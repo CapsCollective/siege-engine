@@ -1,5 +1,6 @@
 # Set general macros
 buildFile = build/app
+sources = src/*.cpp
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
@@ -36,7 +37,7 @@ ifeq ($(CXX),)
 endif
 
 # Default target, compiles, executes and cleans
-run: compile execute clean
+all: compile execute clean
 
 # Lists phony targets for Make compile
 .PHONY: run setup submodules compile execute clean
@@ -81,7 +82,7 @@ endif
 
 # Create the build folder and compile the executable
 compile: build
-	$(CXX) -std=c++17 -I include -L lib/$(platform) src/main.cpp -o $(buildFile) -l raylib $(options)
+	$(CXX) -std=c++17 -I include -L lib/$(platform) $(sources) -o $(buildFile) -l raylib $(options)
 
 # Run the executable
 execute:
