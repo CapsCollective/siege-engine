@@ -1,6 +1,6 @@
 # Set general macros
 buildFile = build/app
-sources = src/*.cpp
+sources = $(CURDIR)/src/*.cpp $(CURDIR)/src/*.h
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
