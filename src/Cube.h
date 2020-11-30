@@ -6,7 +6,7 @@
 #define A_DARK_DISCOMFORT_CUBE_H
 
 #include "Entity.h"
-#include "../include/raylib-cpp.hpp"
+#include <raylib-cpp.hpp>
 
 class Cube : public Entity
 {
