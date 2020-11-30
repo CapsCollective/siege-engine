@@ -1,0 +1,26 @@
+name: macOS
+
+on:
+  push:
+    branches: [ main ]
+    
+  pull_request:
+    branches: [ main ]
+    
+jobs:
+  compile:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: make setup
+      run: make setup
+      
+    - name: make compile
+      run: make compile
+    - name: make clean
+      run: make clean
+
+    - name: make compile CXX=g++
+      run: make compile CXX=g++
+    - name: make clean
+      run: make clean
