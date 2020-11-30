@@ -12,8 +12,14 @@ class Cube : public Entity
 {
 public:
 
-    Cube(raylib::Vector3 pos) :
-    position(pos) {};
+    // Constructors
+
+    explicit Cube(raylib::Vector3 pos) :
+    position(pos),
+    velocity(raylib::Vector3::Zero())
+    {};
+
+    // Overrides
 
     void onUpdate() override;
 
@@ -21,7 +27,13 @@ public:
 
 private:
 
+    // Private fields
+
+    float speed = 1.5f;
+
     raylib::Vector3 position;
+
+    raylib::Vector3 velocity;
 };
 
 

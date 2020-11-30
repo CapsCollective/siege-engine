@@ -3,40 +3,26 @@
 //
 
 #include "Cube.h"
-#include "iostream"
 
 void Cube::onUpdate()
 {
-    std::cout << "updating" << std::endl;
+    // Get move axes as vector
+    raylib::Vector3 move = {
+            -(float)IsKeyDown(KEY_LEFT) + (float)IsKeyDown(KEY_RIGHT),
+            0.f,
+            -(float)IsKeyDown(KEY_UP) + (float)IsKeyDown(KEY_DOWN),
+    };
 
-    float charSpeed = 10.f;
-    raylib::Vector3 velocity = raylib::Vector3::Zero();
+    // Normalise and apply move to velocity, update position
+    position += velocity += move.Normalize() * speed * GetFrameTime();
 
-    if (IsKeyDown(KEY_W))
-    {
-        velocity.z -= 1;
-    }
-
-    if (IsKeyDown(KEY_S))
-    {
-        velocity.z += 1;
-    }
-
-    if (IsKeyDown(KEY_A))
-    {
-        velocity.x -= 1;
-    }
-
-    if (IsKeyDown(KEY_D))
-    {
-        velocity.x += 1;
-    }
-
-    position += velocity.Normalize() * charSpeed * GetFrameTime();
+    // Dampen velocity
+    velocity = velocity * 0.9f;
 }
 
 void Cube::onDraw()
 {
+    // Draw cube to current position
     DrawCube(position, 2.f, 2.f, 2.f, RED);
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
