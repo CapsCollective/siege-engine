@@ -1,4 +1,7 @@
 #include <raylib-cpp.hpp>
+#include <vector>
+#include "Entity.h"
+#include "Cube.h"
 
 int main() {
     
@@ -18,11 +21,19 @@ int main() {
     );
 
     w.SetTargetFPS(60);
+
+    std::vector<Entity*> entities;
+    entities.push_back(new Cube(raylib::Vector3::Zero()));
+
     // Main game loop
     while (!w.ShouldClose()) // Detect window close button or ESC key
     {
         // Update
 
+        for (auto& entity : entities)
+        {
+            entity->onUpdate();
+        }
 
         camera.Update();
 
@@ -31,6 +42,12 @@ int main() {
             bg.ClearBackground();
 
             camera.BeginMode3D();
+
+                for (auto& entity : entities)
+                {
+                    entity->onDraw();
+                }
+
                 DrawGrid(10, 1.0f);
 
             camera.EndMode3D();
