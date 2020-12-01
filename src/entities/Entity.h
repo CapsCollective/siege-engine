@@ -5,12 +5,13 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
+#include <raylib-cpp.hpp>
 
 class Entity
 {
 public:
 
-    // Virtual methods
+    // Pure virtual methods
 
     virtual void onUpdate() = 0;
 

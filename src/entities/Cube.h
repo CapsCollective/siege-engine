@@ -6,7 +6,6 @@
 #define A_DARK_DISCOMFORT_CUBE_H
 
 #include "Entity.h"
-#include "../include/raylib-cpp.hpp"
 
 class Cube : public Entity
 {
@@ -19,7 +18,7 @@ public:
     velocity(raylib::Vector3::Zero())
     {};
 
-    // Overrides
+    // Public overrides
 
     void onUpdate() override;
 

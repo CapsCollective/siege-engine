@@ -1,6 +1,5 @@
 # Set general macros
 buildFile = build/app
-sources = src/*.cpp
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
@@ -8,6 +7,7 @@ ifeq ($(OS), Windows_NT)
 	platform = Windows
 	compiler = g++
 	options = -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
+	sources = main.cpp
 	THEN = &&
 else
 	# Check for MacOS/Linux
@@ -28,6 +28,7 @@ else
 	endif
 
 	# Set UNIX macros
+	sources = $(shell find src -type f -name '*.cpp')
 	THEN = ;
 endif
 
