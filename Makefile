@@ -7,7 +7,7 @@ ifeq ($(OS), Windows_NT)
 	platform = Windows
 	compiler = g++
 	options = -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
-	sources = main.cpp
+	sources = src/main.cpp
 	THEN = &&
 else
 	# Check for MacOS/Linux
