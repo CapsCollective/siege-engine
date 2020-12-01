@@ -8,7 +8,6 @@
 
 class Entity
 {
-
 public:
 
     // Virtual methods
@@ -16,7 +15,6 @@ public:
     virtual void onUpdate() = 0;
 
     virtual void onDraw() = 0;
-
 };
 
 
