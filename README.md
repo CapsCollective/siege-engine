@@ -1,9 +1,9 @@
-![macOS Status](https://github.com/CapsCollective/raylib-cpp-starter/workflows/macOS/badge.svg)
-![Linux Status](https://github.com/CapsCollective/raylib-cpp-starter/workflows/Ubuntu/badge.svg)
-![Windows Status](https://github.com/CapsCollective/raylib-cpp-starter/workflows/Windows/badge.svg)
+![macOS Status](../../workflows/macOS/badge.svg)
+![Linux Status](../../workflows/Ubuntu/badge.svg)
+![Windows Status](../../workflows/Windows/badge.svg)
 # A Dark Discomfort
 
-A survival horror game.
+A retro survival horror game made in [raylib](https://github.com/raysan5/raylib).
 
 ## Getting Started
 

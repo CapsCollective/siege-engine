@@ -1,6 +1,5 @@
 # Set general macros
 buildFile = build/app
-sources = $(CURDIR)/src/*.cpp $(CURDIR)/src/*.h
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
@@ -8,6 +7,7 @@ ifeq ($(OS), Windows_NT)
 	platform = Windows
 	compiler = g++
 	options = -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
+	sources = src/main.cpp
 	THEN = &&
 else
 	# Check for MacOS/Linux
@@ -28,6 +28,7 @@ else
 	endif
 
 	# Set UNIX macros
+	sources = $(shell find src -type f -name '*.cpp')
 	THEN = ;
 endif
 
@@ -36,13 +37,13 @@ ifeq ($(CXX),)
 	CXX = $(compiler)
 endif
 
+# Lists phony targets for Makefile
+.PHONY: all setup submodules compile execute clean
+
 # Default target, compiles, executes and cleans
 all: compile execute clean
 
-# Lists phony targets for Make compile
-.PHONY: run setup submodules compile execute clean
-
-# Sets up the project for compiling, creates libs and includes
+# Sets up the project for compiling, generates includes and libs
 setup: include lib
 
 # Pull and update the the build submodules
