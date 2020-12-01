@@ -6,6 +6,7 @@
 #define A_DARK_DISCOMFORT_CUBE_H
 
 #include "Entity.h"
+#include <raylib-cpp.hpp>
 
 class Cube : public Entity
 {
@@ -34,6 +35,5 @@ private:
 
     raylib::Vector3 velocity;
 };
-
 
 #endif //A_DARK_DISCOMFORT_CUBE_H
