@@ -39,7 +39,7 @@ else
 endif
 
 # Lists phony targets for Makefile
-.PHONY: all setup submodules compile execute clean
+.PHONY: all setup submodules execute clean
 
 # Default target, compiles, executes and cleans
 all: $(target) execute clean
