@@ -91,7 +91,7 @@ execute:
 # Clean up all relevant files
 clean:
 ifeq ($(platform), Windows)
-	-del $(buildDir)\$(executable).exe
+	-del /S $(buildDir)\*
 else
 	rm -rf $(buildDir)/*
 endif
