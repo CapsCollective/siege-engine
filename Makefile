@@ -1,8 +1,11 @@
+# Define custom functions
+rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+
 # Set global macros
 buildDir = bin
 executable = app
 target = $(buildDir)/$(executable)
-sources = $(shell find src -type f -name '*.cpp')
+sources = $(call rwildcard,src/,*.cpp)
 objects = $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 compileFlags = -std=c++17 -I include
 linkFlags = -L lib/$(platform) -l raylib
@@ -12,7 +15,6 @@ ifeq ($(OS), Windows_NT)
 	# Set Windows macros
 	platform = Windows
 	CXX ?= g++
-	sources = $(shell dir src\*.cpp /S /B)
 	linkFlags += -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
 	THEN = &&
 else
