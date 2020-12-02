@@ -12,6 +12,7 @@ ifeq ($(OS), Windows_NT)
 	# Set Windows macros
 	platform = Windows
 	CXX ?= g++
+	sources = $(shell dir src\*.cpp /S /B)
 	linkFlags += -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
 	THEN = &&
 else
