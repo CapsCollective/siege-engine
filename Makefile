@@ -16,11 +16,11 @@ ifeq ($(OS), Windows_NT)
 	# Set Windows macros
 	platform := Windows
 	CXX ?= g++
-	linkFlags += -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
+	linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows 
 	THEN := &&
 	PATHSEP := \\
     MKDIR := -mkdir
-    RM := -del
+    RM := -del /q
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
