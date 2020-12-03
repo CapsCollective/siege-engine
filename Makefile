@@ -16,11 +16,13 @@ ifeq ($(OS), Windows_NT)
 	# Set Windows macros
 	platform := Windows
 	CXX ?= g++
-	linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows 
+	linkFlags += -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
+	libGenDir := src
 	THEN := &&
-	PATHSEP := \\
+	PATHSEP := \$(BLANK)
     MKDIR := -mkdir
-    RM := -del /q
+    RM := -del
+    COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
@@ -43,6 +45,7 @@ else
 	PATHSEP := /
 	MKDIR := mkdir -p
 	RM := rm -rf
+	COPY = cp $1$(PATHSEP)$3 $2
 endif
 
 # Lists phony targets for Makefile
@@ -61,23 +64,15 @@ submodules:
 # Copy the relevant header files into includes
 include: submodules
 	$(MKDIR) $(call platformpth, ./include)
-ifeq ($(platform), Windows)
-	-robocopy "vendor\raylib-cpp\vendor\raylib\src" "include" raylib.h raymath.h
-	-robocopy "vendor\raylib-cpp\include" "include" *.hpp
-else
-	cp vendor/raylib-cpp/vendor/raylib/src/raylib.h vendor/raylib-cpp/vendor/raylib/src/raymath.h include
-	cp vendor/raylib-cpp/include/*.hpp include
-endif
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include,raylib.h)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include,raymath.h)
+	$(call COPY,vendor/raylib-cpp/include,./include,*.hpp)
 
 # Build the raylib static library file and copy it into lib
 lib: submodules
 	cd vendor/raylib-cpp/vendor/raylib/src $(THEN) "$(MAKE)" PLATFORM=PLATFORM_DESKTOP
 	$(MKDIR) $(call platformpth, lib/$(platform))
-ifeq ($(platform), Windows)
-	-robocopy "vendor\raylib-cpp\vendor\raylib\src" "lib\Windows" libraylib.a
-else
-	cp vendor/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a lib/$(platform)/libraylib.a
-endif
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),lib/$(platform),libraylib.a)
 
 # Link the program and create the executable
 $(target): $(objects)
