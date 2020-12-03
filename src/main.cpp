@@ -1,5 +1,8 @@
-#include <raylib-cpp.hpp>
 #include <vector>
+#include <Vector3.hpp>
+#include <Window.hpp>
+#include <Color.hpp>
+#include <Camera3D.hpp>
 #include "entities/Entity.h"
 #include "entities/Cube.h"
 
