@@ -21,9 +21,9 @@ ifeq ($(OS), Windows_NT)
 	libGenDir := src
 	THEN := &&
 	PATHSEP := \$(BLANK)
-    MKDIR := -mkdir
-    RM := -del /q
-    COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+	MKDIR := -mkdir
+	RM := -del /q
+	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
