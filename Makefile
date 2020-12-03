@@ -17,8 +17,8 @@ ifeq ($(OS), Windows_NT)
 	platform := Windows
 	CXX ?= g++
 	linkFlags += -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
-	THEN := "&&"
-	PATHSEP := "\\"
+	THEN := &&
+	PATHSEP := \\
     MKDIR := -mkdir
     RM := -del
 else
@@ -39,8 +39,8 @@ else
 	endif
 
 	# Set UNIX macros
-	THEN := ";"
-	PATHSEP := "/"
+	THEN := ;
+	PATHSEP := /
 	MKDIR := mkdir -p
 	RM := rm -rf
 endif
