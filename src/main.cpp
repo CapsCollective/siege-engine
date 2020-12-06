@@ -5,6 +5,7 @@
 #include <Camera3D.hpp>
 #include "entities/Entity.h"
 #include "entities/Cube.h"
+#include "entitySystem/IndexAllocator.h"
 
 int main()
 {
@@ -15,6 +16,7 @@ int main()
     raylib::Window w = raylib::Window(screenWidth, screenHeight, "Raylib C++ Starter Kit Example");
     w.SetTargetFPS(60);
 
+    IndexAllocator allocator = IndexAllocator();
     // Define entity container
     std::vector<Entity*> entities;
     raylib::Camera3D camera;
