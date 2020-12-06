@@ -14,12 +14,21 @@ public:
 
     // Constructors
 
-    explicit Cube(raylib::Vector3 pos) :
-    position(pos),
-    velocity(raylib::Vector3::Zero())
+    Cube() :
+    Cube(raylib::Vector3::Zero())
     {};
 
-    // Public overrides
+    explicit Cube(raylib::Vector3 pos) :
+    Entity(pos)
+    {
+        // Set default fields
+        speed = 1.5;
+        raylib::Vector3::Zero();
+    };
+
+protected:
+
+    // Protected overrides
 
     void onUpdate() override;
 
@@ -29,8 +38,7 @@ private:
 
     // Private fields
 
-    float speed = 1.5f;
-
+    float speed;
 
     raylib::Vector3 velocity;
 };

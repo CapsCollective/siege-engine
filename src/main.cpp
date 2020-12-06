@@ -20,7 +20,7 @@ int main()
     raylib::Camera3D camera;
 
     // Instantiate world objects
-    entities.push_back(new Cube(raylib::Vector3::Zero()));
+    entities.push_back(new Cube());
     camera = raylib::Camera3D(
             raylib::Vector3(0.f, 10.f, 10.f),
             raylib::Vector3::Zero(),
