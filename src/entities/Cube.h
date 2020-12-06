@@ -31,7 +31,6 @@ private:
 
     float speed = 1.5f;
 
-    raylib::Vector3 position;
 
     raylib::Vector3 velocity;
 };
