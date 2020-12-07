@@ -16,12 +16,15 @@ struct GenerationalIndex {
 class IndexAllocator {
 
 public:
-    IndexAllocator(size_t = 256);
+    IndexAllocator();
     GenerationalIndex allocateIndex();
+    bool isLive(GenerationalIndex);
+    void deallocate(GenerationalIndex);
 private:
     std::vector<IndexEntry> entries;
     std::vector<size_t> freeEntries;
     uint32_t currentEntities;
+    IndexEntry& operator[] (GenerationalIndex);
 };
 
 
