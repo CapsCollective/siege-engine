@@ -20,6 +20,7 @@ GenerationalIndex IndexAllocator::allocateIndex() {
         freeEntries.pop_back();
         entries[index] = {true, generation++};
     }
+    // TODO: Remove once entity system is complete and tested
     std::cout << "Created new index at position: " << index << " with generation: " << generation << std::endl;
     currentEntities++;
 
@@ -33,6 +34,7 @@ bool IndexAllocator::isLive(GenerationalIndex index) {
 void IndexAllocator::deallocate(GenerationalIndex index) {
     freeEntries.push_back(index.index);
     entries[index.index].live = false;
+    // TODO: Remove once entity system is complete and tested
     std::cout << "Removing index at position: " << index.index << " and generation: " << index.generation << std::endl;
 }
 
