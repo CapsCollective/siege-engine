@@ -3,6 +3,8 @@
 
 #include <vector>
 
+// Utility Structs
+
 struct IndexEntry {
     bool live = false;
     uint32_t generation = 0;
@@ -16,14 +18,28 @@ struct GenerationalIndex {
 class IndexAllocator {
 
 public:
+
+    // Constructors
+
     IndexAllocator();
+
+    // Public Utility Methods
+
     GenerationalIndex allocateIndex();
+
     bool isLive(GenerationalIndex);
+
     void deallocate(GenerationalIndex);
+
 private:
+    // Private Methods and fields
+
     std::vector<IndexEntry> entries;
+
     std::vector<size_t> freeEntries;
+
     uint32_t currentEntities;
+
     IndexEntry& operator[] (GenerationalIndex);
 };
 
