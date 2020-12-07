@@ -22,7 +22,7 @@ int main()
     raylib::Camera3D camera;
 
     // Instantiate world objects
-    entities.push_back(new Cube(raylib::Vector3::Zero()));
+    entities.push_back(new Cube());
     GenerationalIndex index = allocator.allocateIndex();
     allocator.deallocate(index);
     index = allocator.allocateIndex();
