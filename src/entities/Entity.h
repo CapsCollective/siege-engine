@@ -22,11 +22,11 @@ protected:
     // Protected constructors
 
     Entity() :
-            Entity(raylib::Vector3::Zero())
+    Entity(raylib::Vector3::Zero())
     {};
 
     explicit Entity(raylib::Vector3 pos) :
-            position(pos)
+    position(pos)
     {};
 
     // Protected fields
