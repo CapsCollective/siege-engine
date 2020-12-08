@@ -17,6 +17,8 @@ public:
 
     virtual void onDraw() = 0;
 
+    virtual ~Entity() = 0;
+
 protected:
 
     // Protected constructors

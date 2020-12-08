@@ -26,3 +26,7 @@ void Cube::onDraw()
     DrawCube(position, 2.f, 2.f, 2.f, RED);
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
+
+Cube::~Cube() {
+
+}

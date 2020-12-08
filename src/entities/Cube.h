@@ -26,6 +26,8 @@ public:
         raylib::Vector3::Zero();
     };
 
+    ~Cube();
+
 protected:
 
     // Protected overrides

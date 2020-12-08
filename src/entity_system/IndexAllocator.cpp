@@ -41,3 +41,7 @@ void IndexAllocator::deallocate(GenerationalIndex index) {
 IndexEntry& IndexAllocator::operator[] (GenerationalIndex index) {
     return entries[index.index];
 }
+
+IndexAllocator::~IndexAllocator() {
+
+}
