@@ -13,9 +13,9 @@ public:
 
     EntityStorage();
 
-    Entity& getEntity(GenerationalIndex);
+    //Entity& getEntity(GenerationalIndex);
 
-    void insert(Entity&);
+    void insert(Entity*);
 
     void remove(Entity&);
 
@@ -25,7 +25,7 @@ public:
 
 private:
     IndexAllocator allocator;
-    std::vector<Entity*> entities;
+    std::vector<Entity> entities;
 };
 
 

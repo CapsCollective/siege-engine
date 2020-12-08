@@ -23,6 +23,8 @@ public:
 
     IndexAllocator();
 
+    ~IndexAllocator();
+
     // Public Utility Methods
 
     GenerationalIndex allocateIndex();
