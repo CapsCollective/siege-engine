@@ -17,6 +17,12 @@ public:
 
     virtual void onDraw() = 0;
 
+    // Public methods
+
+    void setPosition(raylib::Vector3 pos);
+
+    raylib::Vector3 getPosition();
+
 protected:
 
     // Protected constructors

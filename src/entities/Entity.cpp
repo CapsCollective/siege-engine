@@ -3,3 +3,13 @@
 //
 
 #include "Entity.h"
+
+void Entity::setPosition(raylib::Vector3 pos)
+{
+    position = pos;
+}
+
+raylib::Vector3 Entity::getPosition()
+{
+    return position;
+}
