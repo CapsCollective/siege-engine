@@ -19,7 +19,7 @@ public:
 
     // Public methods
 
-    void setPosition(raylib::Vector3 pos);
+    void setPosition(raylib::Vector3 newPosition);
 
     raylib::Vector3 getPosition();
 
@@ -31,8 +31,8 @@ protected:
     Entity(raylib::Vector3::Zero())
     {};
 
-    explicit Entity(raylib::Vector3 pos) :
-    position(pos)
+    explicit Entity(raylib::Vector3 position) :
+    position(position)
     {};
 
     // Protected fields

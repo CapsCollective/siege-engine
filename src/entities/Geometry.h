@@ -2,15 +2,40 @@
 // Created by Jonathan Moallem on 10/12/20.
 //
 
-#ifndef A_DARK_DISCOMFORT_PLAYER_H
-#define A_DARK_DISCOMFORT_PLAYER_H
+#ifndef A_DARK_DISCOMFORT_GEOMETRY_H
+#define A_DARK_DISCOMFORT_GEOMETRY_H
 
+#include "Entity.h"
 
+class Geometry : public Entity
+{
+public:
 
-class Player {
+    // Constructors
 
+    Geometry() :
+    Geometry(raylib::Vector3::Zero(), raylib::Vector3::One())
+    {};
+
+    explicit Geometry(raylib::Vector3 pos, raylib::Vector3 dimensions) :
+    Entity(pos),
+    dimensions(dimensions)
+    {};
+
+protected:
+
+    // Protected overrides
+
+    void onUpdate() override;
+
+    void onDraw() override;
+
+private:
+
+    // Private fields
+
+    raylib::Vector3 dimensions;
 };
 
 
-
-#endif //A_DARK_DISCOMFORT_PLAYER_H
+#endif //A_DARK_DISCOMFORT_GEOMETRY_H

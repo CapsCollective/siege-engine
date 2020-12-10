@@ -4,8 +4,8 @@
 #include <Color.hpp>
 #include <Camera3D.hpp>
 #include "entities/Entity.h"
-#include "entities/Cube.h"
-#include "entities/PlayerController.h"
+#include "entities/Player.h"
+#include "entities/Geometry.h"
 
 int main()
 {
@@ -21,11 +21,11 @@ int main()
     raylib::Camera3D camera;
 
     // Instantiate world objects
-    auto cube = new Cube();
-    entities.push_back(cube);
-    auto playerController = new PlayerController();
-    playerController->setPawn(cube);
-    entities.push_back(playerController);
+    entities.push_back(new Player());
+    entities.push_back(new Geometry(
+            raylib::Vector3::Zero(),
+            raylib::Vector3(5.f, 0.1f, 5.f))
+    );
     camera = raylib::Camera3D(
             raylib::Vector3(0.f, 10.f, 10.f),
             raylib::Vector3::Zero(),
