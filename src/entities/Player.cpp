@@ -2,7 +2,7 @@
 // Created by Jonathan Moallem on 30/11/20.
 //
 
-#include "Cube.h"
+#include "Player.h"
 
 void Player::onUpdate()
 {

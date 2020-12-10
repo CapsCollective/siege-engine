@@ -4,9 +4,9 @@
 
 #include "Entity.h"
 
-void Entity::setPosition(raylib::Vector3 pos)
+void Entity::setPosition(raylib::Vector3 newPosition)
 {
-    position = pos;
+    position = newPosition;
 }
 
 raylib::Vector3 Entity::getPosition()
