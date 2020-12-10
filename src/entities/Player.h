@@ -7,21 +7,22 @@
 
 #include "Entity.h"
 
-class Cube : public Entity
+class Player : public Entity
 {
 public:
 
     // Constructors
 
-    Cube() :
-    Cube(raylib::Vector3::Zero())
+    Player() :
+    Player(raylib::Vector3::Zero())
     {};
 
-    explicit Cube(raylib::Vector3 pos) :
+    explicit Player(raylib::Vector3 pos) :
     Entity(pos)
     {
         // Set default fields
-        raylib::Vector3::Zero();
+        speed = 1.5;
+        velocity = raylib::Vector3::Zero();
     };
 
 protected:
@@ -31,6 +32,14 @@ protected:
     void onUpdate() override;
 
     void onDraw() override;
+
+private:
+
+    // Private fields
+
+    float speed;
+
+    raylib::Vector3 velocity;
 };
 
 #endif //A_DARK_DISCOMFORT_CUBE_H
