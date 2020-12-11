@@ -18,12 +18,14 @@ public:
     {};
 
     explicit Player(raylib::Vector3 position) :
-    Entity(position)
-    {
-        // Set default fields
-        speed = 1.5;
-        velocity = raylib::Vector3::Zero();
-    };
+    Entity(position),
+    speed(1.5f),
+    velocity(raylib::Vector3::Zero())
+    {};
+
+    // Public overrides
+
+    BoundingBox getBoundingBox() override;
 
 protected:
 

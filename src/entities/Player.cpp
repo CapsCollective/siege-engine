@@ -26,3 +26,11 @@ void Player::onDraw()
     DrawCube(position, 2.f, 2.f, 2.f, RED);
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
+
+BoundingBox Player::getBoundingBox()
+{
+    return BoundingBox{
+            position - raylib::Vector3::One(),
+            position + raylib::Vector3::One(),
+    };
+}
