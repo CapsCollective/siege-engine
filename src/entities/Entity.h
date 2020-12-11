@@ -6,9 +6,9 @@
 #define A_DARK_DISCOMFORT_ENTITY_H
 
 #include <Vector3.hpp>
+#include "../entity_system/IndexAllocator.h"
 
-class Entity
-{
+class Entity {
 public:
 
     // Pure virtual methods
@@ -17,23 +17,29 @@ public:
 
     virtual void onDraw() = 0;
 
-    virtual ~Entity() = 0;
+    const GenerationalIndex &GetIndex() const {
+        return index;
+    }
+
+    void SetIndex(const GenerationalIndex &index) {
+        Entity::index = index;
+    }
 
 protected:
 
     // Protected constructors
 
     Entity() :
-            Entity(raylib::Vector3::Zero())
-    {};
+            Entity(raylib::Vector3::Zero()) {};
 
     explicit Entity(raylib::Vector3 pos) :
-            position(pos)
-    {};
+            position(pos), index({0, 0}) {};
 
     // Protected fields
 
     raylib::Vector3 position;
+
+    GenerationalIndex index;
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITY_H

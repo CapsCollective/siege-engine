@@ -27,11 +27,11 @@ public:
 
     // Public Utility Methods
 
-    GenerationalIndex allocateIndex();
+    GenerationalIndex AllocateIndex();
 
-    bool isLive(GenerationalIndex);
+    bool IsLive(GenerationalIndex);
 
-    void deallocate(GenerationalIndex);
+    void Deallocate(GenerationalIndex);
 
 private:
     // Private Methods and fields

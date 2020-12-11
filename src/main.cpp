@@ -5,7 +5,7 @@
 #include <Camera3D.hpp>
 #include "entities/Entity.h"
 #include "entities/Cube.h"
-#include "entity_system/IndexAllocator.h"
+#include "entity_system/EntityStorage.h"
 
 int main()
 {
@@ -16,21 +16,15 @@ int main()
     raylib::Window w = raylib::Window(screenWidth, screenHeight, "Raylib C++ Starter Kit Example");
     w.SetTargetFPS(60);
 
-    IndexAllocator allocator = IndexAllocator();
     // Define entity container
     std::vector<Entity*> entities;
     raylib::Camera3D camera;
 
     // Instantiate world objects
-    entities.push_back(new Cube());
-    GenerationalIndex index = allocator.allocateIndex();
-    allocator.deallocate(index);
-    index = allocator.allocateIndex();
-    GenerationalIndex index2 = allocator.allocateIndex();
-    GenerationalIndex index3 = allocator.allocateIndex();
-    GenerationalIndex index4 = allocator.allocateIndex();
-    allocator.deallocate(index3);
-    index3 = allocator.allocateIndex();
+    Cube player = Cube();
+
+    entities.push_back(&player);
+    EntityStorage::Instance()->Register(&player);
 
     camera = raylib::Camera3D(
             raylib::Vector3(0.f, 10.f, 10.f),
@@ -56,10 +50,10 @@ int main()
         camera.BeginMode3D();
 
         // Draw entities
-        for (auto& entity : entities)
-        {
+        for (auto& entity : EntityStorage::GetEntities()) {
             entity->onDraw();
         }
+
         DrawGrid(10, 1.0f);
 
         camera.EndMode3D();

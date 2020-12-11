@@ -1,23 +1,44 @@
 #include "EntityStorage.h"
-#include <optional>
+
+EntityStorage* EntityStorage::instance;
 
 EntityStorage::EntityStorage() {
     allocator = IndexAllocator();
+    instance = nullptr;
 }
 
-//Entity& EntityStorage::getEntity(GenerationalIndex index) {
-//    bool isInBounds = index.index < entities.size();
-//
-//    if(isInBounds && allocator.isLive(index)) {
-//        return entities[index.index];
-//    } else {
-//        return nullptr;
-//    }
-//}
+Entity* EntityStorage::GetEntity(GenerationalIndex index) {
+    bool isInBounds = index.index < entities.size();
 
-void EntityStorage::insert(Entity *) {
+    if(isInBounds && allocator.IsLive(index)) {
+        return entities[index.index];
+    } else {
+        return nullptr;
+    }
+}
+
+void EntityStorage::Register(Entity* entity) {
+
+    GenerationalIndex index = allocator.AllocateIndex();
+    entity->SetIndex(index);
+
+    if (index.index < entities.size()) {
+        entities[index.index] = entity;
+    } else {
+        entities.push_back(entity);
+    }
+}
+
+void EntityStorage::Remove(Entity* entity) {
 
 }
 
+Entity* EntityStorage::operator[](GenerationalIndex index) {
+    if (allocator.IsLive(index)) {
+        return entities[index.index];
+    } else {
+        return nullptr;
+    }
+}
 
 
