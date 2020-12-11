@@ -22,11 +22,13 @@ public:
     dimensions(dimensions)
     {};
 
+    // Public overrides
+
+    BoundingBox getBoundingBox() override;
+
 protected:
 
     // Protected overrides
-
-    void onUpdate() override;
 
     void onDraw() override;
 

@@ -11,11 +11,15 @@ class Entity
 {
 public:
 
-    // Pure virtual methods
+    // Virtual methods
 
-    virtual void onUpdate() = 0;
+    virtual void onUpdate();
 
-    virtual void onDraw() = 0;
+    virtual void onDraw();
+
+    virtual void onUIDraw();
+
+    virtual BoundingBox getBoundingBox();
 
     // Public methods
 
