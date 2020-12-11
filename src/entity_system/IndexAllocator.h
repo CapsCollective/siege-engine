@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 
 #include <vector>
+#include <cstdint>
 
 // Utility Structs
 
