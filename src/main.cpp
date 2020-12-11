@@ -6,6 +6,7 @@
 #include "entities/Player.h"
 #include "entities/Geometry.h"
 #include "entities/EditorController.h"
+#include "entity_system/EntityStorage.h"
 
 int main()
 {
@@ -15,9 +16,6 @@ int main()
     raylib::Color bg = RAYWHITE;
     raylib::Window window = raylib::Window(screenWidth, screenHeight, "Raylib C++ Starter Kit Example");
     window.SetTargetFPS(60);
-
-    // Define entity container
-    std::vector<Entity*> entities;
 
     // Create camera
     raylib::Camera3D camera;
@@ -30,18 +28,18 @@ int main()
     );
 
     // Instantiate world objects
-    entities.push_back(new Player());
-    entities.push_back(new Geometry(
+    EntityStorage::Instance()->Register(new Player());
+    EntityStorage::Instance()->Register(new Geometry(
             raylib::Vector3::Zero(),
             raylib::Vector3(5.f, 0.1f, 5.f))
     );
-    entities.push_back(new EditorController(&camera, &entities));
+    EntityStorage::Instance()->Register(new EditorController(&camera));
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
         // Update entities
-        for (auto& entity : entities)
+        for (auto& entity : EntityStorage::GetEntities())
         {
             entity->OnUpdate();
         }
@@ -53,7 +51,7 @@ int main()
         camera.BeginMode3D();
 
         // Draw entities
-        for (auto& entity : entities)
+        for (auto& entity : EntityStorage::GetEntities())
         {
             entity->OnDraw();
         }
@@ -67,7 +65,7 @@ int main()
         DrawText("Move with the arrow keys", 10.f, 40.f, 20.f, DARKGRAY);
 
         // UI Draw entities
-        for (auto& entity : entities)
+        for (auto& entity : EntityStorage::GetEntities())
         {
             entity->OnUIDraw();
         }

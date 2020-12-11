@@ -15,9 +15,8 @@ public:
 
     // Constructors
 
-    explicit EditorController(raylib::Camera3D* camera, std::vector<Entity*>* entities) :
+    explicit EditorController(raylib::Camera3D* camera) :
     selectedEntity(nullptr),
-    entities(entities),
     camera(camera)
     {};
 
@@ -36,8 +35,6 @@ private:
     // Private fields
 
     raylib::Camera3D* camera;
-
-    std::vector<Entity*>* entities;
 
     Entity* selectedEntity;
 };

@@ -3,6 +3,7 @@
 //
 
 #include "EditorController.h"
+#include "../entity_system/EntityStorage.h"
 
 void EditorController::OnUpdate()
 {
@@ -13,7 +14,7 @@ void EditorController::OnUpdate()
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
         selectedEntity = nullptr;
-        for (auto& entity : *entities)
+        for (auto& entity : EntityStorage::GetEntities())
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
