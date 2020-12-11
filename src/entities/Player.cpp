@@ -1,6 +1,10 @@
-#include "Cube.h"
+//
+// Created by Jonathan Moallem on 30/11/20.
+//
 
-void Cube::onUpdate()
+#include "Player.h"
+
+void Player::OnUpdate()
 {
     // Get move axes as vector
     raylib::Vector3 move = {
@@ -9,16 +13,24 @@ void Cube::onUpdate()
             -(float)IsKeyDown(KEY_UP) + (float)IsKeyDown(KEY_DOWN),
     };
 
-    // Normalise and apply move to velocity, update position
+    // Normalise and apply move to velocity
     position += velocity += move.Normalize() * speed * GetFrameTime();
 
     // Dampen velocity
     velocity = velocity * 0.9f;
 }
 
-void Cube::onDraw()
+void Player::OnDraw()
 {
-    // Draw cube to current position
+    // Draw player to current position
     DrawCube(position, 2.f, 2.f, 2.f, RED);
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
+}
+
+BoundingBox Player::GetBoundingBox()
+{
+    return BoundingBox{
+            position - raylib::Vector3::One(),
+            position + raylib::Vector3::One(),
+    };
 }
