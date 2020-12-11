@@ -25,11 +25,11 @@ protected:
 
     // Protected overrides
 
-    void onUpdate() override;
+    void OnUpdate() override;
 
-    void onDraw() override;
+    void OnDraw() override;
 
-    void onUIDraw() override;
+    void OnUIDraw() override;
 
 private:
 

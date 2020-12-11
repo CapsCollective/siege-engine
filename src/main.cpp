@@ -43,7 +43,7 @@ int main()
         // Update entities
         for (auto& entity : entities)
         {
-            entity->onUpdate();
+            entity->OnUpdate();
         }
         camera.Update();
 
@@ -55,7 +55,7 @@ int main()
         // Draw entities
         for (auto& entity : entities)
         {
-            entity->onDraw();
+            entity->OnDraw();
         }
 
         DrawGrid(10, 1.0f);
@@ -69,7 +69,7 @@ int main()
         // UI Draw entities
         for (auto& entity : entities)
         {
-            entity->onUIDraw();
+            entity->OnUIDraw();
         }
 
         window.EndDrawing();

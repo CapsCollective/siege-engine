@@ -4,32 +4,17 @@
 
 #include "Entity.h"
 
-void Entity::onUpdate()
+BoundingBox Entity::GetBoundingBox()
 {
-
+    return BoundingBox();
 }
 
-void Entity::onDraw()
-{
-
-}
-
-void Entity::onUIDraw()
-{
-
-}
-
-void Entity::setPosition(raylib::Vector3 newPosition)
+void Entity::SetPosition(raylib::Vector3 newPosition)
 {
     position = newPosition;
 }
 
-raylib::Vector3 Entity::getPosition()
+raylib::Vector3 Entity::GetPosition()
 {
     return position;
-}
-
-BoundingBox Entity::getBoundingBox()
-{
-    return BoundingBox();
 }

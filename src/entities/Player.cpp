@@ -4,7 +4,7 @@
 
 #include "Player.h"
 
-void Player::onUpdate()
+void Player::OnUpdate()
 {
     // Get move axes as vector
     raylib::Vector3 move = {
@@ -20,14 +20,14 @@ void Player::onUpdate()
     velocity = velocity * 0.9f;
 }
 
-void Player::onDraw()
+void Player::OnDraw()
 {
     // Draw player to current position
     DrawCube(position, 2.f, 2.f, 2.f, RED);
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
 
-BoundingBox Player::getBoundingBox()
+BoundingBox Player::GetBoundingBox()
 {
     return BoundingBox{
             position - raylib::Vector3::One(),
