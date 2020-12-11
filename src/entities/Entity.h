@@ -23,12 +23,12 @@ public:
 
     raylib::Vector3 GetPosition();
 
-    const GenerationalIndex &GetIndex() const {
+    const GenerationalIndex& GetIndex() const {
         return index;
     }
 
-    void SetIndex(const GenerationalIndex &index) {
-        Entity::index = index;
+    void SetIndex(const GenerationalIndex &idx) {
+        index = idx;
     }
 
 protected:

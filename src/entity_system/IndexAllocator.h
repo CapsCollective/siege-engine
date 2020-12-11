@@ -35,6 +35,7 @@ public:
     void Deallocate(GenerationalIndex);
 
 private:
+
     // Private Methods and fields
 
     std::vector<IndexEntry> entries;

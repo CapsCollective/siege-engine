@@ -6,24 +6,23 @@
 #include "../entities/Entity.h"
 
 class EntityStorage {
-
 public:
 
     // Constructors
 
-    static EntityStorage* instance;
-
     EntityStorage();
 
-    Entity* GetEntity(GenerationalIndex);
+    // Public fields
+
+    static EntityStorage* instance;
+
+    // Public functions
 
     void Register(Entity*);
 
     void Remove(Entity*);
 
-    // Operator overload to get entities.
-
-    Entity* operator[](GenerationalIndex);
+    Entity* GetEntity(GenerationalIndex);
 
     static std::vector<Entity*>& GetEntities() {
         return Instance()->entities;
@@ -36,8 +35,16 @@ public:
         return instance;
     }
 
+    // Operator overloads
+
+    Entity* operator[](GenerationalIndex);
+
 private:
+
+    // Private fields
+
     IndexAllocator allocator;
+
     std::vector<Entity*> entities;
 };
 

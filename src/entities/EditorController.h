@@ -17,7 +17,8 @@ public:
 
     explicit EditorController(raylib::Camera3D* camera) :
     selectedEntity(nullptr),
-    camera(camera)
+    camera(camera),
+    moveDistance(0.5f)
     {};
 
 protected:
@@ -33,6 +34,8 @@ protected:
 private:
 
     // Private fields
+
+    float moveDistance;
 
     raylib::Camera3D* camera;
 
