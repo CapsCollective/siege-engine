@@ -14,7 +14,7 @@ int main()
     int screenWidth = 800;
     int screenHeight = 450;
     raylib::Color bg = RAYWHITE;
-    raylib::Window window = raylib::Window(screenWidth, screenHeight, "Raylib C++ Starter Kit Example");
+    raylib::Window window = raylib::Window(screenWidth, screenHeight, "A Dark Discomfort");
     window.SetTargetFPS(60);
 
     // Create camera
@@ -28,12 +28,12 @@ int main()
     );
 
     // Instantiate world objects
+    EntityStorage::Instance()->Register(new EditorController(&camera));
     EntityStorage::Instance()->Register(new Player());
     EntityStorage::Instance()->Register(new Geometry(
             raylib::Vector3::Zero(),
             raylib::Vector3(5.f, 0.1f, 5.f))
     );
-    EntityStorage::Instance()->Register(new EditorController(&camera));
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
