@@ -13,19 +13,19 @@ public:
 
     // Virtual methods
 
-    virtual void onUpdate();
+    virtual void OnUpdate() {};
 
-    virtual void onDraw();
+    virtual void OnDraw() {};
 
-    virtual void onUIDraw();
+    virtual void OnUIDraw() {};
 
-    virtual BoundingBox getBoundingBox();
+    virtual BoundingBox GetBoundingBox();
 
     // Public methods
 
-    void setPosition(raylib::Vector3 newPosition);
+    void SetPosition(raylib::Vector3 newPosition);
 
-    raylib::Vector3 getPosition();
+    raylib::Vector3 GetPosition();
 
 protected:
 

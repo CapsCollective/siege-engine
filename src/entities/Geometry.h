@@ -24,13 +24,13 @@ public:
 
     // Public overrides
 
-    BoundingBox getBoundingBox() override;
+    BoundingBox GetBoundingBox() override;
 
 protected:
 
     // Protected overrides
 
-    void onDraw() override;
+    void OnDraw() override;
 
 private:
 
