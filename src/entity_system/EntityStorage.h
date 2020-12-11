@@ -11,21 +11,34 @@ public:
 
     // Constructors
 
+    static EntityStorage* instance;
+
     EntityStorage();
 
-    //Entity& getEntity(GenerationalIndex);
+    Entity* GetEntity(GenerationalIndex);
 
-    void insert(Entity*);
+    void Register(Entity*);
 
-    void remove(Entity&);
+    void Remove(Entity*);
 
     // Operator overload to get entities.
 
-    Entity& operator[](GenerationalIndex);
+    Entity* operator[](GenerationalIndex);
+
+    static std::vector<Entity*>& GetEntities() {
+        return Instance()->entities;
+    }
+
+    static EntityStorage* Instance() {
+        if (!instance) {
+            instance = new EntityStorage();
+        }
+        return instance;
+    }
 
 private:
     IndexAllocator allocator;
-    std::vector<Entity> entities;
+    std::vector<Entity*> entities;
 };
 
 

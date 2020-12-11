@@ -7,7 +7,7 @@ IndexAllocator::IndexAllocator() {
     currentEntities = 0;
 }
 
-GenerationalIndex IndexAllocator::allocateIndex() {
+GenerationalIndex IndexAllocator::AllocateIndex() {
     size_t index = 0;
     uint32_t generation = 0;
 
@@ -27,11 +27,11 @@ GenerationalIndex IndexAllocator::allocateIndex() {
     return {index, generation};
 }
 
-bool IndexAllocator::isLive(GenerationalIndex index) {
+bool IndexAllocator::IsLive(GenerationalIndex index) {
     return entries[index.index].live;
 }
 
-void IndexAllocator::deallocate(GenerationalIndex index) {
+void IndexAllocator::Deallocate(GenerationalIndex index) {
     freeEntries.push_back(index.index);
     entries[index.index].live = false;
     // TODO: Remove once entity system is complete and tested
