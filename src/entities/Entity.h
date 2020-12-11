@@ -11,11 +11,21 @@
 class Entity {
 public:
 
-    // Pure virtual methods
+    // Virtual methods
 
-    virtual void onUpdate() = 0;
+    virtual void OnUpdate() {};
 
-    virtual void onDraw() = 0;
+    virtual void OnDraw() {};
+
+    virtual void OnUIDraw() {};
+
+    virtual BoundingBox GetBoundingBox();
+
+    // Public methods
+
+    void SetPosition(raylib::Vector3 newPosition);
+
+    raylib::Vector3 GetPosition();
 
     const GenerationalIndex &GetIndex() const {
         return index;
@@ -32,8 +42,8 @@ protected:
     Entity() :
             Entity(raylib::Vector3::Zero()) {};
 
-    explicit Entity(raylib::Vector3 pos) :
-            position(pos), index({0, 0}) {};
+    explicit Entity(raylib::Vector3 position) :
+            position(position), index({0, 0}) {};
 
     // Protected fields
 
