@@ -8,7 +8,7 @@
 #include "entities/EditorController.h"
 #include "entity_system/EntityStorage.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     // Initialise window
     int screenWidth = 800;
