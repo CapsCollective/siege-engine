@@ -10,6 +10,9 @@
 
 int main(int argc, char* argv[])
 {
+    // Check for editor flag
+    bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
+
     // Initialise window
     int screenWidth = 800;
     int screenHeight = 450;
@@ -18,8 +21,7 @@ int main(int argc, char* argv[])
     window.SetTargetFPS(60);
 
     // Create camera
-    raylib::Camera3D camera;
-    camera = raylib::Camera3D(
+    raylib::Camera3D camera = raylib::Camera3D(
             raylib::Vector3(0.f, 10.f, 10.f),
             raylib::Vector3::Zero(),
             raylib::Vector3(0.f, 1.f, 0.f),
@@ -28,7 +30,7 @@ int main(int argc, char* argv[])
     );
 
     // Instantiate world objects
-    EntityStorage::Instance()->Register(new EditorController(&camera));
+    if (isEditorMode) EntityStorage::Instance()->Register(new EditorController(&camera));
     EntityStorage::Instance()->Register(new Player());
     EntityStorage::Instance()->Register(new Geometry(
             raylib::Vector3::Zero(),
