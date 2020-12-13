@@ -1,5 +1,6 @@
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
+#include "Geometry.h"
 
 void EditorController::OnUpdate()
 {
@@ -19,8 +20,15 @@ void EditorController::OnUpdate()
             {
                 selectedEntity = entity;
                 break;
+
             }
         }
+    }
+
+    if (IsKeyPressed(KEY_ENTER)) {
+        EntityStorage::Instance()->Register(new Geometry(
+                raylib::Vector3::Zero(),
+                raylib::Vector3(5.f, 0.1f, 5.f)));
     }
 
     if (selectedEntity)
@@ -39,7 +47,6 @@ void EditorController::OnUpdate()
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
         }
-
     }
 }
 
