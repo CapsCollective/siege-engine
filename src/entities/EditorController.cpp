@@ -25,6 +25,7 @@ void EditorController::OnUpdate()
         }
     }
 
+    // THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
     if (IsKeyPressed(KEY_ENTER)) {
         EntityStorage::Instance()->Register(new Geometry(
                 raylib::Vector3::Zero(),
