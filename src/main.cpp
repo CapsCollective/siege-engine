@@ -70,6 +70,8 @@ int main()
             entity->OnUIDraw();
         }
 
+        EntityStorage::Instance()->FreeEntities();
+
         window.EndDrawing();
     }
 
