@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 11/12/20.
-//
-
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
 
@@ -36,6 +32,14 @@ void EditorController::OnUpdate()
 
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
+
+        // PLACEHOLDER: If an entity is selected, delete it only if SPACE is clicked with it.
+        // NOTE -> Entity MUST implement QueueFree for this to work.
+        if (IsKeyPressed(KEY_SPACE)) {
+            selectedEntity->QueueFree();
+            selectedEntity = nullptr;
+        }
+
     }
 }
 
