@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
     raylib::Color bg = RAYWHITE;
     raylib::Window window = raylib::Window(screenWidth, screenHeight, "A Dark Discomfort");
     window.SetTargetFPS(60);
+    SetExitKey(-1);
 
     // Create camera
     raylib::Camera3D camera = raylib::Camera3D(

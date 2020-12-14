@@ -9,6 +9,9 @@ void EditorController::OnUpdate()
 {
     if (!camera) return;
 
+    // Check for deselection key
+    if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
+
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
