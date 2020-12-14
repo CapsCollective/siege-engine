@@ -15,7 +15,9 @@ void EditorController::OnUpdate()
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        // Get the ray cast by teh mouse position
+        if (!camera) return;
+
+        // Get the ray cast by the mouse position
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
         // Check if any entities fall within the ray and set them as selected

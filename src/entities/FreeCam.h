@@ -15,8 +15,10 @@ public:
     // Constructors
 
     explicit FreeCam(raylib::Camera3D* camera) :
-    speed(10.0f),
-    camera(camera)
+    moveSpeed(10.0f),
+    lookSpeed(0.01f),
+    camera(camera),
+    rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {
         camera->SetMode(CAMERA_CUSTOM);
     };
@@ -31,9 +33,13 @@ private:
 
     // Private fields
 
-    float speed;
+    float moveSpeed;
+
+    float lookSpeed;
 
     raylib::Camera3D* camera;
+
+    raylib::Vector3 rotation;
 };
 
 

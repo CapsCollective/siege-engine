@@ -8,22 +8,41 @@ void FreeCam::OnUpdate()
 {
     if (!camera) return;
 
-    if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+    // Calculate halfed screen size values
+    int screenWidthHalf = GetScreenWidth()/2;
+    int screenHeightHalf = GetScreenHeight()/2;
+
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
     {
-        // TODO some camera look code
+        // Begin the click, hide the cursor
+        HideCursor();
+        SetMousePosition(screenWidthHalf, screenHeightHalf);
+    }
+    else if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+    {
+        // Calculate and set the rotation while click held
+        raylib::Vector3 rotate = {
+                (float) (GetMouseX() - screenWidthHalf),
+                (float) -(GetMouseY() - screenHeightHalf),
+                0.f
+        };
+        rotation += (rotate * lookSpeed * GetFrameTime());
+    }
+    else if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON))
+    {
+        // End the click, show the cursor
+        ShowCursor();
     }
 
     // Get movement as vector
     raylib::Vector3 move = {
-            -(float)IsKeyDown(KEY_A) + (float)IsKeyDown(KEY_D),
-            -(float)IsKeyDown(KEY_Q) + (float)IsKeyDown(KEY_E),
-            -(float)IsKeyDown(KEY_W) + (float)IsKeyDown(KEY_S),
+            -(float) IsKeyDown(KEY_A) + (float) IsKeyDown(KEY_D),
+            -(float) IsKeyDown(KEY_Q) + (float) IsKeyDown(KEY_E),
+            -(float) IsKeyDown(KEY_W) + (float) IsKeyDown(KEY_S),
     };
 
-    // Calculate the rotation
-    raylib::Vector3 rotation = raylib::Vector3(0.f, -1.f, -1.f);
-
     // Set the new position and look rotation of the camera
-    camera->SetPosition(raylib::Vector3(camera->GetPosition()) + move.Normalize() * speed * GetFrameTime());
+    camera->SetPosition(raylib::Vector3(
+            camera->GetPosition()) + move.Normalize() * moveSpeed * GetFrameTime());
     camera->SetTarget(raylib::Vector3(camera->GetPosition()) + rotation);
 }
