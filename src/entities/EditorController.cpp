@@ -44,7 +44,7 @@ void EditorController::OnUpdate()
 
         // PLACEHOLDER: If an entity is selected, delete it only if SPACE is clicked with it.
         // NOTE -> Entity MUST implement QueueFree for this to work.
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE)) {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
         }
