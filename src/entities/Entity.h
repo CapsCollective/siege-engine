@@ -36,10 +36,13 @@ protected:
     // Protected constructors
 
     Entity() :
-            Entity(raylib::Vector3::Zero()) {};
+    Entity(raylib::Vector3::Zero())
+    {};
 
     explicit Entity(raylib::Vector3 position) :
-            position(position), index({0, 0}) {};
+    position(position),
+    index({0, 0})
+    {};
 
     // Protected fields
 

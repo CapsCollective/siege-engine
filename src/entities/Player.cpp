@@ -27,6 +27,11 @@ void Player::OnDraw()
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
 
+void Player::OnUIDraw()
+{
+    DrawText("Move with the arrow keys", 10.f, 40.f, 20.f, DARKGRAY);
+}
+
 BoundingBox Player::GetBoundingBox()
 {
     return BoundingBox{
