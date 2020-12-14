@@ -34,8 +34,8 @@ void EditorController::OnUpdate()
     {
         // Calculate move from input
         raylib::Vector3 move = raylib::Vector3::Zero();
-        move.z = moveDistance * (-(float)IsKeyPressed(KEY_W) + (float)IsKeyPressed(KEY_S));
-        move.x = moveDistance * (-(float)IsKeyPressed(KEY_A) + (float)IsKeyPressed(KEY_D));
+        move.z = moveDistance * (-(float)IsKeyPressed(KEY_UP) + (float)IsKeyPressed(KEY_DOWN));
+        move.x = moveDistance * (-(float)IsKeyPressed(KEY_LEFT) + (float)IsKeyPressed(KEY_RIGHT));
 
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
@@ -62,5 +62,5 @@ void EditorController::OnUIDraw()
                         selectedEntity->GetPosition().x,
                         selectedEntity->GetPosition().y,
                         selectedEntity->GetPosition().z),
-             10.f, 70.f, 20.f, PINK);
+             10.f, 40.f, 20.f, PINK);
 }

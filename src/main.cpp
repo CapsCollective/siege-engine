@@ -7,6 +7,7 @@
 #include "entities/Geometry.h"
 #include "entities/EditorController.h"
 #include "entity_system/EntityStorage.h"
+#include "entities/FreeCam.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,18 +22,25 @@ int main(int argc, char* argv[])
     window.SetTargetFPS(60);
     SetExitKey(-1);
 
-    // Create camera
+    // Create main camera
     raylib::Camera3D camera = raylib::Camera3D(
             raylib::Vector3(0.f, 10.f, 10.f),
-            raylib::Vector3::Zero(),
+            raylib::Vector3(0.f, 0.f, 0.f),
             raylib::Vector3(0.f, 1.f, 0.f),
             45.f,
             CAMERA_PERSPECTIVE
     );
 
     // Instantiate world objects
-    if (isEditorMode) EntityStorage::Instance()->Register(new EditorController(&camera));
-    EntityStorage::Instance()->Register(new Player());
+    if (isEditorMode)
+    {
+        EntityStorage::Instance()->Register(new EditorController(&camera));
+        EntityStorage::Instance()->Register(new FreeCam(&camera));
+    }
+    else
+    {
+        EntityStorage::Instance()->Register(new Player());
+    }
     EntityStorage::Instance()->Register(new Geometry(
             raylib::Vector3::Zero(),
             raylib::Vector3(5.f, 0.1f, 5.f))
@@ -46,7 +54,6 @@ int main(int argc, char* argv[])
         {
             entity->OnUpdate();
         }
-        camera.Update();
 
         // Begin drawing to screen
         window.BeginDrawing();
