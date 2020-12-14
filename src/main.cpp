@@ -1,4 +1,3 @@
-#include <vector>
 #include <Vector3.hpp>
 #include <Window.hpp>
 #include <Color.hpp>
@@ -15,10 +14,8 @@ int main(int argc, char* argv[])
     bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
 
     // Initialise window
-    int screenWidth = 800;
-    int screenHeight = 450;
     raylib::Color bg = RAYWHITE;
-    raylib::Window window = raylib::Window(screenWidth, screenHeight, "A Dark Discomfort");
+    raylib::Window window = raylib::Window(800, 450, "A Dark Discomfort");
     window.SetTargetFPS(60);
     SetExitKey(-1);
 
