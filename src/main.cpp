@@ -64,7 +64,6 @@ int main(int argc, char* argv[])
 
         // Begin drawing UI to screen
         DrawFPS(10.f, 10.f);
-        DrawText("Move with the arrow keys", 10.f, 40.f, 20.f, DARKGRAY);
 
         // UI Draw entities
         for (auto& entity : EntityStorage::GetEntities())
