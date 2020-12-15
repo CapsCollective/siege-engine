@@ -1,12 +1,13 @@
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
 #include "../utils/SceneLoader.h"
+#include <iostream>
 
 void EditorController::OnUpdate()
 {
     if (!camera) return;
 
-    if (IsKeyDown(KEY_LEFT_SHIFT))
+    if (IsKeyDown(KEY_LEFT_CONTROL))
     {
         if (IsKeyPressed(KEY_L))
         {

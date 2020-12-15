@@ -32,10 +32,25 @@ void SceneLoader::LoadScene(const std::string& sceneName)
 {
     std::string fileData; // Get the data from the file
 
+    std::cout << "Loading scene" << std::endl;
+
     // For each split at new line
         std::string entityName = ""; // split at [0]
         std::string entityPos = ""; // Spilt [1]
         raylib::Vector3 position = {}; // assign to vector3 string to float
+
+        std::ifstream file("./assets/scenes/" + sceneName);
+        std::string line;
+
+        if (file.is_open()) {
+
+            while (getline (file, line)) {
+                std::cout << line << std::endl;
+            }
+        }
+
+        file.close();
+
         if (entityName == "Geometry")
         {
             std::string entityDims = ""; // Spilt [3]
