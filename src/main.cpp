@@ -76,6 +76,8 @@ int main(int argc, char* argv[])
             entity->OnUIDraw();
         }
 
+        EntityStorage::Instance()->FreeEntities();
+
         window.EndDrawing();
     }
 

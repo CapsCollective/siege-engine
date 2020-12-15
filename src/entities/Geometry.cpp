@@ -1,8 +1,6 @@
-//
-// Created by Jonathan Moallem on 10/12/20.
-//
-
 #include "Geometry.h"
+#include "../entity_system/EntityStorage.h"
+#include <iostream>
 
 void Geometry::OnDraw()
 {
@@ -17,4 +15,9 @@ BoundingBox Geometry::GetBoundingBox()
             position - raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
             position + raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
     };
+}
+
+void Geometry::QueueFree() {
+    std::cout << "Freeing Geometry Entity." << std::endl;
+    EntityStorage::Instance()->QueueFree(this);
 }
