@@ -1,5 +1,4 @@
 #include "IndexAllocator.h"
-#include <iostream>
 
 IndexAllocator::IndexAllocator() {
     entries = std::vector<IndexEntry>();
@@ -8,10 +7,10 @@ IndexAllocator::IndexAllocator() {
 }
 
 GenerationalIndex IndexAllocator::AllocateIndex() {
-    size_t index = 0;
+    size_t index;
     uint32_t generation = 0;
 
-    // If no free entried exist, add a new entity.
+    // If no free entity exist, add a new entity.
     if (freeEntries.empty()) {
         index = entries.size();
         entries.push_back({true, generation});
@@ -22,8 +21,6 @@ GenerationalIndex IndexAllocator::AllocateIndex() {
         freeEntries.pop_back();
         entries[index] = {true, generation++};
     }
-    // TODO: Remove once entity system is complete and tested
-    std::cout << "Created new index at position: " << index << " with generation: " << generation << std::endl;
     currentEntities++;
 
     return {index, generation};
@@ -34,17 +31,11 @@ bool IndexAllocator::IsLive(GenerationalIndex index) {
 }
 
 void IndexAllocator::Deallocate(GenerationalIndex index) {
-    // Set the index's liveness to false.
+    // Set the index's live-ness to false.
     freeEntries.push_back(index.index);
     entries[index.index].live = false;
-    // TODO: Remove once entity system is complete and tested
-    std::cout << "Removing index at position: " << index.index << " and generation: " << index.generation << std::endl;
 }
 
 IndexEntry& IndexAllocator::operator[] (GenerationalIndex index) {
     return entries[index.index];
-}
-
-IndexAllocator::~IndexAllocator() {
-
 }
