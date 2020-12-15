@@ -9,8 +9,9 @@ void EditorController::OnUpdate()
 {
     if (!camera) return;
 
-    // Check for deselection key
+    // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
+    if (IsKeyPressed(KEY_G)) isGridActive = !isGridActive;
 
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -46,13 +47,17 @@ void EditorController::OnUpdate()
 
 void EditorController::OnDraw()
 {
-    if (!selectedEntity) return;
+    // Draw a reference grid at the centre of the scene if toggled on
+    if (isGridActive) DrawGrid(100, 1.0f);
 
-    // Draw gizmo display to selected entity location
-    raylib::Vector3 entityPos = selectedEntity->GetPosition();
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+    if (selectedEntity)
+    {
+        // Draw gizmo display to selected entity location
+        raylib::Vector3 entityPos = selectedEntity->GetPosition();
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+    }
 }
 
 void EditorController::OnUIDraw()
