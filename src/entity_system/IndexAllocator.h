@@ -6,17 +6,20 @@
 
 // Utility Structs
 
-struct IndexEntry {
+struct IndexEntry 
+{
     bool live = false;
     uint32_t generation = 0;
 };
 
-struct GenerationalIndex {
+struct GenerationalIndex 
+{
     size_t index = 0;
     uint32_t generation = 0;
 };
 
-class IndexAllocator {
+class IndexAllocator 
+{ // TODO: FUCK YOU JONO
 
 public:
 

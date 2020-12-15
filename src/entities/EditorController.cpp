@@ -1,6 +1,7 @@
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
 #include "Geometry.h"
+#include <iostream>
 
 void EditorController::OnUpdate()
 {
@@ -31,8 +32,18 @@ void EditorController::OnUpdate()
     }
 
     // TODO implement cycling through all entities on tab
-    if (IsKeyPressed(KEY_TAB)) {
-        selectedEntity = EntityStorage::GetEntities()[0];
+    if (IsKeyPressed(KEY_TAB)) 
+    {
+        if (!selectedEntity) 
+        {
+            selectedEntity = EntityStorage::GetEntities()[0];
+            lastIndex = 0;
+        } 
+        else
+        {
+            lastIndex = ++lastIndex % EntityStorage::GetEntities().size();
+            selectedEntity = EntityStorage::GetEntities()[lastIndex];
+        }
     }
 
     if (selectedEntity)

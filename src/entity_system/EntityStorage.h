@@ -5,7 +5,8 @@
 #include <vector>
 #include "../entities/Entity.h"
 
-class EntityStorage {
+class EntityStorage 
+{
 public:
 
     // Constructors
@@ -28,15 +29,31 @@ public:
 
     // Static instance getters
 
-    static std::vector<Entity*>& GetEntities() {
+    static std::vector<Entity*>& GetEntities() 
+    {
         return Instance()->packedEntities;
     }
 
     static EntityStorage* Instance() {
-        if (!instance) {
+        if (!instance) 
+        {
             instance = new EntityStorage();
         }
         return instance;
+    }
+
+    static Entity* GetEntity(GenerationalIndex index) 
+    {
+        bool isInBounds = index.index < Instance()->entities.size();
+
+        if(isInBounds && Instance()->allocator.IsLive(index)) 
+        {
+            return Instance()->entities[index.index];
+        } 
+        else 
+        {
+            return nullptr;
+        }
     }
 
     // Operator overloads
@@ -53,8 +70,6 @@ private:
 
     // Utility Functions
 
-    Entity* GetEntity(GenerationalIndex);
-
     static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
 
     // Private fields
@@ -65,6 +80,5 @@ private:
     std::vector<Entity*> packedEntities;
     std::vector<Entity*> freedEntities;
 };
-
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

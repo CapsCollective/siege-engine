@@ -4,6 +4,7 @@
 #include <Camera3D.hpp>
 #include <vector>
 #include "Entity.h"
+#include <cstdint>
 
 class EditorController : public Entity
 {
@@ -43,6 +44,8 @@ private:
     raylib::Camera3D* camera;
 
     Entity* selectedEntity;
+
+    size_t lastIndex;
 };
 
 
