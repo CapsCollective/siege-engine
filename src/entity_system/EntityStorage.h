@@ -44,16 +44,14 @@ public:
 
     static Entity* GetEntity(GenerationalIndex index) 
     {
+        // TODO comment this
         bool isInBounds = index.index < Instance()->entities.size();
 
         if(isInBounds && Instance()->allocator.IsLive(index)) 
         {
             return Instance()->entities[index.index];
         } 
-        else 
-        {
-            return nullptr;
-        }
+        else return nullptr;
     }
 
     // Operator overloads
@@ -77,7 +75,9 @@ private:
     IndexAllocator allocator;
 
     std::vector<Entity*> entities;
+
     std::vector<Entity*> packedEntities;
+
     std::vector<Entity*> freedEntities;
 };
 

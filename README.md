@@ -25,3 +25,16 @@ $ make
 > mingw32-make setup
 > mingw32-make
 ```
+
+### Opening the Editor
+You can run the application in editor mode using the `--editor` argument with Make.
+
+#### macOS & Linux
+```console
+$ make ARGS="--editor"
+```
+
+#### Windows
+```console
+> mingw32-make ARGS="--editor"
+```

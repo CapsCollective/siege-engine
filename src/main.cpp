@@ -7,6 +7,7 @@
 #include "entities/EditorController.h"
 #include "entity_system/EntityStorage.h"
 #include "entities/FreeCam.h"
+#include "utils/SceneLoader.h"
 
 int main(int argc, char* argv[])
 {
@@ -38,6 +39,7 @@ int main(int argc, char* argv[])
     }
     else
     {
+        SceneLoader::LoadScene("main");
         EntityStorage::Instance()->Register(new Player());
     }
 

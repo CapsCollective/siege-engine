@@ -7,8 +7,7 @@
 
 void FreeCam::OnUpdate()
 {
-    // TODO change this if save button changes
-    if (!camera || IsKeyDown(KEY_LEFT_SHIFT)) return;
+    if (!camera || IsKeyDown(KEY_LEFT_SUPER)) return;
 
     // Calculate current mouse positional values
     Vector2 mousePosition = GetMousePosition();
@@ -20,10 +19,10 @@ void FreeCam::OnUpdate()
     // Set previous mouse position
     previousMousePosition = mousePosition;
 
-    if (IsKeyDown(KEY_LEFT_ALT))
+    if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
     {
         // Begin the click, hide the cursor
-        if (IsKeyPressed(KEY_LEFT_ALT)) DisableCursor();
+        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) DisableCursor();
 
         // Calculate and set the rotational values
         raylib::Vector3 rotate = {
@@ -33,7 +32,7 @@ void FreeCam::OnUpdate()
         };
         rotation += (rotate * lookSpeed * GetFrameTime());
     }
-    else if (IsKeyReleased(KEY_LEFT_ALT)) EnableCursor(); // End the click, show the cursor
+    else if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON)) EnableCursor(); // End the click, show the cursor
 
     // Get movement as vector
     raylib::Vector3 move = {
