@@ -17,6 +17,8 @@ int main(int argc, char* argv[])
     raylib::Color bg = RAYWHITE;
     raylib::Window window = raylib::Window(800, 450, "A Dark Discomfort");
     window.SetTargetFPS(60);
+
+    // Deactivate the exit key
     SetExitKey(-1);
 
     // Create main camera
@@ -28,7 +30,7 @@ int main(int argc, char* argv[])
             CAMERA_PERSPECTIVE
     );
 
-    // Instantiate world objects
+    // Instantiate world objects as per mode options
     if (isEditorMode)
     {
         EntityStorage::Instance()->Register(new EditorController(&camera));
@@ -62,8 +64,6 @@ int main(int argc, char* argv[])
         {
             entity->OnDraw();
         }
-
-        DrawGrid(10, 1.0f);
 
         camera.EndMode3D();
 

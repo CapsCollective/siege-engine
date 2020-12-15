@@ -8,9 +8,9 @@ void Player::OnUpdate()
 {
     // Get move axes as vector
     raylib::Vector3 move = {
-            -(float)IsKeyDown(KEY_LEFT) + (float)IsKeyDown(KEY_RIGHT),
+            (float)(-IsKeyDown(KEY_LEFT) + IsKeyDown(KEY_RIGHT)),
             0.f,
-            -(float)IsKeyDown(KEY_UP) + (float)IsKeyDown(KEY_DOWN),
+            (float)(-IsKeyDown(KEY_UP) + IsKeyDown(KEY_DOWN)),
     };
 
     // Normalise and apply move to velocity
