@@ -17,7 +17,9 @@ public:
     Entity(position),
     speed(1.5f),
     velocity(raylib::Vector3::Zero())
-    {};
+    {
+        Entity::SetName("Player");
+    };
 
     // Public overrides
 
@@ -31,7 +33,7 @@ protected:
 
     void OnDraw() override;
 
-    void QueueFree() override;
+    void OnUIDraw() override;
 
 private:
 

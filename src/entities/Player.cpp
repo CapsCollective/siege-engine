@@ -1,14 +1,12 @@
 #include "Player.h"
-#include "../entity_system/EntityStorage.h"
-#include <iostream>
 
 void Player::OnUpdate()
 {
     // Get move axes as vector
     raylib::Vector3 move = {
-            -(float)IsKeyDown(KEY_LEFT) + (float)IsKeyDown(KEY_RIGHT),
+            (float)(-IsKeyDown(KEY_LEFT) + IsKeyDown(KEY_RIGHT)),
             0.f,
-            -(float)IsKeyDown(KEY_UP) + (float)IsKeyDown(KEY_DOWN),
+            (float)(-IsKeyDown(KEY_UP) + IsKeyDown(KEY_DOWN)),
     };
 
     // Normalise and apply move to velocity
@@ -25,16 +23,15 @@ void Player::OnDraw()
     DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
 }
 
+void Player::OnUIDraw()
+{
+    DrawText("Move with the arrow keys", 10.f, 40.f, 20.f, DARKGRAY);
+}
+
 BoundingBox Player::GetBoundingBox()
 {
     return BoundingBox{
             position - raylib::Vector3::One(),
             position + raylib::Vector3::One(),
     };
-}
-
-void Player::QueueFree() {
-
-    std::cout << "Freeing the player!" << std::endl;
-    EntityStorage::Instance()->QueueFree(this);
 }

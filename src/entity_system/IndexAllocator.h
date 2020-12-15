@@ -24,7 +24,7 @@ public:
 
     IndexAllocator();
 
-    ~IndexAllocator();
+    ~IndexAllocator() = default;
 
     // Public Utility Methods
 

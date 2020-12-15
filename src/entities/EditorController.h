@@ -14,8 +14,11 @@ public:
     explicit EditorController(raylib::Camera3D* camera) :
     selectedEntity(nullptr),
     camera(camera),
-    moveDistance(0.5f)
-    {};
+    moveDistance(0.5f),
+    isGridActive(true)
+    {
+        Entity::SetName("EditorController");
+    };
 
 protected:
 
@@ -27,9 +30,13 @@ protected:
 
     void OnUIDraw() override;
 
+    void QueueFree() override { /* block implementation */ };
+
 private:
 
     // Private fields
+
+    bool isGridActive;
 
     float moveDistance;
 
