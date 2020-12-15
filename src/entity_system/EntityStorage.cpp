@@ -5,11 +5,6 @@
 
 EntityStorage* EntityStorage::instance;
 
-EntityStorage::EntityStorage() {
-    allocator = IndexAllocator();
-    instance = nullptr;
-}
-
 Entity* EntityStorage::GetEntity(GenerationalIndex index) {
     bool isInBounds = index.index < entities.size();
 

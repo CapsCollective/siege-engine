@@ -30,8 +30,8 @@ void EditorController::OnUpdate()
         }
     }
 
-    // TODO under construction code for entity selection
-    if (IsKeyPressed(KEY_TAB) && !EntityStorage::GetEntities().empty()) {
+    // TODO implement cycling through all entities on tab
+    if (IsKeyPressed(KEY_TAB)) {
         selectedEntity = EntityStorage::GetEntities()[0];
     }
 
@@ -39,8 +39,8 @@ void EditorController::OnUpdate()
     {
         // Calculate move from input
         raylib::Vector3 move = raylib::Vector3::Zero();
-        move.z = moveDistance * (-(float)IsKeyPressed(KEY_UP) + (float)IsKeyPressed(KEY_DOWN));
-        move.x = moveDistance * (-(float)IsKeyPressed(KEY_LEFT) + (float)IsKeyPressed(KEY_RIGHT));
+        move.z = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
+        move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
