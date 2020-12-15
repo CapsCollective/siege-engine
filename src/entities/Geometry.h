@@ -28,6 +28,10 @@ public:
 
     BoundingBox GetBoundingBox() override;
 
+    // Public methods
+
+    raylib::Vector3 GetDimensions();
+
 protected:
 
     // Protected overrides

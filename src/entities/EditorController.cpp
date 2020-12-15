@@ -1,11 +1,25 @@
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
-#include "Geometry.h"
-#include <iostream>
+#include "../utils/SceneLoader.h"
 
 void EditorController::OnUpdate()
 {
     if (!camera) return;
+
+    if (IsKeyDown(KEY_LEFT_SHIFT))
+    {
+        if (IsKeyPressed(KEY_L))
+        {
+            // Load a scene
+            SceneLoader::LoadScene("main.scene");
+        }
+
+        if (IsKeyPressed(KEY_S))
+        {
+            // Save the current scene
+            SceneLoader::SaveScene();
+        }
+    }
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
@@ -31,7 +45,6 @@ void EditorController::OnUpdate()
         }
     }
 
-    // TODO implement cycling through all entities on tab
     if (IsKeyPressed(KEY_TAB)) 
     {
         if (!selectedEntity) 
@@ -97,4 +110,7 @@ void EditorController::OnUIDraw()
              (int) cubeScreenPosition.y, 20, PINK);
     DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
              (int) cubeScreenPosition.y + 20, 18, PINK);
+
+    // TODO add scene save output text (message text???)
+    DrawText("Scene saved",0, 0, 20, PINK);
 }

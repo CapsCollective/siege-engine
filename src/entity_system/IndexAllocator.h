@@ -19,8 +19,7 @@ struct GenerationalIndex
 };
 
 class IndexAllocator 
-{ // TODO: FUCK YOU JONO
-
+{
 public:
 
     // Constructors

@@ -14,3 +14,8 @@ BoundingBox Geometry::GetBoundingBox()
             position + raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
     };
 }
+
+raylib::Vector3 Geometry::GetDimensions()
+{
+    return dimensions;
+}
