@@ -26,16 +26,10 @@ void EditorController::OnUpdate()
             {
                 selectedEntity = entity;
                 break;
-
             }
         }
     }
 
-    // THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
-    if (IsKeyPressed(KEY_ENTER)) {
-        EntityStorage::Instance()->Register(new Geometry(
-                raylib::Vector3::Zero(),
-                raylib::Vector3(5.f, 0.1f, 5.f)));
     }
 
     if (selectedEntity)
@@ -48,8 +42,7 @@ void EditorController::OnUpdate()
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
 
-        // PLACEHOLDER: If an entity is selected, delete it only if SPACE is clicked with it.
-        // NOTE -> Entity MUST implement QueueFree for this to work.
+        // Free the entity if backspace is pressed
         if (IsKeyPressed(KEY_BACKSPACE)) {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
