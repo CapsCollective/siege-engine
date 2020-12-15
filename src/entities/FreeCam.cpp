@@ -8,37 +8,36 @@ void FreeCam::OnUpdate()
 {
     if (!camera) return;
 
-    // Calculate halfed screen size values
-    int screenWidthHalf = GetScreenWidth()/2;
-    int screenHeightHalf = GetScreenHeight()/2;
+    // Calculate current mouse positional values
+    Vector2 mousePosition = GetMousePosition();
+    Vector2 mousePositionDelta = {
+            mousePosition.x - previousMousePosition.x,
+            mousePosition.y - previousMousePosition.y,
+    };
 
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+    // Set previous mouse position
+    previousMousePosition = mousePosition;
+
+    if (IsKeyDown(KEY_LEFT_ALT))
     {
         // Begin the click, hide the cursor
-        HideCursor();
-        SetMousePosition(screenWidthHalf, screenHeightHalf);
-    }
-    else if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
-    {
-        // Calculate and set the rotation while click held
+        if (IsKeyPressed(KEY_LEFT_ALT)) DisableCursor();
+
+        // Calculate and set the rotational values
         raylib::Vector3 rotate = {
-                (float) (GetMouseX() - screenWidthHalf),
-                (float) -(GetMouseY() - screenHeightHalf),
+                mousePositionDelta.x,
+                -mousePositionDelta.y,
                 0.f
         };
         rotation += (rotate * lookSpeed * GetFrameTime());
     }
-    else if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON))
-    {
-        // End the click, show the cursor
-        ShowCursor();
-    }
+    else if (IsKeyReleased(KEY_LEFT_ALT)) EnableCursor(); // End the click, show the cursor
 
     // Get movement as vector
     raylib::Vector3 move = {
-            -(float) IsKeyDown(KEY_A) + (float) IsKeyDown(KEY_D),
-            -(float) IsKeyDown(KEY_Q) + (float) IsKeyDown(KEY_E),
-            -(float) IsKeyDown(KEY_W) + (float) IsKeyDown(KEY_S),
+            (float) (-IsKeyDown(KEY_A) + IsKeyDown(KEY_D)),
+            (float) (-IsKeyDown(KEY_Q) + IsKeyDown(KEY_E)),
+            (float) (-IsKeyDown(KEY_W) + IsKeyDown(KEY_S)),
     };
 
     // Set the new position and look rotation of the camera
