@@ -1,6 +1,4 @@
 #include "Player.h"
-#include "../entity_system/EntityStorage.h"
-#include <iostream>
 
 void Player::OnUpdate()
 {
@@ -36,10 +34,4 @@ BoundingBox Player::GetBoundingBox()
             position - raylib::Vector3::One(),
             position + raylib::Vector3::One(),
     };
-}
-
-void Player::QueueFree() {
-
-    std::cout << "Freeing the player!" << std::endl;
-    EntityStorage::Instance()->QueueFree(this);
 }

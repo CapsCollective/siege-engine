@@ -32,8 +32,6 @@ protected:
     void OnDraw() override;
 
     void OnUIDraw() override;
-    
-    void QueueFree() override;
 
 private:
 
