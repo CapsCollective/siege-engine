@@ -23,7 +23,7 @@ public:
 
     // Public functions
 
-    void Register(Entity*);
+    static void Register(Entity*);
 
     void Remove(Entity*);
 
@@ -60,7 +60,7 @@ public:
 
     // Destructor Methods
 
-    void QueueFree(Entity*);
+    static void QueueFree(Entity*);
 
     void FreeEntities();
 

@@ -8,6 +8,7 @@
 #include "entity_system/EntityStorage.h"
 #include "entities/FreeCam.h"
 #include "utils/SceneLoader.h"
+#include <iostream>
 
 int main(int argc, char* argv[])
 {

@@ -71,7 +71,7 @@ void SceneLoader::LoadScene(const std::string& sceneName)
         {
             raylib::Vector3 dimensions = StringToVector(args[CUSTOM_FIELD_1]);
             // TODO FIX THIS CAUSING SEGFAULTS ON OCCASION
-            EntityStorage::Instance()->Register(new Geometry(position, dimensions));
+            EntityStorage::Register(new Geometry(position, dimensions));
         }
         else
         {
@@ -81,7 +81,9 @@ void SceneLoader::LoadScene(const std::string& sceneName)
     }
 
     // Close the file stream
+    std::cout << "CLOSING FILE" << std::endl;
     file.close();
+    std::cout << "FILE CLOSED" << std::endl;
 }
 
 std::string SceneLoader::VectorToString(raylib::Vector3 vector)
