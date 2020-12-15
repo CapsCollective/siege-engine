@@ -2,6 +2,7 @@
 // Created by Jonathan Moallem on 14/12/20.
 //
 
+//#include <iostream>
 #include "FreeCam.h"
 
 void FreeCam::OnUpdate()
@@ -44,4 +45,7 @@ void FreeCam::OnUpdate()
     camera->SetPosition(raylib::Vector3(
             camera->GetPosition()) + move.Normalize() * moveSpeed * GetFrameTime());
     camera->SetTarget(raylib::Vector3(camera->GetPosition()) + rotation);
+
+//    std::cout << "rotation: " << rotation.x << " " << rotation.y << std::endl;
+//    std::cout << "target: " << camera->GetTarget().x << " " << camera->GetTarget().y << std::endl;
 }

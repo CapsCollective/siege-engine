@@ -64,10 +64,15 @@ void EditorController::OnUIDraw()
 {
     if (!selectedEntity) return;
 
-    // Draw text to the screen with selected entity coordinates
-    DrawText(FormatText("Selected Entity Position: <%f, %f, %f>",
+    // Format display text on the selected entity
+    const char* entityLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
                         selectedEntity->GetPosition().x,
                         selectedEntity->GetPosition().y,
-                        selectedEntity->GetPosition().z),
-             10.f, 40.f, 20.f, PINK);
+                        selectedEntity->GetPosition().z);
+
+    // Draw display text just above the entity in world-space
+    Vector2 cubeScreenPosition = GetWorldToScreen(
+            selectedEntity->GetPosition() + raylib::Vector3(0.f, 3.f, 0.f), *camera);
+    DrawText(entityLabel,(int) cubeScreenPosition.x - MeasureText(entityLabel, 20)/2,
+             (int) cubeScreenPosition.y, 20, PINK);
 }
