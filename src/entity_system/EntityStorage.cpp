@@ -1,5 +1,6 @@
 #include "EntityStorage.h"
 #include <iostream>
+#include <cstdint>
 
 EntityStorage* EntityStorage::instance;
 
