@@ -5,7 +5,8 @@
 #include <Vector3.hpp>
 #include "../entity_system/IndexAllocator.h"
 
-class Entity {
+class Entity 
+{
 public:
 
     // Virtual methods
@@ -34,7 +35,7 @@ public:
         return index;
     }
 
-    void SetIndex(const GenerationalIndex& idx) {
+    void SetIndex(GenerationalIndex& idx) {
         index = idx;
     }
 
