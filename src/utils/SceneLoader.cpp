@@ -4,69 +4,114 @@
 
 #include <iostream>
 #include <fstream>
+#include <utility>
+#include <vector>
 #include "SceneLoader.h"
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 
-void SceneLoader::SaveScene()
+void SceneLoader::SaveScene(const std::string& sceneName)
 {
+    // Iterate over each entity in the scene
     std::string fileData;
     for (auto entity : EntityStorage::GetEntities())
     {
-        fileData += (entity->GetName() + ";" + VectorToString(entity->GetPosition()));
+        // Add it's name and position to the data
+        fileData += (entity->GetName() + ";" + VectorToString(entity->GetPosition()) + ";");
 
+        // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += ";" + VectorToString(dynamic_cast<Geometry*>(entity)->GetDimensions());
+            fileData += VectorToString(dynamic_cast<Geometry*>(entity)->GetDimensions()) + ";";
         }
 
+        // Add new line as entity delimiter
         fileData += "\n";
     }
 
-    std::ofstream fileStream("./assets/scenes/main.scene");
+    // Open a new file stream, dave the data to it and close it
+    std::ofstream fileStream("./assets/scenes/" + sceneName);
     fileStream << fileData;
     fileStream.close();
 }
 
 void SceneLoader::LoadScene(const std::string& sceneName)
 {
-    std::string fileData; // Get the data from the file
+    //TODO remove debug output in this method
+    std::cout << "Loading " + sceneName + "..." << std::endl;
 
-    std::cout << "Loading scene" << std::endl;
+    // Begin the loading process, open the file for streaming
+    std::ifstream file("./assets/scenes/" + sceneName);
+    if (!file.is_open()) return;
 
-    // For each split at new line
-        std::string entityName = ""; // split at [0]
-        std::string entityPos = ""; // Spilt [1]
-        raylib::Vector3 position = {}; // assign to vector3 string to float
+    // Iterate over each line of the file
+    std::string line;
+    while (getline(file, line))
+    {
+        //TODO remove this debug line
+        std::cout << line << std::endl;
 
-        std::ifstream file("./assets/scenes/" + sceneName);
-        std::string line;
+        // Define default field values
+        enum {
+            ENTITY_NAME = 0,
+            ENTITY_POS = 1,
+            CUSTOM_FIELD_1 = 2,
+            CUSTOM_FIELD_2 = 3,
+            CUSTOM_FIELD_3 = 4,
+        };
 
-        if (file.is_open()) {
+        // Split the line into arguments
+        std::vector<std::string> args = SplitString(line, ';');
 
-            while (getline (file, line)) {
-                std::cout << line << std::endl;
-            }
-        }
+        // Calculate the position of the entity
+        raylib::Vector3 position = StringToVector(args[ENTITY_POS]);
 
-        file.close();
-
-        if (entityName == "Geometry")
+        // Register entities by entity name
+        if (args[ENTITY_NAME] == "Geometry")
         {
-            std::string entityDims = ""; // Spilt [3]
-            raylib::Vector3 dimensions = {}; // assign to vector3 string to float
+            raylib::Vector3 dimensions = StringToVector(args[CUSTOM_FIELD_1]);
+            // TODO FIX THIS CAUSING SEGFAULTS ON OCCASION
             EntityStorage::Instance()->Register(new Geometry(position, dimensions));
         }
         else
         {
-            std::cout << "Entity \"" << entityName << "\" has no deserialisation protocols defined" << std::endl;
+            // Notify console of default case
+            std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
         }
+    }
+
+    // Close the file stream
+    file.close();
 }
 
 std::string SceneLoader::VectorToString(raylib::Vector3 vector)
 {
     return std::to_string(vector.x) + "," +
            std::to_string(vector.y) + "," +
-           std::to_string(vector.z);
+           std::to_string(vector.z) + ",";
+}
+
+raylib::Vector3 SceneLoader::StringToVector(std::string string)
+{
+    std::vector<std::string> components = SplitString(std::move(string), ',');
+    return {
+        std::stof(components[0]),
+        std::stof(components[1]),
+        std::stof(components[2]),
+    };
+}
+
+std::vector<std::string> SceneLoader::SplitString(std::string string, char delimiter)
+{
+    // Iterate over the string while there is still a delimiter
+    int delimiterPos;
+    std::vector<std::string> args;
+    while ((delimiterPos = string.find(delimiter)) != std::string::npos)
+    {
+        // Get up to the next delimiter, add it to the vector, and erase it
+        args.push_back(string.substr(0, delimiterPos));
+        string.erase(0, args.back().size()+1);
+    }
+    return args;
 }
 

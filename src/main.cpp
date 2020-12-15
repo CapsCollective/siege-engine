@@ -40,10 +40,6 @@ int main(int argc, char* argv[])
     {
         EntityStorage::Instance()->Register(new Player());
     }
-    EntityStorage::Instance()->Register(new Geometry(
-            raylib::Vector3::Zero(),
-            raylib::Vector3(5.f, 0.1f, 5.f))
-    );
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())

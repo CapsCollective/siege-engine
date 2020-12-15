@@ -1,24 +1,24 @@
 #include "EditorController.h"
 #include "../entity_system/EntityStorage.h"
 #include "../utils/SceneLoader.h"
-#include <iostream>
 
 void EditorController::OnUpdate()
 {
     if (!camera) return;
 
-    if (IsKeyDown(KEY_LEFT_CONTROL))
+    if (IsKeyDown(KEY_LEFT_SHIFT))
     {
         if (IsKeyPressed(KEY_L))
         {
             // Load a scene
+            // TODO clear the current scene before loading
             SceneLoader::LoadScene("main.scene");
         }
 
         if (IsKeyPressed(KEY_S))
         {
             // Save the current scene
-            SceneLoader::SaveScene();
+            SceneLoader::SaveScene("main.scene");
         }
     }
 
@@ -113,5 +113,5 @@ void EditorController::OnUIDraw()
              (int) cubeScreenPosition.y + 20, 18, PINK);
 
     // TODO add scene save output text (message text???)
-    DrawText("Scene saved",0, 0, 20, PINK);
+//    DrawText("Scene saved",0, 0, 20, PINK);
 }

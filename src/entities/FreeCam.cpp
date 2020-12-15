@@ -7,7 +7,8 @@
 
 void FreeCam::OnUpdate()
 {
-    if (!camera) return;
+    // TODO change this if save button changes
+    if (!camera || IsKeyDown(KEY_LEFT_SHIFT)) return;
 
     // Calculate current mouse positional values
     Vector2 mousePosition = GetMousePosition();
