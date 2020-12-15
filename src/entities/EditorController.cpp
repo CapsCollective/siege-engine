@@ -6,19 +6,31 @@ void EditorController::OnUpdate()
 {
     if (!camera) return;
 
-    if (IsKeyDown(KEY_LEFT_SHIFT))
+    if (IsKeyDown(KEY_LEFT_SUPER))
     {
-        if (IsKeyPressed(KEY_L))
-        {
-            // Load a scene
-            // TODO clear the current scene before loading
-            SceneLoader::LoadScene("main.scene");
-        }
+        std::string sceneName = "main";
 
+        // Save the current scene
         if (IsKeyPressed(KEY_S))
         {
-            // Save the current scene
-            SceneLoader::SaveScene("main.scene");
+            SceneLoader::SaveScene(sceneName);
+            DisplayMessage("Scene saved", 10.f);
+        }
+
+        if (IsKeyPressed(KEY_L))
+        {
+            // Drop current entity selection
+            selectedEntity = nullptr;
+
+            // Free all current entities from storage
+            for (auto entity : EntityStorage::GetEntities())
+            {
+                entity->QueueFree();
+            }
+
+            // Load the specified scene
+            SceneLoader::LoadScene(sceneName);
+            DisplayMessage("Scene loaded", 10.f);
         }
     }
 
@@ -46,15 +58,17 @@ void EditorController::OnUpdate()
         }
     }
 
+    // Cycle through all entities
     if (IsKeyPressed(KEY_TAB)) 
     {
         if (!selectedEntity) 
         {
-            selectedEntity = EntityStorage::GetEntities()[0];
-            lastIndex = 0;
+            // Select the first packed entity by index
+            selectedEntity = EntityStorage::GetEntities()[lastIndex = 0];
         } 
         else
         {
+            // Increment and select the next entity index
             lastIndex = ++lastIndex % EntityStorage::GetEntities().size();
             selectedEntity = EntityStorage::GetEntities()[lastIndex];
         }
@@ -95,23 +109,34 @@ void EditorController::OnDraw()
 
 void EditorController::OnUIDraw()
 {
-    if (!selectedEntity) return;
+    if (selectedEntity)
+    {
+        // Format display text on the selected entity
+        const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
+        const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+                                          selectedEntity->GetPosition().x,
+                                          selectedEntity->GetPosition().y,
+                                          selectedEntity->GetPosition().z);
 
-    // Format display text on the selected entity
-    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
-    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
-                                         selectedEntity->GetPosition().x,
-                                         selectedEntity->GetPosition().y,
-                                         selectedEntity->GetPosition().z);
+        // Draw display text just above the entity in world-space
+        Vector2 cubeScreenPosition = GetWorldToScreen(
+                selectedEntity->GetPosition() + raylib::Vector3(0.f, 3.f, 0.f), *camera);
+        DrawText(nameLabel,(int) cubeScreenPosition.x - MeasureText(nameLabel, 20)/2,
+                 (int) cubeScreenPosition.y, 20, PINK);
+        DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
+                 (int) cubeScreenPosition.y + 20, 18, PINK);
+    }
 
-    // Draw display text just above the entity in world-space
-    Vector2 cubeScreenPosition = GetWorldToScreen(
-            selectedEntity->GetPosition() + raylib::Vector3(0.f, 3.f, 0.f), *camera);
-    DrawText(nameLabel,(int) cubeScreenPosition.x - MeasureText(nameLabel, 20)/2,
-             (int) cubeScreenPosition.y, 20, PINK);
-    DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) cubeScreenPosition.y + 20, 18, PINK);
+    // Draw the display message to the screen while the display time is valid
+    if (displayTime > 0.f)
+    {
+        DrawText(displayMessage.c_str(), 10, 40, 20, PINK);
+        displayTime -= 0.1f;
+    }
+}
 
-    // TODO add scene save output text (message text???)
-//    DrawText("Scene saved",0, 0, 20, PINK);
+void EditorController::DisplayMessage(const std::string &message, float time)
+{
+    displayMessage = message;
+    displayTime = time;
 }

@@ -30,7 +30,7 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     }
 
     // Open a new file stream, dave the data to it and close it
-    std::ofstream fileStream("./assets/scenes/" + sceneName);
+    std::ofstream fileStream("./assets/scenes/" + sceneName + ".scene");
     fileStream << fileData;
     fileStream.close();
 }
@@ -41,7 +41,7 @@ void SceneLoader::LoadScene(const std::string& sceneName)
     std::cout << "Loading " + sceneName + "..." << std::endl;
 
     // Begin the loading process, open the file for streaming
-    std::ifstream file("./assets/scenes/" + sceneName);
+    std::ifstream file("./assets/scenes/" + sceneName + ".scene");
     if (!file.is_open()) return;
 
     // Iterate over each line of the file
