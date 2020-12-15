@@ -15,9 +15,10 @@ public:
     // Constructors
 
     explicit FreeCam(raylib::Camera3D* camera) :
-    moveSpeed(10.0f),
-    lookSpeed(0.01f),
+    moveSpeed(10.f),
+    lookSpeed(0.1f),
     camera(camera),
+    previousMousePosition({0.f, 0.f}),
     rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {
         camera->SetMode(CAMERA_CUSTOM);
@@ -40,6 +41,8 @@ private:
     raylib::Camera3D* camera;
 
     raylib::Vector3 rotation;
+
+    Vector2 previousMousePosition;
 };
 
 
