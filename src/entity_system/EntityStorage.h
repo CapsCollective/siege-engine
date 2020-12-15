@@ -24,8 +24,10 @@ public:
 
     Entity* GetEntity(GenerationalIndex);
 
+    // Static instance getters
+
     static std::vector<Entity*>& GetEntities() {
-        return Instance()->entities;
+        return Instance()->packedEntities;
     }
 
     static EntityStorage* Instance() {
@@ -39,13 +41,25 @@ public:
 
     Entity* operator[](GenerationalIndex);
 
+    // Destructor Methods
+
+    void QueueFree(Entity*);
+
+    void FreeEntities();
+
 private:
+
+    // Utility Functions
+
+    uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
 
     // Private fields
 
     IndexAllocator allocator;
 
     std::vector<Entity*> entities;
+    std::vector<Entity*> packedEntities;
+    std::vector<Entity*> freedEntities;
 };
 
 

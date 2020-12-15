@@ -34,6 +34,8 @@ public:
 
     void Deallocate(GenerationalIndex);
 
+    IndexEntry& operator[] (GenerationalIndex);
+
 private:
 
     // Private Methods and fields
@@ -43,8 +45,6 @@ private:
     std::vector<size_t> freeEntries;
 
     uint32_t currentEntities;
-
-    IndexEntry& operator[] (GenerationalIndex);
 };
 
 
