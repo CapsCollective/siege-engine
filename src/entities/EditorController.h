@@ -28,6 +28,8 @@ protected:
 
     void OnUIDraw() override;
 
+    void QueueFree() override { /* block implementation */ };
+
 private:
 
     // Private fields
