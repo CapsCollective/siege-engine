@@ -20,7 +20,9 @@ public:
     explicit Geometry(raylib::Vector3 pos, raylib::Vector3 dimensions) :
     Entity(pos),
     dimensions(dimensions)
-    {};
+    {
+        Entity::SetName("Geometry");
+    };
 
     // Public overrides
 

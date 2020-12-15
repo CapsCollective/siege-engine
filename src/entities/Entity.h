@@ -1,6 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
+#include <string>
 #include <Vector3.hpp>
 #include "../entity_system/IndexAllocator.h"
 
@@ -21,6 +22,10 @@ public:
 
     // Public methods
 
+    std::string GetName();
+
+    void SetName(std::string entityName);
+
     void SetPosition(raylib::Vector3 newPosition);
 
     raylib::Vector3 GetPosition();
@@ -29,7 +34,7 @@ public:
         return index;
     }
 
-    void SetIndex(const GenerationalIndex &idx) {
+    void SetIndex(const GenerationalIndex& idx) {
         index = idx;
     }
 
@@ -43,7 +48,8 @@ protected:
 
     explicit Entity(raylib::Vector3 position) :
     position(position),
-    index({0, 0})
+    index({0, 0}),
+    name("Entity")
     {};
 
     // Protected fields
@@ -51,6 +57,12 @@ protected:
     raylib::Vector3 position;
 
     GenerationalIndex index;
+
+private:
+
+    // Private fields
+
+    std::string name;
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITY_H

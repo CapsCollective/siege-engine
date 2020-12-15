@@ -21,6 +21,7 @@ public:
     previousMousePosition({0.f, 0.f}),
     rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {
+        Entity::SetName("FreeCam");
         camera->SetMode(CAMERA_CUSTOM);
     };
 

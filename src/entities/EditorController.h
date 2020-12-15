@@ -16,7 +16,9 @@ public:
     camera(camera),
     moveDistance(0.5f),
     isGridActive(true)
-    {};
+    {
+        Entity::SetName("EditorController");
+    };
 
 protected:
 
