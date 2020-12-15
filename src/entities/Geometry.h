@@ -32,6 +32,8 @@ protected:
 
     void OnDraw() override;
 
+    void QueueFree() override;
+
 private:
 
     // Private fields
