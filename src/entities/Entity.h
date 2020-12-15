@@ -15,6 +15,8 @@ public:
 
     virtual void OnUIDraw() {};
 
+    virtual void QueueFree() {};
+
     virtual BoundingBox GetBoundingBox();
 
     // Public methods
