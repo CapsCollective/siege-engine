@@ -6,10 +6,16 @@ void EditorController::OnUpdate()
 {
     if (!camera) return;
 
+    // Check for deselection and activation keys
+    if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
+    if (IsKeyPressed(KEY_G)) isGridActive = !isGridActive;
+
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        // Get the ray cast by teh mouse position
+        if (!camera) return;
+
+        // Get the ray cast by the mouse position
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
         // Check if any entities fall within the ray and set them as selected
@@ -20,30 +26,26 @@ void EditorController::OnUpdate()
             {
                 selectedEntity = entity;
                 break;
-
             }
         }
     }
 
-    // THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
-    if (IsKeyPressed(KEY_ENTER)) {
-        EntityStorage::Instance()->Register(new Geometry(
-                raylib::Vector3::Zero(),
-                raylib::Vector3(5.f, 0.1f, 5.f)));
+    // TODO implement cycling through all entities on tab
+    if (IsKeyPressed(KEY_TAB)) {
+        selectedEntity = EntityStorage::GetEntities()[0];
     }
 
     if (selectedEntity)
     {
         // Calculate move from input
         raylib::Vector3 move = raylib::Vector3::Zero();
-        move.z = moveDistance * (-(float)IsKeyPressed(KEY_W) + (float)IsKeyPressed(KEY_S));
-        move.x = moveDistance * (-(float)IsKeyPressed(KEY_A) + (float)IsKeyPressed(KEY_D));
+        move.z = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
+        move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
 
-        // PLACEHOLDER: If an entity is selected, delete it only if SPACE is clicked with it.
-        // NOTE -> Entity MUST implement QueueFree for this to work.
+        // Free the entity if backspace is pressed
         if (IsKeyPressed(KEY_BACKSPACE)) {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
@@ -53,23 +55,35 @@ void EditorController::OnUpdate()
 
 void EditorController::OnDraw()
 {
-    if (!selectedEntity) return;
+    // Draw a reference grid at the centre of the scene if toggled on
+    if (isGridActive) DrawGrid(100, 1.0f);
 
-    // Draw gizmo display to selected entity location
-    raylib::Vector3 entityPos = selectedEntity->GetPosition();
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
-    DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+    if (selectedEntity)
+    {
+        // Draw gizmo display to selected entity location
+        raylib::Vector3 entityPos = selectedEntity->GetPosition();
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+    }
 }
 
 void EditorController::OnUIDraw()
 {
     if (!selectedEntity) return;
 
-    // Draw text to the screen with selected entity coordinates
-    DrawText(FormatText("Selected Entity Position: <%f, %f, %f>",
-                        selectedEntity->GetPosition().x,
-                        selectedEntity->GetPosition().y,
-                        selectedEntity->GetPosition().z),
-             10.f, 70.f, 20.f, PINK);
+    // Format display text on the selected entity
+    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
+    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+                                         selectedEntity->GetPosition().x,
+                                         selectedEntity->GetPosition().y,
+                                         selectedEntity->GetPosition().z);
+
+    // Draw display text just above the entity in world-space
+    Vector2 cubeScreenPosition = GetWorldToScreen(
+            selectedEntity->GetPosition() + raylib::Vector3(0.f, 3.f, 0.f), *camera);
+    DrawText(nameLabel,(int) cubeScreenPosition.x - MeasureText(nameLabel, 20)/2,
+             (int) cubeScreenPosition.y, 20, PINK);
+    DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
+             (int) cubeScreenPosition.y + 20, 18, PINK);
 }

@@ -10,7 +10,11 @@ public:
 
     // Constructors
 
-    EntityStorage();
+    EntityStorage() :
+    allocator(IndexAllocator())
+    {
+        instance = nullptr;
+    };
 
     // Public fields
 
@@ -21,8 +25,6 @@ public:
     void Register(Entity*);
 
     void Remove(Entity*);
-
-    Entity* GetEntity(GenerationalIndex);
 
     // Static instance getters
 
@@ -51,7 +53,9 @@ private:
 
     // Utility Functions
 
-    uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
+    Entity* GetEntity(GenerationalIndex);
+
+    static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
 
     // Private fields
 
