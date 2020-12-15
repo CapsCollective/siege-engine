@@ -5,21 +5,22 @@
 
 EntityStorage* EntityStorage::instance;
 
-void EntityStorage::Register(Entity* entity) 
+void EntityStorage::Register(Entity* entity)
 {
-    GenerationalIndex index = allocator.AllocateIndex();
+    GenerationalIndex index = Instance()->allocator.AllocateIndex();
     entity->SetIndex(index);
 
-    if (index.index < entities.size())
+    std::cout << "AAAAAAAAA" << std::endl;
+    if (index.index < Instance()->entities.size())
     {
-        entities[index.index] = entity;
+        Instance()->entities[index.index] = entity;
     } 
     else 
     {
-        entities.push_back(entity);
+        Instance()->entities.push_back(entity);
     }
 
-    packedEntities.push_back(entity);
+    Instance()->packedEntities.push_back(entity);
 }
 
 void EntityStorage::Remove(Entity* entity) 
@@ -54,11 +55,11 @@ Entity* EntityStorage::operator[](GenerationalIndex index)
 void EntityStorage::QueueFree(Entity* entity) 
 {
     std::cout << "Adding entity at index: " << entity->GetIndex().index << " and generation: " << entity->GetIndex().generation << " for removal" << std::endl;
-    int32_t index = GetEntityIndex(entity, freedEntities);
+    int32_t index = GetEntityIndex(entity, Instance()->freedEntities);
     if (index == -1) 
     {
         std::cout << "Adding entity for removal..." << std::endl;
-        freedEntities.push_back(entity);
+        Instance()->freedEntities.push_back(entity);
     }
 }
 
@@ -78,12 +79,10 @@ void EntityStorage::FreeEntities()
     if (!freedEntities.empty()) 
     {
         std::cout << "Freeing entities..." << std::endl;
-        for (int32_t i = freedEntities.size() - 1; i > -1; i--) 
+        for (int32_t i = 0 ; i < freedEntities.size(); i++)
         {
             Remove(freedEntities[i]);
-            freedEntities.erase(freedEntities.begin() + i);
         }
+        freedEntities.clear();
     }
 }
-
-
