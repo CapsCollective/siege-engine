@@ -3,6 +3,7 @@
 //
 
 #include "Entity.h"
+#include <utility>
 #include "../entity_system/EntityStorage.h"
 
 BoundingBox Entity::GetBoundingBox()
@@ -23,4 +24,14 @@ raylib::Vector3 Entity::GetPosition()
 void Entity::QueueFree()
 {
     EntityStorage::Instance()->QueueFree(this);
+}
+
+std::string Entity::GetName()
+{
+    return name;
+}
+
+void Entity::SetName(std::string entityName)
+{
+    name = std::move(entityName);
 }

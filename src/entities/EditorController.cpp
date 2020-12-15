@@ -30,6 +30,9 @@ void EditorController::OnUpdate()
         }
     }
 
+    // TODO under construction code for entity selection
+    if (IsKeyPressed(KEY_TAB) && !EntityStorage::GetEntities().empty()) {
+        selectedEntity = EntityStorage::GetEntities()[0];
     }
 
     if (selectedEntity)
@@ -70,14 +73,17 @@ void EditorController::OnUIDraw()
     if (!selectedEntity) return;
 
     // Format display text on the selected entity
-    const char* entityLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
-                        selectedEntity->GetPosition().x,
-                        selectedEntity->GetPosition().y,
-                        selectedEntity->GetPosition().z);
+    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
+    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+                                         selectedEntity->GetPosition().x,
+                                         selectedEntity->GetPosition().y,
+                                         selectedEntity->GetPosition().z);
 
     // Draw display text just above the entity in world-space
     Vector2 cubeScreenPosition = GetWorldToScreen(
             selectedEntity->GetPosition() + raylib::Vector3(0.f, 3.f, 0.f), *camera);
-    DrawText(entityLabel,(int) cubeScreenPosition.x - MeasureText(entityLabel, 20)/2,
+    DrawText(nameLabel,(int) cubeScreenPosition.x - MeasureText(nameLabel, 20)/2,
              (int) cubeScreenPosition.y, 20, PINK);
+    DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
+             (int) cubeScreenPosition.y + 20, 18, PINK);
 }
