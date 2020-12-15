@@ -30,6 +30,8 @@ protected:
 
     void OnUpdate() override;
 
+    void QueueFree() override { /* block implementation */ };
+
 private:
 
     // Private fields
