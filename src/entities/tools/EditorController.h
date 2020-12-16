@@ -20,6 +20,7 @@ public:
     lastIndex(0)
     {
         Entity::SetName("EditorController");
+        Entity::SetEntitySerialise(false);
     };
 
 protected:

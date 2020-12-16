@@ -15,6 +15,7 @@ public:
     currentScene("main")
     {
         Entity::SetName("DevConsole");
+        Entity::SetEntitySerialise(false);
     };
 
     // Public methods
