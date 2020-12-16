@@ -35,10 +35,7 @@ public:
     }
 
     static EntityStorage* Instance() {
-        if (!instance) 
-        {
-            instance = new EntityStorage();
-        }
+        if (!instance) instance = new EntityStorage();
         return instance;
     }
 

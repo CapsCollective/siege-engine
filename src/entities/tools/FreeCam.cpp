@@ -1,4 +1,3 @@
-#include <iostream>
 #include "FreeCam.h"
 
 void FreeCam::OnUpdate()

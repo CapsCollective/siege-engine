@@ -34,9 +34,6 @@ void SceneLoader::SaveScene(const std::string& sceneName)
 
 void SceneLoader::LoadScene(const std::string& sceneName)
 {
-    //TODO remove debug output in this method
-    std::cout << "Loading " + sceneName + "..." << std::endl;
-
     // Begin the loading process, open the file for streaming
     std::ifstream file("./assets/scenes/" + sceneName + ".scene");
     if (!file.is_open()) return;
@@ -45,9 +42,6 @@ void SceneLoader::LoadScene(const std::string& sceneName)
     std::string line;
     while (getline(file, line))
     {
-        //TODO remove this debug line
-        std::cout << line << std::endl;
-
         // Define default field values
         enum {
             ENTITY_NAME = 0,
@@ -71,7 +65,7 @@ void SceneLoader::LoadScene(const std::string& sceneName)
         }
         else if (args[ENTITY_NAME] == "Player")
         {
-            EntityStorage::Instance()->Register(new Player(position));
+            EntityStorage::Register(new Player(position));
         }
         else
         {

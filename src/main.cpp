@@ -8,7 +8,6 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
-#include <iostream>
 
 int main(int argc, char* argv[])
 {
@@ -34,7 +33,7 @@ int main(int argc, char* argv[])
 
     // Instantiate world objects as per mode options
     auto console = new DevConsole();
-    EntityStorage::Instance()->Register(console);
+    EntityStorage::Register(console);
     if (isEditorMode)
     {
         EntityStorage::Register(new EditorController(&camera));

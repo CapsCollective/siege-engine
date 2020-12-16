@@ -3,8 +3,8 @@
 
 #include <Camera3D.hpp>
 #include <vector>
-#include "../Entity.h"
 #include <cstdint>
+#include "../Entity.h"
 
 class EditorController : public Entity
 {
