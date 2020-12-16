@@ -6,7 +6,7 @@
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
-#include "CustomTools.h"
+#include "HelperFuncs.h"
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
@@ -18,13 +18,13 @@ void SceneLoader::SaveScene(const std::string& sceneName)
         if (!entity->IsSerialisable()) continue;
 
         // Add its name and position to the data
-        fileData += (entity->GetName() + ";" + CustomTools::VectorToString(entity->GetPosition()) + ";");
+        fileData += (entity->GetName() + ";" + HelperFuncs::VectorToString(entity->GetPosition()) + ";");
 
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += CustomTools::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+            fileData += HelperFuncs::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
         }
 
         // Add new line as entity delimiter
@@ -64,15 +64,15 @@ void SceneLoader::LoadScene(const std::string& sceneName)
         };
 
         // Split the line into arguments
-        std::vector<std::string> args = CustomTools::SplitString(line, ';');
+        std::vector<std::string> args = HelperFuncs::SplitString(line, ';');
 
         // Calculate the position of the entity
-        raylib::Vector3 position = CustomTools::StringToVector(args[ENTITY_POS]);
+        raylib::Vector3 position = HelperFuncs::StringToVector(args[ENTITY_POS]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")
         {
-            raylib::Vector3 dimensions = CustomTools::StringToVector(args[CUSTOM_FIELD_1]);
+            raylib::Vector3 dimensions = HelperFuncs::StringToVector(args[CUSTOM_FIELD_1]);
             EntityStorage::Register(new Geometry(position, dimensions));
         }
         else if (args[ENTITY_NAME] == "Player")
