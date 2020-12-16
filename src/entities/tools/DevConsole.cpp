@@ -19,6 +19,9 @@ void DevConsole::OnUpdate()
         {
             if ((key >= 32) && (key <= 125)) inputText += (char) key;
         }
+
+        // Get the last command you ran - only works once.
+        if (IsKeyPressed(KEY_UP) && !lastInput.empty()) inputText = lastInput;
     }
 
     // Remove characters on backspace
@@ -65,6 +68,7 @@ void DevConsole::OnUpdate()
 
         // Deactivate the console
         isActive = false;
+        lastInput = inputText;
         inputText = "";
     }
 
