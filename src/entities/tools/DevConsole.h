@@ -50,7 +50,8 @@ private:
     std::string displayMessage;
 
     std::string inputText;
-};
 
+    std::string lastInput;
+};
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H
