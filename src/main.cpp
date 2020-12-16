@@ -35,13 +35,13 @@ int main(int argc, char* argv[])
     // Instantiate world objects as per mode options
     if (isEditorMode)
     {
-        EntityStorage::Instance()->Register(new EditorController(&camera));
-        EntityStorage::Instance()->Register(new FreeCam(&camera));
+        EntityStorage::Register(new EditorController(&camera));
+        EntityStorage::Register(new FreeCam(&camera));
     }
     else
     {
         SceneLoader::LoadScene("main");
-        EntityStorage::Instance()->Register(new Player());
+        EntityStorage::Register(new Player());
     }
 
     // Run main game loop until close button or ESC key
@@ -53,9 +53,12 @@ int main(int argc, char* argv[])
             entity->OnUpdate();
         }
 
+        // Entity creation is deferred until after the update loop
+        EntityStorage::RegisterEntities();
+
         // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
         if (isEditorMode && IsKeyPressed(KEY_SPACE)) {
-            EntityStorage::Instance()->Register(new Geometry(
+            EntityStorage::Register(new Geometry(
                     raylib::Vector3::Zero(),
                     raylib::Vector3(5.f, 0.1f, 5.f)));
         }
