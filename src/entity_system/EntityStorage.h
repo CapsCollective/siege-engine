@@ -23,7 +23,7 @@ public:
 
     // Public functions
 
-    void Register(Entity*);
+    static void Register(Entity*);
 
     void Remove(Entity*);
 
@@ -60,9 +60,11 @@ public:
 
     // Destructor Methods
 
-    void QueueFree(Entity*);
+    static void QueueFree(Entity*);
 
     void FreeEntities();
+
+    static void RegisterEntities();
 
 private:
 
@@ -78,7 +80,12 @@ private:
 
     std::vector<Entity*> packedEntities;
 
+    // Deferred vectors - for modifying containers.
     std::vector<Entity*> freedEntities;
+
+    std::vector<Entity*> registeredEntities;
+
+    void AddEntity(Entity *entity);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

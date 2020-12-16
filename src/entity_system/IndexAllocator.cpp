@@ -21,9 +21,9 @@ GenerationalIndex IndexAllocator::AllocateIndex()
     else 
     {
         // If free entries exist - re-use a freed index
-        index = freeEntries.back();
+        index = freeEntries[0];
         generation = entries[index].generation;
-        freeEntries.pop_back();
+        freeEntries.erase(freeEntries.begin());
         entries[index] = {true, generation++};
     }
     currentEntities++;

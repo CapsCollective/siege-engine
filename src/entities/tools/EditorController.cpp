@@ -1,6 +1,7 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
 #include "../../utils/SceneLoader.h"
+#include <iostream>
 
 void EditorController::OnUpdate()
 {
@@ -25,7 +26,7 @@ void EditorController::OnUpdate()
             // Free all current entities from storage
             for (auto entity : EntityStorage::GetEntities())
             {
-                entity->QueueFree();
+                entity->QueueFree(); // Need to queue here since we can't modify a list while using it.
             }
 
             // Load the specified scene

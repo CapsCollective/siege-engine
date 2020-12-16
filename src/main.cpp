@@ -8,6 +8,7 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include <iostream>
 
 int main(int argc, char* argv[])
 {
@@ -36,8 +37,8 @@ int main(int argc, char* argv[])
     EntityStorage::Instance()->Register(console);
     if (isEditorMode)
     {
-        EntityStorage::Instance()->Register(new EditorController(&camera));
-        EntityStorage::Instance()->Register(new FreeCam(&camera));
+        EntityStorage::Register(new EditorController(&camera));
+        EntityStorage::Register(new FreeCam(&camera));
     }
     else
     {
@@ -55,9 +56,12 @@ int main(int argc, char* argv[])
             entity->OnUpdate();
         }
 
+        // Entity creation is deferred until after the update loop
+        EntityStorage::RegisterEntities();
+
         // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
         if (isEditorMode && IsKeyPressed(KEY_EQUAL)) {
-            EntityStorage::Instance()->Register(new Geometry(
+            EntityStorage::Register(new Geometry(
                     raylib::Vector3::Zero(),
                     raylib::Vector3(5.f, 0.1f, 5.f)));
         }

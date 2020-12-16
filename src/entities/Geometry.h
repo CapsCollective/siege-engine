@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 10/12/20.
-//
-
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
