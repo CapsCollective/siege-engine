@@ -10,7 +10,9 @@ public:
     // Constructors
 
     DevConsole() :
-    isActive(false)
+    isActive(false),
+    displayTime(0.f),
+    currentScene("main")
     {
         Entity::SetName("DevConsole");
     };
@@ -33,9 +35,19 @@ protected:
 
 private:
 
+    // Private methods
+
+    void DisplayMessage(const std::string& message, float displayTime);
+
     // Private fields
 
     bool isActive;
+
+    float displayTime;
+
+    std::string currentScene;
+
+    std::string displayMessage;
 
     std::string inputText;
 };
