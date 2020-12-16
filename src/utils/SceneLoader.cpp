@@ -35,6 +35,13 @@ void SceneLoader::SaveScene(const std::string& sceneName)
 
 void SceneLoader::LoadScene(const std::string& sceneName)
 {
+    // Free all current entities from storage
+    for (auto entity : EntityStorage::GetEntities())
+    {
+        // Need to queue here since we can't modify a list while using it
+        entity->QueueFree();
+    }
+
     // Begin the loading process, open the file for streaming
     std::ifstream file("./assets/scenes/" + sceneName + ".scene");
     if (!file.is_open()) return;
