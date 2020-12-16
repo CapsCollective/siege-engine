@@ -5,7 +5,7 @@
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
-#include "Entity.h"
+#include "../Entity.h"
 
 class DevConsole : public Entity
 {

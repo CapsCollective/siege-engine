@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "DevConsole.h"
+#include "../../utils/SceneLoader.h"
 
 void DevConsole::OnUpdate()
 {
@@ -23,11 +24,33 @@ void DevConsole::OnUpdate()
     // Process the command on enter
     if (IsKeyPressed(KEY_ENTER))
     {
+        // Process the input into command and argument format
+        std::string command;
+        std::string argument;
+        int separatorPos = inputText.find(' ');
+        if (separatorPos != -1)
+        {
+            command = inputText.substr(0, separatorPos);
+            argument = inputText.substr(command.size() + 1, inputText.size());
+        }
+        else command = inputText;
+
         // Run the appropriate command
-        std::string command = inputText.substr(0, inputText.find(' '));
         if (command == "load")
         {
-            std::cout << "loading level..." << std::endl;
+            if (argument.empty())
+            {
+                std::cout << "Error: missing argument for " + command +  " command" << std::endl;
+            }
+            else
+            {
+                // TODO clear the current scene
+                SceneLoader::LoadScene(argument);
+            }
+        }
+        else if (command == "save")
+        {
+            SceneLoader::SaveScene(argument.empty() ? "untitled" : argument);
         }
         else
         {

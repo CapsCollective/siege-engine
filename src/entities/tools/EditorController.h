@@ -3,7 +3,7 @@
 
 #include <Camera3D.hpp>
 #include <vector>
-#include "Entity.h"
+#include "../Entity.h"
 #include <cstdint>
 
 class EditorController : public Entity
