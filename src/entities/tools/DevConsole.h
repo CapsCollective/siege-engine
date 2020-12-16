@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 16/12/20.
-//
-
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
@@ -32,6 +28,8 @@ protected:
     void OnUIDraw() override;
 
     void QueueFree() override { /* block implementation */ };
+
+    void Free() override { /* block implementation */ };
 
 private:
 
