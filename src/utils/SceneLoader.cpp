@@ -14,13 +14,17 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     std::string fileData;
     for (auto entity : EntityStorage::GetEntities())
     {
-        // Add it's name and position to the data
+        // Check if the entity is serialisable
+        if (!entity->ShouldSerialise()) continue;
+
+        // Add its name and position to the data
         fileData += (entity->GetName() + ";" + CustomTools::VectorToString(entity->GetPosition()) + ";");
+
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += CustomTools::VectorToString(dynamic_cast<Geometry*>(entity)->GetDimensions()) + ";";
+            fileData += CustomTools::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
         }
 
         // Add new line as entity delimiter

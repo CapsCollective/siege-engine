@@ -29,6 +29,10 @@ public:
 
     void SetName(std::string entityName);
 
+    bool ShouldSerialise() const;
+
+    void SetEntitySerialise(bool serialise);
+
     void SetPosition(raylib::Vector3 newPosition);
 
     raylib::Vector3 GetPosition();
@@ -52,7 +56,8 @@ protected:
     explicit Entity(raylib::Vector3 position) :
     position(position),
     index({0, 0}),
-    name("Entity")
+    name("Entity"),
+    shouldSerialise(true)
     {};
 
     // Protected fields
@@ -64,6 +69,8 @@ protected:
 private:
 
     // Private fields
+
+    bool shouldSerialise;
 
     std::string name;
 };

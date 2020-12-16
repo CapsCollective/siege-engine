@@ -41,3 +41,13 @@ void Entity::SetName(std::string entityName)
 {
     name = std::move(entityName);
 }
+
+void Entity::SetEntitySerialise(bool serialise)
+{
+    shouldSerialise = serialise;
+}
+
+bool Entity::ShouldSerialise() const
+{
+    return shouldSerialise;
+}
