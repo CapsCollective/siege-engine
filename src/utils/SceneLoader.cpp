@@ -6,6 +6,7 @@
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
+#include "CustomTools.h"
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
@@ -14,12 +15,12 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     for (auto entity : EntityStorage::GetEntities())
     {
         // Add it's name and position to the data
-        fileData += (entity->GetName() + ";" + VectorToString(entity->GetPosition()) + ";");
+        fileData += (entity->GetName() + ";" + CustomTools::VectorToString(entity->GetPosition()) + ";");
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += VectorToString(dynamic_cast<Geometry*>(entity)->GetDimensions()) + ";";
+            fileData += CustomTools::VectorToString(dynamic_cast<Geometry*>(entity)->GetDimensions()) + ";";
         }
 
         // Add new line as entity delimiter
@@ -52,15 +53,15 @@ void SceneLoader::LoadScene(const std::string& sceneName)
         };
 
         // Split the line into arguments
-        std::vector<std::string> args = SplitString(line, ';');
+        std::vector<std::string> args = CustomTools::SplitString(line, ';');
 
         // Calculate the position of the entity
-        raylib::Vector3 position = StringToVector(args[ENTITY_POS]);
+        raylib::Vector3 position = CustomTools::StringToVector(args[ENTITY_POS]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")
         {
-            raylib::Vector3 dimensions = StringToVector(args[CUSTOM_FIELD_1]);
+            raylib::Vector3 dimensions = CustomTools::StringToVector(args[CUSTOM_FIELD_1]);
             EntityStorage::Register(new Geometry(position, dimensions));
         }
         else if (args[ENTITY_NAME] == "Player")
@@ -76,36 +77,5 @@ void SceneLoader::LoadScene(const std::string& sceneName)
 
     // Close the file stream
     file.close();
-}
-
-std::string SceneLoader::VectorToString(raylib::Vector3 vector)
-{
-    return std::to_string(vector.x) + "," +
-           std::to_string(vector.y) + "," +
-           std::to_string(vector.z) + ",";
-}
-
-raylib::Vector3 SceneLoader::StringToVector(std::string string)
-{
-    std::vector<std::string> components = SplitString(std::move(string), ',');
-    return {
-        std::stof(components[0]),
-        std::stof(components[1]),
-        std::stof(components[2]),
-    };
-}
-
-std::vector<std::string> SceneLoader::SplitString(std::string string, char delimiter)
-{
-    // Iterate over the string while there is still a delimiter
-    int delimiterPos;
-    std::vector<std::string> args;
-    while ((delimiterPos = string.find(delimiter)) != std::string::npos)
-    {
-        // Get up to the next delimiter, add it to the vector, and erase it
-        args.push_back(string.substr(0, delimiterPos));
-        string.erase(0, args.back().size()+1);
-    }
-    return args;
 }
 
