@@ -2,7 +2,7 @@
 
 void FreeCam::OnUpdate()
 {
-    if (!camera || IsKeyDown(KEY_LEFT_SUPER)) return;
+    if (IsKeyDown(KEY_LEFT_SUPER) || !camera) return;
 
     // Calculate current mouse positional values
     Vector2 mousePosition = GetMousePosition();

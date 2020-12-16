@@ -17,7 +17,6 @@ public:
     camera(camera),
     moveDistance(0.5f),
     isGridActive(true),
-    displayTime(0.f),
     lastIndex(0)
     {
         Entity::SetName("EditorController");
@@ -39,19 +38,11 @@ protected:
 
 private:
 
-    // Private methods
-
-    void DisplayMessage(const std::string& message, float displayTime);
-
     // Private fields
 
     bool isGridActive;
 
     float moveDistance;
-
-    float displayTime;
-
-    std::string displayMessage;
 
     raylib::Camera3D* camera;
 

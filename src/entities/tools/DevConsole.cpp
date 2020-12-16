@@ -1,13 +1,16 @@
-//
-// Created by Jonathan Moallem on 16/12/20.
-//
-
 #include <iostream>
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
 
 void DevConsole::OnUpdate()
 {
+    if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_S))
+    {
+        // Save the current scene
+        SceneLoader::SaveScene(currentScene);
+        DisplayMessage("Scene saved", 10.f);
+    }
+
     if (isActive)
     {
         // Get input from the keyboard and input it
@@ -44,13 +47,16 @@ void DevConsole::OnUpdate()
             }
             else
             {
-                // TODO clear the current scene
-                SceneLoader::LoadScene(argument);
+                currentScene = argument;
+                SceneLoader::LoadScene(currentScene);
+                DisplayMessage("Scene loaded", 10.f);
             }
         }
         else if (command == "save")
         {
-            SceneLoader::SaveScene(argument.empty() ? "untitled" : argument);
+            currentScene = argument.empty() ? "untitled" : argument;
+            SceneLoader::SaveScene(currentScene);
+            DisplayMessage("Scene saved", 10.f);
         }
         else
         {
@@ -72,11 +78,25 @@ void DevConsole::OnUpdate()
 
 void DevConsole::OnUIDraw()
 {
-    if (!isActive) return;
+    if (isActive)
+    {
+        // Draw the console to the screen
+        DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
+        DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
+    }
 
-    // Draw the console to the screen
-    DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
-    DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
+    // Draw the display message to the screen while the display time is valid
+    if (displayTime > 0.f)
+    {
+        DrawText(displayMessage.c_str(), 10, 40, 20, PINK);
+        displayTime -= 0.1f;
+    }
+}
+
+void DevConsole::DisplayMessage(const std::string &message, float time)
+{
+    displayMessage = message;
+    displayTime = time;
 }
 
 bool DevConsole::IsActive() const
