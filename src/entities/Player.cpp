@@ -25,7 +25,7 @@ void Player::OnDraw()
 
 void Player::OnUIDraw()
 {
-    DrawText("Move with the arrow keys", 10.f, 40.f, 20.f, DARKGRAY);
+    DrawText("Move with the arrow keys", 10.f, GetScreenHeight() - 30, 20.f, DARKGRAY);
 }
 
 BoundingBox Player::GetBoundingBox()

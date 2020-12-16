@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     );
 
     // Instantiate world objects as per mode options
-    auto console = new DevConsole();
+    auto console = new DevConsole(isEditorMode);
     EntityStorage::Register(console);
     if (isEditorMode)
     {
