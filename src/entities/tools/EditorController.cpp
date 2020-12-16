@@ -22,12 +22,6 @@ void EditorController::OnUpdate()
             // Drop current entity selection
             selectedEntity = nullptr;
 
-            // Free all current entities from storage
-            for (auto entity : EntityStorage::GetEntities())
-            {
-                entity->QueueFree(); // Need to queue here since we can't modify a list while using it.
-            }
-
             // Load the specified scene
             SceneLoader::LoadScene(sceneName);
             DisplayMessage("Scene loaded", 10.f);
