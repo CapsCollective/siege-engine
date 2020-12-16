@@ -19,6 +19,8 @@ public:
 
     virtual void QueueFree();
 
+    virtual void Free();
+
     virtual BoundingBox GetBoundingBox();
 
     // Public methods
@@ -35,7 +37,7 @@ public:
         return index;
     }
 
-    void SetIndex(GenerationalIndex& idx) {
+    void SetIndex(GenerationalIndex idx) {
         index = idx;
     }
 

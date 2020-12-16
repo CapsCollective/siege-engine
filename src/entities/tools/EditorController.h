@@ -35,6 +35,8 @@ protected:
 
     void QueueFree() override { /* block implementation */ };
 
+    void Free() override { /* block implementation */ };
+
 private:
 
     // Private methods

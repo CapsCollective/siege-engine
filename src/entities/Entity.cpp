@@ -23,7 +23,13 @@ raylib::Vector3 Entity::GetPosition()
 
 void Entity::QueueFree()
 {
-    EntityStorage::Instance()->QueueFree(this);
+    EntityStorage::QueueFree(this);
+}
+
+// A function for removing entities from the storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
+void Entity::Free()
+{
+    EntityStorage::Instance()->Remove(this);
 }
 
 std::string Entity::GetName()

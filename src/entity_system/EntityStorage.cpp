@@ -1,25 +1,36 @@
 #include "EntityStorage.h"
-#include <iostream>
 #include <cstdint>
 #include <algorithm>
 
 EntityStorage* EntityStorage::instance;
 
-void EntityStorage::Register(Entity* entity) 
+void EntityStorage::Register(Entity* entity)
 {
-    GenerationalIndex index = allocator.AllocateIndex();
+    GenerationalIndex index = Instance()->allocator.AllocateIndex();
     entity->SetIndex(index);
 
-    if (index.index < entities.size())
+    Instance()->registeredEntities.push_back(entity);
+}
+
+void EntityStorage::AddEntity(Entity* entity) {
+
+    if (entity->GetIndex().index < entities.size())
     {
-        entities[index.index] = entity;
-    } 
-    else 
+        entities[entity->GetIndex().index] = entity;
+    }
+    else
     {
         entities.push_back(entity);
     }
 
     packedEntities.push_back(entity);
+}
+
+void EntityStorage::RegisterEntities() {
+    for (auto& entity : Instance()->registeredEntities) {
+        Instance()->AddEntity(entity);
+    }
+    Instance()->registeredEntities.clear();
 }
 
 void EntityStorage::Remove(Entity* entity) 
@@ -32,7 +43,6 @@ void EntityStorage::Remove(Entity* entity)
         if (index != -1) 
         {
             packedEntities.erase(packedEntities.begin() + index);
-            std::cout << "Removing entity from packed index at position: " << index << "." << std::endl;
         }
         size_t entityIndex = entity->GetIndex().index;
         delete entities[entityIndex];
@@ -53,12 +63,10 @@ Entity* EntityStorage::operator[](GenerationalIndex index)
 
 void EntityStorage::QueueFree(Entity* entity) 
 {
-    std::cout << "Adding entity at index: " << entity->GetIndex().index << " and generation: " << entity->GetIndex().generation << " for removal" << std::endl;
-    int32_t index = GetEntityIndex(entity, freedEntities);
+    int32_t index = GetEntityIndex(entity, Instance()->freedEntities);
     if (index == -1) 
     {
-        std::cout << "Adding entity for removal..." << std::endl;
-        freedEntities.push_back(entity);
+        Instance()->freedEntities.push_back(entity);
     }
 }
 
@@ -77,13 +85,10 @@ void EntityStorage::FreeEntities()
 {
     if (!freedEntities.empty()) 
     {
-        std::cout << "Freeing entities..." << std::endl;
-        for (int32_t i = freedEntities.size() - 1; i > -1; i--) 
+        for (auto& entity : freedEntities)
         {
-            Remove(freedEntities[i]);
-            freedEntities.erase(freedEntities.begin() + i);
+            Remove(entity);
         }
+        freedEntities.clear();
     }
 }
-
-
