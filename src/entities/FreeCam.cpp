@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 14/12/20.
-//
-
 #include <iostream>
 #include "FreeCam.h"
 
@@ -49,4 +45,5 @@ void FreeCam::OnUpdate()
     // TODO fix camera look issues beyond 90 degrees in either direction from origin
 //    std::cout << "rotation: " << rotation.x << " " << rotation.y << std::endl;
 //    std::cout << "target: " << camera->GetTarget().x << " " << camera->GetTarget().y << std::endl;
+
 }

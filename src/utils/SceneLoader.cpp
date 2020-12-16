@@ -1,7 +1,3 @@
-//
-// Created by Menchy Kintslinger on 15/12/20.
-//
-
 #include <iostream>
 #include <fstream>
 #include <utility>
@@ -70,7 +66,6 @@ void SceneLoader::LoadScene(const std::string& sceneName)
         if (args[ENTITY_NAME] == "Geometry")
         {
             raylib::Vector3 dimensions = StringToVector(args[CUSTOM_FIELD_1]);
-            // TODO FIX THIS CAUSING SEGFAULTS ON OCCASION
             EntityStorage::Register(new Geometry(position, dimensions));
         }
         else
@@ -81,9 +76,7 @@ void SceneLoader::LoadScene(const std::string& sceneName)
     }
 
     // Close the file stream
-    std::cout << "CLOSING FILE" << std::endl;
     file.close();
-    std::cout << "FILE CLOSED" << std::endl;
 }
 
 std::string SceneLoader::VectorToString(raylib::Vector3 vector)

@@ -64,6 +64,8 @@ public:
 
     void FreeEntities();
 
+    static void RegisterEntities();
+
 private:
 
     // Utility Functions
@@ -78,7 +80,12 @@ private:
 
     std::vector<Entity*> packedEntities;
 
+    // Deferred vectors - for modifying containers.
     std::vector<Entity*> freedEntities;
+
+    std::vector<Entity*> registeredEntities;
+
+    void AddEntity(Entity *entity);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H
