@@ -9,8 +9,9 @@ public:
 
     // Constructors
 
-    DevConsole() :
+    explicit DevConsole(bool isEditorMode) :
     isActive(false),
+    isEditorMode(isEditorMode),
     displayTime(0.f),
     currentScene("main")
     {
@@ -38,6 +39,8 @@ private:
     void DisplayMessage(const std::string& message, float displayTime);
 
     // Private fields
+
+    bool isEditorMode;
 
     bool isActive;
 

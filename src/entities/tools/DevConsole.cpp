@@ -1,4 +1,3 @@
-#include <iostream>
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
 
@@ -41,29 +40,35 @@ void DevConsole::OnUpdate()
         }
         else command = inputText;
 
-        // Run the appropriate command
+        // Run the appropriate instructions for specified command
         if (command == "load")
         {
-            if (argument.empty())
+            if (!argument.empty())
             {
-                std::cout << "Error: missing argument for " + command +  " command" << std::endl;
-            }
-            else
-            {
+                // Try load the scene specified
                 currentScene = argument;
-                SceneLoader::LoadScene(currentScene);
-                DisplayMessage("Scene loaded", 10.f);
+                if (SceneLoader::LoadScene(currentScene))
+                {
+                    DisplayMessage(currentScene + ".scene loaded", 10.f);
+                }
+                else DisplayMessage(currentScene + ".scene not found", 10.f);
             }
+            else DisplayMessage("Error: missing argument for " + command +  " command", 10.f);
         }
         else if (command == "save")
         {
-            currentScene = argument.empty() ? "untitled" : argument;
-            SceneLoader::SaveScene(currentScene);
-            DisplayMessage("Scene saved", 10.f);
+            if (isEditorMode)
+            {
+                // Save the scene as the current scene name (or untitled if argument blank)
+                currentScene = argument.empty() ? "untitled" : argument;
+                SceneLoader::SaveScene(currentScene);
+                DisplayMessage("Scene saved", 10.f);
+            }
+            else DisplayMessage("Cannot save from play mode", 10.f);
         }
         else
         {
-            std::cout << "Error: unknown command \"" + command +  "\"" << std::endl;
+            DisplayMessage("Error: unknown command \"" + command +  "\"", 10.f);
         }
 
         // Deactivate the console

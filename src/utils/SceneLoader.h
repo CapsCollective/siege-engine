@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 15/12/20.
-//
-
 #ifndef A_DARK_DISCOMFORT_SCENELOADER_H
 #define A_DARK_DISCOMFORT_SCENELOADER_H
 
@@ -15,7 +11,7 @@ public:
 
     static void SaveScene(const std::string& sceneName);
 
-    static void LoadScene(const std::string& sceneName);
+    static bool LoadScene(const std::string& sceneName);
 };
 
 

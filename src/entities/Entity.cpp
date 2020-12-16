@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 30/11/20.
-//
-
 #include "Entity.h"
 #include <utility>
 #include "../entity_system/EntityStorage.h"
@@ -50,11 +46,6 @@ void Entity::SetSerialisable(bool serialisable)
 bool Entity::IsSerialisable() const
 {
     return isSerialisable;
-}
-
-bool Entity::IsFreeable() const
-{
-    return isFreeable;
 }
 
 void Entity::SetFreeable(bool freeable)
