@@ -15,7 +15,8 @@ public:
     currentScene("main")
     {
         Entity::SetName("DevConsole");
-        Entity::SetEntitySerialise(false);
+        Entity::SetFreeable(false);
+        Entity::SetSerialisable(false);
     };
 
     // Public methods
@@ -29,10 +30,6 @@ protected:
     void OnUpdate() override;
 
     void OnUIDraw() override;
-
-    void QueueFree() override { /* block implementation */ };
-
-    void Free() override { /* block implementation */ };
 
 private:
 

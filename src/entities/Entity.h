@@ -17,21 +17,23 @@ public:
 
     virtual void OnUIDraw() {};
 
-    virtual void QueueFree();
-
-    virtual void Free();
-
     virtual BoundingBox GetBoundingBox();
 
     // Public methods
+
+    void QueueFree(bool forceFree = false);
+
+    void Free(bool forceFree = false);
 
     std::string GetName();
 
     void SetName(std::string entityName);
 
-    bool ShouldSerialise() const;
+    void SetFreeable(bool freeable);
 
-    void SetEntitySerialise(bool serialise);
+    bool IsSerialisable() const;
+
+    void SetSerialisable(bool serialisable);
 
     void SetPosition(raylib::Vector3 newPosition);
 
@@ -57,7 +59,8 @@ protected:
     position(position),
     index({0, 0}),
     name("Entity"),
-    shouldSerialise(true)
+    isSerialisable(true),
+    isFreeable(true)
     {};
 
     // Protected fields
@@ -70,7 +73,9 @@ private:
 
     // Private fields
 
-    bool shouldSerialise;
+    bool isFreeable;
+
+    bool isSerialisable;
 
     std::string name;
 };

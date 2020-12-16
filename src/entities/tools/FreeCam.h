@@ -22,7 +22,8 @@ public:
     rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {
         Entity::SetName("FreeCam");
-        Entity::SetEntitySerialise(false);
+        Entity::SetFreeable(false);
+        Entity::SetSerialisable(false);
         camera->SetMode(CAMERA_CUSTOM);
     };
 
@@ -31,10 +32,6 @@ protected:
     // Protected overrides
 
     void OnUpdate() override;
-
-    void QueueFree() override { /* block implementation */ };
-
-    void Free() override { /* block implementation */ };
 
 private:
 

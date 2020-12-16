@@ -21,15 +21,15 @@ raylib::Vector3 Entity::GetPosition()
     return position;
 }
 
-void Entity::QueueFree()
+void Entity::QueueFree(bool forceFree)
 {
-    EntityStorage::QueueFree(this);
+    if (isFreeable || forceFree) EntityStorage::QueueFree(this);
 }
 
 // A function for removing entities from the storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
-void Entity::Free()
+void Entity::Free(bool forceFree)
 {
-    EntityStorage::Instance()->Remove(this);
+    if (isFreeable || forceFree) EntityStorage::Instance()->Remove(this);
 }
 
 std::string Entity::GetName()
@@ -42,12 +42,22 @@ void Entity::SetName(std::string entityName)
     name = std::move(entityName);
 }
 
-void Entity::SetEntitySerialise(bool serialise)
+void Entity::SetSerialisable(bool serialisable)
 {
-    shouldSerialise = serialise;
+    isSerialisable = serialisable;
 }
 
-bool Entity::ShouldSerialise() const
+bool Entity::IsSerialisable() const
 {
-    return shouldSerialise;
+    return isSerialisable;
+}
+
+bool Entity::IsFreeable() const
+{
+    return isFreeable;
+}
+
+void Entity::SetFreeable(bool freeable)
+{
+    isFreeable = freeable;
 }
