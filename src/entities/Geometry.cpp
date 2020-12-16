@@ -9,7 +9,7 @@ void Geometry::OnDraw()
 
 BoundingBox Geometry::GetBoundingBox()
 {
-    return BoundingBox{
+    return BoundingBox {
             position - raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
             position + raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
     };

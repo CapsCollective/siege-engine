@@ -9,6 +9,7 @@
 #include "SceneLoader.h"
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
+#include "../entities/Player.h"
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
@@ -72,6 +73,10 @@ void SceneLoader::LoadScene(const std::string& sceneName)
             raylib::Vector3 dimensions = StringToVector(args[CUSTOM_FIELD_1]);
             // TODO FIX THIS CAUSING SEGFAULTS ON OCCASION
             EntityStorage::Instance()->Register(new Geometry(position, dimensions));
+        }
+        else if (args[ENTITY_NAME] == "Player")
+        {
+            EntityStorage::Instance()->Register(new Player(position));
         }
         else
         {

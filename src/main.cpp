@@ -2,12 +2,12 @@
 #include <Window.hpp>
 #include <Color.hpp>
 #include <Camera3D.hpp>
-#include "entities/Player.h"
 #include "entities/Geometry.h"
-#include "entities/EditorController.h"
+#include "entities/tools/EditorController.h"
 #include "entity_system/EntityStorage.h"
-#include "entities/FreeCam.h"
+#include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
+#include "entities/tools/DevConsole.h"
 
 int main(int argc, char* argv[])
 {
@@ -32,6 +32,8 @@ int main(int argc, char* argv[])
     );
 
     // Instantiate world objects as per mode options
+    auto console = new DevConsole();
+    EntityStorage::Instance()->Register(console);
     if (isEditorMode)
     {
         EntityStorage::Instance()->Register(new EditorController(&camera));
@@ -40,7 +42,6 @@ int main(int argc, char* argv[])
     else
     {
         SceneLoader::LoadScene("main");
-        EntityStorage::Instance()->Register(new Player());
     }
 
     // Run main game loop until close button or ESC key
@@ -49,11 +50,13 @@ int main(int argc, char* argv[])
         // Update entities
         for (auto& entity : EntityStorage::GetEntities())
         {
+            // Turn off updating if the console is active
+            if (console->IsActive() && entity != console) continue;
             entity->OnUpdate();
         }
 
         // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
-        if (isEditorMode && IsKeyPressed(KEY_SPACE)) {
+        if (isEditorMode && IsKeyPressed(KEY_EQUAL)) {
             EntityStorage::Instance()->Register(new Geometry(
                     raylib::Vector3::Zero(),
                     raylib::Vector3(5.f, 0.1f, 5.f)));
