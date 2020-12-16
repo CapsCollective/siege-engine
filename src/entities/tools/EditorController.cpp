@@ -1,6 +1,6 @@
 #include "EditorController.h"
-#include "../entity_system/EntityStorage.h"
-#include "../utils/SceneLoader.h"
+#include "../../entity_system/EntityStorage.h"
+#include "../../utils/SceneLoader.h"
 
 void EditorController::OnUpdate()
 {
