@@ -20,7 +20,8 @@ public:
     lastIndex(0)
     {
         Entity::SetName("EditorController");
-        Entity::SetEntitySerialise(false);
+        Entity::SetFreeable(false);
+        Entity::SetSerialisable(false);
     };
 
 protected:
@@ -32,10 +33,6 @@ protected:
     void OnDraw() override;
 
     void OnUIDraw() override;
-
-    void QueueFree() override { /* block implementation */ };
-
-    void Free() override { /* block implementation */ };
 
 private:
 

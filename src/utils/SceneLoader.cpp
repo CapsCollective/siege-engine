@@ -15,7 +15,7 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     for (auto entity : EntityStorage::GetEntities())
     {
         // Check if the entity is serialisable
-        if (!entity->ShouldSerialise()) continue;
+        if (!entity->IsSerialisable()) continue;
 
         // Add its name and position to the data
         fileData += (entity->GetName() + ";" + CustomTools::VectorToString(entity->GetPosition()) + ";");
