@@ -1,7 +1,4 @@
-#include <Vector3.hpp>
-#include <Window.hpp>
-#include <Color.hpp>
-#include <Camera3D.hpp>
+#include <raylib-cpp.hpp>
 #include "entities/Geometry.h"
 #include "entities/tools/EditorController.h"
 #include "entity_system/EntityStorage.h"
@@ -44,6 +41,13 @@ int main(int argc, char* argv[])
         SceneLoader::LoadScene("main");
     }
 
+    raylib::Model model = raylib::Model("assets/models/cube.obj");
+    raylib::Image image = raylib::Image("assets/models/cubicmap_atlas.png.png");
+    //raylib::TextureCubemap cubeMap = raylib::TextureCubemap(image);
+    //raylib::Texture2D texture = raylib::Texture2D(image);
+
+    //model.materials[0].maps[MAP_DIFFUSE].texture = texture;
+
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
@@ -75,6 +79,8 @@ int main(int argc, char* argv[])
         {
             entity->OnDraw();
         }
+
+        DrawModel(model, raylib::Vector3(0.0f, 0.0f, 0.0f), 1.0f, WHITE);
 
         camera.EndMode3D();
 
