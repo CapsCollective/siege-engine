@@ -52,3 +52,8 @@ void Entity::SetFreeable(bool freeable)
 {
     isFreeable = freeable;
 }
+
+Entity* Entity::Clone()
+{
+    return nullptr;
+}
