@@ -1,12 +1,12 @@
-#include <Vector3.hpp>
-#include <Window.hpp>
-#include <Color.hpp>
-#include <Camera3D.hpp>
 #include "entities/tools/EditorController.h"
 #include "entity_system/EntityStorage.h"
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include <Vector3.hpp>
+#include <Window.hpp>
+#include <Color.hpp>
+#include <Camera3D.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -31,11 +31,14 @@ int main(int argc, char* argv[])
     );
 
     // Instantiate world objects as per mode options
-    auto console = new DevConsole(isEditorMode);
+    // TODO update to use service locator for common Entities
+    auto display = new MessageDisplay();
+    auto console = new DevConsole(isEditorMode, display);
+    EntityStorage::Register(display);
     EntityStorage::Register(console);
     if (isEditorMode)
     {
-        EntityStorage::Register(new EditorController(&camera));
+        EntityStorage::Register(new EditorController(&camera, display));
         EntityStorage::Register(new FreeCam(&camera));
     }
     else
@@ -47,6 +50,7 @@ int main(int argc, char* argv[])
     while (!window.ShouldClose())
     {
         // Update entities
+        // TODO stop game entity updates from running in the editor (e.g. Player)
         for (auto& entity : EntityStorage::GetEntities())
         {
             // Turn off updating if the console is active
