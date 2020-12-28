@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_PLAYER_H
 
 #include "Entity.h"
+#include "../resources/ModelData.h"
 
 class Player : public Entity
 {
@@ -23,13 +24,7 @@ public:
     velocity(raylib::Vector3::Zero())
     {
         Entity::SetName("Player");
-        modelData = {
-            std::move(modelPath),
-            std::move(modelName),
-            std::move(texturePath),
-            std::move(textureName)
-        };
-
+        modelData = ModelData(modelPath, modelName, texturePath, textureName);
     };
 
     // Public overrides
@@ -54,12 +49,7 @@ private:
 
     raylib::Vector3 velocity;
 
-    struct ModelData {
-        std::string modelPath;
-        std::string modelName;
-        std::string texturePath;
-        std::string textureName;
-    } modelData;
+    ModelData modelData;
 };
 
 #endif //A_DARK_DISCOMFORT_PLAYER_H

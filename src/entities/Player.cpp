@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "../ResourceManager.h"
+#include "../resources/ResourceManager.h"
 
 void Player::OnUpdate()
 {
