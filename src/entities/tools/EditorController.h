@@ -19,7 +19,7 @@ public:
     camera(camera),
     moveDistance(0.5f),
     isGridActive(true),
-    lastIndex(0)
+    selectedIdx(0)
     {
         Entity::SetName("EditorController");
         Entity::SetFreeable(false);
@@ -44,11 +44,12 @@ private:
 
     float moveDistance;
 
+    size_t selectedIdx;
+
     raylib::Camera3D* camera;
 
     Entity* selectedEntity;
 
-    size_t lastIndex;
     MessageDisplay* messageDisplay;
 };
 

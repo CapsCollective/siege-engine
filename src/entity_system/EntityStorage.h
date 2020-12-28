@@ -51,6 +51,11 @@ public:
         else return nullptr;
     }
 
+    static Entity* GetPackedEntity(size_t index)
+    {
+        return Instance()->packedEntities[index];
+    }
+
     // Operator overloads
 
     Entity* operator[](GenerationalIndex);

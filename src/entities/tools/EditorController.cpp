@@ -34,17 +34,21 @@ void EditorController::OnUpdate()
     // Cycle through all entities
     if (IsKeyPressed(KEY_TAB))
     {
-        if (!selectedEntity)
-        {
-            // Select the first packed entity by index
-            selectedEntity = EntityStorage::GetEntities()[lastIndex = 0];
-        }
-        else
-        {
-            // Increment and select the next entity index
-            lastIndex = ++lastIndex % EntityStorage::GetEntities().size();
-            selectedEntity = EntityStorage::GetEntities()[lastIndex];
-        }
+        // Select the first packed entity by index
+        int totalEntities = EntityStorage::GetEntities().size();
+        size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
+        do {
+            // Get a reference to the selected entity and return it if serialisable
+            selectedEntity = EntityStorage::GetPackedEntity(selectedIdx);
+            if (selectedEntity->IsSerialisable()) break;
+            else
+            {
+                // Otherwise increment and select the next entity
+                selectedIdx = ++selectedIdx % totalEntities;
+                selectedEntity = nullptr;
+            }
+
+        } while (selectedIdx != startIdx);
     }
 
     if (selectedEntity)
