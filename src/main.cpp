@@ -71,7 +71,8 @@ int main(int argc, char* argv[])
             entity->OnDraw();
         }
 
-        DrawModel(model, raylib::Vector3(0.0f, 0.0f, 0.0f), 1.0f, RED);
+        DrawModelEx(model, raylib::Vector3::Zero(), raylib::Vector3::Zero(), 0.0f, raylib::Vector3(1.0f, 1.0f, 1.0f), RED);
+        DrawModelWiresEx(model, raylib::Vector3::Zero(), raylib::Vector3::Zero(), 0.0f, raylib::Vector3(1.0f, 1.0f, 1.0f), BLACK);
 
         camera.EndMode3D();
 
