@@ -41,12 +41,10 @@ int main(int argc, char* argv[])
         SceneLoader::LoadScene("main");
     }
 
-    raylib::Model model = raylib::Model("assets/models/cube.obj");
-    raylib::Image image = raylib::Image("assets/models/cubicmap_atlas.png.png");
-    //raylib::TextureCubemap cubeMap = raylib::TextureCubemap(image);
-    //raylib::Texture2D texture = raylib::Texture2D(image);
+    raylib::Model model = raylib::Model("assets/models/cube/cube.obj");
+    raylib::Texture2D texture = raylib::Texture2D("assets/models/cube/CubeTexture.png");
 
-    //model.materials[0].maps[MAP_DIFFUSE].texture = texture;
+    model.materials[0].maps[MAP_DIFFUSE].texture = texture;
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
@@ -80,7 +78,7 @@ int main(int argc, char* argv[])
             entity->OnDraw();
         }
 
-        DrawModel(model, raylib::Vector3(0.0f, 0.0f, 0.0f), 1.0f, WHITE);
+        DrawModel(model, raylib::Vector3(0.0f, 0.0f, 0.0f), 1.0f, RED);
 
         camera.EndMode3D();
 
