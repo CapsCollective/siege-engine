@@ -6,6 +6,8 @@ EntityStorage* EntityStorage::instance;
 
 void EntityStorage::Register(Entity* entity)
 {
+    if (!entity) return;
+
     GenerationalIndex index = Instance()->allocator.AllocateIndex();
     entity->SetIndex(index);
 
