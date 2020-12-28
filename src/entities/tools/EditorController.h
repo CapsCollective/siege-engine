@@ -38,6 +38,10 @@ protected:
 
 private:
 
+    // Private method
+
+    void TrySelectEntity(Entity* entity);
+
     // Private fields
 
     bool isGridActive;
