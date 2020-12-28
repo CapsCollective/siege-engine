@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdint>
 #include "../Entity.h"
+#include "MessageDisplay.h"
 
 class EditorController : public Entity
 {
@@ -12,7 +13,8 @@ public:
 
     // Constructors
 
-    explicit EditorController(raylib::Camera3D* camera) :
+    explicit EditorController(raylib::Camera3D* camera, MessageDisplay* display) :
+    messageDisplay(display),
     selectedEntity(nullptr),
     camera(camera),
     moveDistance(0.5f),
@@ -47,6 +49,7 @@ private:
     Entity* selectedEntity;
 
     size_t lastIndex;
+    MessageDisplay* messageDisplay;
 };
 
 

@@ -7,13 +7,15 @@ void EditorController::OnUpdate()
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
-    if (IsKeyPressed(KEY_G)) isGridActive = !isGridActive;
+    if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_G))
+    {
+        isGridActive = !isGridActive;
+        messageDisplay->DisplayMessage("Grid display toggled");
+    }
 
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        if (!camera) return;
-
         // Get the ray cast by the mouse position
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
@@ -63,12 +65,14 @@ void EditorController::OnUpdate()
         {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
+            messageDisplay->DisplayMessage("Entity deleted");
         }
 
         // Duplicate the entity if D is pressed
         if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_D))
         {
             EntityStorage::Register(selectedEntity->Clone());
+            messageDisplay->DisplayMessage("Entity duplicated");
         }
     }
 }
