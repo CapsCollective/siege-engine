@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "../ResourceManager.h"
 
 void Player::OnUpdate()
 {
@@ -18,9 +19,27 @@ void Player::OnUpdate()
 
 void Player::OnDraw()
 {
-    // Draw player to current position
-    DrawCube(position, 2.f, 2.f, 2.f, RED);
-    DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
+    auto model = ResourceManager::GetRef<raylib::Model>(modelData.modelName);
+    model->materials[0].maps[MAP_DIFFUSE].texture = ResourceManager::Get<raylib::Texture2D>(modelData.textureName);
+
+    DrawModelEx
+    (
+        ResourceManager::Get<raylib::Model>(modelData.modelName),
+        position,
+        raylib::Vector3::Zero(),
+        0.0f,
+        raylib::Vector3(1.0f, 1.0f, 1.0f),
+        RED
+    );
+    DrawModelWiresEx
+    (
+        ResourceManager::Get<raylib::Model>(modelData.modelName),
+        position,
+        raylib::Vector3::Zero(),
+        0.0f,
+        raylib::Vector3(1.0f, 1.0f, 1.0f),
+        MAROON
+    );
 }
 
 void Player::OnUIDraw()

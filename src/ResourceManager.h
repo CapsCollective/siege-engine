@@ -28,9 +28,15 @@ public:
     };
 
     template<typename T>
-    static T& Get(std::string path)
+    static T& Get(const std::string& path)
     {
         return *std::get<T*>(resources[path]);
+    };
+
+    template<typename T>
+    static T* GetRef(const std::string& path)
+    {
+        return std::get<T*>(resources[path]);
     };
 
 private:
