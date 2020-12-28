@@ -5,6 +5,7 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include "ResourceManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -41,10 +42,9 @@ int main(int argc, char* argv[])
         SceneLoader::LoadScene("main");
     }
 
-    raylib::Model model = raylib::Model("assets/models/cube/cube.obj");
-    raylib::Texture2D texture = raylib::Texture2D("assets/models/cube/CubeTexture.png");
-
-    model.materials[0].maps[MAP_DIFFUSE].texture = texture;
+    ResourceManager::Register<raylib::Model>("cube.obj", "assets/models/cube/cube.obj");
+    ResourceManager::Register<raylib::Texture2D>("CubeTexture.png", "assets/models/cube/CubeTexture.png");
+    ResourceManager::Get<raylib::Model>("cube.obj").materials[0].maps[MAP_DIFFUSE].texture = ResourceManager::Get<raylib::Texture2D>("CubeTexture.png");
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
@@ -71,8 +71,19 @@ int main(int argc, char* argv[])
             entity->OnDraw();
         }
 
-        DrawModelEx(model, raylib::Vector3::Zero(), raylib::Vector3::Zero(), 0.0f, raylib::Vector3(1.0f, 1.0f, 1.0f), RED);
-        DrawModelWiresEx(model, raylib::Vector3::Zero(), raylib::Vector3::Zero(), 0.0f, raylib::Vector3(1.0f, 1.0f, 1.0f), BLACK);
+        DrawModelEx(ResourceManager::Get<raylib::Model>("cube.obj"),
+                raylib::Vector3::Zero(), raylib::Vector3::Zero(),
+                0.0f,
+                raylib::Vector3(1.0f, 1.0f, 1.0f),
+                RED
+        );
+        DrawModelWiresEx(ResourceManager::Get<raylib::Model>("cube.obj"),
+                raylib::Vector3::Zero(),
+                raylib::Vector3::Zero(),
+                0.0f,
+                raylib::Vector3(1.0f, 1.0f, 1.0f),
+                BLACK
+        );
 
         camera.EndMode3D();
 
