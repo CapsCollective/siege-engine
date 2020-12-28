@@ -19,3 +19,8 @@ raylib::Vector3 Geometry::GetDimensions()
 {
     return dimensions;
 }
+
+Entity* Geometry::Clone()
+{
+    return new Geometry(position, dimensions);
+}

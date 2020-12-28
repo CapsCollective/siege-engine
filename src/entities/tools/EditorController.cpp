@@ -1,10 +1,9 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
-#include "../Geometry.h"
 
 void EditorController::OnUpdate()
 {
-    if (IsKeyDown(KEY_LEFT_SUPER) || !camera) return;
+    if (!camera) return;
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
@@ -20,7 +19,7 @@ void EditorController::OnUpdate()
 
         // Check if any entities fall within the ray and set them as selected
         selectedEntity = nullptr;
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto &entity : EntityStorage::GetEntities())
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
@@ -30,17 +29,10 @@ void EditorController::OnUpdate()
         }
     }
 
-    // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
-    if (IsKeyPressed(KEY_EQUAL)) {
-        EntityStorage::Register(new Geometry(
-                raylib::Vector3::Zero(),
-                raylib::Vector3(5.f, 0.1f, 5.f)));
-    }
-
     // Cycle through all entities
-    if (IsKeyPressed(KEY_TAB)) 
+    if (IsKeyPressed(KEY_TAB))
     {
-        if (!selectedEntity) 
+        if (!selectedEntity)
         {
             // Select the first packed entity by index
             selectedEntity = EntityStorage::GetEntities()[lastIndex = 0];
@@ -67,9 +59,16 @@ void EditorController::OnUpdate()
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
 
         // Free the entity if backspace is pressed
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
+        }
+
+        // Duplicate the entity if D is pressed
+        if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_D))
+        {
+            EntityStorage::Register(selectedEntity->Clone());
         }
     }
 }

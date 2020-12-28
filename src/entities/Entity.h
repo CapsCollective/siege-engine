@@ -5,7 +5,7 @@
 #include <Vector3.hpp>
 #include "../entity_system/IndexAllocator.h"
 
-class Entity 
+class Entity
 {
 public:
 
@@ -20,6 +20,8 @@ public:
     virtual BoundingBox GetBoundingBox();
 
     // Public methods
+
+    virtual Entity* Clone();
 
     void QueueFree(bool forceFree = false);
 
