@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_ENTITY_H
 
 #include <string>
-#include <Vector3.hpp>
+#include <raylib-cpp.hpp>
 #include "../entity_system/IndexAllocator.h"
 
 class Entity

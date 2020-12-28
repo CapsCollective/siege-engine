@@ -71,20 +71,6 @@ int main(int argc, char* argv[])
             entity->OnDraw();
         }
 
-        DrawModelEx(ResourceManager::Get<raylib::Model>("cube.obj"),
-                raylib::Vector3::Zero(), raylib::Vector3::Zero(),
-                0.0f,
-                raylib::Vector3(1.0f, 1.0f, 1.0f),
-                RED
-        );
-        DrawModelWiresEx(ResourceManager::Get<raylib::Model>("cube.obj"),
-                raylib::Vector3::Zero(),
-                raylib::Vector3::Zero(),
-                0.0f,
-                raylib::Vector3(1.0f, 1.0f, 1.0f),
-                BLACK
-        );
-
         camera.EndMode3D();
 
         // Begin drawing UI to screen
