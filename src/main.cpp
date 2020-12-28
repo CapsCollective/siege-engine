@@ -60,13 +60,6 @@ int main(int argc, char* argv[])
         // Entity creation is deferred until after the update loop
         EntityStorage::RegisterEntities();
 
-        // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
-        if (isEditorMode && IsKeyPressed(KEY_EQUAL)) {
-            EntityStorage::Register(new Geometry(
-                    raylib::Vector3::Zero(),
-                    raylib::Vector3(5.f, 0.1f, 5.f)));
-        }
-
         // Begin drawing to screen
         window.BeginDrawing();
         bg.ClearBackground();

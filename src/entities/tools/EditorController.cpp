@@ -1,5 +1,6 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
+#include "../Geometry.h"
 
 void EditorController::OnUpdate()
 {
@@ -29,6 +30,13 @@ void EditorController::OnUpdate()
         }
     }
 
+    // TODO THIS IS A TEST METHOD - PLEASE REMOVE WHEN ENTITY REMOVAL IS FULLY OPERATIONAL.
+    if (IsKeyPressed(KEY_EQUAL)) {
+        EntityStorage::Register(new Geometry(
+                raylib::Vector3::Zero(),
+                raylib::Vector3(5.f, 0.1f, 5.f)));
+    }
+
     // Cycle through all entities
     if (IsKeyPressed(KEY_TAB)) 
     {
@@ -36,7 +44,7 @@ void EditorController::OnUpdate()
         {
             // Select the first packed entity by index
             selectedEntity = EntityStorage::GetEntities()[lastIndex = 0];
-        } 
+        }
         else
         {
             // Increment and select the next entity index
@@ -49,8 +57,11 @@ void EditorController::OnUpdate()
     {
         // Calculate move from input
         raylib::Vector3 move = raylib::Vector3::Zero();
-        move.z = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
         move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
+
+        // Switch vertical move input between z and y axis based on shift key down
+        float verticalMove = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
+        IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
 
         // Apply the move to the position of the entity
         selectedEntity->SetPosition(selectedEntity->GetPosition() + move);

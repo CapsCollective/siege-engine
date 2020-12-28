@@ -14,6 +14,7 @@ void FreeCam::OnUpdate()
     // Set previous mouse position
     previousMousePosition = mousePosition;
 
+    // TODO fix bug where camera resets on rmb click sometimes
     if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
     {
         // Begin the click, hide the cursor
