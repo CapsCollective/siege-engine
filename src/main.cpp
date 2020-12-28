@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     );
 
     // Instantiate world objects as per mode options
-    // TODO update to use service locator for common Entities
+    // TODO update to use service locator for common entities
     auto display = new MessageDisplay();
     auto console = new DevConsole(isEditorMode, display);
     EntityStorage::Register(display);

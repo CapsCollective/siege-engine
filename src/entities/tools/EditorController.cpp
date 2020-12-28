@@ -25,7 +25,7 @@ void EditorController::OnUpdate()
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
-                selectedEntity = entity;
+                TrySelectEntity(entity);
                 break;
             }
         }
@@ -36,18 +36,14 @@ void EditorController::OnUpdate()
     {
         // Select the first packed entity by index
         int totalEntities = EntityStorage::GetEntities().size();
-        size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
+        size_t startIdx = selectedIdx = !selectedEntity ? 0 : selectedIdx + 1 % totalEntities;
         do {
-            // Get a reference to the selected entity and return it if serialisable
-            selectedEntity = EntityStorage::GetPackedEntity(selectedIdx);
-            if (selectedEntity->IsSerialisable()) break;
-            else
-            {
-                // Otherwise increment and select the next entity
-                selectedIdx = ++selectedIdx % totalEntities;
-                selectedEntity = nullptr;
-            }
+            // Try select the entity
+            TrySelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
+            // If valid, break the loop, or select the next entity
+            if (selectedEntity) break;
+            else selectedIdx = selectedIdx + 1 % totalEntities;
         } while (selectedIdx != startIdx);
     }
 
@@ -114,4 +110,11 @@ void EditorController::OnUIDraw()
              (int) cubeScreenPosition.y, 20, PINK);
     DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
              (int) cubeScreenPosition.y + 20, 18, PINK);
+}
+
+void EditorController::TrySelectEntity(Entity *entity)
+{
+    // Prevent selection of entities that are not serialisable
+    if (entity && !entity->IsSerialisable()) entity = nullptr;
+    selectedEntity = entity;
 }
