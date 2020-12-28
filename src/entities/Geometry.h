@@ -22,6 +22,8 @@ public:
 
     // Public overrides
 
+    Entity* Clone() override;
+
     BoundingBox GetBoundingBox() override;
 
     // Public methods
