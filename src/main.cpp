@@ -5,7 +5,7 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
-#include "ResourceManager.h"
+#include "resources/ResourceManager.h"
 
 int main(int argc, char* argv[])
 {
