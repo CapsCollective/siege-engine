@@ -1,14 +1,14 @@
+#include "../resources/ResourceManager.h"
+#include "../entity_system/EntityStorage.h"
+#include "../entities/Geometry.h"
+#include "../entities/Player.h"
+#include "SceneLoader.h"
+#include "HelperFuncs.h"
 #include <iostream>
 #include <fstream>
 #include <utility>
 #include <vector>
-#include "SceneLoader.h"
-#include "../entity_system/EntityStorage.h"
-#include "../entities/Geometry.h"
-#include "../entities/Player.h"
-#include "HelperFuncs.h"
-#include "../resources/ResourceManager.h"
-#include "../resources/ModelData.h"
+
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
@@ -29,8 +29,8 @@ void SceneLoader::SaveScene(const std::string& sceneName)
         }
         else if (entity->GetName() == "Player")
         {
-            fileData += dynamic_cast<Player *>(entity)->GetModelData().GetModelPath() + ";";
-            fileData += dynamic_cast<Player *>(entity)->GetModelData().GetTexturePath() + ";";
+            fileData += dynamic_cast<Player*>(entity)->GetModelData().GetModelPath() + ";";
+            fileData += dynamic_cast<Player*>(entity)->GetModelData().GetTexturePath() + ";";
         }
 
         // Add new line as entity delimiter
@@ -89,7 +89,7 @@ bool SceneLoader::LoadScene(const std::string& sceneName)
             ResourceManager::Register<raylib::Model>(modelPath);
             ResourceManager::Register<raylib::Texture2D>(texturePath);
 
-            EntityStorage::Register(new Player(position, ModelData(modelPath, texturePath)));
+            EntityStorage::Register(new Player(position,ModelData( modelPath, texturePath)));
         }
         else
         {
