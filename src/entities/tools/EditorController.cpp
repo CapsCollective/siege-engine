@@ -36,14 +36,14 @@ void EditorController::OnToolUpdate()
     {
         // Select the first packed entity by index
         int totalEntities = EntityStorage::GetEntities().size();
-        size_t startIdx = selectedIdx = !selectedEntity ? 0 : selectedIdx + 1 % totalEntities;
+        size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
         do {
             // Try select the entity
             TrySelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
             // If valid, break the loop, or select the next entity
             if (selectedEntity) break;
-            else selectedIdx = selectedIdx + 1 % totalEntities;
+            else selectedIdx = ++selectedIdx % totalEntities;
         } while (selectedIdx != startIdx);
     }
 
