@@ -6,6 +6,7 @@
 #include <cstdint>
 #include "../Entity.h"
 #include "MessageDisplay.h"
+#include "../../utils/ServiceLocator.h"
 
 class EditorController : public Entity
 {
@@ -13,10 +14,10 @@ public:
 
     // Constructors
 
-    explicit EditorController(raylib::Camera3D* camera, MessageDisplay* display) :
-    messageDisplay(display),
+    explicit EditorController() :
+    messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
-    camera(camera),
+    camera(ServiceLocator::GetCamera()),
     moveDistance(0.5f),
     isGridActive(true),
     selectedIdx(0)
