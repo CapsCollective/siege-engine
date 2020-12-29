@@ -41,11 +41,13 @@ public:
 
     static Entity* GetEntity(GenerationalIndex index) 
     {
-        // TODO comment this
+        // Check that the index is in bounds
         bool isInBounds = index.index < Instance()->entities.size();
 
+        // If the entity index is live (is still in use)
         if(isInBounds && Instance()->allocator.IsLive(index)) 
         {
+            // Return the entity
             return Instance()->entities[index.index];
         } 
         else return nullptr;

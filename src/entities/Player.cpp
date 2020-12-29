@@ -19,21 +19,25 @@ void Player::OnUpdate()
 
 void Player::OnDraw()
 {
-    auto model = ResourceManager::GetRef<raylib::Model>(modelData.modelName);
-    model->materials[0].maps[MAP_DIFFUSE].texture = ResourceManager::Get<raylib::Texture2D>(modelData.textureName);
+    // Set the model's texture to this entity's texture
+    ModelData::SetTexture(ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+            ResourceManager::Get<raylib::Texture2D>(modelData.GetTexturePath()));
 
+    // Draw the model
     DrawModelEx
     (
-        ResourceManager::Get<raylib::Model>(modelData.modelName),
+        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
         0.0f,
         raylib::Vector3(1.0f, 1.0f, 1.0f),
         RED
     );
+
+    // Draw the model with wireframe
     DrawModelWiresEx
     (
-        ResourceManager::Get<raylib::Model>(modelData.modelName),
+        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
         0.0f,
@@ -53,4 +57,9 @@ BoundingBox Player::GetBoundingBox()
             position - raylib::Vector3::One(),
             position + raylib::Vector3::One(),
     };
+}
+
+const ModelData& Player::GetModelData()
+{
+    return modelData;
 }
