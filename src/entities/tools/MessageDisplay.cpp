@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 28/12/20.
-//
-
 #include "MessageDisplay.h"
 
 void MessageDisplay::OnUIDraw()

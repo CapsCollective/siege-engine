@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 29/12/20.
-//
-
 #ifndef A_DARK_DISCOMFORT_SERVICELOCATOR_H
 #define A_DARK_DISCOMFORT_SERVICELOCATOR_H
 
