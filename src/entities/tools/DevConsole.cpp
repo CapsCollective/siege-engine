@@ -4,11 +4,12 @@
 
 void DevConsole::OnToolUpdate()
 {
-    // TODO move scene loading responsibilities out of dev console
+    if (!messageDisplay) return;
+
     if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_S))
     {
         // Save the current scene
-        SceneLoader::SaveScene(currentScene);
+        SceneLoader::SaveScene();
         messageDisplay->DisplayMessage("Scene saved");
     }
 
@@ -47,12 +48,11 @@ void DevConsole::OnToolUpdate()
                 if (!argument.empty())
                 {
                     // Try load the scene specified
-                    currentScene = argument;
-                    if (SceneLoader::LoadScene(currentScene))
+                    if (SceneLoader::LoadScene(argument))
                     {
-                        messageDisplay->DisplayMessage(currentScene + ".scene loaded");
+                        messageDisplay->DisplayMessage(argument + ".scene loaded");
                     }
-                    else messageDisplay->DisplayMessage(currentScene + ".scene not found");
+                    else messageDisplay->DisplayMessage(argument + ".scene not found");
                 }
                 else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
             }
@@ -61,11 +61,16 @@ void DevConsole::OnToolUpdate()
                 if (SystemStatics::IsEditorMode())
                 {
                     // Save the scene as the current scene name (or untitled if argument blank)
-                    currentScene = argument.empty() ? "untitled" : argument;
-                    SceneLoader::SaveScene(currentScene);
+                    SceneLoader::SaveScene(argument);
                     messageDisplay->DisplayMessage("Scene saved");
                 }
                 else messageDisplay->DisplayMessage("Cannot save from play mode");
+            }
+            else if (command == "new")
+            {
+                // Open a new, untitled scene
+                SceneLoader::NewScene();
+                messageDisplay->DisplayMessage("Created new scene");
             }
             else
             {
@@ -95,9 +100,4 @@ void DevConsole::OnUIDraw()
         DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
         DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
     }
-}
-
-bool DevConsole::IsActive() const
-{
-    return isActive;
 }

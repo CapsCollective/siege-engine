@@ -13,17 +13,12 @@ public:
 
     explicit DevConsole() :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
-    isActive(false),
-    currentScene("main")
+    isActive(false)
     {
         Entity::SetName("DevConsole");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
     };
-
-    // Public methods
-
-    bool IsActive() const;
 
 protected:
 
@@ -38,8 +33,6 @@ private:
     // Private fields
 
     bool isActive;
-
-    std::string currentScene;
 
     std::string inputText;
 

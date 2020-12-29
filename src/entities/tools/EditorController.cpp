@@ -3,7 +3,7 @@
 
 void EditorController::OnToolUpdate()
 {
-    if (!camera) return;
+    if (!camera || !messageDisplay) return;
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
