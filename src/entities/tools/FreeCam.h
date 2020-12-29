@@ -27,7 +27,7 @@ protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnToolUpdate() override;
 
 private:
 

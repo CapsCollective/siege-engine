@@ -1,13 +1,13 @@
-#include "HelperFuncs.h"
+#include "StringHelpers.h"
 
-std::string HelperFuncs::VectorToString(raylib::Vector3 vector)
+std::string StringHelpers::VectorToString(raylib::Vector3 vector)
 {
     return std::to_string(vector.x) + "," +
            std::to_string(vector.y) + "," +
            std::to_string(vector.z) + ",";
 }
 
-raylib::Vector3 HelperFuncs::StringToVector(std::string string)
+raylib::Vector3 StringHelpers::StringToVector(std::string string)
 {
     std::vector<std::string> components = SplitString(std::move(string), ',');
     return {
@@ -17,7 +17,7 @@ raylib::Vector3 HelperFuncs::StringToVector(std::string string)
     };
 }
 
-std::vector<std::string> HelperFuncs::SplitString(std::string string, char delimiter)
+std::vector<std::string> StringHelpers::SplitString(std::string string, char delimiter)
 {
     // Iterate over the string while there is still a delimiter
     int delimiterPos;

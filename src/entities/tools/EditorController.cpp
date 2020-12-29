@@ -1,19 +1,21 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
 
-void EditorController::OnUpdate()
+void EditorController::OnToolUpdate()
 {
-    if (!camera) return;
+    if (!camera || !messageDisplay) return;
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
-    if (IsKeyPressed(KEY_G)) isGridActive = !isGridActive;
+    if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_G))
+    {
+        isGridActive = !isGridActive;
+        messageDisplay->DisplayMessage("Grid display toggled");
+    }
 
     // Check for mouse clicks
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        if (!camera) return;
-
         // Get the ray cast by the mouse position
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
@@ -23,7 +25,7 @@ void EditorController::OnUpdate()
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
-                selectedEntity = entity;
+                TrySelectEntity(entity);
                 break;
             }
         }
@@ -32,17 +34,17 @@ void EditorController::OnUpdate()
     // Cycle through all entities
     if (IsKeyPressed(KEY_TAB))
     {
-        if (!selectedEntity)
-        {
-            // Select the first packed entity by index
-            selectedEntity = EntityStorage::GetEntities()[lastIndex = 0];
-        }
-        else
-        {
-            // Increment and select the next entity index
-            lastIndex = ++lastIndex % EntityStorage::GetEntities().size();
-            selectedEntity = EntityStorage::GetEntities()[lastIndex];
-        }
+        // Select the first packed entity by index
+        int totalEntities = EntityStorage::GetEntities().size();
+        size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
+        do {
+            // Try select the entity
+            TrySelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+
+            // If valid, break the loop, or select the next entity
+            if (selectedEntity) break;
+            else selectedIdx = ++selectedIdx % totalEntities;
+        } while (selectedIdx != startIdx);
     }
 
     if (selectedEntity)
@@ -63,12 +65,14 @@ void EditorController::OnUpdate()
         {
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
+            messageDisplay->DisplayMessage("Entity deleted");
         }
 
         // Duplicate the entity if D is pressed
         if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_D))
         {
             EntityStorage::Register(selectedEntity->Clone());
+            messageDisplay->DisplayMessage("Entity duplicated");
         }
     }
 }
@@ -106,4 +110,11 @@ void EditorController::OnUIDraw()
              (int) cubeScreenPosition.y, 20, PINK);
     DrawText(posLabel,(int) cubeScreenPosition.x - MeasureText(posLabel, 18)/2,
              (int) cubeScreenPosition.y + 20, 18, PINK);
+}
+
+void EditorController::TrySelectEntity(Entity *entity)
+{
+    // Prevent selection of entities that are not serialisable
+    if (entity && !entity->IsSerialisable()) entity = nullptr;
+    selectedEntity = entity;
 }

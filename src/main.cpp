@@ -1,15 +1,20 @@
-#include <raylib-cpp.hpp>
-#include "entities/Geometry.h"
 #include "entities/tools/EditorController.h"
 #include "entity_system/EntityStorage.h"
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include "utils/ServiceLocator.h"
+#include "utils/SystemStatics.h"
+#include <Vector3.hpp>
+#include <Window.hpp>
+#include <Color.hpp>
+#include <Camera3D.hpp>
 
 int main(int argc, char* argv[])
 {
     // Check for editor flag
     bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
+    SystemStatics::SetIsEditorMode(isEditorMode);
 
     // Initialise window
     raylib::Color bg = RAYWHITE;
@@ -27,13 +32,21 @@ int main(int argc, char* argv[])
             45.f,
             CAMERA_PERSPECTIVE
     );
+    ServiceLocator::Provide(&camera);
+
+    // Initialise and register the message display
+    MessageDisplay display = MessageDisplay();
+    ServiceLocator::Provide(&display);
+    EntityStorage::Register(&display);
+
+    // Initialise and register the dev console
+    DevConsole console = DevConsole();
+    EntityStorage::Register(&console);
 
     // Instantiate world objects as per mode options
-    auto console = new DevConsole(isEditorMode);
-    EntityStorage::Register(console);
     if (isEditorMode)
     {
-        EntityStorage::Register(new EditorController(&camera));
+        EntityStorage::Register(new EditorController());
         EntityStorage::Register(new FreeCam(&camera));
     }
     else
@@ -47,8 +60,11 @@ int main(int argc, char* argv[])
         // Update entities
         for (auto& entity : EntityStorage::GetEntities())
         {
-            // Turn off updating if the console is active
-            if (console->IsActive() && entity != console) continue;
+            // Run editor tool updates
+            entity->OnToolUpdate();
+
+            // Turn off standard updates in editor mode
+            if (isEditorMode) continue;
             entity->OnUpdate();
         }
 

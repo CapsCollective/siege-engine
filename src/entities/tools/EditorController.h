@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdint>
 #include "../Entity.h"
+#include "MessageDisplay.h"
+#include "../../utils/ServiceLocator.h"
 
 class EditorController : public Entity
 {
@@ -12,12 +14,13 @@ public:
 
     // Constructors
 
-    explicit EditorController(raylib::Camera3D* camera) :
+    explicit EditorController() :
+    messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
-    camera(camera),
+    camera(ServiceLocator::GetCamera()),
     moveDistance(0.5f),
     isGridActive(true),
-    lastIndex(0)
+    selectedIdx(0)
     {
         Entity::SetName("EditorController");
         Entity::SetFreeable(false);
@@ -28,7 +31,7 @@ protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnToolUpdate() override;
 
     void OnDraw() override;
 
@@ -36,17 +39,23 @@ protected:
 
 private:
 
+    // Private method
+
+    void TrySelectEntity(Entity* entity);
+
     // Private fields
 
     bool isGridActive;
 
     float moveDistance;
 
+    size_t selectedIdx;
+
     raylib::Camera3D* camera;
 
     Entity* selectedEntity;
 
-    size_t lastIndex;
+    MessageDisplay* messageDisplay;
 };
 
 
