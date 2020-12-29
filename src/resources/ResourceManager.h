@@ -7,15 +7,16 @@
 #include <string>
 #include <iostream>
 
-#define RESOURCEMAP std::map<std::string, std::variant<raylib::Model*, raylib::Texture2D*>>
+#define RESOURCE_MAP std::map<std::string, std::variant<raylib::Model*, raylib::Texture2D*>>
 
 class ResourceManager
 {
-
 public:
 
+    // Public functions
+
     template<typename T>
-    static void Register(std::string path)
+    static void Register(const std::string& path)
     {
         if (resources.find(path) != resources.end()) return;
 
@@ -36,7 +37,9 @@ public:
 
 private:
 
-    static RESOURCEMAP resources;
+    // Private fields
+
+    static RESOURCE_MAP resources;
 };
 
 

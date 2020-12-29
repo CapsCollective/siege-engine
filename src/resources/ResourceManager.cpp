@@ -1,3 +1,3 @@
 #include "ResourceManager.h"
 
-RESOURCEMAP ResourceManager::resources = RESOURCEMAP();
+RESOURCE_MAP ResourceManager::resources = RESOURCE_MAP();

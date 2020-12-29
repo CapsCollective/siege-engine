@@ -24,8 +24,7 @@ void Player::OnDraw()
             ResourceManager::Get<raylib::Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
-    DrawModelEx
-    (
+    DrawModelEx (
         ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
@@ -34,9 +33,8 @@ void Player::OnDraw()
         RED
     );
 
-    // Draw the model with wireframe
-    DrawModelWiresEx
-    (
+    // Draw the model wireframe
+    DrawModelWiresEx (
         ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
