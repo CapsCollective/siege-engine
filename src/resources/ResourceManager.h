@@ -14,17 +14,12 @@ class ResourceManager
 
 public:
 
-    RESOURCEMAP& GetResourceMap()
-    {
-        return resources;
-    }
-
     template<typename T>
-    static void Register(std::string name, std::string path)
+    static void Register(std::string path)
     {
-        if (resources.find(name) != resources.end()) return;
+        if (resources.find(path) != resources.end()) return;
 
-        resources.insert({name, new T(path)});
+        resources.insert({path, new T(path)});
     };
 
     template<typename T>

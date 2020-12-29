@@ -1,22 +1,27 @@
 #include "ModelData.h"
 
-void ModelData::SetModel(const std::string& path, const std::string& name)
+void ModelData::SetModelPath(const std::string& path)
 {
     modelPath = path;
-    modelName = name;
 }
 
-void ModelData::SetTexture(const std::string& path, const std::string& name) {
+void ModelData::SetTexturePath(const std::string& path)
+{
     texturePath = path;
-    textureName = name;
 }
 
-std::pair<std::string, std::string> ModelData::GetModelData()
+const std::string& ModelData::GetModelPath() const
 {
-    return {modelPath, modelName};
+    return modelPath;
 }
 
-std::pair<std::string, std::string> ModelData::GetTextureData()
+const std::string& ModelData::GetTexturePath() const
 {
-    return {texturePath, textureName};
+    return texturePath;
 }
+
+void ModelData::SetTexture(raylib::Model& model, raylib::Texture2D& texture) {
+    model.materials[0].maps[MAP_DIFFUSE].texture = texture;
+}
+
+

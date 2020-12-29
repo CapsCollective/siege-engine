@@ -8,33 +8,35 @@ class ModelData {
 
 public:
 
-    explicit ModelData(const std::string& modelPath, const std::string& modelName, const std::string& texturePath,
-              const std::string& textureName) :
-              modelPath(modelPath),
-              modelName(modelName),
-              texturePath(texturePath),
-              textureName(textureName) {};
+    ModelData(std::string  modelPath, std::string  texturePath) :
+    modelPath(std::move(modelPath)), texturePath(std::move(texturePath))
+    {};
+
+    ModelData() :
+    modelPath(""), texturePath("")
+    {};
+
+    ModelData(const ModelData& other) {
+        this->modelPath = other.modelPath;
+        this->texturePath = other.texturePath;
+    }
 
     ~ModelData() = default;
 
-    void SetModel(const std::string&, const std::string&);
-    void SetTexture(const std::string&, const std::string&);
+    void SetModelPath(const std::string&);
+    void SetTexturePath(const std::string&);
 
-    std::pair<std::string, std::string> GetModelData();
-    std::pair<std::string, std::string> GetTextureData();
+    const std::string& GetModelPath() const;
+    const std::string& GetTexturePath() const;
+
+    static void SetTexture(raylib::Model&, raylib::Texture2D&);
 
 private:
-
     // Model Metadata
     std::string modelPath;
-    std::string modelName;
 
     // Texture Metadata
     std::string texturePath;
-    std::string textureName;
-
-    raylib::Model* model;
-    raylib::Texture2D* texture;
 };
 
 

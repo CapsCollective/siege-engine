@@ -7,6 +7,8 @@
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
 #include "HelperFuncs.h"
+#include "../resources/ResourceManager.h"
+#include "../resources/ModelData.h"
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
@@ -20,11 +22,15 @@ void SceneLoader::SaveScene(const std::string& sceneName)
         // Add its name and position to the data
         fileData += (entity->GetName() + ";" + HelperFuncs::VectorToString(entity->GetPosition()) + ";");
 
-
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
             fileData += HelperFuncs::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+        }
+        else if (entity->GetName() == "Player")
+        {
+            fileData += dynamic_cast<Player *>(entity)->GetModelData().GetModelPath() + ";";
+            fileData += dynamic_cast<Player *>(entity)->GetModelData().GetTexturePath() + ";";
         }
 
         // Add new line as entity delimiter
@@ -77,7 +83,13 @@ bool SceneLoader::LoadScene(const std::string& sceneName)
         }
         else if (args[ENTITY_NAME] == "Player")
         {
-            EntityStorage::Register(new Player(position));
+            std::string modelPath = args[CUSTOM_FIELD_1];
+            std::string texturePath = args[CUSTOM_FIELD_2];
+
+            ResourceManager::Register<raylib::Model>(modelPath);
+            ResourceManager::Register<raylib::Texture2D>(texturePath);
+
+            EntityStorage::Register(new Player(position, ModelData(modelPath, texturePath)));
         }
         else
         {

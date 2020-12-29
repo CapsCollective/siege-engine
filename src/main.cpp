@@ -5,7 +5,6 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
-#include "resources/ResourceManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -41,10 +40,6 @@ int main(int argc, char* argv[])
     {
         SceneLoader::LoadScene("main");
     }
-
-    ResourceManager::Register<raylib::Model>("cube.obj", "assets/models/cube/cube.obj");
-    ResourceManager::Register<raylib::Texture2D>("CubeTexture.png", "assets/models/cube/CubeTexture.png");
-    ResourceManager::Get<raylib::Model>("cube.obj").materials[0].maps[MAP_DIFFUSE].texture = ResourceManager::Get<raylib::Texture2D>("CubeTexture.png");
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
