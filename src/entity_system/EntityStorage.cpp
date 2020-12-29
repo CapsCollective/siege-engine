@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <algorithm>
 
+// Static members
+
 EntityStorage* EntityStorage::instance;
 
 void EntityStorage::Register(Entity* entity)

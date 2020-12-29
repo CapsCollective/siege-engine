@@ -1,11 +1,11 @@
-#ifndef A_DARK_DISCOMFORT_HELPERFUNCS_H
-#define A_DARK_DISCOMFORT_HELPERFUNCS_H
+#ifndef A_DARK_DISCOMFORT_STRINGHELPERS_H
+#define A_DARK_DISCOMFORT_STRINGHELPERS_H
 
 #include <string>
 #include <Vector3.hpp>
 #include <vector>
 
-namespace HelperFuncs
+namespace StringHelpers
 {
     std::string VectorToString(raylib::Vector3 vector);
 
@@ -15,4 +15,4 @@ namespace HelperFuncs
 };
 
 
-#endif //A_DARK_DISCOMFORT_HELPERFUNCS_H
+#endif //A_DARK_DISCOMFORT_STRINGHELPERS_H

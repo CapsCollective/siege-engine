@@ -2,6 +2,8 @@
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
 #include "../Entity.h"
+#include "MessageDisplay.h"
+#include "../../utils/ServiceLocator.h"
 
 class DevConsole : public Entity
 {
@@ -9,50 +11,34 @@ public:
 
     // Constructors
 
-    explicit DevConsole(bool isEditorMode) :
-    isActive(false),
-    isEditorMode(isEditorMode),
-    displayTime(0.f),
-    currentScene("main")
+    explicit DevConsole() :
+    messageDisplay(ServiceLocator::GetMessageDisplay()),
+    isActive(false)
     {
         Entity::SetName("DevConsole");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
     };
 
-    // Public methods
-
-    bool IsActive() const;
-
 protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnToolUpdate() override;
 
     void OnUIDraw() override;
 
 private:
 
-    // Private methods
-
-    void DisplayMessage(const std::string& message, float displayTime);
-
     // Private fields
 
-    bool isEditorMode;
-
     bool isActive;
-
-    float displayTime;
-
-    std::string currentScene;
-
-    std::string displayMessage;
 
     std::string inputText;
 
     std::string lastInput;
+
+    MessageDisplay* messageDisplay;
 };
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H

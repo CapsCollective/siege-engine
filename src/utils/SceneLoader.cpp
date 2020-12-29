@@ -2,15 +2,46 @@
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
+#include "StringHelpers.h"
 #include "SceneLoader.h"
-#include "HelperFuncs.h"
 #include <iostream>
 #include <fstream>
 #include <utility>
 #include <vector>
 
+// Static members
+
+std::string SceneLoader::currentScene;
+
+void SceneLoader::NewScene()
+{
+    // Clear the current scene and reset current scene
+    ClearScene();
+    currentScene = "untitled";
+}
+
+void SceneLoader::SaveScene()
+{
+    // Save the scene as the current scene or untitled
+    SaveScene(currentScene.empty() ? "untitled" : currentScene);
+}
 
 void SceneLoader::SaveScene(const std::string& sceneName)
+{
+    // Serialise the scene by name and set it as current
+    SerialiseScene(sceneName);
+    currentScene = sceneName;
+}
+
+bool SceneLoader::LoadScene(const std::string& sceneName)
+{
+    // Try deserialise the scene by name and set it as current if successful
+    bool result = DeserialiseScene(sceneName);
+    if (result) currentScene = sceneName;
+    return result;
+}
+
+void SceneLoader::SerialiseScene(const std::string& sceneName)
 {
     // Iterate over each entity in the scene
     std::string fileData;
@@ -20,12 +51,12 @@ void SceneLoader::SaveScene(const std::string& sceneName)
         if (!entity->IsSerialisable()) continue;
 
         // Add its name and position to the data
-        fileData += (entity->GetName() + ";" + HelperFuncs::VectorToString(entity->GetPosition()) + ";");
+        fileData += (entity->GetName() + ";" + StringHelpers::VectorToString(entity->GetPosition()) + ";");
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += HelperFuncs::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
         }
         else if (entity->GetName() == "Player")
         {
@@ -43,18 +74,14 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     fileStream.close();
 }
 
-bool SceneLoader::LoadScene(const std::string& sceneName)
+bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 {
     // Begin the loading process, open the file for streaming
     std::ifstream file("./assets/scenes/" + sceneName + ".scene");
     if (!file.is_open()) return false;
 
-    // Free all current entities from storage
-    for (auto entity : EntityStorage::GetEntities())
-    {
-        // Need to queue here since we can't modify a list while using it
-        entity->QueueFree();
-    }
+    // Free all current items from storage
+    ClearScene();
 
     // Iterate over each line of the file
     std::string line;
@@ -70,15 +97,15 @@ bool SceneLoader::LoadScene(const std::string& sceneName)
         };
 
         // Split the line into arguments
-        std::vector<std::string> args = HelperFuncs::SplitString(line, ';');
+        std::vector<std::string> args = StringHelpers::SplitString(line, ';');
 
         // Calculate the position of the entity
-        raylib::Vector3 position = HelperFuncs::StringToVector(args[ENTITY_POS]);
+        raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")
         {
-            raylib::Vector3 dimensions = HelperFuncs::StringToVector(args[CUSTOM_FIELD_1]);
+            raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
             EntityStorage::Register(new Geometry(position, dimensions));
         }
         else if (args[ENTITY_NAME] == "Player")
@@ -101,5 +128,15 @@ bool SceneLoader::LoadScene(const std::string& sceneName)
     // Close the file stream
     file.close();
     return true;
+}
+
+void SceneLoader::ClearScene()
+{
+    // Free all current entities from storage
+    for (auto entity : EntityStorage::GetEntities())
+    {
+        // Need to queue here since we can't modify a list while using it
+        entity->QueueFree();
+    }
 }
 
