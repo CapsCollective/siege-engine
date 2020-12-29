@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 28/12/20.
-//
-
 #ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 #define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 
