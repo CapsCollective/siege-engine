@@ -3,6 +3,7 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include "utils/SystemStatics.h"
 #include <Vector3.hpp>
 #include <Window.hpp>
 #include <Color.hpp>
@@ -12,6 +13,7 @@ int main(int argc, char* argv[])
 {
     // Check for editor flag
     bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
+    SystemStatics::SetIsEditorMode(isEditorMode);
 
     // Initialise window
     raylib::Color bg = RAYWHITE;
