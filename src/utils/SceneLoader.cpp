@@ -13,6 +13,8 @@
 
 std::string SceneLoader::currentScene;
 
+// TODO add constants for field values
+
 void SceneLoader::NewScene()
 {
     // Clear the current scene and reset current scene
@@ -50,6 +52,8 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         // Check if the entity is serialisable
         if (!entity->IsSerialisable()) continue;
 
+        // TODO add labels to serialised fields
+
         // Add its name and position to the data
         fileData += (entity->GetName() + ";" + StringHelpers::VectorToString(entity->GetPosition()) + ";");
 
@@ -60,8 +64,9 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         }
         else if (entity->GetName() == "Player")
         {
-            fileData += dynamic_cast<Player*>(entity)->GetModelData().GetModelPath() + ";";
-            fileData += dynamic_cast<Player*>(entity)->GetModelData().GetTexturePath() + ";";
+            auto player = dynamic_cast<Player*>(entity);
+            fileData += player->GetModelData().GetModelPath() + ";";
+            fileData += player->GetModelData().GetTexturePath() + ";";
         }
 
         // Add new line as entity delimiter
@@ -69,7 +74,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
     }
 
     // Open a new file stream, dave the data to it and close it
-    std::ofstream fileStream("./assets/scenes/" + sceneName + ".scene");
+    std::ofstream fileStream("assets/scenes/" + sceneName + ".scene");
     fileStream << fileData;
     fileStream.close();
 }
@@ -77,7 +82,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
 bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 {
     // Begin the loading process, open the file for streaming
-    std::ifstream file("./assets/scenes/" + sceneName + ".scene");
+    std::ifstream file("assets/scenes/" + sceneName + ".scene");
     if (!file.is_open()) return false;
 
     // Free all current items from storage
@@ -132,6 +137,7 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 
 void SceneLoader::ClearScene()
 {
+    // TODO add model/texture flushing
     // Free all current entities from storage
     for (auto entity : EntityStorage::GetEntities())
     {
