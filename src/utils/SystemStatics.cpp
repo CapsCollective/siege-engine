@@ -6,4 +6,4 @@
 
 // Static members
 
-bool SystemStatics::isEditorMode;
+bool SystemStatics::isEditorMode = false;
