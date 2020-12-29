@@ -11,8 +11,9 @@ public:
 
     // Constructors
 
-    explicit DevConsole() :
+    explicit DevConsole(bool isEditorMode) :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
+    isEditorMode(isEditorMode),
     isActive(false)
     {
         Entity::SetName("DevConsole");
@@ -31,6 +32,8 @@ protected:
 private:
 
     // Private fields
+
+    bool isEditorMode;
 
     bool isActive;
 

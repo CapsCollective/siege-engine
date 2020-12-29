@@ -33,6 +33,10 @@ public:
         return std::get<T*>(resources[path]);
     };
 
+    // TODO add model removal function
+
+    // TODO add model and texture data to stack
+
 private:
 
     // Private fields

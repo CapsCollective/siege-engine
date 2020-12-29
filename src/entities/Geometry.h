@@ -41,6 +41,8 @@ private:
     // Private fields
 
     raylib::Vector3 dimensions;
+
+    // TODO add model data
 };
 
 
