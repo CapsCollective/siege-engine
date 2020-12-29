@@ -40,7 +40,7 @@ public:
 
 private:
 
-    // Private Methods and fields
+    // Private fields
 
     std::vector<IndexEntry> entries;
 
