@@ -9,6 +9,8 @@ class EntityStorage
 {
 public:
 
+    // TODO update entity storage to be fully static
+
     // Constructors
 
     EntityStorage() :
