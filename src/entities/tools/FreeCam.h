@@ -3,6 +3,7 @@
 
 #include <Camera3D.hpp>
 #include "../Entity.h"
+#include "../../utils/ServiceLocator.h"
 
 class FreeCam : public Entity
 {
@@ -10,10 +11,10 @@ public:
 
     // Constructors
 
-    explicit FreeCam(raylib::Camera3D* camera) :
+    explicit FreeCam() :
     moveSpeed(10.f),
     lookSpeed(0.1f),
-    camera(camera),
+    camera(ServiceLocator::GetCamera()),
     previousMousePosition({0.f, 0.f}),
     rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {

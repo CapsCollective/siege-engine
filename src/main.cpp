@@ -4,7 +4,6 @@
 #include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
 #include "utils/ServiceLocator.h"
-#include "utils/SystemStatics.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -14,7 +13,6 @@ int main(int argc, char* argv[])
 {
     // Check for editor flag
     bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
-    SystemStatics::SetIsEditorMode(isEditorMode);
 
     // Initialise window
     raylib::Color bg = RAYWHITE;
@@ -35,13 +33,12 @@ int main(int argc, char* argv[])
     ServiceLocator::Provide(&camera);
 
     // Initialise and register the message display
-    MessageDisplay display = MessageDisplay();
-    ServiceLocator::Provide(&display);
-    EntityStorage::Register(&display);
+    auto display = new MessageDisplay();
+    ServiceLocator::Provide(display);
+    EntityStorage::Register(display);
 
     // Initialise and register the dev console
-    DevConsole console = DevConsole();
-    EntityStorage::Register(&console);
+    EntityStorage::Register(new DevConsole(isEditorMode));
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -49,7 +46,7 @@ int main(int argc, char* argv[])
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
         EntityStorage::Register(editor);
-        EntityStorage::Register(new FreeCam(&camera));
+        EntityStorage::Register(new FreeCam());
     }
     else
     {
@@ -63,6 +60,7 @@ int main(int argc, char* argv[])
         for (auto& entity : EntityStorage::GetEntities())
         {
             // Run editor tool updates
+            // TODO separate entity storage into tools and in-game
             entity->OnToolUpdate();
 
             // Turn off standard updates in editor mode
@@ -87,6 +85,7 @@ int main(int argc, char* argv[])
         camera.EndMode3D();
 
         // Begin drawing UI to screen
+        // TODO move this into a profiling tool
         DrawFPS(10.f, 10.f);
 
         // UI Draw entities
