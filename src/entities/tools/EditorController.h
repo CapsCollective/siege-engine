@@ -1,12 +1,11 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
+#include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
 #include "../Entity.h"
-#include "MessageDisplay.h"
-#include "../../utils/ServiceLocator.h"
 
 class EditorController : public Entity
 {
@@ -27,6 +26,10 @@ public:
         Entity::SetSerialisable(false);
     };
 
+    // Public methods
+
+    void TrySelectEntity(Entity* entity);
+
 protected:
 
     // Protected overrides
@@ -38,10 +41,6 @@ protected:
     void OnUIDraw() override;
 
 private:
-
-    // Private method
-
-    void TrySelectEntity(Entity* entity);
 
     // Private fields
 
@@ -55,7 +54,7 @@ private:
 
     Entity* selectedEntity;
 
-    MessageDisplay* messageDisplay;
+    class MessageDisplay* messageDisplay;
 };
 
 

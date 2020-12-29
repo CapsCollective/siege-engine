@@ -5,10 +5,10 @@
 #include "entities/tools/DevConsole.h"
 #include "utils/ServiceLocator.h"
 #include "utils/SystemStatics.h"
+#include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
 #include <Color.hpp>
-#include <Camera3D.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -46,7 +46,9 @@ int main(int argc, char* argv[])
     // Instantiate world objects as per mode options
     if (isEditorMode)
     {
-        EntityStorage::Register(new EditorController());
+        auto editor = new EditorController();
+        ServiceLocator::Provide(editor);
+        EntityStorage::Register(editor);
         EntityStorage::Register(new FreeCam(&camera));
     }
     else
