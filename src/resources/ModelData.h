@@ -2,7 +2,6 @@
 #define A_DARK_DISCOMFORT_MODELDATA_H
 
 #include <raylib-cpp.hpp>
-#include <string>
 
 class ModelData {
 public:

@@ -1,6 +1,7 @@
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
 #include "../../utils/SystemStatics.h"
+#include "EditorController.h"
 
 void DevConsole::OnToolUpdate()
 {
@@ -47,6 +48,9 @@ void DevConsole::OnToolUpdate()
             {
                 if (!argument.empty())
                 {
+                    // Deselect all entities
+                    ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+
                     // Try load the scene specified
                     if (SceneLoader::LoadScene(argument))
                     {
@@ -68,7 +72,8 @@ void DevConsole::OnToolUpdate()
             }
             else if (command == "new")
             {
-                // Open a new, untitled scene
+                // Deselect all entities and open a new, untitled scene
+                ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
                 SceneLoader::NewScene();
                 messageDisplay->DisplayMessage("Created new scene");
             }
