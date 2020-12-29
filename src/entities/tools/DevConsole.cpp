@@ -45,11 +45,10 @@ void DevConsole::OnToolUpdate()
             // Run the appropriate instructions for specified command
             if (command == "load")
             {
-                // TODO loading test scene from play mode causes segfault
                 if (!argument.empty())
                 {
-                    // Deselect all entities
-                    ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+                    // Deselect all entities if in editor mode
+                    if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
 
                     // Try load the scene specified
                     if (SceneLoader::LoadScene(argument))
