@@ -50,11 +50,14 @@ int main(int argc, char* argv[])
     while (!window.ShouldClose())
     {
         // Update entities
-        // TODO stop game entity updates from running in the editor (e.g. Player)
         for (auto& entity : EntityStorage::GetEntities())
         {
-            // Turn off updating if the console is active
+            // Turn off tool updating if the console is active
             if (console->IsActive() && entity != console) continue;
+            entity->OnToolUpdate();
+
+            // Turn off standard updates in editor mode
+            if (isEditorMode) continue;
             entity->OnUpdate();
         }
 

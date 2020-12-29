@@ -1,7 +1,7 @@
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
 
-void DevConsole::OnUpdate()
+void DevConsole::OnToolUpdate()
 {
     // TODO move scene loading responsibilities out of dev console
     if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_S))

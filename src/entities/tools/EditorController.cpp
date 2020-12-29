@@ -1,7 +1,7 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
 
-void EditorController::OnUpdate()
+void EditorController::OnToolUpdate()
 {
     if (!camera) return;
 
