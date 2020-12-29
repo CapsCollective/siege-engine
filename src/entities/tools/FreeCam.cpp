@@ -1,6 +1,6 @@
 #include "FreeCam.h"
 
-void FreeCam::OnUpdate()
+void FreeCam::OnToolUpdate()
 {
     if (!camera) return;
 

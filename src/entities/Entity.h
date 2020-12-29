@@ -11,17 +11,19 @@ public:
 
     // Virtual methods
 
+    virtual void OnToolUpdate() {};
+
     virtual void OnUpdate() {};
 
     virtual void OnDraw() {};
 
     virtual void OnUIDraw() {};
 
+    virtual Entity* Clone();
+
     virtual BoundingBox GetBoundingBox();
 
     // Public methods
-
-    virtual Entity* Clone();
 
     void QueueFree(bool forceFree = false);
 

@@ -29,7 +29,7 @@ protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnToolUpdate() override;
 
     void OnUIDraw() override;
 
