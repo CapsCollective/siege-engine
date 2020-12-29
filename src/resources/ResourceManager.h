@@ -4,8 +4,6 @@
 #include <raylib-cpp.hpp>
 #include <map>
 #include <variant>
-#include <string>
-#include <iostream>
 
 #define RESOURCE_MAP std::map<std::string, std::variant<raylib::Model*, raylib::Texture2D*>>
 

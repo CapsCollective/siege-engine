@@ -1,5 +1,6 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
+#include "MessageDisplay.h"
 
 void EditorController::OnToolUpdate()
 {

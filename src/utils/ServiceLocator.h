@@ -6,7 +6,6 @@
 #define A_DARK_DISCOMFORT_SERVICELOCATOR_H
 
 #include <Camera3D.hpp>
-#include "../entities/tools/MessageDisplay.h"
 
 class ServiceLocator
 {
@@ -24,9 +23,21 @@ public:
         camera = cam;
     }
 
+    // EditorController functions
+
+    static class EditorController* GetEditorController()
+    {
+        return editorController;
+    }
+
+    static void Provide(EditorController* editor)
+    {
+        editorController = editor;
+    }
+
     // MessageDisplay functions
 
-    static MessageDisplay* GetMessageDisplay()
+    static class MessageDisplay* GetMessageDisplay()
     {
         return messageDisplay;
     }
@@ -41,6 +52,8 @@ private:
     // Private fields
 
     static raylib::Camera* camera;
+
+    static EditorController* editorController;
 
     static MessageDisplay* messageDisplay;
 };
