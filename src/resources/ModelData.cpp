@@ -1,15 +1,5 @@
 #include "ModelData.h"
 
-void ModelData::SetModelPath(const std::string& path)
-{
-    modelPath = path;
-}
-
-void ModelData::SetTexturePath(const std::string& path)
-{
-    texturePath = path;
-}
-
 const std::string& ModelData::GetModelPath() const
 {
     return modelPath;

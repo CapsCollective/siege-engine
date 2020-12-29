@@ -6,7 +6,6 @@
 #include "SceneLoader.h"
 #include <iostream>
 #include <fstream>
-#include <utility>
 #include <vector>
 
 // Static members

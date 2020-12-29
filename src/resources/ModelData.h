@@ -22,10 +22,6 @@ public:
 
     // Public methods
 
-    void SetModelPath(const std::string&);
-
-    void SetTexturePath(const std::string&);
-
     const std::string& GetModelPath() const;
 
     const std::string& GetTexturePath() const;
