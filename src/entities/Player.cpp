@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "../resources/ResourceManager.h"
 
 void Player::OnUpdate()
 {
@@ -18,9 +19,29 @@ void Player::OnUpdate()
 
 void Player::OnDraw()
 {
-    // Draw player to current position
-    DrawCube(position, 2.f, 2.f, 2.f, RED);
-    DrawCubeWires(position, 2.f, 2.f, 2.f, MAROON);
+    // Set the model's texture to this entity's texture
+    ModelData::SetTexture(ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+            ResourceManager::Get<raylib::Texture2D>(modelData.GetTexturePath()));
+
+    // Draw the model
+    DrawModelEx (
+        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+        position,
+        raylib::Vector3::Zero(),
+        0.0f,
+        raylib::Vector3(1.0f, 1.0f, 1.0f),
+        RED
+    );
+
+    // Draw the model wireframe
+    DrawModelWiresEx (
+        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+        position,
+        raylib::Vector3::Zero(),
+        0.0f,
+        raylib::Vector3(1.0f, 1.0f, 1.0f),
+        MAROON
+    );
 }
 
 void Player::OnUIDraw()
@@ -34,4 +55,9 @@ BoundingBox Player::GetBoundingBox()
             position - raylib::Vector3::One(),
             position + raylib::Vector3::One(),
     };
+}
+
+const ModelData& Player::GetModelData()
+{
+    return modelData;
 }
