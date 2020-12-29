@@ -48,6 +48,8 @@ void EditorController::OnToolUpdate()
         } while (selectedIdx != startIdx);
     }
 
+    // TODO add object rotation to EditorController
+
     if (selectedEntity)
     {
         // Calculate move from input
