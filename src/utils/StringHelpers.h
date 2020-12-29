@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_STRINGHELPERS_H
 #define A_DARK_DISCOMFORT_STRINGHELPERS_H
 
-#include <string>
 #include <Vector3.hpp>
+#include <string>
 #include <vector>
 
 namespace StringHelpers

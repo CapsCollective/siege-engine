@@ -1,9 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
-#include <string>
-#include <raylib-cpp.hpp>
 #include "../entity_system/IndexAllocator.h"
+#include <raylib-cpp.hpp>
 
 class Entity
 {

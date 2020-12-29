@@ -9,23 +9,26 @@
 #include <utility>
 #include <vector>
 
-// Static members
+// Define macros
+#define SEP ';'
+#define UNKNOWN_FILENAME "untitled"
+#define SCENE_DIR "assets/scenes/"
+#define SCENE_FILE_EXT ".scene"
 
+// Define static members
 std::string SceneLoader::currentScene;
-
-// TODO add constants for field values
 
 void SceneLoader::NewScene()
 {
     // Clear the current scene and reset current scene
     ClearScene();
-    currentScene = "untitled";
+    currentScene = UNKNOWN_FILENAME;
 }
 
 void SceneLoader::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    SaveScene(currentScene.empty() ? "untitled" : currentScene);
+    SaveScene(currentScene.empty() ? UNKNOWN_FILENAME : currentScene);
 }
 
 void SceneLoader::SaveScene(const std::string& sceneName)
@@ -55,18 +58,18 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         // TODO add labels to serialised fields
 
         // Add its name and position to the data
-        fileData += (entity->GetName() + ";" + StringHelpers::VectorToString(entity->GetPosition()) + ";");
+        fileData += (entity->GetName() + SEP + StringHelpers::VectorToString(entity->GetPosition()) + SEP);
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + SEP;
         }
         else if (entity->GetName() == "Player")
         {
             auto player = dynamic_cast<Player*>(entity);
-            fileData += player->GetModelData().GetModelPath() + ";";
-            fileData += player->GetModelData().GetTexturePath() + ";";
+            fileData += player->GetModelData().GetModelPath() + SEP;
+            fileData += player->GetModelData().GetTexturePath() + SEP;
         }
 
         // Add new line as entity delimiter
@@ -74,7 +77,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
     }
 
     // Open a new file stream, dave the data to it and close it
-    std::ofstream fileStream("assets/scenes/" + sceneName + ".scene");
+    std::ofstream fileStream(SCENE_DIR + sceneName + SCENE_FILE_EXT);
     fileStream << fileData;
     fileStream.close();
 }
@@ -82,7 +85,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
 bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 {
     // Begin the loading process, open the file for streaming
-    std::ifstream file("assets/scenes/" + sceneName + ".scene");
+    std::ifstream file(SCENE_DIR + sceneName + SCENE_FILE_EXT);
     if (!file.is_open()) return false;
 
     // Free all current items from storage
@@ -102,7 +105,7 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         };
 
         // Split the line into arguments
-        std::vector<std::string> args = StringHelpers::SplitString(line, ';');
+        std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
 
         // Calculate the position of the entity
         raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
