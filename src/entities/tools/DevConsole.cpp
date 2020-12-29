@@ -1,6 +1,5 @@
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
-#include "../../utils/SystemStatics.h"
 #include "EditorController.h"
 
 void DevConsole::OnToolUpdate()
@@ -46,6 +45,7 @@ void DevConsole::OnToolUpdate()
             // Run the appropriate instructions for specified command
             if (command == "load")
             {
+                // TODO loading test scene from play mode causes segfault
                 if (!argument.empty())
                 {
                     // Deselect all entities
@@ -62,7 +62,7 @@ void DevConsole::OnToolUpdate()
             }
             else if (command == "save")
             {
-                if (SystemStatics::IsEditorMode())
+                if (isEditorMode)
                 {
                     // Save the scene as the current scene name (or untitled if argument blank)
                     SceneLoader::SaveScene(argument);
@@ -77,6 +77,8 @@ void DevConsole::OnToolUpdate()
                 SceneLoader::NewScene();
                 messageDisplay->DisplayMessage("Created new scene");
             }
+            // TODO add entity creation command
+            // TODO add model/texture setting command
             else
             {
                 messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");
