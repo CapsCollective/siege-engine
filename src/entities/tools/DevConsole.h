@@ -3,6 +3,7 @@
 
 #include "../Entity.h"
 #include "MessageDisplay.h"
+#include "../../utils/ServiceLocator.h"
 
 class DevConsole : public Entity
 {
@@ -10,10 +11,9 @@ public:
 
     // Constructors
 
-    explicit DevConsole(bool isEditorMode, MessageDisplay* display) :
-    messageDisplay(display),
+    explicit DevConsole() :
+    messageDisplay(ServiceLocator::GetMessageDisplay()),
     isActive(false),
-    isEditorMode(isEditorMode),
     currentScene("main")
     {
         Entity::SetName("DevConsole");
