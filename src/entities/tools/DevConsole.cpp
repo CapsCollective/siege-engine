@@ -1,5 +1,6 @@
 #include "DevConsole.h"
 #include "../../utils/SceneLoader.h"
+#include "../../utils/SystemStatics.h"
 
 void DevConsole::OnToolUpdate()
 {
@@ -57,7 +58,7 @@ void DevConsole::OnToolUpdate()
             }
             else if (command == "save")
             {
-                if (isEditorMode)
+                if (SystemStatics::IsEditorMode())
                 {
                     // Save the scene as the current scene name (or untitled if argument blank)
                     currentScene = argument.empty() ? "untitled" : argument;

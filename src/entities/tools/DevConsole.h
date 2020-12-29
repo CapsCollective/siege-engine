@@ -37,8 +37,6 @@ private:
 
     // Private fields
 
-    bool isEditorMode;
-
     bool isActive;
 
     std::string currentScene;
