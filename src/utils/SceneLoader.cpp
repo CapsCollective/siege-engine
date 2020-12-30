@@ -59,7 +59,10 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
+            auto geometry = dynamic_cast<Geometry*>(entity);
             fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+            fileData += geometry->GetModelData().GetModelPath() + ";";
+            fileData += geometry->GetModelData().GetTexturePath() + ";";
         }
         else if (entity->GetName() == "Player")
         {
@@ -110,7 +113,14 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         if (args[ENTITY_NAME] == "Geometry")
         {
             raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
-            EntityStorage::Register(new Geometry(position, dimensions));
+
+            std::string modelPath = args[CUSTOM_FIELD_2];
+            std::string texturePath = args[CUSTOM_FIELD_3];
+
+            ResourceManager::Register<raylib::Model>(modelPath);
+            ResourceManager::Register<raylib::Texture2D>(texturePath);
+
+            EntityStorage::Register(new Geometry(position, dimensions, ModelData(modelPath, texturePath)));
         }
         else if (args[ENTITY_NAME] == "Player")
         {
