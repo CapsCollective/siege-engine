@@ -4,6 +4,7 @@
 #include "../Geometry.h"
 #include "../Player.h"
 #include <algorithm>
+#include <cctype>
 
 // Define custom colours
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
