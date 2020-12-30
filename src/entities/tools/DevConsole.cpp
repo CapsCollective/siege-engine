@@ -83,7 +83,26 @@ void DevConsole::OnToolUpdate()
                 // Toggle the profiler
                 profiler->ToggleActive();
             }
-            // TODO add entity creation command
+            else if (command == "add")
+            {
+                if (!argument.empty())
+                {
+                    if (isEditorMode)
+                    {
+                        // Try add the entity to the scene
+                        if (EditorController::TryAddEntity(argument))
+                        {
+                            messageDisplay->DisplayMessage("Added entity to scene");
+                        }
+                        else
+                        {
+                            messageDisplay->DisplayMessage("Cannot add entity \"" + argument + "\"");
+                        }
+                    }
+                    else messageDisplay->DisplayMessage("Cannot modify scenes from play mode");
+                }
+                else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
+            }
             // TODO add model/texture setting command
             else
             {

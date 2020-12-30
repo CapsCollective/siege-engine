@@ -26,6 +26,10 @@ public:
         Entity::SetSerialisable(false);
     };
 
+    // Class methods
+
+    static bool TryAddEntity(std::string& entityName);
+
     // Public methods
 
     void TrySelectEntity(Entity* entity);
