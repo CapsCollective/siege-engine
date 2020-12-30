@@ -43,7 +43,7 @@ public:
         return &std::get<T>(resources[path]);
     };
 
-    // TODO add model removal function
+    static void ClearResources();
 
 private:
 
