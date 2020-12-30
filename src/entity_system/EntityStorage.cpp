@@ -2,8 +2,7 @@
 #include <cstdint>
 #include <algorithm>
 
-// Static members
-
+// Define static members
 EntityStorage* EntityStorage::instance;
 
 void EntityStorage::Register(Entity* entity)
