@@ -2,16 +2,36 @@
 
 void Geometry::OnDraw()
 {
-    // Draw geometry to current position
-    DrawCube(position, dimensions.x, dimensions.y, dimensions.z, BLUE);
-    DrawCubeWires(position, dimensions.x, dimensions.y, dimensions.z, DARKBLUE);
+    // Set the model's texture to this entity's texture
+    ModelData::SetTexture(ResourceManager::Get<Model>(modelData.GetModelPath()),
+                          ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
+
+    // Draw the model
+    DrawModelEx (
+            ResourceManager::Get<Model>(modelData.GetModelPath()),
+            position,
+            raylib::Vector3(0, 1, 0),
+            rotation,
+            dimensions,
+            BLUE
+    );
+
+    // Draw the model wireframe
+    DrawModelWiresEx (
+            ResourceManager::Get<Model>(modelData.GetModelPath()),
+            position,
+            raylib::Vector3(0, 1, 0),
+            rotation,
+            dimensions,
+            DARKBLUE
+    );
 }
 
 BoundingBox Geometry::GetBoundingBox()
 {
     return BoundingBox {
-            position - raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
-            position + raylib::Vector3(dimensions.x/2.f, dimensions.y/2.f, dimensions.z/2.f),
+            position - raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
+            position + raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
     };
 }
 
@@ -22,5 +42,9 @@ raylib::Vector3 Geometry::GetDimensions()
 
 Entity* Geometry::Clone()
 {
-    return new Geometry(position, rotation, dimensions);
+    return new Geometry(position, rotation, dimensions, modelData);
+}
+
+ModelData &Geometry::GetModelData() {
+    return modelData;
 }

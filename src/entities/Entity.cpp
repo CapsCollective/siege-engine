@@ -36,7 +36,7 @@ void Entity::QueueFree(bool forceFree)
 // A function for removing entities from the storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
 void Entity::Free(bool forceFree)
 {
-    if (isFreeable || forceFree) EntityStorage::Instance()->Remove(this);
+    if (isFreeable || forceFree) EntityStorage::Remove(this);
 }
 
 std::string Entity::GetName()
