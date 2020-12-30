@@ -56,5 +56,4 @@ private:
     ModelData modelData;
 };
 
-
 #endif //A_DARK_DISCOMFORT_GEOMETRY_H

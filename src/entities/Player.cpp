@@ -20,12 +20,12 @@ void Player::OnUpdate()
 void Player::OnDraw()
 {
     // Set the model's texture to this entity's texture
-    ModelData::SetTexture(ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
-            ResourceManager::Get<raylib::Texture2D>(modelData.GetTexturePath()));
+    ModelData::SetTexture(ResourceManager::Get<Model>(modelData.GetModelPath()),
+            ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
     DrawModelEx (
-        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+        ResourceManager::Get<Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
         0.0f,
@@ -35,7 +35,7 @@ void Player::OnDraw()
 
     // Draw the model wireframe
     DrawModelWiresEx (
-        ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
+        ResourceManager::Get<Model>(modelData.GetModelPath()),
         position,
         raylib::Vector3::Zero(),
         0.0f,
