@@ -1,4 +1,5 @@
 #include "StringHelpers.h"
+#include <algorithm>
 
 std::string StringHelpers::VectorToString(raylib::Vector3 vector)
 {
@@ -29,4 +30,10 @@ std::vector<std::string> StringHelpers::SplitString(std::string string, char del
         string.erase(0, args.back().size()+1);
     }
     return args;
+}
+
+std::string StringHelpers::LowercaseString(std::string string)
+{
+    std::for_each(string.begin(), string.end(), [](char& c){c = (char) std::tolower(c);});
+    return string;
 }

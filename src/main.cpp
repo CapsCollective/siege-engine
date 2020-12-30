@@ -1,9 +1,11 @@
 #include "entities/tools/EditorController.h"
+#include "entities/tools/MessageDisplay.h"
 #include "entity_system/EntityStorage.h"
-#include "entities/tools/FreeCam.h"
-#include "utils/SceneLoader.h"
 #include "entities/tools/DevConsole.h"
+#include "entities/tools/Profiler.h"
+#include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
+#include "utils/SceneLoader.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -36,6 +38,11 @@ int main(int argc, char* argv[])
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
     EntityStorage::Register(display);
+
+    // Initialise and register the profiler
+    auto profiler = new Profiler(isEditorMode);
+    ServiceLocator::Provide(profiler);
+    EntityStorage::Register(profiler);
 
     // Initialise and register the dev console
     EntityStorage::Register(new DevConsole(isEditorMode));
@@ -83,10 +90,6 @@ int main(int argc, char* argv[])
         }
 
         camera.EndMode3D();
-
-        // Begin drawing UI to screen
-        // TODO move this into a profiling tool
-        DrawFPS(10.f, 10.f);
 
         // UI Draw entities
         for (auto& entity : EntityStorage::GetEntities())

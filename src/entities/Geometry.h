@@ -11,22 +11,18 @@ public:
     // Constructors
 
     Geometry() :
-    Geometry(raylib::Vector3::Zero(), raylib::Vector3::One())
+    Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
     {};
 
-    explicit Geometry(raylib::Vector3 pos, raylib::Vector3 dimensions) :
-    Entity(pos),
-    dimensions(dimensions),
-    modelData(ModelData("assets/models/cube/cube.obj",
-                        "assets/models/cube/CubeTexture.png"))
-    {
-        Entity::SetName("Geometry");
-    };
+    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
+    Geometry(position, rotation, dimensions, ModelData("assets/models/cube/cube.obj",
+                                                       "assets/models/cube/CubeTexture.png"))
+    {};
 
-    explicit Geometry(raylib::Vector3 pos, raylib::Vector3 dimensions, const ModelData& model) :
-    Entity(pos),
+    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
+    Entity(position, rotation),
     dimensions(dimensions),
-    modelData(model)
+    modelData(data)
     {
         Entity::SetName("Geometry");
     };
