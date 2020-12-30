@@ -1,4 +1,5 @@
 #include "StringHelpers.h"
+#include <algorithm>
 
 std::string StringHelpers::VectorToString(raylib::Vector3 vector)
 {
