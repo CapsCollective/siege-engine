@@ -1,7 +1,3 @@
-//
-// Created by Jonathan Moallem on 30/12/20.
-//
-
 #include "Profiler.h"
 
 void Profiler::OnUIDraw()
