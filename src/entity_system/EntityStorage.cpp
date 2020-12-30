@@ -3,18 +3,11 @@
 #include <algorithm>
 
 // Static member initialisations
-
 std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
-
 IndexAllocator EntityStorage::allocator = IndexAllocator();
-
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
-
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-
 std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
-
-// Functions
 
 void EntityStorage::Register(Entity* entity)
 {

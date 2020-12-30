@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include <utility>
+#include <math.h>
 #include "../entity_system/EntityStorage.h"
 
 BoundingBox Entity::GetBoundingBox()
@@ -15,6 +16,16 @@ void Entity::SetPosition(raylib::Vector3 newPosition)
 raylib::Vector3 Entity::GetPosition()
 {
     return position;
+}
+
+void Entity::SetRotation(float newRotation)
+{
+    rotation = fmod(newRotation, 360.f);
+}
+
+float Entity::GetRotation() const
+{
+    return rotation;
 }
 
 void Entity::QueueFree(bool forceFree)

@@ -1,5 +1,4 @@
 #include "Geometry.h"
-#include "../resources/ResourceManager.h"
 
 void Geometry::OnDraw()
 {
@@ -11,8 +10,8 @@ void Geometry::OnDraw()
     DrawModelEx (
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
-            raylib::Vector3::Zero(),
-            0.0f,
+            raylib::Vector3(0, 1, 0),
+            rotation,
             dimensions,
             BLUE
     );
@@ -21,8 +20,8 @@ void Geometry::OnDraw()
     DrawModelWiresEx (
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
-            raylib::Vector3::Zero(),
-            0.0f,
+            raylib::Vector3(0, 1, 0),
+            rotation,
             dimensions,
             DARKBLUE
     );
@@ -43,7 +42,7 @@ raylib::Vector3 Geometry::GetDimensions()
 
 Entity* Geometry::Clone()
 {
-    return new Geometry(position, dimensions, modelData);
+    return new Geometry(position, rotation, dimensions, modelData);
 }
 
 ModelData &Geometry::GetModelData() {
