@@ -146,12 +146,13 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 
 void SceneLoader::ClearScene()
 {
-    // TODO add model/texture flushing
     // Free all current entities from storage
     for (auto entity : EntityStorage::GetEntities())
     {
         // Need to queue here since we can't modify a list while using it
         entity->QueueFree();
     }
+
+    ResourceManager::ClearResources();
 }
 
