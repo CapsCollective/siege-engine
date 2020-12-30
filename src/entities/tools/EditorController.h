@@ -17,7 +17,9 @@ public:
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
+    rotationAmount(10.f),
     moveDistance(0.5f),
+    isRotationModeActive(false),
     isGridActive(true),
     selectedIdx(0)
     {
@@ -48,9 +50,13 @@ private:
 
     // Private fields
 
+    bool isRotationModeActive;
+
     bool isGridActive;
 
     float moveDistance;
+
+    float rotationAmount;
 
     size_t selectedIdx;
 

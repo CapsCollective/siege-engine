@@ -10,11 +10,11 @@ public:
     // Constructors
 
     Geometry() :
-    Geometry(raylib::Vector3::Zero(), raylib::Vector3::One())
+    Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
     {};
 
-    explicit Geometry(raylib::Vector3 pos, raylib::Vector3 dimensions) :
-    Entity(pos),
+    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
+    Entity(position, rotation),
     dimensions(dimensions)
     {
         Entity::SetName("Geometry");

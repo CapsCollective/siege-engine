@@ -11,25 +11,19 @@ public:
     // Constructors
 
     Player() :
-    Player(raylib::Vector3::Zero())
+    Player(raylib::Vector3::Zero(), 0.f)
     {};
 
-    explicit Player(raylib::Vector3 position) :
-    Entity(position),
+    explicit Player(raylib::Vector3 position, float rotation) :
+    Player(raylib::Vector3::Zero(), rotation, ModelData(
+            "assets/models/cube/cube.obj",
+            "assets/models/cube/CubeTexture.png"))
+    {};
+
+    explicit Player(raylib::Vector3 position, float rotation, const ModelData& data) :
+    Entity(position, rotation),
     speed(1.5f),
     velocity(raylib::Vector3::Zero())
-    {
-        Entity::SetName("Player");
-        modelData = ModelData(
-            "assets/models/cube/cube.obj",
-            "assets/models/cube/CubeTexture.png"
-        );
-    };
-
-    explicit Player(raylib::Vector3 position, const ModelData& data) :
-            Entity(position),
-            speed(1.5f),
-            velocity(raylib::Vector3::Zero())
     {
         Entity::SetName("Player");
         modelData = ModelData(data);
