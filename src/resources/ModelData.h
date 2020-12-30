@@ -26,7 +26,7 @@ public:
 
     const std::string& GetTexturePath() const;
 
-    static void SetTexture(raylib::Model&, raylib::Texture2D&);
+    static void SetTexture(Model&, Texture2D&);
 
 private:
 
@@ -36,6 +36,5 @@ private:
 
     std::string texturePath;
 };
-
 
 #endif //A_DARK_DISCOMFORT_MODELDATA_H

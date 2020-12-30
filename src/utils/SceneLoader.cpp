@@ -117,8 +117,8 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
             std::string modelPath = args[CUSTOM_FIELD_2];
             std::string texturePath = args[CUSTOM_FIELD_3];
 
-            ResourceManager::Register<raylib::Model>(modelPath);
-            ResourceManager::Register<raylib::Texture2D>(texturePath);
+            ResourceManager::Register<Model>(modelPath);
+            ResourceManager::Register<Texture2D>(texturePath);
 
             EntityStorage::Register(new Geometry(position, dimensions, ModelData(modelPath, texturePath)));
         }
@@ -127,10 +127,10 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
             std::string modelPath = args[CUSTOM_FIELD_1];
             std::string texturePath = args[CUSTOM_FIELD_2];
 
-            ResourceManager::Register<raylib::Model>(modelPath);
-            ResourceManager::Register<raylib::Texture2D>(texturePath);
+            ResourceManager::Register<Model>(modelPath);
+            ResourceManager::Register<Texture2D>(texturePath);
 
-            EntityStorage::Register(new Player(position,ModelData( modelPath, texturePath)));
+            EntityStorage::Register(new Player(position,ModelData(modelPath, texturePath)));
         }
         else
         {

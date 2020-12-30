@@ -5,37 +5,45 @@
 #include <map>
 #include <variant>
 
-#define RESOURCE_MAP std::map<std::string, std::variant<raylib::Model*, raylib::Texture2D*>>
+#define RESOURCE_MAP std::map<std::string, std::variant<Model, Texture2D>>
 
 class ResourceManager
 {
 public:
 
     // Public functions
-
     template<typename T>
     static void Register(const std::string& path)
     {
         if (resources.find(path) != resources.end()) return;
 
-        resources.insert({path, new T(path)});
+        std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();
+
+        if (std::is_same<T, Model>::value)
+        {
+            resource = LoadModel(path.c_str());
+        }
+        else if (std::is_same<T, Texture2D>::value)
+        {
+            resource = LoadTexture(path.c_str());
+        }
+
+        resources.insert({path, resource});
     };
 
     template<typename T>
     static T& Get(const std::string& path)
     {
-        return *std::get<T*>(resources[path]);
+        return std::get<T>(resources[path]);
     };
 
     template<typename T>
     static T* GetRef(const std::string& path)
     {
-        return std::get<T*>(resources[path]);
+        return &std::get<T>(resources[path]);
     };
 
     // TODO add model removal function
-
-    // TODO add model and texture data to stack
 
 private:
 

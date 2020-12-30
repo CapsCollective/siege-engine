@@ -10,7 +10,7 @@ const std::string& ModelData::GetTexturePath() const
     return texturePath;
 }
 
-void ModelData::SetTexture(raylib::Model& model, raylib::Texture2D& texture) {
+void ModelData::SetTexture(Model& model, Texture2D& texture) {
     // Set model texture using raylib
     model.materials[0].maps[MAP_DIFFUSE].texture = texture;
 }
