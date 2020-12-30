@@ -12,6 +12,8 @@ namespace StringHelpers
     raylib::Vector3 StringToVector(std::string string);
 
     std::vector<std::string> SplitString(std::string string, char delimiter);
+
+    std::string LowercaseString(std::string string);
 };
 
 
