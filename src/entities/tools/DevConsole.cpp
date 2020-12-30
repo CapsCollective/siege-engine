@@ -1,6 +1,8 @@
 #include "DevConsole.h"
+#include "MessageDisplay.h"
 #include "../../utils/SceneLoader.h"
 #include "EditorController.h"
+#include "Profiler.h"
 
 void DevConsole::OnToolUpdate()
 {
@@ -75,6 +77,11 @@ void DevConsole::OnToolUpdate()
                 ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
                 SceneLoader::NewScene();
                 messageDisplay->DisplayMessage("Created new scene");
+            }
+            else if (command == "stats")
+            {
+                // Toggle the profiler
+                profiler->ToggleActive();
             }
             // TODO add entity creation command
             // TODO add model/texture setting command
