@@ -2,7 +2,6 @@
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
 #include "../Entity.h"
-#include "MessageDisplay.h"
 #include "../../utils/ServiceLocator.h"
 
 class DevConsole : public Entity
@@ -13,6 +12,7 @@ public:
 
     explicit DevConsole(bool isEditorMode) :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
+    profiler(ServiceLocator::GetProfiler()),
     isEditorMode(isEditorMode),
     isActive(false)
     {
@@ -42,6 +42,8 @@ private:
     std::string lastInput;
 
     MessageDisplay* messageDisplay;
+
+    Profiler* profiler;
 };
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H

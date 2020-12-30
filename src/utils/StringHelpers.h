@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_STRINGHELPERS_H
 #define A_DARK_DISCOMFORT_STRINGHELPERS_H
 
-#include <string>
 #include <Vector3.hpp>
+#include <string>
 #include <vector>
 
 namespace StringHelpers
@@ -12,6 +12,8 @@ namespace StringHelpers
     raylib::Vector3 StringToVector(std::string string);
 
     std::vector<std::string> SplitString(std::string string, char delimiter);
+
+    std::string LowercaseString(std::string string);
 };
 
 

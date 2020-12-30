@@ -1,6 +1,8 @@
 #include "DevConsole.h"
+#include "MessageDisplay.h"
 #include "../../utils/SceneLoader.h"
 #include "EditorController.h"
+#include "Profiler.h"
 
 void DevConsole::OnToolUpdate()
 {
@@ -45,11 +47,10 @@ void DevConsole::OnToolUpdate()
             // Run the appropriate instructions for specified command
             if (command == "load")
             {
-                // TODO loading test scene from play mode causes segfault
                 if (!argument.empty())
                 {
-                    // Deselect all entities
-                    ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+                    // Deselect all entities if in editor mode
+                    if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
 
                     // Try load the scene specified
                     if (SceneLoader::LoadScene(argument))
@@ -77,7 +78,31 @@ void DevConsole::OnToolUpdate()
                 SceneLoader::NewScene();
                 messageDisplay->DisplayMessage("Created new scene");
             }
-            // TODO add entity creation command
+            else if (command == "stats")
+            {
+                // Toggle the profiler
+                profiler->ToggleActive();
+            }
+            else if (command == "add")
+            {
+                if (!argument.empty())
+                {
+                    if (isEditorMode)
+                    {
+                        // Try add the entity to the scene
+                        if (EditorController::TryAddEntity(argument))
+                        {
+                            messageDisplay->DisplayMessage("Added entity to scene");
+                        }
+                        else
+                        {
+                            messageDisplay->DisplayMessage("Cannot add entity \"" + argument + "\"");
+                        }
+                    }
+                    else messageDisplay->DisplayMessage("Cannot modify scenes from play mode");
+                }
+                else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
+            }
             // TODO add model/texture setting command
             else
             {

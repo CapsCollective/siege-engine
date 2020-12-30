@@ -27,8 +27,8 @@ void Player::OnDraw()
     DrawModelEx (
         ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
-        raylib::Vector3::Zero(),
-        0.0f,
+        raylib::Vector3(0, 1, 0),
+        rotation,
         raylib::Vector3(1.0f, 1.0f, 1.0f),
         RED
     );
@@ -37,8 +37,8 @@ void Player::OnDraw()
     DrawModelWiresEx (
         ResourceManager::Get<raylib::Model>(modelData.GetModelPath()),
         position,
-        raylib::Vector3::Zero(),
-        0.0f,
+        raylib::Vector3(0, 1, 0),
+        rotation,
         raylib::Vector3(1.0f, 1.0f, 1.0f),
         MAROON
     );
