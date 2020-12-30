@@ -1,6 +1,9 @@
 #include "EditorController.h"
 #include "../../entity_system/EntityStorage.h"
 #include "MessageDisplay.h"
+#include "../Geometry.h"
+#include "../Player.h"
+#include <algorithm>
 
 void EditorController::OnToolUpdate()
 {
@@ -120,4 +123,24 @@ void EditorController::TrySelectEntity(Entity *entity)
     // Prevent selection of entities that are not serialisable
     if (entity && !entity->IsSerialisable()) entity = nullptr;
     selectedEntity = entity;
+}
+
+bool EditorController::TryAddEntity(std::string& entityName)
+{
+    // Lowercase the supplied entity name
+    std::transform(entityName.begin(), entityName.end(), entityName.begin(), std::tolower);
+
+    // Check for matching cases
+    if (entityName == "geometry")
+    {
+        EntityStorage::Register(new Geometry());
+        return true;
+    }
+    // TODO fix runtime player model creation crashes "bad variant access"
+//    else if (entityName == "player")
+//    {
+//        EntityStorage::Register(new Player());
+//        return true;
+//    }
+    return false;
 }
