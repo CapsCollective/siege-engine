@@ -3,6 +3,7 @@
 #include "MessageDisplay.h"
 #include "../Geometry.h"
 #include "../Player.h"
+#include "../../utils/StringHelpers.h"
 #include <algorithm>
 #include <cctype>
 
@@ -147,7 +148,7 @@ void EditorController::TrySelectEntity(Entity *entity)
 bool EditorController::TryAddEntity(std::string& entityName)
 {
     // Lowercase the supplied entity name
-    std::transform(entityName.begin(), entityName.end(), entityName.begin(), std::tolower);
+    entityName = StringHelpers::LowercaseString(entityName);
 
     // Check for matching cases
     if (entityName == "geometry")
