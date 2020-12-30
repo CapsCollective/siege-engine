@@ -154,11 +154,10 @@ bool EditorController::TryAddEntity(std::string& entityName)
         EntityStorage::Register(new Geometry());
         return true;
     }
-    // TODO fix runtime player model creation crashes "bad variant access"
-//    else if (entityName == "player")
-//    {
-//        EntityStorage::Register(new Player());
-//        return true;
-//    }
+    else if (entityName == "player")
+    {
+        EntityStorage::Register(new Player());
+        return true;
+    }
     return false;
 }

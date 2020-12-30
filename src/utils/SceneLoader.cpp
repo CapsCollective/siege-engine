@@ -6,7 +6,6 @@
 #include "SceneLoader.h"
 #include <iostream>
 #include <fstream>
-#include <utility>
 #include <vector>
 
 // Define macros
@@ -65,7 +64,10 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
-            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + SEP;
+            auto geometry = dynamic_cast<Geometry*>(entity);
+            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
+            fileData += geometry->GetModelData().GetModelPath() + SEP;
+            fileData += geometry->GetModelData().GetTexturePath() + SEP;
         }
         else if (entity->GetName() == "Player")
         {
@@ -118,17 +120,18 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         if (args[ENTITY_NAME] == "Geometry")
         {
             raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
-            EntityStorage::Register(new Geometry(position, rotation, dimensions));
+
+            std::string modelPath = args[CUSTOM_FIELD_2];
+            std::string texturePath = args[CUSTOM_FIELD_3];
+
+            EntityStorage::Register(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
         }
         else if (args[ENTITY_NAME] == "Player")
         {
             std::string modelPath = args[CUSTOM_FIELD_1];
             std::string texturePath = args[CUSTOM_FIELD_2];
 
-            ResourceManager::Register<raylib::Model>(modelPath);
-            ResourceManager::Register<raylib::Texture2D>(texturePath);
-
-            EntityStorage::Register(new Player(position, rotation, ModelData(modelPath, texturePath)));
+            EntityStorage::Register(new Player(position, rotation));
         }
         else
         {
@@ -144,12 +147,13 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 
 void SceneLoader::ClearScene()
 {
-    // TODO add model/texture flushing
     // Free all current entities from storage
     for (auto entity : EntityStorage::GetEntities())
     {
         // Need to queue here since we can't modify a list while using it
         entity->QueueFree();
     }
+
+    ResourceManager::ClearResources();
 }
 

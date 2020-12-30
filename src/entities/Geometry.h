@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
 #include "Entity.h"
+#include "../resources/ModelData.h"
 
 class Geometry : public Entity
 {
@@ -14,8 +15,14 @@ public:
     {};
 
     explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
+    Geometry(position, rotation, dimensions, ModelData("assets/models/cube/cube.obj",
+                                                       "assets/models/cube/CubeTexture.png"))
+    {};
+
+    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
     Entity(position, rotation),
-    dimensions(dimensions)
+    dimensions(dimensions),
+    modelData(data)
     {
         Entity::SetName("Geometry");
     };
@@ -30,6 +37,8 @@ public:
 
     raylib::Vector3 GetDimensions();
 
+    ModelData& GetModelData();
+
 protected:
 
     // Protected overrides
@@ -42,8 +51,7 @@ private:
 
     raylib::Vector3 dimensions;
 
-    // TODO add model data
+    ModelData modelData;
 };
-
 
 #endif //A_DARK_DISCOMFORT_GEOMETRY_H

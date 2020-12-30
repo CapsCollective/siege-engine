@@ -9,89 +9,66 @@ class EntityStorage
 {
 public:
 
-    // TODO update entity storage to be fully static
-
-    // Constructors
-
-    EntityStorage() :
-    allocator(IndexAllocator())
-    {
-        instance = nullptr;
-    };
-
-    // Public fields
-
-    static EntityStorage* instance;
-
     // Public functions
 
+    // Queues an entity for initialisation in the next frame
     static void Register(Entity*);
 
-    void Remove(Entity*);
+    // Removes an entity from storage
+    static void Remove(Entity*);
 
-    // Static instance getters
-
+    // Returns our packed entities (for iteration)
     static std::vector<Entity*>& GetEntities() 
     {
-        return Instance()->packedEntities;
+        return packedEntities;
     }
 
-    static EntityStorage* Instance() {
-        if (!instance) instance = new EntityStorage();
-        return instance;
-    }
-
-    static Entity* GetEntity(GenerationalIndex index) 
-    {
-        // Check that the index is in bounds
-        bool isInBounds = index.index < Instance()->entities.size();
-
-        // If the entity index is live (is still in use)
-        if(isInBounds && Instance()->allocator.IsLive(index)) 
-        {
-            // Return the entity
-            return Instance()->entities[index.index];
-        } 
-        else return nullptr;
-    }
-
+    // Returns an entity in the packed list
     static Entity* GetPackedEntity(size_t index)
     {
-        return Instance()->packedEntities[index];
+        return packedEntities[index];
     }
 
-    // Operator overloads
-
+    // Operator overload for index operator
     Entity* operator[](GenerationalIndex);
 
-    // Destructor Methods
-
+    // Queues an entity for freeing at the end of the frame
     static void QueueFree(Entity*);
 
-    void FreeEntities();
+    // Frees all queued entities
+    static void FreeEntities();
 
+    // Registers all entities separately (usually happens after the update loop.)
     static void RegisterEntities();
 
 private:
 
-    // Utility Functions
+    // Public Functions
 
+    // Returns the entity's index in the packed vector.
+    // TODO: Make this more efficient. Currently just does an iterator search.
     static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
 
     // Private fields
 
-    IndexAllocator allocator;
+    // Handles generational index allocation/de-allocation.
+    static IndexAllocator allocator;
 
-    std::vector<Entity*> entities;
+    // The vector that stores all entities (this storage will always match the size of all
+    // entites that were oreviously made)
+    static std::vector<Entity*> entities;
 
-    std::vector<Entity*> packedEntities;
+    // The packed vector of entities - contains all available entities in no particular order.
+    static std::vector<Entity*> packedEntities;
 
-    // Deferred vectors - for modifying containers.
-    std::vector<Entity*> freedEntities;
+    // Vector for storing all entities which were queued for freeing.
+    static std::vector<Entity*> freedEntities;
 
-    std::vector<Entity*> registeredEntities;
+    // Vector containing all entities that were queued for adding.
+    static std::vector<Entity*> registeredEntities;
 
-    void AddEntity(Entity *entity);
+    // Adds an entity to the entity storage.
+    static void AddEntity(Entity *entity);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H
