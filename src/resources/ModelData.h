@@ -11,8 +11,8 @@ public:
     ModelData(std::string  modelPath, std::string  texturePath) :
     modelPath(std::move(modelPath)), texturePath(std::move(texturePath))
     {
-        ResourceManager::Register<Model>(modelPath);
-        ResourceManager::Register<Texture>(texturePath);
+        ResourceManager::Register<Model>(this->modelPath);
+        ResourceManager::Register<Texture>(this->texturePath);
     };
 
     ModelData(const ModelData& other) {
