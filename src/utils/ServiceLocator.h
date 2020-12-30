@@ -43,6 +43,18 @@ public:
         messageDisplay = display;
     }
 
+    // MessageDisplay functions
+
+    static class Profiler* GetProfiler()
+    {
+        return systemProfiler;
+    }
+
+    static void Provide(Profiler* profiler)
+    {
+        systemProfiler = profiler;
+    }
+
 private:
 
     // Private fields
@@ -52,6 +64,8 @@ private:
     static EditorController* editorController;
 
     static MessageDisplay* messageDisplay;
+
+    static Profiler* systemProfiler;
 };
 
 
