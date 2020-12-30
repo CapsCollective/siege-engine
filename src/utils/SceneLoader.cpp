@@ -57,8 +57,10 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
 
         // TODO add labels to serialised fields
 
-        // Add its name and position to the data
-        fileData += (entity->GetName() + SEP + StringHelpers::VectorToString(entity->GetPosition()) + SEP);
+        // Add its name, position and rotation to the data
+        fileData += (entity->GetName() + SEP +
+                StringHelpers::VectorToString(entity->GetPosition()) + SEP +
+                std::to_string(entity->GetRotation()) + SEP);
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
@@ -99,22 +101,24 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         enum {
             ENTITY_NAME = 0,
             ENTITY_POS = 1,
-            CUSTOM_FIELD_1 = 2,
-            CUSTOM_FIELD_2 = 3,
-            CUSTOM_FIELD_3 = 4,
+            ENTITY_ROT = 2,
+            CUSTOM_FIELD_1 = 3,
+            CUSTOM_FIELD_2 = 4,
+            CUSTOM_FIELD_3 = 5,
         };
 
         // Split the line into arguments
         std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
 
-        // Calculate the position of the entity
+        // Get the position and rotation of the entity
         raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
+        float rotation = std::stof(args[ENTITY_ROT]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")
         {
             raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
-            EntityStorage::Register(new Geometry(position, dimensions));
+            EntityStorage::Register(new Geometry(position, rotation, dimensions));
         }
         else if (args[ENTITY_NAME] == "Player")
         {
@@ -124,7 +128,7 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
             ResourceManager::Register<raylib::Model>(modelPath);
             ResourceManager::Register<raylib::Texture2D>(texturePath);
 
-            EntityStorage::Register(new Player(position,ModelData( modelPath, texturePath)));
+            EntityStorage::Register(new Player(position, rotation, ModelData(modelPath, texturePath)));
         }
         else
         {

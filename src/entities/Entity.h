@@ -42,6 +42,10 @@ public:
 
     raylib::Vector3 GetPosition();
 
+    void SetRotation(float newRotation);
+
+    float GetRotation() const;
+
     const GenerationalIndex& GetIndex() const {
         return index;
     }
@@ -55,10 +59,11 @@ protected:
     // Protected constructors
 
     Entity() :
-    Entity(raylib::Vector3::Zero())
+    Entity(raylib::Vector3::Zero(), 0.f)
     {};
 
-    explicit Entity(raylib::Vector3 position) :
+    explicit Entity(raylib::Vector3 position, float rotation) :
+    rotation(rotation),
     position(position),
     index({0, 0}),
     name("Entity"),
@@ -67,6 +72,8 @@ protected:
     {};
 
     // Protected fields
+
+    float rotation;
 
     raylib::Vector3 position;
 
