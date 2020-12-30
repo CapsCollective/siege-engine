@@ -17,22 +17,20 @@ public:
     explicit Player(raylib::Vector3 position) :
     Entity(position),
     speed(1.5f),
-    velocity(raylib::Vector3::Zero())
+    velocity(raylib::Vector3::Zero()),
+    modelData(ModelData("assets/models/cube/cube.obj",
+                        "assets/models/cube/CubeTexture.png"))
     {
         Entity::SetName("Player");
-        modelData = ModelData(
-            "assets/models/cube/cube.obj",
-            "assets/models/cube/CubeTexture.png"
-        );
     };
 
     explicit Player(raylib::Vector3 position, const ModelData& data) :
             Entity(position),
             speed(1.5f),
-            velocity(raylib::Vector3::Zero())
+            velocity(raylib::Vector3::Zero()),
+            modelData(data)
     {
         Entity::SetName("Player");
-        modelData = ModelData(data);
     };
 
     // Public overrides

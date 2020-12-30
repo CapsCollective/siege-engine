@@ -117,18 +117,12 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
             std::string modelPath = args[CUSTOM_FIELD_2];
             std::string texturePath = args[CUSTOM_FIELD_3];
 
-            ResourceManager::Register<Model>(modelPath);
-            ResourceManager::Register<Texture2D>(texturePath);
-
             EntityStorage::Register(new Geometry(position, dimensions, ModelData(modelPath, texturePath)));
         }
         else if (args[ENTITY_NAME] == "Player")
         {
             std::string modelPath = args[CUSTOM_FIELD_1];
             std::string texturePath = args[CUSTOM_FIELD_2];
-
-            ResourceManager::Register<Model>(modelPath);
-            ResourceManager::Register<Texture2D>(texturePath);
 
             EntityStorage::Register(new Player(position,ModelData(modelPath, texturePath)));
         }
