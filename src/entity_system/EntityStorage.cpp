@@ -3,11 +3,17 @@
 #include <algorithm>
 
 // Static member initialisations
-std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 IndexAllocator EntityStorage::allocator = IndexAllocator();
+
+// All available storage vectors.
+std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
+
+// Vectors for holding filtered entities (tools, game entities, or both)
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
+
+// Vectors for transformations (deleting and creating entities)
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
 
@@ -27,7 +33,6 @@ void EntityStorage::Register(Entity* entity)
 // Adds an entity to the Entity Storage.
 void EntityStorage::AddEntity(Entity* entity)
 {
-
     // If the entity's given index already exists
     if (entity->GetIndex().index < entities.size())
     {
