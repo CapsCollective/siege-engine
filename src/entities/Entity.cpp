@@ -18,6 +18,10 @@ raylib::Vector3 Entity::GetPosition()
     return position;
 }
 
+void Entity::SetTool(bool isTool) {
+    this->isTool = isTool;
+}
+
 void Entity::SetRotation(float newRotation)
 {
     rotation = fmod(newRotation, 360.f);
