@@ -66,15 +66,14 @@ int main(int argc, char* argv[])
         // Update all tools
         for (auto& entity : EntityStorage::GetTools())
         {
-            // Update all our tools
+            // Update tools
             entity->OnUpdate();
         }
 
-        // Update entities
+        // Update game entities
         if (!isEditorMode) {
             for (auto& entity : EntityStorage::GetEntities())
             {
-                // Update our entities
                 entity->OnUpdate();
             }
         }
@@ -101,6 +100,7 @@ int main(int argc, char* argv[])
             entity->OnUIDraw();
         }
 
+        // Remove all entities at the end of the frame
         EntityStorage::FreeEntities();
 
         window.EndDrawing();
