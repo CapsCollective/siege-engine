@@ -7,9 +7,9 @@ std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 IndexAllocator EntityStorage::allocator = IndexAllocator();
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
+std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
-
 
 void EntityStorage::Register(Entity* entity)
 {
@@ -40,8 +40,17 @@ void EntityStorage::AddEntity(Entity* entity)
         entities.push_back(entity);
     }
 
-    // Add the entity to the end of our packed entities.
-    packedEntities.push_back(entity);
+    if (entity->IsTool())
+    {
+        packedTools.push_back(entity);
+    }
+    else
+    {
+        // Add the entity to the end of our packed entities.
+        packedEntities.push_back(entity);
+    }
+
+    allPackedEntities.emplace_back(entity);
 }
 
 void EntityStorage::RegisterEntities() {
@@ -62,14 +71,27 @@ void EntityStorage::Remove(Entity* entity)
         // De-allocate the entity's index
         allocator.Deallocate(entity->GetIndex());
 
-        // Get the packed index
-        int32_t index = GetEntityIndex(entity, packedEntities);
+        // Get the appropriate storage (tools or entities)
+        auto storage = entity->IsTool() ? &packedTools : &packedEntities;
 
+        // Get the packed index
+        int32_t index = GetEntityIndex(entity, *storage);
+        int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
+
+        // Check if we found the appropriate index in our tool or entity storage
         if (index != -1) 
         {
             // Erase the packed index entry from our packed entity storage
-            packedEntities.erase(packedEntities.begin() + index);
+            storage->erase(storage->begin() + index);
         }
+
+        // Check if we found an index in our general storage of all entities.
+        if (generalIndex != -1)
+        {
+            // Erase the packed index entry from our container that stores all entities
+            allPackedEntities.erase(allPackedEntities.begin() + generalIndex);
+        }
+
         // Finally, delete the entity from the heap
         size_t entityIndex = entity->GetIndex().index;
         delete entities[entityIndex];

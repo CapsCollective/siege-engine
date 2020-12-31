@@ -10,8 +10,6 @@ public:
 
     // Virtual methods
 
-    virtual void OnToolUpdate() {};
-
     virtual void OnUpdate() {};
 
     virtual void OnDraw() {};
@@ -40,7 +38,9 @@ public:
 
     void SetPosition(raylib::Vector3 newPosition);
 
-    void SetTool(bool isTool);
+    void SetIsTool(bool isTool);
+
+    bool IsTool();
 
     raylib::Vector3 GetPosition();
 

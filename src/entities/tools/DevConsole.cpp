@@ -4,7 +4,7 @@
 #include "EditorController.h"
 #include "Profiler.h"
 
-void DevConsole::OnToolUpdate()
+void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 

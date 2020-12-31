@@ -18,7 +18,7 @@ raylib::Vector3 Entity::GetPosition()
     return position;
 }
 
-void Entity::SetTool(bool isTool) {
+void Entity::SetIsTool(bool isTool) {
     this->isTool = isTool;
 }
 
@@ -71,4 +71,8 @@ void Entity::SetFreeable(bool freeable)
 Entity* Entity::Clone()
 {
     return nullptr;
+}
+
+bool Entity::IsTool() {
+    return isTool;
 }

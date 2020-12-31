@@ -15,6 +15,7 @@ public:
         Entity::SetName("MessageDisplay");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
+        Entity::SetIsTool(true);
     };
 
     // Public methods
