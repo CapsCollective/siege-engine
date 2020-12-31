@@ -8,7 +8,7 @@
 // Define custom colours
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
 
-void EditorController::OnToolUpdate()
+void EditorController::OnUpdate()
 {
     if (!camera || !messageDisplay) return;
 

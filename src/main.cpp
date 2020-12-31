@@ -63,16 +63,20 @@ int main(int argc, char* argv[])
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
-        // Update entities
-        for (auto& entity : EntityStorage::GetEntities())
+        // Update all tools
+        for (auto& entity : EntityStorage::GetTools())
         {
-            // Run editor tool updates
-            // TODO separate entity storage into tools and in-game
-            entity->OnToolUpdate();
-
-            // Turn off standard updates in editor mode
-            if (isEditorMode) continue;
+            // Update all our tools
             entity->OnUpdate();
+        }
+
+        // Update entities
+        if (!isEditorMode) {
+            for (auto& entity : EntityStorage::GetEntities())
+            {
+                // Update our entities
+                entity->OnUpdate();
+            }
         }
 
         // Entity creation is deferred until after the update loop
@@ -84,7 +88,7 @@ int main(int argc, char* argv[])
         camera.BeginMode3D();
 
         // Draw entities
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto& entity : EntityStorage::GetAllEntities())
         {
             entity->OnDraw();
         }
@@ -92,7 +96,7 @@ int main(int argc, char* argv[])
         camera.EndMode3D();
 
         // UI Draw entities
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto& entity : EntityStorage::GetAllEntities())
         {
             entity->OnUIDraw();
         }

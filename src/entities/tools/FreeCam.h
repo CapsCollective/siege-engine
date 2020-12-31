@@ -22,13 +22,14 @@ public:
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
         camera->SetMode(CAMERA_CUSTOM);
+        Entity::SetIsTool(true);
     };
 
 protected:
 
     // Protected overrides
 
-    void OnToolUpdate() override;
+    void OnUpdate() override;
 
 private:
 

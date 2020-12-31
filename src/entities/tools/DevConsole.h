@@ -19,14 +19,14 @@ public:
         Entity::SetName("DevConsole");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
-
+        Entity::SetIsTool(true);
     };
 
 protected:
 
     // Protected overrides
 
-    void OnToolUpdate() override;
+    void OnUpdate() override;
 
     void OnUIDraw() override;
 

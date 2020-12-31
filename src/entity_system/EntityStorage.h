@@ -23,6 +23,16 @@ public:
         return packedEntities;
     }
 
+    static std::vector<Entity*>& GetAllEntities()
+    {
+        return allPackedEntities;
+    }
+
+    static std::vector<Entity*>& GetTools()
+    {
+        return packedTools;
+    }
+
     // Returns an entity in the packed list
     static Entity* GetPackedEntity(size_t index)
     {
@@ -63,6 +73,9 @@ private:
 
     // A packed vector of all tools - contains all tool entities.
     static std::vector<Entity*> packedTools;
+
+    // Holds every single entity in a packed index
+    static std::vector<Entity*> allPackedEntities;
 
     // Vector for storing all entities which were queued for freeing.
     static std::vector<Entity*> freedEntities;
