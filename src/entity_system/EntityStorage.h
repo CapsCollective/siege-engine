@@ -58,8 +58,11 @@ private:
     // entites that were oreviously made)
     static std::vector<Entity*> entities;
 
-    // The packed vector of entities - contains all available entities in no particular order.
+    // The packed vector of entities - contains all available non-tool-entities in no particular order.
     static std::vector<Entity*> packedEntities;
+
+    // A packed vector of all tools - contains all tool entities.
+    static std::vector<Entity*> packedTools;
 
     // Vector for storing all entities which were queued for freeing.
     static std::vector<Entity*> freedEntities;
