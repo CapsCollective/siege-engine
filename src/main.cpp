@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        SceneLoader::LoadScene("main");
+        SceneLoader::QueueNextScene("main");
     }
 
     // Run main game loop until close button or ESC key
