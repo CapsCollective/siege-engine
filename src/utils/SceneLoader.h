@@ -15,7 +15,7 @@ public:
 
     static bool LoadScene(const std::string& sceneName);
 
-    static bool QueueNextScene(const std::string& sceneName);
+    static void QueueNextScene(const std::string& sceneName);
 
     static void LoadNextScene();
 
