@@ -7,7 +7,7 @@ void Geometry::OnDraw()
                           ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
-    DrawModelEx (
+    DrawModelEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),
@@ -17,7 +17,7 @@ void Geometry::OnDraw()
     );
 
     // Draw the model wireframe
-    DrawModelWiresEx (
+    DrawModelWiresEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),

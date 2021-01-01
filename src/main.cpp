@@ -10,6 +10,7 @@
 #include <Vector3.hpp>
 #include <Window.hpp>
 #include <Color.hpp>
+#include "resources/ResourceManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -102,6 +103,8 @@ int main(int argc, char* argv[])
 
         // Remove all entities at the end of the frame
         EntityStorage::FreeEntities();
+        ResourceManager::FreeAllResources();
+        SceneLoader::LoadNextScene();
 
         window.EndDrawing();
     }

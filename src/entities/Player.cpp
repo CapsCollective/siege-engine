@@ -20,26 +20,26 @@ void Player::OnDraw()
 {
     // Set the model's texture to this entity's texture
     ModelData::SetTexture(ResourceManager::Get<Model>(modelData.GetModelPath()),
-            ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
+                          ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
     DrawModelEx (
-        ResourceManager::Get<Model>(modelData.GetModelPath()),
-        position,
-        raylib::Vector3(0, 1, 0),
-        rotation,
-        raylib::Vector3(1.0f, 1.0f, 1.0f),
-        RED
+            ResourceManager::Get<Model>(modelData.GetModelPath()),
+            position,
+            raylib::Vector3(0, 1, 0),
+            rotation,
+            raylib::Vector3(1.0f, 1.0f, 1.0f),
+            RED
     );
 
     // Draw the model wireframe
     DrawModelWiresEx (
-        ResourceManager::Get<Model>(modelData.GetModelPath()),
-        position,
-        raylib::Vector3(0, 1, 0),
-        rotation,
-        raylib::Vector3(1.0f, 1.0f, 1.0f),
-        MAROON
+            ResourceManager::Get<Model>(modelData.GetModelPath()),
+            position,
+            raylib::Vector3(0, 1, 0),
+            rotation,
+            raylib::Vector3(1.0f, 1.0f, 1.0f),
+            MAROON
     );
 }
 
