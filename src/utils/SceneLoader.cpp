@@ -16,6 +16,7 @@
 
 // Define static members
 std::string SceneLoader::currentScene;
+std::string SceneLoader::nextScene;
 
 void SceneLoader::NewScene()
 {
@@ -92,9 +93,6 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
     std::ifstream file(SCENE_DIR + sceneName + SCENE_FILE_EXT);
     if (!file.is_open()) return false;
 
-    // Free all current items from storage
-    ClearScene();
-
     // Iterate over each line of the file
     std::string line;
     while (getline(file, line))
@@ -155,5 +153,22 @@ void SceneLoader::ClearScene()
     }
 
     ResourceManager::ClearResources();
+}
+
+bool SceneLoader::QueueNextScene(const std::string &sceneName) {
+    // Free all current items from storage
+    ClearScene();
+    nextScene = sceneName;
+    return true;
+}
+
+void SceneLoader::LoadNextScene() {
+
+    if (!nextScene.empty()) {
+        if (LoadScene(nextScene)) {
+            std::cout << "Successfully loaded scene: " << nextScene << std::endl;
+        }
+        nextScene.clear();
+    }
 }
 

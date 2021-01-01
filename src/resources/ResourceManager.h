@@ -34,7 +34,7 @@ public:
     template<typename T>
     static T& Get(const std::string& path)
     {
-        return std::get<T>(resources[path]);
+        return std::get<T>(resources.at(path));
     };
 
     template<typename T>
@@ -43,6 +43,8 @@ public:
         return &std::get<T>(resources[path]);
     };
 
+    static void FreeAllResources();
+
     static void ClearResources();
 
 private:
@@ -50,7 +52,8 @@ private:
     // Private fields
 
     static RESOURCE_MAP resources;
-};
 
+    static std::vector<std::variant<Model, Texture2D>*> freedResources;
+};
 
 #endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H

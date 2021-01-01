@@ -53,9 +53,9 @@ void DevConsole::OnUpdate()
                     if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
 
                     // Try load the scene specified
-                    if (SceneLoader::LoadScene(argument))
+                    if (SceneLoader::QueueNextScene(argument))
                     {
-                        messageDisplay->DisplayMessage(argument + ".scene loaded");
+                        messageDisplay->DisplayMessage("Loading scene: " + argument + ".scene...");
                     }
                     else messageDisplay->DisplayMessage(argument + ".scene not found");
                 }
