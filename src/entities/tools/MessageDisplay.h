@@ -13,8 +13,6 @@ public:
     displayTime(0.f)
     {
         Entity::SetName("MessageDisplay");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
     // Public methods

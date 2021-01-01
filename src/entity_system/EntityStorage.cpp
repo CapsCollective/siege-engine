@@ -27,7 +27,7 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     entity->SetIndex(index);
 
     // Queue the entity for initialisation.
-    registeredEntities.push_back({entity, isTool});
+    registeredEntities.emplace_back(entity, isTool);
 }
 
 // Adds an entity to the Entity Storage.

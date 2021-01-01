@@ -1,6 +1,7 @@
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "entity_system/EntityStorage.h"
+#include "resources/ResourceManager.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
@@ -10,7 +11,6 @@
 #include <Vector3.hpp>
 #include <Window.hpp>
 #include <Color.hpp>
-#include "resources/ResourceManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -64,10 +64,9 @@ int main(int argc, char* argv[])
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
-        // Update all tools
+        // Update tool entities
         for (auto& entity : EntityStorage::GetTools())
         {
-            // Update tools
             entity->OnUpdate();
         }
 

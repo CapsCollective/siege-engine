@@ -12,7 +12,7 @@ public:
     // Public functions
 
     // Queues an entity for initialisation in the next frame
-    static void Register(Entity*, bool = false);
+    static void Register(Entity*, bool isTool = false);
 
     // Removes an entity from storage
     static void Remove(Entity*);

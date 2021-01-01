@@ -51,7 +51,7 @@ void DevConsole::OnUpdate()
             if (!argument.empty())
             {
                 // Deselect all entities if in editor mode
-                if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+                if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
 
                 // Try load the scene specified
                 SceneLoader::QueueNextScene(argument);
@@ -71,7 +71,7 @@ void DevConsole::OnUpdate()
         else if (command == "new")
         {
             // Deselect all entities and open a new, untitled scene
-            ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+            ServiceLocator::GetEditorController()->SelectEntity(nullptr);
             SceneLoader::NewScene();
             messageDisplay->DisplayMessage("Created new scene");
         }
