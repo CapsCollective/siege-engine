@@ -15,9 +15,9 @@ std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
 
 // Vectors for transformations (deleting and creating entities)
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
+std::vector<std::pair<Entity*, bool>> EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
 
-void EntityStorage::Register(Entity* entity)
+void EntityStorage::Register(Entity* entity, bool isTool)
 {
     // If the pointer is null - stop the function.
     if (!entity) return;
@@ -27,11 +27,11 @@ void EntityStorage::Register(Entity* entity)
     entity->SetIndex(index);
 
     // Queue the entity for initialisation.
-    registeredEntities.push_back(entity);
+    registeredEntities.push_back({entity, isTool});
 }
 
 // Adds an entity to the Entity Storage.
-void EntityStorage::AddEntity(Entity* entity)
+void EntityStorage::AddEntity(Entity* entity, bool isTool)
 {
     // If the entity's given index already exists
     if (entity->GetIndex().index < entities.size())
@@ -45,7 +45,7 @@ void EntityStorage::AddEntity(Entity* entity)
         entities.push_back(entity);
     }
 
-    if (entity->IsTool())
+    if (isTool)
     {
         packedTools.push_back(entity);
     }
@@ -62,7 +62,7 @@ void EntityStorage::RegisterEntities() {
     // Iterate over our queued entities and initialise them
     for (auto& entity : registeredEntities) {
         // Add the entity to storage
-        AddEntity(entity);
+        AddEntity(entity.first, entity.second);
     }
     // Finally, remove all entities from the queue.
     registeredEntities.clear();
@@ -76,18 +76,15 @@ void EntityStorage::Remove(Entity* entity)
         // De-allocate the entity's index
         allocator.Deallocate(entity->GetIndex());
 
-        // Get the appropriate storage (tools or entities)
-        auto storage = entity->IsTool() ? &packedTools : &packedEntities;
-
         // Get the packed index
-        int32_t index = GetEntityIndex(entity, *storage);
+        int32_t index = GetEntityIndex(entity, packedEntities);
         int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
 
         // Check if we found the appropriate index in our tool or entity storage
         if (index != -1) 
         {
             // Erase the packed index entry from our packed entity storage
-            storage->erase(storage->begin() + index);
+            packedEntities.erase(packedEntities.begin() + index);
         }
 
         // Check if we found an index in our general storage of all entities.

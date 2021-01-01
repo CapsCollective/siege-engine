@@ -22,7 +22,6 @@ public:
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
         camera->SetMode(CAMERA_CUSTOM);
-        Entity::SetIsTool(true);
     };
 
 protected:

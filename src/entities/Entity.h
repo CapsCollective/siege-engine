@@ -38,10 +38,6 @@ public:
 
     void SetPosition(raylib::Vector3 newPosition);
 
-    void SetIsTool(bool isTool);
-
-    bool IsTool();
-
     raylib::Vector3 GetPosition();
 
     void SetRotation(float newRotation);
@@ -70,8 +66,7 @@ protected:
     index({0, 0}),
     name("Entity"),
     isSerialisable(true),
-    isFreeable(true),
-    isTool(false)
+    isFreeable(true)
     {};
 
     // Protected fields
@@ -89,8 +84,6 @@ private:
     bool isFreeable;
 
     bool isSerialisable;
-
-    bool isTool;
 
     std::string name;
 };

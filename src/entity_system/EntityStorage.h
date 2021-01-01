@@ -12,7 +12,7 @@ public:
     // Public functions
 
     // Queues an entity for initialisation in the next frame
-    static void Register(Entity*);
+    static void Register(Entity*, bool = false);
 
     // Removes an entity from storage
     static void Remove(Entity*);
@@ -81,10 +81,10 @@ private:
     static std::vector<Entity*> freedEntities;
 
     // Vector containing all entities that were queued for adding.
-    static std::vector<Entity*> registeredEntities;
+    static std::vector<std::pair<Entity*, bool>> registeredEntities;
 
     // Adds an entity to the entity storage.
-    static void AddEntity(Entity *entity);
+    static void AddEntity(Entity* entity, bool isTool);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H
