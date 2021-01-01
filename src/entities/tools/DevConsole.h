@@ -17,8 +17,6 @@ public:
     isActive(false)
     {
         Entity::SetName("DevConsole");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
 protected:

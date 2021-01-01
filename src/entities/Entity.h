@@ -22,19 +22,13 @@ public:
 
     // Public methods
 
-    void QueueFree(bool forceFree = false);
+    void QueueFree();
 
     void Free(bool forceFree = false);
 
     std::string GetName();
 
     void SetName(std::string entityName);
-
-    void SetFreeable(bool freeable);
-
-    bool IsSerialisable() const;
-
-    void SetSerialisable(bool serialisable);
 
     void SetPosition(raylib::Vector3 newPosition);
 
@@ -64,9 +58,7 @@ protected:
     rotation(rotation),
     position(position),
     index({0, 0}),
-    name("Entity"),
-    isSerialisable(true),
-    isFreeable(true)
+    name("Entity")
     {};
 
     // Protected fields
@@ -80,10 +72,6 @@ protected:
 private:
 
     // Private fields
-
-    bool isFreeable;
-
-    bool isSerialisable;
 
     std::string name;
 };

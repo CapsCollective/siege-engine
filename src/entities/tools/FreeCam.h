@@ -19,8 +19,6 @@ public:
     rotation(raylib::Vector3(0.f, -1.f, -1.f))
     {
         Entity::SetName("FreeCam");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
         camera->SetMode(CAMERA_CUSTOM);
     };
 

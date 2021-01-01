@@ -1,9 +1,11 @@
+#include "../entities/tools/MessageDisplay.h"
 #include "../resources/ResourceManager.h"
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
 #include "StringHelpers.h"
 #include "SceneLoader.h"
+#include "ServiceLocator.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -52,9 +54,6 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
     std::string fileData;
     for (auto entity : EntityStorage::GetEntities())
     {
-        // Check if the entity is serialisable
-        if (!entity->IsSerialisable()) continue;
-
         // Add its name, position and rotation to the data
         fileData += (entity->GetName() + SEP +
                 DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
@@ -157,6 +156,7 @@ void SceneLoader::ClearScene()
         entity->QueueFree();
     }
 
+    // Clear out all resources
     ResourceManager::ClearResources();
 }
 

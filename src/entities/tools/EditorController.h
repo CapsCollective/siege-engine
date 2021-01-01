@@ -28,8 +28,6 @@ public:
     selectedIdx(0)
     {
         Entity::SetName("EditorController");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
     // Class methods
@@ -38,7 +36,7 @@ public:
 
     // Public methods
 
-    void TrySelectEntity(Entity* entity);
+    void SelectEntity(Entity* entity);
 
 protected:
 

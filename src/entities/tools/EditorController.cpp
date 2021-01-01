@@ -56,7 +56,7 @@ void EditorController::OnUpdate()
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
-                TrySelectEntity(entity);
+                SelectEntity(entity);
                 break;
             }
         }
@@ -71,7 +71,7 @@ void EditorController::OnUpdate()
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                TrySelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
@@ -153,10 +153,8 @@ void EditorController::OnUIDraw()
              (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
 }
 
-void EditorController::TrySelectEntity(Entity *entity)
+void EditorController::SelectEntity(Entity* entity)
 {
-    // Prevent selection of entities that are not serialisable
-    if (entity && !entity->IsSerialisable()) entity = nullptr;
     selectedEntity = entity;
 }
 
