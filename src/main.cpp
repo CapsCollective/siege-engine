@@ -38,23 +38,23 @@ int main(int argc, char* argv[])
     // Initialise and register the message display
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
-    EntityStorage::Register(display);
+    EntityStorage::Register(display, true);
 
     // Initialise and register the profiler
     auto profiler = new Profiler(isEditorMode);
     ServiceLocator::Provide(profiler);
-    EntityStorage::Register(profiler);
+    EntityStorage::Register(profiler, true);
 
     // Initialise and register the dev console
-    EntityStorage::Register(new DevConsole(isEditorMode));
+    EntityStorage::Register(new DevConsole(isEditorMode), true);
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
     {
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
-        EntityStorage::Register(editor);
-        EntityStorage::Register(new FreeCam());
+        EntityStorage::Register(editor, true);
+        EntityStorage::Register(new FreeCam(), true);
     }
     else
     {

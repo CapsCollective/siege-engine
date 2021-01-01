@@ -25,7 +25,6 @@ public:
         Entity::SetName("EditorController");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
-        Entity::SetIsTool(true);
     };
 
     // Class methods

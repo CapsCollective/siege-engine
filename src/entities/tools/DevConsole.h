@@ -19,7 +19,6 @@ public:
         Entity::SetName("DevConsole");
         Entity::SetFreeable(false);
         Entity::SetSerialisable(false);
-        Entity::SetIsTool(true);
     };
 
 protected:
