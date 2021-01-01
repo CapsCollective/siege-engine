@@ -4,6 +4,7 @@
 #include "../Geometry.h"
 #include "../Player.h"
 #include "../../utils/StringHelpers.h"
+#include "../../utils/SceneLoader.h"
 
 // Define custom colours
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
@@ -14,15 +15,33 @@ void EditorController::OnToolUpdate()
 
     // Check for deselection and activation keys
     if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
-    if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_G))
-    {
-        isGridActive = !isGridActive;
-        messageDisplay->DisplayMessage("Grid display toggled");
-    }
-    if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_R))
-    {
-        isRotationModeActive = !isRotationModeActive;
-        messageDisplay->DisplayMessage("Rotation mode toggled");
+
+    // Check for command key presses
+    if (IsKeyDown(KEY_LEFT_SUPER)){
+        if (IsKeyPressed(KEY_G))
+        {
+            // Toggle grid display
+            isGridActive = !isGridActive;
+            messageDisplay->DisplayMessage("Grid display toggled");
+        }
+        else if (IsKeyPressed(KEY_R))
+        {
+            // Toggle rotation mode
+            currentMode = currentMode == ROTATION ? POSITION : ROTATION;
+            messageDisplay->DisplayMessage("Rotation mode toggled");
+        }
+        else if (IsKeyPressed(KEY_S))
+        {
+            // Save the scene
+            SceneLoader::SaveScene();
+            messageDisplay->DisplayMessage("Scene saved");
+        }
+        else if (IsKeyPressed(KEY_D) && selectedEntity)
+        {
+            // Duplicate the entity
+            EntityStorage::Register(selectedEntity->Clone());
+            messageDisplay->DisplayMessage("Entity duplicated");
+        }
     }
 
     // Check for mouse clicks
@@ -61,24 +80,27 @@ void EditorController::OnToolUpdate()
 
     if (selectedEntity)
     {
-        if (isRotationModeActive)
+        switch (currentMode)
         {
-            // Calculate rotation from input and apply it to the rotation of the entity
-            float rotation = rotationAmount * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
-            selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
-        }
-        else
-        {
-            // Calculate move from input
-            raylib::Vector3 move = raylib::Vector3::Zero();
-            move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
+            case POSITION: {
+                // Calculate move from input
+                raylib::Vector3 move = raylib::Vector3::Zero();
+                move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
-            // Switch vertical move input between z and y axis based on shift key down
-            float verticalMove = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
-            IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
+                // Switch vertical move input between z and y axis based on shift key down
+                float verticalMove = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
+                IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
 
-            // Apply the move to the position of the entity
-            selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
+                // Apply the move to the position of the entity
+                selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
+                break;
+            }
+            case ROTATION: {
+                // Calculate rotation from input and apply it to the rotation of the entity
+                float rotation = rotationAmount * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
+                selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
+                break;
+            }
         }
 
         // Free the entity if backspace is pressed
@@ -87,13 +109,6 @@ void EditorController::OnToolUpdate()
             selectedEntity->QueueFree();
             selectedEntity = nullptr;
             messageDisplay->DisplayMessage("Entity deleted");
-        }
-
-        // Duplicate the entity if D is pressed
-        if (IsKeyDown(KEY_LEFT_SUPER) && IsKeyPressed(KEY_D))
-        {
-            EntityStorage::Register(selectedEntity->Clone());
-            messageDisplay->DisplayMessage("Entity duplicated");
         }
     }
 }
@@ -131,9 +146,9 @@ void EditorController::OnUIDraw()
     DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
              (int) screenPosition.y, 20, PINK);
     DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 20, 18, isRotationModeActive ? PINK : BRIGHT_PINK);
+             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
     DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 40, 18, isRotationModeActive ? BRIGHT_PINK : PINK);
+             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
 }
 
 void EditorController::TrySelectEntity(Entity *entity)
