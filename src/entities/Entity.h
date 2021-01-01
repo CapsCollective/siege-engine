@@ -24,7 +24,7 @@ public:
 
     void QueueFree();
 
-    void Free(bool forceFree = false);
+    void Free();
 
     std::string GetName();
 

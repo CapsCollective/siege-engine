@@ -7,8 +7,6 @@ public:
 
     // Public methods
 
-    // TODO public API is too broad, cut it down to essentials
-
     static void NewScene();
 
     static void SaveScene();
@@ -22,8 +20,6 @@ public:
 private:
 
     // Private methods
-
-    static bool LoadScene(const std::string& sceneName);
 
     static void SerialiseScene(const std::string& sceneName);
 

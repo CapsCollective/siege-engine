@@ -42,6 +42,13 @@ void EditorController::OnUpdate()
             EntityStorage::Register(selectedEntity->Clone());
             messageDisplay->DisplayMessage("Entity duplicated");
         }
+        else if (IsKeyPressed(KEY_BACKSPACE) && selectedEntity)
+        {
+            // Free the entity
+            selectedEntity->QueueFree();
+            selectedEntity = nullptr;
+            messageDisplay->DisplayMessage("Entity deleted");
+        }
     }
 
     // Check for mouse clicks
@@ -82,6 +89,7 @@ void EditorController::OnUpdate()
 
     if (selectedEntity)
     {
+        // Run the appropriate editor mode logic on the selected entity
         switch (currentMode)
         {
             case POSITION: {
@@ -103,14 +111,6 @@ void EditorController::OnUpdate()
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
-        }
-
-        // Free the entity if backspace is pressed
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            selectedEntity->QueueFree();
-            selectedEntity = nullptr;
-            messageDisplay->DisplayMessage("Entity deleted");
         }
     }
 }
@@ -163,7 +163,7 @@ bool EditorController::TryAddEntity(std::string& entityName)
     // Lowercase the supplied entity name
     entityName = StringHelpers::LowercaseString(entityName);
 
-    // Check for matching cases
+    // Check for matching cases to run
     if (entityName == "geometry")
     {
         EntityStorage::Register(new Geometry());

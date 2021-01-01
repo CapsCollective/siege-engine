@@ -1,12 +1,5 @@
 #include "IndexAllocator.h"
 
-IndexAllocator::IndexAllocator() 
-{
-    entries = std::vector<IndexEntry>();
-    freeEntries = std::vector<size_t>();
-    currentEntities = 0;
-}
-
 GenerationalIndex IndexAllocator::AllocateIndex() 
 {
     size_t index;
