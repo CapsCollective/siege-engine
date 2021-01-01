@@ -7,6 +7,11 @@
 #include <cstdint>
 #include "../Entity.h"
 
+enum EditorMode {
+    POSITION,
+    ROTATION,
+};
+
 class EditorController : public Entity
 {
 public:
@@ -17,9 +22,9 @@ public:
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
-    rotationAmount(10.f),
+    rotationAmount(15.f),
     moveDistance(0.5f),
-    isRotationModeActive(false),
+    currentMode(POSITION),
     isGridActive(true),
     selectedIdx(0)
     {
@@ -50,7 +55,7 @@ private:
 
     // Private fields
 
-    bool isRotationModeActive;
+    EditorMode currentMode;
 
     bool isGridActive;
 
