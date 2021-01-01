@@ -160,19 +160,24 @@ void SceneLoader::ClearScene()
     ResourceManager::ClearResources();
 }
 
-bool SceneLoader::QueueNextScene(const std::string &sceneName) {
+// Sets the next scene
+void SceneLoader::QueueNextScene(const std::string &sceneName)
+{
     // Free all current items from storage
     ClearScene();
     nextScene = sceneName;
-    return true;
 }
 
-void SceneLoader::LoadNextScene() {
+void SceneLoader::LoadNextScene()
+{
 
-    if (!nextScene.empty()) {
+    if (!nextScene.empty())
+    {
         if (LoadScene(nextScene)) {
+            // TODO: Unsure how to tie this message to the MessageDisplay. I've logged it down so far, but I'm sure there's a more elegant way to do this.
             std::cout << "Successfully loaded scene: " << nextScene << std::endl;
         }
+        else std::cout << "Unable to find scene: " << nextScene << std::endl;
         nextScene.clear();
     }
 }

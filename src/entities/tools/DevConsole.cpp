@@ -54,11 +54,7 @@ void DevConsole::OnUpdate()
                 if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
 
                 // Try load the scene specified
-                if (SceneLoader::QueueNextScene(argument))
-                {
-                    messageDisplay->DisplayMessage("Loading scene: " + argument + ".scene...");
-                }
-                else messageDisplay->DisplayMessage(argument + ".scene not found");
+                SceneLoader::QueueNextScene(argument);
             }
             else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
         }

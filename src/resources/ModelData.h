@@ -4,7 +4,8 @@
 #include <raylib-cpp.hpp>
 #include "ResourceManager.h"
 
-class ModelData {
+class ModelData
+{
 public:
 
     // Constructors
@@ -15,7 +16,8 @@ public:
         ResourceManager::Register<Texture>(this->texturePath);
     };
 
-    ModelData(const ModelData& other) {
+    ModelData(const ModelData& other)
+    {
         this->modelPath = other.modelPath;
         this->texturePath = other.texturePath;
 
