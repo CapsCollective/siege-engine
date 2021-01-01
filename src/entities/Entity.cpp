@@ -33,7 +33,7 @@ void Entity::QueueFree()
     EntityStorage::QueueFree(this);
 }
 
-void Entity::Free(bool forceFree)
+void Entity::Free()
 {
     // Remove entity from storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
     EntityStorage::Remove(this);

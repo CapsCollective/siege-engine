@@ -6,6 +6,7 @@
 #include <variant>
 #include <vector>
 
+// Define macros
 #define RESOURCE_MAP std::map<std::string, std::variant<Model, Texture2D>>
 
 class ResourceManager
@@ -16,6 +17,7 @@ public:
     template<typename T>
     static void Register(const std::string& path)
     {
+        // TODO comment Register
         if (resources.find(path) != resources.end()) return;
 
         std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();

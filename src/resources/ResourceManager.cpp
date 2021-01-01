@@ -14,6 +14,7 @@ void ResourceManager::ClearResources()
 
 void ResourceManager::FreeAllResources()
 {
+    // TODO comment FreeAllResources
     if (!freedResources.empty()) {
         for (auto i = freedResources.rbegin(); i != freedResources.rend(); ++i)
         {

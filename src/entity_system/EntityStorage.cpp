@@ -3,6 +3,7 @@
 #include <algorithm>
 
 // Static member initialisations
+// TODO Find a way to stop this from being an unsafe initialisation
 IndexAllocator EntityStorage::allocator = IndexAllocator();
 
 // All available storage vectors.
