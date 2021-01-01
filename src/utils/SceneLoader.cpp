@@ -170,15 +170,16 @@ void SceneLoader::QueueNextScene(const std::string &sceneName)
 
 void SceneLoader::LoadNextScene()
 {
+    if (nextScene.empty()) return;
 
-    if (!nextScene.empty())
-    {
-        if (LoadScene(nextScene)) {
-            // TODO: Unsure how to tie this message to the MessageDisplay. I've logged it down so far, but I'm sure there's a more elegant way to do this.
-            std::cout << "Successfully loaded scene: " << nextScene << std::endl;
-        }
-        else std::cout << "Unable to find scene: " << nextScene << std::endl;
-        nextScene.clear();
+    // Try load the next scene
+    MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
+    if (LoadScene(nextScene)) {
+        messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
     }
+    else messageDisplay->DisplayMessage("Unable to find \"" + nextScene +  ".scene\"");
+
+    // Clear the next scene
+    nextScene.clear();
 }
 
