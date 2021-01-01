@@ -13,7 +13,9 @@ public:
 
     static void SaveScene(const std::string& sceneName);
 
-    static bool LoadScene(const std::string& sceneName);
+    static void QueueNextScene(const std::string& sceneName);
+
+    static void LoadNextScene();
 
 private:
 
@@ -28,6 +30,8 @@ private:
     // Private fields
 
     static std::string currentScene;
+
+    static std::string nextScene;
 };
 
 

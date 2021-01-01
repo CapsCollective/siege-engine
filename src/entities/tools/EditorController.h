@@ -17,7 +17,6 @@ class EditorController : public Entity
 public:
 
     // Constructors
-
     explicit EditorController() :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
@@ -29,8 +28,6 @@ public:
     selectedIdx(0)
     {
         Entity::SetName("EditorController");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
     // Class methods
@@ -39,13 +36,13 @@ public:
 
     // Public methods
 
-    void TrySelectEntity(Entity* entity);
+    void SelectEntity(Entity* entity);
 
 protected:
 
     // Protected overrides
 
-    void OnToolUpdate() override;
+    void OnUpdate() override;
 
     void OnDraw() override;
 

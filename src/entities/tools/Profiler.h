@@ -13,8 +13,6 @@ public:
             isActive(isActive)
     {
         Entity::SetName("Profiler");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
     // Public methods

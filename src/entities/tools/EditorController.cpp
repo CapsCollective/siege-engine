@@ -9,7 +9,7 @@
 // Define custom colours
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
 
-void EditorController::OnToolUpdate()
+void EditorController::OnUpdate()
 {
     if (!camera || !messageDisplay) return;
 
@@ -42,6 +42,13 @@ void EditorController::OnToolUpdate()
             EntityStorage::Register(selectedEntity->Clone());
             messageDisplay->DisplayMessage("Entity duplicated");
         }
+        else if (IsKeyPressed(KEY_BACKSPACE) && selectedEntity)
+        {
+            // Free the entity
+            selectedEntity->QueueFree();
+            selectedEntity = nullptr;
+            messageDisplay->DisplayMessage("Entity deleted");
+        }
     }
 
     // Check for mouse clicks
@@ -56,7 +63,7 @@ void EditorController::OnToolUpdate()
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
-                TrySelectEntity(entity);
+                SelectEntity(entity);
                 break;
             }
         }
@@ -67,19 +74,22 @@ void EditorController::OnToolUpdate()
     {
         // Select the first packed entity by index
         int totalEntities = EntityStorage::GetEntities().size();
-        size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
-        do {
-            // Try select the entity
-            TrySelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+        if (totalEntities > 0) {
+            size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
+            do {
+                // Try select the entity
+                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
-            // If valid, break the loop, or select the next entity
-            if (selectedEntity) break;
-            else selectedIdx = ++selectedIdx % totalEntities;
-        } while (selectedIdx != startIdx);
+                // If valid, break the loop, or select the next entity
+                if (selectedEntity) break;
+                else selectedIdx = ++selectedIdx % totalEntities;
+            } while (selectedIdx != startIdx);
+        }
     }
 
     if (selectedEntity)
     {
+        // Run the appropriate editor mode logic on the selected entity
         switch (currentMode)
         {
             case POSITION: {
@@ -101,14 +111,6 @@ void EditorController::OnToolUpdate()
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
-        }
-
-        // Free the entity if backspace is pressed
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            selectedEntity->QueueFree();
-            selectedEntity = nullptr;
-            messageDisplay->DisplayMessage("Entity deleted");
         }
     }
 }
@@ -151,10 +153,8 @@ void EditorController::OnUIDraw()
              (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
 }
 
-void EditorController::TrySelectEntity(Entity *entity)
+void EditorController::SelectEntity(Entity* entity)
 {
-    // Prevent selection of entities that are not serialisable
-    if (entity && !entity->IsSerialisable()) entity = nullptr;
     selectedEntity = entity;
 }
 
@@ -163,7 +163,7 @@ bool EditorController::TryAddEntity(std::string& entityName)
     // Lowercase the supplied entity name
     entityName = StringHelpers::LowercaseString(entityName);
 
-    // Check for matching cases
+    // Check for matching cases to run
     if (entityName == "geometry")
     {
         EntityStorage::Register(new Geometry());

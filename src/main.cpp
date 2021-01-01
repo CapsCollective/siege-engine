@@ -1,6 +1,7 @@
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "entity_system/EntityStorage.h"
+#include "resources/ResourceManager.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
@@ -37,42 +38,44 @@ int main(int argc, char* argv[])
     // Initialise and register the message display
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
-    EntityStorage::Register(display);
+    EntityStorage::Register(display, true);
 
     // Initialise and register the profiler
     auto profiler = new Profiler(isEditorMode);
     ServiceLocator::Provide(profiler);
-    EntityStorage::Register(profiler);
+    EntityStorage::Register(profiler, true);
 
     // Initialise and register the dev console
-    EntityStorage::Register(new DevConsole(isEditorMode));
+    EntityStorage::Register(new DevConsole(isEditorMode), true);
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
     {
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
-        EntityStorage::Register(editor);
-        EntityStorage::Register(new FreeCam());
+        EntityStorage::Register(editor, true);
+        EntityStorage::Register(new FreeCam(), true);
     }
     else
     {
-        SceneLoader::LoadScene("main");
+        SceneLoader::QueueNextScene("main");
     }
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
-        // Update entities
-        for (auto& entity : EntityStorage::GetEntities())
+        // Update tool entities
+        for (auto& entity : EntityStorage::GetTools())
         {
-            // Run editor tool updates
-            // TODO separate entity storage into tools and in-game
-            entity->OnToolUpdate();
-
-            // Turn off standard updates in editor mode
-            if (isEditorMode) continue;
             entity->OnUpdate();
+        }
+
+        // Update game entities
+        if (!isEditorMode) {
+            for (auto& entity : EntityStorage::GetEntities())
+            {
+                entity->OnUpdate();
+            }
         }
 
         // Entity creation is deferred until after the update loop
@@ -84,7 +87,7 @@ int main(int argc, char* argv[])
         camera.BeginMode3D();
 
         // Draw entities
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto& entity : EntityStorage::GetAllEntities())
         {
             entity->OnDraw();
         }
@@ -92,12 +95,15 @@ int main(int argc, char* argv[])
         camera.EndMode3D();
 
         // UI Draw entities
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto& entity : EntityStorage::GetAllEntities())
         {
             entity->OnUIDraw();
         }
 
+        // Remove all entities at the end of the frame
         EntityStorage::FreeEntities();
+        ResourceManager::FreeAllResources();
+        SceneLoader::LoadNextScene();
 
         window.EndDrawing();
     }

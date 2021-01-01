@@ -4,7 +4,9 @@
 #include <raylib-cpp.hpp>
 #include <map>
 #include <variant>
+#include <vector>
 
+// Define macros
 #define RESOURCE_MAP std::map<std::string, std::variant<Model, Texture2D>>
 
 class ResourceManager
@@ -15,6 +17,7 @@ public:
     template<typename T>
     static void Register(const std::string& path)
     {
+        // TODO comment Register
         if (resources.find(path) != resources.end()) return;
 
         std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();
@@ -34,7 +37,7 @@ public:
     template<typename T>
     static T& Get(const std::string& path)
     {
-        return std::get<T>(resources[path]);
+        return std::get<T>(resources.at(path));
     };
 
     template<typename T>
@@ -43,6 +46,8 @@ public:
         return &std::get<T>(resources[path]);
     };
 
+    static void FreeAllResources();
+
     static void ClearResources();
 
 private:
@@ -50,7 +55,8 @@ private:
     // Private fields
 
     static RESOURCE_MAP resources;
-};
 
+    static std::vector<std::variant<Model, Texture2D>*> freedResources;
+};
 
 #endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H
