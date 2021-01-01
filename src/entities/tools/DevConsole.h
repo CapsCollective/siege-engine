@@ -17,15 +17,13 @@ public:
     isActive(false)
     {
         Entity::SetName("DevConsole");
-        Entity::SetFreeable(false);
-        Entity::SetSerialisable(false);
     };
 
 protected:
 
     // Protected overrides
 
-    void OnToolUpdate() override;
+    void OnUpdate() override;
 
     void OnUIDraw() override;
 

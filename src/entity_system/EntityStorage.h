@@ -12,7 +12,7 @@ public:
     // Public functions
 
     // Queues an entity for initialisation in the next frame
-    static void Register(Entity*);
+    static void Register(Entity*, bool isTool = false);
 
     // Removes an entity from storage
     static void Remove(Entity*);
@@ -21,6 +21,16 @@ public:
     static std::vector<Entity*>& GetEntities() 
     {
         return packedEntities;
+    }
+
+    static std::vector<Entity*>& GetAllEntities()
+    {
+        return allPackedEntities;
+    }
+
+    static std::vector<Entity*>& GetTools()
+    {
+        return packedTools;
     }
 
     // Returns an entity in the packed list
@@ -58,17 +68,23 @@ private:
     // entites that were oreviously made)
     static std::vector<Entity*> entities;
 
-    // The packed vector of entities - contains all available entities in no particular order.
+    // The packed vector of entities - contains all available non-tool-entities in no particular order.
     static std::vector<Entity*> packedEntities;
+
+    // A packed vector of all tools - contains all tool entities.
+    static std::vector<Entity*> packedTools;
+
+    // Holds every single entity in a packed index
+    static std::vector<Entity*> allPackedEntities;
 
     // Vector for storing all entities which were queued for freeing.
     static std::vector<Entity*> freedEntities;
 
     // Vector containing all entities that were queued for adding.
-    static std::vector<Entity*> registeredEntities;
+    static std::vector<std::pair<Entity*, bool>> registeredEntities;
 
     // Adds an entity to the entity storage.
-    static void AddEntity(Entity *entity);
+    static void AddEntity(Entity* entity, bool isTool);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

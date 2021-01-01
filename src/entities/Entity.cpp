@@ -1,6 +1,6 @@
 #include "Entity.h"
 #include <utility>
-#include <math.h>
+#include <cmath>
 #include "../entity_system/EntityStorage.h"
 
 BoundingBox Entity::GetBoundingBox()
@@ -28,15 +28,15 @@ float Entity::GetRotation() const
     return rotation;
 }
 
-void Entity::QueueFree(bool forceFree)
+void Entity::QueueFree()
 {
-    if (isFreeable || forceFree) EntityStorage::QueueFree(this);
+    EntityStorage::QueueFree(this);
 }
 
-// A function for removing entities from the storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
-void Entity::Free(bool forceFree)
+void Entity::Free()
 {
-    if (isFreeable || forceFree) EntityStorage::Remove(this);
+    // Remove entity from storage - NOT SAFE, USE QUEUE FREE WHEN POSSIBLE!
+    EntityStorage::Remove(this);
 }
 
 std::string Entity::GetName()
@@ -47,21 +47,6 @@ std::string Entity::GetName()
 void Entity::SetName(std::string entityName)
 {
     name = std::move(entityName);
-}
-
-void Entity::SetSerialisable(bool serialisable)
-{
-    isSerialisable = serialisable;
-}
-
-bool Entity::IsSerialisable() const
-{
-    return isSerialisable;
-}
-
-void Entity::SetFreeable(bool freeable)
-{
-    isFreeable = freeable;
 }
 
 Entity* Entity::Clone()

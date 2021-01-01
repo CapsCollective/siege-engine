@@ -26,7 +26,10 @@ public:
     };
 
     // Public overrides
+
     BoundingBox GetBoundingBox() override;
+
+    // Public methods
 
     const ModelData& GetModelData();
 

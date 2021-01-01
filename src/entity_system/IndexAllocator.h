@@ -15,6 +15,7 @@ struct IndexEntry
 struct GenerationalIndex 
 {
     size_t index = 0;
+    // TODO generation is unused - why?
     uint32_t generation = 0;
 };
 
@@ -24,7 +25,11 @@ public:
 
     // Constructors
 
-    IndexAllocator();
+    IndexAllocator() :
+    entries(std::vector<IndexEntry>()),
+    freeEntries(std::vector<size_t>()),
+    currentEntities(0)
+    {};
 
     ~IndexAllocator() = default;
 

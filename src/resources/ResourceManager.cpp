@@ -2,27 +2,33 @@
 #include "ResourceManager.h"
 
 RESOURCE_MAP ResourceManager::resources = RESOURCE_MAP();
+std::vector<std::variant<Model, Texture2D>*> ResourceManager::freedResources = std::vector<std::variant<Model, Texture2D>*>();
 
 void ResourceManager::ClearResources()
 {
-    std::vector<std::variant<Model, Texture2D>> unloadedResources = std::vector<std::variant<Model, Texture2D>>();
-
     for (auto& resource : resources)
     {
-        unloadedResources.push_back(resource.second);
+        freedResources.push_back(&resource.second);
     }
+}
 
-    for (auto i = unloadedResources.rbegin(); i != unloadedResources.rend(); ++i)
-    {
-        if (std::holds_alternative<Model>(*i))
+void ResourceManager::FreeAllResources()
+{
+    // TODO comment FreeAllResources
+    if (!freedResources.empty()) {
+        for (auto i = freedResources.rbegin(); i != freedResources.rend(); ++i)
         {
-            UnloadModel(std::get<Model>(*i));
+            if (std::holds_alternative<Model>(**i))
+            {
+                UnloadModel(std::get<Model>(**i));
+            }
+            else if (std::holds_alternative<Texture2D>(**i))
+            {
+                UnloadTexture(std::get<Texture2D>(**i));
+            }
+
         }
-        else if (std::holds_alternative<Texture2D>(*i))
-        {
-            UnloadTexture(std::get<Texture2D>(*i));
-        }
+        freedResources.clear();
+        resources.clear();
     }
-
-    resources.clear();
 }

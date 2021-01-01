@@ -14,7 +14,7 @@ namespace StringHelpers
     std::vector<std::string> SplitString(std::string string, char delimiter);
 
     std::string LowercaseString(std::string string);
-};
+}
 
 
 #endif //A_DARK_DISCOMFORT_STRINGHELPERS_H

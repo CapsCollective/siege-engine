@@ -1,9 +1,11 @@
+#include "../entities/tools/MessageDisplay.h"
 #include "../resources/ResourceManager.h"
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
 #include "StringHelpers.h"
 #include "SceneLoader.h"
+#include "ServiceLocator.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,12 +18,37 @@
 
 // Define static members
 std::string SceneLoader::currentScene;
+std::string SceneLoader::nextScene;
+
 
 void SceneLoader::NewScene()
 {
     // Clear the current scene and reset current scene
     ClearScene();
     currentScene = UNKNOWN_FILENAME;
+}
+
+void SceneLoader::QueueNextScene(const std::string &sceneName)
+{
+    // Free all current items from storage
+    ClearScene();
+    nextScene = sceneName;
+}
+
+void SceneLoader::LoadNextScene()
+{
+    if (nextScene.empty()) return;
+
+    // Try deserialise the scene by name and set it as current if successful
+    MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
+    if (DeserialiseScene(nextScene)) {
+        currentScene = nextScene;
+        messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
+    }
+    else messageDisplay->DisplayMessage("Unable to find \"" + nextScene +  ".scene\"");
+
+    // Clear the next scene
+    nextScene.clear();
 }
 
 void SceneLoader::SaveScene()
@@ -37,23 +64,12 @@ void SceneLoader::SaveScene(const std::string& sceneName)
     currentScene = sceneName;
 }
 
-bool SceneLoader::LoadScene(const std::string& sceneName)
-{
-    // Try deserialise the scene by name and set it as current if successful
-    bool result = DeserialiseScene(sceneName);
-    if (result) currentScene = sceneName;
-    return result;
-}
-
 void SceneLoader::SerialiseScene(const std::string& sceneName)
 {
     // Iterate over each entity in the scene
     std::string fileData;
     for (auto entity : EntityStorage::GetEntities())
     {
-        // Check if the entity is serialisable
-        if (!entity->IsSerialisable()) continue;
-
         // Add its name, position and rotation to the data
         fileData += (entity->GetName() + SEP +
                 DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
@@ -89,9 +105,6 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
     // Begin the loading process, open the file for streaming
     std::ifstream file(SCENE_PATH(sceneName));
     if (!file.is_open()) return false;
-
-    // Free all current items from storage
-    ClearScene();
 
     // Iterate over each line of the file
     std::string line;
@@ -159,6 +172,7 @@ void SceneLoader::ClearScene()
         entity->QueueFree();
     }
 
+    // Clear out all resources
     ResourceManager::ClearResources();
 }
 

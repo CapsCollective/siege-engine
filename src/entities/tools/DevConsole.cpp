@@ -4,7 +4,7 @@
 #include "EditorController.h"
 #include "Profiler.h"
 
-void DevConsole::OnToolUpdate()
+void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
@@ -51,14 +51,10 @@ void DevConsole::OnToolUpdate()
             if (!argument.empty())
             {
                 // Deselect all entities if in editor mode
-                if (isEditorMode) ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+                if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
 
                 // Try load the scene specified
-                if (SceneLoader::LoadScene(argument))
-                {
-                    messageDisplay->DisplayMessage(argument + ".scene loaded");
-                }
-                else messageDisplay->DisplayMessage(argument + ".scene not found");
+                SceneLoader::QueueNextScene(argument);
             }
             else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
         }
@@ -75,7 +71,7 @@ void DevConsole::OnToolUpdate()
         else if (command == "new")
         {
             // Deselect all entities and open a new, untitled scene
-            ServiceLocator::GetEditorController()->TrySelectEntity(nullptr);
+            ServiceLocator::GetEditorController()->SelectEntity(nullptr);
             SceneLoader::NewScene();
             messageDisplay->DisplayMessage("Created new scene");
         }
