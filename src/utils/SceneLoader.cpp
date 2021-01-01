@@ -9,10 +9,10 @@
 #include <vector>
 
 // Define macros
-#define SEP ';'
+#define SEP '|'
 #define UNKNOWN_FILENAME "untitled"
-#define SCENE_DIR "assets/scenes/"
-#define SCENE_FILE_EXT ".scene"
+#define DEFINE_FIELD(name, content) name + std::string(":") + content + SEP
+#define SCENE_PATH(sceneName) "assets/scenes/" + sceneName + ".scene"
 
 // Define static members
 std::string SceneLoader::currentScene;
@@ -55,26 +55,24 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
         // Check if the entity is serialisable
         if (!entity->IsSerialisable()) continue;
 
-        // TODO add labels to serialised fields
-
         // Add its name, position and rotation to the data
         fileData += (entity->GetName() + SEP +
-                StringHelpers::VectorToString(entity->GetPosition()) + SEP +
-                std::to_string(entity->GetRotation()) + SEP);
+                DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
+                DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())));
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
         {
             auto geometry = dynamic_cast<Geometry*>(entity);
-            fileData += StringHelpers::VectorToString(dynamic_cast<Geometry *>(entity)->GetDimensions()) + ";";
-            fileData += geometry->GetModelData().GetModelPath() + SEP;
-            fileData += geometry->GetModelData().GetTexturePath() + SEP;
+            fileData += DEFINE_FIELD("DIMENSIONS", StringHelpers::VectorToString(geometry->GetDimensions()));
+            fileData += DEFINE_FIELD("MODEL_PATH", geometry->GetModelData().GetModelPath());
+            fileData += DEFINE_FIELD("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
         }
         else if (entity->GetName() == "Player")
         {
             auto player = dynamic_cast<Player*>(entity);
-            fileData += player->GetModelData().GetModelPath() + SEP;
-            fileData += player->GetModelData().GetTexturePath() + SEP;
+            fileData += DEFINE_FIELD("MODEL_PATH", player->GetModelData().GetModelPath());
+            fileData += DEFINE_FIELD("TEXTURE_PATH", player->GetModelData().GetTexturePath());
         }
 
         // Add new line as entity delimiter
@@ -82,7 +80,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
     }
 
     // Open a new file stream, dave the data to it and close it
-    std::ofstream fileStream(SCENE_DIR + sceneName + SCENE_FILE_EXT);
+    std::ofstream fileStream(SCENE_PATH(sceneName));
     fileStream << fileData;
     fileStream.close();
 }
@@ -90,7 +88,7 @@ void SceneLoader::SerialiseScene(const std::string& sceneName)
 bool SceneLoader::DeserialiseScene(const std::string& sceneName)
 {
     // Begin the loading process, open the file for streaming
-    std::ifstream file(SCENE_DIR + sceneName + SCENE_FILE_EXT);
+    std::ifstream file(SCENE_PATH(sceneName));
     if (!file.is_open()) return false;
 
     // Iterate over each line of the file
@@ -110,6 +108,12 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         // Split the line into arguments
         std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
 
+        // Strip labels from each item
+        for (std::string& arg : args)
+        {
+            arg = arg.substr(arg.find(':') + 1, arg.size());
+        }
+
         // Get the position and rotation of the entity
         raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
         float rotation = std::stof(args[ENTITY_ROT]);
@@ -117,25 +121,26 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")
         {
+            // Get custom fields
             raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
-
             std::string modelPath = args[CUSTOM_FIELD_2];
             std::string texturePath = args[CUSTOM_FIELD_3];
 
+            // Register the new entity
             EntityStorage::Register(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
+
+            std::cout << texturePath << std::endl;
         }
         else if (args[ENTITY_NAME] == "Player")
         {
+            // Get custom fields
             std::string modelPath = args[CUSTOM_FIELD_1];
             std::string texturePath = args[CUSTOM_FIELD_2];
 
+            // Register the new entity
             EntityStorage::Register(new Player(position, rotation));
         }
-        else
-        {
-            // Notify console of default case
-            std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
-        }
+        else std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
     }
 
     // Close the file stream
