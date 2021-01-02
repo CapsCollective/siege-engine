@@ -9,11 +9,13 @@
 // Define macros
 #define RESOURCE_MAP std::map<std::string, std::variant<Model, Texture2D>>
 
+// TODO comment API functions
 class ResourceManager
 {
 public:
 
     // Public functions
+
     template<typename T>
     static void Register(const std::string& path)
     {

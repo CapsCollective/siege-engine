@@ -4,6 +4,7 @@
 #include "../entity_system/IndexAllocator.h"
 #include <raylib-cpp.hpp>
 
+// TODO comment API functions
 class Entity
 {
 public:

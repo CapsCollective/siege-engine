@@ -9,8 +9,10 @@ class ModelData
 public:
 
     // Constructors
+
     ModelData(std::string  modelPath, std::string  texturePath) :
-    modelPath(std::move(modelPath)), texturePath(std::move(texturePath))
+    modelPath(std::move(modelPath)),
+    texturePath(std::move(texturePath))
     {
         ResourceManager::Register<Model>(this->modelPath);
         ResourceManager::Register<Texture>(this->texturePath);
@@ -31,7 +33,7 @@ public:
 
     const std::string& GetTexturePath() const;
 
-    static void SetTexture(Model&, Texture2D&);
+    static void SetTexture(Model& model, Texture2D& texture);
 
 private:
 

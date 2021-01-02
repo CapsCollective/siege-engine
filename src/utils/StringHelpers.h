@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+// TODO comment API functions
 namespace StringHelpers
 {
     std::string VectorToString(raylib::Vector3 vector);
