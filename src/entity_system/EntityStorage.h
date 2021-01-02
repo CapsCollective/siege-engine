@@ -93,7 +93,7 @@ private:
 
     // Private Functions
 
-    // TODO comment API functions
+    // TODO properly comment API functions
 
     // Returns the entity's index in the packed vector
     static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
