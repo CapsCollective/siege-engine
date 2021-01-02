@@ -102,7 +102,8 @@ void EditorController::OnUpdate()
                 IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
 
                 // Apply the move to the position of the entity
-                selectedEntity->SetPosition(selectedEntity->GetPosition() + move);
+                raylib::Vector3 entityPosition = selectedEntity->GetPosition();
+                selectedEntity->SetPosition(entityPosition + move);
                 break;
             }
             case ROTATION: {
@@ -143,8 +144,9 @@ void EditorController::OnUIDraw()
     const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
+    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
     Vector2 screenPosition = GetWorldToScreen(
-            selectedEntity->GetPosition() + raylib::Vector3(0.f, 4.f, 0.f), *camera);
+            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
     DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
              (int) screenPosition.y, 20, PINK);
     DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
