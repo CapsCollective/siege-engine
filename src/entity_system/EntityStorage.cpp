@@ -3,7 +3,6 @@
 #include <algorithm>
 
 // Static member initialisations
-// TODO Find a way to stop this from being an unsafe initialisation
 IndexAllocator EntityStorage::allocator = IndexAllocator();
 
 // All available storage vectors.
@@ -46,16 +45,11 @@ void EntityStorage::AddEntity(Entity* entity, bool isTool)
         entities.push_back(entity);
     }
 
-    if (isTool)
-    {
-        packedTools.push_back(entity);
-    }
-    else
-    {
-        // Add the entity to the end of our packed entities.
-        packedEntities.push_back(entity);
-    }
+    // Add the entity to the end of its appropriate packed entities
+    if (isTool) packedTools.push_back(entity);
+    else packedEntities.push_back(entity);
 
+    // Add the entity to the end of all packed entities
     allPackedEntities.emplace_back(entity);
 }
 
@@ -109,11 +103,7 @@ Entity* EntityStorage::operator[](GenerationalIndex index)
         // Return the entity
         return entities[index.index];
     } 
-    else 
-    {
-        // Return a nullpointer
-        return nullptr;
-    }
+    else return nullptr;
 }
 
 void EntityStorage::QueueFree(Entity* entity) 
@@ -129,16 +119,9 @@ void EntityStorage::QueueFree(Entity* entity)
 
 uint32_t EntityStorage::GetEntityIndex(Entity* entity, std::vector<Entity*>& entityStorage) 
 {
-    // Iterate over the given vector and check if the element exists, if it does, return the index
+    // Try find the entity, and return the index of the entity or -1 if not found
     auto it = std::find(entityStorage.begin(), entityStorage.end(), entity);
-    int32_t index = -1;
-    if (it != entityStorage.end()) 
-    {
-        // Get the index of the entity (if found)
-        index = std::distance(entityStorage.begin(), it);
-    }
-    // Return the index
-    return index;
+    return (it != entityStorage.end()) ? std::distance(entityStorage.begin(), it) : -1;
 }
 
 void EntityStorage::FreeEntities() 

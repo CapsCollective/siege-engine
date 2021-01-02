@@ -25,15 +25,11 @@ public:
 
     // Constructors
 
-    IndexAllocator() :
-    entries(std::vector<IndexEntry>()),
-    freeEntries(std::vector<size_t>()),
-    currentEntities(0)
-    {};
+    IndexAllocator() = default;
 
     ~IndexAllocator() = default;
 
-    // Public Utility Methods
+    // Public methods
 
     GenerationalIndex AllocateIndex();
 
@@ -51,7 +47,7 @@ private:
 
     std::vector<size_t> freeEntries;
 
-    uint32_t currentEntities;
+    uint32_t currentEntities = 0;
 };
 
 
