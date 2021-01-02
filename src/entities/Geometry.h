@@ -35,9 +35,9 @@ public:
 
     // Public methods
 
-    raylib::Vector3 GetDimensions();
+    const raylib::Vector3& GetDimensions();
 
-    ModelData& GetModelData();
+    const ModelData& GetModelData();
 
 protected:
 
