@@ -29,7 +29,7 @@ public:
      * Returns all packed entities (for iteration purposes)
      * @return A reference to the vector of all packed entities
      */
-    static std::vector<Entity*>& GetAllEntities()
+    static const std::vector<Entity*>& GetAllEntities()
     {
         return allPackedEntities;
     }
@@ -38,7 +38,7 @@ public:
      * Returns packed game entities (for iteration purposes)
      * @return A reference to the vector of packed game entities
      */
-    static std::vector<Entity*>& GetEntities() 
+    static const std::vector<Entity*>& GetEntities()
     {
         return packedEntities;
     }
@@ -47,7 +47,7 @@ public:
      * Returns packed tool entities (for iteration purposes)
      * @return A reference to the vector of packed tool entities
      */
-    static std::vector<Entity*>& GetTools()
+    static const std::vector<Entity*>& GetTools()
     {
         return packedTools;
     }

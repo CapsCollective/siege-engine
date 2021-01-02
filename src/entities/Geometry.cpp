@@ -35,7 +35,7 @@ BoundingBox Geometry::GetBoundingBox()
     };
 }
 
-raylib::Vector3 Geometry::GetDimensions()
+const raylib::Vector3& Geometry::GetDimensions()
 {
     return dimensions;
 }
@@ -45,6 +45,6 @@ Entity* Geometry::Clone()
     return new Geometry(position, rotation, dimensions, modelData);
 }
 
-ModelData& Geometry::GetModelData() {
+const ModelData& Geometry::GetModelData() {
     return modelData;
 }
