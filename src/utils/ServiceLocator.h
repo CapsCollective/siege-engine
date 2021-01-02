@@ -3,6 +3,7 @@
 
 #include <Camera3D.hpp>
 
+// TODO comment API functions
 class ServiceLocator
 {
 public:
