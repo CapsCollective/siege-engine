@@ -93,36 +93,56 @@ private:
 
     // Private Functions
 
-    // TODO properly comment API functions
-
-    // Returns the entity's index in the packed vector
-    static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>& entityStorage);
+    /**
+     * Returns the index of a given element within a given entity vector.
+     * @param entity - the entity pointer you want to find
+     * @param storage - the entity vector that you want to search over.
+     * @return either a -1 when no index is found, or the index if the entity is found.
+     */
+    static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>&);
 
     // Private fields
 
-    // Handles generational index allocation/de-allocation
+    /**
+     * The allocator used to provide a generation index to a new entity.
+     */
     static IndexAllocator allocator;
 
-    // The vector that stores all entities (this storage will always match the size of all
-    // entites that were oreviously made)
+    /**
+     * A full vector containing all entities. This storage is not packed, so gaps will exist between entities if entities are de-allocated.
+     */
     static std::vector<Entity*> entities;
 
-    // The packed vector of entities - contains all available non-tool-entities in no particular order
+    /**
+     * A full vector containing all non-tool entities. Packed means that entities are in no particular order.
+     */
     static std::vector<Entity*> packedEntities;
 
-    // A packed vector of all tools - contains all tool entities
+    /**
+     * A packed vector of all tools - contains all tool entities
+     */
     static std::vector<Entity*> packedTools;
 
-    // Holds every single entity in a packed index
+    /**
+     * Holds every single entity in a packed index
+     */
     static std::vector<Entity*> allPackedEntities;
 
-    // Vector for storing all entities which were queued for freeing
+    /**
+     * Vector for storing all entities which were queued for freeing
+     */
     static std::vector<Entity*> freedEntities;
 
-    // Vector containing all entities that were queued for adding
+    /**
+     * Vector containing all entities that were queued for adding
+     */
     static std::vector<std::pair<Entity*, bool>> registeredEntities;
 
-    // Adds an entity to the entity storage
+    /**
+     * Adds an entity to the entity storage
+     * @param entity - The entity pointer being added
+     * @param isTool - a flag specifying whether the entity is a tool or not.
+     */
     static void AddEntity(Entity* entity, bool isTool);
 };
 

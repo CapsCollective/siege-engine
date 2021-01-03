@@ -1,5 +1,9 @@
 #include "IndexAllocator.h"
 
+bool operator==(GenerationalIndex& indexA, GenerationalIndex& indexB) {
+    return indexA.index == indexB.index && indexA.generation == indexB.generation;
+}
+
 GenerationalIndex IndexAllocator::AllocateIndex() 
 {
     size_t index;

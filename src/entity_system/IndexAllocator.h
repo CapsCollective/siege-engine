@@ -15,9 +15,10 @@ struct IndexEntry
 struct GenerationalIndex 
 {
     size_t index = 0;
-    // TODO generation is unused - why?
     uint32_t generation = 0;
 };
+
+bool operator==(GenerationalIndex&, GenerationalIndex&);
 
 class IndexAllocator 
 {
