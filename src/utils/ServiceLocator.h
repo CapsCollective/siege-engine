@@ -3,18 +3,25 @@
 
 #include <Camera3D.hpp>
 
-// TODO comment API functions
 class ServiceLocator
 {
 public:
 
     // Camera functions
 
+    /**
+     * A getter method for the raylib camera
+     * @return The current raylib camera
+     */
     static raylib::Camera* GetCamera()
     {
         return camera;
     }
 
+    /**
+     * A provider method for the raylib camera
+     * @param cam - the raylib camera to provide
+     */
     static void Provide(raylib::Camera* cam)
     {
         camera = cam;
@@ -22,11 +29,19 @@ public:
 
     // EditorController functions
 
+    /**
+     * A getter method for the EditorController
+     * @return The EditorController
+     */
     static class EditorController* GetEditorController()
     {
         return editorController;
     }
 
+    /**
+     * A provider method for the EditorController
+     * @param editor - the EditorController to provide
+     */
     static void Provide(EditorController* editor)
     {
         editorController = editor;
@@ -34,23 +49,39 @@ public:
 
     // MessageDisplay functions
 
+    /**
+     * A getter method for the MessageDisplay
+     * @return The MessageDisplay
+     */
     static class MessageDisplay* GetMessageDisplay()
     {
         return messageDisplay;
     }
 
+    /**
+     * A provider method for the MessageDisplay
+     * @param display - the MessageDisplay to provide
+     */
     static void Provide(MessageDisplay* display)
     {
         messageDisplay = display;
     }
 
-    // MessageDisplay functions
+    // Profiler functions
 
+    /**
+     * A getter method for the Profiler
+     * @return The Profiler
+     */
     static class Profiler* GetProfiler()
     {
         return systemProfiler;
     }
 
+    /**
+     * A provider method for the Profiler
+     * @param profiler - the Profiler to provide
+     */
     static void Provide(Profiler* profiler)
     {
         systemProfiler = profiler;
