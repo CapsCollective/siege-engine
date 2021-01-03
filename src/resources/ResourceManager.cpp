@@ -1,13 +1,19 @@
 #include <vector>
 #include "ResourceManager.h"
 
+// static member initialisation
+
+// The resources map - stores a key-value pair of resource paths - std::variant values.
 RESOURCE_MAP ResourceManager::resources = RESOURCE_MAP();
+// A vector of resources for freeing resources.
 std::vector<std::variant<Model, Texture2D>*> ResourceManager::freedResources = std::vector<std::variant<Model, Texture2D>*>();
 
 void ResourceManager::ClearResources()
 {
+    // Get every resource in the map.
     for (auto& resource : resources)
     {
+        // Push the resource to the freeResources vector for unloading at the end of the frame.
         freedResources.push_back(&resource.second);
     }
 }
