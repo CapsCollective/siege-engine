@@ -5,6 +5,9 @@
 #include <vector>
 #include "../entities/Entity.h"
 
+// Define macros
+#define ENTITY_LIST std::vector<std::pair<Entity*, bool>>
+
 class EntityStorage 
 {
 public:
@@ -94,32 +97,37 @@ private:
     // Private Functions
 
     /**
-     * Returns the index of a given element within a given entity vector.
+     * Returns the index of a given element within a given entity vector
      * @param entity - the entity pointer you want to find
-     * @param storage - the entity vector that you want to search over.
-     * @return either a -1 when no index is found, or the index if the entity is found.
+     * @param storage - the entity vector that you want to search over
+     * @return A -1 when no index is found, or the index if the entity
+     *         is found
      */
     static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>&);
 
     // Private fields
 
     /**
-     * The allocator used to provide a generation index to a new entity.
+     * The allocator used to provide a generation index to a new entity
      */
     static IndexAllocator allocator;
 
     /**
-     * A full vector containing all entities. This storage is not packed, so gaps will exist between entities if entities are de-allocated.
+     * A full vector containing all entities
+     * @warning This storage is not packed, so gaps will exist between
+     *          entities if entities are de-allocated
      */
     static std::vector<Entity*> entities;
 
     /**
-     * A full vector containing all non-tool entities. Packed means that entities are in no particular order.
+     * A full vector containing all non-tool entities
+     * @note This storage is packed, so entities are placed in no
+     *       particular order
      */
     static std::vector<Entity*> packedEntities;
 
     /**
-     * A packed vector of all tools - contains all tool entities
+     * A packed vector of all tools containing all tool entities
      */
     static std::vector<Entity*> packedTools;
 
@@ -136,12 +144,13 @@ private:
     /**
      * Vector containing all entities that were queued for adding
      */
-    static std::vector<std::pair<Entity*, bool>> registeredEntities;
+    static ENTITY_LIST registeredEntities;
 
     /**
      * Adds an entity to the entity storage
      * @param entity - The entity pointer being added
-     * @param isTool - a flag specifying whether the entity is a tool or not.
+     * @param isTool - a flag specifying whether the entity is a
+     *                 tool or not
      */
     static void AddEntity(Entity* entity, bool isTool);
 };

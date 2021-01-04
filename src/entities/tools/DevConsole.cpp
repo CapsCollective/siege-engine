@@ -100,8 +100,8 @@ void DevConsole::OnUpdate()
             }
             else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
         }
-        // TODO add position/rotation setting command
-        // TODO add model/texture setting command
+        // TODO add setpos/setrot command
+        // TODO add setmod/settex setting command
         else
         {
             messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");

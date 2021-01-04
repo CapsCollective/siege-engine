@@ -9,7 +9,7 @@ GenerationalIndex IndexAllocator::AllocateIndex()
     size_t index;
     uint32_t generation = 0;
 
-    // If no free entity exist, add a new entity.
+    // If no free entity exist, add a new entity
     if (freeEntries.empty()) 
     {
         index = entries.size();
