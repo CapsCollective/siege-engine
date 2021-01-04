@@ -2,35 +2,33 @@
 #include <cstdint>
 #include <algorithm>
 
-// Static member initialisations
+// Static member initialisations of basic fields
 IndexAllocator EntityStorage::allocator = IndexAllocator();
-
-// All available storage vectors.
 std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 
-// Vectors for holding filtered entities (tools, game entities, or both)
+// Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
 
-// Vectors for transformations (deleting and creating entities)
+// Static member initialisations of vectors for transformations
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-std::vector<std::pair<Entity*, bool>> EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
+ENTITY_LIST EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
 
 void EntityStorage::Register(Entity* entity, bool isTool)
 {
-    // If the pointer is null - stop the function.
+    // If the pointer is null - stop the function
     if (!entity) return;
 
     // Generate an index and add it to the entity
     GenerationalIndex index = allocator.AllocateIndex();
     entity->SetIndex(index);
 
-    // Queue the entity for initialisation.
+    // Queue the entity for initialisation
     registeredEntities.emplace_back(entity, isTool);
 }
 
-// Adds an entity to the Entity Storage.
+// Adds an entity to the Entity Storage
 void EntityStorage::AddEntity(Entity* entity, bool isTool)
 {
     // If the entity's given index already exists
@@ -59,40 +57,39 @@ void EntityStorage::RegisterEntities() {
         // Add the entity to storage
         AddEntity(entity.first, entity.second);
     }
-    // Finally, remove all entities from the queue.
+    // Finally, remove all entities from the queue
     registeredEntities.clear();
 }
 
 void EntityStorage::Remove(Entity* entity) 
 {
     // Check if the entity's index is in bounds
-    if (entity->GetIndex().index < entities.size()) 
+    if (entity->GetIndex().index >= entities.size()) return;
+
+    // De-allocate the entity's index
+    allocator.Deallocate(entity->GetIndex());
+
+    // Get the packed index
+    int32_t index = GetEntityIndex(entity, packedEntities);
+    int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
+
+    // Check if we found the appropriate index in our tool or entity storage
+    if (index != -1)
     {
-        // De-allocate the entity's index
-        allocator.Deallocate(entity->GetIndex());
-
-        // Get the packed index
-        int32_t index = GetEntityIndex(entity, packedEntities);
-        int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
-
-        // Check if we found the appropriate index in our tool or entity storage
-        if (index != -1) 
-        {
-            // Erase the packed index entry from our packed entity storage
-            packedEntities.erase(packedEntities.begin() + index);
-        }
-
-        // Check if we found an index in our general storage of all entities.
-        if (generalIndex != -1)
-        {
-            // Erase the packed index entry from our container that stores all entities
-            allPackedEntities.erase(allPackedEntities.begin() + generalIndex);
-        }
-
-        // Finally, delete the entity from the heap
-        size_t entityIndex = entity->GetIndex().index;
-        delete entities[entityIndex];
+        // Erase the packed index entry from our packed entity storage
+        packedEntities.erase(packedEntities.begin() + index);
     }
+
+    // Check if we found an index in our general storage of all entities
+    if (generalIndex != -1)
+    {
+        // Erase the packed index entry from our container that stores all entities
+        allPackedEntities.erase(allPackedEntities.begin() + generalIndex);
+    }
+
+    // Finally, delete the entity from the heap
+    size_t entityIndex = entity->GetIndex().index;
+    delete entities[entityIndex];
 }
 
 Entity* EntityStorage::operator[](GenerationalIndex index) 
