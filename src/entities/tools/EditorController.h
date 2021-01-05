@@ -21,8 +21,8 @@ public:
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
-    rotationAmount(15.f),
-    moveDistance(0.5f),
+    movePrecision(2),
+    rotatePrecision(3),
     currentMode(POSITION),
     isGridActive(true),
     selectedIdx(0)
@@ -50,15 +50,23 @@ protected:
 
 private:
 
+    // Private methods
+
+    void AdjustPrecision(int adjustment);
+
     // Private fields
+
+    static float moveLevels[];
+
+    static float rotateLevels[];
 
     EditorMode currentMode;
 
     bool isGridActive;
 
-    float moveDistance;
+    int movePrecision;
 
-    float rotationAmount;
+    int rotatePrecision;
 
     size_t selectedIdx;
 

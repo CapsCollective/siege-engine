@@ -6,8 +6,12 @@
 #include "../../utils/StringHelpers.h"
 #include "../../utils/SceneLoader.h"
 
-// Define custom colours
+// Define macros
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
+
+// Static member initialisation
+float EditorController::moveLevels[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
+float EditorController::rotateLevels[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
 
 void EditorController::OnUpdate()
 {
@@ -36,18 +40,24 @@ void EditorController::OnUpdate()
             SceneLoader::SaveScene();
             messageDisplay->DisplayMessage("Scene saved");
         }
-        else if (IsKeyPressed(KEY_D) && selectedEntity)
+        else if (selectedEntity)
         {
-            // Duplicate the entity
-            EntityStorage::Register(selectedEntity->Clone());
-            messageDisplay->DisplayMessage("Entity duplicated");
-        }
-        else if (IsKeyPressed(KEY_BACKSPACE) && selectedEntity)
-        {
-            // Free the entity
-            selectedEntity->QueueFree();
-            selectedEntity = nullptr;
-            messageDisplay->DisplayMessage("Entity deleted");
+            if (IsKeyPressed(KEY_D))
+            {
+                // Duplicate the entity
+                EntityStorage::Register(selectedEntity->Clone());
+                messageDisplay->DisplayMessage("Entity duplicated");
+            }
+            else if (IsKeyPressed(KEY_BACKSPACE))
+            {
+                // Free the entity
+                selectedEntity->QueueFree();
+                selectedEntity = nullptr;
+                messageDisplay->DisplayMessage("Entity deleted");
+            }
+            // Adjust the transformation precision level
+            else if (IsKeyPressed(KEY_EQUAL)) AdjustPrecision(1);
+            else if (IsKeyPressed(KEY_MINUS)) AdjustPrecision(-1);
         }
     }
 
@@ -95,10 +105,11 @@ void EditorController::OnUpdate()
             case POSITION: {
                 // Calculate move from input
                 raylib::Vector3 move = raylib::Vector3::Zero();
-                move.x = moveDistance * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
+                float precision = moveLevels[movePrecision];
+                move.x = precision * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
                 // Switch vertical move input between z and y axis based on shift key down
-                float verticalMove = moveDistance * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
+                float verticalMove = precision * (float) (-IsKeyPressed(KEY_UP) + IsKeyPressed(KEY_DOWN));
                 IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
 
                 // Apply the move to the position of the entity
@@ -108,7 +119,8 @@ void EditorController::OnUpdate()
             }
             case ROTATION: {
                 // Calculate rotation from input and apply it to the rotation of the entity
-                float rotation = rotationAmount * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
+                float precision = rotateLevels[rotatePrecision];
+                float rotation = precision * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
@@ -177,4 +189,34 @@ bool EditorController::TryAddEntity(std::string& entityName)
         return true;
     }
     return false;
+}
+
+void EditorController::AdjustPrecision(int adjustment)
+{
+    // Precision adjust for the relevant mode
+    switch (currentMode)
+    {
+        case POSITION: {
+            // Check boundaries on move precision
+            int newPrecision = movePrecision + adjustment;
+            if (newPrecision >= 0 && newPrecision < sizeof(moveLevels)/sizeof(int))
+            {
+                // Apply the new precision value
+                movePrecision = newPrecision;
+                messageDisplay->DisplayMessage(FormatText("Move precision set to %.2f", moveLevels[movePrecision]));
+            }
+            break;
+        }
+        case ROTATION: {
+            // Check boundaries on rotate precision
+            int newPrecision = rotatePrecision + adjustment;
+            if (newPrecision >= 0 && newPrecision < sizeof(rotateLevels)/sizeof(int))
+            {
+                // Apply the new precision value
+                rotatePrecision = newPrecision;
+                messageDisplay->DisplayMessage(FormatText("Rotate precision set to %.2f°", rotateLevels[rotatePrecision]));
+            }
+            break;
+        }
+    }
 }
