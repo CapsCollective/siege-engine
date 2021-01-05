@@ -20,7 +20,7 @@ public:
     velocity(raylib::Vector3::Zero()),
     modelData(ModelData(
             "assets/models/cube/cube.obj",
-            "assets/models/cube/CubeTexture.png"))
+            "assets/models/cube/cube.png"))
     {
         Entity::SetName("Player");
     };
