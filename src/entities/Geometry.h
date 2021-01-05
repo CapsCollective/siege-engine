@@ -16,7 +16,7 @@ public:
 
     explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
     Geometry(position, rotation, dimensions, ModelData("assets/models/cube/cube.obj",
-                                                       "assets/models/cube/CubeTexture.png"))
+                                                       "assets/models/cube/cube.png"))
     {};
 
     explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
