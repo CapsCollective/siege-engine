@@ -29,6 +29,12 @@ protected:
 
 private:
 
+    // Private methods
+
+    bool CheckEditorMode();
+
+    bool CheckArgs(const std::string& command, const std::string& args);
+
     // Private fields
 
     bool isEditorMode;

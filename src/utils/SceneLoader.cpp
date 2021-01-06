@@ -54,14 +54,15 @@ void SceneLoader::LoadNextScene()
 void SceneLoader::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    SaveScene(currentScene.empty() ? UNKNOWN_FILENAME : currentScene);
+    SaveScene(currentScene.empty() ? "" : currentScene);
 }
 
 void SceneLoader::SaveScene(const std::string& sceneName)
 {
+    std::string name = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
     // Serialise the scene by name and set it as current
-    SerialiseScene(sceneName);
-    currentScene = sceneName;
+    SerialiseScene(name);
+    currentScene = name;
 }
 
 void SceneLoader::SerialiseScene(const std::string& sceneName)

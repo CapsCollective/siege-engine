@@ -48,7 +48,7 @@ void DevConsole::OnUpdate()
         // Run the appropriate instructions for specified command
         if (command == "load")
         {
-            if (!argument.empty())
+            if (CheckArgs("load", argument))
             {
                 // Deselect all entities if in editor mode
                 if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
@@ -56,17 +56,15 @@ void DevConsole::OnUpdate()
                 // Try load the scene specified
                 SceneLoader::QueueNextScene(argument);
             }
-            else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
         }
         else if (command == "save")
         {
-            if (isEditorMode)
+            if (CheckEditorMode())
             {
                 // Save the scene as the current scene name (or untitled if argument blank)
                 SceneLoader::SaveScene(argument);
                 messageDisplay->DisplayMessage("Scene saved");
             }
-            else messageDisplay->DisplayMessage("Cannot save from play mode");
         }
         else if (command == "new")
         {
@@ -82,23 +80,18 @@ void DevConsole::OnUpdate()
         }
         else if (command == "add")
         {
-            if (!argument.empty())
+            if (CheckEditorMode() && CheckArgs("add", argument))
             {
-                if (isEditorMode)
+                // Try add the entity to the scene
+                if (EditorController::TryAddEntity(argument))
                 {
-                    // Try add the entity to the scene
-                    if (EditorController::TryAddEntity(argument))
-                    {
-                        messageDisplay->DisplayMessage("Added entity to scene");
-                    }
-                    else
-                    {
-                        messageDisplay->DisplayMessage("Cannot add entity \"" + argument + "\"");
-                    }
+                    messageDisplay->DisplayMessage("Added entity to scene");
                 }
-                else messageDisplay->DisplayMessage("Cannot modify scenes from play mode");
+                else messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
             }
-            else messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
+        }
+            }
+            else messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
         }
         // TODO add setpos/setrot command
         // TODO add setmod/settex command
@@ -116,10 +109,21 @@ void DevConsole::OnUpdate()
 
 void DevConsole::OnUIDraw()
 {
-    if (isActive)
-    {
-        // Draw the console to the screen
-        DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
-        DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
-    }
+    if (!isActive) return;
+
+    // Draw the console to the screen
+    DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
+    DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
+}
+
+bool DevConsole::CheckEditorMode()
+{
+    if (!isEditorMode) messageDisplay->DisplayMessage("Error: command not valid in editor mode");
+    return isEditorMode;
+}
+
+bool DevConsole::CheckArgs(const std::string& command, const std::string& args)
+{
+    if (args.empty()) messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
+    return !args.empty();
 }
