@@ -18,6 +18,12 @@ namespace StringHelpers
      * A helper function to convert a string to a Vector3
      * @param string - the string to convert
      * @return The resulting Vector3 from the string
+     * @throws length_error - thrown when the number of
+     *                        supplied vector components is
+     *                        not equal to 3
+     * @throws invalid_argument - thrown if a non-float
+     *                            component is found in
+     *                            the supplied vector
      */
     raylib::Vector3 StringToVector(std::string string);
 

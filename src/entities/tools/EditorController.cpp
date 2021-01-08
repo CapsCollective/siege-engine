@@ -220,3 +220,18 @@ void EditorController::AdjustPrecision(int adjustment)
         }
     }
 }
+
+bool EditorController::TrySetPos(raylib::Vector3 position)
+{
+    if (!selectedEntity) return false;
+    selectedEntity->SetPosition(position);
+    return true;
+
+}
+
+bool EditorController::TrySetRot(float rotation)
+{
+    if (!selectedEntity) return false;
+    selectedEntity->SetRotation(rotation);
+    return true;
+}

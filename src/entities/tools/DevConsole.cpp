@@ -1,6 +1,7 @@
 #include "DevConsole.h"
 #include "MessageDisplay.h"
 #include "../../utils/SceneLoader.h"
+#include "../../utils/StringHelpers.h"
 #include "EditorController.h"
 #include "Profiler.h"
 
@@ -90,10 +91,44 @@ void DevConsole::OnUpdate()
                 else messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
             }
         }
+        else if (command == "setpos")
+        {
+            if (CheckEditorMode() && CheckArgs("setpos", argument))
+            {
+                // Try convert the argument to a Vector3, and set the entity's position
+                try {
+                    raylib::Vector3 position = StringHelpers::StringToVector(argument);
+                    if (ServiceLocator::GetEditorController()->TrySetPos(position))
+                    {
+                        messageDisplay->DisplayMessage("Entity position set to " + argument);
+                    }
+                    else messageDisplay->DisplayMessage("Error: No entity selected");
+                }
+                catch (const std::invalid_argument& err) {
+                    messageDisplay->DisplayMessage("Error: Invalid type of Vector3 components, should be float");
+                }
+                catch (const std::length_error& err) {
+                    messageDisplay->DisplayMessage("Error: Invalid number of Vector3 components, should be 3");
+                }
             }
-            else messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
         }
-        // TODO add setpos/setrot command
+        else if (command == "setrot")
+        {
+            if (CheckEditorMode() && CheckArgs("setrot", argument))
+            {
+                // Try convert the argument to float, and set the entity's rotation
+                try {
+                    if (ServiceLocator::GetEditorController()->TrySetRot(std::stof(argument)))
+                    {
+                        messageDisplay->DisplayMessage("Entity rotation set to " + argument + "°");
+                    }
+                    else messageDisplay->DisplayMessage("Error: No entity selected");
+                }
+                catch (const std::invalid_argument& err) {
+                    messageDisplay->DisplayMessage("Error: Invalid float input");
+                }
+            }
+        }
         // TODO add setmod/settex command
         else
         {
