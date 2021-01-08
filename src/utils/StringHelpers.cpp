@@ -3,9 +3,7 @@
 
 std::string StringHelpers::VectorToString(raylib::Vector3 vector)
 {
-    return std::to_string(vector.x) + "," +
-           std::to_string(vector.y) + "," +
-           std::to_string(vector.z) + ",";
+    return std::to_string(vector.x) + "," + std::to_string(vector.y) + "," + std::to_string(vector.z);
 }
 
 raylib::Vector3 StringHelpers::StringToVector(std::string string)
@@ -29,6 +27,7 @@ std::vector<std::string> StringHelpers::SplitString(std::string string, char del
         args.push_back(string.substr(0, delimiterPos));
         string.erase(0, args.back().size()+1);
     }
+    args.push_back(string);
     return args;
 }
 
