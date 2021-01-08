@@ -4,6 +4,7 @@
 #include "../../utils/StringHelpers.h"
 #include "EditorController.h"
 #include "Profiler.h"
+#include <stdexcept>
 
 void DevConsole::OnUpdate()
 {
