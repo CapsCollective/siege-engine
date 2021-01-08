@@ -38,6 +38,10 @@ public:
 
     void SelectEntity(Entity* entity);
 
+    bool TrySetPos(raylib::Vector3 position);
+
+    bool TrySetRot(float rotation);
+
 protected:
 
     // Protected overrides
