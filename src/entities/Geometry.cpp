@@ -13,7 +13,7 @@ void Geometry::OnDraw()
             raylib::Vector3(0, 1, 0),
             rotation,
             dimensions,
-            BLUE
+            WHITE
     );
 
     // Draw the model wireframe
@@ -23,7 +23,7 @@ void Geometry::OnDraw()
             raylib::Vector3(0, 1, 0),
             rotation,
             dimensions,
-            DARKBLUE
+            PINK
     );
 }
 
@@ -47,4 +47,9 @@ Entity* Geometry::Clone()
 
 const ModelData& Geometry::GetModelData() {
     return modelData;
+}
+
+void Geometry::SetModelData(const ModelData &data)
+{
+    modelData = data;
 }

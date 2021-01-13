@@ -3,8 +3,9 @@
 
 #include "Entity.h"
 #include "../resources/ModelData.h"
+#include "../interfaces/Modelable.h"
 
-class Player : public Entity
+class Player : public Entity, public Modelable
 {
 public:
 
@@ -29,9 +30,9 @@ public:
 
     BoundingBox GetBoundingBox() override;
 
-    // Public methods
+    const ModelData& GetModelData() override;
 
-    const ModelData& GetModelData();
+    void SetModelData(const ModelData& modelData) override;
 
 protected:
 

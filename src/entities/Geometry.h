@@ -3,8 +3,9 @@
 
 #include "Entity.h"
 #include "../resources/ModelData.h"
+#include "../interfaces/Modelable.h"
 
-class Geometry : public Entity
+class Geometry : public Entity, public Modelable
 {
 public:
 
@@ -15,8 +16,9 @@ public:
     {};
 
     explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
-    Geometry(position, rotation, dimensions, ModelData("assets/models/cube/cube.obj",
-                                                       "assets/models/cube/cube.png"))
+    Geometry(position, rotation, dimensions, ModelData(
+            "assets/models/cube/cube.obj",
+            "assets/models/cube/cube.png"))
     {};
 
     explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
@@ -33,11 +35,13 @@ public:
 
     BoundingBox GetBoundingBox() override;
 
+    const ModelData& GetModelData() override;
+
+    void SetModelData(const ModelData& modelData) override;
+
     // Public methods
 
     const raylib::Vector3& GetDimensions();
-
-    const ModelData& GetModelData();
 
 protected:
 

@@ -22,6 +22,8 @@ int main(int argc, char* argv[])
     raylib::Window window = raylib::Window(800, 450, "A Dark Discomfort");
     window.SetTargetFPS(60);
 
+    // TODO add logo raylib_anim example sequence as entity
+
     // Deactivate the exit key
     SetExitKey(-1);
 

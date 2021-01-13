@@ -149,10 +149,6 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         }
         else if (args[ENTITY_NAME] == "Player")
         {
-            // Get custom fields
-            std::string modelPath = args[CUSTOM_FIELD_1];
-            std::string texturePath = args[CUSTOM_FIELD_2];
-
             // Register the new entity
             EntityStorage::Register(new Player(position, rotation));
         }
