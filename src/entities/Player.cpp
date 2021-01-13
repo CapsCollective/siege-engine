@@ -14,6 +14,8 @@ void Player::OnUpdate()
 
     // Dampen velocity
     velocity = velocity * 0.9f;
+
+    // TODO add collision
 }
 
 void Player::OnDraw()
@@ -28,8 +30,8 @@ void Player::OnDraw()
             position,
             raylib::Vector3(0, 1, 0),
             rotation,
-            raylib::Vector3(1.0f, 1.0f, 1.0f),
-            RED
+            raylib::Vector3::One(),
+            WHITE
     );
 
     // Draw the model wireframe
@@ -38,8 +40,8 @@ void Player::OnDraw()
             position,
             raylib::Vector3(0, 1, 0),
             rotation,
-            raylib::Vector3(1.0f, 1.0f, 1.0f),
-            MAROON
+            raylib::Vector3::One(),
+            PINK
     );
 }
 
@@ -59,4 +61,9 @@ BoundingBox Player::GetBoundingBox()
 const ModelData& Player::GetModelData()
 {
     return modelData;
+}
+
+void Player::SetModelData(const ModelData& data)
+{
+    modelData = data;
 }

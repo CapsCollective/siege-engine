@@ -235,3 +235,16 @@ bool EditorController::TrySetRot(float rotation)
     selectedEntity->SetRotation(rotation);
     return true;
 }
+
+bool EditorController::TrySetModelData(const std::string& model, const std::string& texture)
+{
+    if (!selectedEntity) return false;
+    auto modelableEntity = dynamic_cast<Modelable*>(selectedEntity);
+    if (modelableEntity)
+    {
+        auto modelData = modelableEntity->GetModelData();
+        modelableEntity->SetModelData(ModelData(model, texture));
+        return true;
+    }
+    return false;
+}

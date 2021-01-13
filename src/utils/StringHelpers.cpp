@@ -42,3 +42,11 @@ std::string StringHelpers::LowercaseString(std::string string)
     std::for_each(string.begin(), string.end(), [](char& c){c = (char) std::tolower(c);});
     return string;
 }
+
+std::string StringHelpers::Replace(std::string string, const std::string& toReplace, const std::string& replacement)
+{
+    size_t pos = string.find(toReplace);
+    if (pos == std::string::npos) return string;
+    string.replace(pos, toReplace.length(), replacement);
+    return string;
+}

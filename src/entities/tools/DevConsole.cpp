@@ -130,7 +130,33 @@ void DevConsole::OnUpdate()
                 }
             }
         }
-        // TODO add setmod/settex command
+        else if (command == "setmd")
+        {
+            if (CheckEditorMode() && CheckArgs("setmd", argument))
+            {
+                // Split the supplied arguments from input
+                auto args = StringHelpers::SplitString(argument, ' ');
+
+                // Check for valid number of arguments
+                if (args.size() >= 2)
+                {
+                    // Make text replacements for user shortcuts
+                    std::string modelPath = StringHelpers::Replace(
+                            args[0], ".", "assets/models");
+                    std::string texturePath = StringHelpers::Replace(
+                            args[1], ".", "assets/models");
+
+                    // Try set the entity model data using the supplied arguments
+                    if (ServiceLocator::GetEditorController()->TrySetModelData(modelPath, texturePath))
+                    {
+                        messageDisplay->DisplayMessage("Entity texture set to " +
+                        modelPath + " " + texturePath);
+                    }
+                    else messageDisplay->DisplayMessage("Error: No entity selected or entity not modelable");
+                }
+                else messageDisplay->DisplayMessage("Error: Too few arguments supplied");
+            }
+        }
         else
         {
             messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");

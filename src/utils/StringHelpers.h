@@ -42,6 +42,16 @@ namespace StringHelpers
      * @return The lowercased string
      */
     std::string LowercaseString(std::string string);
+
+    /**
+     * A helper function to replace the first instance of a
+     * supplied substring with the a supplied replacement
+     * @param string - the string to modify
+     * @param toReplace - the substring to replace
+     * @param replacement - the string to replace it with
+     * @return The modified string
+     */
+    std::string Replace(std::string string, const std::string& toReplace, const std::string& replacement);
 }
 
 
