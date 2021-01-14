@@ -15,7 +15,7 @@ public:
     Player(raylib::Vector3::Zero(), 0.f)
     {};
 
-    explicit Player(raylib::Vector3 position, float rotation) :
+    Player(raylib::Vector3 position, float rotation) :
     Entity(position, rotation),
     speed(1.5f),
     velocity(raylib::Vector3::Zero()),

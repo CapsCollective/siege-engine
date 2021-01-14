@@ -7,6 +7,8 @@ class Modelable
 {
 public:
 
+    // TODO reposition interface as Drawable
+
     virtual const ModelData& GetModelData() = 0;
 
     virtual void SetModelData(const ModelData& modelData) = 0;

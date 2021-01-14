@@ -45,6 +45,7 @@ std::string StringHelpers::LowercaseString(std::string string)
 
 std::string StringHelpers::Replace(std::string string, const std::string& toReplace, const std::string& replacement)
 {
+    // Try find the position of the supplied substring and replace the substring at position
     size_t pos = string.find(toReplace);
     if (pos == std::string::npos) return string;
     string.replace(pos, toReplace.length(), replacement);

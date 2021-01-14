@@ -15,7 +15,7 @@ void Player::OnUpdate()
     // Dampen velocity
     velocity = velocity * 0.9f;
 
-    // TODO add collision
+    // TODO add collision potentially using interface Collidable
 }
 
 void Player::OnDraw()
