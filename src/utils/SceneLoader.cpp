@@ -67,6 +67,7 @@ void SceneLoader::SaveScene(const std::string& sceneName)
 
 void SceneLoader::SerialiseScene(const std::string& sceneName)
 {
+    // TODO move serialisation and deserialisation logic into its own module with interface Serialisable
     // Iterate over each entity in the scene
     std::string fileData;
     for (auto entity : EntityStorage::GetEntities())

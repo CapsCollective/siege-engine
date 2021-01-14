@@ -37,6 +37,7 @@ public:
      * @return A pointer to the cloned entity object
      * @warning Calling this function on an object that does
      *          not override it will return a nullptr
+     * TODO potentially move into cloneable interface
      */
     virtual Entity* Clone();
 
