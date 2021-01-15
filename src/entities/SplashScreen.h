@@ -1,15 +1,15 @@
-#ifndef A_DARK_DISCOMFORT_INTROSEQUENCE_H
-#define A_DARK_DISCOMFORT_INTROSEQUENCE_H
+#ifndef A_DARK_DISCOMFORT_SPLASHSCREEN_H
+#define A_DARK_DISCOMFORT_SPLASHSCREEN_H
 
 #include "Entity.h"
 
-class IntroSequence : public Entity
+class SplashScreen : public Entity
 {
 public:
 
     // Constructors
 
-    IntroSequence() :
+    SplashScreen() :
     logoPositionX(GetScreenWidth()/2 - 128),
     logoPositionY(GetScreenHeight()/2 - 128),
     framesCounter(0),
@@ -19,7 +19,8 @@ public:
     bottomSideRecWidth(16),
     rightSideRecHeight(16),
     state(BLINK),
-    alpha(1.f)
+    alpha(1.f),
+    logoTexture()
     {
         Entity::SetName("IntroSequence");
     };
@@ -36,7 +37,7 @@ private:
 
     // Private enums
 
-    enum IntroSequenceState { BLINK = 0, BARS_1 = 1, BARS_2 = 2, LETTERING = 3, END = 4 };
+    enum IntroSequenceState { BLINK, BARS_1, BARS_2, LETTERING, CAPS_1, CAPS_2, END };
 
     // Private fields
 
@@ -55,7 +56,9 @@ private:
     IntroSequenceState state;
     float alpha;
 
+    Texture2D logoTexture;
+
 };
 
 
-#endif //A_DARK_DISCOMFORT_INTROSEQUENCE_H
+#endif //A_DARK_DISCOMFORT_SPLASHSCREEN_H
