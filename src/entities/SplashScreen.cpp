@@ -1,8 +1,12 @@
-#include "IntroSequence.h"
+#include "SplashScreen.h"
 #include "../utils/SceneLoader.h"
 
-void IntroSequence::OnUpdate()
+// Define macros
+#define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }
+
+void SplashScreen::OnUpdate()
 {
+    // TODO add skip button to splash screen
     // Run the state machine update
     switch (state)
     {
@@ -33,17 +37,36 @@ void IntroSequence::OnUpdate()
             if (lettersCount >= 10)
             {
                 alpha -= 0.02f;
-                if (alpha <= -1.0f) alpha = 0.0f, state = END;
+                if (alpha <= -1.0f)
+                {
+                    // Setup image for next state
+                    Image image = LoadImage("assets/images/caps_collective.png");
+                    logoTexture = LoadTextureFromImage(image);
+                    UnloadImage(image);
+                    alpha = 0.0f;
+                    state = CAPS_1;
+                }
             }
             break;
+        case CAPS_1:
+            // Fade in the logo
+            alpha += 0.01f;
+            if (alpha >= 2.0f) state = CAPS_2;
+            break;
+        case CAPS_2:
+            // Fade out the logo
+            alpha -= 0.02f;
+            if (alpha <= -1.0f) state = END;
+            break;
         case END:
-            // Load the main scene
+            // End the animations and load the main scene
+            UnloadTexture(logoTexture);
             SceneLoader::QueueNextScene("main");
             break;
     }
 }
 
-void IntroSequence::OnUIDraw()
+void SplashScreen::OnUIDraw()
 {
     // Run the appropriate draw calls for the animation state
     switch (state)
@@ -73,6 +96,11 @@ void IntroSequence::OnUIDraw()
             DrawText(TextSubtext("raylib", 0, lettersCount),GetScreenWidth()/2 - 44,
                      GetScreenHeight()/2 + 48, 50, Fade(BLACK, alpha));
             break;
+        case CAPS_1:
+        case CAPS_2:
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(CAPS_COLOUR, alpha));
+            DrawTexture(logoTexture, GetScreenWidth()/2 - logoTexture.width/2,
+                        GetScreenHeight()/2 - logoTexture.height/2, ColorAlpha(WHITE, alpha-0.2f));
         case END:
             break;
     }
