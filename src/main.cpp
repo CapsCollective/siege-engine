@@ -7,6 +7,7 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
 #include "utils/SceneLoader.h"
+#include "entities/IntroSequence.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -21,8 +22,6 @@ int main(int argc, char* argv[])
     raylib::Color bg = RAYWHITE;
     raylib::Window window = raylib::Window(800, 450, "A Dark Discomfort");
     window.SetTargetFPS(60);
-
-    // TODO add logo raylib_anim example sequence as entity
 
     // Deactivate the exit key
     SetExitKey(-1);
@@ -53,6 +52,7 @@ int main(int argc, char* argv[])
     // Instantiate world objects as per mode options
     if (isEditorMode)
     {
+        // Start the editor controller
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
         EntityStorage::Register(editor, true);
@@ -60,7 +60,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-        SceneLoader::QueueNextScene("main");
+        // Start the game intro sequence
+        EntityStorage::Register(new IntroSequence());
     }
 
     // Run main game loop until close button or ESC key
