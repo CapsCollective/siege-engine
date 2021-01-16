@@ -6,6 +6,7 @@
 #include "StringHelpers.h"
 #include "SceneLoader.h"
 #include "ServiceLocator.h"
+#include "../entities/SplashScreen.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -152,6 +153,11 @@ bool SceneLoader::DeserialiseScene(const std::string& sceneName)
         {
             // Register the new entity
             EntityStorage::Register(new Player(position, rotation));
+        }
+        else if (args[ENTITY_NAME] == "SplashScreen")
+        {
+            // Register the new entity
+            EntityStorage::Register(new SplashScreen());
         }
         else std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
     }
