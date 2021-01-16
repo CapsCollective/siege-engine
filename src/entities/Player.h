@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_PLAYER_H
 
 #include "Entity.h"
-#include "../resources/ModelData.h"
+#include "../resource_system/ModelData.h"
 #include "../interfaces/Modelable.h"
 
 class Player : public Entity, public Modelable

@@ -1,5 +1,5 @@
 #include "SplashScreen.h"
-#include "../utils/SceneLoader.h"
+#include "../scene_system/SceneLoader.h"
 
 // Define macros
 #define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }
