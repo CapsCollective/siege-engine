@@ -4,8 +4,9 @@
 #include "Entity.h"
 #include "../resources/ModelData.h"
 #include "../interfaces/Modelable.h"
+#include "../interfaces/Cloneable.h"
 
-class Geometry : public Entity, public Modelable
+class Geometry : public Entity, public Modelable, public Cloneable
 {
 public:
 
