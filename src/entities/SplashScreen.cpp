@@ -6,7 +6,6 @@
 
 void SplashScreen::OnUpdate()
 {
-    // TODO add skip button to splash screen
     // Run the state machine update
     switch (state)
     {
@@ -17,6 +16,7 @@ void SplashScreen::OnUpdate()
             break;
         case BARS_1:
             // Grow the top and left bars to size
+            alpha -= 0.02f;
             topSideRecWidth += 4;
             leftSideRecHeight += 4;
             if (topSideRecWidth == 256) state = BARS_2;
@@ -26,7 +26,7 @@ void SplashScreen::OnUpdate()
             bottomSideRecWidth += 4;
             rightSideRecHeight += 4;
 
-            if (bottomSideRecWidth == 256) state = LETTERING;
+            if (bottomSideRecWidth == 256) alpha = 1.f, state = LETTERING;
             break;
         case LETTERING:
             // Add new letters at framerate
@@ -50,7 +50,7 @@ void SplashScreen::OnUpdate()
             break;
         case CAPS_1:
             // Fade in the logo
-            alpha += 0.01f;
+            alpha += 0.02f;
             if (alpha >= 2.0f) state = CAPS_2;
             break;
         case CAPS_2:
@@ -64,6 +64,9 @@ void SplashScreen::OnUpdate()
             SceneLoader::QueueNextScene("main");
             break;
     }
+
+    // Skip the playback on escape pressed
+    if (IsKeyPressed(KEY_ESCAPE)) state = END;
 }
 
 void SplashScreen::OnUIDraw()
@@ -73,6 +76,8 @@ void SplashScreen::OnUIDraw()
     {
         case BLINK:
             if ((framesCounter/15)%2) DrawRectangle(logoPositionX, logoPositionY, 16, 16, BLACK);
+            DrawText("Press ESC to skip",10,GetScreenHeight() - 30,
+                     20, Fade(BLACK, alpha));
             break;
         case BARS_2:
             DrawRectangle(logoPositionX + 240, logoPositionY, 16, rightSideRecHeight, BLACK);
@@ -80,6 +85,8 @@ void SplashScreen::OnUIDraw()
         case BARS_1:
             DrawRectangle(logoPositionX, logoPositionY, topSideRecWidth, 16, BLACK);
             DrawRectangle(logoPositionX, logoPositionY, 16, leftSideRecHeight, BLACK);
+            DrawText("Press ESC to skip",10,GetScreenHeight() - 30,
+                     20, Fade(BLACK, alpha));
             break;
         case LETTERING:
             DrawRectangle(logoPositionX, logoPositionY, topSideRecWidth, 16, Fade(BLACK, alpha));
