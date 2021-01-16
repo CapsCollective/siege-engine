@@ -4,7 +4,7 @@
 #include "../Geometry.h"
 #include "../Player.h"
 #include "../../utils/StringHelpers.h"
-#include "../../utils/SceneLoader.h"
+#include "../../scene_system/SceneLoader.h"
 
 // Define macros
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }

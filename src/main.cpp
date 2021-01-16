@@ -1,12 +1,12 @@
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "entity_system/EntityStorage.h"
-#include "resources/ResourceManager.h"
+#include "resource_system/ResourceManager.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
-#include "utils/SceneLoader.h"
+#include "scene_system/SceneLoader.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>

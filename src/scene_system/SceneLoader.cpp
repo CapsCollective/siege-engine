@@ -1,11 +1,11 @@
 #include "../entities/tools/MessageDisplay.h"
-#include "../resources/ResourceManager.h"
+#include "../resource_system/ResourceManager.h"
 #include "../entity_system/EntityStorage.h"
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
-#include "StringHelpers.h"
+#include "../utils/StringHelpers.h"
 #include "SceneLoader.h"
-#include "ServiceLocator.h"
+#include "../utils/ServiceLocator.h"
 #include "../entities/SplashScreen.h"
 #include <iostream>
 #include <fstream>
