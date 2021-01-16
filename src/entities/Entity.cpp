@@ -3,11 +3,6 @@
 #include <cmath>
 #include "../entity_system/EntityStorage.h"
 
-Entity* Entity::Clone()
-{
-    return nullptr;
-}
-
 BoundingBox Entity::GetBoundingBox()
 {
     return BoundingBox();

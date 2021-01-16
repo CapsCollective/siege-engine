@@ -7,7 +7,7 @@ class Modelable
 {
 public:
 
-    // TODO reposition interface as Drawable
+    // TODO reposition interface as Drawable & comment this class
 
     virtual const ModelData& GetModelData() = 0;
 
