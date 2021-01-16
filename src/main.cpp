@@ -7,7 +7,6 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
 #include "utils/SceneLoader.h"
-#include "entities/SplashScreen.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -61,7 +60,7 @@ int main(int argc, char* argv[])
     else
     {
         // Start the game splash screen
-        EntityStorage::Register(new SplashScreen());
+        SceneLoader::QueueNextScene("splash");
     }
 
     // Run main game loop until close button or ESC key

@@ -22,7 +22,7 @@ public:
     alpha(1.f),
     logoTexture()
     {
-        Entity::SetName("IntroSequence");
+        Entity::SetName("SplashScreen");
     };
 
 protected:
