@@ -4,8 +4,9 @@
 #include "Entity.h"
 #include "../resource_system/ModelData.h"
 #include "../interfaces/Modelable.h"
+#include "../interfaces/Cloneable.h"
 
-class Player : public Entity, public Modelable
+class Player : public Entity, public Modelable, public Cloneable
 {
 public:
 
@@ -27,6 +28,8 @@ public:
     };
 
     // Public overrides
+
+    Entity* Clone() override;
 
     BoundingBox GetBoundingBox() override;
 

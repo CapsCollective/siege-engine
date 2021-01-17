@@ -67,3 +67,8 @@ void Player::SetModelData(const ModelData& data)
 {
     modelData = data;
 }
+
+Entity *Player::Clone()
+{
+    return new Player(position, rotation);
+}

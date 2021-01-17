@@ -2,7 +2,8 @@
 #define A_DARK_DISCOMFORT_ENTITY_H
 
 #include "../entity_system/IndexAllocator.h"
-#include <raylib-cpp.hpp>
+#include <Vector3.hpp>
+#include "string"
 
 /**
  * The base entity class for game objects and tool
