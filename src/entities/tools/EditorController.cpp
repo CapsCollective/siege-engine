@@ -1,10 +1,10 @@
 #include "EditorController.h"
-#include "../../entity_system/EntityStorage.h"
+#include "../../systems/entities/EntityStorage.h"
 #include "MessageDisplay.h"
 #include "../Geometry.h"
 #include "../Player.h"
 #include "../../utils/StringHelpers.h"
-#include "../../scene_system/SceneManager.h"
+#include "../../systems/scenes/SceneManager.h"
 
 // Define macros
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
