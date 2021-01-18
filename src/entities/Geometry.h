@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
 #include "Entity.h"
-#include "../resource_system/ModelData.h"
+#include "../systems/resources/ModelData.h"
 #include "../interfaces/Modelable.h"
 #include "../interfaces/Cloneable.h"
 

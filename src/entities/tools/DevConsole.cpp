@@ -1,6 +1,6 @@
 #include "DevConsole.h"
 #include "MessageDisplay.h"
-#include "../../scene_system/SceneManager.h"
+#include "../../systems/scenes/SceneManager.h"
 #include "../../utils/StringHelpers.h"
 #include "EditorController.h"
 #include "Profiler.h"

@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
-#include "../entity_system/IndexAllocator.h"
+#include "../systems/entities/IndexAllocator.h"
 #include <Vector3.hpp>
 #include "string"
 

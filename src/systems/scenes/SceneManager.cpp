@@ -1,7 +1,7 @@
-#include "../entities/tools/MessageDisplay.h"
-#include "../resource_system/ResourceManager.h"
-#include "../entity_system/EntityStorage.h"
-#include "../utils/ServiceLocator.h"
+#include "../../entities/tools/MessageDisplay.h"
+#include "../../systems/resources/ResourceManager.h"
+#include "../../systems/entities/EntityStorage.h"
+#include "../../utils/ServiceLocator.h"
 #include "SceneSerialiser.h"
 #include "SceneManager.h"
 #include <iostream>

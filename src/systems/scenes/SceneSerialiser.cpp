@@ -1,9 +1,9 @@
 #include "SceneSerialiser.h"
-#include "../utils/StringHelpers.h"
-#include "../entities/Entity.h"
-#include "../entities/Geometry.h"
-#include "../entities/Player.h"
-#include "../entities/SplashScreen.h"
+#include "../../utils/StringHelpers.h"
+#include "../../entities/Entity.h"
+#include "../../entities/Geometry.h"
+#include "../../entities/Player.h"
+#include "../../entities/SplashScreen.h"
 #include <iostream>
 
 // Define macros
