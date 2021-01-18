@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include <utility>
 #include <cmath>
-#include "../systems/entities/EntityStorage.h"
+#include "EntityStorage.h"
 
 BoundingBox Entity::GetBoundingBox()
 {

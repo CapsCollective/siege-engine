@@ -5,7 +5,7 @@
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
-#include "../Entity.h"
+#include "../../systems/entity/Entity.h"
 
 enum EditorMode {
     POSITION,
