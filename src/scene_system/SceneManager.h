@@ -1,7 +1,7 @@
-#ifndef A_DARK_DISCOMFORT_SCENELOADER_H
-#define A_DARK_DISCOMFORT_SCENELOADER_H
+#ifndef A_DARK_DISCOMFORT_SCENEMANAGER_H
+#define A_DARK_DISCOMFORT_SCENEMANAGER_H
 
-class SceneLoader
+class SceneManager
 {
 public:
 
@@ -42,19 +42,6 @@ private:
     // Private methods
 
     /**
-     * Serialise the current scene to a file by name
-     * @param sceneName - the name of the file to serialise to
-     */
-    static void SerialiseScene(const std::string& sceneName);
-
-    /**
-     * Deserialise a specified scene from a file by name
-     * @param sceneName - the name of the file to deserialise
-     * @return Success status of the operation as a bool
-     */
-    static bool DeserialiseScene(const std::string& sceneName);
-
-    /**
      * Clears all entities in the scene (and related resources)
      */
     static void ClearScene();
@@ -73,4 +60,4 @@ private:
 };
 
 
-#endif //A_DARK_DISCOMFORT_SCENELOADER_H
+#endif //A_DARK_DISCOMFORT_SCENEMANAGER_H

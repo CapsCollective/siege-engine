@@ -6,7 +6,7 @@
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
-#include "scene_system/SceneLoader.h"
+#include "scene_system/SceneManager.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     else
     {
         // Start the game splash screen
-        SceneLoader::QueueNextScene("splash");
+        SceneManager::QueueNextScene("splash");
     }
 
     // Run main game loop until close button or ESC key
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
         // Remove all entities at the end of the frame
         EntityStorage::FreeEntities();
         ResourceManager::FreeAllResources();
-        SceneLoader::LoadNextScene();
+        SceneManager::LoadNextScene();
 
         window.EndDrawing();
     }

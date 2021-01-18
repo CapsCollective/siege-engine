@@ -4,7 +4,7 @@
 #include "../Geometry.h"
 #include "../Player.h"
 #include "../../utils/StringHelpers.h"
-#include "../../scene_system/SceneLoader.h"
+#include "../../scene_system/SceneManager.h"
 
 // Define macros
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
@@ -37,7 +37,7 @@ void EditorController::OnUpdate()
         else if (IsKeyPressed(KEY_S))
         {
             // Save the scene
-            SceneLoader::SaveScene();
+            SceneManager::SaveScene();
             messageDisplay->DisplayMessage("Scene saved");
         }
         else if (selectedEntity)

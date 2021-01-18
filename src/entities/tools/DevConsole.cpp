@@ -1,6 +1,6 @@
 #include "DevConsole.h"
 #include "MessageDisplay.h"
-#include "../../scene_system/SceneLoader.h"
+#include "../../scene_system/SceneManager.h"
 #include "../../utils/StringHelpers.h"
 #include "EditorController.h"
 #include "Profiler.h"
@@ -56,7 +56,7 @@ void DevConsole::OnUpdate()
                 if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
 
                 // Try load the scene specified
-                SceneLoader::QueueNextScene(argument);
+                SceneManager::QueueNextScene(argument);
             }
         }
         else if (command == "save")
@@ -64,7 +64,7 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode())
             {
                 // Save the scene as the current scene name (or untitled if argument blank)
-                SceneLoader::SaveScene(argument);
+                SceneManager::SaveScene(argument);
                 messageDisplay->DisplayMessage("Scene saved");
             }
         }
@@ -72,7 +72,7 @@ void DevConsole::OnUpdate()
         {
             // Deselect all entities and open a new, untitled scene
             ServiceLocator::GetEditorController()->SelectEntity(nullptr);
-            SceneLoader::NewScene();
+            SceneManager::NewScene();
             messageDisplay->DisplayMessage("Created new scene");
         }
         else if (command == "stats")
