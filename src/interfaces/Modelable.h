@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_MODELABLE_H
 #define A_DARK_DISCOMFORT_MODELABLE_H
 
-#include "../systems/resources/ModelData.h"
+#include "../systems/resource/ModelData.h"
 
 class Modelable
 {

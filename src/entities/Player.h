@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_PLAYER_H
 #define A_DARK_DISCOMFORT_PLAYER_H
 
-#include "Entity.h"
-#include "../systems/resources/ModelData.h"
+#include "../systems/entity/Entity.h"
+#include "../systems/resource/ModelData.h"
 #include "../interfaces/Modelable.h"
 #include "../interfaces/Cloneable.h"
 

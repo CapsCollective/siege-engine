@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_SPLASHSCREEN_H
 #define A_DARK_DISCOMFORT_SPLASHSCREEN_H
 
-#include "Entity.h"
+#include "../systems/entity/Entity.h"
 
 class SplashScreen : public Entity
 {
