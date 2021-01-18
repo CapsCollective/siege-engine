@@ -3,7 +3,7 @@
 
 #include "../../utils/SystemMacros.h"
 #include <string>
-#include <map>
+#include <vector>
 
 class SceneSerialiser
 {
