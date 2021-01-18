@@ -1,5 +1,5 @@
 #include "SplashScreen.h"
-#include "../scene_system/SceneLoader.h"
+#include "../scene_system/SceneManager.h"
 
 // Define macros
 #define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }
@@ -61,7 +61,7 @@ void SplashScreen::OnUpdate()
         case END:
             // End the animations and load the main scene
             UnloadTexture(logoTexture);
-            SceneLoader::QueueNextScene("main");
+            SceneManager::QueueNextScene("main");
             break;
     }
 
