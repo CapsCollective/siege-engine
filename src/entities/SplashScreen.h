@@ -3,6 +3,16 @@
 
 #include "../systems/entity/Entity2D.h"
 
+enum IntroSequenceState {
+    BLINK,
+    BARS_1,
+    BARS_2,
+    LETTERING,
+    CAPS_1,
+    CAPS_2,
+    END
+};
+
 class SplashScreen : public Entity2D
 {
 public:
@@ -34,10 +44,6 @@ protected:
     void OnDraw() override;
 
 private:
-
-    // Private enums
-
-    enum IntroSequenceState { BLINK, BARS_1, BARS_2, LETTERING, CAPS_1, CAPS_2, END };
 
     // Private fields
 

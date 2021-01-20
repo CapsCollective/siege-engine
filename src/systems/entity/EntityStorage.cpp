@@ -47,13 +47,12 @@ void EntityStorage::AddEntity(Entity* entity, bool isTool)
         entities.push_back(entity);
     }
 
+    // Add each entity to its relevant container
     auto entity3D = dynamic_cast<Entity3D*>(entity);
-
     if (entity3D) {
         packedEntity3Ds.emplace_back(entity3D);
     } else {
         auto entity2D = dynamic_cast<Entity2D*>(entity);
-
         if (entity2D) {
             packedEntity2Ds.emplace_back(entity2D);
         }
@@ -85,7 +84,6 @@ void EntityStorage::Remove(Entity* entity)
     // Get the packed index
     // TODO: Maybe return a struct with all of an entity's index information?
     int32_t index = GetEntityIndex<Entity>(entity, packedEntities);
-
     int32_t index3D = GetEntityIndex<Entity3D>(dynamic_cast<Entity3D*>(entity), packedEntity3Ds);
     int32_t index2D = GetEntityIndex<Entity2D>(dynamic_cast<Entity2D*>(entity), packedEntity2Ds);
 

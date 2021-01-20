@@ -5,6 +5,15 @@
 #include <string>
 #include <vector>
 
+enum SerialisationFields {
+    ENTITY_NAME = 0,
+    ENTITY_POS = 1,
+    ENTITY_ROT = 2,
+    CUSTOM_FIELD_1 = 3,
+    CUSTOM_FIELD_2 = 4,
+    CUSTOM_FIELD_3 = 5,
+};
+
 class SceneSerialiser
 {
 public:
@@ -28,19 +37,6 @@ public:
      *                   pointers to populate
      */
     static void Deserialise(const std::vector<std::string>& sceneLines, OUT std::vector<Entity*>& entities);
-
-private:
-
-    // Private enums
-
-    enum SerialisationFields {
-        ENTITY_NAME = 0,
-        ENTITY_POS = 1,
-        ENTITY_ROT = 2,
-        CUSTOM_FIELD_1 = 3,
-        CUSTOM_FIELD_2 = 4,
-        CUSTOM_FIELD_3 = 5,
-    };
 };
 
 
