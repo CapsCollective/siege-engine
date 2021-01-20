@@ -1,21 +1,19 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include "../../systems/entity/Entity2D.h"
+#include "../../systems/entity/Tool.h"
 #include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
-#include "Gizmo.h"
-#include "Grid.h"
 
 enum EditorMode {
     POSITION,
     ROTATION,
 };
 
-class EditorController : public Entity2D
+class EditorController : public Tool
 {
 public:
 
@@ -25,22 +23,13 @@ public:
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
+    isGridActive(true),
     movePrecision(2),
     rotatePrecision(3),
     currentMode(POSITION),
-    selectedIdx(0),
-    gizmo(new Gizmo(false)),
-    grid(new Grid())
+    selectedIdx(0)
     {
         Entity::SetName("EditorController");
-        EntityStorage::Register(gizmo, true);
-        EntityStorage::Register(grid, true);
-    };
-
-    ~EditorController()
-    {
-        gizmo->QueueFree();
-        grid->QueueFree();
     };
 
     // Class methods
@@ -49,7 +38,7 @@ public:
 
     // Public methods
 
-    void SelectEntity(class Entity3D* entity);
+    void SelectEntity(class Entity* entity);
 
     bool TrySetPos(raylib::Vector3 position);
 
@@ -65,6 +54,8 @@ protected:
 
     void OnDraw() override;
 
+    void OnDraw2D() override;
+
 private:
 
     // Private methods
@@ -77,6 +68,8 @@ private:
 
     static float rotateLevels[];
 
+    bool isGridActive;
+
     EditorMode currentMode;
 
     int movePrecision;
@@ -87,13 +80,9 @@ private:
 
     raylib::Camera3D* camera;
 
-    Entity3D* selectedEntity;
+    Entity* selectedEntity;
 
     class MessageDisplay* messageDisplay;
-
-    Gizmo* gizmo;
-
-    Grid* grid;
 };
 
 

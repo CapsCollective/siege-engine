@@ -24,7 +24,7 @@ void EditorController::OnUpdate()
         if (IsKeyPressed(KEY_G))
         {
             // Toggle grid display
-            grid->SetActive(!grid->GetActive());
+            isGridActive = !isGridActive;
             messageDisplay->DisplayMessage("Grid display toggled");
         }
         else if (IsKeyPressed(KEY_R))
@@ -75,9 +75,8 @@ void EditorController::OnUpdate()
         SelectEntity(nullptr);
         for (auto& entity : EntityStorage::GetEntities())
         {
-            auto entity3D = dynamic_cast<Entity3D*>(entity);
-            if (entity3D && CheckCollisionRayBox(ray, entity3D->GetBoundingBox())) {
-                SelectEntity(entity3D);
+            if (CheckCollisionRayBox(ray, entity->GetBoundingBox())) {
+                SelectEntity(entity);
                 break;
             }
         }
@@ -92,7 +91,7 @@ void EditorController::OnUpdate()
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                SelectEntity(dynamic_cast<Entity3D*>(EntityStorage::GetPackedEntity(selectedIdx)));
+                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
@@ -134,6 +133,21 @@ void EditorController::OnUpdate()
 
 void EditorController::OnDraw()
 {
+    // Draw a reference grid at the centre of the scene if toggled on
+    if (isGridActive) DrawGrid(100, 1.0f);
+
+    if (selectedEntity)
+    {
+        // Draw gizmo display to its location
+        raylib::Vector3 entityPos = selectedEntity->GetPosition();
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
+        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+    }
+}
+
+void EditorController::OnDraw2D()
+{
     if (!selectedEntity) return;
 
     // Format display text on the selected entity
@@ -156,11 +170,10 @@ void EditorController::OnDraw()
              (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
 }
 
-void EditorController::SelectEntity(Entity3D* entity)
+void EditorController::SelectEntity(Entity* entity)
 {
     // Display the entity based on its existence
     selectedEntity = entity;
-    gizmo->SetActive(selectedEntity);
 }
 
 bool EditorController::TryAddEntity(std::string& entityName)

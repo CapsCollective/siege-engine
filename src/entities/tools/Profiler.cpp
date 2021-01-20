@@ -1,6 +1,6 @@
 #include "Profiler.h"
 
-void Profiler::OnDraw()
+void Profiler::OnDraw2D()
 {
     if (!isActive) return;
 

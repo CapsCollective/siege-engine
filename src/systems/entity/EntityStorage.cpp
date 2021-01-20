@@ -1,4 +1,5 @@
 #include "EntityStorage.h"
+#include "Tool.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -10,15 +11,11 @@ std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
 
-
-std::vector<Entity3D*> EntityStorage::packedEntity3Ds = std::vector<Entity3D*>();
-std::vector<Entity2D*> EntityStorage::packedEntity2Ds = std::vector<Entity2D*>();
-
 // Static member initialisations of vectors for transformations
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-ENTITY_LIST EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
+std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
 
-void EntityStorage::Register(Entity* entity, bool isTool)
+void EntityStorage::Register(Entity* entity)
 {
     // If the pointer is null - stop the function
     if (!entity) return;
@@ -28,11 +25,11 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     entity->SetIndex(index);
 
     // Queue the entity for initialisation
-    registeredEntities.emplace_back(entity, isTool);
+    registeredEntities.emplace_back(entity);
 }
 
 // Adds an entity to the Entity Storage
-void EntityStorage::AddEntity(Entity* entity, bool isTool)
+void EntityStorage::AddEntity(Entity* entity)
 {
 
     // If the entity's given index already exists
@@ -47,19 +44,8 @@ void EntityStorage::AddEntity(Entity* entity, bool isTool)
         entities.push_back(entity);
     }
 
-    // Add each entity to its relevant container
-    auto entity3D = dynamic_cast<Entity3D*>(entity);
-    if (entity3D) {
-        packedEntity3Ds.emplace_back(entity3D);
-    } else {
-        auto entity2D = dynamic_cast<Entity2D*>(entity);
-        if (entity2D) {
-            packedEntity2Ds.emplace_back(entity2D);
-        }
-    }
-
     // Add the entity to the end of its appropriate packed entities
-    if (isTool) packedTools.push_back(entity);
+    if (dynamic_cast<Tool*>(entity)) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
 }
 
@@ -67,7 +53,7 @@ void EntityStorage::RegisterEntities() {
     // Iterate over our queued entities and initialise them
     for (auto& entity : registeredEntities) {
         // Add the entity to storage
-        AddEntity(entity.first, entity.second);
+        AddEntity(entity);
     }
     // Finally, remove all entities from the queue
     registeredEntities.clear();
@@ -82,27 +68,10 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    // TODO: Maybe return a struct with all of an entity's index information?
-    int32_t index = GetEntityIndex<Entity>(entity, packedEntities);
-    int32_t index3D = GetEntityIndex<Entity3D>(dynamic_cast<Entity3D*>(entity), packedEntity3Ds);
-    int32_t index2D = GetEntityIndex<Entity2D>(dynamic_cast<Entity2D*>(entity), packedEntity2Ds);
+    int32_t index = GetEntityIndex(entity, packedEntities);
 
-    // Check if we found the appropriate index in our tool or entity storage
-    if (index != -1)
-    {
-        // Erase the packed index entry from our packed entity storage
-        packedEntities.erase(packedEntities.begin() + index);
-    }
-
-    if (index3D != -1)
-    {
-        packedEntity3Ds.erase(packedEntity3Ds.begin() + index3D);
-    }
-
-    if (index2D != -1)
-    {
-        packedEntity2Ds.erase(packedEntity2Ds.begin() + index2D);
-    }
+    // Erase the packed index entry from our packed entity storage if found
+    if (index != -1) packedEntities.erase(packedEntities.begin() + index);
 
     // Finally, delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;
@@ -123,7 +92,7 @@ Entity* EntityStorage::operator[](GenerationalIndex index)
 void EntityStorage::QueueFree(Entity* entity) 
 {
     // Ensure that we have no duplicates in the freedEntities vector
-    int32_t index = GetEntityIndex<Entity>(entity, freedEntities);
+    int32_t index = GetEntityIndex(entity, freedEntities);
     if (index == -1) 
     {
         // Push the entity back into our queue

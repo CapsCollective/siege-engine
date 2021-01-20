@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_SPLASHSCREEN_H
 #define A_DARK_DISCOMFORT_SPLASHSCREEN_H
 
-#include "../systems/entity/Entity2D.h"
+#include "../systems/entity/Entity.h"
 
 enum IntroSequenceState {
     BLINK,
@@ -13,7 +13,7 @@ enum IntroSequenceState {
     END
 };
 
-class SplashScreen : public Entity2D
+class SplashScreen : public Entity
 {
 public:
 
@@ -41,7 +41,7 @@ protected:
 
     void OnUpdate() override;
 
-    void OnDraw() override;
+    void OnDraw2D() override;
 
 private:
 

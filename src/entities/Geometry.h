@@ -1,12 +1,12 @@
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
-#include "../systems/entity/Entity3D.h"
+#include "../systems/entity/Entity.h"
 #include "../systems/resource/ModelData.h"
 #include "../interfaces/Modelable.h"
 #include "../interfaces/Cloneable.h"
 
-class Geometry : public Entity3D, public Modelable, public Cloneable
+class Geometry : public Entity, public Modelable, public Cloneable
 {
 public:
 
@@ -23,7 +23,7 @@ public:
     {};
 
     Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
-    Entity3D(position, rotation),
+    Entity(position, rotation),
     dimensions(dimensions),
     modelData(data)
     {
