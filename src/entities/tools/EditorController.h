@@ -20,6 +20,7 @@ class EditorController : public Entity2D
 public:
 
     // Constructors
+
     EditorController() :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
@@ -31,9 +32,9 @@ public:
     gizmo(new Gizmo(false)),
     grid(new Grid())
     {
+        Entity::SetName("EditorController");
         EntityStorage::Register(gizmo, true);
         EntityStorage::Register(grid, true);
-        Entity::SetName("EditorController");
     };
 
     ~EditorController()
