@@ -1,18 +1,25 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include "../../systems/entity/Entity3D.h"
+#include "../../systems/entity/Entity2D.h"
 #include "../../utils/ServiceLocator.h"
+#include "Gizmo.h"
+#include "../../systems/entity/EntityStorage.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
 
-class EditorController : public Entity3D
+enum EditorMode {
+    POSITION,
+    ROTATION,
+};
+
+class EditorController : public Entity2D
 {
 public:
 
     // Constructors
-    explicit EditorController() :
+    EditorController() :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
@@ -20,9 +27,16 @@ public:
     rotatePrecision(3),
     currentMode(POSITION),
     isGridActive(true),
-    selectedIdx(0)
+    selectedIdx(0),
+    gizmo(new Gizmo(false))
     {
+        EntityStorage::Register(gizmo);
         Entity::SetName("EditorController");
+    };
+
+    ~EditorController()
+    {
+        gizmo->QueueFree();
     };
 
     // Class methods
@@ -31,7 +45,7 @@ public:
 
     // Public methods
 
-    void SelectEntity(Entity3D* entity);
+    void SelectEntity(class Entity3D* entity);
 
     bool TrySetPos(raylib::Vector3 position);
 
@@ -48,13 +62,6 @@ protected:
     void OnDraw() override;
 
 private:
-
-    // Private enums
-
-    enum EditorMode {
-        POSITION,
-        ROTATION,
-    };
 
     // Private methods
 
@@ -81,6 +88,8 @@ private:
     Entity3D* selectedEntity;
 
     class MessageDisplay* messageDisplay;
+
+    Gizmo* gizmo;
 };
 
 

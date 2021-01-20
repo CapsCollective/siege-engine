@@ -18,7 +18,7 @@ void EditorController::OnUpdate()
     if (!camera || !messageDisplay) return;
 
     // Check for deselection and activation keys
-    if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
+    if (IsKeyPressed(KEY_ESCAPE)) SelectEntity(nullptr);
 
     // Check for command key presses
     if (IsKeyDown(KEY_LEFT_SUPER)){
@@ -27,6 +27,10 @@ void EditorController::OnUpdate()
             // Toggle grid display
             isGridActive = !isGridActive;
             messageDisplay->DisplayMessage("Grid display toggled");
+
+            // TODO move this into a separate Entity3D
+            // Draw a reference grid at the centre of the scene if toggled on
+            //if (isGridActive) DrawGrid(100, 1.0f);
         }
         else if (IsKeyPressed(KEY_R))
         {
@@ -57,7 +61,7 @@ void EditorController::OnUpdate()
             {
                 // Free the entity
                 selectedEntity->QueueFree();
-                selectedEntity = nullptr;
+                SelectEntity(nullptr);
                 messageDisplay->DisplayMessage("Entity deleted");
             }
             // Adjust the transformation precision level
@@ -73,8 +77,8 @@ void EditorController::OnUpdate()
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
         // Check if any entities fall within the ray and set them as selected
-        selectedEntity = nullptr;
-        for (auto &entity : EntityStorage::GetEntities())
+        SelectEntity(nullptr);
+        for (auto& entity : EntityStorage::GetEntities())
         {
             // TODO fix this for Entity3D
 //            if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
@@ -137,47 +141,33 @@ void EditorController::OnUpdate()
 
 void EditorController::OnDraw()
 {
-    // Draw a reference grid at the centre of the scene if toggled on
-    if (isGridActive) DrawGrid(100, 1.0f);
+    if (!selectedEntity) return;
 
-    if (selectedEntity)
-    {
-        // Draw gizmo display to selected entity location
-        raylib::Vector3 entityPos = selectedEntity->GetPosition();
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
-    }
+    // Format display text on the selected entity
+    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
+    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+                                      selectedEntity->GetPosition().x,
+                                      selectedEntity->GetPosition().y,
+                                      selectedEntity->GetPosition().z);
+    const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
+
+    // Draw display text just above the entity in world-space
+    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
+    Vector2 screenPosition = GetWorldToScreen(
+            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
+    DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
+             (int) screenPosition.y, 20, PINK);
+    DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
+             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
+    DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
+             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
 }
-
-//void EditorController::OnUIDraw()
-//{
-//    // TODO move this into a separate Entity2D
-//    if (!selectedEntity) return;
-//
-//    // Format display text on the selected entity
-//    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
-//    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
-//                                      selectedEntity->GetPosition().x,
-//                                      selectedEntity->GetPosition().y,
-//                                      selectedEntity->GetPosition().z);
-//    const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
-//
-//    // Draw display text just above the entity in world-space
-//    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
-//    Vector2 screenPosition = GetWorldToScreen(
-//            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
-//    DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
-//             (int) screenPosition.y, 20, PINK);
-//    DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-//             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
-//    DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-//             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
-//}
 
 void EditorController::SelectEntity(Entity3D* entity)
 {
+    // Display the entity based on its existence
     selectedEntity = entity;
+    gizmo->SetActive(selectedEntity);
 }
 
 bool EditorController::TryAddEntity(std::string& entityName)
