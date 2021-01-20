@@ -1,18 +1,13 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
+#include "../../systems/entity/Entity3D.h"
 #include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
-#include "../../systems/entity/Entity.h"
 
-enum EditorMode {
-    POSITION,
-    ROTATION,
-};
-
-class EditorController : public Entity
+class EditorController : public Entity3D
 {
 public:
 
@@ -36,7 +31,7 @@ public:
 
     // Public methods
 
-    void SelectEntity(Entity* entity);
+    void SelectEntity(Entity3D* entity);
 
     bool TrySetPos(raylib::Vector3 position);
 
@@ -52,9 +47,14 @@ protected:
 
     void OnDraw() override;
 
-    void OnUIDraw() override;
-
 private:
+
+    // Private enums
+
+    enum EditorMode {
+        POSITION,
+        ROTATION,
+    };
 
     // Private methods
 
@@ -78,7 +78,7 @@ private:
 
     raylib::Camera3D* camera;
 
-    Entity* selectedEntity;
+    Entity3D* selectedEntity;
 
     class MessageDisplay* messageDisplay;
 };

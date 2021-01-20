@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_SPLASHSCREEN_H
 #define A_DARK_DISCOMFORT_SPLASHSCREEN_H
 
-#include "../systems/entity/Entity.h"
+#include "../systems/entity/Entity2D.h"
 
-class SplashScreen : public Entity
+class SplashScreen : public Entity2D
 {
 public:
 
@@ -31,7 +31,7 @@ protected:
 
     void OnUpdate() override;
 
-    void OnUIDraw() override;
+    void OnDraw() override;
 
 private:
 
