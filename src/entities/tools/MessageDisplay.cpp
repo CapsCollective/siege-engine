@@ -1,6 +1,6 @@
 #include "MessageDisplay.h"
 
-void MessageDisplay::OnDraw()
+void MessageDisplay::OnDraw2D()
 {
     // Draw the display message to the screen while the display time is valid
     if (displayTime > 0.f)

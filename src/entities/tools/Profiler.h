@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_PROFILER_H
 #define A_DARK_DISCOMFORT_PROFILER_H
 
-#include "../../systems/entity/Entity2D.h"
+#include "../../systems/entity/Tool.h"
 
-class Profiler : public Entity2D
+class Profiler : public Tool
 {
 public:
 
@@ -23,7 +23,7 @@ protected:
 
     // Protected overrides
 
-    void OnDraw() override;
+    void OnDraw2D() override;
 
 private:
 
