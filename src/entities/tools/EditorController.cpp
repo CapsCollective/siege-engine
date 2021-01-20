@@ -1,5 +1,4 @@
 #include "EditorController.h"
-#include "../../systems/entity/EntityStorage.h"
 #include "MessageDisplay.h"
 #include "../Geometry.h"
 #include "../Player.h"
@@ -80,12 +79,11 @@ void EditorController::OnUpdate()
         SelectEntity(nullptr);
         for (auto& entity : EntityStorage::GetEntities())
         {
-            // TODO fix this for Entity3D
-//            if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
-//            {
-//                SelectEntity(entity);
-//                break;
-//            }
+            auto entity3D = dynamic_cast<Entity3D*>(entity);
+            if (entity3D && CheckCollisionRayBox(ray, entity3D->GetBoundingBox())) {
+                SelectEntity(entity3D);
+                break;
+            }
         }
     }
 
@@ -98,8 +96,7 @@ void EditorController::OnUpdate()
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                // TODO fix this for Entity3D
-//                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+                SelectEntity(dynamic_cast<Entity3D*>(EntityStorage::GetPackedEntity(selectedIdx)));
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;

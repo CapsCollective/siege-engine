@@ -9,7 +9,10 @@ std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 // Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
-std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
+
+
+std::vector<Entity3D*> EntityStorage::packedEntity3Ds = std::vector<Entity3D*>();
+std::vector<Entity2D*> EntityStorage::packedEntity2Ds = std::vector<Entity2D*>();
 
 // Static member initialisations of vectors for transformations
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
@@ -31,6 +34,7 @@ void EntityStorage::Register(Entity* entity, bool isTool)
 // Adds an entity to the Entity Storage
 void EntityStorage::AddEntity(Entity* entity, bool isTool)
 {
+
     // If the entity's given index already exists
     if (entity->GetIndex().index < entities.size())
     {
@@ -43,12 +47,21 @@ void EntityStorage::AddEntity(Entity* entity, bool isTool)
         entities.push_back(entity);
     }
 
+    auto entity3D = dynamic_cast<Entity3D*>(entity);
+
+    if (entity3D) {
+        packedEntity3Ds.emplace_back(entity3D);
+    } else {
+        auto entity2D = dynamic_cast<Entity2D*>(entity);
+
+        if (entity2D) {
+            packedEntity2Ds.emplace_back(entity2D);
+        }
+    }
+
     // Add the entity to the end of its appropriate packed entities
     if (isTool) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
-
-    // Add the entity to the end of all packed entities
-    allPackedEntities.emplace_back(entity);
 }
 
 void EntityStorage::RegisterEntities() {
@@ -70,8 +83,11 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    int32_t index = GetEntityIndex(entity, packedEntities);
-    int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
+    // TODO: Maybe return a struct with all of an entity's index information?
+    int32_t index = GetEntityIndex<Entity>(entity, packedEntities);
+
+    int32_t index3D = GetEntityIndex<Entity3D>(dynamic_cast<Entity3D*>(entity), packedEntity3Ds);
+    int32_t index2D = GetEntityIndex<Entity2D>(dynamic_cast<Entity2D*>(entity), packedEntity2Ds);
 
     // Check if we found the appropriate index in our tool or entity storage
     if (index != -1)
@@ -80,11 +96,14 @@ void EntityStorage::Remove(Entity* entity)
         packedEntities.erase(packedEntities.begin() + index);
     }
 
-    // Check if we found an index in our general storage of all entities
-    if (generalIndex != -1)
+    if (index3D != -1)
     {
-        // Erase the packed index entry from our container that stores all entities
-        allPackedEntities.erase(allPackedEntities.begin() + generalIndex);
+        packedEntity3Ds.erase(packedEntity3Ds.begin() + index3D);
+    }
+
+    if (index2D != -1)
+    {
+        packedEntity2Ds.erase(packedEntity2Ds.begin() + index2D);
     }
 
     // Finally, delete the entity from the heap
@@ -106,19 +125,12 @@ Entity* EntityStorage::operator[](GenerationalIndex index)
 void EntityStorage::QueueFree(Entity* entity) 
 {
     // Ensure that we have no duplicates in the freedEntities vector
-    int32_t index = GetEntityIndex(entity, freedEntities);
+    int32_t index = GetEntityIndex<Entity>(entity, freedEntities);
     if (index == -1) 
     {
         // Push the entity back into our queue
         freedEntities.push_back(entity);
     }
-}
-
-uint32_t EntityStorage::GetEntityIndex(Entity* entity, std::vector<Entity*>& entityStorage) 
-{
-    // Try find the entity, and return the index of the entity or -1 if not found
-    auto it = std::find(entityStorage.begin(), entityStorage.end(), entity);
-    return (it != entityStorage.end()) ? std::distance(entityStorage.begin(), it) : -1;
 }
 
 void EntityStorage::FreeEntities() 

@@ -4,6 +4,8 @@
 #include "IndexAllocator.h"
 #include <vector>
 #include "Entity.h"
+#include "Entity2D.h"
+#include "Entity3D.h"
 
 // Define macros
 #define ENTITY_LIST std::vector<std::pair<Entity*, bool>>
@@ -27,15 +29,6 @@ public:
      * @param entity - entity to be removed from storage
      */
     static void Remove(Entity* entity);
-
-    /**
-     * Returns all packed entities (for iteration purposes)
-     * @return A reference to the vector of all packed entities
-     */
-    static const std::vector<Entity*>& GetAllEntities()
-    {
-        return allPackedEntities;
-    }
 
     /**
      * Returns packed game entities (for iteration purposes)
@@ -65,6 +58,16 @@ public:
     static Entity* GetPackedEntity(size_t index)
     {
         return packedEntities[index];
+    }
+
+    static const std::vector<Entity3D*>& GetAll3DEntities()
+    {
+        return packedEntity3Ds;
+    }
+
+    static const std::vector<Entity2D*>& GetAll2DEntities()
+    {
+        return packedEntity2Ds;
     }
 
     /**
@@ -103,7 +106,13 @@ private:
      * @return A -1 when no index is found, or the index if the entity
      *         is found
      */
-    static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>&);
+    template<typename T>
+    static uint32_t GetEntityIndex(T* entity, std::vector<T*>& storage)
+    {
+        // Try find the entity, and return the index of the entity or -1 if not found
+        auto it = std::find(storage.begin(), storage.end(), entity);
+        return (it != storage.end()) ? std::distance(storage.begin(), it) : -1;
+    }
 
     // Private fields
 
@@ -132,9 +141,14 @@ private:
     static std::vector<Entity*> packedTools;
 
     /**
-     * Holds every single entity in a packed index
-     */
-    static std::vector<Entity*> allPackedEntities;
+    * Vector containing all 3D entities
+    */
+    static std::vector<Entity3D*> packedEntity3Ds;
+
+    /**
+    * Vector containing all 2D entities that were queued for adding
+    */
+    static std::vector<Entity2D*> packedEntity2Ds;
 
     /**
      * Vector for storing all entities which were queued for freeing
