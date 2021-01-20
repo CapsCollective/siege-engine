@@ -20,13 +20,13 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         auto entity3D = dynamic_cast<Entity3D*>(entity);
         if (!entity3D) continue;
 
+        // TODO make serialisation more modular (on a per-file basis)
         // Add its name, position and rotation to the data
         fileData += (entity->GetName() + SEP +
                      DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity3D->GetPosition())) +
                      DEFINE_FIELD("ROTATION", std::to_string(entity3D->GetRotation())));
 
         // Add any additional fields needed to the data
-        // TODO make serialisation more modular (on a per-file basis)
         if (entity->GetName() == "Geometry")
         {
             auto geometry = dynamic_cast<Geometry*>(entity);
