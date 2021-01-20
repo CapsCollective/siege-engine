@@ -1,20 +1,22 @@
-#ifndef A_DARK_DISCOMFORT_GIZMO_H
-#define A_DARK_DISCOMFORT_GIZMO_H
+#ifndef A_DARK_DISCOMFORT_GRID_H
+#define A_DARK_DISCOMFORT_GRID_H
 
 #include "../../systems/entity/Entity3D.h"
 
-class Gizmo : public Entity3D
+class Grid : public Entity3D
 {
 public:
 
-    explicit Gizmo(bool isActive = true) :
+    explicit Grid(int size = 100.f, bool isActive = true) :
     isActive(isActive),
-    extents(3.f)
+    size(size)
     {};
 
     // Public methods
 
     void SetActive(bool active);
+
+    bool GetActive() const;
 
 protected:
 
@@ -28,8 +30,8 @@ private:
 
     bool isActive;
 
-    float extents;
+    int size;
 };
 
 
-#endif //A_DARK_DISCOMFORT_GIZMO_H
+#endif //A_DARK_DISCOMFORT_GRID_H
