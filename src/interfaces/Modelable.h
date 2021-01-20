@@ -7,10 +7,17 @@ class Modelable
 {
 public:
 
-    // TODO reposition interface as Drawable & comment this class
-
+    /**
+     * A virtual getter method model data
+     * @return The object's model data
+     */
     virtual const ModelData& GetModelData() = 0;
 
+    /**
+     * A virtual setter method model data
+     * @param modelData - model data to set to the
+     *                    object
+     */
     virtual void SetModelData(const ModelData& modelData) = 0;
 
 };
