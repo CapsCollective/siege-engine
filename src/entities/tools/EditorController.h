@@ -2,12 +2,13 @@
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
 #include "../../systems/entity/Entity2D.h"
-#include "../../utils/ServiceLocator.h"
-#include "Gizmo.h"
 #include "../../systems/entity/EntityStorage.h"
+#include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
+#include "Gizmo.h"
+#include "Grid.h"
 
 enum EditorMode {
     POSITION,
@@ -26,17 +27,19 @@ public:
     movePrecision(2),
     rotatePrecision(3),
     currentMode(POSITION),
-    isGridActive(true),
     selectedIdx(0),
-    gizmo(new Gizmo(false))
+    gizmo(new Gizmo(false)),
+    grid(new Grid())
     {
-        EntityStorage::Register(gizmo);
+        EntityStorage::Register(gizmo, true);
+        EntityStorage::Register(grid, true);
         Entity::SetName("EditorController");
     };
 
     ~EditorController()
     {
         gizmo->QueueFree();
+        grid->QueueFree();
     };
 
     // Class methods
@@ -75,8 +78,6 @@ private:
 
     EditorMode currentMode;
 
-    bool isGridActive;
-
     int movePrecision;
 
     int rotatePrecision;
@@ -90,6 +91,8 @@ private:
     class MessageDisplay* messageDisplay;
 
     Gizmo* gizmo;
+
+    Grid* grid;
 };
 
 

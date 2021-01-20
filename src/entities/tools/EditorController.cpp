@@ -24,12 +24,8 @@ void EditorController::OnUpdate()
         if (IsKeyPressed(KEY_G))
         {
             // Toggle grid display
-            isGridActive = !isGridActive;
+            grid->SetActive(!grid->GetActive());
             messageDisplay->DisplayMessage("Grid display toggled");
-
-            // TODO move this into a separate Entity3D
-            // Draw a reference grid at the centre of the scene if toggled on
-            //if (isGridActive) DrawGrid(100, 1.0f);
         }
         else if (IsKeyPressed(KEY_R))
         {
@@ -221,7 +217,6 @@ bool EditorController::TrySetPos(raylib::Vector3 position)
     if (!selectedEntity) return false;
     selectedEntity->SetPosition(position);
     return true;
-
 }
 
 bool EditorController::TrySetRot(float rotation)
