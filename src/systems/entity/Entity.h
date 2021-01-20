@@ -20,27 +20,6 @@ public:
      */
     virtual void OnUpdate() {};
 
-    /**
-     * A virtual update method to be overridden for entity
-     * drawing instructions (runs after game logic)
-     */
-    virtual void OnDraw() {};
-
-    /**
-     * A virtual update method to be overridden for entity
-     * UI drawing instructions (runs after drawing)
-     */
-    virtual void OnUIDraw() {};
-
-    /**
-     * A virtual method for implementing a definition of an
-     * entity's BoundingBox attribute
-     * @return The entity's BoundingBox
-     * @note Calling this function on an object that does not
-     *       override it will return a zero sized BoundingBox
-     */
-    virtual BoundingBox GetBoundingBox();
-
     // Public methods
 
     /**
@@ -59,19 +38,6 @@ public:
     // Public getters
 
     /**
-     * Getter method for the entity's position attribute
-     * @return A constant reference to the entity's
-     *         position a Vector3
-     */
-    const raylib::Vector3& GetPosition() const;
-
-    /**
-     * Getter method for the entity's rotation attribute
-     * @return The entity's rotation as a float
-     */
-    float GetRotation() const;
-
-    /**
      * Getter method for the entity's vanity name
      * @return A constant reference to the entity's name
      *         as a string
@@ -88,23 +54,6 @@ public:
     // Public setters
 
     /**
-     * Setter method for the entity's position attribute
-     * @param newPosition - a Vector3 to set as the
-     *                      entity's position
-     */
-    void SetPosition(raylib::Vector3 newPosition);
-
-    /**
-     * Setter method for the entity's rotation attribute
-     * @param newRotation - a float to set as the
-     *                      entity's rotation
-     * @note While negative rotations are accepted,
-     *       rotations beyond 360 degrees are
-     *       automatically wrapped
-     */
-    void SetRotation(float newRotation);
-
-    /**
      * Setter method for the entity's generational index
      * @param idx - a GenerationalIndex to set as the
      *              entity's generational index
@@ -118,22 +67,10 @@ protected:
     // Constructors
 
     /**
-     * Zero-param constructor for Entity, initialises both
-     * position and rotation to zero
+     * Zero-param constructor for Entity, initialises all
+     * fields to zero
      */
     Entity() :
-    Entity(raylib::Vector3::Zero(), 0.f)
-    {};
-
-    /**
-     * Delegate constructor for Entity, initialises
-     * generational index to zero and name to "Entity"
-     * @param position - the initial position of the entity
-     * @param rotation - the initial rotation of the entity
-     */
-    explicit Entity(raylib::Vector3 position, float rotation) :
-    rotation(rotation),
-    position(position),
     index(GenerationalIndex()),
     name("Entity")
     {};
@@ -149,18 +86,6 @@ protected:
      *          undefined behaviour during serialisation
      */
     void SetName(std::string entityName);
-
-    // Protected fields
-
-    /**
-     * The rotation of the entity in degrees
-     */
-    float rotation;
-
-    /**
-     * The position of the entity as a Vector3
-     */
-    raylib::Vector3 position;
 
 private:
 
