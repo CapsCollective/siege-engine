@@ -89,19 +89,23 @@ int main(int argc, char* argv[])
         camera.BeginMode3D();
 
         // Draw entities
-        // TODO refactor to only draw Entity3Ds
+        // TODO refactor to only receive Entity3Ds
         for (auto& entity : EntityStorage::GetAllEntities())
         {
-            //entity->OnDraw();
+            auto entity3D = dynamic_cast<Entity3D* const>(entity);
+            if (!entity3D) continue;
+            entity3D->OnDraw();
         }
 
         camera.EndMode3D();
 
         // UI Draw entities
-        // TODO refactor to only draw Entity2Ds
+        // TODO refactor to only receive Entity2Ds
         for (auto& entity : EntityStorage::GetAllEntities())
         {
-//            entity->OnUIDraw();
+            auto entity2D = dynamic_cast<Entity2D* const>(entity);
+            if (!entity2D) continue;
+            entity2D->OnDraw();
         }
 
         // Remove all entities at the end of the frame
