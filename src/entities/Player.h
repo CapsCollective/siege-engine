@@ -1,12 +1,12 @@
 #ifndef A_DARK_DISCOMFORT_PLAYER_H
 #define A_DARK_DISCOMFORT_PLAYER_H
 
-#include "../systems/entity/Entity.h"
+#include "../systems/entity/Entity3D.h"
 #include "../systems/resource/ModelData.h"
 #include "../interfaces/Modelable.h"
 #include "../interfaces/Cloneable.h"
 
-class Player : public Entity, public Modelable, public Cloneable
+class Player : public Entity3D, public Modelable, public Cloneable
 {
 public:
 
@@ -17,7 +17,7 @@ public:
     {};
 
     Player(raylib::Vector3 position, float rotation) :
-    Entity(position, rotation),
+    Entity3D(position, rotation),
     speed(1.5f),
     velocity(raylib::Vector3::Zero()),
     modelData(ModelData(
@@ -44,8 +44,6 @@ protected:
     void OnUpdate() override;
 
     void OnDraw() override;
-
-    void OnUIDraw() override;
 
 private:
 

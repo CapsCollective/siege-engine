@@ -169,7 +169,7 @@ void DevConsole::OnUpdate()
     }
 }
 
-void DevConsole::OnUIDraw()
+void DevConsole::OnDraw()
 {
     if (!isActive) return;
 

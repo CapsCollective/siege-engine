@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 #define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 
-#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/Entity2D.h"
 
-class MessageDisplay : public Entity
+class MessageDisplay : public Entity2D
 {
 public:
 
@@ -23,7 +23,7 @@ protected:
 
     // Protected overrides
 
-    void OnUIDraw() override;
+    void OnDraw() override;
 
 private:
 

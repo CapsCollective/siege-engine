@@ -76,11 +76,12 @@ void EditorController::OnUpdate()
         selectedEntity = nullptr;
         for (auto &entity : EntityStorage::GetEntities())
         {
-            if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
-            {
-                SelectEntity(entity);
-                break;
-            }
+            // TODO fix this for Entity3D
+//            if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
+//            {
+//                SelectEntity(entity);
+//                break;
+//            }
         }
     }
 
@@ -93,7 +94,8 @@ void EditorController::OnUpdate()
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+                // TODO fix this for Entity3D
+//                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
@@ -148,31 +150,32 @@ void EditorController::OnDraw()
     }
 }
 
-void EditorController::OnUIDraw()
-{
-    if (!selectedEntity) return;
+//void EditorController::OnUIDraw()
+//{
+//    // TODO move this into a separate Entity2D
+//    if (!selectedEntity) return;
+//
+//    // Format display text on the selected entity
+//    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
+//    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+//                                      selectedEntity->GetPosition().x,
+//                                      selectedEntity->GetPosition().y,
+//                                      selectedEntity->GetPosition().z);
+//    const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
+//
+//    // Draw display text just above the entity in world-space
+//    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
+//    Vector2 screenPosition = GetWorldToScreen(
+//            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
+//    DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
+//             (int) screenPosition.y, 20, PINK);
+//    DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
+//             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
+//    DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
+//             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
+//}
 
-    // Format display text on the selected entity
-    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
-    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
-                                      selectedEntity->GetPosition().x,
-                                      selectedEntity->GetPosition().y,
-                                      selectedEntity->GetPosition().z);
-    const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
-
-    // Draw display text just above the entity in world-space
-    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
-    Vector2 screenPosition = GetWorldToScreen(
-            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
-    DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
-             (int) screenPosition.y, 20, PINK);
-    DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
-    DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
-}
-
-void EditorController::SelectEntity(Entity* entity)
+void EditorController::SelectEntity(Entity3D* entity)
 {
     selectedEntity = entity;
 }

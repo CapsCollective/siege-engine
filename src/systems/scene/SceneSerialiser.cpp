@@ -17,9 +17,10 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
     for (auto entity : entities)
     {
         // Add its name, position and rotation to the data
-        fileData += (entity->GetName() + SEP +
-                     DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
-                     DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())));
+        // TODO fix this for Entity3D serialisation....
+//        fileData += (entity->GetName() + SEP +
+//                     DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
+//                     DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())));
 
         // Add any additional fields needed to the data
         // TODO make serialisation more modular (on a per-file basis)

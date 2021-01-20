@@ -45,10 +45,11 @@ void Player::OnDraw()
     );
 }
 
-void Player::OnUIDraw()
-{
-    DrawText("Move with the arrow keys", 10.f, GetScreenHeight() - 30, 20.f, DARKGRAY);
-}
+//void Player::OnDraw()
+//{
+//    // TODO move this elsewhere
+//    DrawText("Move with the arrow keys", 10.f, GetScreenHeight() - 30, 20.f, DARKGRAY);
+//}
 
 BoundingBox Player::GetBoundingBox()
 {

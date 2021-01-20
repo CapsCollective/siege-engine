@@ -7,8 +7,6 @@
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
 #include "systems/scene/SceneManager.h"
-#include "systems/widget/WidgetStorage.h"
-#include "systems/widget/Widget.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -91,23 +89,19 @@ int main(int argc, char* argv[])
         camera.BeginMode3D();
 
         // Draw entities
+        // TODO refactor to only draw Entity3Ds
         for (auto& entity : EntityStorage::GetAllEntities())
         {
-            entity->OnDraw();
+            //entity->OnDraw();
         }
 
         camera.EndMode3D();
 
         // UI Draw entities
+        // TODO refactor to only draw Entity2Ds
         for (auto& entity : EntityStorage::GetAllEntities())
         {
-            entity->OnUIDraw();
-        }
-
-        // TODO migrate to widget-based UI system
-        for (auto& widget : WidgetStorage::GetWidgets())
-        {
-            widget->OnDraw();
+//            entity->OnUIDraw();
         }
 
         // Remove all entities at the end of the frame

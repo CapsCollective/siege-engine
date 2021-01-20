@@ -69,7 +69,7 @@ void SplashScreen::OnUpdate()
     if (IsKeyPressed(KEY_ESCAPE)) state = END;
 }
 
-void SplashScreen::OnUIDraw()
+void SplashScreen::OnDraw()
 {
     // Run the appropriate draw calls for the animation state
     switch (state)
