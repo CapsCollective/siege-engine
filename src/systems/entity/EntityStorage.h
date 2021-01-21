@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_ENTITYSTORAGE_H
 
 #include "IndexAllocator.h"
+#include <algorithm>
 #include <vector>
 #include "Entity.h"
 
