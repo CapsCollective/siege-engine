@@ -45,8 +45,6 @@ protected:
 
     void OnDraw() override;
 
-    void OnUIDraw() override;
-
 private:
 
     // Private fields

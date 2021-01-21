@@ -1,4 +1,5 @@
 #include "EntityStorage.h"
+#include "Tool.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -9,13 +10,12 @@ std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 // Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
-std::vector<Entity*> EntityStorage::allPackedEntities = std::vector<Entity*>();
 
 // Static member initialisations of vectors for transformations
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-ENTITY_LIST EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
+std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
 
-void EntityStorage::Register(Entity* entity, bool isTool)
+void EntityStorage::Register(Entity* entity)
 {
     // If the pointer is null - stop the function
     if (!entity) return;
@@ -25,12 +25,13 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     entity->SetIndex(index);
 
     // Queue the entity for initialisation
-    registeredEntities.emplace_back(entity, isTool);
+    registeredEntities.emplace_back(entity);
 }
 
 // Adds an entity to the Entity Storage
-void EntityStorage::AddEntity(Entity* entity, bool isTool)
+void EntityStorage::AddEntity(Entity* entity)
 {
+
     // If the entity's given index already exists
     if (entity->GetIndex().index < entities.size())
     {
@@ -44,18 +45,17 @@ void EntityStorage::AddEntity(Entity* entity, bool isTool)
     }
 
     // Add the entity to the end of its appropriate packed entities
-    if (isTool) packedTools.push_back(entity);
+    if (dynamic_cast<Tool*>(entity)) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
-
-    // Add the entity to the end of all packed entities
-    allPackedEntities.emplace_back(entity);
 }
 
-void EntityStorage::RegisterEntities() {
-    // Iterate over our queued entities and initialise them
-    for (auto& entity : registeredEntities) {
+void EntityStorage::RegisterEntities()
+{
+    // Iterate over queued entities and initialise them
+    for (auto& entity : registeredEntities)
+    {
         // Add the entity to storage
-        AddEntity(entity.first, entity.second);
+        AddEntity(entity);
     }
     // Finally, remove all entities from the queue
     registeredEntities.clear();
@@ -71,21 +71,9 @@ void EntityStorage::Remove(Entity* entity)
 
     // Get the packed index
     int32_t index = GetEntityIndex(entity, packedEntities);
-    int32_t generalIndex = GetEntityIndex(entity, allPackedEntities);
 
-    // Check if we found the appropriate index in our tool or entity storage
-    if (index != -1)
-    {
-        // Erase the packed index entry from our packed entity storage
-        packedEntities.erase(packedEntities.begin() + index);
-    }
-
-    // Check if we found an index in our general storage of all entities
-    if (generalIndex != -1)
-    {
-        // Erase the packed index entry from our container that stores all entities
-        allPackedEntities.erase(allPackedEntities.begin() + generalIndex);
-    }
+    // Erase the packed index entry from packed entity storage if found
+    if (index != -1) packedEntities.erase(packedEntities.begin() + index);
 
     // Finally, delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;
@@ -109,16 +97,9 @@ void EntityStorage::QueueFree(Entity* entity)
     int32_t index = GetEntityIndex(entity, freedEntities);
     if (index == -1) 
     {
-        // Push the entity back into our queue
+        // Push the entity back into the queue
         freedEntities.push_back(entity);
     }
-}
-
-uint32_t EntityStorage::GetEntityIndex(Entity* entity, std::vector<Entity*>& entityStorage) 
-{
-    // Try find the entity, and return the index of the entity or -1 if not found
-    auto it = std::find(entityStorage.begin(), entityStorage.end(), entity);
-    return (it != entityStorage.end()) ? std::distance(entityStorage.begin(), it) : -1;
 }
 
 void EntityStorage::FreeEntities() 
