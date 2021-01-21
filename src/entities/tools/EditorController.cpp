@@ -1,5 +1,4 @@
 #include "EditorController.h"
-#include "../../systems/entity/EntityStorage.h"
 #include "MessageDisplay.h"
 #include "../Geometry.h"
 #include "../Player.h"
@@ -18,7 +17,7 @@ void EditorController::OnUpdate()
     if (!camera || !messageDisplay) return;
 
     // Check for deselection and activation keys
-    if (IsKeyPressed(KEY_ESCAPE)) selectedEntity = nullptr;
+    if (IsKeyPressed(KEY_ESCAPE)) SelectEntity(nullptr);
 
     // Check for command key presses
     if (IsKeyDown(KEY_LEFT_SUPER)){
@@ -57,7 +56,7 @@ void EditorController::OnUpdate()
             {
                 // Free the entity
                 selectedEntity->QueueFree();
-                selectedEntity = nullptr;
+                SelectEntity(nullptr);
                 messageDisplay->DisplayMessage("Entity deleted");
             }
             // Adjust the transformation precision level
@@ -73,8 +72,8 @@ void EditorController::OnUpdate()
         Ray ray = camera->GetMouseRay(GetMousePosition());
 
         // Check if any entities fall within the ray and set them as selected
-        selectedEntity = nullptr;
-        for (auto &entity : EntityStorage::GetEntities())
+        SelectEntity(nullptr);
+        for (auto& entity : EntityStorage::GetEntities())
         {
             if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
             {
@@ -89,7 +88,8 @@ void EditorController::OnUpdate()
     {
         // Select the first packed entity by index
         int totalEntities = EntityStorage::GetEntities().size();
-        if (totalEntities > 0) {
+        if (totalEntities > 0)
+        {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
@@ -140,7 +140,7 @@ void EditorController::OnDraw()
 
     if (selectedEntity)
     {
-        // Draw gizmo display to selected entity location
+        // Draw gizmo display to its location
         raylib::Vector3 entityPos = selectedEntity->GetPosition();
         DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
         DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
@@ -148,7 +148,7 @@ void EditorController::OnDraw()
     }
 }
 
-void EditorController::OnUIDraw()
+void EditorController::OnDraw2D()
 {
     if (!selectedEntity) return;
 
@@ -174,6 +174,7 @@ void EditorController::OnUIDraw()
 
 void EditorController::SelectEntity(Entity* entity)
 {
+    // Display the entity based on its existence
     selectedEntity = entity;
 }
 
@@ -231,7 +232,6 @@ bool EditorController::TrySetPos(raylib::Vector3 position)
     if (!selectedEntity) return false;
     selectedEntity->SetPosition(position);
     return true;
-
 }
 
 bool EditorController::TrySetRot(float rotation)

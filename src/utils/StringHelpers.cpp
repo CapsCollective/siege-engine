@@ -14,10 +14,12 @@ raylib::Vector3 StringHelpers::StringToVector(std::string string)
     if (components.size() != 3) throw std::length_error("Received incorrect number of vector components");
 
     // Try convert the components to float values and return them as a Vector3
-    try {
+    try
+    {
         return {std::stof(components[0]), std::stof(components[1]), std::stof(components[2])};
     }
-    catch (const std::invalid_argument& err) {
+    catch (const std::invalid_argument& err)
+    {
         throw std::invalid_argument("Received non-float vector components");
     }
 }

@@ -27,24 +27,24 @@ public:
         // If the resource already exists then exit the function
         if (resources.find(path) != resources.end()) return;
 
-        // Define an empty variant to hold our resource
+        // Define an empty variant to hold resource
         std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();
 
         // Check what type of resource is being registered
         // In this case, check that the resource is a Model
         if (std::is_same<T, Model>::value)
         {
-            // If it is a model, load the model and store the struct in our variant
+            // If it is a model, load the model and store the struct in the variant
             resource = LoadModel(path.c_str());
         }
         // If the resource is a Texture2D
         else if (std::is_same<T, Texture2D>::value)
         {
-            // Load the TEXTURE and store the struct in our variant
+            // Load the TEXTURE and store the struct in the variant
             resource = LoadTexture(path.c_str());
         }
 
-        // Add the variant to our resources map
+        // Add the variant to the resources map
         resources.insert({path, resource});
     };
 

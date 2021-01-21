@@ -1,10 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
-#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/Tool.h"
 #include "../../utils/ServiceLocator.h"
 
-class DevConsole : public Entity
+class DevConsole : public Tool
 {
 public:
 
@@ -25,7 +25,7 @@ protected:
 
     void OnUpdate() override;
 
-    void OnUIDraw() override;
+    void OnDraw2D() override;
 
 private:
 

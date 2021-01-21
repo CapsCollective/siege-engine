@@ -2,11 +2,9 @@
 #define A_DARK_DISCOMFORT_ENTITYSTORAGE_H
 
 #include "IndexAllocator.h"
+#include <algorithm>
 #include <vector>
 #include "Entity.h"
-
-// Define macros
-#define ENTITY_LIST std::vector<std::pair<Entity*, bool>>
 
 class EntityStorage 
 {
@@ -17,25 +15,14 @@ public:
     /**
      * Queues an entity for initialisation in the next frame
      * @param entity - the entity to register in storage
-     * @param isTool - optional, flags the entity to be stored as a tool
-     *                 entity rather than a game entity if set to true
      */
-    static void Register(Entity* entity, bool isTool = false);
+    static void Register(Entity* entity);
 
     /**
      * Removes an entity from storage
      * @param entity - entity to be removed from storage
      */
     static void Remove(Entity* entity);
-
-    /**
-     * Returns all packed entities (for iteration purposes)
-     * @return A reference to the vector of all packed entities
-     */
-    static const std::vector<Entity*>& GetAllEntities()
-    {
-        return allPackedEntities;
-    }
 
     /**
      * Returns packed game entities (for iteration purposes)
@@ -103,7 +90,12 @@ private:
      * @return A -1 when no index is found, or the index if the entity
      *         is found
      */
-    static uint32_t GetEntityIndex(Entity*, std::vector<Entity*>&);
+    static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage)
+    {
+        // Try find the entity, and return the index of the entity or -1 if not found
+        auto it = std::find(storage.begin(), storage.end(), entity);
+        return (it != storage.end()) ? std::distance(storage.begin(), it) : -1;
+    }
 
     // Private fields
 
@@ -132,11 +124,6 @@ private:
     static std::vector<Entity*> packedTools;
 
     /**
-     * Holds every single entity in a packed index
-     */
-    static std::vector<Entity*> allPackedEntities;
-
-    /**
      * Vector for storing all entities which were queued for freeing
      */
     static std::vector<Entity*> freedEntities;
@@ -144,15 +131,13 @@ private:
     /**
      * Vector containing all entities that were queued for adding
      */
-    static ENTITY_LIST registeredEntities;
+    static std::vector<Entity*> registeredEntities;
 
     /**
      * Adds an entity to the entity storage
      * @param entity - The entity pointer being added
-     * @param isTool - a flag specifying whether the entity is a
-     *                 tool or not
      */
-    static void AddEntity(Entity* entity, bool isTool);
+    static void AddEntity(Entity* entity);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

@@ -38,15 +38,15 @@ int main(int argc, char* argv[])
     // Initialise and register the message display
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
-    EntityStorage::Register(display, true);
+    EntityStorage::Register(display);
 
     // Initialise and register the profiler
     auto profiler = new Profiler(isEditorMode);
     ServiceLocator::Provide(profiler);
-    EntityStorage::Register(profiler, true);
+    EntityStorage::Register(profiler);
 
     // Initialise and register the dev console
-    EntityStorage::Register(new DevConsole(isEditorMode), true);
+    EntityStorage::Register(new DevConsole(isEditorMode));
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
         // Start the editor controller
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
-        EntityStorage::Register(editor, true);
-        EntityStorage::Register(new FreeCam(), true);
+        EntityStorage::Register(editor);
+        EntityStorage::Register(new FreeCam());
     }
     else
     {
@@ -66,19 +66,14 @@ int main(int argc, char* argv[])
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
-        // Update tool entities
-        for (auto& entity : EntityStorage::GetTools())
+        // Update game entities
+        if (!isEditorMode)
         {
-            entity->OnUpdate();
+            for (auto& entity : EntityStorage::GetEntities()) entity->OnUpdate();
         }
 
-        // Update game entities
-        if (!isEditorMode) {
-            for (auto& entity : EntityStorage::GetEntities())
-            {
-                entity->OnUpdate();
-            }
-        }
+        // Update tool entities
+        for (auto& entity : EntityStorage::GetTools()) entity->OnUpdate();
 
         // Entity creation is deferred until after the update loop
         EntityStorage::RegisterEntities();
@@ -89,18 +84,14 @@ int main(int argc, char* argv[])
         camera.BeginMode3D();
 
         // Draw entities
-        for (auto& entity : EntityStorage::GetAllEntities())
-        {
-            entity->OnDraw();
-        }
+        for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
+        for (auto& entity : EntityStorage::GetTools()) entity->OnDraw();
 
         camera.EndMode3D();
 
         // UI Draw entities
-        for (auto& entity : EntityStorage::GetAllEntities())
-        {
-            entity->OnUIDraw();
-        }
+        for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();
+        for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
         // Remove all entities at the end of the frame
         EntityStorage::FreeEntities();

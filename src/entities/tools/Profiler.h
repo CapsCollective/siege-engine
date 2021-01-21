@@ -1,16 +1,16 @@
 #ifndef A_DARK_DISCOMFORT_PROFILER_H
 #define A_DARK_DISCOMFORT_PROFILER_H
 
-#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/Tool.h"
 
-class Profiler : public Entity
+class Profiler : public Tool
 {
 public:
 
     // Constructors
 
     explicit Profiler(bool isActive) :
-            isActive(isActive)
+    isActive(isActive)
     {
         Entity::SetName("Profiler");
     };
@@ -23,7 +23,7 @@ protected:
 
     // Protected overrides
 
-    void OnUIDraw() override;
+    void OnDraw2D() override;
 
 private:
 

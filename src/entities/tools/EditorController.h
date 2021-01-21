@@ -1,30 +1,32 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
+#include "../../systems/entity/Tool.h"
+#include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
-#include "../../systems/entity/Entity.h"
 
 enum EditorMode {
     POSITION,
     ROTATION,
 };
 
-class EditorController : public Entity
+class EditorController : public Tool
 {
 public:
 
     // Constructors
-    explicit EditorController() :
+
+    EditorController() :
     messageDisplay(ServiceLocator::GetMessageDisplay()),
     selectedEntity(nullptr),
     camera(ServiceLocator::GetCamera()),
+    isGridActive(true),
     movePrecision(2),
     rotatePrecision(3),
     currentMode(POSITION),
-    isGridActive(true),
     selectedIdx(0)
     {
         Entity::SetName("EditorController");
@@ -36,7 +38,7 @@ public:
 
     // Public methods
 
-    void SelectEntity(Entity* entity);
+    void SelectEntity(class Entity* entity);
 
     bool TrySetPos(raylib::Vector3 position);
 
@@ -52,7 +54,7 @@ protected:
 
     void OnDraw() override;
 
-    void OnUIDraw() override;
+    void OnDraw2D() override;
 
 private:
 
@@ -66,9 +68,9 @@ private:
 
     static float rotateLevels[];
 
-    EditorMode currentMode;
-
     bool isGridActive;
+
+    EditorMode currentMode;
 
     int movePrecision;
 

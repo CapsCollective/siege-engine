@@ -2,16 +2,16 @@
 #define A_DARK_DISCOMFORT_FREECAM_H
 
 #include <Camera3D.hpp>
-#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/Tool.h"
 #include "../../utils/ServiceLocator.h"
 
-class FreeCam : public Entity
+class FreeCam : public Tool
 {
 public:
 
     // Constructors
 
-    explicit FreeCam() :
+    FreeCam() :
     moveSpeed(10.f),
     lookSpeed(0.1f),
     camera(ServiceLocator::GetCamera()),

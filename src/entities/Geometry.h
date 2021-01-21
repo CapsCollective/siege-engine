@@ -16,13 +16,13 @@ public:
     Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
     {};
 
-    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
+    Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
     Geometry(position, rotation, dimensions, ModelData(
             "assets/models/cube/cube.obj",
             "assets/models/cube/cube.png"))
     {};
 
-    explicit Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
+    Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
     Entity(position, rotation),
     dimensions(dimensions),
     modelData(data)

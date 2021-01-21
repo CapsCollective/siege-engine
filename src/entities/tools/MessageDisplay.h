@@ -1,15 +1,15 @@
 #ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 #define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 
-#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/Tool.h"
 
-class MessageDisplay : public Entity
+class MessageDisplay : public Tool
 {
 public:
 
     // Constructors
 
-    explicit MessageDisplay() :
+    MessageDisplay() :
     displayTime(0.f)
     {
         Entity::SetName("MessageDisplay");
@@ -23,7 +23,7 @@ protected:
 
     // Protected overrides
 
-    void OnUIDraw() override;
+    void OnDraw2D() override;
 
 private:
 
