@@ -45,7 +45,8 @@ Entity* Geometry::Clone()
     return new Geometry(position, rotation, dimensions, modelData);
 }
 
-const ModelData& Geometry::GetModelData() {
+const ModelData& Geometry::GetModelData()
+{
     return modelData;
 }
 
