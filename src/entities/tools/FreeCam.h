@@ -11,7 +11,7 @@ public:
 
     // Constructors
 
-    explicit FreeCam() :
+    FreeCam() :
     moveSpeed(10.f),
     lookSpeed(0.1f),
     camera(ServiceLocator::GetCamera()),
