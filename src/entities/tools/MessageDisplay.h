@@ -9,7 +9,7 @@ public:
 
     // Constructors
 
-    explicit MessageDisplay() :
+    MessageDisplay() :
     displayTime(0.f)
     {
         Entity::SetName("MessageDisplay");
