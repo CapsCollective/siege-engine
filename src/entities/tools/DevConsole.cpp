@@ -97,7 +97,8 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("setpos", argument))
             {
                 // Try convert the argument to a Vector3, and set the entity's position
-                try {
+                try
+                {
                     raylib::Vector3 position = StringHelpers::StringToVector(argument);
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
@@ -105,10 +106,12 @@ void DevConsole::OnUpdate()
                     }
                     else messageDisplay->DisplayMessage("Error: No entity selected");
                 }
-                catch (const std::invalid_argument& err) {
+                catch (const std::invalid_argument& err)
+                {
                     messageDisplay->DisplayMessage("Error: Invalid type of Vector3 components, should be float");
                 }
-                catch (const std::length_error& err) {
+                catch (const std::length_error& err)
+                {
                     messageDisplay->DisplayMessage("Error: Invalid number of Vector3 components, should be 3");
                 }
             }
@@ -118,14 +121,16 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("setrot", argument))
             {
                 // Try convert the argument to float, and set the entity's rotation
-                try {
+                try
+                {
                     if (ServiceLocator::GetEditorController()->TrySetRot(std::stof(argument)))
                     {
                         messageDisplay->DisplayMessage("Entity rotation set to " + argument + "°");
                     }
                     else messageDisplay->DisplayMessage("Error: No entity selected");
                 }
-                catch (const std::invalid_argument& err) {
+                catch (const std::invalid_argument& err)
+                {
                     messageDisplay->DisplayMessage("Error: Invalid float input");
                 }
             }

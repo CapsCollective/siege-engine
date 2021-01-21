@@ -1,6 +1,7 @@
 #include "IndexAllocator.h"
 
-bool operator==(GenerationalIndex& indexA, GenerationalIndex& indexB) {
+bool operator==(GenerationalIndex& indexA, GenerationalIndex& indexB)
+{
     return indexA.index == indexB.index && indexA.generation == indexB.generation;
 }
 
@@ -14,8 +15,8 @@ GenerationalIndex IndexAllocator::AllocateIndex()
     {
         index = entries.size();
         entries.push_back({true, generation});
-    } 
-    else 
+    }
+    else
     {
         // If free entries exist - re-use a freed index
         index = freeEntries[0];

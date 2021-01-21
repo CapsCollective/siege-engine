@@ -49,9 +49,11 @@ void EntityStorage::AddEntity(Entity* entity)
     else packedEntities.push_back(entity);
 }
 
-void EntityStorage::RegisterEntities() {
-    // Iterate over our queued entities and initialise them
-    for (auto& entity : registeredEntities) {
+void EntityStorage::RegisterEntities()
+{
+    // Iterate over queued entities and initialise them
+    for (auto& entity : registeredEntities)
+    {
         // Add the entity to storage
         AddEntity(entity);
     }
@@ -70,7 +72,7 @@ void EntityStorage::Remove(Entity* entity)
     // Get the packed index
     int32_t index = GetEntityIndex(entity, packedEntities);
 
-    // Erase the packed index entry from our packed entity storage if found
+    // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);
 
     // Finally, delete the entity from the heap
@@ -95,7 +97,7 @@ void EntityStorage::QueueFree(Entity* entity)
     int32_t index = GetEntityIndex(entity, freedEntities);
     if (index == -1) 
     {
-        // Push the entity back into our queue
+        // Push the entity back into the queue
         freedEntities.push_back(entity);
     }
 }

@@ -75,7 +75,8 @@ void EditorController::OnUpdate()
         SelectEntity(nullptr);
         for (auto& entity : EntityStorage::GetEntities())
         {
-            if (CheckCollisionRayBox(ray, entity->GetBoundingBox())) {
+            if (CheckCollisionRayBox(ray, entity->GetBoundingBox()))
+            {
                 SelectEntity(entity);
                 break;
             }
@@ -87,7 +88,8 @@ void EditorController::OnUpdate()
     {
         // Select the first packed entity by index
         int totalEntities = EntityStorage::GetEntities().size();
-        if (totalEntities > 0) {
+        if (totalEntities > 0)
+        {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
