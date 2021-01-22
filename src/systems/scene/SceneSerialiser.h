@@ -9,9 +9,10 @@ enum SerialisationFields {
     ENTITY_NAME = 0,
     ENTITY_POS = 1,
     ENTITY_ROT = 2,
-    CUSTOM_FIELD_1 = 3,
-    CUSTOM_FIELD_2 = 4,
-    CUSTOM_FIELD_3 = 5,
+    ENTITY_Z_IDX = 3,
+    CUSTOM_FIELD_1 = 4,
+    CUSTOM_FIELD_2 = 5,
+    CUSTOM_FIELD_3 = 6,
 };
 
 class SceneSerialiser
