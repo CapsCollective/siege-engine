@@ -20,7 +20,8 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         // Add its name, position and rotation to the data
         fileData += (entity->GetName() + SEP +
                      DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
-                     DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())));
+                     DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())) +
+                     DEFINE_FIELD("Z-INDEX", std::to_string(entity->GetZIndex())));
 
         // Add any additional fields needed to the data
         if (entity->GetName() == "Geometry")
@@ -52,14 +53,12 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
         std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
 
         // Strip labels from each item
-        for (std::string& arg : args)
-        {
-            arg = arg.substr(arg.find(':') + 1, arg.size());
-        }
+        for (std::string& arg : args) arg = arg.substr(arg.find(':') + 1, arg.size());
 
-        // Get the position and rotation of the entity
+        // Get the position, rotation and z-index of the entity
         raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
         float rotation = std::stof(args[ENTITY_ROT]);
+        int zIndex = std::stoi(args[ENTITY_Z_IDX]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")

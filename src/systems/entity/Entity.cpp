@@ -48,6 +48,11 @@ float Entity::GetRotation() const
     return rotation;
 }
 
+int Entity::GetZIndex() const
+{
+    return zIndex;
+}
+
 void Entity::SetPosition(raylib::Vector3 newPosition)
 {
     position = newPosition;
