@@ -1,14 +1,17 @@
 #include "SceneSerialiser.h"
 #include "../../utils/StringHelpers.h"
-#include "../entity/Entity.h"
-#include "../../entities/Geometry.h"
-#include "../../entities/Player.h"
-#include "../../entities/SplashScreen.h"
+#include "serialisers/EntitySerialiser.h"
+#include "serialisers/PlayerSerialiser.h"
+#include "serialisers/GeometrySerialiser.h"
+#include "serialisers/SplashScreenSerialiser.h"
 #include <iostream>
+#include <algorithm>
 
-// Define macros
-#define SEP '|'
-#define DEFINE_FIELD(name, content) name + std::string(":") + content + SEP
+std::vector<EntitySerialiser*> SceneSerialiser::serialisers {
+        new GeometrySerialiser(),
+        new PlayerSerialiser(),
+        new SplashScreenSerialiser(),
+};
 
 std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
 {
@@ -16,30 +19,9 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
     std::string fileData;
     for (auto entity : entities)
     {
-        // TODO make serialisation more modular (on a per-file basis)
-        // Add its name, position and rotation to the data
-        fileData += (entity->GetName() + SEP +
-                     DEFINE_FIELD("POSITION", StringHelpers::VectorToString(entity->GetPosition())) +
-                     DEFINE_FIELD("ROTATION", std::to_string(entity->GetRotation())) +
-                     DEFINE_FIELD("Z-INDEX", std::to_string(entity->GetZIndex())));
-
-        // Add any additional fields needed to the data
-        if (entity->GetName() == "Geometry")
-        {
-            auto geometry = dynamic_cast<Geometry*>(entity);
-            fileData += DEFINE_FIELD("DIMENSIONS", StringHelpers::VectorToString(geometry->GetDimensions()));
-            fileData += DEFINE_FIELD("MODEL_PATH", geometry->GetModelData().GetModelPath());
-            fileData += DEFINE_FIELD("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
-        }
-        else if (entity->GetName() == "Player")
-        {
-            auto player = dynamic_cast<Player*>(entity);
-            fileData += DEFINE_FIELD("MODEL_PATH", player->GetModelData().GetModelPath());
-            fileData += DEFINE_FIELD("TEXTURE_PATH", player->GetModelData().GetTexturePath());
-        }
-
-        // Add new line as entity delimiter
-        fileData += "\n";
+        // Try find the appropriate serialiser for the given entity
+        auto serialiser = TryGetSerialiser(entity->GetName());
+        if (serialiser) fileData += serialiser->Serialise(entity) + "\n";
     }
     return fileData;
 }
@@ -55,32 +37,18 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
         // Strip labels from each item
         for (std::string& arg : args) arg = arg.substr(arg.find(':') + 1, arg.size());
 
-        // Get the position, rotation and z-index of the entity
-        raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
-        float rotation = std::stof(args[ENTITY_ROT]);
-        int zIndex = std::stoi(args[ENTITY_Z_IDX]);
-
         // Register entities by entity name
-        if (args[ENTITY_NAME] == "Geometry")
-        {
-            // Get custom fields
-            raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
-            std::string modelPath = args[CUSTOM_FIELD_2];
-            std::string texturePath = args[CUSTOM_FIELD_3];
-
-            // Register the new entity
-            entities.push_back(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
-        }
-        else if (args[ENTITY_NAME] == "Player")
-        {
-            // Register the new entity
-            entities.push_back(new Player(position, rotation));
-        }
-        else if (args[ENTITY_NAME] == "SplashScreen")
-        {
-            // Register the new entity
-            entities.push_back(new SplashScreen());
-        }
+        auto serialiser = TryGetSerialiser(args[ENTITY_NAME]);
+        if (serialiser) entities.push_back(serialiser->Deserialise(args));
         else std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
     }
+}
+
+EntitySerialiser* SceneSerialiser::TryGetSerialiser(const std::string& entityName)
+{
+    for (auto& serialiser : serialisers)
+    {
+        if (serialiser->GetName() == entityName) return serialiser;
+    }
+    return nullptr;
 }

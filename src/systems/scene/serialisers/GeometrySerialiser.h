@@ -1,16 +1,20 @@
-//
-// Created by Jonathan Moallem on 23/1/21.
-//
-
 #ifndef A_DARK_DISCOMFORT_GEOMETRYSERIALISER_H
 #define A_DARK_DISCOMFORT_GEOMETRYSERIALISER_H
 
+#include "EntitySerialiser.h"
 
+class GeometrySerialiser : public EntitySerialiser
+{
+public:
 
-class GeometrySerialiser {
+    GeometrySerialiser() :
+    EntitySerialiser("Geometry")
+    {};
 
+    std::string Serialise(Entity* entity) override;
+
+    Entity* Deserialise(const std::vector<std::string>& entityArgs) override;
 };
-
 
 
 #endif //A_DARK_DISCOMFORT_GEOMETRYSERIALISER_H
