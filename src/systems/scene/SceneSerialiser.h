@@ -3,6 +3,9 @@
 
 #include "../../utils/SystemMacros.h"
 #include "serialisers/EntitySerialiser.h"
+#include "serialisers/GeometrySerialiser.h"
+#include "serialisers/PlayerSerialiser.h"
+#include "serialisers/SplashScreenSerialiser.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -41,6 +44,12 @@ private:
     // Private fields
 
     static std::vector<EntitySerialiser*> serialisers;
+
+    static GeometrySerialiser geometrySerialiser;
+
+    static PlayerSerialiser playerSerialiser;
+
+    static SplashScreenSerialiser splashSerialiser;
 };
 
 
