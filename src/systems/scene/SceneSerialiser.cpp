@@ -1,16 +1,17 @@
 #include "SceneSerialiser.h"
 #include "../../utils/StringHelpers.h"
 #include "serialisers/EntitySerialiser.h"
-#include "serialisers/PlayerSerialiser.h"
-#include "serialisers/GeometrySerialiser.h"
-#include "serialisers/SplashScreenSerialiser.h"
 #include <iostream>
 #include <algorithm>
 
+// Define static members
+GeometrySerialiser SceneSerialiser::geometrySerialiser;
+PlayerSerialiser SceneSerialiser::playerSerialiser;
+SplashScreenSerialiser SceneSerialiser::splashSerialiser;
 std::vector<EntitySerialiser*> SceneSerialiser::serialisers {
-        new GeometrySerialiser(),
-        new PlayerSerialiser(),
-        new SplashScreenSerialiser(),
+        &geometrySerialiser,
+        &playerSerialiser,
+        &splashSerialiser,
 };
 
 std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
