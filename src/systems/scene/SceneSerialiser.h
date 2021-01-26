@@ -2,14 +2,20 @@
 #define A_DARK_DISCOMFORT_SCENESERIALISER_H
 
 #include "../../utils/SystemMacros.h"
-#include "serialisers/EntitySerialiser.h"
-#include "serialisers/GeometrySerialiser.h"
-#include "serialisers/PlayerSerialiser.h"
-#include "serialisers/SplashScreenSerialiser.h"
 #include <string>
 #include <vector>
 #include <map>
 #include <Vector3.hpp>
+
+enum SerialisationFields {
+    ENTITY_NAME = 0,
+    ENTITY_POS = 1,
+    ENTITY_ROT = 2,
+    ENTITY_Z_IDX = 3,
+    CUSTOM_FIELD_1 = 4,
+    CUSTOM_FIELD_2 = 5,
+    CUSTOM_FIELD_3 = 6,
+};
 
 class SceneSerialiser
 {
@@ -34,22 +40,6 @@ public:
      *                   pointers to populate
      */
     static void Deserialise(const std::vector<std::string>& sceneLines, OUT std::vector<Entity*>& entities);
-
-private:
-
-    // Private methods
-
-    static EntitySerialiser* TryGetSerialiser(const std::string& entityName);
-
-    // Private fields
-
-    static std::vector<EntitySerialiser*> serialisers;
-
-    static GeometrySerialiser geometrySerialiser;
-
-    static PlayerSerialiser playerSerialiser;
-
-    static SplashScreenSerialiser splashSerialiser;
 };
 
 
