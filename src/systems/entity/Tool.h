@@ -14,12 +14,6 @@ public:
      * A blank override to prevent freeing
      */
     void QueueFree() override {};
-
-    /**
-     * A blank override to prevent freeing
-     */
-    void Free() override {};
-
 };
 
 
