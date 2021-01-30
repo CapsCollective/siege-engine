@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "../systems/collision/CollisionRegister.h"
 
 void Player::OnUpdate()
 {
@@ -10,12 +11,16 @@ void Player::OnUpdate()
     };
 
     // Normalise and apply move to velocity
-    position += velocity += move.Normalize() * speed * GetFrameTime();
+    velocity += move.Normalize() * speed * GetFrameTime();
+
+    // Apply force of gravity
+    velocity += raylib::Vector3(0.f, -0.1f, 0.f);
+
+    // Allow move if no collision
+    if (!CollisionRegister::CheckCollision(GetBoundingBox())) position += velocity;
 
     // Dampen velocity
     velocity = velocity * 0.9f;
-
-    // TODO add collision potentially using interface Collidable
 }
 
 void Player::OnDraw()
