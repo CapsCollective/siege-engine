@@ -13,3 +13,9 @@ bool CollisionRegister::CheckCollision(const BoundingBox& boundingBox)
     }
     return false;
 }
+
+void CollisionRegister::Add(Entity* entity)
+{
+    // Add the entity to the register
+    collidableEntities.push_back(entity);
+}

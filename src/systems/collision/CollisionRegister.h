@@ -9,6 +9,8 @@ public:
 
     // Public methods
 
+    static void Add(Entity* entity);
+
     static bool CheckCollision(const BoundingBox& boundingBox);
 
 private:

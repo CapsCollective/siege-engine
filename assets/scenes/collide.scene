@@ -1,0 +1,2 @@
+Player|POSITION:0.000000,3.000000,0.000000|ROTATION:0.000000|MODEL_PATH:assets/models/cube/cube.obj|TEXTURE_PATH:assets/models/cube/cube.png|
+Geometry|POSITION:0.000000,0.000000,0.000000|ROTATION:0.000000|DIMENSIONS:1.000000,1.000000,1.000000|MODEL_PATH:assets/models/cube/cube.obj|TEXTURE_PATH:assets/models/cube/cube.png|

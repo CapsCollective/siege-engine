@@ -4,6 +4,7 @@
 #include "../../entities/Geometry.h"
 #include "../../entities/Player.h"
 #include "../../entities/SplashScreen.h"
+#include "../collision/CollisionRegister.h"
 #include <iostream>
 
 // Define macros
@@ -70,7 +71,10 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
             std::string texturePath = args[CUSTOM_FIELD_3];
 
             // Register the new entity
-            entities.push_back(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
+            // TODO move this responsibility elsewhere
+            auto geometry = new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath));
+            CollisionRegister::Add(geometry);
+            entities.push_back(geometry);
         }
         else if (args[ENTITY_NAME] == "Player")
         {
