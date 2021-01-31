@@ -7,6 +7,7 @@ std::vector<Entity*> CollisionRegister::collidableEntities;
 
 bool CollisionRegister::CheckCollision(const BoundingBox& boundingBox)
 {
+    // Check collision for each registered entity against the bounding box
     for (auto& entity : collidableEntities)
     {
         if (CheckCollisionBoxes(entity->GetBoundingBox(), boundingBox)) return true;

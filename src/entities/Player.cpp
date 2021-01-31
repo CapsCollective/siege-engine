@@ -14,7 +14,7 @@ void Player::OnUpdate()
     velocity += move.Normalize() * speed * GetFrameTime();
 
     // Apply force of gravity
-    velocity += raylib::Vector3(0.f, -0.1f, 0.f);
+    velocity += raylib::Vector3(0.f, -0.01f, 0.f);
 
     // Allow move if no collision
     if (!CollisionRegister::CheckCollision(GetBoundingBox())) position += velocity;
