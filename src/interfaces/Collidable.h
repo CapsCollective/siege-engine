@@ -9,6 +9,7 @@ class Collidable
 {
 public:
 
+    // TODO use this?
     virtual Entity* GetBounds() = 0;
 
 };
