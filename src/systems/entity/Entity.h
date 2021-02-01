@@ -78,6 +78,12 @@ public:
      */
     float GetRotation() const;
 
+    /**
+     * Getter method for the entity's z-index attribute
+     * @return The entity's z-index as an int
+     */
+    int GetZIndex() const;
+
     // Public setters
 
     /**
