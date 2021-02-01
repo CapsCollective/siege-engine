@@ -41,13 +41,6 @@ public:
     virtual void QueueFree();
 
     /**
-     * Unsafely removes the entity from storage immediately
-     * @warning This method is very unsafe and QueueFree()
-     *          should be used wherever possible instead
-     */
-    virtual void Free();
-
-    /**
      * A virtual method for implementing a definition of an
      * entity's BoundingBox attribute
      * @return The entity's BoundingBox
@@ -84,6 +77,12 @@ public:
      * @return The entity's rotation as a float
      */
     float GetRotation() const;
+
+    /**
+     * Getter method for the entity's z-index attribute
+     * @return The entity's z-index as an int
+     */
+    int GetZIndex() const;
 
     // Public setters
 

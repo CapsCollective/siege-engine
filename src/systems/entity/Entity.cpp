@@ -13,11 +13,6 @@ void Entity::QueueFree()
     EntityStorage::QueueFree(this);
 }
 
-void Entity::Free()
-{
-    EntityStorage::Remove(this);
-}
-
 const std::string& Entity::GetName() const
 {
     return name;
@@ -46,6 +41,11 @@ const raylib::Vector3& Entity::GetPosition() const
 float Entity::GetRotation() const
 {
     return rotation;
+}
+
+int Entity::GetZIndex() const
+{
+    return zIndex;
 }
 
 void Entity::SetPosition(raylib::Vector3 newPosition)
