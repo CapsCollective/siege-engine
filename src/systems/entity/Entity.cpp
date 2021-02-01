@@ -13,11 +13,6 @@ void Entity::QueueFree()
     EntityStorage::QueueFree(this);
 }
 
-void Entity::Free()
-{
-    EntityStorage::Remove(this);
-}
-
 const std::string& Entity::GetName() const
 {
     return name;

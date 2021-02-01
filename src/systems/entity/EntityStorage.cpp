@@ -113,3 +113,9 @@ void EntityStorage::FreeEntities()
     // Clear the storage.
     freedEntities.clear();
 }
+
+uint32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &storage) {
+    // Try find the entity, and return the index of the entity or -1 if not found
+    auto it = std::find(storage.begin(), storage.end(), entity);
+    return (it != storage.end()) ? std::distance(storage.begin(), it) : -1;
+}

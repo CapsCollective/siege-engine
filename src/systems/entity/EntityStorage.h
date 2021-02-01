@@ -28,19 +28,13 @@ public:
      * Returns packed game entities (for iteration purposes)
      * @return A reference to the vector of packed game entities
      */
-    static const std::vector<Entity*>& GetEntities()
-    {
-        return packedEntities;
-    }
+    static const std::vector<Entity*>& GetEntities() { return packedEntities; }
 
     /**
      * Returns packed tool entities (for iteration purposes)
      * @return A reference to the vector of packed tool entities
      */
-    static const std::vector<Entity*>& GetTools()
-    {
-        return packedTools;
-    }
+    static const std::vector<Entity*>& GetTools() { return packedTools; }
 
     /**
      * Returns an entity in the packed list
@@ -49,10 +43,7 @@ public:
      * @warning Accessing an out of bounds index will result in
      *          undefined behaviour
      */
-    static Entity* GetPackedEntity(size_t index)
-    {
-        return packedEntities[index];
-    }
+    static Entity* GetPackedEntity(size_t index) { return packedEntities[index]; }
 
     /**
      * Queues an entity for freeing at the end of the frame
@@ -90,12 +81,7 @@ private:
      * @return A -1 when no index is found, or the index if the entity
      *         is found
      */
-    static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage)
-    {
-        // Try find the entity, and return the index of the entity or -1 if not found
-        auto it = std::find(storage.begin(), storage.end(), entity);
-        return (it != storage.end()) ? std::distance(storage.begin(), it) : -1;
-    }
+    static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
 
     // Private fields
 
