@@ -32,8 +32,6 @@ public:
      */
     virtual void OnDraw2D() {};
 
-    // Public methods
-
     /**
      * Queues the entity to be freed from storage safely at
      * the end of a frame
@@ -48,6 +46,13 @@ public:
      *       override it will return a zero sized BoundingBox
      */
     virtual BoundingBox GetBoundingBox();
+
+    /**
+     * A virtual method to be overridden for more complex
+     * object copying logic
+     * @return A pointer to the cloned entity object
+     */
+    virtual Entity* Clone();
 
     // Public getters
 
