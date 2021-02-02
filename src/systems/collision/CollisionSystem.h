@@ -1,9 +1,9 @@
-#ifndef A_DARK_DISCOMFORT_COLLISIONREGISTER_H
-#define A_DARK_DISCOMFORT_COLLISIONREGISTER_H
+#ifndef A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
+#define A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
 
 #include <vector>
 
-class CollisionRegister
+class CollisionSystem
 {
 public:
 
@@ -42,4 +42,4 @@ private:
 };
 
 
-#endif //A_DARK_DISCOMFORT_COLLISIONREGISTER_H
+#endif //A_DARK_DISCOMFORT_COLLISIONSYSTEM_H

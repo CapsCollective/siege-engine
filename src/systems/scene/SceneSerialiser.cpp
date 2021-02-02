@@ -3,7 +3,6 @@
 #include "../../entities/Geometry.h"
 #include "../../entities/Player.h"
 #include "../../entities/SplashScreen.h"
-#include "../collision/CollisionRegister.h"
 #include <iostream>
 #include <algorithm>
 
@@ -69,10 +68,7 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
             std::string texturePath = args[CUSTOM_FIELD_3];
 
             // Register the new entity
-            // TODO move this responsibility elsewhere
-            auto geometry = new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath));
-            CollisionRegister::Add(geometry);
-            entities.push_back(geometry);
+            entities.push_back(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
         }
         else if (args[ENTITY_NAME] == "Player")
         {

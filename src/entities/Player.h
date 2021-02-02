@@ -3,7 +3,7 @@
 
 #include "../systems/entity/Entity.h"
 #include "../systems/resource/ModelData.h"
-#include "../interfaces/Modelable.h"
+#include "../systems/resource/Modelable.h"
 
 class Player : public Entity, public Modelable
 {
