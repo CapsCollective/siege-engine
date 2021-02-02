@@ -1,17 +1,17 @@
 #include <BoundingBox.hpp>
 #include "../entity/Entity.h"
-#include "CollisionRegister.h"
+#include "CollisionSystem.h"
 
 // Define static members
-std::vector<Entity*> CollisionRegister::collidableEntities;
+std::vector<Entity*> CollisionSystem::collidableEntities;
 
-void CollisionRegister::Add(Entity* entity)
+void CollisionSystem::Add(Entity* entity)
 {
     // Add the entity to the register
     collidableEntities.push_back(entity);
 }
 
-raylib::Vector3 CollisionRegister::MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity)
+raylib::Vector3 CollisionSystem::MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity)
 {
     // TODO convert this system to use OBBs with separating plane theorem
     // TODO add collision sweeping for more accurate results
@@ -27,6 +27,7 @@ raylib::Vector3 CollisionRegister::MoveAndSlide(const BoundingBox& boundingBox, 
     BoundingBox xBox = {boxMin + xVelocity, boxMax + xVelocity};
     BoundingBox zBox = {boxMin + zVelocity,boxMax + zVelocity};
 
+    // TODO make collisions call OnCollision for Collidables
     // Check for collision against all collidable entities
     for (auto& entity : collidableEntities)
     {
@@ -38,7 +39,7 @@ raylib::Vector3 CollisionRegister::MoveAndSlide(const BoundingBox& boundingBox, 
     return velocity;
 }
 
-bool CollisionRegister::CheckCollision(const BoundingBox& boundingBox)
+bool CollisionSystem::CheckCollision(const BoundingBox& boundingBox)
 {
     // Check collision for each registered entity against the bounding box
     for (auto& entity : collidableEntities)

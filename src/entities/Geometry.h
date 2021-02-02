@@ -3,9 +3,10 @@
 
 #include "../systems/entity/Entity.h"
 #include "../systems/resource/ModelData.h"
-#include "../interfaces/Modelable.h"
+#include "../systems/resource/Modelable.h"
+#include "../systems/collision/Collidable.h"
 
-class Geometry : public Entity, public Modelable, public Cloneable
+class Geometry : public Entity, public Modelable, public Collidable
 {
 public:
 
@@ -38,6 +39,8 @@ public:
     const ModelData& GetModelData() override;
 
     void SetModelData(const ModelData& modelData) override;
+
+    void OnCollision(Entity* entity) override {};
 
     // Public methods
 

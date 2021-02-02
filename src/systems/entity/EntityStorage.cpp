@@ -1,5 +1,7 @@
 #include "EntityStorage.h"
 #include "Tool.h"
+#include "../collision/Collidable.h"
+#include "../collision/CollisionSystem.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -47,6 +49,10 @@ void EntityStorage::AddEntity(Entity* entity)
     // Add the entity to the end of its appropriate packed entities
     if (dynamic_cast<Tool*>(entity)) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
+
+    // Register collidable entities with the collision system
+    // TODO move this storage capability into the entity storage for thread safety
+    if (dynamic_cast<Collidable*>(entity)) CollisionSystem::Add(entity);
 }
 
 void EntityStorage::RegisterEntities()

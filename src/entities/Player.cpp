@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "../systems/collision/CollisionRegister.h"
+#include "../systems/collision/CollisionSystem.h"
 
 void Player::OnUpdate()
 {
@@ -16,8 +16,9 @@ void Player::OnUpdate()
     // Apply force of gravity
     velocity += raylib::Vector3(0.f, -0.01f, 0.f);
 
-    // Allow move if no collision
-    if (!CollisionRegister::CheckCollision(GetBoundingBox())) position += velocity;
+    // Set the resulting attempted move's velocity to the object's position
+    velocity = CollisionSystem::MoveAndSlide(GetBoundingBox(), velocity);
+    position += velocity;
 
     // Dampen velocity
     velocity = velocity * 0.9f;
@@ -52,7 +53,7 @@ void Player::OnDraw()
 
 BoundingBox Player::GetBoundingBox()
 {
-    return BoundingBox{
+    return BoundingBox {
             position - raylib::Vector3::One(),
             position + raylib::Vector3::One(),
     };
@@ -68,7 +69,7 @@ void Player::SetModelData(const ModelData& data)
     modelData = data;
 }
 
-Entity *Player::Clone()
+Entity* Player::Clone()
 {
     return new Player(position, rotation);
 }
