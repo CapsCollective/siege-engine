@@ -16,6 +16,17 @@ public:
     static void Add(Entity* entity);
 
     /**
+     * Checks the collision of the object while moving
+     * it along a vector to find its movable velocity
+     * @param boundingBox - the bounding box to collide
+     * @param velocity - the starting velocity of the
+     *                   colliding object
+     * @return The resulting linear velocity after
+     *         applying any collision events
+     */
+    static raylib::Vector3 MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity);
+
+    /**
      * Checks a given bounding box for collisions against
      * any registered entities
      * @param boundingBox - the bounding box to check

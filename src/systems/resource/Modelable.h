@@ -1,20 +1,20 @@
 #ifndef A_DARK_DISCOMFORT_MODELABLE_H
 #define A_DARK_DISCOMFORT_MODELABLE_H
 
-#include "../systems/resource/ModelData.h"
+#include "ModelData.h"
 
 class Modelable
 {
 public:
 
     /**
-     * A virtual getter method model data
+     * A virtual getter method for model data
      * @return The object's model data
      */
     virtual const ModelData& GetModelData() = 0;
 
     /**
-     * A virtual setter method model data
+     * A virtual setter method for model data
      * @param modelData - model data to set to the
      *                    object
      */
