@@ -19,7 +19,6 @@ public:
      *                    object
      */
     virtual void SetModelData(const ModelData& modelData) = 0;
-
 };
 
 
