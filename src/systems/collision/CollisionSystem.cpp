@@ -1,14 +1,23 @@
 #include <BoundingBox.hpp>
+#include <algorithm>
 #include "../entity/Entity.h"
 #include "CollisionSystem.h"
 
 // Define static members
+// TODO make storage use an octree for improved performance
 std::vector<Entity*> CollisionSystem::collidableEntities;
 
 void CollisionSystem::Add(Entity* entity)
 {
     // Add the entity to the register
     collidableEntities.push_back(entity);
+}
+
+void CollisionSystem::Remove(Entity* entity)
+{
+    // Find and remove the entity from the register
+    auto it = std::find(collidableEntities.begin(), collidableEntities.end(), entity);
+    if (it != collidableEntities.end()) collidableEntities.erase(it);
 }
 
 raylib::Vector3 CollisionSystem::MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity)
