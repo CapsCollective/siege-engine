@@ -51,7 +51,7 @@ void EntityStorage::AddEntity(Entity* entity)
     else packedEntities.push_back(entity);
 
     // Register collidable entities with the collision system
-    // TODO move this storage capability into the entity storage for thread safety
+    // TODO move this storage call somewhere more relevant
     if (dynamic_cast<Collidable*>(entity)) CollisionSystem::Add(entity);
 }
 
@@ -80,6 +80,10 @@ void EntityStorage::Remove(Entity* entity)
 
     // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);
+
+    // Register collidable entities with the collision system
+    // TODO move this storage call somewhere more relevant
+    if (dynamic_cast<Collidable*>(entity)) CollisionSystem::Remove(entity);
 
     // Finally, delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;

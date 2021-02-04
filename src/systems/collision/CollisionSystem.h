@@ -16,6 +16,12 @@ public:
     static void Add(Entity* entity);
 
     /**
+     * De-registers a given entity for collision detection
+     * @param entity - the entity to deregister
+     */
+    static void Remove(Entity* entity);
+
+    /**
      * Checks the collision of the object while moving
      * it along a vector to find its movable velocity
      * @param boundingBox - the bounding box to collide
