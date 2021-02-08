@@ -2,9 +2,7 @@
 #define A_DARK_DISCOMFORT_ENTITYSTORAGE_H
 
 #include "IndexAllocator.h"
-#include <algorithm>
 #include <vector>
-#include "Entity.h"
 
 class EntityStorage 
 {
@@ -16,7 +14,7 @@ public:
      * Queues an entity for initialisation in the next frame
      * @param entity - the entity to register in storage
      */
-    static void Register(Entity* entity);
+    static void Register(class Entity* entity);
 
     /**
      * Removes an entity from storage
@@ -57,7 +55,7 @@ public:
     static void FreeEntities();
 
     /**
-     * Registers all entities separately, should be called after
+     * Registers all entities separately, should be called before
      * the update loop
      */
     static void RegisterEntities();

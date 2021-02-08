@@ -1,6 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
 #define A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
 
+#include "../entity/Entity.h"
 #include <vector>
 
 class CollisionSystem
@@ -20,6 +21,18 @@ public:
      * @param entity - the entity to deregister
      */
     static void Remove(Entity* entity);
+
+    /**
+     * Registers all added entities, should be called before
+     * the update loop
+     */
+    static void RegisterEntities();
+
+    /**
+     * Frees all removed entities, should be called after
+     * the update loop
+     */
+    static void FreeEntities();
 
     /**
      * Checks the collision of the object while moving
@@ -44,7 +57,11 @@ private:
 
     // Private fields
 
-    static std::vector<class Entity*> collidableEntities;
+    static std::vector<Entity*> collidableEntities;
+
+    static std::vector<Entity*> addedEntities;
+
+    static std::vector<Entity*> removedEntities;
 };
 
 

@@ -75,12 +75,12 @@ public:
     };
 
     /**
-     * Immediately frees all stored resources
-     */
-    static void FreeAllResources();
+    * Clears all stored resources at the end of the frame
+    */
+    static void FreeResources();
 
     /**
-     * Clears all stored resources at the end of the frame
+     * Immediately clears all stored resources
      */
     static void ClearResources();
 

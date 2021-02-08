@@ -1,7 +1,5 @@
 #include "EntityStorage.h"
 #include "Tool.h"
-#include "../collision/Collidable.h"
-#include "../collision/CollisionSystem.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -19,7 +17,7 @@ std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
 
 void EntityStorage::Register(Entity* entity)
 {
-    // If the pointer is null - stop the function
+    // If the pointer is null, stop the function
     if (!entity) return;
 
     // Generate an index and add it to the entity
@@ -30,14 +28,13 @@ void EntityStorage::Register(Entity* entity)
     registeredEntities.emplace_back(entity);
 }
 
-// Adds an entity to the Entity Storage
 void EntityStorage::AddEntity(Entity* entity)
 {
 
     // If the entity's given index already exists
     if (entity->GetIndex().index < entities.size())
     {
-        // override the existing entry
+        // Override the existing entry
         entities[entity->GetIndex().index] = entity;
     }
     else
@@ -49,10 +46,6 @@ void EntityStorage::AddEntity(Entity* entity)
     // Add the entity to the end of its appropriate packed entities
     if (dynamic_cast<Tool*>(entity)) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
-
-    // Register collidable entities with the collision system
-    // TODO move this storage call somewhere more relevant
-    if (dynamic_cast<Collidable*>(entity)) CollisionSystem::Add(entity);
 }
 
 void EntityStorage::RegisterEntities()
@@ -63,7 +56,7 @@ void EntityStorage::RegisterEntities()
         // Add the entity to storage
         AddEntity(entity);
     }
-    // Finally, remove all entities from the queue
+    // Remove all entities from the queue
     registeredEntities.clear();
 }
 
@@ -81,11 +74,7 @@ void EntityStorage::Remove(Entity* entity)
     // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);
 
-    // Register collidable entities with the collision system
-    // TODO move this storage call somewhere more relevant
-    if (dynamic_cast<Collidable*>(entity)) CollisionSystem::Remove(entity);
-
-    // Finally, delete the entity from the heap
+    // Delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;
     delete entities[entityIndex];
 }
