@@ -1,23 +1,43 @@
-#include <BoundingBox.hpp>
 #include <algorithm>
-#include "../entity/Entity.h"
 #include "CollisionSystem.h"
 
 // Define static members
 // TODO make storage use an octree for improved performance
 std::vector<Entity*> CollisionSystem::collidableEntities;
+std::vector<Entity*> CollisionSystem::addedEntities;
+std::vector<Entity*> CollisionSystem::removedEntities;
 
 void CollisionSystem::Add(Entity* entity)
 {
-    // Add the entity to the register
-    collidableEntities.push_back(entity);
+    // Set the entity for registration
+    addedEntities.push_back(entity);
 }
 
 void CollisionSystem::Remove(Entity* entity)
 {
-    // Find and remove the entity from the register
-    auto it = std::find(collidableEntities.begin(), collidableEntities.end(), entity);
-    if (it != collidableEntities.end()) collidableEntities.erase(it);
+    // Set the entity for de-registration
+    removedEntities.push_back(entity);
+}
+
+void CollisionSystem::RegisterEntities()
+{
+    // Register all entities for addition
+    for (auto& entity : addedEntities)
+    {
+        collidableEntities.push_back(entity);
+    }
+    addedEntities.clear();
+}
+
+void CollisionSystem::FreeEntities()
+{
+    // Find and deregister all entities for removal
+    for (auto& entity : removedEntities)
+    {
+        auto it = std::find(collidableEntities.begin(), collidableEntities.end(), entity);
+        if (it != collidableEntities.end()) collidableEntities.erase(it);
+    }
+    removedEntities.clear();
 }
 
 raylib::Vector3 CollisionSystem::MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity)

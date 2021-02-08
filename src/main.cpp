@@ -1,12 +1,13 @@
+#include "systems/collision/CollisionSystem.h"
+#include "systems/resource/ResourceManager.h"
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "systems/entity/EntityStorage.h"
-#include "systems/resource/ResourceManager.h"
+#include "systems/scene/SceneManager.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
 #include "utils/ServiceLocator.h"
-#include "systems/scene/SceneManager.h"
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -77,6 +78,7 @@ int main(int argc, char* argv[])
 
         // Entity creation is deferred until after the update loop
         EntityStorage::RegisterEntities();
+        CollisionSystem::RegisterEntities();
 
         // Begin drawing to screen
         window.BeginDrawing();
@@ -94,8 +96,9 @@ int main(int argc, char* argv[])
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
         // Remove all entities at the end of the frame
+        ResourceManager::FreeResources();
+        CollisionSystem::FreeEntities();
         EntityStorage::FreeEntities();
-        ResourceManager::FreeAllResources();
         SceneManager::LoadNextScene();
 
         window.EndDrawing();

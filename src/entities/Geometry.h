@@ -5,8 +5,9 @@
 #include "../systems/resource/ModelData.h"
 #include "../systems/resource/Modelable.h"
 #include "../systems/collision/Collidable.h"
+#include "../systems/collision/CollisionSystem.h"
 
-class Geometry : public Entity, public Modelable, public Collidable
+class Geometry : public Entity, public Modelable
 {
 public:
 
@@ -28,19 +29,22 @@ public:
     modelData(data)
     {
         Entity::SetName("Geometry");
+
+        // Register the entity as collidable
+        CollisionSystem::Add(this);
     };
 
     // Public overrides
 
     Entity* Clone() override;
 
+    void QueueFree() override;
+
     BoundingBox GetBoundingBox() override;
 
     const ModelData& GetModelData() override;
 
     void SetModelData(const ModelData& modelData) override;
-
-    void OnCollision(Entity* entity) override {};
 
     // Public methods
 
