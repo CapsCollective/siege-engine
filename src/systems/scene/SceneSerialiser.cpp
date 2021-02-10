@@ -66,6 +66,8 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
             raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
             std::string modelPath = args[CUSTOM_FIELD_2];
             std::string texturePath = args[CUSTOM_FIELD_3];
+
+            // Register the new entity
             entities.push_back(new Geometry(position, rotation, dimensions, ModelData(modelPath, texturePath)));
         }
         else if (args[ENTITY_NAME] == "Player")

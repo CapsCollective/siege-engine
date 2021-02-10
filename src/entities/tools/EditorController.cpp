@@ -43,14 +43,14 @@ void EditorController::OnUpdate()
         {
             if (IsKeyPressed(KEY_D))
             {
-                // Duplicate the entity
-                auto cloneableEntity = dynamic_cast<Cloneable*>(selectedEntity);
-                if (cloneableEntity)
+                // Try duplicate the entity
+                auto newEntity = selectedEntity->Clone();
+                if (newEntity)
                 {
-                    EntityStorage::Register(cloneableEntity->Clone());
+                    EntityStorage::Register(newEntity);
                     messageDisplay->DisplayMessage("Entity duplicated");
                 }
-                else messageDisplay->DisplayMessage("Entity not cloneable");
+                else messageDisplay->DisplayMessage("Entity not duplicatable");
             }
             else if (IsKeyPressed(KEY_BACKSPACE))
             {

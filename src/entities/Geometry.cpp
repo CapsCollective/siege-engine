@@ -45,6 +45,13 @@ Entity* Geometry::Clone()
     return new Geometry(position, rotation, dimensions, modelData);
 }
 
+void Geometry::QueueFree()
+{
+    // Deregister the entity as collidable before freeing it
+    CollisionSystem::Remove(this);
+    Entity::QueueFree();
+}
+
 const ModelData& Geometry::GetModelData()
 {
     return modelData;

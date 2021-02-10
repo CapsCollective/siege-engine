@@ -15,7 +15,7 @@ void ResourceManager::ClearResources()
     }
 }
 
-void ResourceManager::FreeAllResources()
+void ResourceManager::FreeResources()
 {
     // If we have resources to free
     if (freedResources.empty()) return;
