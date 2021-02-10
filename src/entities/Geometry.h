@@ -3,10 +3,11 @@
 
 #include "../systems/entity/Entity.h"
 #include "../systems/resource/ModelData.h"
-#include "../interfaces/Modelable.h"
-#include "../interfaces/Cloneable.h"
+#include "../systems/resource/Modelable.h"
+#include "../systems/collision/Collidable.h"
+#include "../systems/collision/CollisionSystem.h"
 
-class Geometry : public Entity, public Modelable, public Cloneable
+class Geometry : public Entity, public Modelable
 {
 public:
 
@@ -28,11 +29,16 @@ public:
     modelData(data)
     {
         Entity::SetName("Geometry");
+
+        // Register the entity as collidable
+        CollisionSystem::Add(this);
     };
 
     // Public overrides
 
     Entity* Clone() override;
+
+    void QueueFree() override;
 
     BoundingBox GetBoundingBox() override;
 

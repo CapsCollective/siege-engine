@@ -8,6 +8,11 @@ BoundingBox Entity::GetBoundingBox()
     return BoundingBox();
 }
 
+Entity* Entity::Clone()
+{
+    return nullptr;
+}
+
 void Entity::QueueFree()
 {
     EntityStorage::QueueFree(this);
