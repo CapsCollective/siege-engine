@@ -12,6 +12,37 @@ class Entity
 {
 public:
 
+    // Constructors
+
+    /**
+     * Zero-param constructor for Entity, initialises both
+     * position and rotation to zero
+     */
+    Entity() :
+            Entity(raylib::Vector3::Zero(), 0.f)
+    {};
+
+    /**
+     * Delegate constructor for Entity, initialises
+     * generational index to zero and name to "Entity"
+     * @param position - the initial position of the entity
+     * @param rotation - the initial rotation of the entity
+     * @param zIndex - the initial z-index of the entity,
+     *                 defaults to zero
+     */
+    Entity(raylib::Vector3 position, float rotation, int zIndex = 0) :
+            position(position),
+            rotation(rotation),
+            name("Entity"),
+            index(GenerationalIndex()),
+            zIndex(zIndex)
+    {};
+
+    // Destructor
+    // TODO make constructors public and add default destructors
+
+    virtual ~Entity() = default;
+
     // Virtual methods
 
     /**
@@ -118,32 +149,6 @@ public:
     void SetRotation(float newRotation);
 
 protected:
-
-    // Constructors
-
-    /**
-     * Zero-param constructor for Entity, initialises both
-     * position and rotation to zero
-     */
-    Entity() :
-    Entity(raylib::Vector3::Zero(), 0.f)
-    {};
-
-    /**
-     * Delegate constructor for Entity, initialises
-     * generational index to zero and name to "Entity"
-     * @param position - the initial position of the entity
-     * @param rotation - the initial rotation of the entity
-     * @param zIndex - the initial z-index of the entity,
-     *                 defaults to zero
-     */
-    Entity(raylib::Vector3 position, float rotation, int zIndex = 0) :
-    position(position),
-    rotation(rotation),
-    name("Entity"),
-    index(GenerationalIndex()),
-    zIndex(zIndex)
-    {};
 
     // Protected methods
 
