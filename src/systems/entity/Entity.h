@@ -138,10 +138,10 @@ protected:
      *                 defaults to zero
      */
     Entity(raylib::Vector3 position, float rotation, int zIndex = 0) :
-    index(GenerationalIndex()),
-    name("Entity"),
-    rotation(rotation),
     position(position),
+    rotation(rotation),
+    name("Entity"),
+    index(GenerationalIndex()),
     zIndex(zIndex)
     {};
 

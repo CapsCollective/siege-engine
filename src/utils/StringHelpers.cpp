@@ -27,7 +27,7 @@ raylib::Vector3 StringHelpers::StringToVector(std::string string)
 std::vector<std::string> StringHelpers::SplitString(std::string string, char delimiter)
 {
     // Iterate over the string while there is still a delimiter
-    int delimiterPos;
+    size_t delimiterPos;
     std::vector<std::string> args;
     while ((delimiterPos = string.find(delimiter)) != std::string::npos)
     {
