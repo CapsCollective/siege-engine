@@ -4,14 +4,16 @@ platformpth = $(subst /,$(PATHSEP),$1)
 
 # Set global macros
 buildDir := bin
-executable := app
-target := $(buildDir)/$(executable)
-sources := $(call rwildcard,src/,*.cpp)
-objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
-depends := $(patsubst %.o, %.d, $(objects))
-compileFlags := -std=c++17 -I include
+compileFlags := -std=c++17 -I ./include
 linkFlags = -L lib/$(platform) -l raylib
 
+# Set src target macros
+target := $(buildDir)/app
+srcDir := src
+srcBuildDir := $(buildDir)/$(srcDir)
+sources := $(call rwildcard,$(srcDir)/,*.cpp)
+objects := $(patsubst $(srcDir)/%, $(srcBuildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
+depends := $(patsubst %.o, %.d, $(objects))
 # Check for Windows
 ifeq ($(OS), Windows_NT)
 	# Set Windows macros
@@ -83,7 +85,7 @@ $(target): $(objects)
 -include $(depends)
 
 # Compile objects to the build directory
-$(buildDir)/%.o: src/%.cpp Makefile
+$(srcBuildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@
 
