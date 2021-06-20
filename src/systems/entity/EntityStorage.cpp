@@ -7,6 +7,7 @@
 IndexAllocator EntityStorage::allocator = IndexAllocator();
 std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 
+// TODO switch back to using a boolean to indicate tool-ness
 // Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();

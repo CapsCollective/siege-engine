@@ -12,6 +12,7 @@
 
 std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
 {
+    // TODO extract this into an EntityManifest
     // Iterate over each entity in the scene
     std::string fileData;
     for (auto entity : entities)

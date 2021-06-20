@@ -4,7 +4,7 @@ platformpth = $(subst /,$(PATHSEP),$1)
 
 # Set global macros
 buildDir := bin
-compileFlags := -std=c++17 -I ./include
+compileFlags := -Wall -std=c++17 -I ./include
 linkFlags = -L lib/$(platform) -l raylib
 
 # Set src target macros

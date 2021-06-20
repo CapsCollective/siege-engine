@@ -20,14 +20,14 @@ public:
     // Constructors
 
     EditorController() :
-    messageDisplay(ServiceLocator::GetMessageDisplay()),
-    selectedEntity(nullptr),
-    camera(ServiceLocator::GetCamera()),
     isGridActive(true),
+    currentMode(POSITION),
     movePrecision(2),
     rotatePrecision(3),
-    currentMode(POSITION),
-    selectedIdx(0)
+    selectedIdx(0),
+    camera(ServiceLocator::GetCamera()),
+    selectedEntity(nullptr),
+    messageDisplay(ServiceLocator::GetMessageDisplay())
     {
         Entity::SetName("EditorController");
     };

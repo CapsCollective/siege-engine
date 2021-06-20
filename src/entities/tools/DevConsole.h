@@ -11,10 +11,10 @@ public:
     // Constructors
 
     explicit DevConsole(bool isEditorMode) :
-    messageDisplay(ServiceLocator::GetMessageDisplay()),
-    profiler(ServiceLocator::GetProfiler()),
     isEditorMode(isEditorMode),
-    isActive(false)
+    isActive(false),
+    messageDisplay(ServiceLocator::GetMessageDisplay()),
+    profiler(ServiceLocator::GetProfiler())
     {
         Entity::SetName("DevConsole");
     };
