@@ -12,25 +12,36 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+
+    # Run setup
+
     - name: make setup
       run: make setup
-      
+
+    # Build and clean
+
     - name: make bin/app
       run: make bin/app
+
     - name: make clean
       run: make clean
 
+    # Rebuild with g++
+
     - name: make bin/app CXX=g++
       run: make bin/app CXX=g++
-    - name: make clean
-      run: make clean
 
   test:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+
+      # Run setup
+
       - name: make setup
         run: make setup
+
+      # Run tests
 
       - name: make test
         run: make test
