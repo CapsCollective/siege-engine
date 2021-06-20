@@ -14,6 +14,14 @@ srcBuildDir := $(buildDir)/$(srcDir)
 sources := $(call rwildcard,$(srcDir)/,*.cpp)
 objects := $(patsubst $(srcDir)/%, $(srcBuildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
+
+# Set test target macros
+testTarget := $(buildDir)/test
+testDir := tests
+testBuildDir := $(buildDir)/$(testDir)
+testSources := $(call rwildcard,$(testDir),*.cpp)
+testObjects := $(patsubst $(testDir)/%, $(testBuildDir)/%, $(patsubst %.cpp, %.o, $(testSources)))
+
 # Check for Windows
 ifeq ($(OS), Windows_NT)
 	# Set Windows macros
@@ -52,7 +60,7 @@ else
 endif
 
 # Lists phony targets for Makefile
-.PHONY: all setup submodules execute clean
+.PHONY: all setup submodules execute test executeTests cleanTests clean
 
 # Default target, compiles, executes and cleans
 all: $(target) execute clean
@@ -92,6 +100,26 @@ $(srcBuildDir)/%.o: src/%.cpp Makefile
 # Run the executable
 execute:
 	$(target) $(ARGS)
+
+# Run all unit tests
+test: $(target) $(testTarget) executeTests cleanTests
+
+# Link the tests and create the executable
+$(testTarget): $(testObjects)
+	$(CXX) $(testObjects) $(filter-out $(srcBuildDir)/main.o, $(objects)) -o $(testTarget) $(linkFlags)
+
+# Compile test objects to the build directory
+$(testBuildDir)/%.o: $(testDir)/%.cpp
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@
+
+# Run the test executable
+executeTests:
+	$(testTarget)
+
+# Clean up all relevant test files
+cleanTests:
+	$(RM) $(call platformpth, $(testBuildDir)/*)
 
 # Clean up all relevant files
 clean:
