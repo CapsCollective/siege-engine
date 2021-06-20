@@ -33,3 +33,15 @@ jobs:
     - name: make clean
       run: mingw32-make clean
       shell: cmd
+
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: make setup
+        run: mingw32-make setup
+        shell: cmd
+
+      - name: make test
+        run: mingw32-make test
+        shell: cmd

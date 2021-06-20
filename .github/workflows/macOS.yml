@@ -24,3 +24,13 @@ jobs:
       run: make bin/app CXX=g++
     - name: make clean
       run: make clean
+
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: make setup
+        run: make setup
+
+      - name: make test
+        run: make test
