@@ -81,6 +81,12 @@ private:
      */
     static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
 
+    /**
+     * Adds an entity to the entity storage
+     * @param entity - The entity pointer being added
+     */
+    static void AddEntity(Entity* entity);
+
     // Private fields
 
     /**
@@ -116,12 +122,6 @@ private:
      * Vector containing all entities that were queued for adding
      */
     static std::vector<Entity*> registeredEntities;
-
-    /**
-     * Adds an entity to the entity storage
-     * @param entity - The entity pointer being added
-     */
-    static void AddEntity(Entity* entity);
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

@@ -59,7 +59,6 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
         // Get standard entity fields
         raylib::Vector3 position = StringHelpers::StringToVector(args[ENTITY_POS]);
         float rotation = std::stof(args[ENTITY_ROT]);
-        int zIndex = std::stoi(args[ENTITY_Z_IDX]);
 
         // Register entities by entity name
         if (args[ENTITY_NAME] == "Geometry")

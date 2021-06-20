@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
     // Initialise and register the message display
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
+    // TODO add batch registration
     EntityStorage::Register(display);
 
     // Initialise and register the profiler
