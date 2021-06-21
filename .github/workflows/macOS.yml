@@ -30,18 +30,3 @@ jobs:
 
     - name: make bin/app CXX=g++
       run: make bin/app CXX=g++
-
-  test:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      # Run setup
-
-      - name: make setup
-        run: make setup
-
-      # Run tests
-
-      - name: make test
-        run: make test
