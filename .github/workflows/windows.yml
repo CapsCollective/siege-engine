@@ -34,20 +34,3 @@ jobs:
     - name: make bin/app CXX=g++
       run: mingw32-make bin/app CXX=g++
       shell: cmd
-
-  test:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      # Run setup
-
-      - name: make setup
-        run: mingw32-make setup
-        shell: cmd
-
-      # Run tests
-
-      - name: make test
-        run: mingw32-make test
-        shell: cmd
