@@ -7,7 +7,7 @@ class MessageDisplay : public Tool
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     MessageDisplay() :
     displayTime(0.f)

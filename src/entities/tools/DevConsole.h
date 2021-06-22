@@ -8,7 +8,7 @@ class DevConsole : public Tool
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     explicit DevConsole(bool isEditorMode) :
     isEditorMode(isEditorMode),

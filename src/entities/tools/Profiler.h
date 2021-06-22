@@ -7,7 +7,7 @@ class Profiler : public Tool
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     explicit Profiler(bool isActive) :
     isActive(isActive)
