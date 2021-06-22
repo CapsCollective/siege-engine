@@ -14,7 +14,9 @@ public:
      * Queues an entity for initialisation in the next frame
      * @param entity - the entity to register in storage
      */
-    static void Register(class Entity* entity);
+    static void Register(class Entity* entity, bool isTool = false);
+
+    static void RegisterBatched(const std::vector<Entity*> &newEntities, bool isTool = false);
 
     /**
      * Removes an entity from storage
@@ -85,7 +87,7 @@ private:
      * Adds an entity to the entity storage
      * @param entity - The entity pointer being added
      */
-    static void AddEntity(Entity* entity);
+    static void AddEntity(Entity* entity, bool isTool);
 
     // Private fields
 
@@ -121,7 +123,7 @@ private:
     /**
      * Vector containing all entities that were queued for adding
      */
-    static std::vector<Entity*> registeredEntities;
+    static std::vector<std::pair<Entity*, bool>> registeredEntities;
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H
