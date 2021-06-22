@@ -31,7 +31,7 @@ ifeq ($(OS), Windows_NT)
 	libGenDir := src
 	THEN := &&
 	PATHSEP := \$(BLANK)
-	MKDIR := -mkdir -p
+	MKDIR := -mkdir
 	RM := -del /q
 	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 else
