@@ -9,7 +9,7 @@ class FreeCam : public Tool
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     FreeCam() :
     moveSpeed(10.f),

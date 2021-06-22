@@ -12,7 +12,7 @@ class Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     /**
      * Zero-param constructor for Entity, initialises both
@@ -37,9 +37,6 @@ public:
             index(GenerationalIndex()),
             zIndex(zIndex)
     {};
-
-    // Destructor
-    // TODO make constructors public and add default destructors
 
     virtual ~Entity() = default;
 
