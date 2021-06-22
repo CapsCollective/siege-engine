@@ -10,13 +10,13 @@ std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 // TODO switch back to using a boolean to indicate tool-ness
 // Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
-std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
+std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>(); 
 
 // Static member initialisations of vectors for transformations
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
-std::vector<Entity*> EntityStorage::registeredEntities = std::vector<Entity*>();
+std::vector<std::pair<Entity*, bool>> EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
 
-void EntityStorage::Register(Entity* entity)
+void EntityStorage::Register(Entity* entity, bool isTool)
 {
     // If the pointer is null, stop the function
     if (!entity) return;
@@ -25,11 +25,30 @@ void EntityStorage::Register(Entity* entity)
     GenerationalIndex index = allocator.AllocateIndex();
     entity->SetIndex(index);
 
+
     // Queue the entity for initialisation
-    registeredEntities.emplace_back(entity);
+    registeredEntities.emplace_back(std::make_pair(entity, isTool));
 }
 
-void EntityStorage::AddEntity(Entity* entity)
+void EntityStorage::RegisterBatched(const std::vector<Entity*> &newEntities, bool isTool) 
+{
+    if (newEntities.empty()) return;
+
+    size_t newEntityCount = newEntities.size();
+
+    std::vector<Entity*> storage = isTool ? packedTools : packedEntities;
+
+    entities.reserve(entities.size() + newEntityCount);
+    storage.reserve(storage.size() + newEntityCount);
+
+    for (auto entity : newEntities) {
+        GenerationalIndex index = allocator.AllocateIndex();
+        entity->SetIndex(index);
+        registeredEntities.emplace_back(std::make_pair(entity, isTool));
+    }
+}
+
+void EntityStorage::AddEntity(Entity* entity, bool isTool)
 {
 
     // If the entity's given index already exists
@@ -45,7 +64,7 @@ void EntityStorage::AddEntity(Entity* entity)
     }
 
     // Add the entity to the end of its appropriate packed entities
-    if (dynamic_cast<Tool*>(entity)) packedTools.push_back(entity);
+    if (isTool) packedTools.push_back(entity);
     else packedEntities.push_back(entity);
 }
 
@@ -55,7 +74,7 @@ void EntityStorage::RegisterEntities()
     for (auto& entity : registeredEntities)
     {
         // Add the entity to storage
-        AddEntity(entity);
+        AddEntity(entity.first, entity.second);
     }
     // Remove all entities from the queue
     registeredEntities.clear();

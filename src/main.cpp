@@ -36,19 +36,21 @@ int main(int argc, char* argv[])
     );
     ServiceLocator::Provide(&camera);
 
-    // Initialise and register the message display
+    // Initialise the message display
     auto display = new MessageDisplay();
     ServiceLocator::Provide(display);
-    // TODO add batch registration
-    EntityStorage::Register(display);
 
-    // Initialise and register the profiler
+    // Initialise the profiler
     auto profiler = new Profiler(isEditorMode);
     ServiceLocator::Provide(profiler);
-    EntityStorage::Register(profiler);
 
-    // Initialise and register the dev console
-    EntityStorage::Register(new DevConsole(isEditorMode));
+    // Batch register all initialised tools (including the dev console)
+    // TODO: Work out the best formatting for these kinds of methods
+    EntityStorage::RegisterBatched({
+        display,
+        profiler,
+        new DevConsole(isEditorMode)
+    }, true);
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -56,8 +58,12 @@ int main(int argc, char* argv[])
         // Start the editor controller
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
-        EntityStorage::Register(editor);
-        EntityStorage::Register(new FreeCam());
+
+        // Batch register the editor and freeCam
+        EntityStorage::RegisterBatched({
+            editor,
+            new FreeCam()
+        }, true);
     }
     else
     {
