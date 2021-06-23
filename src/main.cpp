@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     ServiceLocator::Provide(profiler);
 
     // Batch register all initialised tools (including the dev console)
-    EntityStorage::Register({
+    EntityStorage::Add({
         display,
         profiler,
         new DevConsole(isEditorMode)
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
         ServiceLocator::Provide(editor);
 
         // Batch register the editor and freeCam
-        EntityStorage::Register({
+        EntityStorage::Add({
             editor,
             new FreeCam()
         }, true);
