@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include "../../systems/entity/Tool.h"
+#include "../../systems/entity/Entity.h"
 #include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
 #include <Camera3D.hpp>
@@ -13,7 +13,7 @@ enum EditorMode {
     ROTATION,
 };
 
-class EditorController : public Tool
+class EditorController : public Entity
 {
 public:
 

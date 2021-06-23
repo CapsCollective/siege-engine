@@ -1,10 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
-#include "../../systems/entity/Tool.h"
 #include "../../utils/ServiceLocator.h"
+#include "../../systems/entity/Entity.h"
 
-class DevConsole : public Tool
+class DevConsole : public Entity
 {
 public:
 
