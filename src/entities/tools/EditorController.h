@@ -17,7 +17,7 @@ class EditorController : public Tool
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     EditorController() :
     isGridActive(true),

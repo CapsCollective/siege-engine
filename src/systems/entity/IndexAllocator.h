@@ -24,7 +24,7 @@ class IndexAllocator
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     IndexAllocator() = default;
 

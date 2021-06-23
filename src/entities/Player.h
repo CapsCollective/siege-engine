@@ -9,7 +9,7 @@ class Player : public Entity, public Modelable
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     Player() :
     Player(raylib::Vector3::Zero(), 0.f)

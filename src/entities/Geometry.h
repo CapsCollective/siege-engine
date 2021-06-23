@@ -11,7 +11,7 @@ class Geometry : public Entity, public Modelable
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     Geometry() :
     Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
