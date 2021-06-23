@@ -17,7 +17,7 @@ class SplashScreen : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     SplashScreen() :
     logoPositionX(GetScreenWidth()/2 - 128),

@@ -8,7 +8,7 @@ class ModelData
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     ModelData(std::string  modelPath, std::string  texturePath) :
     modelPath(std::move(modelPath)),
