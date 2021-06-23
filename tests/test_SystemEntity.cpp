@@ -4,7 +4,7 @@
 
 TEST_CASE( "entities can be added to storage", "[EntityStorage]" ) {
     Entity e;
-    EntityStorage::Register(&e);
+    EntityStorage::Add(&e);
 
     REQUIRE(EntityStorage::GetEntities().empty());
 
