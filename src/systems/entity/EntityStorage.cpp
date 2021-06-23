@@ -1,5 +1,5 @@
 #include "EntityStorage.h"
-#include "Tool.h"
+#include "./Entity.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -15,7 +15,7 @@ std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::freedEntities = std::vector<Entity*>();
 std::vector<std::pair<Entity*, bool>> EntityStorage::registeredEntities = std::vector<std::pair<Entity*, bool>>();
 
-void EntityStorage::Register(Entity* entity, bool isTool)
+void EntityStorage::Add(Entity* entity, bool isTool)
 {
     // If the pointer is null, stop the function
     if (!entity) return;
@@ -27,7 +27,7 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     registeredEntities.emplace_back(std::make_pair(entity, isTool));
 }
 
-void EntityStorage::Register(const std::vector<Entity*>& newEntities, bool isTool) 
+void EntityStorage::Add(const std::vector<Entity*>& newEntities, bool isTool) 
 {
     if (newEntities.empty()) return;
 
@@ -45,38 +45,20 @@ void EntityStorage::Register(const std::vector<Entity*>& newEntities, bool isToo
     }
 }
 
-void EntityStorage::AddEntity(Entity* entity)
-{
-    // Add entity straight to the entity storage
-    AddToEntities(entity);
-
-    // Add the entity to packed entities
-    packedEntities.push_back(entity);
-}
-
-void EntityStorage::AddTool(Entity* entity)
-{
-     // Add tool straight to the entity storage
-    AddToEntities(entity);
-
-    // Add the entity to the end of the packed tools vector
-    packedTools.push_back(entity);
-}
-
-void EntityStorage::AddToEntities(Entity* entity) {
-    // If the entity's given index already exists then override the existing entry
-    if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
-    else entities.push_back(entity);
-}
-
 void EntityStorage::RegisterEntities()
 {
     // Iterate over queued entities and initialise them
-    for (auto& entity : registeredEntities)
+    for (auto& registrationData : registeredEntities)
     {
+        auto& entity = registrationData.first;
+        
+        // If the entity's given index already exists then override the existing entry
+        if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
+        else entities.push_back(entity);
+
         // Add the entity to appropriate storage
-        if (entity.second) AddTool(entity.first); 
-        else AddEntity(entity.first);
+        if (registrationData.second) packedTools.push_back(entity);
+        else packedEntities.push_back(entity);
     }
     // Remove all entities from the queue
     registeredEntities.clear();

@@ -50,7 +50,7 @@ void SceneManager::LoadNextScene()
         // Deserialise and register all entities to current scene
         std::vector<Entity*> entities;
         SceneSerialiser::Deserialise(sceneLines, entities);
-        for (auto entity : entities) EntityStorage::Register(entity);
+        for (auto entity : entities) EntityStorage::Add(entity);
 
         // Set the current scene details
         currentScene = nextScene;

@@ -11,12 +11,18 @@ public:
     // Public functions
 
     /**
-     * Queues an entity for initialisation in the next frame
-     * @param entity - the entity to register in storage
+     * Queues an entity to be added to the scene at the end of the frame.
+     * @param entity - the entity to add to the storage queue storage
+     * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
      */
-    static void Register(class Entity* entity, bool isTool = false);
+    static void Add(class Entity* entity, bool isTool = false);
 
-    static void Register(const std::vector<Entity*> &newEntities, bool isTool = false);
+    /**
+     * Queues a batch of entities to be added in the scene at the end of the frame.
+     * @param newEntities - A vector of entities to be added to storage
+     * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
+     */
+    static void Add(const std::vector<Entity*> &newEntities, bool isTool = false);
 
     /**
      * Removes an entity from storage
@@ -82,24 +88,6 @@ private:
      *         is found
      */
     static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
-
-    /**
-     * Adds an entity to the entity storage and packed entity storage
-     * @param entity - The entity pointer being added
-     */
-    static void AddEntity(Entity* entity);
-
-    /**
-     * Adds a tool to both the entity storage and packed tool storage
-     * @param entity - The entity pointer being added
-     */
-    static void AddTool(Entity* entity);
-
-    /**
-     * Adds an entity to storage
-     * @param entity - The entity pointer being added
-     */
-    static void AddToEntities(Entity* entity);
 
     // Private fields
 

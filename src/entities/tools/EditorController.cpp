@@ -47,7 +47,7 @@ void EditorController::OnUpdate()
                 auto newEntity = selectedEntity->Clone();
                 if (newEntity)
                 {
-                    EntityStorage::Register(newEntity);
+                    EntityStorage::Add(newEntity);
                     messageDisplay->DisplayMessage("Entity duplicated");
                 }
                 else messageDisplay->DisplayMessage("Entity not duplicatable");
@@ -186,12 +186,12 @@ bool EditorController::TryAddEntity(std::string& entityName)
     // Check for matching cases to run
     if (entityName == "geometry")
     {
-        EntityStorage::Register(new Geometry());
+        EntityStorage::Add(new Geometry());
         return true;
     }
     else if (entityName == "player")
     {
-        EntityStorage::Register(new Player());
+        EntityStorage::Add(new Player());
         return true;
     }
     return false;
