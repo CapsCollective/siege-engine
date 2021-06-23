@@ -16,7 +16,7 @@ public:
      */
     static void Register(class Entity* entity, bool isTool = false);
 
-    static void RegisterBatched(const std::vector<Entity*> &newEntities, bool isTool = false);
+    static void Register(const std::vector<Entity*> &newEntities, bool isTool = false);
 
     /**
      * Removes an entity from storage
@@ -84,10 +84,22 @@ private:
     static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
 
     /**
-     * Adds an entity to the entity storage
+     * Adds an entity to the entity storage and packed entity storage
      * @param entity - The entity pointer being added
      */
-    static void AddEntity(Entity* entity, bool isTool);
+    static void AddEntity(Entity* entity);
+
+    /**
+     * Adds a tool to both the entity storage and packed tool storage
+     * @param entity - The entity pointer being added
+     */
+    static void AddTool(Entity* entity);
+
+    /**
+     * Adds an entity to storage
+     * @param entity - The entity pointer being added
+     */
+    static void AddToEntities(Entity* entity);
 
     // Private fields
 
