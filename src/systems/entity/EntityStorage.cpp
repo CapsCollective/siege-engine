@@ -7,7 +7,6 @@
 IndexAllocator EntityStorage::allocator = IndexAllocator();
 std::vector<Entity*> EntityStorage::entities = std::vector<Entity*>();
 
-// TODO switch back to using a boolean to indicate tool-ness
 // Static member initialisations of vectors for holding filtered entities
 std::vector<Entity*> EntityStorage::packedEntities = std::vector<Entity*>();
 std::vector<Entity*> EntityStorage::packedTools = std::vector<Entity*>(); 
@@ -22,50 +21,53 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     if (!entity) return;
 
     // Generate an index and add it to the entity
-    GenerationalIndex index = allocator.AllocateIndex();
-    entity->SetIndex(index);
+    entity->SetIndex(allocator.AllocateIndex());
 
 
     // Queue the entity for initialisation
     registeredEntities.emplace_back(std::make_pair(entity, isTool));
 }
 
-void EntityStorage::RegisterBatched(const std::vector<Entity*> &newEntities, bool isTool) 
+void EntityStorage::Register(const std::vector<Entity*>& newEntities, bool isTool) 
 {
     if (newEntities.empty()) return;
 
     size_t newEntityCount = newEntities.size();
 
-    std::vector<Entity*> storage = isTool ? packedTools : packedEntities;
+    std::vector<Entity*>& storage = isTool ? packedTools : packedEntities;
 
+    // Reserve vector space to avoid unnecessary resizing
     entities.reserve(entities.size() + newEntityCount);
     storage.reserve(storage.size() + newEntityCount);
 
-    for (auto entity : newEntities) {
-        GenerationalIndex index = allocator.AllocateIndex();
-        entity->SetIndex(index);
+    for (auto& entity : newEntities) {
+        entity->SetIndex(allocator.AllocateIndex());
         registeredEntities.emplace_back(std::make_pair(entity, isTool));
     }
 }
 
-void EntityStorage::AddEntity(Entity* entity, bool isTool)
+void EntityStorage::AddEntity(Entity* entity)
 {
+    // Add entity straight to the entity storage
+    AddToEntities(entity);
 
-    // If the entity's given index already exists
-    if (entity->GetIndex().index < entities.size())
-    {
-        // Override the existing entry
-        entities[entity->GetIndex().index] = entity;
-    }
-    else
-    {
-        // Add the new entity to the end of the list
-        entities.push_back(entity);
-    }
+    // Add the entity to packed entities
+    packedEntities.push_back(entity);
+}
 
-    // Add the entity to the end of its appropriate packed entities
-    if (isTool) packedTools.push_back(entity);
-    else packedEntities.push_back(entity);
+void EntityStorage::AddTool(Entity* entity)
+{
+     // Add tool straight to the entity storage
+    AddToEntities(entity);
+
+    // Add the entity to the end of the packed tools vector
+    packedTools.push_back(entity);
+}
+
+void EntityStorage::AddToEntities(Entity* entity) {
+    // If the entity's given index already exists then override the existing entry
+    if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
+    else entities.push_back(entity);
 }
 
 void EntityStorage::RegisterEntities()
@@ -73,8 +75,9 @@ void EntityStorage::RegisterEntities()
     // Iterate over queued entities and initialise them
     for (auto& entity : registeredEntities)
     {
-        // Add the entity to storage
-        AddEntity(entity.first, entity.second);
+        // Add the entity to appropriate storage
+        if (entity.second) AddTool(entity.first); 
+        else AddEntity(entity.first);
     }
     // Remove all entities from the queue
     registeredEntities.clear();
