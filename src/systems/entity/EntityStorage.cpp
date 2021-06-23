@@ -23,7 +23,6 @@ void EntityStorage::Register(Entity* entity, bool isTool)
     // Generate an index and add it to the entity
     entity->SetIndex(allocator.AllocateIndex());
 
-
     // Queue the entity for initialisation
     registeredEntities.emplace_back(std::make_pair(entity, isTool));
 }
