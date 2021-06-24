@@ -65,6 +65,7 @@ void Entity::SetRotation(float newRotation)
 
 void Entity::SetZIndex(int idx)
 {
-    // TODO add z-sorting to entity storage
+    int oldIndex = zIndex;
     zIndex = idx;
+    EntityStorage::ReSortByZIndex(this, oldIndex);
 }
