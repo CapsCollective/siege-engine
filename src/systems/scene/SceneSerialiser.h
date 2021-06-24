@@ -7,6 +7,9 @@
 #include <map>
 #include <Vector3.hpp>
 
+// Define constants
+static constexpr const char SEP = '|';
+static constexpr const char NAME_SEP = ':';
 
 // Define types
 typedef std::string(Serialiser)(class Entity* entity);
@@ -72,5 +75,11 @@ private:
     static std::map<std::string, SerialisationInterface> serialisables;
 };
 
+// Free functions
+
+static inline const std::string DefineField(const std::string& name, const std::string& content)
+{
+    return name + NAME_SEP + content + SEP;
+}
 
 #endif //A_DARK_DISCOMFORT_SCENESERIALISER_H

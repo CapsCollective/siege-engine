@@ -25,6 +25,7 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
 
+        // TODO Try find any specific instructions for the given entity
         auto it = serialisables.find(entity->GetName());
         if (it != serialisables.end())
         {

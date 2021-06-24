@@ -8,10 +8,8 @@
 #include <fstream>
 #include <vector>
 
-// Define macros
-#define OUT
-#define UNKNOWN_FILENAME "untitled"
-#define SCENE_PATH(sceneName) "assets/scenes/" + sceneName + ".scene"
+// Define constants
+static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
 // Define static members
 std::string SceneManager::currentScene;
@@ -37,7 +35,7 @@ void SceneManager::LoadNextScene()
     MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
 
     // Try open the next scene file for streaming
-    std::ifstream file(SCENE_PATH(nextScene));
+    std::ifstream file(MakeScenePath(nextScene));
 
     // Exit if next scene is invalid
     if (file.is_open())
@@ -75,7 +73,7 @@ void SceneManager::SaveScene(const std::string& sceneName)
     currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
 
     // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(SCENE_PATH(currentScene));
+    std::ofstream fileStream(MakeScenePath(currentScene));
     fileStream << SceneSerialiser::Serialise(EntityStorage::GetEntities());
     fileStream.close();
 }
