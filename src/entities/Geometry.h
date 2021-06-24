@@ -11,6 +11,10 @@ class Geometry : public Entity, public Modelable
 {
 public:
 
+    // Public constants
+
+    static constexpr const char NAME[] = "Geometry";
+
     // 'Structors
 
     Geometry() :
@@ -28,7 +32,7 @@ public:
     dimensions(dimensions),
     modelData(data)
     {
-        Entity::SetName("Geometry");
+        Entity::SetName(NAME);
 
         // Register the entity as collidable
         CollisionSystem::Add(this);
@@ -50,6 +54,12 @@ public:
 
     const raylib::Vector3& GetDimensions();
 
+    // Public static methods
+
+    static std::string Serialise(Entity* entity);
+
+    static Entity* Deserialise(const struct EntityData& data, const std::vector<std::string>& args);
+
 protected:
 
     // Protected overrides
@@ -63,6 +73,7 @@ private:
     raylib::Vector3 dimensions;
 
     ModelData modelData;
+
 };
 
 #endif //A_DARK_DISCOMFORT_GEOMETRY_H

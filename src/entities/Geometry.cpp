@@ -1,4 +1,6 @@
 #include "Geometry.h"
+#include "../utils/StringHelpers.h"
+#include "../systems/scene/SceneSerialiser.h"
 
 void Geometry::OnDraw()
 {
@@ -60,4 +62,23 @@ const ModelData& Geometry::GetModelData()
 void Geometry::SetModelData(const ModelData &data)
 {
     modelData = data;
+}
+
+std::string Geometry::Serialise(Entity* entity)
+{
+    std::string fileData;
+    auto geometry = dynamic_cast<Geometry*>(entity);
+    fileData += DefineField("DIMENSIONS", StringHelpers::VectorToString(geometry->GetDimensions()));
+    fileData += DefineField("MODEL_PATH", geometry->GetModelData().GetModelPath());
+    fileData += DefineField("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
+    return fileData;
+}
+
+Entity* Geometry::Deserialise(const EntityData& data, const std::vector<std::string>& args)
+{
+    raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
+    std::string modelPath = args[CUSTOM_FIELD_2];
+    std::string texturePath = args[CUSTOM_FIELD_3];
+
+    return new Geometry(data.position, data.rotation, dimensions, ModelData(modelPath, texturePath));
 }

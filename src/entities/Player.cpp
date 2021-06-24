@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../systems/collision/CollisionSystem.h"
+#include "../systems/scene/SceneSerialiser.h"
 
 void Player::OnUpdate()
 {
@@ -72,4 +73,18 @@ void Player::SetModelData(const ModelData& data)
 Entity* Player::Clone()
 {
     return new Player(position, rotation);
+}
+
+std::string Player::Serialise(Entity* entity)
+{
+    std::string fileData;
+    auto player = dynamic_cast<Player*>(entity);
+    fileData += DefineField("MODEL_PATH", player->GetModelData().GetModelPath());
+    fileData += DefineField("TEXTURE_PATH", player->GetModelData().GetTexturePath());
+    return fileData;
+}
+
+Entity* Player::Deserialise(const EntityData& data, const std::vector<std::string>& args)
+{
+    return new Player(data.position, data.rotation);
 }

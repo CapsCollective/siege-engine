@@ -112,3 +112,8 @@ void SplashScreen::OnDraw2D()
             break;
     }
 }
+
+Entity* SplashScreen::Deserialise(const EntityData& data, const std::vector<std::string>& args)
+{
+    return new SplashScreen();
+}

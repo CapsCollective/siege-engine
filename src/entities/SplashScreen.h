@@ -17,6 +17,10 @@ class SplashScreen : public Entity
 {
 public:
 
+    // Public constants
+
+    static constexpr const char NAME[] = "SplashScreen";
+
     // 'Structors
 
     SplashScreen() :
@@ -32,8 +36,12 @@ public:
     alpha(1.f),
     logoTexture()
     {
-        Entity::SetName("SplashScreen");
+        Entity::SetName(NAME);
     };
+
+    // Public static methods
+
+    static Entity* Deserialise(const struct EntityData& data, const std::vector<std::string>& args);
 
 protected:
 
@@ -65,6 +73,5 @@ private:
     Texture2D logoTexture;
 
 };
-
 
 #endif //A_DARK_DISCOMFORT_SPLASHSCREEN_H

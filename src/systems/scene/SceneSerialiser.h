@@ -7,6 +7,12 @@
 #include <map>
 #include <Vector3.hpp>
 
+
+// Define types
+typedef std::string(Serialiser)(class Entity* entity);
+typedef class Entity*(Deserialiser)(const struct EntityData& data, const std::vector<std::string>& args);
+typedef std::pair<Serialiser*, Deserialiser*> SerialisationInterface;
+
 enum SerialisationFields {
     ENTITY_NAME = 0,
     ENTITY_POS = 1,
@@ -17,11 +23,31 @@ enum SerialisationFields {
     CUSTOM_FIELD_3 = 6,
 };
 
+struct EntityData {
+
+    // 'Structors
+
+    EntityData(raylib::Vector3 position, float rotation, int zIndex) :
+            position(position),
+            rotation(rotation),
+            zIndex(zIndex) {};
+
+    // Public members
+
+    raylib::Vector3 position;
+
+    float rotation;
+
+    int zIndex;
+};
+
 class SceneSerialiser
 {
 public:
 
     // Public methods
+
+    static void RegisterSerialisable(const std::string& name, Serialiser* serialise, Deserialiser* deserialise);
 
     /**
      * Serialises a list of entities into system the scene
@@ -40,6 +66,10 @@ public:
      *                   pointers to populate
      */
     static void Deserialise(const std::vector<std::string>& sceneLines, OUT std::vector<Entity*>& entities);
+
+private:
+
+    static std::map<std::string, SerialisationInterface> serialisables;
 };
 
 
