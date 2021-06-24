@@ -68,8 +68,18 @@ public:
      */
     static void RegisterEntities();
 
-    static void ReSortByZIndex(Entity* e, int oldIdx);
+    /**
+     * Re-sorts the entity packed index by Z-index.
+     * Implements a partial sort, so only relevant sections of the
+     * packed storage will be sorted.
+     * @param entity - the entity being compared
+     * @param oldIdx - the old Z index (for comparison)
+     */
+    static void ReSortByZIndex(Entity* entity, int oldZIdx);
 
+    /**
+     * Sorts the entity packed storage by Z index.
+     */
     static void SortByZIndex();
 
     /**
