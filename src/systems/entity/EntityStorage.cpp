@@ -47,6 +47,7 @@ void EntityStorage::Add(const std::vector<Entity*>& newEntities, bool isTool)
 
 void EntityStorage::RegisterEntities()
 {
+    if (registeredEntities.empty()) return;
     // Iterate over queued entities and initialise them
     for (auto& registrationData : registeredEntities)
     {
@@ -61,6 +62,7 @@ void EntityStorage::RegisterEntities()
         else packedEntities.push_back(entity);
     }
 
+    // Once all entities are added, sort the packed index
     SortByZIndex();
 
     // Remove all entities from the queue
@@ -74,14 +76,20 @@ void EntityStorage::SortByZIndex() {
     });
 }
 
-// TEST - need to test this with a console
-void EntityStorage::ReSortByZIndex(Entity* e, int oldIdx) 
+void EntityStorage::ReSortByZIndex(Entity* entity, int oldZIdx)
 {
-    size_t packedIdx = GetEntityIndex(e, packedEntities);
+    // Get the index of the entity in packed storage
+    uint32_t packedIdx = GetEntityIndex(entity, packedEntities);
 
-    if (packedIdx != -1) {
-        auto begin = e->GetZIndex() > oldIdx ? packedEntities.begin() + packedIdx : packedEntities.begin();
-        auto end = begin == packedEntities.begin() ? packedEntities.begin() + packedIdx : packedEntities.end();
+    if (packedIdx != -1)
+    {
+        // Check if the new z index is greater than the old z index. If it is, start sorting
+        // from the entity's index.
+        bool isGreater = entity->GetZIndex() > oldZIdx;
+        auto begin = isGreater ? packedEntities.begin() + packedIdx : packedEntities.begin();
+        auto end = isGreater ? packedEntities.end() : packedEntities.begin() + packedIdx;
+
+        // Sort EntityStorage from either beginning -> entity index, or entity index -> end
         std::partial_sort(begin, end, packedEntities.end(), [](Entity* a, Entity* b){
             return a->GetZIndex() < b->GetZIndex();
         });
@@ -97,7 +105,7 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    int32_t index = GetEntityIndex(entity, packedEntities);
+    uint32_t index = GetEntityIndex(entity, packedEntities);
 
     // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);

@@ -65,7 +65,11 @@ void Entity::SetRotation(float newRotation)
 
 void Entity::SetZIndex(int idx)
 {
+    // Only update z index if there's an actual change
+    if (idx == zIndex) return;
+
     int oldIndex = zIndex;
     zIndex = idx;
+
     EntityStorage::ReSortByZIndex(this, oldIndex);
 }
