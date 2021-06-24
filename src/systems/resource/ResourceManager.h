@@ -6,9 +6,9 @@
 #include <variant>
 #include <vector>
 
-// Define macros
-#define RESOURCE_MAP std::map<std::string, std::variant<Model, Texture2D>>
-#define RESOURCE_LIST std::vector<std::variant<Model, Texture2D>*>
+// Define types
+typedef std::map<std::string, std::variant<Model, Texture2D>> ResourceMap;
+typedef std::vector<std::variant<Model, Texture2D>*> ResourceList;
 
 class ResourceManager
 {
@@ -91,12 +91,12 @@ private:
     /**
      * All resources in the system
      */
-    static RESOURCE_MAP resources;
+    static ResourceMap resources;
 
     /**
      * All resources to free at the end of the frame
      */
-    static RESOURCE_LIST freedResources;
+    static ResourceList freedResources;
 };
 
 #endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H
