@@ -9,6 +9,10 @@ class Player : public Entity, public Modelable
 {
 public:
 
+    // Public constants
+
+    static constexpr const char NAME[] = "Player";
+
     // 'Structors
 
     Player() :
@@ -23,7 +27,7 @@ public:
             "assets/models/cube/cube.obj",
             "assets/models/cube/cube.png"))
     {
-        Entity::SetName("Player");
+        Entity::SetName(NAME);
     };
 
     // Public overrides
@@ -35,6 +39,12 @@ public:
     const ModelData& GetModelData() override;
 
     void SetModelData(const ModelData& modelData) override;
+
+    // Public static methods
+
+    static std::string Serialise(Entity* entity);
+
+    static Entity* Deserialise(const struct EntityData& data, const std::vector<std::string>& args);
 
 protected:
 
@@ -53,6 +63,7 @@ private:
     raylib::Vector3 velocity;
 
     ModelData modelData;
+
 };
 
 #endif //A_DARK_DISCOMFORT_PLAYER_H
