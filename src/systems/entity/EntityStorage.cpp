@@ -60,8 +60,32 @@ void EntityStorage::RegisterEntities()
         if (registrationData.second) packedTools.push_back(entity);
         else packedEntities.push_back(entity);
     }
+
+    SortByZIndex();
+
     // Remove all entities from the queue
     registeredEntities.clear();
+}
+
+void EntityStorage::SortByZIndex() {
+    // Sort packedEntities by Z index - lowest to highest
+    std::sort(packedEntities.begin(), packedEntities.end(), [](Entity* a, Entity* b){ 
+        return a->GetZIndex() < b->GetZIndex();
+    });
+}
+
+// TEST - need to test this with a console
+void EntityStorage::ReSortByZIndex(Entity* e, int oldIdx) 
+{
+    size_t packedIdx = GetEntityIndex(e, packedEntities);
+
+    if (packedIdx != -1) {
+        auto begin = e->GetZIndex() > oldIdx ? packedEntities.begin() + packedIdx : packedEntities.begin();
+        auto end = begin == packedEntities.begin() ? packedEntities.begin() + packedIdx : packedEntities.end();
+        std::partial_sort(begin, end, packedEntities.end(), [](Entity* a, Entity* b){
+            return a->GetZIndex() < b->GetZIndex();
+        });
+    }
 }
 
 void EntityStorage::Remove(Entity* entity) 

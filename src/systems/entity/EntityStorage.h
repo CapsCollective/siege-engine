@@ -68,6 +68,10 @@ public:
      */
     static void RegisterEntities();
 
+    static void ReSortByZIndex(Entity* e, int oldIdx);
+
+    static void SortByZIndex();
+
     /**
      * Operator overload for index operator
      * @param index - the generational index to be accessed
