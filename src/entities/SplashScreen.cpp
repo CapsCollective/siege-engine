@@ -1,5 +1,6 @@
 #include "SplashScreen.h"
 #include "../systems/scene/SceneManager.h"
+#include "../systems/scene/SceneSerialiser.h"
 
 // Define macros
 #define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }
@@ -113,7 +114,9 @@ void SplashScreen::OnDraw2D()
     }
 }
 
-Entity* SplashScreen::Deserialise(const EntityData& data, const std::vector<std::string>& args)
+static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& arg)
 {
-    return new SplashScreen();
+        return new SplashScreen();
 }
+
+REGISTER_SERIALISATION_INTERFACE(SplashScreen::NAME, nullptr, Deserialise);

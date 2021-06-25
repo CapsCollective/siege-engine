@@ -4,13 +4,12 @@
 #include <iostream>
 #include <algorithm>
 
-// Static member initialisation
-std::map<std::string, SerialisationInterface> SceneSerialiser::serialisables;
+// TODO clean up classes
 
-
-void SceneSerialiser::RegisterSerialisable(const std::string& name, Serialiser* serialise, Deserialiser* deserialise)
+void SceneSerialiser::RegisterSerialisable(
+        const std::string& name, const Serialiser& serialise, const Deserialiser& deserialise)
 {
-    serialisables.emplace(name, std::make_pair(serialise, deserialise));
+    GetSerialisables().emplace(name, std::make_pair(serialise, deserialise));
 }
 
 std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
@@ -25,7 +24,7 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
 
-        // TODO Try find any specific instructions for the given entity
+        auto& serialisables = GetSerialisables();
         auto it = serialisables.find(entity->GetName());
         if (it != serialisables.end())
         {
@@ -56,6 +55,7 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
                 std::stof(args[ENTITY_ROT]),
                 std::stoi(args[ENTITY_Z_IDX]));
 
+        auto& serialisables = GetSerialisables();
         auto it = serialisables.find(args[ENTITY_NAME]);
         if (it != serialisables.end())
         {

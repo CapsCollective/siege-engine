@@ -75,7 +75,7 @@ Entity* Player::Clone()
     return new Player(position, rotation);
 }
 
-std::string Player::Serialise(Entity* entity)
+static std::string Serialise(Entity* entity)
 {
     std::string fileData;
     auto player = dynamic_cast<Player*>(entity);
@@ -84,7 +84,9 @@ std::string Player::Serialise(Entity* entity)
     return fileData;
 }
 
-Entity* Player::Deserialise(const EntityData& data, const std::vector<std::string>& args)
+static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
 {
     return new Player(data.position, data.rotation);
 }
+
+REGISTER_SERIALISATION_INTERFACE(Player::NAME, Serialise, Deserialise);

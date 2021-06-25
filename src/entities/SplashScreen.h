@@ -39,10 +39,6 @@ public:
         Entity::SetName(NAME);
     };
 
-    // Public static methods
-
-    static Entity* Deserialise(const struct EntityData& data, const std::vector<std::string>& args);
-
 protected:
 
     // Protected overrides

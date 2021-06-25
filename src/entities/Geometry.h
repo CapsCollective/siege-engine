@@ -54,12 +54,6 @@ public:
 
     const raylib::Vector3& GetDimensions();
 
-    // Public static methods
-
-    static std::string Serialise(Entity* entity);
-
-    static Entity* Deserialise(const struct EntityData& data, const std::vector<std::string>& args);
-
 protected:
 
     // Protected overrides
