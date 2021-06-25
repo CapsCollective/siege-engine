@@ -12,9 +12,9 @@ static constexpr const char SEP = '|';
 static constexpr const char NAME_SEP = ':';
 
 // Define types
-typedef std::string(Serialiser)(class Entity* entity);
-typedef class Entity*(Deserialiser)(const struct EntityData& data, const std::vector<std::string>& args);
-typedef std::pair<Serialiser*, Deserialiser*> SerialisationInterface;
+typedef const std::function<std::string(class Entity*)> Serialiser;
+typedef const std::function<class Entity*(const struct EntityData&, const std::vector<std::string>&)> Deserialiser;
+typedef std::pair<Serialiser, Deserialiser> SerialisationInterface;
 
 enum SerialisationFields {
     ENTITY_NAME = 0,
@@ -77,7 +77,7 @@ private:
 
 // Free functions
 
-static inline const std::string DefineField(const std::string& name, const std::string& content)
+inline const std::string DefineField(const std::string& name, const std::string& content)
 {
     return name + NAME_SEP + content + SEP;
 }

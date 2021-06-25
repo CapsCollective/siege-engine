@@ -61,7 +61,7 @@ private:
 
 // Free functions
 
-static inline std::string MakeScenePath(const std::string& sceneName)
+inline std::string MakeScenePath(const std::string& sceneName)
 {
     return "assets/scenes/" + sceneName + ".scene";
 }
