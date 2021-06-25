@@ -29,7 +29,7 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         auto it = serialisables.find(entity->GetName());
         if (it != serialisables.end())
         {
-            Serialiser* serialiser = it->second.first;
+            Serialiser serialiser = it->second.first;
             if (serialiser) fileData += serialiser(entity);
         }
 
@@ -59,7 +59,7 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
         auto it = serialisables.find(args[ENTITY_NAME]);
         if (it != serialisables.end())
         {
-            Deserialiser* deserialiser = it->second.second;
+            Deserialiser deserialiser = it->second.second;
             if (deserialiser) entities.push_back(deserialiser(data, args));
         }
         else std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
