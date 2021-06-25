@@ -1,6 +1,5 @@
 #include "systems/collision/CollisionSystem.h"
 #include "systems/resource/ResourceManager.h"
-#include "systems/scene/SceneSerialiser.h"
 #include "systems/entity/EntityStorage.h"
 #include "systems/scene/SceneManager.h"
 #include "utils/ServiceLocator.h"
@@ -10,10 +9,6 @@
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
-
-#include "entities/SplashScreen.h"
-#include "entities/Geometry.h"
-#include "entities/Player.h"
 
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
@@ -32,11 +27,6 @@ int main(int argc, char* argv[])
 
     // Deactivate the exit key
     SetExitKey(-1);
-
-    // Register serialisable entities
-    SceneSerialiser::RegisterSerialisable(Geometry::NAME, Geometry::Serialise, Geometry::Deserialise);
-    SceneSerialiser::RegisterSerialisable(Player::NAME, Player::Serialise, Player::Deserialise);
-    SceneSerialiser::RegisterSerialisable(SplashScreen::NAME, nullptr, SplashScreen::Deserialise);
 
     // Create main camera
     raylib::Camera3D camera = raylib::Camera3D(

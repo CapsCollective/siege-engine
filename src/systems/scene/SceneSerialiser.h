@@ -7,6 +7,10 @@
 #include <map>
 #include <Vector3.hpp>
 
+// Define macros
+#define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser) \
+    static SerialisationInterfaceRegisterer _si_reg_(name, serialiser, deserialiser)
+
 // Define constants
 static constexpr const char SEP = '|';
 static constexpr const char NAME_SEP = ':';
@@ -50,7 +54,8 @@ public:
 
     // Public methods
 
-    static void RegisterSerialisable(const std::string& name, Serialiser* serialise, Deserialiser* deserialise);
+    static void RegisterSerialisable(
+            const std::string& name, const Serialiser& serialise, const Deserialiser& deserialise);
 
     /**
      * Serialises a list of entities into system the scene
@@ -72,7 +77,20 @@ public:
 
 private:
 
-    static std::map<std::string, SerialisationInterface> serialisables;
+    static std::map<std::string, SerialisationInterface>& GetSerialisables()
+    {
+        static std::map<std::string, SerialisationInterface> serialisables;
+        return serialisables;
+    }
+};
+
+struct SerialisationInterfaceRegisterer
+{
+    SerialisationInterfaceRegisterer(
+            const std::string& name, const Serialiser& serialise, const Deserialiser& deserialise)
+    {
+        SceneSerialiser::RegisterSerialisable(name, serialise, deserialise);
+    }
 };
 
 // Free functions
