@@ -68,8 +68,8 @@ void Entity::SetZIndex(int idx)
     // Only update z index if there's an actual change
     if (idx == zIndex) return;
 
-    int oldIndex = zIndex;
+    int oldZIndex = zIndex;
     zIndex = idx;
 
-    EntityStorage::ReSortByZIndex(this, oldIndex);
+    EntityStorage::SortPartial(this, oldZIndex);
 }
