@@ -13,7 +13,7 @@ public:
     /**
      * Queues an entity to be added to the scene at the end of the frame.
      * @param entity - the entity to add to the storage queue storage
-     * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
+     * @param isTool - A flag to specify whether an entity is a tool (meaning it can't be removed)
      */
     static void Add(class Entity* entity, bool isTool = false);
 
@@ -75,20 +75,12 @@ public:
      * @param entity - the entity being compared
      * @param oldIdx - the old Z index (for comparison)
      */
-    static void ReSortByZIndex(Entity* entity, int oldZIdx);
+    static void SortPartial(Entity* entity, int oldZIdx);
 
     /**
      * Sorts the entity packed storage by Z index.
      */
-    static void SortByZIndex();
-
-    /**
-     * Operator overload for index operator
-     * @param index - the generational index to be accessed
-     * @return The entity at the specified generational index
-     * @note Will return a nullptr if the entity cannot be found
-     */
-    Entity* operator[](GenerationalIndex index);
+    static void Sort(std::vector<Entity*>& storage);
 
 private:
 
