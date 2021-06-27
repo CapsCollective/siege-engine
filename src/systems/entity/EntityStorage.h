@@ -22,13 +22,7 @@ public:
      * @param newEntities - A vector of entities to be added to storage
      * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
      */
-    static void Add(const std::vector<Entity*> &newEntities, bool isTool = false);
-
-    /**
-     * Removes an entity from storage
-     * @param entity - entity to be removed from storage
-     */
-    static void Remove(Entity* entity);
+    static void Add(const std::vector<Entity*>& newEntities, bool isTool = false);
 
     /**
      * Returns packed game entities (for iteration purposes)
@@ -82,9 +76,17 @@ public:
      */
     static void Sort(std::vector<Entity*>& storage);
 
+    static void Reset();
+
 private:
 
     // Private Functions
+
+    /**
+     * Removes an entity from storage
+     * @param entity - entity to be removed from storage
+     */
+    static void Remove(Entity* entity, std::vector<Entity*>& storage);
 
     /**
      * Returns the index of a given element within a given entity vector

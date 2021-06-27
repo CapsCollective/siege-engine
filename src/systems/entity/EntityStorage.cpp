@@ -115,7 +115,7 @@ void EntityStorage::SortPartial(Entity* entity, int oldZIdx)
     }
 }
 
-void EntityStorage::Remove(Entity* entity) 
+void EntityStorage::Remove(Entity* entity, std::vector<Entity*>& storage)
 {
     // Check if the entity's index is in bounds
     if (entity->GetIndex().index >= entities.size()) return;
@@ -124,10 +124,10 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    int32_t index = GetEntityIndex(entity, packedEntities);
+    int32_t index = GetEntityIndex(entity, storage);
 
     // Erase the packed index entry from packed entity storage if found
-    if (index != -1) packedEntities.erase(packedEntities.begin() + index);
+    if (index != -1) storage.erase(storage.begin() + index);
 
     // Delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;
@@ -145,13 +145,32 @@ void EntityStorage::QueueFree(Entity* entity)
     }
 }
 
+void EntityStorage::Reset()
+{
+    freedEntities.insert(freedEntities.begin(), packedEntities.begin(), packedEntities.end());
+
+    for (auto& e : freedEntities) {
+        Remove(e, packedEntities);
+    }
+
+    freedEntities.clear();
+
+    freedEntities.insert(freedEntities.begin(), packedTools.begin(), packedTools.end());
+
+    for (auto& e : freedEntities) {
+        Remove(e, packedTools);
+    }
+
+    freedEntities.clear();
+}
+
 void EntityStorage::FreeEntities() 
 {
     // Iterate over all entities that need to be freed
     for (auto& entity : freedEntities)
     {
         // Remove them and free their memory
-        Remove(entity);
+        Remove(entity, packedEntities);
     }
     // Clear the storage.
     freedEntities.clear();
