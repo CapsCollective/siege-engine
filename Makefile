@@ -6,6 +6,9 @@ platformpth = $(subst /,$(PATHSEP),$1)
 buildDir := bin
 compileFlags := -Wall -std=c++17 -I ./include
 linkFlags = -L lib/$(platform) -l raylib
+ifdef MACRO_DEFS
+	macroDefines := -D $(MACRO_DEFS)
+endif
 
 # Set src target macros
 target := $(buildDir)/app
@@ -95,7 +98,7 @@ $(target): $(objects)
 # Compile objects to the build directory
 $(srcBuildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(macroDefines)
 
 # Run the executable
 execute:
@@ -111,7 +114,7 @@ $(testTarget): $(testObjects)
 # Compile test objects to the build directory
 $(testBuildDir)/%.o: $(testDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(macroDefines)
 
 # Run the test executable
 executeTests:
