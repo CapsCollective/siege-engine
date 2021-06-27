@@ -9,7 +9,7 @@
 
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser) \
-    static SerialisationInterfaceRegisterer _si_reg_(name, serialiser, deserialiser)
+    static SerialisationInterfaceRegisterer CONCAT_SYMBOL(_si_reg_, __LINE__)(name, serialiser, deserialiser)
 
 // Define constants
 static constexpr const char SEP = '|';
