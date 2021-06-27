@@ -52,7 +52,7 @@ public:
      * Returns a reference to a resource
      * @tparam T - the type of resource which needs to be returned
      * @param path - the path of the resource in the file system
-     * @return A reference to the designated resource
+     * @return a reference to the designated resource
      */
     template<typename T>
     static T& Get(const std::string& path)
@@ -65,7 +65,7 @@ public:
      * Returns a pointer to a resource
      * @tparam T - the type of resource which needs to be returned
      * @param path - the path of the resource in the file system
-     * @return A pointer to the designated resource
+     * @return a pointer to the designated resource
      */
     template<typename T>
     static T* GetRef(const std::string& path)

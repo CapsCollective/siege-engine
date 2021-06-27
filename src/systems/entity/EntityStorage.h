@@ -32,20 +32,20 @@ public:
 
     /**
      * Returns packed game entities (for iteration purposes)
-     * @return A reference to the vector of packed game entities
+     * @return a reference to the vector of packed game entities
      */
     static const std::vector<Entity*>& GetEntities() { return packedEntities; }
 
     /**
      * Returns packed tool entities (for iteration purposes)
-     * @return A reference to the vector of packed tool entities
+     * @return a reference to the vector of packed tool entities
      */
     static const std::vector<Entity*>& GetTools() { return packedTools; }
 
     /**
      * Returns an entity in the packed list
      * @param index - the index to access
-     * @return The entity at the supplied index
+     * @return the entity at the supplied index
      * @warning Accessing an out of bounds index will result in
      *          undefined behaviour
      */
@@ -71,7 +71,7 @@ public:
     /**
      * Operator overload for index operator
      * @param index - the generational index to be accessed
-     * @return The entity at the specified generational index
+     * @return the entity at the specified generational index
      * @note Will return a nullptr if the entity cannot be found
      */
     Entity* operator[](GenerationalIndex index);
@@ -84,7 +84,7 @@ private:
      * Returns the index of a given element within a given entity vector
      * @param entity - the entity pointer you want to find
      * @param storage - the entity vector that you want to search over
-     * @return A -1 when no index is found, or the index if the entity
+     * @return a -1 when no index is found, or the index if the entity
      *         is found
      */
     static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);

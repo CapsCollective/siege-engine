@@ -11,7 +11,7 @@ public:
 
     /**
      * A getter method for the raylib camera
-     * @return The current raylib camera
+     * @return the current raylib camera
      */
     static raylib::Camera* GetCamera()
     {
@@ -31,7 +31,7 @@ public:
 
     /**
      * A getter method for the EditorController
-     * @return The EditorController
+     * @return the EditorController
      */
     static class EditorController* GetEditorController()
     {
@@ -51,7 +51,7 @@ public:
 
     /**
      * A getter method for the MessageDisplay
-     * @return The MessageDisplay
+     * @return the MessageDisplay
      */
     static class MessageDisplay* GetMessageDisplay()
     {
@@ -71,7 +71,7 @@ public:
 
     /**
      * A getter method for the Profiler
-     * @return The Profiler
+     * @return the Profiler
      */
     static class Profiler* GetProfiler()
     {
