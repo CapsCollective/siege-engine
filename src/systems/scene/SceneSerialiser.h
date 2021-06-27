@@ -2,10 +2,11 @@
 #define A_DARK_DISCOMFORT_SCENESERIALISER_H
 
 #include "../../utils/Macros.h"
+#include <Vector3.hpp>
+#include <functional>
 #include <string>
 #include <vector>
 #include <map>
-#include <Vector3.hpp>
 
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser) \

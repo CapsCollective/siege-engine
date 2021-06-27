@@ -89,7 +89,7 @@ void EntityStorage::Sort(std::vector<Entity*>& storage) {
 void EntityStorage::SortPartial(Entity* entity, int oldZIdx)
 {
     // Get the index of the entity in packed storage
-    uint32_t index = GetEntityIndex(entity, packedEntities);
+    int32_t index = GetEntityIndex(entity, packedEntities);
     
     auto& storage = packedEntities;
 
@@ -124,7 +124,7 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    uint32_t index = GetEntityIndex(entity, packedEntities);
+    int32_t index = GetEntityIndex(entity, packedEntities);
 
     // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);
@@ -157,8 +157,8 @@ void EntityStorage::FreeEntities()
     freedEntities.clear();
 }
 
-uint32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &storage) {
+int32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &storage) {
     // Try find the entity, and return the index of the entity or -1 if not found
     auto it = std::find(storage.begin(), storage.end(), entity);
-    return (it != storage.end()) ? std::distance(storage.begin(), it) : -1;
+    return (it != storage.end()) ? (int32_t) std::distance(storage.begin(), it) : -1;
 }
