@@ -19,25 +19,24 @@ public:
 
     // Public constants
 
-    static constexpr const char NAME[] = "SplashScreen";
+    static const std::string ENTITY_NAME;
 
     // 'Structors
 
     SplashScreen() :
-    logoPositionX(GetScreenWidth()/2 - 128),
-    logoPositionY(GetScreenHeight()/2 - 128),
-    framesCounter(0),
-    lettersCount(0),
-    topSideRecWidth(16),
-    leftSideRecHeight(16),
-    bottomSideRecWidth(16),
-    rightSideRecHeight(16),
-    state(BLINK),
-    alpha(1.f),
-    logoTexture()
-    {
-        Entity::SetName(NAME);
-    };
+        Entity(ENTITY_NAME),
+        logoPositionX(GetScreenWidth()/2 - 128),
+        logoPositionY(GetScreenHeight()/2 - 128),
+        framesCounter(0),
+        lettersCount(0),
+        topSideRecWidth(16),
+        leftSideRecHeight(16),
+        bottomSideRecWidth(16),
+        rightSideRecHeight(16),
+        state(BLINK),
+        alpha(1.f),
+        logoTexture()
+    {};
 
 protected:
 

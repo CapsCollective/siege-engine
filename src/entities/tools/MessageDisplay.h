@@ -10,10 +10,8 @@ public:
     // 'Structors
 
     MessageDisplay() :
-    displayTime(0.f)
-    {
-        Entity::SetName("MessageDisplay");
-    };
+        displayTime(0.f)
+    {};
 
     // Public methods
 

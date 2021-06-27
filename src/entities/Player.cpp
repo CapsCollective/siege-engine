@@ -2,6 +2,9 @@
 #include "../systems/collision/CollisionSystem.h"
 #include "../systems/scene/SceneSerialiser.h"
 
+// Static member initialisation
+const std::string Player::ENTITY_NAME("Player");
+
 void Player::OnUpdate()
 {
     // Get move axes as vector
@@ -32,7 +35,7 @@ void Player::OnDraw()
                           ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
-    DrawModelEx (
+    DrawModelEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),
@@ -42,7 +45,7 @@ void Player::OnDraw()
     );
 
     // Draw the model wireframe
-    DrawModelWiresEx (
+    DrawModelWiresEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),
@@ -89,4 +92,4 @@ static Entity* Deserialise(const EntityData& data, const std::vector<std::string
     return new Player(data.position, data.rotation);
 }
 
-REGISTER_SERIALISATION_INTERFACE(Player::NAME, Serialise, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_NAME, Serialise, Deserialise);

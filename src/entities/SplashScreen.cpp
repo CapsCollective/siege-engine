@@ -5,6 +5,9 @@
 // Define macros
 #define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }
 
+// Static member initialisation
+const std::string SplashScreen::ENTITY_NAME("SplashScreen");
+
 void SplashScreen::OnUpdate()
 {
     // Run the state machine update
@@ -119,4 +122,4 @@ static Entity* Deserialise(const EntityData& data, const std::vector<std::string
         return new SplashScreen();
 }
 
-REGISTER_SERIALISATION_INTERFACE(SplashScreen::NAME, nullptr, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(SplashScreen::ENTITY_NAME, nullptr, Deserialise);
