@@ -2,11 +2,15 @@
 #include "../utils/StringHelpers.h"
 #include "../systems/scene/SceneSerialiser.h"
 
+// Static member initialisation
+const std::string Geometry::ENTITY_NAME("Geometry");
+
 void Geometry::OnDraw()
 {
     // Set the model's texture to this entity's texture
-    ModelData::SetTexture(ResourceManager::Get<Model>(modelData.GetModelPath()),
-                          ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
+    ModelData::SetTexture(
+            ResourceManager::Get<Model>(modelData.GetModelPath()),
+            ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
     DrawModelEx(
@@ -72,7 +76,7 @@ static std::string Serialise(Entity* entity)
     fileData += DefineField("MODEL_PATH", geometry->GetModelData().GetModelPath());
     fileData += DefineField("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
     return fileData;
-};
+}
 
 static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
 {
@@ -80,7 +84,11 @@ static Entity* Deserialise(const EntityData& data, const std::vector<std::string
     std::string modelPath = args[CUSTOM_FIELD_2];
     std::string texturePath = args[CUSTOM_FIELD_3];
 
-    return new Geometry(data.position, data.rotation, dimensions, ModelData(modelPath, texturePath));
-};
+    return new Geometry(
+            data.position,
+            data.rotation,
+            dimensions,
+            ModelData(modelPath, texturePath));
+}
 
-REGISTER_SERIALISATION_INTERFACE(Geometry::NAME, Serialise, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(Geometry::ENTITY_NAME, Serialise, Deserialise);

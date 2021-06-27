@@ -10,10 +10,8 @@ public:
     // 'Structors
 
     explicit Profiler(bool isActive) :
-    isActive(isActive)
-    {
-        Entity::SetName("Profiler");
-    };
+        isActive(isActive)
+    {};
 
     // Public methods
 

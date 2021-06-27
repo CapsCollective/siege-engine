@@ -20,17 +20,15 @@ public:
     // 'Structors
 
     EditorController() :
-    isGridActive(true),
-    currentMode(POSITION),
-    movePrecision(2),
-    rotatePrecision(3),
-    selectedIdx(0),
-    camera(ServiceLocator::GetCamera()),
-    selectedEntity(nullptr),
-    messageDisplay(ServiceLocator::GetMessageDisplay())
-    {
-        Entity::SetName("EditorController");
-    };
+        isGridActive(true),
+        currentMode(POSITION),
+        movePrecision(2),
+        rotatePrecision(3),
+        selectedIdx(0),
+        camera(ServiceLocator::GetCamera()),
+        selectedEntity(nullptr),
+        messageDisplay(ServiceLocator::GetMessageDisplay())
+    {};
 
     // Class methods
 

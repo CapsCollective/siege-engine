@@ -4,10 +4,10 @@
 #include <iostream>
 #include <algorithm>
 
-// TODO clean up classes
-
 void SceneSerialiser::RegisterSerialisable(
-        const std::string& name, const Serialiser& serialise, const Deserialiser& deserialise)
+        const std::string& name,
+        const Serialiser& serialise,
+        const Deserialiser& deserialise)
 {
     GetSerialisables().emplace(name, std::make_pair(serialise, deserialise));
 }
@@ -24,10 +24,12 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
 
+        // Check if the entity has a relevant serialisable interface registered
         auto& serialisables = GetSerialisables();
         auto it = serialisables.find(entity->GetName());
         if (it != serialisables.end())
         {
+            // Apply its serialiser if it
             Serialiser serialiser = it->second.first;
             if (serialiser) fileData += serialiser(entity);
         }
@@ -50,15 +52,18 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
         for (std::string& arg : args) arg = arg.substr(arg.find(NAME_SEP) + 1, arg.size());
 
         // Get standard entity fields
-        EntityData data(
+        EntityData data = {
                 StringHelpers::StringToVector(args[ENTITY_POS]),
                 std::stof(args[ENTITY_ROT]),
-                std::stoi(args[ENTITY_Z_IDX]));
+                std::stoi(args[ENTITY_Z_IDX])
+        };
 
+        // Check if the entity has a relevant serialisable interface registered
         auto& serialisables = GetSerialisables();
         auto it = serialisables.find(args[ENTITY_NAME]);
         if (it != serialisables.end())
         {
+            // Apply its deserialiser
             Deserialiser deserialiser = it->second.second;
             if (deserialiser) entities.push_back(deserialiser(data, args));
         }
