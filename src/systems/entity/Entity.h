@@ -161,15 +161,13 @@ public:
      */
     void SetRotation(float newRotation);
 
-protected:
-
-    // Protected methods
-
     /**
      * Setter method for the entity's z-index value
      * @param idx - the index value to set
      */
     void SetZIndex(int idx);
+
+protected:
 
     // Protected fields
 

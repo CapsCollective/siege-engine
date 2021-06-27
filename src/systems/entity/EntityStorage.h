@@ -37,15 +37,6 @@ public:
     static const std::vector<Entity*>& GetTools() { return packedTools; }
 
     /**
-     * Returns an entity in the packed list
-     * @param index - the index to access
-     * @return the entity at the supplied index
-     * @warning Accessing an out of bounds index will result in
-     *          undefined behaviour
-     */
-    static Entity* GetPackedEntity(size_t index) { return packedEntities[index]; }
-
-    /**
      * Queues an entity for freeing at the end of the frame
      * @param entity - the entity to free
      */
@@ -63,13 +54,14 @@ public:
     static void RegisterEntities();
 
     /**
-     * Re-sorts the entity packed index by Z-index.
-     * Implements a partial sort, so only relevant sections of the
-     * packed storage will be sorted.
-     * @param entity - the entity being compared
-     * @param oldIdx - the old Z index (for comparison)
+     * Resets the entity storage and removes all tool, non-tool, and queued entities.
+     * @warning THIS IS VERY UNSAFE AND SHOULD NOT BE USED IN THE MAIN LOOP.
      */
-    static void SortPartial(Entity* entity, int oldZIdx);
+    static void Reset();
+
+private:
+
+    // Private Functions
 
     /**
      * Sorts the entity packed storage by Z index.
@@ -78,14 +70,14 @@ public:
     static void Sort(std::vector<Entity*>& storage);
 
     /**
-     * Resets the entity storage and removes all tool, non-tool, and queued entities.
-     * WARNING: THIS IS VERY UNSAFE AND SHOULD NOT BE USED IN THE MAIN LOOP.
+     * Re-sorts the entity packed index by Z-index.
+     * Implements a partial sort, so only relevant sections of the
+     * packed storage will be sorted.
+     * @param entity - the entity being compared
+     * @param oldIdx - the old Z index (for comparison)
      */
-    static void Reset();
-
-private:
-
-    // Private Functions
+    friend class Entity;
+    static void SortPartial(Entity* entity, int oldZIdx);
 
     /**
      * Removes an entity from storage

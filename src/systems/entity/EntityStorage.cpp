@@ -147,14 +147,16 @@ void EntityStorage::QueueFree(Entity* entity)
 
 void EntityStorage::Reset()
 {
-    // Clear both packedEntities and packedTools
-    ClearStorage(packedEntities);
-    ClearStorage(packedTools);
-
     // Delete all entities that were queued for registration
     for (auto& registrationData : registeredEntities) delete registrationData.first;
 
+    // Clear queuing storages
     registeredEntities.clear();
+    freedEntities.clear();
+
+    // Clear both packedEntities and packedTools
+    ClearStorage(packedEntities);
+    ClearStorage(packedTools);
 }
 
 void EntityStorage::ClearStorage(std::vector<Entity*>& storage)

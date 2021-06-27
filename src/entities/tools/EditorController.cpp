@@ -87,13 +87,13 @@ void EditorController::OnUpdate()
     if (IsKeyPressed(KEY_TAB))
     {
         // Select the first packed entity by index
-        int totalEntities = EntityStorage::GetEntities().size();
+        size_t totalEntities = EntityStorage::GetEntities().size();
         if (totalEntities > 0)
         {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+                SelectEntity(EntityStorage::GetEntities()[selectedIdx]);
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
