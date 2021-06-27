@@ -47,21 +47,72 @@ void EntityStorage::Add(const std::vector<Entity*>& newEntities, bool isTool)
 
 void EntityStorage::RegisterEntities()
 {
+    if (registeredEntities.empty()) return;
+
+    // Flags to determine the types of entities that were added
+    bool isToolAdded = false;
+    bool isEntityAdded = false;
+
     // Iterate over queued entities and initialise them
     for (auto& registrationData : registeredEntities)
     {
         auto& entity = registrationData.first;
+        bool isTool = registrationData.second;
         
         // If the entity's given index already exists then override the existing entry
         if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
         else entities.push_back(entity);
 
-        // Add the entity to appropriate storage
-        if (registrationData.second) packedTools.push_back(entity);
-        else packedEntities.push_back(entity);
+        auto& storage = isTool ? packedTools : packedEntities;
+
+        isToolAdded = isTool || isToolAdded;
+        isEntityAdded = !isTool || isEntityAdded;
+
+        storage.push_back(entity);
     }
+
+    // Once all entities are added, sort the packed storage
+    if (isEntityAdded) Sort(packedEntities);
+    if (isToolAdded) Sort(packedTools);
+
     // Remove all entities from the queue
     registeredEntities.clear();
+}
+
+void EntityStorage::Sort(std::vector<Entity*>& storage) {
+    // Sort packedEntities by Z index - lowest to highest
+    std::sort(storage.begin(), storage.end(), [](Entity* a, Entity* b){ 
+        return a->GetZIndex() < b->GetZIndex();
+    });
+}
+
+void EntityStorage::SortPartial(Entity* entity, int oldZIdx)
+{
+    // Get the index of the entity in packed storage
+    uint32_t index = GetEntityIndex(entity, packedEntities);
+    
+    auto& storage = packedEntities;
+
+    // If the entity doesn't exist in our packed entities, then search our tools
+    if (index == -1) 
+    {
+        index = GetEntityIndex(entity, packedTools);
+        storage = packedTools;
+    }
+
+    if (index != -1)
+    {
+        // Check if the new z index is greater than the old z index. If it is, start sorting
+        // from the entity's index.
+        bool isGreater = entity->GetZIndex() > oldZIdx;
+        auto begin = isGreater ? storage.begin() + index : storage.begin();
+        auto end = isGreater ? storage.end() : storage.begin() + index;
+
+        // Sort EntityStorage from either beginning -> entity index, or entity index -> end
+        std::partial_sort(begin, end, storage.end(), [](Entity* a, Entity* b){
+            return a->GetZIndex() < b->GetZIndex();
+        });
+    }
 }
 
 void EntityStorage::Remove(Entity* entity) 
@@ -73,7 +124,7 @@ void EntityStorage::Remove(Entity* entity)
     allocator.Deallocate(entity->GetIndex());
 
     // Get the packed index
-    int32_t index = GetEntityIndex(entity, packedEntities);
+    uint32_t index = GetEntityIndex(entity, packedEntities);
 
     // Erase the packed index entry from packed entity storage if found
     if (index != -1) packedEntities.erase(packedEntities.begin() + index);
@@ -81,17 +132,6 @@ void EntityStorage::Remove(Entity* entity)
     // Delete the entity from the heap
     size_t entityIndex = entity->GetIndex().index;
     delete entities[entityIndex];
-}
-
-Entity* EntityStorage::operator[](GenerationalIndex index) 
-{
-    // Make sure the provided index is actually in use
-    if (allocator.IsLive(index)) 
-    {
-        // Return the entity
-        return entities[index.index];
-    } 
-    else return nullptr;
 }
 
 void EntityStorage::QueueFree(Entity* entity) 

@@ -63,6 +63,11 @@ void Entity::SetRotation(float newRotation)
 
 void Entity::SetZIndex(int idx)
 {
-    // TODO add z-sorting to entity storage
+    // Only update z index if there's an actual change
+    if (idx == zIndex) return;
+
+    int oldZIndex = zIndex;
     zIndex = idx;
+
+    EntityStorage::SortPartial(this, oldZIndex);
 }
