@@ -73,9 +73,14 @@ public:
 
     /**
      * Sorts the entity packed storage by Z index.
+     * @param storage - the entity vector that needs to be sorted.
      */
     static void Sort(std::vector<Entity*>& storage);
 
+    /**
+     * Resets the entity storage and removes all tool, non-tool, and queued entities.
+     * WARNING: THIS IS VERY UNSAFE AND SHOULD NOT BE USED IN THE MAIN LOOP.
+     */
     static void Reset();
 
 private:
@@ -87,6 +92,12 @@ private:
      * @param entity - entity to be removed from storage
      */
     static void Remove(Entity* entity, std::vector<Entity*>& storage);
+
+    /**
+     * Cleared a specific entity storage vector of all entities
+     * @param storage - the specific storage that needs to be cleared
+     */
+    static void ClearStorage(std::vector<Entity*>& storage);
 
     /**
      * Returns the index of a given element within a given entity vector
