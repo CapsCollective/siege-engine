@@ -147,20 +147,27 @@ void EntityStorage::QueueFree(Entity* entity)
 
 void EntityStorage::Reset()
 {
-    freedEntities.insert(freedEntities.begin(), packedEntities.begin(), packedEntities.end());
+    // Clear both packedEntities and packedTools
+    ClearStorage(packedEntities);
+    ClearStorage(packedTools);
 
+    // Delete all entities that were queued for registration
+    for (auto& registrationData : registeredEntities) delete registrationData.first;
+
+    registeredEntities.clear();
+}
+
+void EntityStorage::ClearStorage(std::vector<Entity*>& storage)
+{
+    // append storage to the end of freedEntities
+    freedEntities.insert(freedEntities.begin(), storage.begin(), storage.end());
+
+    // Remove the entities from storage
     for (auto& e : freedEntities) {
-        Remove(e, packedEntities);
+        Remove(e, storage);
     }
 
-    freedEntities.clear();
-
-    freedEntities.insert(freedEntities.begin(), packedTools.begin(), packedTools.end());
-
-    for (auto& e : freedEntities) {
-        Remove(e, packedTools);
-    }
-
+    // Clear all pointers from freedEntities
     freedEntities.clear();
 }
 
