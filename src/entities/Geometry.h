@@ -11,25 +11,27 @@ class Geometry : public Entity, public Modelable
 {
 public:
 
+    // Public constants
+
+    static const std::string ENTITY_NAME;
+
     // 'Structors
 
     Geometry() :
-    Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
+        Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
     {};
 
     Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
-    Geometry(position, rotation, dimensions, ModelData(
-            "assets/models/cube/cube.obj",
-            "assets/models/cube/cube.png"))
+        Geometry(position, rotation, dimensions, ModelData(
+                "assets/models/cube/cube.obj",
+                "assets/models/cube/cube.png"))
     {};
 
     Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
-    Entity(position, rotation),
-    dimensions(dimensions),
-    modelData(data)
+        Entity(ENTITY_NAME, position, rotation),
+        dimensions(dimensions),
+        modelData(data)
     {
-        Entity::SetName("Geometry");
-
         // Register the entity as collidable
         CollisionSystem::Add(this);
     };
@@ -63,6 +65,7 @@ private:
     raylib::Vector3 dimensions;
 
     ModelData modelData;
+
 };
 
 #endif //A_DARK_DISCOMFORT_GEOMETRY_H

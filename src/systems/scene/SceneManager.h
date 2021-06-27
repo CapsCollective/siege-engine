@@ -59,5 +59,12 @@ private:
     static std::string nextScene;
 };
 
+// Free functions
+
+inline std::string MakeScenePath(const std::string& sceneName)
+{
+    return "assets/scenes/" + sceneName + ".scene";
+}
+
 
 #endif //A_DARK_DISCOMFORT_SCENEMANAGER_H

@@ -3,6 +3,9 @@
 #include <utility>
 #include <cmath>
 
+// Static member initialisation
+const std::string Entity::ENTITY_NAME("Entity");
+
 BoundingBox Entity::GetBoundingBox()
 {
     return BoundingBox();
@@ -26,11 +29,6 @@ const std::string& Entity::GetName() const
 const GenerationalIndex& Entity::GetIndex() const
 {
     return index;
-}
-
-void Entity::SetName(std::string entityName)
-{
-    name = std::move(entityName);
 }
 
 void Entity::SetIndex(GenerationalIndex idx)
