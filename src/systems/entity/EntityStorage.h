@@ -93,7 +93,7 @@ private:
      * @return a -1 when no index is found, or the index if the entity
      *         is found
      */
-    static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
+    static int32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
 
     // Private fields
 
