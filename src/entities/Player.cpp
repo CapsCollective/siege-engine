@@ -1,5 +1,9 @@
 #include "Player.h"
 #include "../systems/collision/CollisionSystem.h"
+#include "../systems/scene/SceneSerialiser.h"
+
+// Static member initialisation
+const std::string Player::ENTITY_NAME("Player");
 
 void Player::OnUpdate()
 {
@@ -31,7 +35,7 @@ void Player::OnDraw()
                           ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
 
     // Draw the model
-    DrawModelEx (
+    DrawModelEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),
@@ -41,7 +45,7 @@ void Player::OnDraw()
     );
 
     // Draw the model wireframe
-    DrawModelWiresEx (
+    DrawModelWiresEx(
             ResourceManager::Get<Model>(modelData.GetModelPath()),
             position,
             raylib::Vector3(0, 1, 0),
@@ -73,3 +77,19 @@ Entity* Player::Clone()
 {
     return new Player(position, rotation);
 }
+
+static std::string Serialise(Entity* entity)
+{
+    std::string fileData;
+    auto player = dynamic_cast<Player*>(entity);
+    fileData += DefineField("MODEL_PATH", player->GetModelData().GetModelPath());
+    fileData += DefineField("TEXTURE_PATH", player->GetModelData().GetTexturePath());
+    return fileData;
+}
+
+static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
+{
+    return new Player(data.position, data.rotation);
+}
+
+REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_NAME, Serialise, Deserialise);

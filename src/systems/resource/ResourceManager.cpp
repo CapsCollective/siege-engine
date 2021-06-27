@@ -2,8 +2,8 @@
 #include "ResourceManager.h"
 
 // Static member initialisation
-RESOURCE_MAP ResourceManager::resources = RESOURCE_MAP();
-RESOURCE_LIST ResourceManager::freedResources = RESOURCE_LIST();
+ResourceMap ResourceManager::resources;
+ResourceList ResourceManager::freedResources;
 
 void ResourceManager::ClearResources()
 {

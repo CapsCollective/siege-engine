@@ -9,7 +9,7 @@ public:
 
     /**
      * A virtual getter method for model data
-     * @return The object's model data
+     * @return the object's model data
      */
     virtual const ModelData& GetModelData() = 0;
 
