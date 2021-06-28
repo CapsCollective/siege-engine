@@ -64,7 +64,7 @@ void SceneManager::LoadNextScene()
 void SceneManager::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    SaveScene(currentScene.empty() ? "" : currentScene);
+    SaveScene(currentScene.empty() ? std::string() : currentScene);
 }
 
 void SceneManager::SaveScene(const std::string& sceneName)

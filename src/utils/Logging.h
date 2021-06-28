@@ -11,6 +11,7 @@
 
 // Define logging helper macros
 #define _CC_LINE_LOC __FILE__ ":" TOSTRING(__LINE__)
+// TODO make this use cout
 #define _CC_LOG(log_level, colour_macro, message, ...) \
     std::printf(colour_macro(log_level " at [" _CC_LINE_LOC "] " message) "\n", ##__VA_ARGS__)
 
