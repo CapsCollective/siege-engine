@@ -7,6 +7,8 @@
 #include <vector>
 
 // Define types
+
+// Resource map stores a union (std::variant) of either a model or a Texture2D
 typedef std::map<std::string, std::variant<Model, Texture2D>> ResourceMap;
 typedef std::vector<std::variant<Model, Texture2D>*> ResourceList;
 
@@ -24,27 +26,19 @@ public:
     template<typename T>
     static void Register(const std::string& path)
     {
-        // If the resource already exists then exit the function
         if (resources.find(path) != resources.end()) return;
 
         // Define an empty variant to hold resource
         std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();
 
-        // Check what type of resource is being registered
-        // In this case, check that the resource is a Model
         if (std::is_same<T, Model>::value)
         {
-            // If it is a model, load the model and store the struct in the variant
             resource = LoadModel(path.c_str());
         }
-        // If the resource is a Texture2D
         else if (std::is_same<T, Texture2D>::value)
         {
-            // Load the TEXTURE and store the struct in the variant
             resource = LoadTexture(path.c_str());
         }
-
-        // Add the variant to the resources map
         resources.insert({path, resource});
     };
 
@@ -89,12 +83,12 @@ private:
     // Private fields
 
     /**
-     * All resources in the system
+     * All resources in the system - currently limited to textures and models
      */
     static ResourceMap resources;
 
     /**
-     * All resources to free at the end of the frame
+     * All resources to free at the end of the frame - limited to Textures and Models
      */
     static ResourceList freedResources;
 };
