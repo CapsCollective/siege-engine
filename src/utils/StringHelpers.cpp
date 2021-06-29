@@ -26,6 +26,7 @@ raylib::Vector3 StringHelpers::StringToVector(std::string string)
 
 std::vector<std::string> StringHelpers::SplitString(std::string string, char delimiter)
 {
+    if (string.empty()) return {};
     // Iterate over the string while there is still a delimiter
     size_t delimiterPos;
     std::vector<std::string> args;
@@ -47,6 +48,7 @@ std::string StringHelpers::LowercaseString(std::string string)
 
 std::string StringHelpers::Replace(std::string string, const std::string& toReplace, const std::string& replacement)
 {
+    if (toReplace.empty()) return string;
     // Try find the position of the supplied substring and replace the substring at position
     size_t pos = string.find(toReplace);
     if (pos == std::string::npos) return string;
