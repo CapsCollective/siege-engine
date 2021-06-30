@@ -5,6 +5,9 @@ class SceneManager
 {
 public:
 
+    // Define constants
+    static constexpr const char DEFAULT_BASEDIR[] = "assets/scenes/";
+
     // Public methods
 
     /**
@@ -22,7 +25,7 @@ public:
      * Saves the currently loaded scene by the name supplied
      * @param sceneName - the name to save the scene as
      */
-    static void SaveScene(const std::string& sceneName);
+    static void SaveScene(const std::string& sceneName, const std::string& baseDir = DEFAULT_BASEDIR);
 
     /**
      * Safely prepares the current scene for loading of a newly
@@ -35,7 +38,7 @@ public:
      * Loads a newly queued scene if one is set, should be called
      * at the end of the frame
      */
-    static void LoadNextScene();
+    static void LoadNextScene(const std::string& baseDir = DEFAULT_BASEDIR);
 
 private:
 
@@ -61,9 +64,9 @@ private:
 
 // Free functions
 
-inline std::string MakeScenePath(const std::string& sceneName)
+inline std::string MakeScenePath(const std::string& sceneName, const std::string& baseDir)
 {
-    return "assets/scenes/" + sceneName + ".scene";
+    return baseDir + sceneName + ".scene";
 }
 
 

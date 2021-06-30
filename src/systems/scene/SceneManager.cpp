@@ -22,20 +22,20 @@ void SceneManager::NewScene()
     currentScene = UNKNOWN_FILENAME;
 }
 
-void SceneManager::QueueNextScene(const std::string &sceneName)
+void SceneManager::QueueNextScene(const std::string& sceneName)
 {
     // Free all current items from storage
     ClearScene();
     nextScene = sceneName;
 }
 
-void SceneManager::LoadNextScene()
+void SceneManager::LoadNextScene(const std::string& baseDir)
 {
     if (nextScene.empty()) return;
     MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
 
     // Try open the next scene file for streaming
-    std::ifstream file(MakeScenePath(nextScene));
+    std::ifstream file(MakeScenePath(nextScene, baseDir));
 
     // Exit if next scene is invalid
     if (file.is_open())
@@ -67,13 +67,13 @@ void SceneManager::SaveScene()
     SaveScene(currentScene.empty() ? std::string() : currentScene);
 }
 
-void SceneManager::SaveScene(const std::string& sceneName)
+void SceneManager::SaveScene(const std::string& sceneName, const std::string& baseDir)
 {
     // Get and set the current scene name
     currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
 
     // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(MakeScenePath(currentScene));
+    std::ofstream fileStream(MakeScenePath(currentScene, baseDir));
     fileStream << SceneSerialiser::Serialise(EntityStorage::GetEntities());
     fileStream.close();
 }
