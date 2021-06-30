@@ -45,10 +45,8 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
     // Iterate over each line of the file
     for (const std::string& line : sceneString)
     {
-        // Split the line into arguments
+        // Split the line into arguments and strip the labels from each item
         std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
-
-        // Strip labels from each item
         for (std::string& arg : args) arg = arg.substr(arg.find(NAME_SEP) + 1, arg.size());
 
         // Get standard entity fields
