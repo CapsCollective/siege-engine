@@ -15,35 +15,47 @@
 // Define logging helper macros
 #define _CC_LOG_LINE_LOC __FILE__ ":" TOSTRING(__LINE__)
 #define _CC_LOG_MSG_FMT(log_level, colour_macro, message) colour_macro(log_level " at [" _CC_LOG_LINE_LOC "] " message)
+#define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
+#define _CC_LOG_VRNT_ARR_SZE CONCAT_SYMBOL(_vrnt_arr_sze_, __LINE__)
 #define _CC_LOG(log_level, colour_macro, message, ...) \
-    std::vector<Logging::Variant> CONCAT_SYMBOL(_vrnt_vec_, __LINE__)({ __VA_ARGS__ }); \
-    Logging::VariantFormatPrint(_CC_LOG_MSG_FMT(log_level, colour_macro, message), CONCAT_SYMBOL(_vrnt_vec_, __LINE__))
+    static Logging::Variant _CC_LOG_VRNT_ARR[] { __VA_ARGS__ }; \
+    static size_t _CC_LOG_VRNT_ARR_SZE = sizeof(_CC_LOG_VRNT_ARR)/Logging::VARIANT_SIZE; \
+    Logging::VariantFormatPrint( \
+        _CC_LOG_MSG_FMT(log_level, colour_macro, message), _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE)
 
 namespace Logging
 {
     // Define types
     typedef std::variant<std::string, int, float> Variant;
 
+    // Define constants
+    static constexpr const size_t VARIANT_SIZE = sizeof(Logging::Variant);
+    static constexpr const char REPLACE_STRING[] = "{}";
+    static constexpr const size_t REPLACE_STRING_SIZE = sizeof(REPLACE_STRING) - 1;
+
     /**
      * Allows for the format printing of strings with a variant
      * list of format arguments.
      * @param text - the text to format, using "{}" to define
      *               variant replacement
-     * @param variantItems - a vector of variant items to format
+     * @param variantItems - an array of variant items to format
      *                       the text with
+     * @param size - the size of variantItems
      */
-    static void VariantFormatPrint(const std::string& text, const std::vector<Variant>& variantItems)
+    static void VariantFormatPrint(const std::string& text, const Logging::Variant* variantItems, const size_t& size)
     {
-        std::string fmt = text;
-        for (const auto& item : variantItems)
+        std::string fmt(text);
+        for (size_t i = 0; i < size; i++)
         {
             std::string str;
+            const Variant& item = variantItems[i];
             if (std::holds_alternative<std::string>(item)) str = std::get<std::string>(item);
             else if (std::holds_alternative<int>(item)) str = std::to_string(std::get<int>(item));
             else if (std::holds_alternative<float>(item)) str = std::to_string(std::get<float>(item));
 
-            // TODO optimise this by doing a find all or a cut, print, replace loop.
-            fmt = StringHelpers::Replace(fmt, "{}", str);
+            size_t removalPoint = fmt.find(REPLACE_STRING);
+            std::cout << fmt.substr(0, removalPoint) << str;
+            fmt.erase(0, removalPoint+REPLACE_STRING_SIZE);
         }
         std::cout << fmt << std::endl;
     }
