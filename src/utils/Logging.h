@@ -3,7 +3,9 @@
 
 #include "Macros.h"
 #include "StringHelpers.h"
+#include "../systems/entity/Entity.h"
 #include <iostream>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -17,19 +19,57 @@
 #define _CC_LOG_MSG_FMT(log_level, colour_macro, message) colour_macro(log_level " at [" _CC_LOG_LINE_LOC "] " message)
 #define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
 #define _CC_LOG_VRNT_ARR_SZE CONCAT_SYMBOL(_vrnt_arr_sze_, __LINE__)
+#define _CC_LOG_FMT_STR CONCAT_SYMBOL(_fmt_str_, __LINE__)
 #define _CC_LOG(log_level, colour_macro, message, ...) \
-    static Logging::Variant _CC_LOG_VRNT_ARR[] { __VA_ARGS__ }; \
+    static Logging::VariantContainer _CC_LOG_VRNT_ARR[] { __VA_ARGS__ }; \
     static size_t _CC_LOG_VRNT_ARR_SZE = sizeof(_CC_LOG_VRNT_ARR)/Logging::VARIANT_SIZE; \
-    Logging::VariantFormatPrint( \
-        _CC_LOG_MSG_FMT(log_level, colour_macro, message), _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE)
+    static std::string _CC_LOG_FMT_STR (_CC_LOG_MSG_FMT(log_level, colour_macro, message)); \
+    Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE); \
+    std::cout << _CC_LOG_FMT_STR << std::endl;
+#define DEFINE_VARIANT_TYPE(type, tranform) \
+    VariantContainer(type) : data(tranform) {} // NOLINT(google-explicit-constructor)
 
 namespace Logging
 {
-    // Define types
-    typedef std::variant<std::string, int, float> Variant;
+
+    /**
+     * A container class for print variant types
+     */
+    class VariantContainer
+    {
+    public:
+
+        // 'Structors
+
+        DEFINE_VARIANT_TYPE(const char* data, data);
+        DEFINE_VARIANT_TYPE(const int& data, std::to_string(data));
+        DEFINE_VARIANT_TYPE(const float& data, std::to_string(data));
+        DEFINE_VARIANT_TYPE(const double& data, std::to_string(data));
+        DEFINE_VARIANT_TYPE(const Entity& data,data.GetName());
+        DEFINE_VARIANT_TYPE(const raylib::Vector3& data,
+                            "Vector3(" + StringHelpers::VectorToString(data) + ")");
+
+        /**
+         * Returns the data held by the variant container
+         * @return the data string as a const reference
+         */
+        const std::string& GetString() const
+        {
+            return data;
+        };
+
+    private:
+
+        // Private fields
+
+        /**
+         * String data held by the object
+         */
+        std::string data;
+    };
 
     // Define constants
-    static constexpr const size_t VARIANT_SIZE = sizeof(Logging::Variant);
+    static constexpr const size_t VARIANT_SIZE = sizeof(VariantContainer);
     static constexpr const char REPLACE_STRING[] = "{}";
     static constexpr const size_t REPLACE_STRING_SIZE = sizeof(REPLACE_STRING) - 1;
 
@@ -42,22 +82,22 @@ namespace Logging
      *                       the text with
      * @param size - the size of variantItems
      */
-    static void VariantFormatPrint(const std::string& text, const Logging::Variant* variantItems, const size_t& size)
+    static void VariantFormat(std::string& text, const VariantContainer* variantItems, const size_t& size)
     {
-        std::string fmt(text);
-        for (size_t i = 0; i < size; i++)
+        size_t cursor(0);
+        for (size_t i(0); i < size; i++)
         {
-            std::string str;
-            const Variant& item = variantItems[i];
-            if (std::holds_alternative<std::string>(item)) str = std::get<std::string>(item);
-            else if (std::holds_alternative<int>(item)) str = std::to_string(std::get<int>(item));
-            else if (std::holds_alternative<float>(item)) str = std::to_string(std::get<float>(item));
+            // Find the point of replacement from the last known cursor position
+            cursor = text.find(REPLACE_STRING, cursor);
+            if (cursor == std::string::npos) break;
 
-            size_t removalPoint = fmt.find(REPLACE_STRING);
-            std::cout << fmt.substr(0, removalPoint) << str;
-            fmt.erase(0, removalPoint+REPLACE_STRING_SIZE);
+            // Replace the format pattern with the current variant item
+            const std::string& item = variantItems[i].GetString();
+            text.replace(cursor, REPLACE_STRING_SIZE, item);
+
+            // Move cursor to current position
+            cursor += item.length();
         }
-        std::cout << fmt << std::endl;
     }
 }
 
