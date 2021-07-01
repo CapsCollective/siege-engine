@@ -32,10 +32,13 @@ void SceneManager::QueueNextScene(const std::string& sceneName)
 void SceneManager::LoadNextScene(const std::string& baseDir)
 {
     if (nextScene.empty()) return;
+
     MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
 
     // Try open the next scene file for streaming
     std::ifstream file(MakeScenePath(nextScene, baseDir));
+
+    std::string message;
 
     // Exit if next scene is invalid
     if (file.is_open())
@@ -52,9 +55,12 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
 
         // Set the current scene details
         currentScene = nextScene;
-        messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
+        message = "Successfully loaded " + nextScene + ".scene";
+        //messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
     }
-    else messageDisplay->DisplayMessage("Unable to find \"" + nextScene +  ".scene\"");
+    else message = "Unable to find \"" + nextScene +  ".scene\"";
+
+    if (messageDisplay) messageDisplay->DisplayMessage(message);
 
     // Close the file stream and clear next scene
     file.close();
