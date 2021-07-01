@@ -3,6 +3,7 @@
 #include "../src/systems/entity/EntityStorage.h"
 #include "data/TestEntity.h"
 #include <fstream>
+#include <filesystem>
 #include <string>
 
 // Const declarations
