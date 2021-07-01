@@ -3,11 +3,18 @@
 
 TEST_CASE("vectors can be converted to strings", "[StringHelpers]")
 {
-    SECTION("when a vector is provided to the function it should return a string with three decimal values")
+    SECTION("when a zero vector is provided to the function it should be properly formatted")
     {
         std::string result = StringHelpers::VectorToString(raylib::Vector3::Zero());
 
         REQUIRE(result == "0.000000,0.000000,0.000000");
+    }
+
+    SECTION("when a vector is provided to the function it should be properly formatted")
+    {
+        raylib::Vector3 vec(3.6f, 2.11f, 37.1f);
+        std::string result = StringHelpers::VectorToString(vec);
+        REQUIRE(result == "3.600000,2.110000,37.100000");
     }
 }
 
