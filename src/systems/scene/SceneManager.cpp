@@ -43,6 +43,7 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
     // Exit if next scene is invalid
     if (file.is_open())
     {
+        // TODO move this into the scene serialiser
         // Get the scene file's lines
         std::string line;
         std::vector<std::string> sceneLines;
