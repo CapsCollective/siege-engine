@@ -190,3 +190,11 @@ int32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &sto
     auto it = std::find(storage.begin(), storage.end(), entity);
     return (it != storage.end()) ? (int32_t) std::distance(storage.begin(), it) : -1;
 }
+
+bool EntityStorage::IsLive(const GenerationalIndex& index) {
+    return allocator.IsLive(index);
+}
+
+bool EntityStorage::IsLive(Entity* entity) {
+    return allocator.IsLive(entity->GetIndex());
+}

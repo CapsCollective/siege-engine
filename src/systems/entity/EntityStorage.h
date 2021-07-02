@@ -59,6 +59,10 @@ public:
      */
     static void Reset();
 
+    static bool IsLive(const GenerationalIndex& index);
+
+    static bool IsLive(Entity* entity);
+
 private:
 
     // Private Functions
