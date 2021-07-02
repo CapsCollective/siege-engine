@@ -6,12 +6,12 @@
 // Static member initialisation
 const std::string Entity::ENTITY_NAME("Entity");
 
-BoundingBox Entity::GetBoundingBox()
+BoundingBox Entity::GetBoundingBox() const
 {
     return BoundingBox();
 }
 
-Entity* Entity::Clone()
+Entity* Entity::Clone() const
 {
     return nullptr;
 }

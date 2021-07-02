@@ -194,7 +194,3 @@ int32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &sto
 bool EntityStorage::IsLive(const GenerationalIndex& index) {
     return allocator.IsLive(index);
 }
-
-bool EntityStorage::IsLive(Entity* entity) {
-    return allocator.IsLive(entity->GetIndex());
-}

@@ -38,11 +38,11 @@ public:
 
     // Public overrides
 
-    Entity* Clone() override;
+    Entity* Clone() const override;
 
     void QueueFree() override;
 
-    BoundingBox GetBoundingBox() override;
+    BoundingBox GetBoundingBox() const override;
 
     const ModelData& GetModelData() override;
 

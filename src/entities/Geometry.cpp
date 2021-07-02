@@ -33,11 +33,11 @@ void Geometry::OnDraw()
     );
 }
 
-BoundingBox Geometry::GetBoundingBox()
+BoundingBox Geometry::GetBoundingBox() const
 {
     return BoundingBox {
-            position - raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
-            position + raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
+            raylib::Vector3(position) - raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
+            raylib::Vector3(position) + raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
     };
 }
 
@@ -46,7 +46,7 @@ const raylib::Vector3& Geometry::GetDimensions()
     return dimensions;
 }
 
-Entity* Geometry::Clone()
+Entity* Geometry::Clone() const
 {
     return new Geometry(position, rotation, dimensions, modelData);
 }
