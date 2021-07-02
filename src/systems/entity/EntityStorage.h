@@ -59,9 +59,12 @@ public:
      */
     static void Reset();
 
+    /**
+     * TODO document me
+     * @param index
+     * @return
+     */
     static bool IsLive(const GenerationalIndex& index);
-
-    static bool IsLive(Entity* entity);
 
 private:
 

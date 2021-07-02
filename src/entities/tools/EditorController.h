@@ -4,6 +4,7 @@
 #include "../../systems/entity/Entity.h"
 #include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
+#include "../../systems/entity/EntityPtr.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
@@ -78,9 +79,9 @@ private:
 
     raylib::Camera3D* camera;
 
-    Entity* selectedEntity;
+    EntityPtr<Entity> selectedEntity;
 
-    class MessageDisplay* messageDisplay;
+    EntityPtr<MessageDisplay> messageDisplay;
 };
 
 

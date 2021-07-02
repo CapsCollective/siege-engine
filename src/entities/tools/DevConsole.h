@@ -3,6 +3,7 @@
 
 #include "../../utils/ServiceLocator.h"
 #include "../../systems/entity/Entity.h"
+#include "../../systems/entity/EntityPtr.h"
 
 class DevConsole : public Entity
 {
@@ -43,9 +44,9 @@ private:
 
     std::string lastInput;
 
-    MessageDisplay* messageDisplay;
+    EntityPtr<MessageDisplay> messageDisplay;
 
-    Profiler* profiler;
+    EntityPtr<Profiler> profiler;
 };
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H

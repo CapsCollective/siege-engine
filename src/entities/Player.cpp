@@ -55,11 +55,11 @@ void Player::OnDraw()
     );
 }
 
-BoundingBox Player::GetBoundingBox()
+BoundingBox Player::GetBoundingBox() const
 {
     return BoundingBox {
-            position - raylib::Vector3::One(),
-            position + raylib::Vector3::One(),
+            raylib::Vector3(position) - raylib::Vector3::One(),
+            raylib::Vector3(position) + raylib::Vector3::One(),
     };
 }
 
@@ -73,7 +73,7 @@ void Player::SetModelData(const ModelData& data)
     modelData = data;
 }
 
-Entity* Player::Clone()
+Entity* Player::Clone() const
 {
     return new Player(position, rotation);
 }

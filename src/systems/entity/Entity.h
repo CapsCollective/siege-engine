@@ -4,6 +4,7 @@
 #include "IndexAllocator.h"
 #include <Vector3.hpp>
 #include "string"
+#include "EntityPtr.h"
 
 /**
  * The base entity class for game objects and tool
@@ -89,14 +90,14 @@ public:
      * @note Calling this function on an object that does not
      *       override it will return a zero sized BoundingBox
      */
-    virtual BoundingBox GetBoundingBox();
+    virtual BoundingBox GetBoundingBox() const;
 
     /**
      * A virtual method to be overridden for more complex
      * object copying logic
      * @return a pointer to the cloned entity object
      */
-    virtual Entity* Clone();
+    virtual Entity* Clone() const;
 
     // Public getters
 
