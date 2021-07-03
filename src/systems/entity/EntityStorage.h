@@ -105,7 +105,20 @@ private:
      * @return a -1 when no index is found, or the index if the entity
      *         is found
      */
-    static int32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
+    static int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage);
+
+    /**
+     * Searches a node of a packed index for an entity
+     * @param targetEntity - the entity pointer you want to find
+     * @param storage - the entity vector that you want to search over
+     * @param targetZIndex - the z index of the entity
+     * @param branchIndex - the index of the branch being searched
+     * @return a 0 when no entity is found, or the index of the branch if the entity was found
+     */
+    static size_t SearchBranch(Entity* targetEntity,
+                               const std::vector<Entity*>& storage,
+                               const int& targetZIndex,
+                               const size_t& branchIndex);
 
     // Private fields
 
