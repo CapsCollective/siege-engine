@@ -8,7 +8,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
         Logging::VariantContainer vc[] {1, "$$", 17.3, 1.2f, raylib::Vector3::Zero()};
         std::string fmt = "This {} is {} very {} well {} formatted {}!";
         Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
-        REQUIRE(fmt == "This 1 is $$ very 17.300000 well 1.200000 formatted Vector3(0.000000,0.000000,0.000000)!");
+        REQUIRE(fmt == "This 1 is $$ very 17.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
     }
 
     SECTION("when given too few replacement points for values it should only use those it can fit")

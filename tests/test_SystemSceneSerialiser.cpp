@@ -69,7 +69,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
     {
         std::string sceneData = SceneSerialiser::Serialise({e1});
         REQUIRE(sceneData == "TestEntity1|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some custom data|\n");
@@ -82,7 +82,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
 
             sceneData = SceneSerialiser::Serialise({e1});
             REQUIRE(sceneData == "TestEntity1|"
-                                 "POSITION:1.000000,2.000000,3.000000|"
+                                 "POSITION:1.00,2.00,3.00|"
                                  "ROTATION:25.000000|"
                                  "Z-INDEX:-3|"
                                  "CUSTOM_DATA:this is some custom data|\n");
@@ -93,24 +93,24 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
     {
         std::string sceneData = SceneSerialiser::Serialise({e2, e1});
         REQUIRE(sceneData == "TestEntity2|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some other custom data|\n"
                              "TestEntity1|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some custom data|\n");
 
         sceneData = SceneSerialiser::Serialise({e1, e2});
         REQUIRE(sceneData == "TestEntity1|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some custom data|\n"
                              "TestEntity2|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some other custom data|\n");
@@ -120,16 +120,16 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
     {
         std::string sceneData = SceneSerialiser::Serialise({e2, e3, e1});
         REQUIRE(sceneData == "TestEntity2|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some other custom data|\n"
                              "TestEntity3|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|\n"
                              "TestEntity1|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some custom data|\n");
@@ -140,12 +140,12 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
         auto e4 = new Entity();
         std::string sceneData = SceneSerialiser::Serialise({e2, e4, e1});
         REQUIRE(sceneData == "TestEntity2|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some other custom data|\n"
                              "TestEntity1|"
-                             "POSITION:0.000000,0.000000,0.000000|"
+                             "POSITION:0.00,0.00,0.00|"
                              "ROTATION:0.000000|"
                              "Z-INDEX:0|"
                              "CUSTOM_DATA:this is some custom data|\n");
