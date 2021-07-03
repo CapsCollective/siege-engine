@@ -7,14 +7,14 @@ TEST_CASE("vectors can be converted to strings", "[StringHelpers]")
     {
         std::string result = StringHelpers::VectorToString(raylib::Vector3::Zero());
 
-        REQUIRE(result == "0.000000,0.000000,0.000000");
+        REQUIRE(result == "0.00,0.00,0.00");
     }
 
     SECTION("when a vector is provided to the function it should be properly formatted")
     {
         raylib::Vector3 vec(3.6f, 2.11f, 37.1f);
         std::string result = StringHelpers::VectorToString(vec);
-        REQUIRE(result == "3.600000,2.110000,37.100000");
+        REQUIRE(result == "3.60,2.11,37.10");
     }
 }
 
