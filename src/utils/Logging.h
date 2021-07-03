@@ -46,6 +46,7 @@ namespace Logging
         DEFINE_VARIANT_TYPE(const int& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const float& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const double& data, std::to_string(data));
+        DEFINE_VARIANT_TYPE(const size_t& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const Entity& data,data.GetName());
         DEFINE_VARIANT_TYPE(const raylib::Vector3& data,
                             "Vector3(" + StringHelpers::VectorToString(data) + ")");
