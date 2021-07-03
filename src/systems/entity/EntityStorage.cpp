@@ -185,12 +185,50 @@ void EntityStorage::FreeEntities()
     freedEntities.clear();
 }
 
-int32_t EntityStorage::GetEntityIndex(Entity *entity, std::vector<Entity *> &storage) {
-    // Try find the entity, and return the index of the entity or -1 if not found
-    auto it = std::find(storage.begin(), storage.end(), entity);
-    return (it != storage.end()) ? (int32_t) std::distance(storage.begin(), it) : -1;
+int32_t EntityStorage::GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
+{
+    if (storage.empty()) return -1;
+
+    size_t index = 0;
+    int targetZIndex = entity->GetZIndex();
+    bool found = storage[0] == entity;
+    int32_t foundIndex = 0;
+
+    while(!found && index < storage.size()) {
+        // Get the branches of the current node
+        size_t left = (index * 2) + 1;
+        size_t right = (index * 2) + 2;
+
+        // Search each branch for the entity. If no entity is found, return 0.
+        size_t isOnLeft = SearchBranch(entity, storage, targetZIndex, left);
+        size_t isOnRight = SearchBranch(entity, storage, targetZIndex, right);
+
+        // Check if either branch found the entity
+        size_t branchResults = (isOnLeft * left) + (isOnRight * right);
+
+        // If the entity was found, return the entity's index, otherwise return -1.
+        foundIndex = (int)branchResults + ((branchResults == 0) * -1);
+
+        found = (foundIndex != -1);
+
+        index++;
+    }
+    return foundIndex;
 }
 
-bool EntityStorage::IsLive(const GenerationalIndex& index) {
+size_t EntityStorage::SearchBranch(
+        Entity* targetEntity,
+        const std::vector<Entity*>& storage,
+        const int& targetZIndex,
+        const size_t& branchIndex)
+{
+    // Check if the index is in bounds, otherwise return 0
+    size_t index = (branchIndex < storage.size()) * branchIndex;
+    // return the entity's index if it exists, otherwise return 0.
+    return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == targetEntity);
+}
+
+bool EntityStorage::IsLive(const GenerationalIndex& index)
+{
     return allocator.IsLive(index);
 }
