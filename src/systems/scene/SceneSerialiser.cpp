@@ -14,25 +14,25 @@ void SceneSerialiser::RegisterSerialisable(
 
 std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
 {
+    auto& serialisables = GetSerialisables();
+
     // Iterate over each entity in the scene
     std::string fileData;
     for (auto& entity : entities)
     {
+        // Only serialise entities that register a serialisable interface
+        auto it = serialisables.find(entity->GetName());
+        if (it == serialisables.end()) continue;
+
         // Serialise the general entity information
         fileData += entity->GetName() + SEP;
         fileData += DefineField("POSITION", StringHelpers::VectorToString(entity->GetPosition()));
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
 
-        // Check if the entity has a relevant serialisable interface registered
-        auto& serialisables = GetSerialisables();
-        auto it = serialisables.find(entity->GetName());
-        if (it != serialisables.end())
-        {
-            // Apply its serialiser if it
-            Serialiser serialiser = it->second.first;
-            if (serialiser) fileData += serialiser(entity);
-        }
+        // Apply its serialiser if it
+        Serialiser serialiser = it->second.first;
+        if (serialiser) fileData += serialiser(entity);
 
         // End the serialisation entry
         fileData += "\n";
