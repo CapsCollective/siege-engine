@@ -44,6 +44,13 @@ private:
 
     // Private methods
 
+    static inline std::string MakeScenePath(const std::string& sceneName, const std::string& baseDir)
+    {
+        return baseDir + sceneName + ".scene";
+    }
+
+    // Private methods
+
     /**
      * Clears all entities in the scene (and related resources)
      */
@@ -61,13 +68,5 @@ private:
      */
     static std::string nextScene;
 };
-
-// Free functions
-
-inline std::string MakeScenePath(const std::string& sceneName, const std::string& baseDir)
-{
-    return baseDir + sceneName + ".scene";
-}
-
 
 #endif //A_DARK_DISCOMFORT_SCENEMANAGER_H

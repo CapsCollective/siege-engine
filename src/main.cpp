@@ -39,18 +39,21 @@ int main(int argc, char* argv[])
     ServiceLocator::Provide(&camera);
 
     // Initialise the message display
-    auto display = new MessageDisplay();
-    ServiceLocator::Provide(display);
+    auto display = MessageDisplay();
+    ServiceLocator::Provide(&display);
 
     // Initialise the profiler
-    auto profiler = new Profiler(isEditorMode);
-    ServiceLocator::Provide(profiler);
+    auto profiler = Profiler(isEditorMode);
+    ServiceLocator::Provide(&profiler);
+
+    // Initialise the dev console
+    auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
     EntityStorage::Add({
-        display,
-        profiler,
-        new DevConsole(isEditorMode)
+        &display,
+        &profiler,
+        &devConsole
     }, true);
 
     // Instantiate world objects as per mode options
@@ -103,13 +106,13 @@ int main(int argc, char* argv[])
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
+        window.EndDrawing();
+
         // Remove all entities at the end of the frame
         ResourceManager::FreeResources();
         CollisionSystem::FreeEntities();
         EntityStorage::FreeEntities();
         SceneManager::LoadNextScene();
-
-        window.EndDrawing();
     }
 
     return 0;

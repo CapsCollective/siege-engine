@@ -5,6 +5,7 @@
 #include <cstdint>
 
 // Utility Structs
+// TODO document this class
 
 struct IndexEntry 
 {
