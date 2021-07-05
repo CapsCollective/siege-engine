@@ -1,9 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include "../../systems/entity/Tool.h"
+#include "../../systems/entity/Entity.h"
 #include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
+#include "../../systems/entity/EntityPtr.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>
@@ -13,24 +14,22 @@ enum EditorMode {
     ROTATION,
 };
 
-class EditorController : public Tool
+class EditorController : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     EditorController() :
-    messageDisplay(ServiceLocator::GetMessageDisplay()),
-    selectedEntity(nullptr),
-    camera(ServiceLocator::GetCamera()),
-    isGridActive(true),
-    movePrecision(2),
-    rotatePrecision(3),
-    currentMode(POSITION),
-    selectedIdx(0)
-    {
-        Entity::SetName("EditorController");
-    };
+        isGridActive(true),
+        currentMode(POSITION),
+        movePrecision(2),
+        rotatePrecision(3),
+        selectedIdx(0),
+        camera(ServiceLocator::GetCamera()),
+        selectedEntity(nullptr),
+        messageDisplay(ServiceLocator::GetMessageDisplay())
+    {};
 
     // Class methods
 
@@ -80,9 +79,9 @@ private:
 
     raylib::Camera3D* camera;
 
-    Entity* selectedEntity;
+    EntityPtr<Entity> selectedEntity;
 
-    class MessageDisplay* messageDisplay;
+    EntityPtr<MessageDisplay> messageDisplay;
 };
 
 

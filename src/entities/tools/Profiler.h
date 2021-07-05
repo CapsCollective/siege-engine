@@ -1,19 +1,17 @@
 #ifndef A_DARK_DISCOMFORT_PROFILER_H
 #define A_DARK_DISCOMFORT_PROFILER_H
 
-#include "../../systems/entity/Tool.h"
+#include "../../systems/entity/Entity.h"
 
-class Profiler : public Tool
+class Profiler : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     explicit Profiler(bool isActive) :
-    isActive(isActive)
-    {
-        Entity::SetName("Profiler");
-    };
+        isActive(isActive)
+    {};
 
     // Public methods
 

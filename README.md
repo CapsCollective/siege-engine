@@ -1,6 +1,7 @@
 ![macOS Status](../../workflows/macOS/badge.svg)
 ![Linux Status](../../workflows/Ubuntu/badge.svg)
 ![Windows Status](../../workflows/Windows/badge.svg)
+![Tests Status](../../workflows/Tests/badge.svg)
 # A Dark Discomfort
 
 A retro survival horror game made in [raylib](https://github.com/raysan5/raylib).

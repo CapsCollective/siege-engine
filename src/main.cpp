@@ -1,13 +1,15 @@
 #include "systems/collision/CollisionSystem.h"
 #include "systems/resource/ResourceManager.h"
-#include "entities/tools/EditorController.h"
-#include "entities/tools/MessageDisplay.h"
 #include "systems/entity/EntityStorage.h"
 #include "systems/scene/SceneManager.h"
+#include "utils/ServiceLocator.h"
+
+#include "entities/tools/EditorController.h"
+#include "entities/tools/MessageDisplay.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
-#include "utils/ServiceLocator.h"
+
 #include <Camera3D.hpp>
 #include <Vector3.hpp>
 #include <Window.hpp>
@@ -36,18 +38,23 @@ int main(int argc, char* argv[])
     );
     ServiceLocator::Provide(&camera);
 
-    // Initialise and register the message display
-    auto display = new MessageDisplay();
-    ServiceLocator::Provide(display);
-    EntityStorage::Register(display);
+    // Initialise the message display
+    auto display = MessageDisplay();
+    ServiceLocator::Provide(&display);
 
-    // Initialise and register the profiler
-    auto profiler = new Profiler(isEditorMode);
-    ServiceLocator::Provide(profiler);
-    EntityStorage::Register(profiler);
+    // Initialise the profiler
+    auto profiler = Profiler(isEditorMode);
+    ServiceLocator::Provide(&profiler);
 
-    // Initialise and register the dev console
-    EntityStorage::Register(new DevConsole(isEditorMode));
+    // Initialise the dev console
+    auto devConsole = DevConsole(isEditorMode);
+
+    // Batch register all initialised tools (including the dev console)
+    EntityStorage::Add({
+        &display,
+        &profiler,
+        &devConsole
+    }, true);
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -55,8 +62,12 @@ int main(int argc, char* argv[])
         // Start the editor controller
         auto editor = new EditorController();
         ServiceLocator::Provide(editor);
-        EntityStorage::Register(editor);
-        EntityStorage::Register(new FreeCam());
+
+        // Batch register the editor and freeCam
+        EntityStorage::Add({
+            editor,
+            new FreeCam()
+        }, true);
     }
     else
     {
@@ -95,13 +106,13 @@ int main(int argc, char* argv[])
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
+        window.EndDrawing();
+
         // Remove all entities at the end of the frame
         ResourceManager::FreeResources();
         CollisionSystem::FreeEntities();
         EntityStorage::FreeEntities();
         SceneManager::LoadNextScene();
-
-        window.EndDrawing();
     }
 
     return 0;

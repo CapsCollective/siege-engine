@@ -1,6 +1,5 @@
 #include "../../entities/tools/MessageDisplay.h"
 #include "../../systems/resource/ResourceManager.h"
-#include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
 #include "SceneSerialiser.h"
 #include "SceneManager.h"
@@ -8,10 +7,8 @@
 #include <fstream>
 #include <vector>
 
-// Define macros
-#define OUT
-#define UNKNOWN_FILENAME "untitled"
-#define SCENE_PATH(sceneName) "assets/scenes/" + sceneName + ".scene"
+// Define constants
+static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
 // Define static members
 std::string SceneManager::currentScene;
@@ -24,20 +21,24 @@ void SceneManager::NewScene()
     currentScene = UNKNOWN_FILENAME;
 }
 
-void SceneManager::QueueNextScene(const std::string &sceneName)
+void SceneManager::QueueNextScene(const std::string& sceneName)
 {
     // Free all current items from storage
     ClearScene();
     nextScene = sceneName;
 }
 
-void SceneManager::LoadNextScene()
+void SceneManager::LoadNextScene(const std::string& baseDir)
 {
     if (nextScene.empty()) return;
+
     MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
 
     // Try open the next scene file for streaming
-    std::ifstream file(SCENE_PATH(nextScene));
+    std::ifstream file(MakeScenePath(nextScene, baseDir));
+    // TODO move this into the scene serialiser
+
+    std::string message;
 
     // Exit if next scene is invalid
     if (file.is_open())
@@ -50,13 +51,16 @@ void SceneManager::LoadNextScene()
         // Deserialise and register all entities to current scene
         std::vector<Entity*> entities;
         SceneSerialiser::Deserialise(sceneLines, entities);
-        for (auto entity : entities) EntityStorage::Register(entity);
+        for (auto& entity : entities) EntityStorage::Add(entity);
 
         // Set the current scene details
         currentScene = nextScene;
-        messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
+        message = "Successfully loaded " + nextScene + ".scene";
+        //messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
     }
-    else messageDisplay->DisplayMessage("Unable to find \"" + nextScene +  ".scene\"");
+    else message = "Unable to find \"" + nextScene +  ".scene\"";
+
+    if (messageDisplay) messageDisplay->DisplayMessage(message);
 
     // Close the file stream and clear next scene
     file.close();
@@ -66,16 +70,16 @@ void SceneManager::LoadNextScene()
 void SceneManager::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    SaveScene(currentScene.empty() ? "" : currentScene);
+    SaveScene(currentScene.empty() ? std::string() : currentScene);
 }
 
-void SceneManager::SaveScene(const std::string& sceneName)
+void SceneManager::SaveScene(const std::string& sceneName, const std::string& baseDir)
 {
     // Get and set the current scene name
     currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
 
     // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(SCENE_PATH(currentScene));
+    std::ofstream fileStream(MakeScenePath(currentScene, baseDir));
     fileStream << SceneSerialiser::Serialise(EntityStorage::GetEntities());
     fileStream.close();
 }
@@ -83,7 +87,7 @@ void SceneManager::SaveScene(const std::string& sceneName)
 void SceneManager::ClearScene()
 {
     // Free all current entities from storage
-    for (auto entity : EntityStorage::GetEntities()) entity->QueueFree();
+    for (auto& entity : EntityStorage::GetEntities()) entity->QueueFree();
 
     // Clear out all resources
     ResourceManager::ClearResources();

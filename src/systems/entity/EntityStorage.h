@@ -11,37 +11,30 @@ public:
     // Public functions
 
     /**
-     * Queues an entity for initialisation in the next frame
-     * @param entity - the entity to register in storage
+     * Queues an entity to be added to the scene at the end of the frame.
+     * @param entity - the entity to add to the storage queue storage
+     * @param isTool - A flag to specify whether an entity is a tool (meaning it can't be removed)
      */
-    static void Register(class Entity* entity);
+    static void Add(class Entity* entity, bool isTool = false);
 
     /**
-     * Removes an entity from storage
-     * @param entity - entity to be removed from storage
+     * Queues a batch of entities to be added in the scene at the end of the frame.
+     * @param newEntities - A vector of entities to be added to storage
+     * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
      */
-    static void Remove(Entity* entity);
+    static void Add(const std::vector<Entity*>& newEntities, bool isTool = false);
 
     /**
      * Returns packed game entities (for iteration purposes)
-     * @return A reference to the vector of packed game entities
+     * @return a reference to the vector of packed game entities
      */
     static const std::vector<Entity*>& GetEntities() { return packedEntities; }
 
     /**
      * Returns packed tool entities (for iteration purposes)
-     * @return A reference to the vector of packed tool entities
+     * @return a reference to the vector of packed tool entities
      */
     static const std::vector<Entity*>& GetTools() { return packedTools; }
-
-    /**
-     * Returns an entity in the packed list
-     * @param index - the index to access
-     * @return The entity at the supplied index
-     * @warning Accessing an out of bounds index will result in
-     *          undefined behaviour
-     */
-    static Entity* GetPackedEntity(size_t index) { return packedEntities[index]; }
 
     /**
      * Queues an entity for freeing at the end of the frame
@@ -61,25 +54,71 @@ public:
     static void RegisterEntities();
 
     /**
-     * Operator overload for index operator
-     * @param index - the generational index to be accessed
-     * @return The entity at the specified generational index
-     * @note Will return a nullptr if the entity cannot be found
+     * Resets the entity storage and removes all tool, non-tool, and queued entities.
+     * @warning THIS IS VERY UNSAFE AND SHOULD NOT BE USED IN THE MAIN LOOP.
      */
-    Entity* operator[](GenerationalIndex index);
+    static void Reset();
+
+    /**
+     * Determines whether a particular entity is valid.
+     * @param index - the generational index of the entity.
+     * @return true if entity is valid, false otherwise.
+     */
+    static bool IsLive(const GenerationalIndex& index);
 
 private:
 
     // Private Functions
 
     /**
+     * Sorts the entity packed storage by Z index.
+     * @param storage - the entity vector that needs to be sorted.
+     */
+    static void Sort(std::vector<Entity*>& storage);
+
+    /**
+     * Re-sorts the entity packed index by Z-index.
+     * Implements a partial sort, so only relevant sections of the
+     * packed storage will be sorted.
+     * @param entity - the entity being compared
+     * @param oldIdx - the old Z index (for comparison)
+     */
+    friend class Entity;
+    static void SortPartial(Entity* entity, int oldZIdx);
+
+    /**
+     * Removes an entity from storage
+     * @param entity - entity to be removed from storage
+     */
+    static void Remove(Entity* entity, std::vector<Entity*>& storage);
+
+    /**
+     * Cleared a specific entity storage vector of all entities
+     * @param storage - the specific storage that needs to be cleared
+     */
+    static void ClearStorage(std::vector<Entity*>& storage);
+
+    /**
      * Returns the index of a given element within a given entity vector
      * @param entity - the entity pointer you want to find
      * @param storage - the entity vector that you want to search over
-     * @return A -1 when no index is found, or the index if the entity
+     * @return a -1 when no index is found, or the index if the entity
      *         is found
      */
-    static uint32_t GetEntityIndex(Entity* entity, std::vector<Entity*>& storage);
+    static int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage);
+
+    /**
+     * Searches a node of a packed index for an entity
+     * @param targetEntity - the entity pointer you want to find
+     * @param storage - the entity vector that you want to search over
+     * @param targetZIndex - the z index of the entity
+     * @param branchIndex - the index of the branch being searched
+     * @return a 0 when no entity is found, or the index of the branch if the entity was found
+     */
+    static size_t SearchBranch(Entity* targetEntity,
+                               const std::vector<Entity*>& storage,
+                               const int& targetZIndex,
+                               const size_t& branchIndex);
 
     // Private fields
 
@@ -115,13 +154,7 @@ private:
     /**
      * Vector containing all entities that were queued for adding
      */
-    static std::vector<Entity*> registeredEntities;
-
-    /**
-     * Adds an entity to the entity storage
-     * @param entity - The entity pointer being added
-     */
-    static void AddEntity(Entity* entity);
+    static std::vector<std::pair<Entity*, bool>> registeredEntities;
 };
 
 #endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H

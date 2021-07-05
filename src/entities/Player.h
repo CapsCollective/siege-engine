@@ -9,28 +9,30 @@ class Player : public Entity, public Modelable
 {
 public:
 
-    // Constructors
+    // Public constants
+
+    static const std::string ENTITY_NAME;
+
+    // 'Structors
 
     Player() :
-    Player(raylib::Vector3::Zero(), 0.f)
+        Player(raylib::Vector3::Zero(), 0.f)
     {};
 
     Player(raylib::Vector3 position, float rotation) :
-    Entity(position, rotation),
-    speed(1.5f),
-    velocity(raylib::Vector3::Zero()),
-    modelData(ModelData(
-            "assets/models/cube/cube.obj",
-            "assets/models/cube/cube.png"))
-    {
-        Entity::SetName("Player");
-    };
+        Entity(ENTITY_NAME, position, rotation),
+        speed(1.5f),
+        velocity(raylib::Vector3::Zero()),
+        modelData(ModelData(
+                "assets/models/cube/cube.obj",
+                "assets/models/cube/cube.png"))
+    {};
 
     // Public overrides
 
-    Entity* Clone() override;
+    Entity* Clone() const override;
 
-    BoundingBox GetBoundingBox() override;
+    BoundingBox GetBoundingBox() const override;
 
     const ModelData& GetModelData() override;
 
@@ -53,6 +55,7 @@ private:
     raylib::Vector3 velocity;
 
     ModelData modelData;
+
 };
 
 #endif //A_DARK_DISCOMFORT_PLAYER_H

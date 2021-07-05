@@ -1,19 +1,17 @@
 #ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 #define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 
-#include "../../systems/entity/Tool.h"
+#include "../../systems/entity/Entity.h"
 
-class MessageDisplay : public Tool
+class MessageDisplay : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     MessageDisplay() :
-    displayTime(0.f)
-    {
-        Entity::SetName("MessageDisplay");
-    };
+        displayTime(0.f)
+    {};
 
     // Public methods
 

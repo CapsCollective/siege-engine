@@ -1,23 +1,22 @@
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
-#include "../../systems/entity/Tool.h"
 #include "../../utils/ServiceLocator.h"
+#include "../../systems/entity/Entity.h"
+#include "../../systems/entity/EntityPtr.h"
 
-class DevConsole : public Tool
+class DevConsole : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     explicit DevConsole(bool isEditorMode) :
-    messageDisplay(ServiceLocator::GetMessageDisplay()),
-    profiler(ServiceLocator::GetProfiler()),
-    isEditorMode(isEditorMode),
-    isActive(false)
-    {
-        Entity::SetName("DevConsole");
-    };
+        isEditorMode(isEditorMode),
+        isActive(false),
+        messageDisplay(ServiceLocator::GetMessageDisplay()),
+        profiler(ServiceLocator::GetProfiler())
+    {};
 
 protected:
 
@@ -45,9 +44,9 @@ private:
 
     std::string lastInput;
 
-    MessageDisplay* messageDisplay;
+    EntityPtr<MessageDisplay> messageDisplay;
 
-    Profiler* profiler;
+    EntityPtr<Profiler> profiler;
 };
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H

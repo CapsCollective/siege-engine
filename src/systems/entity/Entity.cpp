@@ -3,12 +3,15 @@
 #include <utility>
 #include <cmath>
 
-BoundingBox Entity::GetBoundingBox()
+// Static member initialisation
+const std::string Entity::ENTITY_NAME("Entity");
+
+BoundingBox Entity::GetBoundingBox() const
 {
     return BoundingBox();
 }
 
-Entity* Entity::Clone()
+Entity* Entity::Clone() const
 {
     return nullptr;
 }
@@ -26,11 +29,6 @@ const std::string& Entity::GetName() const
 const GenerationalIndex& Entity::GetIndex() const
 {
     return index;
-}
-
-void Entity::SetName(std::string entityName)
-{
-    name = std::move(entityName);
 }
 
 void Entity::SetIndex(GenerationalIndex idx)
@@ -65,6 +63,13 @@ void Entity::SetRotation(float newRotation)
 
 void Entity::SetZIndex(int idx)
 {
-    // TODO add z-sorting to entity storage
+    // Only update z index if there's an actual change
+    if (idx == zIndex) return;
+
+    // Swap the values
+    int oldZIndex = zIndex;
     zIndex = idx;
+
+    // Inform the entity system of the change
+    EntityStorage::SortPartial(this, oldZIndex);
 }

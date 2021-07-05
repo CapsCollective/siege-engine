@@ -5,6 +5,7 @@
 #include <cstdint>
 
 // Utility Structs
+// TODO document this class
 
 struct IndexEntry 
 {
@@ -24,7 +25,7 @@ class IndexAllocator
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     IndexAllocator() = default;
 
