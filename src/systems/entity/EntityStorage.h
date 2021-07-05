@@ -60,9 +60,9 @@ public:
     static void Reset();
 
     /**
-     * TODO document me
-     * @param index
-     * @return
+     * Determines whether a particular entity is valid.
+     * @param index - the generational index of the entity.
+     * @return true if entity is valid, false otherwise.
      */
     static bool IsLive(const GenerationalIndex& index);
 

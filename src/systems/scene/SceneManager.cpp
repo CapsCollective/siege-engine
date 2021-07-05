@@ -1,6 +1,5 @@
 #include "../../entities/tools/MessageDisplay.h"
 #include "../../systems/resource/ResourceManager.h"
-#include "../../systems/entity/EntityStorage.h"
 #include "../../utils/ServiceLocator.h"
 #include "SceneSerialiser.h"
 #include "SceneManager.h"
@@ -37,13 +36,13 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
 
     // Try open the next scene file for streaming
     std::ifstream file(MakeScenePath(nextScene, baseDir));
+    // TODO move this into the scene serialiser
 
     std::string message;
 
     // Exit if next scene is invalid
     if (file.is_open())
     {
-        // TODO move this into the scene serialiser
         // Get the scene file's lines
         std::string line;
         std::vector<std::string> sceneLines;
@@ -52,7 +51,7 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
         // Deserialise and register all entities to current scene
         std::vector<Entity*> entities;
         SceneSerialiser::Deserialise(sceneLines, entities);
-        for (auto entity : entities) EntityStorage::Add(entity);
+        for (auto& entity : entities) EntityStorage::Add(entity);
 
         // Set the current scene details
         currentScene = nextScene;
@@ -88,7 +87,7 @@ void SceneManager::SaveScene(const std::string& sceneName, const std::string& ba
 void SceneManager::ClearScene()
 {
     // Free all current entities from storage
-    for (auto entity : EntityStorage::GetEntities()) entity->QueueFree();
+    for (auto& entity : EntityStorage::GetEntities()) entity->QueueFree();
 
     // Clear out all resources
     ResourceManager::ClearResources();
