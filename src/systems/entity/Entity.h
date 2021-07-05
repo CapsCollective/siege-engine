@@ -4,6 +4,7 @@
 #include "IndexAllocator.h"
 #include <Vector3.hpp>
 #include "string"
+#include "EntityPtr.h"
 
 /**
  * The base entity class for game objects and tool
@@ -11,6 +12,50 @@
 class Entity
 {
 public:
+
+    // Public constants
+
+    static const std::string ENTITY_NAME;
+
+    // 'Structors
+
+    /**
+     * Zero-param constructor for Entity, initialises both
+     * position and rotation to zero, and name to "Entity"
+     */
+    Entity() :
+            Entity(ENTITY_NAME)
+    {};
+
+    /**
+     * Single-param constructor for Entity that simply defines
+     * a custom name for the Entity
+     * @param name - a const reference to the name of the
+     *               entity as a string
+     */
+    Entity(const std::string& name) :
+            Entity(name, raylib::Vector3::Zero(), 0.f)
+    {};
+
+    /**
+     * Delegate constructor for Entity, initialises
+     * generational index to zero
+     * @param name - a const reference to the name of the
+     *               entity as a string
+     * @param position - the initial position of the entity
+     * @param rotation - the initial rotation of the entity
+     * @param zIndex - the initial z-index of the entity,
+     *                 defaults to zero
+     */
+    Entity(const std::string& name, raylib::Vector3 position, float rotation, int zIndex = 0) :
+            position(position),
+            rotation(rotation),
+            name(name),
+            index(GenerationalIndex()),
+            zIndex(zIndex)
+    {};
+
+    virtual ~Entity() = default;
 
     // Virtual methods
 
@@ -41,51 +86,51 @@ public:
     /**
      * A virtual method for implementing a definition of an
      * entity's BoundingBox attribute
-     * @return The entity's BoundingBox
+     * @return the entity's BoundingBox
      * @note Calling this function on an object that does not
      *       override it will return a zero sized BoundingBox
      */
-    virtual BoundingBox GetBoundingBox();
+    virtual BoundingBox GetBoundingBox() const;
 
     /**
      * A virtual method to be overridden for more complex
      * object copying logic
-     * @return A pointer to the cloned entity object
+     * @return a pointer to the cloned entity object
      */
-    virtual Entity* Clone();
+    virtual Entity* Clone() const;
 
     // Public getters
 
     /**
      * Getter method for the entity's vanity name
-     * @return A constant reference to the entity's name
+     * @return a constant reference to the entity's name
      *         as a string
      */
     const std::string& GetName() const;
 
     /**
      * Getter method for the entity's generational index
-     * @return A constant reference to the entity's
+     * @return a constant reference to the entity's
      *         GenerationalIndex
      */
     const GenerationalIndex& GetIndex() const;
 
     /**
      * Getter method for the entity's position attribute
-     * @return A constant reference to the entity's
+     * @return a constant reference to the entity's
      *         position a Vector3
      */
     const raylib::Vector3& GetPosition() const;
 
     /**
      * Getter method for the entity's rotation attribute
-     * @return The entity's rotation as a float
+     * @return the entity's rotation as a float
      */
     float GetRotation() const;
 
     /**
      * Getter method for the entity's z-index attribute
-     * @return The entity's z-index as an int
+     * @return the entity's z-index as an int
      */
     int GetZIndex() const;
 
@@ -117,51 +162,13 @@ public:
      */
     void SetRotation(float newRotation);
 
-protected:
-
-    // Constructors
-
-    /**
-     * Zero-param constructor for Entity, initialises both
-     * position and rotation to zero
-     */
-    Entity() :
-    Entity(raylib::Vector3::Zero(), 0.f)
-    {};
-
-    /**
-     * Delegate constructor for Entity, initialises
-     * generational index to zero and name to "Entity"
-     * @param position - the initial position of the entity
-     * @param rotation - the initial rotation of the entity
-     * @param zIndex - the initial z-index of the entity,
-     *                 defaults to zero
-     */
-    Entity(raylib::Vector3 position, float rotation, int zIndex = 0) :
-    index(GenerationalIndex()),
-    name("Entity"),
-    rotation(rotation),
-    position(position),
-    zIndex(zIndex)
-    {};
-
-    // Protected methods
-
-    /**
-     * Setter method for the entity's vanity name
-     * @param entityName - a string to set as the entity's
-     *                     vanity name
-     * @warning Do not use this method outside of the
-     *          constructor as doing so will produce
-     *          undefined behaviour during serialisation
-     */
-    void SetName(std::string entityName);
-
     /**
      * Setter method for the entity's z-index value
      * @param idx - the index value to set
      */
     void SetZIndex(int idx);
+
+protected:
 
     // Protected fields
 
@@ -182,7 +189,7 @@ private:
     /**
      * The name of the entity type
      */
-    std::string name;
+    const std::string& name;
 
     /**
      * The generational index of the entity

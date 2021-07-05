@@ -31,6 +31,7 @@ GenerationalIndex IndexAllocator::AllocateIndex()
 
 bool IndexAllocator::IsLive(GenerationalIndex index) 
 {
+    // TODO add generation checking
     return entries[index.index].live;
 }
 

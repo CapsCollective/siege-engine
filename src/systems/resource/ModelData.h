@@ -8,7 +8,7 @@ class ModelData
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     ModelData(std::string  modelPath, std::string  texturePath) :
     modelPath(std::move(modelPath)),
@@ -33,7 +33,7 @@ public:
 
     const std::string& GetTexturePath() const;
 
-    static void SetTexture(Model& model, Texture2D& texture);
+    static void SetTexture(const Model& model, const Texture2D& texture);
 
 private:
 

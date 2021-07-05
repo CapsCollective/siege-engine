@@ -1,24 +1,23 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
+#include "../../systems/entity/Entity.h"
 #include <Camera3D.hpp>
-#include "../../systems/entity/Tool.h"
 #include "../../utils/ServiceLocator.h"
 
-class FreeCam : public Tool
+class FreeCam : public Entity
 {
 public:
 
-    // Constructors
+    // 'Structors
 
     FreeCam() :
-    moveSpeed(10.f),
-    lookSpeed(0.1f),
-    camera(ServiceLocator::GetCamera()),
-    previousMousePosition({0.f, 0.f}),
-    rotation(raylib::Vector3(0.f, -1.f, -1.f))
+        moveSpeed(10.f),
+        lookSpeed(0.1f),
+        camera(ServiceLocator::GetCamera()),
+        rotation(raylib::Vector3(0.f, -1.f, -1.f)),
+        previousMousePosition({0.f, 0.f})
     {
-        Entity::SetName("FreeCam");
         camera->SetMode(CAMERA_CUSTOM);
     };
 

@@ -47,7 +47,7 @@ void EditorController::OnUpdate()
                 auto newEntity = selectedEntity->Clone();
                 if (newEntity)
                 {
-                    EntityStorage::Register(newEntity);
+                    EntityStorage::Add(newEntity);
                     messageDisplay->DisplayMessage("Entity duplicated");
                 }
                 else messageDisplay->DisplayMessage("Entity not duplicatable");
@@ -87,13 +87,13 @@ void EditorController::OnUpdate()
     if (IsKeyPressed(KEY_TAB))
     {
         // Select the first packed entity by index
-        int totalEntities = EntityStorage::GetEntities().size();
+        size_t totalEntities = EntityStorage::GetEntities().size();
         if (totalEntities > 0)
         {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do {
                 // Try select the entity
-                SelectEntity(EntityStorage::GetPackedEntity(selectedIdx));
+                SelectEntity(EntityStorage::GetEntities()[selectedIdx]);
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
@@ -186,12 +186,12 @@ bool EditorController::TryAddEntity(std::string& entityName)
     // Check for matching cases to run
     if (entityName == "geometry")
     {
-        EntityStorage::Register(new Geometry());
+        EntityStorage::Add(new Geometry());
         return true;
     }
     else if (entityName == "player")
     {
-        EntityStorage::Register(new Player());
+        EntityStorage::Add(new Player());
         return true;
     }
     return false;
@@ -244,7 +244,7 @@ bool EditorController::TrySetRot(float rotation)
 bool EditorController::TrySetModelData(const std::string& model, const std::string& texture)
 {
     if (!selectedEntity) return false;
-    auto modelableEntity = dynamic_cast<Modelable*>(selectedEntity);
+    auto modelableEntity = selectedEntity.Get<Modelable>();
     if (modelableEntity)
     {
         auto modelData = modelableEntity->GetModelData();
