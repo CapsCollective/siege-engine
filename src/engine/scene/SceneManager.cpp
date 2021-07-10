@@ -1,7 +1,7 @@
-#include "../../utils/ServiceLocator.h"
 #include "../resource/ResourceManager.h"
 #include "SceneSerialiser.h"
 #include "SceneManager.h"
+#include "../utils/Logging.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -31,8 +31,6 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
 {
     if (nextScene.empty()) return;
 
-    MessageDisplay* messageDisplay = ServiceLocator::GetMessageDisplay();
-
     // Try open the next scene file for streaming
     std::ifstream file(MakeScenePath(nextScene, baseDir));
     // TODO move this into the scene serialiser
@@ -54,12 +52,12 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
 
         // Set the current scene details
         currentScene = nextScene;
-        message = "Successfully loaded " + nextScene + ".scene";
-        //messageDisplay->DisplayMessage("Successfully loaded " + nextScene + ".scene");
+        CC_LOG_INFO("Successfully loaded {}.scene", nextScene);
     }
-    else message = "Unable to find \"" + nextScene +  ".scene\"";
-
-    if (messageDisplay) messageDisplay->DisplayMessage(message);
+    else
+    {
+        CC_LOG_INFO("Unable to load \"{}.scene\"", nextScene);
+    }
 
     // Close the file stream and clear next scene
     file.close();

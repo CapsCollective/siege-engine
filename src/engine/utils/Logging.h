@@ -15,6 +15,7 @@
 #define _CC_LOG_WRAP_TEXT_GREY(text) "\x1B[37m" text "\033[0m"
 
 // Define logging helper macros
+// TODO logging does not support changing variables
 #define _CC_LOG_LINE_LOC __FILE__ ":" TOSTRING(__LINE__)
 #define _CC_LOG_MSG_FMT(log_level, colour_macro, message) colour_macro(log_level " at [" _CC_LOG_LINE_LOC "] " message)
 #define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
