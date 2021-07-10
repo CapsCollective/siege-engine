@@ -4,8 +4,8 @@ platformpth = $(subst /,$(PATHSEP),$1)
 
 # Set global macros
 buildDir := bin
-compileFlags := -Wall -std=c++17 -I ./include
-linkFlags = -L lib/$(platform) -l raylib
+compileFlags := -Wall -std=c++17 -I ./include -I ./engine
+linkFlags = -L lib/$(platform) -l raylib -l engine
 ifdef MACRO_DEFS
 	macroDefines := -D $(MACRO_DEFS)
 endif
@@ -17,6 +17,14 @@ srcBuildDir := $(buildDir)/$(srcDir)
 sources := $(call rwildcard,$(srcDir)/,*.cpp)
 objects := $(patsubst $(srcDir)/%, $(srcBuildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
+
+# Set src target macros
+engineTarget = lib/$(platform)/libengine.a
+engineDir := engine
+engineBuildDir := $(buildDir)/$(engineDir)
+engineSources := $(call rwildcard,$(engineDir)/,*.cpp)
+engineObjects := $(patsubst $(engineDir)/%, $(engineBuildDir)/%, $(patsubst %.cpp, %.o, $(engineSources)))
+engineDepends := $(patsubst %.o, %.d, $(engineObjects))
 
 # Set test target macros
 testTarget := $(buildDir)/test
@@ -88,15 +96,27 @@ lib: submodules
 	$(MKDIR) $(call platformpth, lib/$(platform))
 	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),lib/$(platform),libraylib.a)
 
+# Link the engine and create the static lib
+lib/%/libengine.a: $(engineObjects)
+	ar -r $(engineTarget) $(engineObjects)
+
+# Add all rules from dependency files
+-include $(engineDepends)
+
+# Compile objects to the build directory
+$(engineBuildDir)/%.o: $(engineDir)/%.cpp Makefile
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(macroDefines)
+
 # Link the program and create the executable
-$(target): $(objects)
+$(target): $(engineTarget) $(objects)
 	$(CXX) $(objects) -o $(target) $(linkFlags)
 
 # Add all rules from dependency files
 -include $(depends)
 
 # Compile objects to the build directory
-$(srcBuildDir)/%.o: src/%.cpp Makefile
+$(srcBuildDir)/%.o: $(srcDir)/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(macroDefines)
 
@@ -105,11 +125,11 @@ execute:
 	$(target) $(ARGS)
 
 # Run all unit tests
-test: $(target) $(testTarget) executeTests cleanTests
+test: $(testTarget) executeTests cleanTests
 
 # Link the tests and create the executable
-$(testTarget): $(testObjects)
-	$(CXX) $(testObjects) $(filter-out $(srcBuildDir)/main.o, $(objects)) -o $(testTarget) $(linkFlags)
+$(testTarget): $(engineTarget) $(testObjects)
+	$(CXX) $(testObjects) -o $(testTarget) $(linkFlags)
 
 # Compile test objects to the build directory
 $(testBuildDir)/%.o: $(testDir)/%.cpp

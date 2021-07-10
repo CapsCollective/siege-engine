@@ -15,18 +15,17 @@
 #define _CC_LOG_WRAP_TEXT_GREY(text) "\x1B[37m" text "\033[0m"
 
 // Define logging helper macros
-// TODO logging does not support changing variables
 #define _CC_LOG_LINE_LOC __FILE__ ":" TOSTRING(__LINE__)
 #define _CC_LOG_MSG_FMT(log_level, colour_macro, message) colour_macro(log_level " at [" _CC_LOG_LINE_LOC "] " message)
 #define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
 #define _CC_LOG_VRNT_ARR_SZE CONCAT_SYMBOL(_vrnt_arr_sze_, __LINE__)
 #define _CC_LOG_FMT_STR CONCAT_SYMBOL(_fmt_str_, __LINE__)
-#define _CC_LOG(log_level, colour_macro, message, ...) \
-    static Logging::VariantContainer _CC_LOG_VRNT_ARR[] { __VA_ARGS__ }; \
+#define _CC_LOG(log_level, colour_macro, message, ...) { \
+    Logging::VariantContainer _CC_LOG_VRNT_ARR[] { __VA_ARGS__ }; \
     static size_t _CC_LOG_VRNT_ARR_SZE = sizeof(_CC_LOG_VRNT_ARR)/Logging::VARIANT_SIZE; \
-    static std::string _CC_LOG_FMT_STR (_CC_LOG_MSG_FMT(log_level, colour_macro, message)); \
+    std::string _CC_LOG_FMT_STR (_CC_LOG_MSG_FMT(log_level, colour_macro, message)); \
     Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE); \
-    std::cout << _CC_LOG_FMT_STR << std::endl;
+    std::cout << _CC_LOG_FMT_STR << std::endl; }
 #define DEFINE_VARIANT_TYPE(type, tranform) \
     VariantContainer(type) : data(tranform) {} // NOLINT(google-explicit-constructor)
 

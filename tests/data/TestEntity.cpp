@@ -1,5 +1,5 @@
 #include "TestEntity.h"
-#include "../../src/engine/scene/SceneSerialiser.h"
+#include <scene/SceneSerialiser.h>
 
 const std::string TestEntity::ENTITY_NAME("TestEntity");
 

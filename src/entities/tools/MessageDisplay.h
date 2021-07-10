@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 #define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
 
-#include "../../engine/entity/Entity.h"
+#include <entity/Entity.h>
 
 class MessageDisplay : public Entity
 {

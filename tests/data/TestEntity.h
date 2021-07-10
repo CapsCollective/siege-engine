@@ -1,6 +1,6 @@
 #ifndef A_DARK_DISCOMFORT_TESTENTITY_H
 #define A_DARK_DISCOMFORT_TESTENTITY_H
-#include "../../src/engine/entity/Entity.h"
+#include <entity/Entity.h>
 
 
 class TestEntity : public Entity {

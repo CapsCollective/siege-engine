@@ -1,6 +1,7 @@
 #include "SceneSerialiser.h"
 #include "../utils/StringHelpers.h"
 #include "../entity/Entity.h"
+#include "../utils/Logging.h"
 #include <iostream>
 #include <algorithm>
 
@@ -65,6 +66,6 @@ void SceneSerialiser::Deserialise(const std::vector<std::string>& sceneString, O
             Deserialiser deserialiser = it->second.second;
             if (deserialiser) entities.push_back(deserialiser(data, args));
         }
-        else std::cout << "\"" << args[ENTITY_NAME] << "\" has no deserialisation protocols defined" << std::endl;
+        else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", args[ENTITY_NAME]);
     }
 }

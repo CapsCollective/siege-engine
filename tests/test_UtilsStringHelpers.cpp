@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../src/engine/utils/StringHelpers.h"
+#include <utils/StringHelpers.h>
 
 TEST_CASE("vectors can be converted to strings", "[StringHelpers]")
 {

@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_SPLASHSCREEN_H
 #define A_DARK_DISCOMFORT_SPLASHSCREEN_H
 
-#include "../engine/entity/Entity.h"
+#include <entity/Entity.h>
 
 enum IntroSequenceState {
     BLINK,

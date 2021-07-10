@@ -1,14 +1,13 @@
-#include "engine/collision/CollisionSystem.h"
-#include "engine/resource/ResourceManager.h"
-#include "engine/entity/EntityStorage.h"
-#include "engine/scene/SceneManager.h"
+#include <collision/CollisionSystem.h>
+#include <resource/ResourceManager.h>
+#include <entity/EntityStorage.h>
+#include <scene/SceneManager.h>
 
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
-
 #include "ServiceLocator.h"
 
 #include <Camera3D.hpp>
