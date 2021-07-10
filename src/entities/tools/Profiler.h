@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_PROFILER_H
 #define A_DARK_DISCOMFORT_PROFILER_H
 
-#include "../../engine/entity/Entity.h"
+#include <entity/Entity.h>
 
 class Profiler : public Entity
 {

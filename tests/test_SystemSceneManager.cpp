@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "../src/engine/scene/SceneManager.h"
-#include "../src/engine/entity/EntityStorage.h"
+#include <scene/SceneManager.h>
+#include <entity/EntityStorage.h>
 #include "data/TestEntity.h"
 #include <fstream>
 #include <filesystem>

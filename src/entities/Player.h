@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_PLAYER_H
 #define A_DARK_DISCOMFORT_PLAYER_H
 
-#include "../engine/entity/Entity.h"
-#include "../engine/resource/ModelData.h"
-#include "../engine/resource/Modelable.h"
+#include <entity/Entity.h>
+#include <resource/ModelData.h>
+#include <resource/Modelable.h>
 
 class Player : public Entity, public Modelable
 {

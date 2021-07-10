@@ -1,11 +1,11 @@
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
-#include "../engine/entity/Entity.h"
-#include "../engine/resource/ModelData.h"
-#include "../engine/resource/Modelable.h"
-#include "../engine/collision/Collidable.h"
-#include "../engine/collision/CollisionSystem.h"
+#include <entity/Entity.h>
+#include <resource/ModelData.h>
+#include <resource/Modelable.h>
+#include <collision/Collidable.h>
+#include <collision/CollisionSystem.h>
 
 class Geometry : public Entity, public Modelable
 {

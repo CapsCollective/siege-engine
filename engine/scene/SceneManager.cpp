@@ -54,10 +54,7 @@ void SceneManager::LoadNextScene(const std::string& baseDir)
         currentScene = nextScene;
         CC_LOG_INFO("Successfully loaded {}.scene", nextScene);
     }
-    else
-    {
-        CC_LOG_INFO("Unable to load \"{}.scene\"", nextScene);
-    }
+    else CC_LOG_INFO("Unable to load \"{}.scene\"", nextScene);
 
     // Close the file stream and clear next scene
     file.close();

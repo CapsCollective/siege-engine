@@ -1,6 +1,6 @@
 #include "SplashScreen.h"
-#include "../engine/scene/SceneManager.h"
-#include "../engine/scene/SceneSerialiser.h"
+#include <scene/SceneManager.h>
+#include <scene/SceneSerialiser.h>
 
 // Define macros
 #define CAPS_COLOUR CLITERAL(Color){ 166, 226, 209, 255 }

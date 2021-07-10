@@ -1,6 +1,6 @@
 #include "Player.h"
-#include "../engine/collision/CollisionSystem.h"
-#include "../engine/scene/SceneSerialiser.h"
+#include <collision/CollisionSystem.h>
+#include <scene/SceneSerialiser.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
