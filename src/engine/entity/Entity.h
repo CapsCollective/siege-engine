@@ -104,7 +104,7 @@ public:
     /**
      * Getter method for the entity's vanity name
      * @return a constant reference to the entity's name
-     *         as a string
+ *         as a string
      */
     const std::string& GetName() const;
 

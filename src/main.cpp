@@ -1,8 +1,8 @@
-#include "systems/collision/CollisionSystem.h"
-#include "systems/resource/ResourceManager.h"
-#include "systems/entity/EntityStorage.h"
-#include "systems/scene/SceneManager.h"
 #include "utils/ServiceLocator.h"
+#include "engine/collision/CollisionSystem.h"
+#include "engine/resource/ResourceManager.h"
+#include "engine/entity/EntityStorage.h"
+#include "engine/scene/SceneManager.h"
 
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
