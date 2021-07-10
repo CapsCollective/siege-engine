@@ -18,7 +18,7 @@ sources := $(call rwildcard,$(srcDir)/,*.cpp)
 objects := $(patsubst $(srcDir)/%, $(srcBuildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
-# Set src target macros
+# Set engine target macros
 engineTarget = lib/$(platform)/libengine.a
 engineDir := engine
 engineBuildDir := $(buildDir)/$(engineDir)
@@ -32,6 +32,7 @@ testDir := tests
 testBuildDir := $(buildDir)/$(testDir)
 testSources := $(call rwildcard,$(testDir),*.cpp)
 testObjects := $(patsubst $(testDir)/%, $(testBuildDir)/%, $(patsubst %.cpp, %.o, $(testSources)))
+testDepends := $(patsubst %.o, %.d, $(testObjects))
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
@@ -85,10 +86,10 @@ submodules:
 
 # Copy the relevant header files into includes
 include: submodules
-	$(MKDIR) $(call platformpth, ./include)
-	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include,raylib.h)
-	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include,raymath.h)
-	$(call COPY,vendor/raylib-cpp/include,./include,*.hpp)
+	$(MKDIR) $(call platformpth, ./include/raylib)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include/raylib,raylib.h)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,./include/raylib,raymath.h)
+	$(call COPY,vendor/raylib-cpp/include,./include/raylib,*.hpp)
 
 # Build the raylib static library file and copy it into lib
 lib: submodules
@@ -130,6 +131,9 @@ test: $(testTarget) executeTests cleanTests
 # Link the tests and create the executable
 $(testTarget): $(engineTarget) $(testObjects)
 	$(CXX) $(testObjects) -o $(testTarget) $(linkFlags)
+
+# Add all rules from dependency files
+-include $(testDepends)
 
 # Compile test objects to the build directory
 $(testBuildDir)/%.o: $(testDir)/%.cpp

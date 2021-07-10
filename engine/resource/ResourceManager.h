@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_RESOURCEMANAGER_H
 #define A_DARK_DISCOMFORT_RESOURCEMANAGER_H
 
-#include <raylib-cpp.hpp>
+#include <raylib/raylib-cpp.hpp>
 #include <map>
 #include <variant>
 #include <vector>

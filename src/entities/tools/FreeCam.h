@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
-#include <Camera3D.hpp>
+#include <raylib/Camera3D.hpp>
 #include "../../ServiceLocator.h"
 #include <entity/Entity.h>
 
