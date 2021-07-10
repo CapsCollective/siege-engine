@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_SCENESERIALISER_H
 
 #include "../utils/Macros.h"
-#include <Vector3.hpp>
+#include <raylib/Vector3.hpp>
 #include <functional>
 #include <string>
 #include <vector>

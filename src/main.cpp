@@ -3,17 +3,17 @@
 #include <entity/EntityStorage.h>
 #include <scene/SceneManager.h>
 
+#include <raylib/Camera3D.hpp>
+#include <raylib/Vector3.hpp>
+#include <raylib/Window.hpp>
+#include <raylib/Color.hpp>
+
 #include "entities/tools/EditorController.h"
 #include "entities/tools/MessageDisplay.h"
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
 #include "ServiceLocator.h"
-
-#include <Camera3D.hpp>
-#include <Vector3.hpp>
-#include <Window.hpp>
-#include <Color.hpp>
 
 int main(int argc, char* argv[])
 {

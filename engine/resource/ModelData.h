@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_MODELDATA_H
 #define A_DARK_DISCOMFORT_MODELDATA_H
 
-#include <raylib-cpp.hpp>
+#include <raylib/raylib-cpp.hpp>
 #include "ResourceManager.h"
 
 class ModelData
