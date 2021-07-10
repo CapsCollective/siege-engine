@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../src/utils/Logging.h"
+#include "../src/engine/utils/Logging.h"
 
 TEST_CASE("messages can be formatted correctly", "[Logging]")
 {

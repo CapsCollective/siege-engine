@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
-#include "../../systems/entity/Entity.h"
+#include "../../engine/entity/Entity.h"
+#include "../../ServiceLocator.h"
 #include <Camera3D.hpp>
-#include "../../utils/ServiceLocator.h"
 
 class FreeCam : public Entity
 {

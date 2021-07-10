@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "../src/systems/entity/Entity.h"
-#include "../src/systems/entity/EntityStorage.h"
+#include "../src/engine/entity/Entity.h"
+#include "../src/engine/entity/EntityStorage.h"
 
 TEST_CASE("entities can be added to storage", "[EntityStorage]")
 {
