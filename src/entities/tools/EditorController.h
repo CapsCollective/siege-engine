@@ -1,10 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include "../../utils/ServiceLocator.h"
 #include "../../engine/entity/Entity.h"
 #include "../../engine/entity/EntityStorage.h"
 #include "../../engine/entity/EntityPtr.h"
+#include "../../ServiceLocator.h"
 #include <Camera3D.hpp>
 #include <vector>
 #include <cstdint>

@@ -1,4 +1,3 @@
-#include "utils/ServiceLocator.h"
 #include "engine/collision/CollisionSystem.h"
 #include "engine/resource/ResourceManager.h"
 #include "engine/entity/EntityStorage.h"
@@ -9,6 +8,8 @@
 #include "entities/tools/DevConsole.h"
 #include "entities/tools/Profiler.h"
 #include "entities/tools/FreeCam.h"
+
+#include "ServiceLocator.h"
 
 #include <Camera3D.hpp>
 #include <Vector3.hpp>

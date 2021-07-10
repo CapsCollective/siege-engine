@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
 #define A_DARK_DISCOMFORT_DEVCONSOLE_H
 
-#include "../../utils/ServiceLocator.h"
 #include "../../engine/entity/Entity.h"
 #include "../../engine/entity/EntityPtr.h"
+#include "../../ServiceLocator.h"
 
 class DevConsole : public Entity
 {
