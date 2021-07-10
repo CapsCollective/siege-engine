@@ -1,7 +1,7 @@
 #include "DevConsole.h"
 #include "MessageDisplay.h"
-#include "../../systems/scene/SceneManager.h"
-#include "../../utils/StringHelpers.h"
+#include "../../engine/scene/SceneManager.h"
+#include "../../engine/utils/StringHelpers.h"
 #include "EditorController.h"
 #include "Profiler.h"
 #include <stdexcept>

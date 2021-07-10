@@ -2,8 +2,8 @@
 #include "MessageDisplay.h"
 #include "../Geometry.h"
 #include "../Player.h"
-#include "../../utils/StringHelpers.h"
-#include "../../systems/scene/SceneManager.h"
+#include "../../engine/utils/StringHelpers.h"
+#include "../../engine/scene/SceneManager.h"
 
 // Define macros
 #define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
