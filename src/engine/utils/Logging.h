@@ -3,7 +3,7 @@
 
 #include "Macros.h"
 #include "StringHelpers.h"
-#include "../systems/entity/Entity.h"
+#include "../entity/Entity.h"
 #include <iostream>
 #include <utility>
 #include <variant>

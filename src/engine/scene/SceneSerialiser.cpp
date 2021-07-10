@@ -1,5 +1,5 @@
 #include "SceneSerialiser.h"
-#include "../../utils/StringHelpers.h"
+#include "../utils/StringHelpers.h"
 #include "../entity/Entity.h"
 #include <iostream>
 #include <algorithm>
