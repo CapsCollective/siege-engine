@@ -5,7 +5,7 @@ platformpth = $(subst /,$(PATHSEP),$1)
 # Set global macros
 buildDir := bin
 compileFlags := -Wall -std=c++17 -I ./include -I ./engine
-linkFlags = -L lib/$(platform) -l raylib -l engine
+linkFlags = -L lib/$(platform) -l engine -l raylib 
 ifdef MACRO_DEFS
 	macroDefines := -D $(MACRO_DEFS)
 endif
