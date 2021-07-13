@@ -1,23 +1,23 @@
 #define GLFW_INCLUDE_VULKAN
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
 #include <iostream>
+#include "Window/Window.h"
 
 int main() 
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
+    // Window initialisation
+    SnekVk::Window window = SnekVk::Window("Snek", 800, 600);
 
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
     std::cout << extensionCount << " extensions supported\n";
 
-    while(!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
+    // Main loop
+    while(!window.WindowShouldClose()) {
+        window.Update();
     }
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    // Cleanup
+    window.DestroyWindow();
 }
