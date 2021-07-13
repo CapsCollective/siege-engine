@@ -29,4 +29,5 @@ jobs:
       # Run tests
 
       - name: make test
+        working-directory: ./vendor/engine
         run: make test

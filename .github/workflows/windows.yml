@@ -21,8 +21,8 @@ jobs:
 
     # Build and clean
       
-    - name: make bin/app
-      run: mingw32-make bin/app
+    - name: make build
+      run: mingw32-make build
       shell: cmd
       
     - name: make clean
@@ -31,6 +31,6 @@ jobs:
 
     # Rebuild with g++
 
-    - name: make bin/app CXX=g++
-      run: mingw32-make bin/app CXX=g++
+    - name: make build CXX=g++
+      run: mingw32-make build CXX=g++
       shell: cmd
