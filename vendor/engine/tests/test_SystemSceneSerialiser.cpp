@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include <scene/SceneSerialiser.h>
-#include <entity/Entity.h>
+#include "../src/scene/SceneSerialiser.h"
+#include "../src/entity/Entity.h"
 
 class TestEntity1 : public Entity
 {

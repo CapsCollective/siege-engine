@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include <scene/SceneManager.h>
-#include <entity/EntityStorage.h>
+#include "../src/scene/SceneManager.h"
+#include "../src/entity/EntityStorage.h"
 #include "data/TestEntity.h"
 #include <fstream>
 #include <filesystem>
@@ -27,7 +27,7 @@ std::string GetFileContent(const std::string& dir)
     return content;
 }
 
-// Tests
+
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
     SceneManager::NewScene();
