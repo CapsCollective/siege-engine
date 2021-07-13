@@ -3,7 +3,7 @@
 
 #include <entity/Entity.h>
 #include <entity/EntityPtr.h>
-#include "../../ServiceLocator.h"
+#include "../ServiceLocator.h"
 
 class DevConsole : public Entity
 {

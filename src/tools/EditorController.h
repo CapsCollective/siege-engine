@@ -4,7 +4,7 @@
 #include <entity/Entity.h>
 #include <entity/EntityStorage.h>
 #include <entity/EntityPtr.h>
-#include "../../ServiceLocator.h"
+#include "../ServiceLocator.h"
 #include <raylib/Camera3D.hpp>
 #include <vector>
 #include <cstdint>
