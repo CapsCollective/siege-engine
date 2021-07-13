@@ -8,11 +8,11 @@
 #include <raylib/Window.hpp>
 #include <raylib/Color.hpp>
 
-#include "entities/tools/EditorController.h"
-#include "entities/tools/MessageDisplay.h"
-#include "entities/tools/DevConsole.h"
-#include "entities/tools/Profiler.h"
-#include "entities/tools/FreeCam.h"
+#include "tools/EditorController.h"
+#include "tools/MessageDisplay.h"
+#include "tools/DevConsole.h"
+#include "tools/Profiler.h"
+#include "tools/FreeCam.h"
 #include "ServiceLocator.h"
 
 int main(int argc, char* argv[])
@@ -94,13 +94,13 @@ int main(int argc, char* argv[])
         // Begin drawing to screen
         window.BeginDrawing();
         bg.ClearBackground();
-        camera.BeginMode3D();
+        camera.BeginMode();
 
         // Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw();
 
-        camera.EndMode3D();
+        camera.EndMode();
 
         // UI Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();

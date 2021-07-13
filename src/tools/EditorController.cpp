@@ -1,7 +1,7 @@
 #include "EditorController.h"
 #include "MessageDisplay.h"
-#include "../Geometry.h"
-#include "../Player.h"
+#include "../entities/Geometry.h"
+#include "../entities/Player.h"
 #include <utils/StringHelpers.h>
 #include <scene/SceneManager.h>
 

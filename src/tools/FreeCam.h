@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_FREECAM_H
 
 #include <raylib/Camera3D.hpp>
-#include "../../ServiceLocator.h"
+#include "../ServiceLocator.h"
 #include <entity/Entity.h>
 
 class FreeCam : public Entity
