@@ -3,6 +3,9 @@
 #include "../Window/Window.h"
 #include "Renderer.h" 
 #include <vulkan/vulkan.h>
+#include <array>
+#include <cassert>
+#include <iostream>
 
 namespace SnekVk
 {
@@ -19,20 +22,34 @@ namespace SnekVk
             VulkanDevice(Window& window):
                 window(window) 
             {
-                CreateInstance();
+                assert(CreateInstance() == SnekState::Success && "Failed to create Vulkan Instance!");
+                std::cout << "SNEKVK: Created VULKAN Instance!" << std::endl;
             }
 
             ~VulkanDevice() {}
 
             SnekState CreateInstance();
 
-            bool checkValidationLayerSupport();
+            bool CheckValidationLayerSupport();
+
+            struct LayerAndExtensionInfo GetRequiredExtensions();
 
         private:
 
-            static const char* validationLayers[];
-            static const char* deviceExtensions[];
+            static std::array<const char*, 1> validationLayers;
+
+            static std::array<const char*, 1> deviceExtensions;
 
             Window& window;
+
+            VkInstance instance;
+
+            void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+    };
+
+    struct LayerAndExtensionInfo 
+    {
+        const char** names;
+        uint32_t count;
     };
 }
