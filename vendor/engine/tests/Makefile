@@ -15,7 +15,7 @@ include ../make/BuildVars.mk
 srcDir = .
 target = $(buildDir)/test
 compileFlags += -I ../include -I ../src
-linkFlags += -L ../lib/$(platform) -l engine -l raylib
+linkFlags += -L ../lib -l engine -l raylib
 
 .PHONY: all run clean
 
@@ -28,4 +28,4 @@ run: $(target)
 	$(target) $(ARGS)
 
 clean:
-	$(RM) $(call platformpth, $(buildDir)/*)
+	$(RM) $(call platformpth, $(buildDir))

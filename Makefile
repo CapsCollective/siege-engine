@@ -13,7 +13,7 @@ endif
 # Set build vars and overrides
 include vendor/engine/make/BuildVars.mk
 compileFlags += -I vendor/engine/include -I vendor/engine/src
-linkFlags += -L vendor/engine/lib/$(platform) -l engine -l raylib
+linkFlags += -L vendor/engine/lib -l engine -l raylib
 
 .PHONY: all setup build engine run clean
 
@@ -31,11 +31,11 @@ $(target): engine $(objects)
 build: $(target)
 
 engine:
-	cd vendor/engine $(THEN) "$(MAKE)" lib/$(platform)/libengine.a $(passFlags)
+	cd vendor/engine $(THEN) "$(MAKE)" lib/libengine.a $(passFlags)
 
 run: $(target)
 	$(target) $(ARGS)
 
 clean:
-	$(RM) $(call platformpth, $(buildDir)/*)
+	$(RM) $(call platformpth, $(buildDir))
 	cd vendor/engine $(THEN) "$(MAKE)" clean

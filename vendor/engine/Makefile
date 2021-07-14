@@ -8,7 +8,7 @@ endif
 
 # Set build vars and overrides
 include make/BuildVars.mk
-target = lib/$(platform)/libengine.a
+target = lib/libengine.a
 compileFlags += -I ./include
 
 .PHONY: all setup submodules clean
@@ -32,8 +32,8 @@ include: submodules
 # Build the raylib static library file and copy it into lib
 lib: submodules
 	cd vendor/raylib-cpp/vendor/raylib/src $(THEN) "$(MAKE)" PLATFORM=PLATFORM_DESKTOP
-	$(MKDIR) $(call platformpth, lib/$(platform))
-	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),lib/$(platform),libraylib.a)
+	$(MKDIR) $(call platformpth, lib)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),lib,libraylib.a)
 
 # Set build rules and overrides
 include make/BuildRules.mk
@@ -45,5 +45,6 @@ test: $(target)
 	cd tests $(THEN) "$(MAKE)" bin/test run $(passFlags) ARGS=$(ARGS)
 
 clean:
-	$(RM) $(call platformpth, $(buildDir)/*)
+	$(RM) $(call platformpth, $(buildDir))
+	$(RM) $(call platformpth, $(target))
 	cd tests $(THEN) "$(MAKE)" clean
