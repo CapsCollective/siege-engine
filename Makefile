@@ -15,9 +15,9 @@ include vendor/engine/make/BuildVars.mk
 compileFlags += -I vendor/engine/include -I vendor/engine/src
 linkFlags += -L vendor/engine/lib/$(platform) -l engine -l raylib
 
-.PHONY: all setup build execute clean
+.PHONY: all setup build engine run clean
 
-all: build execute clean
+all: run clean
 
 # Sets up the project and deps
 setup:
@@ -25,13 +25,15 @@ setup:
 
 # Set build rules and overrides
 include vendor/engine/make/BuildRules.mk
+$(target): engine $(objects)
+	$(CXX) $(objects) -o $(target) $(linkFlags)
 
-build: engine $(target)
+build: $(target)
 
 engine:
 	cd vendor/engine $(THEN) "$(MAKE)" lib/$(platform)/libengine.a $(passFlags)
 
-execute:
+run: $(target)
 	$(target) $(ARGS)
 
 clean:
