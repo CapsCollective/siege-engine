@@ -7,7 +7,7 @@
 #include <string>
 
 // Const declarations
-const std::string SCENE_DIR = "tests/data/";
+const std::string SCENE_DIR = "data/";
 const std::string FILE_NAME = "test.scene";
 const std::string FULL_TEST_PATH = SCENE_DIR + FILE_NAME;
 
@@ -89,15 +89,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         remove("test.scene");
     }
 
-    SECTION("when an empty string is passed in for the directory it should default to 'assets/scene/'")
-    {
-        SceneManager::SaveScene("tests");
-        REQUIRE(FileExists("assets/scenes/test.scene"));
-        remove("assets/scenes/tests.scene");
-    }
-
     EntityStorage::Reset();
-    remove("tests/data/test.scene");
+    remove("data/test.scene");
 }
 
 TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
@@ -126,7 +119,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     SECTION("when a scene is loaded from a populated file it should populate the EntityStorage correctly")
     {
         SceneManager::QueueNextScene("scene1");
-        SceneManager::LoadNextScene("tests/data/");
+        SceneManager::LoadNextScene("data/");
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().size() == 3);
@@ -143,7 +136,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when a new scene is loaded in it should add all entities to the EntityStorage")
     {
-        SceneManager::LoadNextScene("tests/data/");
+        SceneManager::LoadNextScene("data/");
 
         EntityStorage::RegisterEntities();
         REQUIRE(EntityStorage::GetEntities().size() == 1);
@@ -156,7 +149,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
         SceneManager::QueueNextScene("nonexistent");
         EntityStorage::FreeEntities();
 
-        SceneManager::LoadNextScene("tests/data/");
+        SceneManager::LoadNextScene("data/");
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
@@ -174,7 +167,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     SECTION("when loading a scene with garbage data it should reset the scene")
     {
         SceneManager::QueueNextScene("garbage.scene");
-        SceneManager::LoadNextScene("tests/data/");
+        SceneManager::LoadNextScene("data/");
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
