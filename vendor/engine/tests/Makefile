@@ -17,14 +17,14 @@ target = $(buildDir)/test
 compileFlags += -I ../include -I ../src
 linkFlags += -L ../lib/$(platform) -l engine -l raylib
 
-.PHONY: all build execute clean
+.PHONY: all run clean
 
-all: $(target) execute clean
+all: run clean
 
 # Set build rules and overrides
 include ../make/BuildRules.mk
 
-execute:
+run: $(target)
 	$(target) $(ARGS)
 
 clean:
