@@ -2,7 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <iostream>
 #include "Window/Window.h"
-#include "Renderer/VulkanDevice.h"
+#include "Renderer/Device/VulkanDevice.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -10,7 +10,6 @@
 
 int main() 
 {
-
     #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG) 
     AllocConsole();
     freopen("CON", "w", stdout);
@@ -23,11 +22,6 @@ int main()
 
     SnekVk::VulkanDevice device = SnekVk::VulkanDevice(window);
 
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-    std::cout << extensionCount << " extensions supported\n";
-
     // Main loop
     while(!window.WindowShouldClose()) {
         window.Update();
@@ -35,4 +29,5 @@ int main()
 
     // Cleanup
     window.DestroyWindow();
+    return 0;
 }

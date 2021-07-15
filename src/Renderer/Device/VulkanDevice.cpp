@@ -9,21 +9,11 @@ namespace SnekVk
 
     std::array<const char*, 1> VulkanDevice::deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    // local callback functions
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
-        const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-        void *pUserData) {
-        std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
-        return VK_FALSE;
-    }
-
     SnekState VulkanDevice::CreateInstance() 
     {
-        std::cout << CheckValidationLayerSupport() << std::endl;
-        if (enableValidationLayers && !CheckValidationLayerSupport()) return SnekState::Failure;
+        SNEK_ASSERT(1 < 0, "ONE IS NOT LESS THAN 0!");
+        if (enableValidationLayers && !CheckValidationLayerSupport()) 
+            return SnekState::Failure;
         
         // Create app info
         VkApplicationInfo appInfo {};
@@ -48,7 +38,7 @@ namespace SnekVk
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
-            PopulateDebugMessengerCreateInfo(debugCreateInfo);
+            SnekVK::PopulateDebugMessengerCreateInfo(debugCreateInfo);
             createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
         } 
         else
@@ -60,6 +50,10 @@ namespace SnekVk
         if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) 
             return SnekState::Failure; 
         
+        DestroyLayerAndExtensionInfo(info);
+
+        SNEK_ASSERT(HasGlfwInstanceExtensions(), "must have GLFW extensions to process Vulkan!");
+
         return SnekState::Success;
     }
 
@@ -90,12 +84,12 @@ namespace SnekVk
 
     LayerAndExtensionInfo VulkanDevice::GetRequiredExtensions() 
     {
-        uint32_t glfwExtensionCount = 0;
+        u32 glfwExtensionCount = 0;
         const char** glfwExtensions;
 
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        uint32_t totalExtensions = enableValidationLayers ? (glfwExtensionCount + 1) : glfwExtensionCount;
+        u32 totalExtensions = enableValidationLayers ? (glfwExtensionCount + 1) : glfwExtensionCount;
 
         const char** extensions = new const char*;
 
@@ -109,16 +103,46 @@ namespace SnekVk
         return { extensions, totalExtensions };
     }
 
-    void VulkanDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
+    bool VulkanDevice::HasGlfwInstanceExtensions() 
     {
-        createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        createInfo.pfnUserCallback = debugCallback;
-        createInfo.pUserData = nullptr;
+        bool hasExtensions = true;
+        u32 extensionCount = 0;
+
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+        VkExtensionProperties extensions[extensionCount];
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions);
+
+        std::cout << "Available extensions: " << std::endl;
+        for (size_t i = 0; i < extensionCount; i++)
+        {
+            const char* extension = extensions[i].extensionName;
+            std::cout << "\t" << extension << std::endl;
+        }
+
+        std::cout << "Required extensions: " << std::endl;
+        LayerAndExtensionInfo requiredExtensions = GetRequiredExtensions();
+
+        for (size_t i = 0; i < requiredExtensions.count; i++)
+        {
+            const char* required = requiredExtensions.names[i];
+            std::cout << "\t" << required << std::endl;
+            bool found = false;
+            
+            for (size_t j = 0; j < extensionCount; j++)
+            {
+                const char* extension = extensions[j].extensionName;
+                found = strcmp(extension, required) == 0;
+                if (found) break;
+            }
+
+            if (!found)
+            {
+                hasExtensions = false;
+                break;
+            } 
+        }
+
+        DestroyLayerAndExtensionInfo(requiredExtensions);
+        return hasExtensions;
     }
 }

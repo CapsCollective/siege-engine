@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../Window/Window.h"
-#include "Renderer.h" 
-#include <vulkan/vulkan.h>
+#include "../../Window/Window.h"
+#include "../Renderer.h" 
 #include <array>
-#include <cassert>
-#include <iostream>
+#include "DebugUtilsMessenger.h"
 
 namespace SnekVk
 {
@@ -22,17 +20,11 @@ namespace SnekVk
             VulkanDevice(Window& window):
                 window(window) 
             {
-                assert(CreateInstance() == SnekState::Success && "Failed to create Vulkan Instance!");
+                SNEK_ASSERT(CreateInstance() == SnekState::Success, "Failed to create Vulkan Instance!");
                 std::cout << "SNEKVK: Created VULKAN Instance!" << std::endl;
             }
 
             ~VulkanDevice() {}
-
-            SnekState CreateInstance();
-
-            bool CheckValidationLayerSupport();
-
-            struct LayerAndExtensionInfo GetRequiredExtensions();
 
         private:
 
@@ -44,12 +36,25 @@ namespace SnekVk
 
             VkInstance instance;
 
-            void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+            SnekState CreateInstance();
+
+            bool CheckValidationLayerSupport();
+
+            struct LayerAndExtensionInfo GetRequiredExtensions();
+
+            bool HasGlfwInstanceExtensions();
     };
 
+    // Utilities 
+    // TODO: Move to utils file.
     struct LayerAndExtensionInfo 
     {
         const char** names;
         uint32_t count;
+    };
+
+    void DestroyLayerAndExtensionInfo(LayerAndExtensionInfo& info)
+    {
+        delete [] info.names;
     };
 }
