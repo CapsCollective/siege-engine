@@ -28,9 +28,14 @@ namespace SnekVk
 
                 SNEK_ASSERT(CreateSurface() == SnekState::Success, "Failed to create window surface for glfw!");
                 std::cout << "SNEKVK: Created window surface!" << std::endl;
+
+                SNEK_ASSERT(PickPhysicalDevice() == SnekState::Success, "Failed to find a suitable physical device!");
+                std::cout << "SNEKVK: Found a suitable physical device!" << std::endl;
             }
 
             ~VulkanDevice() {}
+
+            void DestroyVulkanDevice();
 
         private:
 
@@ -46,11 +51,23 @@ namespace SnekVk
 
             VkSurfaceKHR surface;
 
+            VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
             SnekState CreateInstance();
 
             SnekState SetupDebugMessenger();
 
             SnekState CreateSurface();
+
+            SnekState PickPhysicalDevice();
+
+            bool IsDeviceSuitable(VkPhysicalDevice device);
+
+            struct QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+            bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+
+            struct SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
             bool CheckValidationLayerSupport();
 
@@ -70,5 +87,33 @@ namespace SnekVk
     void DestroyLayerAndExtensionInfo(LayerAndExtensionInfo& info)
     {
         delete [] info.names;
+    };
+
+    struct QueueFamilyIndices 
+    {
+        u32 graphicsFamily;
+        u32 presentFamily;
+
+        bool hasGraphicsFamily = false;
+        bool hasPresentFamily = false;
+    };
+
+    bool IsComplete(const QueueFamilyIndices& indices) { return indices.hasGraphicsFamily && indices.hasPresentFamily; };
+
+    struct SwapChainSupportDetails
+    {
+        VkSurfaceCapabilitiesKHR capabilities;
+        
+        VkSurfaceFormatKHR* formats;
+        bool hasSurfaceFormat = false;
+        
+        VkPresentModeKHR* presentModes;
+        bool hasPresentMode = false; 
+    };
+
+    void DestroySwapChainSupportDetails(SwapChainSupportDetails& swapChainSupport)
+    {
+        delete swapChainSupport.formats;
+        delete swapChainSupport.presentModes;
     };
 }

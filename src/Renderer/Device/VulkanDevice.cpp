@@ -72,7 +72,165 @@ namespace SnekVk
 
     SnekState VulkanDevice::CreateSurface() 
     { 
-        return window.CreateWindowSurface(instance, &surface) ? SnekState::Success : SnekState::Failure; }
+        return window.CreateWindowSurface(instance, &surface) ? SnekState::Success : SnekState::Failure; 
+    }
+
+    SnekState VulkanDevice::PickPhysicalDevice()
+    {
+        SnekState state = SnekState::Success;
+        u32 deviceCount = 0;
+        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+        if (deviceCount == 0) return SnekState::Failure;
+
+        std::cout << "Device count: " << deviceCount << std::endl;
+
+        VkPhysicalDevice devices[deviceCount];
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
+
+        for (size_t i = 0; i < deviceCount; i++)
+        {
+            VkPhysicalDevice device = devices[i];
+            if (IsDeviceSuitable(device))
+            {
+                physicalDevice = device;
+                break;
+            }
+        }
+
+        if (physicalDevice == VK_NULL_HANDLE) state = SnekState::Failure;
+        
+        return state;
+    }
+
+    bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
+    {
+        QueueFamilyIndices indices = FindQueueFamilies(device);
+
+        bool extensionsSupported = CheckDeviceExtensionSupport(device);
+
+        bool swapChainAdequate = false;
+
+        if (extensionsSupported)
+        {
+            SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+            swapChainAdequate = swapChainSupport.hasPresentMode && swapChainSupport.hasSurfaceFormat;
+            DestroySwapChainSupportDetails(swapChainSupport);
+        }
+
+        VkPhysicalDeviceFeatures supportedFeatures;
+        vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+        return IsComplete(indices) && extensionsSupported && swapChainAdequate &&
+                supportedFeatures.samplerAnisotropy;
+    }
+
+    SwapChainSupportDetails VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device)
+    {
+        SwapChainSupportDetails details;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+        u32 formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+ 
+        VkSurfaceFormatKHR* formats = new VkSurfaceFormatKHR;
+        if (formatCount != 0)
+        {
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, formats);
+        }
+
+        u32 presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+        VkPresentModeKHR* presentModes = new VkPresentModeKHR;
+
+        if (presentModeCount != 0)
+        {
+            vkGetPhysicalDeviceSurfacePresentModesKHR(
+                device,
+                surface, 
+                &presentModeCount,
+                presentModes
+            );
+        }
+
+        details.formats = formats;
+        details.hasSurfaceFormat = formatCount > 0;
+        details.presentModes = presentModes;
+        details.hasPresentMode = presentModeCount > 0;
+
+        return details;
+    }
+
+    QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice device)
+    {
+        QueueFamilyIndices indices;
+
+        u32 queueFamilyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+        VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
+
+        for (size_t i = 0; i < queueFamilyCount; i++)
+        {
+            auto& queueFamily = queueFamilies[i];
+            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                indices.graphicsFamily = i;
+                indices.hasGraphicsFamily = true;
+            }
+
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+
+            if (queueFamily.queueCount > 0 && presentSupport)
+            {
+                indices.presentFamily = i;
+                indices.hasPresentFamily = true;
+            }
+
+            if (IsComplete(indices)) break;
+        }
+        return indices;
+    }
+
+    bool VulkanDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+    {
+        u32 extensionCount;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+        VkExtensionProperties availableExtensions[extensionCount];
+        vkEnumerateDeviceExtensionProperties(
+            device, 
+            nullptr,
+            &extensionCount,
+            availableExtensions
+        );
+
+        bool hasRequiredExtensions = true;
+
+        for (auto& requiredExtension : deviceExtensions)
+        {
+            bool hasExtension = false;
+            for (size_t i = 0; i < extensionCount; i++)
+            {
+                const char* deviceExtension = availableExtensions[i].extensionName;
+                if (strcmp(requiredExtension, deviceExtension) == 0)
+                {
+                    hasExtension = true;
+                    break;
+                }
+            }
+            if (!hasExtension)
+            {
+                hasRequiredExtensions = false;
+                break;
+            }
+        }
+
+        return hasRequiredExtensions;
+    }
 
     bool VulkanDevice::CheckValidationLayerSupport()
     {
@@ -161,5 +319,13 @@ namespace SnekVk
 
         DestroyLayerAndExtensionInfo(requiredExtensions);
         return hasExtensions;
+    }
+
+    void VulkanDevice::DestroyVulkanDevice() 
+    {
+        if (enableValidationLayers) SnekVK::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyInstance(instance, nullptr);
     }
 }

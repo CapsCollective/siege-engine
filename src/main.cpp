@@ -25,6 +25,7 @@ int main()
     }
 
     // Cleanup
+    device.DestroyVulkanDevice();
     window.DestroyWindow();
     return 0;
 }
