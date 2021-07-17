@@ -1,6 +1,3 @@
-#define GLFW_INCLUDE_VULKAN
-#include <vulkan/vulkan.h>
-#include <iostream>
 #include "Window/Window.h"
 #include "Renderer/Device/VulkanDevice.h"
 

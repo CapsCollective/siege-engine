@@ -11,7 +11,6 @@ namespace SnekVk
 
     SnekState VulkanDevice::CreateInstance() 
     {
-        SNEK_ASSERT(1 < 0, "ONE IS NOT LESS THAN 0!");
         if (enableValidationLayers && !CheckValidationLayerSupport()) 
             return SnekState::Failure;
         
@@ -52,10 +51,28 @@ namespace SnekVk
         
         DestroyLayerAndExtensionInfo(info);
 
-        SNEK_ASSERT(HasGlfwInstanceExtensions(), "must have GLFW extensions to process Vulkan!");
+        SNEK_ASSERT(HasGlfwInstanceExtensions(), "must have GLFW extensions to initialise Vulkan!");
 
         return SnekState::Success;
     }
+
+    SnekState VulkanDevice::SetupDebugMessenger()
+    {
+        SnekState state = SnekState::Success;
+
+        if (!enableValidationLayers) return state;
+
+        VkDebugUtilsMessengerCreateInfoEXT createInfo;
+        SnekVK::PopulateDebugMessengerCreateInfo(createInfo);
+
+        if (SnekVK::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) state = SnekState::Failure;
+        
+        return state;
+    }
+
+    SnekState VulkanDevice::CreateSurface() 
+    { 
+        return window.CreateWindowSurface(instance, &surface) ? SnekState::Success : SnekState::Failure; }
 
     bool VulkanDevice::CheckValidationLayerSupport()
     {

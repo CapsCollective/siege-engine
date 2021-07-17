@@ -33,4 +33,13 @@ namespace SnekVk
         window = glfwCreateWindow(width, height, name, nullptr, nullptr);
         glfwWindows++;
     }
+
+    bool Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+    {
+        if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
+        {
+            return false;
+        }
+        return true;
+    }
 }

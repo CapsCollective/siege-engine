@@ -1,5 +1,6 @@
 #pragma once
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <cstdint>
 
@@ -35,6 +36,8 @@ namespace SnekVk
         void DestroyWindow();
 
         bool WindowShouldClose();
+
+        bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
     private:
 

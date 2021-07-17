@@ -22,6 +22,12 @@ namespace SnekVk
             {
                 SNEK_ASSERT(CreateInstance() == SnekState::Success, "Failed to create Vulkan Instance!");
                 std::cout << "SNEKVK: Created VULKAN Instance!" << std::endl;
+                
+                SNEK_ASSERT(SetupDebugMessenger() == SnekState::Success, "Failed to create Vulkan Instance!");
+                if (enableValidationLayers) std::cout << "SNEKVK: Created DebugUtilsMessenger!" << std::endl;
+
+                SNEK_ASSERT(CreateSurface() == SnekState::Success, "Failed to create window surface for glfw!");
+                std::cout << "SNEKVK: Created window surface!" << std::endl;
             }
 
             ~VulkanDevice() {}
@@ -36,7 +42,15 @@ namespace SnekVk
 
             VkInstance instance;
 
+            VkDebugUtilsMessengerEXT debugMessenger;
+
+            VkSurfaceKHR surface;
+
             SnekState CreateInstance();
+
+            SnekState SetupDebugMessenger();
+
+            SnekState CreateSurface();
 
             bool CheckValidationLayerSupport();
 
