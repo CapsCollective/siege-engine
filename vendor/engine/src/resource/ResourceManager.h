@@ -3,14 +3,7 @@
 
 #include <raylib/raylib-cpp.hpp>
 #include <map>
-#include <variant>
 #include <vector>
-
-// Define types
-
-// Resource map stores a union (std::variant) of either a model or a Texture2D
-typedef std::map<std::string, std::variant<Model, Texture2D>> ResourceMap;
-typedef std::vector<std::variant<Model, Texture2D>*> ResourceList;
 
 class ResourceManager
 {
@@ -20,53 +13,20 @@ public:
 
     /**
      * Loads a resource from a path and adds it to the resource map
-     * @tparam T - defines the type of resource being added (Model or Texture2D)
      * @param path - the path the resource will be loaded from
      */
-    template<typename T>
-    static void Register(const std::string& path)
-    {
-        if (resources.find(path) != resources.end()) return;
+    static void RegisterModel(const std::string& path);
 
-        // Define an empty variant to hold resource
-        std::variant<Model, Texture> resource = std::variant<Model, Texture2D>();
-
-        if (std::is_same<T, Model>::value)
-        {
-            resource = LoadModel(path.c_str());
-        }
-        else if (std::is_same<T, Texture2D>::value)
-        {
-            resource = LoadTexture(path.c_str());
-        }
-        resources.insert({path, resource});
-    };
+    static void RegisterTexture(const std::string& path);
 
     /**
      * Returns a reference to a resource
-     * @tparam T - the type of resource which needs to be returned
      * @param path - the path of the resource in the file system
      * @return a reference to the designated resource
      */
-    template<typename T>
-    static T& Get(const std::string& path)
-    {
-        // Unwraps the variant in the given path
-        return std::get<T>(resources.at(path));
-    };
+    static Model& GetModel(const std::string& path);
 
-    /**
-     * Returns a pointer to a resource
-     * @tparam T - the type of resource which needs to be returned
-     * @param path - the path of the resource in the file system
-     * @return a pointer to the designated resource
-     */
-    template<typename T>
-    static T* GetRef(const std::string& path)
-    {
-        // Unwraps the variant in the given path and returns a pointer
-        return &std::get<T>(resources[path]);
-    };
+    static Texture& GetTexture(const std::string& path);
 
     /**
     * Clears all stored resources at the end of the frame
@@ -85,12 +45,14 @@ private:
     /**
      * All resources in the system - currently limited to textures and models
      */
-    static ResourceMap resources;
+    static std::map<std::string, Model> models;
+    static std::map<std::string, Texture> textures;
 
     /**
-     * All resources to free at the end of the frame - limited to Textures and Models
+     * All resources to free at the end of the frame - limited to textures and models
      */
-    static ResourceList freedResources;
+    static std::vector<Model*> freedModels;
+    static std::vector<Texture*> freedTextures;
 };
 
 #endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H

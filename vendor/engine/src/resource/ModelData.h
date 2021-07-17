@@ -14,8 +14,8 @@ public:
     modelPath(std::move(modelPath)),
     texturePath(std::move(texturePath))
     {
-        ResourceManager::Register<Model>(this->modelPath);
-        ResourceManager::Register<Texture>(this->texturePath);
+        ResourceManager::RegisterModel(this->modelPath);
+        ResourceManager::RegisterTexture(this->texturePath);
     };
 
     ModelData(const ModelData& other)
@@ -23,8 +23,8 @@ public:
         this->modelPath = other.modelPath;
         this->texturePath = other.texturePath;
 
-        ResourceManager::Register<Model>(modelPath);
-        ResourceManager::Register<Texture>(texturePath);
+        ResourceManager::RegisterModel(modelPath);
+        ResourceManager::RegisterTexture(texturePath);
     }
 
     // Public methods
@@ -33,7 +33,7 @@ public:
 
     const std::string& GetTexturePath() const;
 
-    static void SetTexture(const Model& model, const Texture2D& texture);
+    static void SetTexture(const Model& model, const Texture& texture);
 
 private:
 

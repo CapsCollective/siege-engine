@@ -2,35 +2,58 @@
 #include "ResourceManager.h"
 
 // Static member initialisation
-ResourceMap ResourceManager::resources;
-ResourceList ResourceManager::freedResources;
+std::map<std::string, Model> ResourceManager::models;
+std::map<std::string, Texture> ResourceManager::textures;
 
-void ResourceManager::ClearResources()
+std::vector<Model*> ResourceManager::freedModels;
+std::vector<Texture*> ResourceManager::freedTextures;
+
+void ResourceManager::RegisterModel(const std::string& path)
 {
-    for (auto& resource : resources)
-    {
-        freedResources.push_back(&resource.second);
-    }
+    if (models.find(path) != models.end()) return;
+    models[path] = LoadModel(path.c_str());
+}
+
+void ResourceManager::RegisterTexture(const std::string& path)
+{
+    if (textures.find(path) != textures.end()) return;
+    textures[path] = LoadTexture(path.c_str());
+}
+
+Model& ResourceManager::GetModel(const std::string& path)
+{
+    return models.at(path);
+}
+
+Texture& ResourceManager::GetTexture(const std::string& path)
+{
+    return textures.at(path);
 }
 
 void ResourceManager::FreeResources()
 {
-    if (freedResources.empty()) return;
+    if (freedModels.empty() && freedTextures.empty()) return;
 
     // Iterate over the vector backwards to avoid memory issues
-    for (auto i = freedResources.rbegin(); i != freedResources.rend(); ++i)
+    for (auto i = freedModels.rbegin(); i != freedModels.rend(); i++)
     {
-        // Check what type the variant holds - requires two levels
-        // of de - referencing (once for the iterator once for the vector element)
-        if (std::holds_alternative<Model>(**i))
-        {
-            UnloadModel(std::get<Model>(**i));
-        }
-        else if (std::holds_alternative<Texture2D>(**i))
-        {
-            UnloadTexture(std::get<Texture2D>(**i));
-        }
+        UnloadModel(**i);
     }
-    freedResources.clear();
-    resources.clear();
+    freedModels.clear();
+    models.clear();
+
+    // Iterate over the vector backwards to avoid memory issues
+    for (auto i = freedTextures.rbegin(); i != freedTextures.rend(); i++)
+    {
+        UnloadTexture(**i);
+    }
+    freedTextures.clear();
+    textures.clear();
+}
+
+void ResourceManager::ClearResources()
+{
+    for (auto& model : models) freedModels.push_back(&model.second);
+
+    for (auto& texture : textures) freedTextures.push_back(&texture.second);
 }
