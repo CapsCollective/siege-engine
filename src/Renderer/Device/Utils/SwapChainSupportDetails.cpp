@@ -38,4 +38,10 @@ namespace SnekVK
 
         return details;
     }
+
+    void DestroySwapChainSupportDetails(SwapChainSupportDetails& swapChainSupport)
+    {
+        delete swapChainSupport.formats;
+        delete swapChainSupport.presentModes;
+    }
 }

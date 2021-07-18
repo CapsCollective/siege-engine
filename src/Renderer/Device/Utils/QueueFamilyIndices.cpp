@@ -38,4 +38,6 @@ namespace SnekVK
         }
         return indices;
     }
+
+    bool IsComplete(const QueueFamilyIndices& indices) {return indices.hasGraphicsFamily && indices.hasPresentFamily;}
 }

@@ -15,11 +15,7 @@ namespace SnekVK
         bool hasPresentMode = false; 
     };
 
-    void DestroySwapChainSupportDetails(SwapChainSupportDetails& swapChainSupport)
-    {
-        delete swapChainSupport.formats;
-        delete swapChainSupport.presentModes;
-    };
+    void DestroySwapChainSupportDetails(SwapChainSupportDetails& swapChainSupport);
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 }

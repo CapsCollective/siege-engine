@@ -13,7 +13,7 @@ namespace SnekVK
         bool hasPresentFamily = false;
     };
 
-    bool IsComplete(const QueueFamilyIndices& indices) { return indices.hasGraphicsFamily && indices.hasPresentFamily; };
+    bool IsComplete(const QueueFamilyIndices& indices);
 
     QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
 }
