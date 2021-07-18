@@ -11,7 +11,7 @@ void ResourceManager::FreeResources()
 {
     if (freedModels.empty() && freedTextures.empty()) return;
 
-    // Iterate over the vector backwards to avoid memory issues
+    // Iterate over vectors backwards to avoid memory issues
     for (auto i = freedModels.rbegin(); i != freedModels.rend(); i++)
     {
         UnloadModel(**i);

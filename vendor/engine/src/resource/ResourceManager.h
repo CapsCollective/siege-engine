@@ -9,10 +9,11 @@ class ResourceManager
 {
 public:
 
-    // Public functions
+    // Public methods
 
     /**
-     * Loads a resource from a path and adds it to the resource map
+     * Loads a resource from a path.
+     * @tparam T - the type of resource being added
      * @param path - the path the resource will be loaded from
      */
     template<typename T>
@@ -31,9 +32,10 @@ public:
     }
 
     /**
-     * Returns a reference to a resource
+     * Gets a reference to a resource by path.
+     * @tparam T - the type of resource which needs to be returned
      * @param path - the path of the resource in the file system
-     * @return a reference to the designated resource
+     * @return a reference to the resource
      */
     template<typename T>
     static T& Get(const std::string& path)
@@ -43,12 +45,12 @@ public:
     }
 
     /**
-    * Clears all stored resources at the end of the frame
-    */
+     * Queues all stored resources for removal.
+     */
     static void FreeResources();
 
     /**
-     * Immediately clears all stored resources
+     * Immediately clears all stored resources.
      */
     static void ClearResources();
 
@@ -57,15 +59,23 @@ private:
     // Private fields
 
     /**
-     * All resources in the system
+     * Loaded model resources.
      */
     static std::map<std::string, Model> models;
+
+    /**
+     * Loaded texture resources.
+     */
     static std::map<std::string, Texture> textures;
 
     /**
-     * All resources to free at the end of the frame
+     * Model resources queued for freeing.
      */
     static std::vector<Model*> freedModels;
+
+    /**
+     * Texture resources queued for freeing.
+     */
     static std::vector<Texture*> freedTextures;
 };
 
