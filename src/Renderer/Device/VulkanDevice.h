@@ -17,6 +17,8 @@ namespace SnekVk
             const bool enableValidationLayers = false;
         #endif
 
+            // 'Structors
+
             VulkanDevice(Window& window):
                 window(window) 
             {
@@ -34,12 +36,31 @@ namespace SnekVk
 
                 SNEK_ASSERT(CreateLogicalDevice() == SnekState::Success, "Failed to create a logical device!");
                 std::cout << "SNEKVK: Successfully created logical device!" << std::endl;
+
+                SNEK_ASSERT(CreateCommandPool() == SnekState::Success, "Failed to create command pool!");
+                std::cout << "SNEKVK: Successfully created command pool!" << std::endl;
             }
+
+            // Device is not movable or copyable
+            VulkanDevice(const VulkanDevice &) = delete;
+            void operator=(const VulkanDevice &) = delete;
+            VulkanDevice(VulkanDevice &&) = delete;
+            VulkanDevice &operator=(VulkanDevice &&) = delete;
 
             ~VulkanDevice() {}
 
             void DestroyVulkanDevice();
 
+            // Getters
+
+            VkCommandPool GetCommandPool() { return commandPool; }
+            VkDevice GetDevice() { return device; }
+            VkSurfaceKHR GetSurfaceKHR() { return surface; }
+            VkQueue GetGraphicsQueue() { return graphicsQueue; }
+            VkQueue GetPresentQueue() { return presentQueue; }
+
+
+ 
         private:
 
             static std::array<const char*, 1> validationLayers;
@@ -56,11 +77,15 @@ namespace SnekVk
 
             VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
+            VkPhysicalDeviceProperties properties;
+
             VkDevice device;
 
             VkQueue graphicsQueue;
 
             VkQueue presentQueue;
+
+            VkCommandPool commandPool;
 
             SnekState CreateInstance();
 
@@ -72,13 +97,19 @@ namespace SnekVk
 
             SnekState CreateLogicalDevice();
 
+            SnekState CreateCommandPool();
+
             bool IsDeviceSuitable(VkPhysicalDevice device);
 
             struct QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
+            struct QueueFamilyIndices FindPhysicalQueueFamilies();
+
             bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
             struct SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+
+            struct SwapChainSupportDetails GetSwapChainSupport();
 
             bool CheckValidationLayerSupport();
 

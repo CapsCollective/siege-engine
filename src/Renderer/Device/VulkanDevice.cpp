@@ -92,9 +92,8 @@ namespace SnekVk
             VkPhysicalDevice device = devices[i];
             if (IsDeviceSuitable(device))
             {
-                VkPhysicalDeviceProperties properties;
                 vkGetPhysicalDeviceProperties(device, &properties);
-                std::cout << "FOUND DEVICE: " << properties.deviceName << std::endl;
+                std::cout << "SNEKVK: FOUND DEVICE: " << properties.deviceName << std::endl;
                 physicalDevice = device;
                 break;
             }
@@ -157,6 +156,24 @@ namespace SnekVk
         return SnekState::Success;
     }
 
+    SnekState VulkanDevice::CreateCommandPool()
+    {
+        QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
+
+        VkCommandPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+        poolInfo.flags = 
+            VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+        if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+        {
+            return SnekState::Failure;
+        }
+
+        return SnekState::Success;
+    }
+
     bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
     {
         QueueFamilyIndices indices = FindQueueFamilies(device);
@@ -215,6 +232,8 @@ namespace SnekVk
 
         return details;
     }
+
+    SwapChainSupportDetails VulkanDevice::GetSwapChainSupport() { return QuerySwapChainSupport(physicalDevice); }
 
     QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice device)
     {
@@ -379,8 +398,11 @@ namespace SnekVk
         return hasExtensions;
     }
 
+    QueueFamilyIndices VulkanDevice::FindPhysicalQueueFamilies() { return FindQueueFamilies(physicalDevice); };
+
     void VulkanDevice::DestroyVulkanDevice() 
     {
+        vkDestroyCommandPool(device, commandPool, nullptr);
         vkDestroyDevice(device, nullptr);
 
         if (enableValidationLayers) SnekVK::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
