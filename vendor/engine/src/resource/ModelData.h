@@ -10,21 +10,21 @@ public:
 
     // 'Structors
 
-    ModelData(std::string  modelPath, std::string  texturePath) :
+    ModelData(std::string modelPath, std::string texturePath) :
     modelPath(std::move(modelPath)),
     texturePath(std::move(texturePath))
     {
-        ResourceManager::RegisterModel(this->modelPath);
-        ResourceManager::RegisterTexture(this->texturePath);
+        ResourceManager::Register<Model>(this->modelPath);
+        ResourceManager::Register<Texture>(this->texturePath);
     };
 
     ModelData(const ModelData& other)
     {
-        this->modelPath = other.modelPath;
-        this->texturePath = other.texturePath;
+        modelPath = other.modelPath;
+        texturePath = other.texturePath;
 
-        ResourceManager::RegisterModel(modelPath);
-        ResourceManager::RegisterTexture(texturePath);
+        ResourceManager::Register<Model>(modelPath);
+        ResourceManager::Register<Texture>(texturePath);
     }
 
     // Public methods

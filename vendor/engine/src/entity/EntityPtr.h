@@ -16,10 +16,10 @@ public:
      * the entity pointer object
      * @param pointer - a pointer to an entity object
      */
-    EntityPtr(E* pointer) :
+    explicit EntityPtr(E* pointer) :
         pointer(pointer)
     {
-        static_assert(std::is_base_of<Entity, E>::value);
+        static_assert(std::is_base_of_v<Entity, E>);
         if (pointer) index = pointer->GetIndex();
     }
 
