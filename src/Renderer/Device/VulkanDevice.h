@@ -31,6 +31,9 @@ namespace SnekVk
 
                 SNEK_ASSERT(PickPhysicalDevice() == SnekState::Success, "Failed to find a suitable physical device!");
                 std::cout << "SNEKVK: Found a suitable physical device!" << std::endl;
+
+                SNEK_ASSERT(CreateLogicalDevice() == SnekState::Success, "Failed to create a logical device!");
+                std::cout << "SNEKVK: Successfully created logical device!" << std::endl;
             }
 
             ~VulkanDevice() {}
@@ -53,6 +56,12 @@ namespace SnekVk
 
             VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
+            VkDevice device;
+
+            VkQueue graphicsQueue;
+
+            VkQueue presentQueue;
+
             SnekState CreateInstance();
 
             SnekState SetupDebugMessenger();
@@ -60,6 +69,8 @@ namespace SnekVk
             SnekState CreateSurface();
 
             SnekState PickPhysicalDevice();
+
+            SnekState CreateLogicalDevice();
 
             bool IsDeviceSuitable(VkPhysicalDevice device);
 

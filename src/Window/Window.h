@@ -12,7 +12,7 @@ namespace SnekVk
 
         // 'Structors
 
-        Window(char* name, int width, int height) : 
+        Window(char const* name, int width, int height) : 
         width(width), height(height), name(name) 
         {
             InitWindow();
@@ -48,7 +48,7 @@ namespace SnekVk
         // Private variables
         GLFWwindow* window;
 
-        char* name;
+        char const* name;
 
         int width;
         int height;

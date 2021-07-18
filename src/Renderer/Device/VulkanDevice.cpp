@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <array>
+#include <set>
 
 namespace SnekVk 
 {
@@ -83,8 +84,6 @@ namespace SnekVk
 
         if (deviceCount == 0) return SnekState::Failure;
 
-        std::cout << "Device count: " << deviceCount << std::endl;
-
         VkPhysicalDevice devices[deviceCount];
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
 
@@ -93,6 +92,9 @@ namespace SnekVk
             VkPhysicalDevice device = devices[i];
             if (IsDeviceSuitable(device))
             {
+                VkPhysicalDeviceProperties properties;
+                vkGetPhysicalDeviceProperties(device, &properties);
+                std::cout << "FOUND DEVICE: " << properties.deviceName << std::endl;
                 physicalDevice = device;
                 break;
             }
@@ -101,6 +103,58 @@ namespace SnekVk
         if (physicalDevice == VK_NULL_HANDLE) state = SnekState::Failure;
         
         return state;
+    }
+
+    SnekState VulkanDevice::CreateLogicalDevice()
+    {
+        QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
+
+        std::set<u32> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
+        VkDeviceQueueCreateInfo queueCreateInfos[uniqueQueueFamilies.size()];
+
+        float queuePriority = 1.0f;
+
+        size_t index = 0; 
+        for (auto& queueFamily : uniqueQueueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo = {};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = queueFamily; 
+            queueCreateInfo.queueCount = 1; 
+            queueCreateInfo.pQueuePriorities = &queuePriority;
+            queueCreateInfos[index] = queueCreateInfo;
+            index++;
+        } 
+
+        VkPhysicalDeviceFeatures deviceFeatures = {};
+        deviceFeatures.samplerAnisotropy = VK_TRUE;
+
+        VkDeviceCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+        createInfo.queueCreateInfoCount = static_cast<u32>(uniqueQueueFamilies.size());
+        createInfo.pQueueCreateInfos = queueCreateInfos;
+
+        createInfo.pEnabledFeatures = &deviceFeatures;
+        createInfo.enabledExtensionCount = static_cast<u32>(deviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+        if (enableValidationLayers)
+        {
+            createInfo.enabledLayerCount = static_cast<u32>(validationLayers.size());
+            createInfo.ppEnabledLayerNames = validationLayers.data();
+        }
+        else createInfo.enabledLayerCount = 0;
+
+        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
+        {
+            return SnekState::Failure;
+        }
+
+        vkGetDeviceQueue(device, indices.graphicsFamily, 0, &graphicsQueue);
+        vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
+
+        return SnekState::Success;
     }
 
     bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
@@ -175,6 +229,8 @@ namespace SnekVk
         for (size_t i = 0; i < queueFamilyCount; i++)
         {
             auto& queueFamily = queueFamilies[i];
+
+            // Check if device queues support graphics operatrions
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
             {
                 indices.graphicsFamily = i;
@@ -182,6 +238,8 @@ namespace SnekVk
             }
 
             VkBool32 presentSupport = false;
+
+            // Check if device supports operations to our surface (glfw)
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 
             if (queueFamily.queueCount > 0 && presentSupport)
@@ -323,6 +381,8 @@ namespace SnekVk
 
     void VulkanDevice::DestroyVulkanDevice() 
     {
+        vkDestroyDevice(device, nullptr);
+
         if (enableValidationLayers) SnekVK::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 
         vkDestroySurfaceKHR(instance, surface, nullptr);
