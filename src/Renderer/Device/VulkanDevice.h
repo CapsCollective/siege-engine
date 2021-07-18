@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../../Window/Window.h"
-#include "../Renderer.h" 
 #include <array>
-#include "DebugUtilsMessenger.h"
+#include "Utils/DebugUtilsMessenger.h"
+#include "Utils/Instance.h"
+#include "Utils/PhysicalDevice.h"
 
 namespace SnekVk
 {
@@ -59,8 +60,6 @@ namespace SnekVk
             VkQueue GetGraphicsQueue() { return graphicsQueue; }
             VkQueue GetPresentQueue() { return presentQueue; }
 
-
- 
         private:
 
             static std::array<const char*, 1> validationLayers;
@@ -99,63 +98,8 @@ namespace SnekVk
 
             SnekState CreateCommandPool();
 
-            bool IsDeviceSuitable(VkPhysicalDevice device);
+            SnekVK::QueueFamilyIndices FindPhysicalQueueFamilies();
 
-            struct QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-
-            struct QueueFamilyIndices FindPhysicalQueueFamilies();
-
-            bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-
-            struct SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
-
-            struct SwapChainSupportDetails GetSwapChainSupport();
-
-            bool CheckValidationLayerSupport();
-
-            struct LayerAndExtensionInfo GetRequiredExtensions();
-
-            bool HasGlfwInstanceExtensions();
-    };
-
-    // Utilities 
-    // TODO: Move to utils file.
-    struct LayerAndExtensionInfo 
-    {
-        const char** names;
-        uint32_t count;
-    };
-
-    void DestroyLayerAndExtensionInfo(LayerAndExtensionInfo& info)
-    {
-        delete [] info.names;
-    };
-
-    struct QueueFamilyIndices 
-    {
-        u32 graphicsFamily;
-        u32 presentFamily;
-
-        bool hasGraphicsFamily = false;
-        bool hasPresentFamily = false;
-    };
-
-    bool IsComplete(const QueueFamilyIndices& indices) { return indices.hasGraphicsFamily && indices.hasPresentFamily; };
-
-    struct SwapChainSupportDetails
-    {
-        VkSurfaceCapabilitiesKHR capabilities;
-        
-        VkSurfaceFormatKHR* formats;
-        bool hasSurfaceFormat = false;
-        
-        VkPresentModeKHR* presentModes;
-        bool hasPresentMode = false; 
-    };
-
-    void DestroySwapChainSupportDetails(SwapChainSupportDetails& swapChainSupport)
-    {
-        delete swapChainSupport.formats;
-        delete swapChainSupport.presentModes;
+            SnekVK::SwapChainSupportDetails GetSwapChainSupport();
     };
 }

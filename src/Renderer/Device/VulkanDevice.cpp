@@ -12,7 +12,7 @@ namespace SnekVk
 
     SnekState VulkanDevice::CreateInstance() 
     {
-        if (enableValidationLayers && !CheckValidationLayerSupport()) 
+        if (enableValidationLayers && !SnekVK::CheckValidationLayerSupport(validationLayers.data(), validationLayers.size())) 
             return SnekState::Failure;
         
         // Create app info
@@ -28,7 +28,7 @@ namespace SnekVk
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
 
-        LayerAndExtensionInfo info = GetRequiredExtensions();
+        SnekVK::LayerAndExtensionInfo info = SnekVK::GetRequiredExtensions(enableValidationLayers);
 
         createInfo.ppEnabledExtensionNames = info.names;
         createInfo.enabledExtensionCount = info.count;
@@ -50,9 +50,9 @@ namespace SnekVk
         if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) 
             return SnekState::Failure; 
         
-        DestroyLayerAndExtensionInfo(info);
+        SnekVK::DestroyLayerAndExtensionInfo(info);
 
-        SNEK_ASSERT(HasGlfwInstanceExtensions(), "must have GLFW extensions to initialise Vulkan!");
+        SNEK_ASSERT(SnekVK::HasGlfwInstanceExtensions(enableValidationLayers), "must have GLFW extensions to initialise Vulkan!");
 
         return SnekState::Success;
     }
@@ -90,7 +90,7 @@ namespace SnekVk
         for (size_t i = 0; i < deviceCount; i++)
         {
             VkPhysicalDevice device = devices[i];
-            if (IsDeviceSuitable(device))
+            if (SnekVK::IsDeviceSuitable(device, surface, deviceExtensions.data(), deviceExtensions.size()))
             {
                 vkGetPhysicalDeviceProperties(device, &properties);
                 std::cout << "SNEKVK: FOUND DEVICE: " << properties.deviceName << std::endl;
@@ -106,7 +106,7 @@ namespace SnekVk
 
     SnekState VulkanDevice::CreateLogicalDevice()
     {
-        QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
+        SnekVK::QueueFamilyIndices indices = SnekVK::FindQueueFamilies(physicalDevice, surface);
 
         std::set<u32> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
         VkDeviceQueueCreateInfo queueCreateInfos[uniqueQueueFamilies.size()];
@@ -158,7 +158,7 @@ namespace SnekVk
 
     SnekState VulkanDevice::CreateCommandPool()
     {
-        QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
+        SnekVK::QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
 
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -174,231 +174,9 @@ namespace SnekVk
         return SnekState::Success;
     }
 
-    bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
-    {
-        QueueFamilyIndices indices = FindQueueFamilies(device);
+    SnekVK::SwapChainSupportDetails VulkanDevice::GetSwapChainSupport() { return SnekVK::QuerySwapChainSupport(physicalDevice, surface); }
 
-        bool extensionsSupported = CheckDeviceExtensionSupport(device);
-
-        bool swapChainAdequate = false;
-
-        if (extensionsSupported)
-        {
-            SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
-            swapChainAdequate = swapChainSupport.hasPresentMode && swapChainSupport.hasSurfaceFormat;
-            DestroySwapChainSupportDetails(swapChainSupport);
-        }
-
-        VkPhysicalDeviceFeatures supportedFeatures;
-        vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-
-        return IsComplete(indices) && extensionsSupported && swapChainAdequate &&
-                supportedFeatures.samplerAnisotropy;
-    }
-
-    SwapChainSupportDetails VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device)
-    {
-        SwapChainSupportDetails details;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-        u32 formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
- 
-        VkSurfaceFormatKHR* formats = new VkSurfaceFormatKHR;
-        if (formatCount != 0)
-        {
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, formats);
-        }
-
-        u32 presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
-        VkPresentModeKHR* presentModes = new VkPresentModeKHR;
-
-        if (presentModeCount != 0)
-        {
-            vkGetPhysicalDeviceSurfacePresentModesKHR(
-                device,
-                surface, 
-                &presentModeCount,
-                presentModes
-            );
-        }
-
-        details.formats = formats;
-        details.hasSurfaceFormat = formatCount > 0;
-        details.presentModes = presentModes;
-        details.hasPresentMode = presentModeCount > 0;
-
-        return details;
-    }
-
-    SwapChainSupportDetails VulkanDevice::GetSwapChainSupport() { return QuerySwapChainSupport(physicalDevice); }
-
-    QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice device)
-    {
-        QueueFamilyIndices indices;
-
-        u32 queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-        VkQueueFamilyProperties queueFamilies[queueFamilyCount];
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
-
-        for (size_t i = 0; i < queueFamilyCount; i++)
-        {
-            auto& queueFamily = queueFamilies[i];
-
-            // Check if device queues support graphics operatrions
-            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-            {
-                indices.graphicsFamily = i;
-                indices.hasGraphicsFamily = true;
-            }
-
-            VkBool32 presentSupport = false;
-
-            // Check if device supports operations to our surface (glfw)
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-
-            if (queueFamily.queueCount > 0 && presentSupport)
-            {
-                indices.presentFamily = i;
-                indices.hasPresentFamily = true;
-            }
-
-            if (IsComplete(indices)) break;
-        }
-        return indices;
-    }
-
-    bool VulkanDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device)
-    {
-        u32 extensionCount;
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-        VkExtensionProperties availableExtensions[extensionCount];
-        vkEnumerateDeviceExtensionProperties(
-            device, 
-            nullptr,
-            &extensionCount,
-            availableExtensions
-        );
-
-        bool hasRequiredExtensions = true;
-
-        for (auto& requiredExtension : deviceExtensions)
-        {
-            bool hasExtension = false;
-            for (size_t i = 0; i < extensionCount; i++)
-            {
-                const char* deviceExtension = availableExtensions[i].extensionName;
-                if (strcmp(requiredExtension, deviceExtension) == 0)
-                {
-                    hasExtension = true;
-                    break;
-                }
-            }
-            if (!hasExtension)
-            {
-                hasRequiredExtensions = false;
-                break;
-            }
-        }
-
-        return hasRequiredExtensions;
-    }
-
-    bool VulkanDevice::CheckValidationLayerSupport()
-    {
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-        VkLayerProperties availableLayers[layerCount];
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
-
-        for (auto& validationLayer : validationLayers)
-        {
-            bool layerFound = false;
-            for (size_t i = 0; i < layerCount; i++)
-            {
-                if (strcmp(validationLayer, availableLayers[i].layerName) == 0)
-                {
-                    layerFound = true;
-                    break;
-                }    
-            }
-            if (!layerFound) return false;
-        }
-
-        return true;
-    }
-
-    LayerAndExtensionInfo VulkanDevice::GetRequiredExtensions() 
-    {
-        u32 glfwExtensionCount = 0;
-        const char** glfwExtensions;
-
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-        u32 totalExtensions = enableValidationLayers ? (glfwExtensionCount + 1) : glfwExtensionCount;
-
-        const char** extensions = new const char*;
-
-        for (size_t i = 0; i < glfwExtensionCount; i++)
-        {
-            extensions[i] = glfwExtensions[i];
-        }
-
-        if (enableValidationLayers) extensions[totalExtensions - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-
-        return { extensions, totalExtensions };
-    }
-
-    bool VulkanDevice::HasGlfwInstanceExtensions() 
-    {
-        bool hasExtensions = true;
-        u32 extensionCount = 0;
-
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-        VkExtensionProperties extensions[extensionCount];
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions);
-
-        std::cout << "Available extensions: " << std::endl;
-        for (size_t i = 0; i < extensionCount; i++)
-        {
-            const char* extension = extensions[i].extensionName;
-            std::cout << "\t" << extension << std::endl;
-        }
-
-        std::cout << "Required extensions: " << std::endl;
-        LayerAndExtensionInfo requiredExtensions = GetRequiredExtensions();
-
-        for (size_t i = 0; i < requiredExtensions.count; i++)
-        {
-            const char* required = requiredExtensions.names[i];
-            std::cout << "\t" << required << std::endl;
-            bool found = false;
-            
-            for (size_t j = 0; j < extensionCount; j++)
-            {
-                const char* extension = extensions[j].extensionName;
-                found = strcmp(extension, required) == 0;
-                if (found) break;
-            }
-
-            if (!found)
-            {
-                hasExtensions = false;
-                break;
-            } 
-        }
-
-        DestroyLayerAndExtensionInfo(requiredExtensions);
-        return hasExtensions;
-    }
-
-    QueueFamilyIndices VulkanDevice::FindPhysicalQueueFamilies() { return FindQueueFamilies(physicalDevice); };
+    SnekVK::QueueFamilyIndices VulkanDevice::FindPhysicalQueueFamilies() { return SnekVK::FindQueueFamilies(physicalDevice, surface); };
 
     void VulkanDevice::DestroyVulkanDevice() 
     {

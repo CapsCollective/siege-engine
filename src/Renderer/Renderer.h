@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vulkan/vulkan.h>
 #include <iostream>
 #include <cstdint>
@@ -5,7 +7,6 @@
 // Custom type declarations
 typedef uint32_t u32;
 typedef int32_t i32;
-
 typedef size_t size;
 
 #if (defined(_WIN32) || defined(_WIN64)) 
