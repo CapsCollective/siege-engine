@@ -38,7 +38,7 @@ lib: submodules
 # Set build rules and overrides
 include make/BuildRules.mk
 $(target): $(objects)
-	ar -r $(target) $(objects)
+	ar -rc $(target) $(objects)
 
 # Build and run all tests
 test: $(target)
