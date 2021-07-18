@@ -15,18 +15,32 @@ public:
      * Loads a resource from a path and adds it to the resource map
      * @param path - the path the resource will be loaded from
      */
-    static void RegisterModel(const std::string& path);
-
-    static void RegisterTexture(const std::string& path);
+    template<typename T>
+    static void Register(const std::string& path)
+    {
+        if constexpr (std::is_same_v<T, Model>)
+        {
+            if (models.find(path) != models.end()) return;
+            models[path] = LoadModel(path.c_str());
+        }
+        else if constexpr (std::is_same_v<T, Texture>)
+        {
+            if (textures.find(path) != textures.end()) return;
+            textures[path] = LoadTexture(path.c_str());
+        }
+    }
 
     /**
      * Returns a reference to a resource
      * @param path - the path of the resource in the file system
      * @return a reference to the designated resource
      */
-    static Model& GetModel(const std::string& path);
-
-    static Texture& GetTexture(const std::string& path);
+    template<typename T>
+    static T& Get(const std::string& path)
+    {
+        if constexpr (std::is_same_v<T, Model>) return models.at(path);
+        else if constexpr (std::is_same_v<T, Texture>) return textures.at(path);
+    }
 
     /**
     * Clears all stored resources at the end of the frame
@@ -43,13 +57,13 @@ private:
     // Private fields
 
     /**
-     * All resources in the system - currently limited to textures and models
+     * All resources in the system
      */
     static std::map<std::string, Model> models;
     static std::map<std::string, Texture> textures;
 
     /**
-     * All resources to free at the end of the frame - limited to textures and models
+     * All resources to free at the end of the frame
      */
     static std::vector<Model*> freedModels;
     static std::vector<Texture*> freedTextures;
