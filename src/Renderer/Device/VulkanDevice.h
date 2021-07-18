@@ -20,27 +20,7 @@ namespace SnekVk
 
             // 'Structors
 
-            VulkanDevice(Window& window):
-                window(window) 
-            {
-                SNEK_ASSERT(CreateInstance() == SnekState::Success, "Failed to create Vulkan Instance!");
-                std::cout << "SNEKVK: Created VULKAN Instance!" << std::endl;
-                
-                SNEK_ASSERT(SetupDebugMessenger() == SnekState::Success, "Failed to create Vulkan Instance!");
-                if (enableValidationLayers) std::cout << "SNEKVK: Created DebugUtilsMessenger!" << std::endl;
-
-                SNEK_ASSERT(CreateSurface() == SnekState::Success, "Failed to create window surface for glfw!");
-                std::cout << "SNEKVK: Created window surface!" << std::endl;
-
-                SNEK_ASSERT(PickPhysicalDevice() == SnekState::Success, "Failed to find a suitable physical device!");
-                std::cout << "SNEKVK: Found a suitable physical device!" << std::endl;
-
-                SNEK_ASSERT(CreateLogicalDevice() == SnekState::Success, "Failed to create a logical device!");
-                std::cout << "SNEKVK: Successfully created logical device!" << std::endl;
-
-                SNEK_ASSERT(CreateCommandPool() == SnekState::Success, "Failed to create command pool!");
-                std::cout << "SNEKVK: Successfully created command pool!" << std::endl;
-            }
+            VulkanDevice(Window& window);
 
             // Device is not movable or copyable
             VulkanDevice(const VulkanDevice &) = delete;

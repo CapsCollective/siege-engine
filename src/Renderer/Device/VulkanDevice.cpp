@@ -10,6 +10,28 @@ namespace SnekVk
 
     std::array<const char*, 1> VulkanDevice::deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
+    VulkanDevice::VulkanDevice(Window& window):
+        window(window)
+    {
+        SNEK_ASSERT(CreateInstance() == SnekState::Success, "Failed to create Vulkan Instance!");
+        std::cout << "SNEKVK: Created VULKAN Instance!" << std::endl;
+
+        SNEK_ASSERT(SetupDebugMessenger() == SnekState::Success, "Failed to create Vulkan Instance!");
+        if (enableValidationLayers) std::cout << "SNEKVK: Created DebugUtilsMessenger!" << std::endl;
+
+        SNEK_ASSERT(CreateSurface() == SnekState::Success, "Failed to create window surface for glfw!");
+        std::cout << "SNEKVK: Created window surface!" << std::endl;
+
+        SNEK_ASSERT(PickPhysicalDevice() == SnekState::Success, "Failed to find a suitable physical device!");
+        std::cout << "SNEKVK: Found a suitable physical device!" << std::endl;
+
+        SNEK_ASSERT(CreateLogicalDevice() == SnekState::Success, "Failed to create a logical device!");
+        std::cout << "SNEKVK: Successfully created logical device!" << std::endl;
+
+        SNEK_ASSERT(CreateCommandPool() == SnekState::Success, "Failed to create command pool!");
+        std::cout << "SNEKVK: Successfully created command pool!" << std::endl;
+    };
+
     SnekState VulkanDevice::CreateInstance() 
     {
         if (enableValidationLayers && !SnekVK::CheckValidationLayerSupport(validationLayers.data(), validationLayers.size())) 
@@ -92,8 +114,8 @@ namespace SnekVk
             VkPhysicalDevice device = devices[i];
             if (SnekVK::IsDeviceSuitable(device, surface, deviceExtensions.data(), deviceExtensions.size()))
             {
-                vkGetPhysicalDeviceProperties(device, &properties);
-                std::cout << "SNEKVK: FOUND DEVICE: " << properties.deviceName << std::endl;
+                //vkGetPhysicalDeviceProperties(device, &properties);
+                //std::cout << "SNEKVK: FOUND DEVICE: " << properties.deviceName << std::endl;
                 physicalDevice = device;
                 break;
             }
