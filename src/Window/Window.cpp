@@ -36,10 +36,6 @@ namespace SnekVk
 
     bool Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
     {
-        if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
-        {
-            return false;
-        }
-        return true;
+        return glfwCreateWindowSurface(instance, window, nullptr, surface) == VK_SUCCESS;
     }
 }

@@ -1,5 +1,5 @@
 #include "Window/Window.h"
-#include "Renderer/Device/VulkanDevice.h"
+#include "Renderer/VulkanDevice.hpp"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -15,9 +15,10 @@ int main()
     #endif
 
     // Window initialisation
-    SnekVk::Window window = SnekVk::Window("Snek", 800, 600);
+    SnekVk::Window window("Snek", 800, 600);
+    SnekVk::VulkanDevice device(window);
 
-    SnekVk::VulkanDevice device = SnekVk::VulkanDevice(window);
+    //SnekVk::VulkanDevice device(window);
 
     // Main loop
     while(!window.WindowShouldClose()) {
@@ -25,7 +26,7 @@ int main()
     }
 
     // Cleanup
-    device.DestroyVulkanDevice();
+    SnekVk::VulkanDevice::DestroyVulkanDevice(device);
     window.DestroyWindow();
     return 0;
 }
