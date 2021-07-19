@@ -1,5 +1,5 @@
 #include "Window/Window.h"
-#include "Renderer/VulkanDevice.hpp"
+#include "Renderer/VulkanDevice.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>

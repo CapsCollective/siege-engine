@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include "Renderer.h"
 #include "../Window/Window.h"
-#include "Utils/DebugUtilsMessenger.hpp"
-#include "Utils/Extensions.hpp"
+#include "Utils/DebugUtilsMessenger.h"
+#include "Utils/Extensions.h"
 
 // std lib headers
 #include <string>
@@ -43,11 +43,11 @@ class VulkanDevice {
   VulkanDevice(VulkanDevice &&) = delete;
   VulkanDevice &operator=(VulkanDevice &&) = delete;
 
-  VkCommandPool getCommandPool() { return commandPool; }
-  VkDevice device() { return device_; }
-  VkSurfaceKHR surface() { return surface_; }
-  VkQueue graphicsQueue() { return graphicsQueue_; }
-  VkQueue presentQueue() { return presentQueue_; }
+  VkCommandPool GetCommandPool() { return commandPool; }
+  VkDevice Device() { return device; }
+  VkSurfaceKHR Surface() { return surface; }
+  VkQueue GraphicsQueue() { return graphicsQueue; }
+  VkQueue PresentQueue() { return presentQueue; }
 
   SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -79,7 +79,7 @@ class VulkanDevice {
   static void DestroyVulkanDevice(VulkanDevice& device);
 
  private:
-  SnekState CreateInstance();
+  void CreateInstance();
   void SetupDebugMessenger();
   void CreateSurface();
   void PickPhysicalDevice();
@@ -98,10 +98,10 @@ class VulkanDevice {
   Window &window;
   VkCommandPool commandPool;
 
-  VkDevice device_;
-  VkSurfaceKHR surface_;
-  VkQueue graphicsQueue_;
-  VkQueue presentQueue_;
+  VkDevice device;
+  VkSurfaceKHR surface;
+  VkQueue graphicsQueue;
+  VkQueue presentQueue;
 
   const std::array<const char *, 1> validationLayers = { "VK_LAYER_KHRONOS_validation" };
   const std::array<const char *, 1> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };

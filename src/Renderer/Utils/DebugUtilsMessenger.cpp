@@ -1,4 +1,4 @@
-#include "DebugUtilsMessenger.hpp"
+#include "DebugUtilsMessenger.h"
 
 namespace SnekVk
 {

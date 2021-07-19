@@ -126,3 +126,5 @@ fabric.properties
 
 bin 
 lib
+
+.DS_STORE
