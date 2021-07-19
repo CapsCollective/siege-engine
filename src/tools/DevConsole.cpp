@@ -21,10 +21,10 @@ void DevConsole::OnUpdate()
     if (!isActive) return;
 
     // Get input from the keyboard and input it
-    int key;
-    while ((key = GetKeyPressed()) > 0)
+    char key;
+    while ((key = (char) GetCharPressed()) > 0)
     {
-        if ((key >= 32) && (key <= 125)) inputText += (char) key;
+        if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
@@ -39,7 +39,7 @@ void DevConsole::OnUpdate()
         // Process the input into command and argument format
         std::string command;
         std::string argument;
-        int separatorPos = inputText.find(' ');
+        size_t separatorPos = inputText.find(' ');
         if (separatorPos != -1)
         {
             command = inputText.substr(0, separatorPos);

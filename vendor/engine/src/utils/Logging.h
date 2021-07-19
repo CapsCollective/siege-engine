@@ -44,6 +44,7 @@ namespace Logging
 
         DEFINE_VARIANT_TYPE(const std::string& data, data);
         DEFINE_VARIANT_TYPE(const char* data, data);
+        DEFINE_VARIANT_TYPE(const char data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const int& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const float& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const double& data, std::to_string(data));
