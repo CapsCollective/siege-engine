@@ -4,6 +4,9 @@
 #include "../Window/Window.h"
 #include "Utils/DebugUtilsMessenger.h"
 #include "Utils/Extensions.h"
+#include "Utils/QueueFamilyIndices.h"
+#include "Utils/PhysicalDevice.h"
+#include "Utils/SwapChainSupportDetails.h"
 
 // std lib headers
 #include <string>
@@ -11,20 +14,6 @@
 #include <array>
 
 namespace SnekVk {
-
-struct SwapChainSupportDetails {
-  VkSurfaceCapabilitiesKHR capabilities;
-  std::vector<VkSurfaceFormatKHR> formats;
-  std::vector<VkPresentModeKHR> presentModes;
-};
-
-struct QueueFamilyIndices {
-  uint32_t graphicsFamily;
-  uint32_t presentFamily;
-  bool graphicsFamilyHasValue = false;
-  bool presentFamilyHasValue = false;
-  bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
-};
 
 class VulkanDevice {
  public:
@@ -49,9 +38,9 @@ class VulkanDevice {
   VkQueue GraphicsQueue() { return graphicsQueue; }
   VkQueue PresentQueue() { return presentQueue; }
 
-  SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
+  SwapChainSupportDetails getSwapChainSupport() { return SnekVk::QuerySwapChainSupport(physicalDevice, surface); }
   uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-  QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+  QueueFamilyIndices findPhysicalQueueFamilies() { return SnekVk::FindQueueFamilies(physicalDevice, surface); }
   VkFormat findSupportedFormat(
       const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
@@ -85,12 +74,6 @@ class VulkanDevice {
   void PickPhysicalDevice();
   void CreateLogicalDevice();
   void CreateCommandPool();
-
-  // helper functions
-  bool isDeviceSuitable(VkPhysicalDevice device);
-  QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-  bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-  SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
