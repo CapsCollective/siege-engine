@@ -1,17 +1,8 @@
 #include "StringHelpers.h"
 #include <algorithm>
 #include <stdexcept>
-#include <sstream>
-#include <iomanip>
 
-std::string StringHelpers::VectorToString(raylib::Vector3 vector)
-{
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2) << vector.x  << "," << vector.y << "," << vector.z;
-    return ss.str();
-}
-
-raylib::Vector3 StringHelpers::StringToVector(std::string string)
+Vec3 StringHelpers::StringToVector(std::string string)
 {
     // Split the string at comma values and check the number of components
     const std::vector<std::string>& components = SplitString(std::move(string), ',');

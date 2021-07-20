@@ -27,7 +27,7 @@ std::string SceneSerialiser::Serialise(const std::vector<Entity*>& entities)
 
         // Serialise the general entity information
         fileData += entity->GetName() + SEP;
-        fileData += DefineField("POSITION", StringHelpers::VectorToString(entity->GetPosition()));
+        fileData += DefineField("POSITION", entity->GetPosition().ToString());
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
 

@@ -99,7 +99,7 @@ void DevConsole::OnUpdate()
                 // Try convert the argument to a Vector3, and set the entity's position
                 try
                 {
-                    raylib::Vector3 position = StringHelpers::StringToVector(argument);
+                    Vec3 position = StringHelpers::StringToVector(argument);
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
                         messageDisplay->DisplayMessage("Entity position set to " + argument);
