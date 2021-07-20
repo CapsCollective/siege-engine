@@ -2,6 +2,8 @@
 
 #include "../Renderer.h"
 #include <unordered_set>
+#include <vector>
+#include <cstring>
 
 namespace SnekVk
 {
