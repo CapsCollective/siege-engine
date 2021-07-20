@@ -1,5 +1,4 @@
 #include "VulkanDevice.h"
-#include "Renderer.h"
 
 // std headers
 #include <cstring>

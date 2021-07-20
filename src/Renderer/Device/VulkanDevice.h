@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Renderer.h"
-#include "../Window/Window.h"
+#include "../Renderer.h"
+#include "../../Window/Window.h"
+
 #include "Utils/DebugUtilsMessenger.h"
 #include "Utils/Extensions.h"
 #include "Utils/QueueFamilyIndices.h"

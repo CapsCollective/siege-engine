@@ -1,5 +1,5 @@
 #include "Window/Window.h"
-#include "Renderer/VulkanDevice.h"
+#include "Renderer/Device/VulkanDevice.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -16,6 +16,7 @@ int main()
 
     // Window initialisation
     SnekVk::Window window("Snek", 800, 600);
+    
     SnekVk::VulkanDevice device(window);
 
     //SnekVk::VulkanDevice device(window);
