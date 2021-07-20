@@ -43,7 +43,7 @@ public:
      * @return the resulting linear velocity after
      *         applying any collision events
      */
-    static raylib::Vector3 MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity);
+    static Vec3 MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity);
 
     /**
      * Checks a given bounding box for collisions against
@@ -51,7 +51,7 @@ public:
      * @param boundingBox - the bounding box to check
      * @return whether there were any collisions
      */
-    static bool CheckCollision(const BoundingBox& boundingBox);
+    static bool CheckCollision(const BoundedBox& boundingBox);
 
 private:
 

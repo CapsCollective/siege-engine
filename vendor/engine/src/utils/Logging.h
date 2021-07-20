@@ -51,8 +51,8 @@ namespace Logging
         DEFINE_VARIANT_TYPE(const size_t& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
         DEFINE_VARIANT_TYPE(const Entity& data,data.GetName());
-        DEFINE_VARIANT_TYPE(const raylib::Vector3& data,
-                            "Vector3(" + StringHelpers::VectorToString(data) + ")");
+        DEFINE_VARIANT_TYPE(const Vec3& data,
+                            "Vector3(" + data.ToString() + ")");
 
         /**
          * Returns the data held by the variant container

@@ -39,7 +39,7 @@ public:
 
     void SelectEntity(class Entity* entity);
 
-    bool TrySetPos(raylib::Vector3 position);
+    bool TrySetPos(Vec3 position);
 
     bool TrySetRot(float rotation);
 
