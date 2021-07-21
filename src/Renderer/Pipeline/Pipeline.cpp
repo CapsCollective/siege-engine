@@ -6,9 +6,13 @@
 
 namespace SnekVk 
 {
-    Pipeline::Pipeline(char const* vertFilePath, char const* fragFilePath)
+    Pipeline::Pipeline(
+        VulkanDevice& device, 
+        const char* vertFilePath, 
+        const char* fragFilePath, 
+        const PipelineConfigInfo& configInfo) : device{device}
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath);
+        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
     }
 
     Pipeline::~Pipeline() {}
@@ -19,7 +23,7 @@ namespace SnekVk
 
         SNEK_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
 
-        size_t size = static_cast<size_t>(file.tellg());
+        u32 size = static_cast<u32>(file.tellg());
         
         char* buffer = new char[size];
         
@@ -32,7 +36,10 @@ namespace SnekVk
         return { buffer, size };
     }
 
-    void Pipeline::CreateGraphicsPipeline(char const* vertFilePath, char const* fragFilePath)
+    void Pipeline::CreateGraphicsPipeline(
+        char const* vertFilePath, 
+        char const* fragFilePath, 
+        const PipelineConfigInfo& configInfo)
     {
         auto vertCode = ReadFile(vertFilePath);
         auto fragCode = ReadFile(fragFilePath);
@@ -42,6 +49,24 @@ namespace SnekVk
 
         DestroyFileData(vertCode);
         DestroyFileData(fragCode);
+    }
+
+    void Pipeline::CreateShaderModule(struct FileData fileData, VkShaderModule* shaderModule)
+    {
+        VkShaderModuleCreateInfo createInfo {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = fileData.bufferSize;
+        createInfo.pCode = reinterpret_cast<const u32*>(fileData.buffer);
+
+        SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, shaderModule) == VK_SUCCESS, 
+            "Failed to create shader module!");
+    }
+
+    PipelineConfigInfo Pipeline::DefaultPipelineConfig(u32 width, u32 height)
+    {
+        PipelineConfigInfo configInfo {};
+
+        return configInfo;
     }
 
     void DestroyFileData(FileData& data)
