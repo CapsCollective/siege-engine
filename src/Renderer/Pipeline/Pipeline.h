@@ -5,7 +5,21 @@
 
 namespace SnekVk 
 {
-    struct PipelineConfigInfo {};
+    struct PipelineConfigInfo 
+    {
+        VkViewport viewport{};
+        VkRect2D scissor{};
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
+        VkPipelineMultisampleStateCreateInfo multisampleInfo{};
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
+        VkPipelineLayout pipelineLayout{nullptr};
+        VkRenderPass renderPass{nullptr};
+        u32 subPass{0}; 
+    };
+
     class Pipeline 
     {
         public:
@@ -17,6 +31,8 @@ namespace SnekVk
             );
 
             ~Pipeline();
+
+            static void DestroyGraphicsPipeline(Pipeline& pipeline); 
 
             Pipeline(const Pipeline&) = delete;
             void operator=(const Pipeline&) = delete;
