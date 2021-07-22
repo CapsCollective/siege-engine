@@ -40,40 +40,37 @@ void CollisionSystem::FreeEntities()
     removedEntities.clear();
 }
 
-raylib::Vector3 CollisionSystem::MoveAndSlide(const BoundingBox& boundingBox, raylib::Vector3 velocity)
+Vec3 CollisionSystem::MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity)
 {
     // TODO convert this system to use OBBs with separating plane theorem
     // TODO add collision sweeping for more accurate results
     // Get the min and max values for the bounding box
-    raylib::Vector3 boxMin = boundingBox.min;
-    raylib::Vector3 boxMax = boundingBox.max;
+    const Vec3& boxMin = boundingBox.min;
+    const Vec3& boxMax = boundingBox.max;
 
     // Calculate the bounding box positions for each component of the object's velocity
-    raylib::Vector3 yVelocity = raylib::Vector3(0.f, velocity.y, 0.f);
-    raylib::Vector3 xVelocity = raylib::Vector3(velocity.x, 0.f, 0.f);
-    raylib::Vector3 zVelocity = raylib::Vector3(0.f, 0.f, velocity.z);
-    BoundingBox yBox = {boxMin + yVelocity, boxMax + yVelocity};
-    BoundingBox xBox = {boxMin + xVelocity, boxMax + xVelocity};
-    BoundingBox zBox = {boxMin + zVelocity,boxMax + zVelocity};
+    BoundedBox yBox = {boxMin + velocity.YComp(), boxMax + velocity.YComp()};
+    BoundedBox xBox = {boxMin + velocity.XComp(), boxMax + velocity.XComp()};
+    BoundedBox zBox = {boxMin + velocity.ZComp(), boxMax + velocity.ZComp()};
 
     // TODO make collisions call OnCollision for Collidables
     // Check for collision against all collidable entities
     for (auto& entity : collidableEntities)
     {
         // Nullify the any colliding velocity components
-        if (CheckCollisionBoxes(entity->GetBoundingBox(), yBox)) velocity.y = 0.f;
-        if (CheckCollisionBoxes(entity->GetBoundingBox(), xBox)) velocity.x = 0.f;
-        if (CheckCollisionBoxes(entity->GetBoundingBox(), zBox)) velocity.z = 0.f;
+        if (yBox.Intersects(entity->GetBoundingBox())) velocity.y = 0.f;
+        if (xBox.Intersects(entity->GetBoundingBox())) velocity.x = 0.f;
+        if (zBox.Intersects(entity->GetBoundingBox())) velocity.z = 0.f;
     }
     return velocity;
 }
 
-bool CollisionSystem::CheckCollision(const BoundingBox& boundingBox)
+bool CollisionSystem::CheckCollision(const BoundedBox& boundingBox)
 {
     // Check collision for each registered entity against the bounding box
     for (auto& entity : collidableEntities)
     {
-        if (CheckCollisionBoxes(entity->GetBoundingBox(), boundingBox)) return true;
+        if (boundingBox.Intersects(entity->GetBoundingBox())) return true;
     }
     return false;
 }

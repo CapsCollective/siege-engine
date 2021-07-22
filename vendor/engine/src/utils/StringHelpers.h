@@ -1,19 +1,12 @@
 #ifndef A_DARK_DISCOMFORT_STRINGHELPERS_H
 #define A_DARK_DISCOMFORT_STRINGHELPERS_H
 
-#include <raylib/Vector3.hpp>
+#include "Maths.h"
 #include <string>
 #include <vector>
 
 namespace StringHelpers
 {
-    /**
-     * A helper function to convert a Vector3 to a string
-     * @param vector - the vector to convert
-     * @return a string representation of the Vector3
-     */
-    std::string VectorToString(raylib::Vector3 vector);
-
     /**
      * A helper function to convert a string to a Vector3
      * @param string - the string to convert
@@ -25,7 +18,7 @@ namespace StringHelpers
      *                            component is found in
      *                            the supplied vector
      */
-    raylib::Vector3 StringToVector(std::string string);
+    Vec3 StringToVector(std::string string);
 
     /**
      * A helper function to split a string into a vector of

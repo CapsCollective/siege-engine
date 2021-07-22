@@ -16,13 +16,13 @@ public:
     // 'Structors
 
     Player() :
-        Player(raylib::Vector3::Zero(), 0.f)
+        Player(Vec3::Zero, 0.f)
     {};
 
-    Player(raylib::Vector3 position, float rotation) :
+    Player(Vec3 position, float rotation) :
         Entity(ENTITY_NAME, position, rotation),
         speed(1.5f),
-        velocity(raylib::Vector3::Zero()),
+        velocity(Vec3::Zero),
         modelData(ModelData(
                 "assets/models/cube/cube.obj",
                 "assets/models/cube/cube.png"))
@@ -32,7 +32,7 @@ public:
 
     Entity* Clone() const override;
 
-    BoundingBox GetBoundingBox() const override;
+    BoundedBox GetBoundingBox() const override;
 
     const ModelData& GetModelData() override;
 
@@ -52,7 +52,7 @@ private:
 
     float speed;
 
-    raylib::Vector3 velocity;
+    Vec3 velocity;
 
     ModelData modelData;
 

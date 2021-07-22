@@ -1,6 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_MACROS_H
 #define A_DARK_DISCOMFORT_MACROS_H
 
+// Reserved character macros
+#define COMMA ,
+#define SEMICOLON ;
+
 // OUT parameter macro
 #define OUT
 

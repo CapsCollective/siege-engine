@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
 
     // Create main camera
     raylib::Camera3D camera = raylib::Camera3D(
-            raylib::Vector3(0.f, 10.f, 10.f),
-            raylib::Vector3(0.f, 0.f, 0.f),
-            raylib::Vector3(0.f, 1.f, 0.f),
+            Vec3(0.f, 10.f, 10.f),
+            Vec3(0.f, 0.f, 0.f),
+            Vec3(0.f, 1.f, 0.f),
             45.f,
             CAMERA_PERSPECTIVE
     );
