@@ -6,9 +6,9 @@
 // Static member initialisation
 const std::string Entity::ENTITY_NAME("Entity");
 
-BoundingBox Entity::GetBoundingBox() const
+BoundedBox Entity::GetBoundingBox() const
 {
-    return BoundingBox();
+    return BoundedBox();
 }
 
 Entity* Entity::Clone() const
@@ -36,7 +36,7 @@ void Entity::SetIndex(GenerationalIndex idx)
     index = idx;
 }
 
-const raylib::Vector3& Entity::GetPosition() const
+const Vec3& Entity::GetPosition() const
 {
     return position;
 }
@@ -51,7 +51,7 @@ int Entity::GetZIndex() const
     return zIndex;
 }
 
-void Entity::SetPosition(raylib::Vector3 newPosition)
+void Entity::SetPosition(Vec3 newPosition)
 {
     position = newPosition;
 }

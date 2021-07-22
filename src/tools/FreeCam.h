@@ -15,7 +15,7 @@ public:
         moveSpeed(10.f),
         lookSpeed(0.1f),
         camera(ServiceLocator::GetCamera()),
-        rotation(raylib::Vector3(0.f, -1.f, -1.f)),
+        rotation(Vec3(0.f, -1.f, -1.f)),
         previousMousePosition({0.f, 0.f})
     {
         camera->SetMode(CAMERA_CUSTOM);
@@ -37,7 +37,7 @@ private:
 
     raylib::Camera3D* camera;
 
-    raylib::Vector3 rotation;
+    Vec3 rotation;
 
     Vector2 previousMousePosition;
 };

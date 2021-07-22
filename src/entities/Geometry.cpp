@@ -12,21 +12,19 @@ void Geometry::OnDraw()
 
     // Set the model's texture to this entity's texture
     ModelData::SetTexture(model, texture);
-    DrawModelEx(model,position,
-                raylib::Vector3(0, 1, 0), rotation,dimensions,WHITE);
-    DrawModelWiresEx(model,position,
-                     raylib::Vector3(0, 1, 0), rotation,dimensions, PINK);
+    DrawModelEx(model, position,Vec3(0, 1, 0), rotation, dimensions, WHITE);
+    DrawModelWiresEx(model, position, Vec3(0, 1, 0), rotation, dimensions, PINK);
 }
 
-BoundingBox Geometry::GetBoundingBox() const
+BoundedBox Geometry::GetBoundingBox() const
 {
-    return BoundingBox {
-            raylib::Vector3(position) - raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
-            raylib::Vector3(position) + raylib::Vector3(dimensions.x, dimensions.y, dimensions.z),
+    return BoundedBox {
+        position - dimensions,
+        position + dimensions,
     };
 }
 
-const raylib::Vector3& Geometry::GetDimensions()
+const Vec3& Geometry::GetDimensions()
 {
     return dimensions;
 }
@@ -57,7 +55,7 @@ static std::string Serialise(Entity* entity)
 {
     std::string fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
-    fileData += DefineField("DIMENSIONS", StringHelpers::VectorToString(geometry->GetDimensions()));
+    fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
     fileData += DefineField("MODEL_PATH", geometry->GetModelData().GetModelPath());
     fileData += DefineField("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
     return fileData;
@@ -65,14 +63,11 @@ static std::string Serialise(Entity* entity)
 
 static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
 {
-    raylib::Vector3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
+    Vec3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
     std::string modelPath = args[CUSTOM_FIELD_2];
     std::string texturePath = args[CUSTOM_FIELD_3];
 
-    return new Geometry(
-            data.position,
-            data.rotation,
-            dimensions,
+    return new Geometry(data.position, data.rotation, dimensions,
             ModelData(modelPath, texturePath));
 }
 

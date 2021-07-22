@@ -109,7 +109,7 @@ void EditorController::OnUpdate()
         {
             case POSITION: {
                 // Calculate move from input
-                raylib::Vector3 move = raylib::Vector3::Zero();
+                Vec3 move = Vec3::Zero;
                 float precision = moveLevels[movePrecision];
                 move.x = precision * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
@@ -118,7 +118,7 @@ void EditorController::OnUpdate()
                 IsKeyDown(KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
 
                 // Apply the move to the position of the entity
-                raylib::Vector3 entityPosition = selectedEntity->GetPosition();
+                Vec3 entityPosition = selectedEntity->GetPosition();
                 selectedEntity->SetPosition(entityPosition + move);
                 break;
             }
@@ -141,10 +141,11 @@ void EditorController::OnDraw()
     if (selectedEntity)
     {
         // Draw gizmo display to its location
-        raylib::Vector3 entityPos = selectedEntity->GetPosition();
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(3.f, 0.f, 0.f), RED);
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 3.f, 0.f), GREEN);
-        DrawLine3D(entityPos, entityPos + raylib::Vector3(0.f, 0.f, 3.f), BLUE);
+        Vec3 entityPos = selectedEntity->GetPosition();
+        Vec3 extents(3.f, 3.f, 3.f);
+        DrawLine3D(entityPos, (entityPos + extents.XComp()), RED);
+        DrawLine3D(entityPos, (entityPos + extents.YComp()), GREEN);
+        DrawLine3D(entityPos, (entityPos + extents.ZComp()), BLUE);
     }
 }
 
@@ -161,9 +162,9 @@ void EditorController::OnDraw2D()
     const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
-    raylib::Vector3 entityPosition = selectedEntity->GetPosition();
+    Vec3 entityPosition = selectedEntity->GetPosition();
     Vector2 screenPosition = GetWorldToScreen(
-            entityPosition + raylib::Vector3(0.f, 4.f, 0.f), *camera);
+            (entityPosition + Vec3(0.f, 4.f, 0.f)), *camera);
     DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
              (int) screenPosition.y, 20, PINK);
     DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
@@ -227,7 +228,7 @@ void EditorController::AdjustPrecision(int adjustment)
     }
 }
 
-bool EditorController::TrySetPos(raylib::Vector3 position)
+bool EditorController::TrySetPos(Vec3 position)
 {
     if (!selectedEntity) return false;
     selectedEntity->SetPosition(position);

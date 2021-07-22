@@ -2,9 +2,9 @@
 #define A_DARK_DISCOMFORT_ENTITY_H
 
 #include "IndexAllocator.h"
-#include <raylib/Vector3.hpp>
 #include "string"
 #include "EntityPtr.h"
+#include "../utils/Maths.h"
 
 /**
  * The base entity class for game objects and tool
@@ -34,7 +34,7 @@ public:
      *               entity as a string
      */
     Entity(const std::string& name) :
-            Entity(name, raylib::Vector3::Zero(), 0.f)
+            Entity(name, Vec3::Zero, 0.f)
     {};
 
     /**
@@ -47,7 +47,7 @@ public:
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const std::string& name, raylib::Vector3 position, float rotation, int zIndex = 0) :
+    Entity(const std::string& name, Vec3 position, float rotation, int zIndex = 0) :
             position(position),
             rotation(rotation),
             name(name),
@@ -85,12 +85,12 @@ public:
 
     /**
      * A virtual method for implementing a definition of an
-     * entity's BoundingBox attribute
-     * @return the entity's BoundingBox
+     * entity's BoundedBox attribute
+     * @return the entity's BoundedBox
      * @note Calling this function on an object that does not
-     *       override it will return a zero sized BoundingBox
+     *       override it will return a zero sized BoundedBox
      */
-    virtual BoundingBox GetBoundingBox() const;
+    virtual BoundedBox GetBoundingBox() const;
 
     /**
      * A virtual method to be overridden for more complex
@@ -120,7 +120,7 @@ public:
      * @return a constant reference to the entity's
      *         position a Vector3
      */
-    const raylib::Vector3& GetPosition() const;
+    const Vec3& GetPosition() const;
 
     /**
      * Getter method for the entity's rotation attribute
@@ -150,7 +150,7 @@ public:
      * @param newPosition - a Vector3 to set as the
      *                      entity's position
      */
-    void SetPosition(raylib::Vector3 newPosition);
+    void SetPosition(Vec3 newPosition);
 
     /**
      * Setter method for the entity's rotation attribute
@@ -175,7 +175,7 @@ protected:
     /**
      * The position of the entity as a Vector3
      */
-    raylib::Vector3 position;
+    Vec3 position;
 
     /**
      * The rotation of the entity in degrees

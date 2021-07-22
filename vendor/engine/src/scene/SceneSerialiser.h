@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_SCENESERIALISER_H
 #define A_DARK_DISCOMFORT_SCENESERIALISER_H
 
+#include "../utils/Maths.h"
 #include "../utils/Macros.h"
-#include <raylib/Vector3.hpp>
 #include <functional>
 #include <string>
 #include <vector>
@@ -92,17 +92,17 @@ struct EntityData {
     /**
      * The entity position
      */
-    raylib::Vector3 position;
+    Vec3 position;
 
     /**
-     * The entityrotation
+     * The entity rotation
      */
-    float rotation;
+    float rotation {0};
 
     /**
      * The entity z-index
      */
-    int zIndex;
+    int zIndex {0};
 };
 
 /**
