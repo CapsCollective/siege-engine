@@ -44,7 +44,7 @@ class VulkanDevice {
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     QueueFamilyIndices findPhysicalQueueFamilies() { return SnekVk::FindQueueFamilies(physicalDevice, surface); }
     VkFormat FindSupportedFormat(
-        const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+        const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 	// Buffer Helper Functions
 	void CreateBuffer(

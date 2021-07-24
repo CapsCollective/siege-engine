@@ -173,10 +173,12 @@ namespace SnekVk {
 
 
 	VkFormat VulkanDevice::FindSupportedFormat(
-	const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
+		const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features) 
 	{
-		for (VkFormat format : candidates) 
+		for (size_t i = 0; i < formatCount; i++) 
 		{
+			VkFormat format = candidates[i];
+
 			VkFormatProperties props;
 			vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
 
@@ -189,7 +191,7 @@ namespace SnekVk {
 				return format;
 			}
 		}
-		throw std::runtime_error("failed to find supported format!");
+		SNEK_ASSERT(formatCount == 0, "Failed to find a supported format!");
 	}
 
 	uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 

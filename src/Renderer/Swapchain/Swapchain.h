@@ -17,21 +17,29 @@ namespace SnekVk
         void operator=(const SwapChain*) = delete;
         void DestroySwapChain(SwapChain& swapChain);
 
+        VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
+
         private:
         
         void CreateSwapChain();
+        void CreateImageViews();
+        void CreateRenderPass();
 
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats, size_t formatCount);
         VkPresentModeKHR ChoosePresentMode(VkPresentModeKHR* presentModes, size_t presentModeCount);
         VkExtent2D ChooseSwapExtent(VkSurfaceCapabilitiesKHR& capabilities);
+        VkFormat FindDepthFormat();
         
         VulkanDevice& device;
         VkExtent2D windowExtent;
+
+        VkRenderPass renderPass;
 
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
 
         VkImage* swapChainImages;
+        VkImageView* swapChainImageViews;
         u32 imageCount;
 
         VkSwapchainKHR swapChain;
