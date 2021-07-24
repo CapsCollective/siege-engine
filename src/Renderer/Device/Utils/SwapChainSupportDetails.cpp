@@ -13,6 +13,8 @@ namespace SnekVk
         if (formatCount != 0) 
         {
             vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats);
+            
+            details.availableFormatCount = formatCount;
             details.hasFormats = true;
         }
 
@@ -26,6 +28,8 @@ namespace SnekVk
                 surface,
                 &presentModeCount,
                 details.presentModes);
+
+            details.availablePresentModeCount = presentModeCount;
             details.hasPresentModes = true;
         }
         return details;

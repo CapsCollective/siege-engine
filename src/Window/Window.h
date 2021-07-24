@@ -29,6 +29,8 @@ namespace SnekVk
 
         const int& GetWidth() { return width; }
 
+        VkExtent2D GetExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+
         // Public Functions
 
         void Update();

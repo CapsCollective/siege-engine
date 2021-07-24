@@ -40,7 +40,7 @@ class VulkanDevice {
     VkQueue GraphicsQueue() { return graphicsQueue; }
     VkQueue PresentQueue() { return presentQueue; }
 
-    SwapChainSupportDetails getSwapChainSupport() { return SnekVk::QuerySwapChainSupport(physicalDevice, surface); }
+    SwapChainSupportDetails GetSwapChainSupport() { return SnekVk::QuerySwapChainSupport(physicalDevice, surface); }
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     QueueFamilyIndices findPhysicalQueueFamilies() { return SnekVk::FindQueueFamilies(physicalDevice, surface); }
     VkFormat FindSupportedFormat(

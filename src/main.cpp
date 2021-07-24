@@ -1,6 +1,7 @@
 #include "Window/Window.h"
 #include "Renderer/Device/VulkanDevice.h"
 #include "Renderer/Pipeline/Pipeline.h"
+#include "Renderer/Swapchain/Swapchain.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -23,8 +24,10 @@ int main()
 
     SnekVk::VulkanDevice device(window);
 
-    SnekVk::Pipeline pipeline(device, "shaders/simpleShader.vert.spv", "shaders/simpleShader.frag.spv", 
-        SnekVk::Pipeline::DefaultPipelineConfig(WIDTH, HEIGHT));
+    // SnekVk::Pipeline pipeline(device, "shaders/simpleShader.vert.spv", "shaders/simpleShader.frag.spv", 
+    //     SnekVk::Pipeline::DefaultPipelineConfig(WIDTH, HEIGHT));
+
+    SnekVk::SwapChain swapChain(device, window.GetExtent());
 
     // Main loop
     while(!window.WindowShouldClose()) {
@@ -32,7 +35,7 @@ int main()
     }
 
     // Cleanup
-    SnekVk::Pipeline::DestroyGraphicsPipeline(pipeline);
+    //SnekVk::Pipeline::DestroyGraphicsPipeline(pipeline);
     SnekVk::VulkanDevice::DestroyVulkanDevice(device);
     window.DestroyWindow();
     return 0;
