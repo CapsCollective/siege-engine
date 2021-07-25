@@ -1,5 +1,7 @@
 #include "Swapchain.h"
 
+#include <array>
+
 namespace SnekVk
 {
     SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) 
@@ -8,7 +10,55 @@ namespace SnekVk
         CreateSwapChain();
         CreateImageViews();
         CreateRenderPass();
-        CreateImageViews();
+        CreateDepthResources();
+        CreateFrameBuffers();
+        CreateSyncObjects();
+    }
+
+    void SwapChain::DestroySwapChain(VulkanDevice& device, SwapChain& swapChain)
+    {
+        u32 imageCount = swapChain.GetImageCount(); 
+        for (u32 i = 0; i < imageCount; i++)
+        {
+            vkDestroyImageView(device.Device(), swapChain.swapChainImageViews[i], nullptr);
+        }
+
+        delete [] swapChain.swapChainImageViews;
+
+        if (swapChain.GetSwapChain() != nullptr)
+        {
+            vkDestroySwapchainKHR(device.Device(), swapChain.GetSwapChain(), nullptr);
+            swapChain.swapChain = nullptr;
+        }
+
+        for (size_t i = 0; i < imageCount; i++)
+        {
+            vkDestroyImageView(device.Device(), swapChain.depthImageViews[i], nullptr);
+            vkDestroyImage(device.Device(), swapChain.depthImages[i], nullptr);
+            vkFreeMemory(device.Device(), swapChain.depthImageMemorys[i], nullptr);
+        }
+
+        delete [] swapChain.depthImageViews;
+        delete [] swapChain.depthImages;
+        delete [] swapChain.depthImageMemorys;
+
+        for (size_t i = 0; i < imageCount; i++)
+        {
+            vkDestroyFramebuffer(device.Device(), swapChain.swapChainFrameBuffers[i], nullptr);
+        }
+
+        delete [] swapChain.swapChainFrameBuffers;
+
+        vkDestroyRenderPass(device.Device(), swapChain.renderPass, nullptr);
+        
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            vkDestroySemaphore(device.Device(), swapChain.renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(device.Device(), swapChain.imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(device.Device(), swapChain.inFlightFences[i], nullptr);
+        }
+
+        delete [] swapChain.imagesInFlight;
     }
 
     void SwapChain::CreateSwapChain()
@@ -207,6 +257,58 @@ namespace SnekVk
 
             SNEK_ASSERT(vkCreateImageView(device.Device(), &viewInfo, nullptr, &depthImageViews[i]) == VK_SUCCESS,
                 "Failed to create texture image view!");
+        }
+    }
+
+    void SwapChain::CreateFrameBuffers()
+    {
+        swapChainFrameBuffers = new VkFramebuffer[imageCount];
+
+        for(size_t i = 0; i < imageCount; i++)
+        {
+            u32 attachmentCount = 2;
+
+            VkImageView attachments[] {swapChainImageViews[i], depthImageViews[i]};
+
+            VkExtent2D swapChainExtent = GetSwapChainExtent();
+
+            VkFramebufferCreateInfo frameBufferInfo{};
+            frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            frameBufferInfo.renderPass = renderPass;
+            frameBufferInfo.attachmentCount = attachmentCount;
+            frameBufferInfo.pAttachments = attachments;
+            frameBufferInfo.width = swapChainExtent.width;
+            frameBufferInfo.height = swapChainExtent.height;
+            frameBufferInfo.layers = 1;
+
+            SNEK_ASSERT(vkCreateFramebuffer(device.Device(), &frameBufferInfo, nullptr, &swapChainFrameBuffers[i]) == VK_SUCCESS,
+                "Failed to create framebuffer");
+        }
+    }
+
+    void SwapChain::CreateSyncObjects()
+    {
+        imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+        renderFinishedSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+        inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
+        imagesInFlight = new VkFence[imageCount];
+
+        for (size_t i = 0; i < imageCount; i++) imagesInFlight[i] = VK_NULL_HANDLE;
+
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            SNEK_ASSERT(
+                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) == VK_SUCCESS &&
+                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) == VK_SUCCESS &&
+                vkCreateFence(device.Device(), &fenceInfo, nullptr, &inFlightFences[i]) == VK_SUCCESS, 
+                "Failed to create synchronization objects fora  frame!");
         }
     }
 

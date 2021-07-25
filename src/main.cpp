@@ -35,6 +35,7 @@ int main()
     }
 
     // Cleanup
+    SnekVk::SwapChain::DestroySwapChain(device, swapChain);
     //SnekVk::Pipeline::DestroyGraphicsPipeline(pipeline);
     SnekVk::VulkanDevice::DestroyVulkanDevice(device);
     window.DestroyWindow();

@@ -15,10 +15,13 @@ namespace SnekVk
 
         SwapChain(const SwapChain&) = delete;
         void operator=(const SwapChain*) = delete;
-        void DestroySwapChain(SwapChain& swapChain);
+        static void DestroySwapChain(VulkanDevice& device, SwapChain& swapChain);
 
         VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
         VkExtent2D GetSwapChainExtent() { return swapChainExtent; }
+
+        u32 GetImageCount() { return imageCount; }
+        VkSwapchainKHR GetSwapChain() { return swapChain; }
 
         private:
         
@@ -27,6 +30,7 @@ namespace SnekVk
         void CreateRenderPass();
         void CreateDepthResources();
         void CreateFrameBuffers();
+        void CreateSyncObjects();
 
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats, size_t formatCount);
         VkPresentModeKHR ChoosePresentMode(VkPresentModeKHR* presentModes, size_t presentModeCount);
@@ -54,5 +58,11 @@ namespace SnekVk
         u32 imageCount;
 
         VkSwapchainKHR swapChain;
+
+        VkSemaphore* imageAvailableSemaphores;
+        VkSemaphore* renderFinishedSemaphores;
+        VkFence* inFlightFences;
+        VkFence* imagesInFlight;
+        size_t currentFrame = 0;
     };
 }
