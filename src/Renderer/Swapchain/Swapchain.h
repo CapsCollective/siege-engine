@@ -23,6 +23,11 @@ namespace SnekVk
         u32 GetImageCount() { return imageCount; }
         VkSwapchainKHR GetSwapChain() { return swapChain; }
 
+        u32 GetWidth() { return swapChainExtent.width; }
+        u32 GetHeight() { return swapChainExtent.height; }
+
+        VkRenderPass GetRenderPass() { return renderPass; }
+
         private:
         
         void CreateSwapChain();

@@ -120,12 +120,8 @@ namespace SnekVk
         SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
 
-        std::cout << "CREATED" << std::endl;
-
         DestroyFileData(vertCode);
         DestroyFileData(fragCode);
-
-        std::cout << "CREATED" << std::endl;
     }
 
     void Pipeline::CreateShaderModule(struct FileData fileData, VkShaderModule* shaderModule)
