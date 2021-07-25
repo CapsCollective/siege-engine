@@ -10,13 +10,7 @@ typedef uint64_t u64;
 typedef int32_t i32;
 typedef size_t size;
 
-#if (defined(_WIN32) || defined(_WIN64)) 
-    #define EXIT_APP \
-        system("pause"); \
-        abort();
-#else
-    #define EXIT_APP abort();
-#endif 
+#define EXIT_APP abort();
 
 #define REPORT_ASSERT_FAILURE(expr, file, line, message) \
     std::cout << "SNEK ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: "  << line << std::endl; \

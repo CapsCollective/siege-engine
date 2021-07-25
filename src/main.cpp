@@ -11,10 +11,12 @@
 int main() 
 {
     #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG) 
-    AllocConsole();
+    
+    AttachConsole(ATTACH_PARENT_PROCESS);
     freopen("CON", "w", stdout);
     freopen("CON", "w", stderr);
     freopen("CON", "r", stdin);
+    
     #endif
 
     static const constexpr int WIDTH = 800;

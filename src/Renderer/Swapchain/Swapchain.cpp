@@ -124,6 +124,8 @@ namespace SnekVk
         this->imageCount = imageCount;
         swapChainImageFormat = surfaceFormat.format;
         swapChainExtent = extent;
+
+        SnekVk::DestroySwapChainSupportDetails(details);
     }
 
     void SwapChain::CreateImageViews()
@@ -146,6 +148,8 @@ namespace SnekVk
             SNEK_ASSERT(vkCreateImageView(device.Device(), &createInfo, nullptr, &swapChainImageViews[i]) == VK_SUCCESS,
                     "Failed to create texture image view!");
         }
+
+        std::cout << "Created ImageViews" << std::endl;
     }
 
     void SwapChain::CreateRenderPass()
