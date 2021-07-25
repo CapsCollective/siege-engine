@@ -28,6 +28,7 @@ int main()
     SnekVk::SwapChain swapChain(device, window.GetExtent());
 
     // Graphics pipeline creation
+    // TODO: Edit this to allow pipelines to be configured and passed into renderer.
     VkPipelineLayout pipelineLayout;
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
