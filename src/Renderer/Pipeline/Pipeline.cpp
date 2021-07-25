@@ -109,6 +109,7 @@ namespace SnekVk
         pipelineCreateInfo.pMultisampleState = &configInfo.multisampleInfo;
         pipelineCreateInfo.pColorBlendState = &configInfo.colorBlendInfo;
         pipelineCreateInfo.pDynamicState = nullptr;
+        pipelineCreateInfo.pDepthStencilState = &configInfo.depthStencilInfo;
 
         pipelineCreateInfo.layout = configInfo.pipelineLayout;
         pipelineCreateInfo.renderPass = configInfo.renderPass;

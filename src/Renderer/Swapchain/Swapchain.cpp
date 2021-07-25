@@ -312,6 +312,79 @@ namespace SnekVk
         }
     }
 
+    VkResult SwapChain::AcquireNextImage(u32* imageIndex)
+    {
+        vkWaitForFences(
+            device.Device(), 
+            1, 
+            &inFlightFences[currentFrame], 
+            VK_TRUE, 
+            std::numeric_limits<u64>::max());
+
+        return vkAcquireNextImageKHR(
+            device.Device(),
+            swapChain, 
+            std::numeric_limits<u64>::max(),
+            imageAvailableSemaphores[currentFrame],
+            VK_NULL_HANDLE,
+            imageIndex
+        ); 
+    }
+
+    VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex)
+    {
+        u32 index = *imageIndex;
+
+        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
+        {
+            vkWaitForFences(device.Device(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
+        }
+
+        imagesInFlight[index] = inFlightFences[currentFrame];
+
+        VkSubmitInfo submitInfo{};
+        
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
+        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = buffers;
+
+        VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+        
+        vkResetFences(device.Device(), 1, &inFlightFences[currentFrame]);
+
+        SNEK_ASSERT(vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) == VK_SUCCESS,
+            "Failed to submit draw command buffer");
+
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+
+        VkSwapchainKHR swapChains[] {swapChain};
+
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+
+        presentInfo.pImageIndices = imageIndex;
+
+        auto result = vkQueuePresentKHR(device.PresentQueue(), &presentInfo);
+
+        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+        return result;
+    }
+
     // Helpers
 
     VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats, size_t formatCount)

@@ -10,12 +10,17 @@ namespace SnekVk
 
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
+        // 'Structors 
+
         SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
         ~SwapChain() {};
 
         SwapChain(const SwapChain&) = delete;
         void operator=(const SwapChain*) = delete;
+
         static void DestroySwapChain(VulkanDevice& device, SwapChain& swapChain);
+
+        // Getters
 
         VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
         VkExtent2D GetSwapChainExtent() { return swapChainExtent; }
@@ -27,6 +32,9 @@ namespace SnekVk
         u32 GetHeight() { return swapChainExtent.height; }
 
         VkRenderPass GetRenderPass() { return renderPass; }
+
+        VkResult AcquireNextImage(u32* imageIndex);
+        VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
 
         private:
         
