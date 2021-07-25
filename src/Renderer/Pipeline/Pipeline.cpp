@@ -136,6 +136,11 @@ namespace SnekVk
             "Failed to create shader module!");
     }
 
+    void Pipeline::Bind(VkCommandBuffer commandBuffer)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
+
     PipelineConfigInfo Pipeline::DefaultPipelineConfig(u32 width, u32 height)
     {
         PipelineConfigInfo configInfo {};

@@ -128,3 +128,4 @@ bin
 lib
 
 .DS_STORE
+.env

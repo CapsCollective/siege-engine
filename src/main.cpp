@@ -2,6 +2,7 @@
 #include "Renderer/Device/VulkanDevice.h"
 #include "Renderer/Pipeline/Pipeline.h"
 #include "Renderer/Swapchain/Swapchain.h"
+#include "Renderer/Renderer.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -44,11 +45,18 @@ int main()
     pipelineConfig.pipelineLayout = pipelineLayout;
 
     SnekVk::Pipeline pipeline(device, "shaders/simpleShader.vert.spv", "shaders/simpleShader.frag.spv", pipelineConfig);
+
+    SnekVk::Renderer renderer(&swapChain);
+
+    renderer.CreateCommandBuffers(device, pipeline);
     
     // Main loop
     while(!window.WindowShouldClose()) {
         window.Update();
+        renderer.DrawFrame();
     }
+
+    vkDeviceWaitIdle(device.Device());
 
     // Cleanup
     vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);

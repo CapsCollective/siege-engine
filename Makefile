@@ -12,6 +12,14 @@ includes := -I vendor/glfw/include -I $(VULKAN_SDK)/include
 linkFlags = -L lib/$(platform) -lglfw3
 compileFlags := -std=c++17 $(includes)
 
+ifneq ("$(wildcard ./.env)", "")
+	include .env
+	vertSources = $(shell find ./shaders -type f -name "*.vert")
+	vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
+	fragSources = $(shell find ./shaders -type f -name "*.frag")
+	fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
+endif
+
 ifdef MACRO_DEFS
     macroDefines := -D $(MACRO_DEFS)
 endif
@@ -96,8 +104,11 @@ lib:
 	$(macOSVulkanLib)
 
 # Link the program and create the executable
-$(target): $(objects)
+$(target): $(objects) $(vertObjFiles) $(fragObjFiles)
 	$(CXX) $(objects) -o $(target) $(linkFlags)
+
+%.spv: %
+	${GLSLC} $< -o $@
 
 # Add all rules from dependency files
 -include $(depends)

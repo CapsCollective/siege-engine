@@ -25,6 +25,8 @@ namespace SnekVk
         VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
         VkExtent2D GetSwapChainExtent() { return swapChainExtent; }
 
+        VkFramebuffer GetFrameBuffer(u32 i) { return swapChainFrameBuffers[i]; }
+
         u32 GetImageCount() { return imageCount; }
         VkSwapchainKHR GetSwapChain() { return swapChain; }
 
