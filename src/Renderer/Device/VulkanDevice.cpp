@@ -207,7 +207,7 @@ namespace SnekVk {
 			}
 		}
 
-		throw std::runtime_error("failed to find suitable memory type!");
+		SNEK_ASSERT(false, "Failed to find suitable memory type!");
 	}
 
 	void VulkanDevice::CreateBuffer(
@@ -324,10 +324,8 @@ namespace SnekVk {
 		VkImage &image,
 		VkDeviceMemory &imageMemory) 
 	{
-		if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to create image!");
-		}
+		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, &image) == VK_SUCCESS, 
+			"Failed to create Image!");
 
 		VkMemoryRequirements memRequirements;
 		vkGetImageMemoryRequirements(device, image, &memRequirements);
@@ -337,15 +335,11 @@ namespace SnekVk {
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to allocate image memory!");
-		}
+		SNEK_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) == VK_SUCCESS,
+				"Failed to allocate image memory!");
 
-		if (vkBindImageMemory(device, image, imageMemory, 0) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to bind image memory!");
-		}
+		SNEK_ASSERT(vkBindImageMemory(device, image, imageMemory, 0) == VK_SUCCESS,
+				"Failed to bind image memory!");
 	}
 
 	void VulkanDevice::DestroyVulkanDevice(VulkanDevice& device)
