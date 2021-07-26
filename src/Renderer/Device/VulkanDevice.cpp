@@ -191,7 +191,7 @@ namespace SnekVk {
 				return format;
 			}
 		}
-		SNEK_ASSERT(formatCount == 0, "Failed to find a supported format!");
+		SNEK_ASSERT(false, "Failed to find a supported format!");
 	}
 
 	uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
