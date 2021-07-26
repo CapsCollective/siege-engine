@@ -11,12 +11,10 @@
 int main() 
 {
     #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG) 
-    
     AttachConsole(ATTACH_PARENT_PROCESS);
     freopen("CON", "w", stdout);
     freopen("CON", "w", stderr);
     freopen("CON", "r", stdin);
-    
     #endif
 
     static const constexpr int WIDTH = 800;
@@ -47,7 +45,7 @@ int main()
     pipelineConfig.renderPass = swapChain.GetRenderPass();
     pipelineConfig.pipelineLayout = pipelineLayout;
 
-    SnekVk::Pipeline pipeline(device, "shaders/simpleShader.vert.spv", "shaders/simpleShader.frag.spv", pipelineConfig);
+    SnekVk::Pipeline pipeline(device, "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
 
     SnekVk::Renderer renderer(&swapChain);
 

@@ -13,9 +13,9 @@ linkFlags = -L lib/$(platform) -lglfw3
 compileFlags := -std=c++17 $(includes)
 
 vertSources = $(call rwildcard,shaders/,*.vert)
-vertObjFiles = $(patsubst %.vert,%.vert.spv,$(vertSources))
+vertObjFiles = $(patsubst %.vert,$(buildDir)/%.vert.spv,$(vertSources))
 fragSources = $(call rwildcard,shaders/,*.frag)
-fragObjFiles = $(patsubst %.frag,%.frag.spv,$(fragSources))
+fragObjFiles = $(patsubst %.frag,$(buildDir)/%.frag.spv,$(fragSources))
 
 ifdef MACRO_DEFS
     macroDefines := -D $(MACRO_DEFS)
@@ -104,7 +104,8 @@ lib:
 $(target): $(objects) $(vertObjFiles) $(fragObjFiles)
 	$(CXX) $(objects) -o $(target) $(linkFlags)
 
-%.spv: %
+$(buildDir)/%.spv: % 
+	$(MKDIR) $(call platformpth, $(@D))
 	${GLSLC} $< -o $@
 
 # Add all rules from dependency files
