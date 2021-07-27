@@ -2,20 +2,19 @@
 #define A_DARK_DISCOMFORT_TESTENTITY_H
 #include <entity/Entity.h>
 
-
-class TestEntity : public Entity {
-
-    public:
-
-    TestEntity()
-            : Entity(ENTITY_NAME, raylib::Vector3::Zero(), 0.f)
-    {};
-
-    TestEntity(raylib::Vector3 position, float rotation)
-            : Entity(ENTITY_NAME, position, rotation)
-    {};
+class TestEntity : public Entity
+{
+public:
 
     static const std::string ENTITY_NAME;
+
+    TestEntity()
+        : TestEntity(Vec3::Zero, 0.f)
+    {}
+
+    TestEntity(Vec3 position, float rotation)
+        : Entity(ENTITY_NAME, position, rotation)
+    {}
 };
 
 
