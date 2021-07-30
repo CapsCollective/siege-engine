@@ -1,23 +1,23 @@
 #include "SwapChainSupportDetails.h"
 
-namespace SnekVk
+namespace SnekVk::SwapChainSupportDetails
 {
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR& surface) 
+    SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface) 
     {
         SwapChainSupportDetails details;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, OUT &details.capabilities);
 
         uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT &formatCount, nullptr);
 
         if (formatCount != 0) 
         {
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, OUT details.formats);
             details.hasFormats = true;
         }
 
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, OUT &presentModeCount, nullptr);
 
         if (presentModeCount != 0) 
         {
@@ -25,7 +25,7 @@ namespace SnekVk
                 device,
                 surface,
                 &presentModeCount,
-                details.presentModes);
+                OUT details.presentModes);
             details.hasPresentModes = true;
         }
         return details;

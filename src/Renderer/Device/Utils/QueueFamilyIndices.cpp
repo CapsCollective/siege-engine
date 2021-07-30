@@ -1,18 +1,18 @@
 #include "QueueFamilyIndices.h"
 
-namespace SnekVk
+namespace SnekVk::QueueFamilyIndices
 {
     bool IsComplete(QueueFamilyIndices& indices) { return indices.graphicsFamilyHasValue && indices.presentFamilyHasValue; }
 
     QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR& surface) 
     {
-        SnekVk::QueueFamilyIndices indices;
+        QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+        vkGetPhysicalDeviceQueueFamilyProperties(device, OUT &queueFamilyCount, nullptr);
 
         VkQueueFamilyProperties queueFamilies[queueFamilyCount];
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, OUT queueFamilies);
 
         for (size_t i = 0; i < queueFamilyCount; i++) 
         {
@@ -25,14 +25,14 @@ namespace SnekVk
             }
 
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, OUT &presentSupport);
 
             if (queueFamily.queueCount > 0 && presentSupport) 
             {
                 indices.presentFamily = i;
                 indices.presentFamilyHasValue = true;
             }
-            if (SnekVk::IsComplete(indices)) 
+            if (IsComplete(indices)) 
             {
                 break;
             }

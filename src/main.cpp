@@ -19,15 +19,9 @@ int main()
     
     SnekVk::VulkanDevice device(window);
 
-    //SnekVk::VulkanDevice device(window);
-
     // Main loop
     while(!window.WindowShouldClose()) {
         window.Update();
     }
-
-    // Cleanup
-    SnekVk::VulkanDevice::DestroyVulkanDevice(device);
-    window.DestroyWindow();
     return 0;
 }
