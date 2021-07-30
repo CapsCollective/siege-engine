@@ -154,10 +154,10 @@ TEST_CASE("entities stay sorted by z-index", "[EntityStorage]")
 
     SECTION("when three adding entities with specific z-indices")
     {
-        Entity* e1 = new Entity("e1", raylib::Vector3::Zero(), 0.f, 2);
-        Entity* e2 = new Entity("e2", raylib::Vector3::Zero(), 0.f, 5);
-        Entity* e3 = new Entity("e3", raylib::Vector3::Zero(), 0.f, 1);
-        Entity* e4 = new Entity("e4", raylib::Vector3::Zero(), 0.f, 3);
+        auto* e1 = new Entity("e1", Vec3::Zero, 0.f, 2);
+        auto* e2 = new Entity("e2", Vec3::Zero, 0.f, 5);
+        auto* e3 = new Entity("e3", Vec3::Zero, 0.f, 1);
+        auto* e4 = new Entity("e4", Vec3::Zero, 0.f, 3);
         EntityStorage::Add({e1, e2, e3, e4});
         EntityStorage::RegisterEntities();
 
