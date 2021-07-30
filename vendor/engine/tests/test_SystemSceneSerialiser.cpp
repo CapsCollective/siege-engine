@@ -12,7 +12,7 @@ public:
             Entity(ENTITY_NAME)
     {};
 
-    TestEntity1(raylib::Vector3 position, float rotation, int zIndex) :
+    TestEntity1(Vec3 position, float rotation, int zIndex) :
             Entity(ENTITY_NAME, position, rotation, zIndex)
     {};
 };
@@ -206,7 +206,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
             SECTION("and retain its standard field values")
             {
                 REQUIRE(entities[0]->GetName() == "TestEntity1");
-                raylib::Vector3 pos(entities[0]->GetPosition());
+                Vec3 pos(entities[0]->GetPosition());
                 REQUIRE(pos.x == 1.f);
                 REQUIRE(pos.y == 2.f);
                 REQUIRE(pos.z == 3.f);

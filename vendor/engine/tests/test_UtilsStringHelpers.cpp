@@ -1,30 +1,13 @@
 #include "catch.hpp"
 #include "../src/utils/StringHelpers.h"
 
-TEST_CASE("vectors can be converted to strings", "[StringHelpers]")
-{
-    SECTION("when a zero vector is provided to the function it should be properly formatted")
-    {
-        std::string result = StringHelpers::VectorToString(raylib::Vector3::Zero());
-
-        REQUIRE(result == "0.00,0.00,0.00");
-    }
-
-    SECTION("when a vector is provided to the function it should be properly formatted")
-    {
-        raylib::Vector3 vec(3.6f, 2.11f, 37.1f);
-        std::string result = StringHelpers::VectorToString(vec);
-        REQUIRE(result == "3.60,2.11,37.10");
-    }
-}
-
 TEST_CASE("strings can be converted into vectors", "[StringHelpers]")
 {
     SECTION("when a string is provided to the function")
     {
-        raylib::Vector3 result = StringHelpers::StringToVector("1.000000,5.000000,0.000000");
+        Vec3 result = StringHelpers::StringToVector("1.000000,5.000000,0.000000");
 
-        SECTION("it should result in a raylib vector with the same values")
+        SECTION("it should result in a vector with the same values")
         {
             REQUIRE(result.x == 1.);
             REQUIRE(result.y == 5.);
@@ -34,9 +17,9 @@ TEST_CASE("strings can be converted into vectors", "[StringHelpers]")
 
     SECTION("when a string with floats containing values with decimals is provided to the function")
     {
-        raylib::Vector3 result = StringHelpers::StringToVector("1.54,3.27,0.65");
+        Vec3 result = StringHelpers::StringToVector("1.54,3.27,0.65");
 
-        SECTION("it should return a raylib vector with the same float values")
+        SECTION("it should return a vector with the same float values")
         {
             REQUIRE(result.x == 1.54f);
             REQUIRE(result.y == 3.27f);
@@ -46,9 +29,9 @@ TEST_CASE("strings can be converted into vectors", "[StringHelpers]")
 
     SECTION("when a string with spaces between values is passed in into the function")
     {
-        raylib::Vector3 result = StringHelpers::StringToVector("0.0, 3.27, 5.67");
+        Vec3 result = StringHelpers::StringToVector("0.0, 3.27, 5.67");
 
-        SECTION("it should return a raylib vector with the same float values")
+        SECTION("it should return a vector with the same float values")
         {
             REQUIRE(result.x == 0.0f);
             REQUIRE(result.y == 3.27f);
