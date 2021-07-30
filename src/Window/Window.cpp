@@ -10,27 +10,13 @@ namespace SnekVk
         glfwPollEvents();
     }
 
-    void Window::DestroyWindow()
-    {
-        glfwDestroyWindow(window);
-        if (--glfwWindows <= 0) glfwTerminate();
-    }
-
     bool Window::WindowShouldClose()
     {
         return glfwWindowShouldClose(window);
     }
 
-    void Window::InitWindow()
+    bool Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
     {
-        if (!glfwInitialised)
-        {
-            glfwInit();
-            glfwInitialised = true;    
-        }
-        
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        window = glfwCreateWindow(width, height, name, nullptr, nullptr);
-        glfwWindows++;
+        return glfwCreateWindowSurface(instance, window, nullptr, surface) == VK_SUCCESS;
     }
 }
