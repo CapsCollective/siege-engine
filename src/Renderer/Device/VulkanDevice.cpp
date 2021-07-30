@@ -39,7 +39,7 @@ namespace SnekVk {
 				"Validation Layers are not supported!");
 		}
 			
-		VkApplicationInfo appInfo = {};
+		VkApplicationInfo appInfo {};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		appInfo.pApplicationName = "SnekVK";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
