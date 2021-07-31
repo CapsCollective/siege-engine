@@ -1,11 +1,11 @@
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
-#include "../engine/entity/Entity.h"
-#include "../engine/resource/ModelData.h"
-#include "../engine/resource/Modelable.h"
-#include "../engine/collision/Collidable.h"
-#include "../engine/collision/CollisionSystem.h"
+#include <entity/Entity.h>
+#include <resource/ModelData.h>
+#include <resource/Modelable.h>
+#include <collision/Collidable.h>
+#include <collision/CollisionSystem.h>
 
 class Geometry : public Entity, public Modelable
 {
@@ -18,16 +18,16 @@ public:
     // 'Structors
 
     Geometry() :
-        Geometry(raylib::Vector3::Zero(), 0.f, raylib::Vector3::One())
+        Geometry(Vec3::Zero, 0.f, Vec3::One)
     {};
 
-    Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions) :
+    Geometry(Vec3 position, float rotation, Vec3 dimensions) :
         Geometry(position, rotation, dimensions, ModelData(
                 "assets/models/cube/cube.obj",
                 "assets/models/cube/cube.png"))
     {};
 
-    Geometry(raylib::Vector3 position, float rotation, raylib::Vector3 dimensions, const ModelData& data) :
+    Geometry(Vec3 position, float rotation, Vec3 dimensions, const ModelData& data) :
         Entity(ENTITY_NAME, position, rotation),
         dimensions(dimensions),
         modelData(data)
@@ -42,7 +42,7 @@ public:
 
     void QueueFree() override;
 
-    BoundingBox GetBoundingBox() const override;
+    BoundedBox GetBoundingBox() const override;
 
     const ModelData& GetModelData() override;
 
@@ -50,7 +50,7 @@ public:
 
     // Public methods
 
-    const raylib::Vector3& GetDimensions();
+    const Vec3& GetDimensions();
 
 protected:
 
@@ -62,7 +62,7 @@ private:
 
     // Private fields
 
-    raylib::Vector3 dimensions;
+    Vec3 dimensions;
 
     ModelData modelData;
 

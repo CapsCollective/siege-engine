@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_SERVICELOCATOR_H
 #define A_DARK_DISCOMFORT_SERVICELOCATOR_H
 
-#include <Camera3D.hpp>
-#include "engine/utils/ServiceLocatorUtils.h"
+#include <raylib/Camera3D.hpp>
+#include <utils/ServiceLocatorUtils.h>
 
 class ServiceLocator
 {
