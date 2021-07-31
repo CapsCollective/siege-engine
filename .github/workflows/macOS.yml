@@ -16,8 +16,7 @@ jobs:
     env: 
       VK_VERSION: "1.2.135"
       INSTALL_LOCATION: "$GITHUB_WORKSPACE/../vulkan_sdk"
-      GLSLC: "$GITHUB_WORKSPACE/../vulkan_sdk/vulkansdk-macos-1.2.135.0/macOS/bin/glslc"
-
+      
     steps:
       - uses: actions/checkout@v2
       
@@ -45,12 +44,14 @@ jobs:
       - name: setup dependencies
         run: |
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/vulkansdk-macos-1.2.135.0/macOS
+          export $VULKAN_SDK/bin/glslc
           make setup
           
         # Build the app
       - name: build project
         run: |
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/vulkansdk-macos-1.2.135.0/macOS
+          export $VULKAN_SDK/bin/glslc
           make bin/app
         
         # Clean the binaries
@@ -61,4 +62,5 @@ jobs:
       - name: make bin/app CXX=g++
         run: |
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/vulkansdk-macos-1.2.135.0/macOS
+          export $VULKAN_SDK/bin/glslc
           make bin/app CXX=g++
