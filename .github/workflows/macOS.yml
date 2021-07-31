@@ -20,13 +20,13 @@ jobs:
 
     # Build and clean
 
-    - name: make bin/app
-      run: make bin/app
+    - name: make build
+      run: make build
 
     - name: make clean
       run: make clean
 
     # Rebuild with g++
 
-    - name: make bin/app CXX=g++
-      run: make bin/app CXX=g++
+    - name: make build CXX=g++
+      run: make build CXX=g++

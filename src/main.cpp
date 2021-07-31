@@ -1,20 +1,19 @@
-#include "engine/collision/CollisionSystem.h"
-#include "engine/resource/ResourceManager.h"
-#include "engine/entity/EntityStorage.h"
-#include "engine/scene/SceneManager.h"
+#include <collision/CollisionSystem.h>
+#include <resource/ResourceManager.h>
+#include <entity/EntityStorage.h>
+#include <scene/SceneManager.h>
 
-#include "entities/tools/EditorController.h"
-#include "entities/tools/MessageDisplay.h"
-#include "entities/tools/DevConsole.h"
-#include "entities/tools/Profiler.h"
-#include "entities/tools/FreeCam.h"
+#include <raylib/Camera3D.hpp>
+#include <raylib/Vector3.hpp>
+#include <raylib/Window.hpp>
+#include <raylib/Color.hpp>
 
+#include "tools/EditorController.h"
+#include "tools/MessageDisplay.h"
+#include "tools/DevConsole.h"
+#include "tools/Profiler.h"
+#include "tools/FreeCam.h"
 #include "ServiceLocator.h"
-
-#include <Camera3D.hpp>
-#include <Vector3.hpp>
-#include <Window.hpp>
-#include <Color.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -31,9 +30,9 @@ int main(int argc, char* argv[])
 
     // Create main camera
     raylib::Camera3D camera = raylib::Camera3D(
-            raylib::Vector3(0.f, 10.f, 10.f),
-            raylib::Vector3(0.f, 0.f, 0.f),
-            raylib::Vector3(0.f, 1.f, 0.f),
+            Vec3(0.f, 10.f, 10.f),
+            Vec3(0.f, 0.f, 0.f),
+            Vec3(0.f, 1.f, 0.f),
             45.f,
             CAMERA_PERSPECTIVE
     );
@@ -95,13 +94,13 @@ int main(int argc, char* argv[])
         // Begin drawing to screen
         window.BeginDrawing();
         bg.ClearBackground();
-        camera.BeginMode3D();
+        camera.BeginMode();
 
         // Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw();
 
-        camera.EndMode3D();
+        camera.EndMode();
 
         // UI Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();

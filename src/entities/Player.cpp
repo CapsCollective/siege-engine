@@ -1,6 +1,6 @@
 #include "Player.h"
-#include "../engine/collision/CollisionSystem.h"
-#include "../engine/scene/SceneSerialiser.h"
+#include <collision/CollisionSystem.h>
+#include <scene/SceneSerialiser.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
@@ -8,17 +8,17 @@ const std::string Player::ENTITY_NAME("Player");
 void Player::OnUpdate()
 {
     // Get move axes as vector
-    raylib::Vector3 move = {
+    Vec3 move = {
             (float)(-IsKeyDown(KEY_LEFT) + IsKeyDown(KEY_RIGHT)),
             0.f,
             (float)(-IsKeyDown(KEY_UP) + IsKeyDown(KEY_DOWN)),
     };
 
     // Normalise and apply move to velocity
-    velocity += move.Normalize() * speed * GetFrameTime();
+    velocity += move.Normalise() * speed * GetFrameTime();
 
     // Apply force of gravity
-    velocity += raylib::Vector3(0.f, -0.01f, 0.f);
+    velocity += Vec3(0.f, -0.01f, 0.f);
 
     // Set the resulting attempted move's velocity to the object's position
     velocity = CollisionSystem::MoveAndSlide(GetBoundingBox(), velocity);
@@ -30,36 +30,22 @@ void Player::OnUpdate()
 
 void Player::OnDraw()
 {
-    // Set the model's texture to this entity's texture
-    ModelData::SetTexture(ResourceManager::Get<Model>(modelData.GetModelPath()),
-                          ResourceManager::Get<Texture2D>(modelData.GetTexturePath()));
+    const Model& model = ResourceManager::Get<Model>(modelData.GetModelPath());
+    const Texture& texture = ResourceManager::Get<Texture>(modelData.GetTexturePath());
 
-    // Draw the model
-    DrawModelEx(
-            ResourceManager::Get<Model>(modelData.GetModelPath()),
-            position,
-            raylib::Vector3(0, 1, 0),
-            rotation,
-            raylib::Vector3::One(),
-            WHITE
-    );
-
-    // Draw the model wireframe
-    DrawModelWiresEx(
-            ResourceManager::Get<Model>(modelData.GetModelPath()),
-            position,
-            raylib::Vector3(0, 1, 0),
-            rotation,
-            raylib::Vector3::One(),
-            PINK
-    );
+    // Set the model's texture to this entity's texture and draw it
+    ModelData::SetTexture(model, texture);
+    DrawModelEx(model, position,Vec3(0, 1, 0),
+                rotation, Vec3::One, WHITE);
+    DrawModelWiresEx(model, position,Vec3(0, 1, 0),
+                     rotation, Vec3::One, PINK);
 }
 
-BoundingBox Player::GetBoundingBox() const
+BoundedBox Player::GetBoundingBox() const
 {
-    return BoundingBox {
-            raylib::Vector3(position) - raylib::Vector3::One(),
-            raylib::Vector3(position) + raylib::Vector3::One(),
+    return BoundedBox {
+        position - Vec3::One,
+        position + Vec3::One,
     };
 }
 
