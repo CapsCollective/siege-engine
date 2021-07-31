@@ -14,17 +14,17 @@
 #include <vector>
 #include <array>
 
+#ifdef DEBUG
+	#define ENABLE_VALIDATION_LAYERS true
+#else
+    #define ENABLE_VALIDATION_LAYERS false
+#endif
+
 namespace SnekVk {
 
 class VulkanDevice {
+	static const bool enableValidationLayers = ENABLE_VALIDATION_LAYERS;
 	public:
-
-#ifdef DEBUG
-	const bool enableValidationLayers = true;
-#else
-    const bool enableValidationLayers = false;
-#endif
-
     VulkanDevice(SnekVk::Window &window);
     ~VulkanDevice();
 
@@ -40,9 +40,9 @@ class VulkanDevice {
     VkQueue GraphicsQueue() { return graphicsQueue; }
     VkQueue PresentQueue() { return presentQueue; }
 
-    SwapChainSupportDetails GetSwapChainSupport() { return SnekVk::QuerySwapChainSupport(physicalDevice, surface); }
+    SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport() { return SwapChainSupportDetails::QuerySupport(physicalDevice, surface); }
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    QueueFamilyIndices findPhysicalQueueFamilies() { return SnekVk::FindQueueFamilies(physicalDevice, surface); }
+    QueueFamilyIndices::QueueFamilyIndices findPhysicalQueueFamilies() { return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface); }
     VkFormat FindSupportedFormat(
         const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features);
 
@@ -66,8 +66,6 @@ class VulkanDevice {
 		VkDeviceMemory &imageMemory);
 
 	VkPhysicalDeviceProperties properties;
-
-	static void DestroyVulkanDevice(VulkanDevice& device);
 
  	private:
 	void CreateInstance();

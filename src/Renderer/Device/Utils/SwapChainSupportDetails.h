@@ -3,7 +3,7 @@
 #include "../../Core.h"
 #include <vector>
 
-namespace SnekVk
+namespace SnekVk::SwapChainSupportDetails
 {
     struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities {};
@@ -17,7 +17,7 @@ namespace SnekVk
         bool hasPresentModes = false;
     };
 
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR& surface);
+    SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface);
 
     void DestroySwapChainSupportDetails(SwapChainSupportDetails& details);
 }
