@@ -17,6 +17,7 @@ jobs:
       VK_VERSION: "1.2.176.1"
       INSTALL_LOCATION: "C:"
       VULKAN_SDK: "C:\\VulkanSDK\\1.2.176.1"
+      GLSLC: "C:\\VulkanSDK\\1.2.176.1\\Bin32\\glslc.exe"
 
     steps:
       - uses: actions/checkout@v2
