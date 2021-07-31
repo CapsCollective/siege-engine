@@ -16,6 +16,7 @@ jobs:
     env: 
       VK_VERSION: "1.2.135"
       INSTALL_LOCATION: "$GITHUB_WORKSPACE/../vulkan_sdk"
+      GLSLC: "$GITHUB_WORKSPACE/../vulkan_sdk/vulkansdk-macos-1.2.135.0/macOS/bin/glslc"
 
     steps:
       - uses: actions/checkout@v2
