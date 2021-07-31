@@ -1,9 +1,13 @@
 #include "Window/Window.h"
 #include "Renderer/Device/VulkanDevice.h"
+#include "Renderer/Pipeline/Pipeline.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
 #endif
+
+static const constexpr int WIDTH = 800;
+static const constexpr int HEIGHT = 600;
 
 int main() 
 {
@@ -15,9 +19,12 @@ int main()
     #endif
 
     // Window initialisation
-    SnekVk::Window window("Snek", 800, 600);
-    
+    SnekVk::Window window("Snek", WIDTH, HEIGHT);
+
     SnekVk::VulkanDevice device(window);
+
+    SnekVk::Pipeline pipeline(device, "shaders/simpleShader.vert.spv", "shaders/simpleShader.frag.spv", 
+        SnekVk::Pipeline::DefaultPipelineConfig(WIDTH, HEIGHT));
 
     // Main loop
     while(!window.WindowShouldClose()) {
