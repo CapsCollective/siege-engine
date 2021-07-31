@@ -1,5 +1,6 @@
 #pragma once
 
+// Include Vulkan headers through glfw.
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <cstdint>
@@ -15,13 +16,25 @@ namespace SnekVk
         Window(char const* name, int width, int height) : 
         width(width), height(height), name(name) 
         {
-            InitWindow();
+            if (!glfwInitialised)
+            {
+                glfwInit();
+                glfwInitialised = true;    
+            }
+            
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+            window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+            glfwWindows++;
         }
 
         Window() :
             Window("Window", 800, 600) {}
 
-        ~Window() {}
+        ~Window() 
+        {
+            glfwDestroyWindow(window);
+            if (--glfwWindows <= 0) glfwTerminate();
+        }
 
         // Public Getters
 
@@ -33,8 +46,6 @@ namespace SnekVk
 
         void Update();
 
-        void DestroyWindow();
-
         bool WindowShouldClose();
 
         bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
@@ -42,18 +53,17 @@ namespace SnekVk
     private:
 
         // Private static variables
+
         static bool glfwInitialised;
         static size_t glfwWindows;
 
         // Private variables
+
         GLFWwindow* window;
 
         char const* name;
 
         int width;
         int height;
-
-        // Private funtions
-        void InitWindow();
     };
 }

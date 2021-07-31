@@ -30,11 +30,9 @@ typedef size_t size;
         EXIT_APP \
     } \
 
+#define OUT
+
 namespace SnekVk 
 {
-    enum SnekState 
-    {
-        Success = 0,
-        Failure = 1
-    };
+
 }
