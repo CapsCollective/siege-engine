@@ -1,23 +1,23 @@
 #include "PhysicalDevice.h"
 #include <set>
 
-namespace SnekVk
+namespace SnekVk::PhysicalDevice
 {
-    bool CheckDeviceExtensionSupport(
+    bool CheckExtensionSupport(
         VkPhysicalDevice device, 
         const char* const* deviceExtensions, 
         size_t deviceExtensionCount
     ) 
     {
         uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, OUT &extensionCount, nullptr);
 
         VkExtensionProperties availableExtensions[extensionCount];
         vkEnumerateDeviceExtensionProperties(
             device,
             nullptr,
             &extensionCount,
-            availableExtensions);
+            OUT availableExtensions);
 
         std::set<std::string> requiredExtensions;
 
@@ -36,23 +36,23 @@ namespace SnekVk
         return requiredExtensions.empty();
     }
 
-    bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR& surface, const char *const * deviceExtensions, size_t deviceExtensionCount) 
+    bool IsSuitable(VkPhysicalDevice device, VkSurfaceKHR& surface, const char *const * deviceExtensions, size_t deviceExtensionCount) 
     {
-        SnekVk::QueueFamilyIndices indices = SnekVk::FindQueueFamilies(device, surface);
+        QueueFamilyIndices::QueueFamilyIndices indices = QueueFamilyIndices::FindQueueFamilies(device, surface);
 
-        bool extensionsSupported = SnekVk::CheckDeviceExtensionSupport(device, deviceExtensions, deviceExtensionCount);
+        bool extensionsSupported = CheckExtensionSupport(device, deviceExtensions, deviceExtensionCount);
 
         bool swapChainAdequate = false;
         if (extensionsSupported) 
         {
-            SnekVk::SwapChainSupportDetails swapChainSupport = SnekVk::QuerySwapChainSupport(device, surface);
+            SwapChainSupportDetails::SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySupport(device, surface);
             swapChainAdequate = swapChainSupport.hasFormats && swapChainSupport.hasPresentModes;
         }
 
         VkPhysicalDeviceFeatures supportedFeatures;
-        vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+        vkGetPhysicalDeviceFeatures(device, OUT &supportedFeatures);
 
-        return SnekVk::IsComplete(indices) && extensionsSupported && swapChainAdequate &&
+        return QueueFamilyIndices::IsComplete(indices) && extensionsSupported && swapChainAdequate &&
                 supportedFeatures.samplerAnisotropy;
     }
 }

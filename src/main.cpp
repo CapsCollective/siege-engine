@@ -6,6 +6,9 @@
 #include <windows.h>
 #endif
 
+static const constexpr int WIDTH = 800;
+static const constexpr int HEIGHT = 600;
+
 int main() 
 {
     #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG) 
@@ -14,9 +17,6 @@ int main()
     freopen("CON", "w", stderr);
     freopen("CON", "r", stdin);
     #endif
-
-    static const constexpr int WIDTH = 800;
-    static const constexpr int HEIGHT = 600;
 
     // Window initialisation
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
@@ -30,10 +30,5 @@ int main()
     while(!window.WindowShouldClose()) {
         window.Update();
     }
-
-    // Cleanup
-    SnekVk::Pipeline::DestroyGraphicsPipeline(pipeline);
-    SnekVk::VulkanDevice::DestroyVulkanDevice(device);
-    window.DestroyWindow();
     return 0;
 }

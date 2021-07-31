@@ -3,15 +3,15 @@
 #include <GLFW/glfw3.h>
 #include <unordered_set>
 
-namespace SnekVk
+namespace SnekVk::Extensions
 {
     bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size) 
     {
         u32 layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+        vkEnumerateInstanceLayerProperties(OUT &layerCount, nullptr);
 
         VkLayerProperties availableLayers[layerCount];
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
+        vkEnumerateInstanceLayerProperties(&layerCount, OUT availableLayers);
 
         for (size_t i = 0; i < size; i++) 
         {
@@ -53,9 +53,9 @@ namespace SnekVk
     void HasGflwRequiredInstanceExtensions(bool enableValidationLayers) 
     {
         uint32_t extensionCount = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+        vkEnumerateInstanceExtensionProperties(nullptr, OUT &extensionCount, nullptr);
         VkExtensionProperties extensions[extensionCount];
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions);
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, OUT extensions);
 
         std::cout << "available extensions:" << std::endl;
         std::unordered_set<std::string> available;
@@ -67,7 +67,7 @@ namespace SnekVk
         }
 
         std::cout << "required extensions:" << std::endl;
-        auto requiredExtensions = SnekVk::GetRequiredExtensions(enableValidationLayers);
+        auto requiredExtensions = GetRequiredExtensions(enableValidationLayers);
         for (const auto &required : requiredExtensions) 
         {
             std::cout << "\t" << required << std::endl;

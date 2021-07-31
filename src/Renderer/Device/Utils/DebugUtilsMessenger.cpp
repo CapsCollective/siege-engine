@@ -1,6 +1,6 @@
 #include "DebugUtilsMessenger.h"
 
-namespace SnekVk
+namespace SnekVk::DebugUtilsMessenger
 {
           // local callback functions
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -13,7 +13,7 @@ namespace SnekVk
     return VK_FALSE;
   }
 
-  VkResult CreateDebugUtilsMessengerEXT(
+  VkResult CreateMessenger(
       VkInstance instance,
       const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
       const VkAllocationCallbacks *pAllocator,
@@ -28,7 +28,7 @@ namespace SnekVk
     }
   }
 
-  void DestroyDebugUtilsMessengerEXT(
+  void DestroyMessenger(
       VkInstance instance,
       VkDebugUtilsMessengerEXT debugMessenger,
       const VkAllocationCallbacks *pAllocator) {
@@ -40,7 +40,7 @@ namespace SnekVk
     }
   }
 
-  void PopulateDebugMessengerCreateInfo(
+  void PopulateCreateInfo(
       VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;

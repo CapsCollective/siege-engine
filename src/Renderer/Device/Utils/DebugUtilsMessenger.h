@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <iostream>
 
-namespace SnekVk
+namespace SnekVk::DebugUtilsMessenger
 {
       // local callback functions
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -12,16 +12,16 @@ namespace SnekVk
       const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
       void *pUserData);
 
-  VkResult CreateDebugUtilsMessengerEXT(
+  VkResult CreateMessenger(
       VkInstance instance,
       const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
       const VkAllocationCallbacks *pAllocator,
       VkDebugUtilsMessengerEXT *pDebugMessenger);
 
-  void DestroyDebugUtilsMessengerEXT(
+  void DestroyMessenger(
       VkInstance instance,
       VkDebugUtilsMessengerEXT debugMessenger,
       const VkAllocationCallbacks *pAllocator);
 
-  void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+  void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
 }
