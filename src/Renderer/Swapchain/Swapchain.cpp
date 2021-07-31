@@ -90,7 +90,7 @@ namespace SnekVk
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         
-        QueueFamilyIndices::QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+        QueueFamilyIndices::QueueFamilyIndices indices = device.FindPhysicalQueueFamilies();
         u32 queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
         if (indices.graphicsFamily != indices.presentFamily)
@@ -114,12 +114,12 @@ namespace SnekVk
 
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        SNEK_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, &swapChain) == VK_SUCCESS,
+        SNEK_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT &swapChain) == VK_SUCCESS,
                 "Failed to create Swapchain!");
 
-        vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, nullptr);
+        vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT &imageCount, nullptr);
         swapChainImages = new VkImage[imageCount];
-        vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, swapChainImages);
+        vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, OUT swapChainImages);
 
         this->imageCount = imageCount;
         swapChainImageFormat = surfaceFormat.format;
@@ -145,7 +145,7 @@ namespace SnekVk
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            SNEK_ASSERT(vkCreateImageView(device.Device(), &createInfo, nullptr, &swapChainImageViews[i]) == VK_SUCCESS,
+            SNEK_ASSERT(vkCreateImageView(device.Device(), &createInfo, nullptr, OUT &swapChainImageViews[i]) == VK_SUCCESS,
                     "Failed to create texture image view!");
         }
 
@@ -211,7 +211,7 @@ namespace SnekVk
         renderPassCreateInfo.dependencyCount = 1;
         renderPassCreateInfo.pDependencies = &dependency;
 
-        SNEK_ASSERT(vkCreateRenderPass(device.Device(), &renderPassCreateInfo, nullptr, &renderPass) == VK_SUCCESS,
+        SNEK_ASSERT(vkCreateRenderPass(device.Device(), &renderPassCreateInfo, nullptr, OUT &renderPass) == VK_SUCCESS,
             "Failed to create render pass!");
     }
 
@@ -245,8 +245,8 @@ namespace SnekVk
             device.CreateImageWithInfo(
                 imageInfo, 
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                depthImages[i], 
-                depthImageMemorys[i]);
+                OUT depthImages[i], 
+                OUT depthImageMemorys[i]);
 
             VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -259,7 +259,7 @@ namespace SnekVk
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            SNEK_ASSERT(vkCreateImageView(device.Device(), &viewInfo, nullptr, &depthImageViews[i]) == VK_SUCCESS,
+            SNEK_ASSERT(vkCreateImageView(device.Device(), &viewInfo, nullptr, OUT &depthImageViews[i]) == VK_SUCCESS,
                 "Failed to create texture image view!");
         }
     }
@@ -285,7 +285,7 @@ namespace SnekVk
             frameBufferInfo.height = swapChainExtent.height;
             frameBufferInfo.layers = 1;
 
-            SNEK_ASSERT(vkCreateFramebuffer(device.Device(), &frameBufferInfo, nullptr, &swapChainFrameBuffers[i]) == VK_SUCCESS,
+            SNEK_ASSERT(vkCreateFramebuffer(device.Device(), &frameBufferInfo, nullptr, OUT &swapChainFrameBuffers[i]) == VK_SUCCESS,
                 "Failed to create framebuffer");
         }
     }
@@ -309,9 +309,9 @@ namespace SnekVk
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             SNEK_ASSERT(
-                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) == VK_SUCCESS &&
-                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) == VK_SUCCESS &&
-                vkCreateFence(device.Device(), &fenceInfo, nullptr, &inFlightFences[i]) == VK_SUCCESS, 
+                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, OUT &imageAvailableSemaphores[i]) == VK_SUCCESS &&
+                vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, OUT &renderFinishedSemaphores[i]) == VK_SUCCESS &&
+                vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT &inFlightFences[i]) == VK_SUCCESS, 
                 "Failed to create synchronization objects fora  frame!");
         }
     }
@@ -364,9 +364,9 @@ namespace SnekVk
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
         
-        vkResetFences(device.Device(), 1, &inFlightFences[currentFrame]);
+        vkResetFences(device.Device(), 1, OUT &inFlightFences[currentFrame]);
 
-        SNEK_ASSERT(vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) == VK_SUCCESS,
+        SNEK_ASSERT(vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, OUT inFlightFences[currentFrame]) == VK_SUCCESS,
             "Failed to submit draw command buffer");
 
         VkPresentInfoKHR presentInfo{};

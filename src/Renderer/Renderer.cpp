@@ -22,7 +22,7 @@ namespace SnekVk
         allocInfo.commandPool = device.GetCommandPool();
         allocInfo.commandBufferCount = size;
 
-        SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, commandBuffers) == VK_SUCCESS,
+        SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers) == VK_SUCCESS,
             "Failed to allocate command buffer");
 
         for (u32 i = 0; i < size; i++)
@@ -30,7 +30,7 @@ namespace SnekVk
             VkCommandBufferBeginInfo beginInfo{};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-            SNEK_ASSERT(vkBeginCommandBuffer(commandBuffers[i], &beginInfo) == VK_SUCCESS,
+            SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffers[i], &beginInfo) == VK_SUCCESS,
                 "Failed to begin recording command buffer");
             
             VkRenderPassBeginInfo renderPassInfo{};
@@ -49,14 +49,14 @@ namespace SnekVk
             renderPassInfo.clearValueCount = clearValueCount;
             renderPassInfo.pClearValues = clearValues;
             
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdBeginRenderPass(OUT commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             pipeline.Bind(commandBuffers[i]);
             vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 
-            vkCmdEndRenderPass(commandBuffers[i]);
+            vkCmdEndRenderPass(OUT commandBuffers[i]);
 
-            SNEK_ASSERT(vkEndCommandBuffer(commandBuffers[i]) == VK_SUCCESS,
+            SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffers[i]) == VK_SUCCESS,
                 "Failed to record command buffer!");
         }
     }
