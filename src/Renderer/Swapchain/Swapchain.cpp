@@ -15,50 +15,50 @@ namespace SnekVk
         CreateSyncObjects();
     }
 
-    void SwapChain::DestroySwapChain(VulkanDevice& device, SwapChain& swapChain)
+    SwapChain::~SwapChain() 
     {
-        u32 imageCount = swapChain.GetImageCount(); 
+        u32 imageCount = GetImageCount(); 
         for (u32 i = 0; i < imageCount; i++)
         {
-            vkDestroyImageView(device.Device(), swapChain.swapChainImageViews[i], nullptr);
+            vkDestroyImageView(device.Device(), swapChainImageViews[i], nullptr);
         }
 
-        delete [] swapChain.swapChainImageViews;
+        delete [] swapChainImageViews;
 
-        if (swapChain.GetSwapChain() != nullptr)
+        if (GetSwapChain() != nullptr)
         {
-            vkDestroySwapchainKHR(device.Device(), swapChain.GetSwapChain(), nullptr);
-            swapChain.swapChain = nullptr;
+            vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
+            swapChain = nullptr;
         }
 
         for (size_t i = 0; i < imageCount; i++)
         {
-            vkDestroyImageView(device.Device(), swapChain.depthImageViews[i], nullptr);
-            vkDestroyImage(device.Device(), swapChain.depthImages[i], nullptr);
-            vkFreeMemory(device.Device(), swapChain.depthImageMemorys[i], nullptr);
+            vkDestroyImageView(device.Device(), depthImageViews[i], nullptr);
+            vkDestroyImage(device.Device(), depthImages[i], nullptr);
+            vkFreeMemory(device.Device(), depthImageMemorys[i], nullptr);
         }
 
-        delete [] swapChain.depthImageViews;
-        delete [] swapChain.depthImages;
-        delete [] swapChain.depthImageMemorys;
+        delete [] depthImageViews;
+        delete [] depthImages;
+        delete [] depthImageMemorys;
 
         for (size_t i = 0; i < imageCount; i++)
         {
-            vkDestroyFramebuffer(device.Device(), swapChain.swapChainFrameBuffers[i], nullptr);
+            vkDestroyFramebuffer(device.Device(), swapChainFrameBuffers[i], nullptr);
         }
 
-        delete [] swapChain.swapChainFrameBuffers;
+        delete [] swapChainFrameBuffers;
 
-        vkDestroyRenderPass(device.Device(), swapChain.renderPass, nullptr);
+        vkDestroyRenderPass(device.Device(), renderPass, nullptr);
         
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            vkDestroySemaphore(device.Device(), swapChain.renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(device.Device(), swapChain.imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(device.Device(), swapChain.inFlightFences[i], nullptr);
+            vkDestroySemaphore(device.Device(), renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(device.Device(), imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(device.Device(), inFlightFences[i], nullptr);
         }
 
-        delete [] swapChain.imagesInFlight;
+        delete [] imagesInFlight;
     }
 
     void SwapChain::CreateSwapChain()

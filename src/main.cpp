@@ -56,5 +56,9 @@ int main()
         window.Update();
         renderer.DrawFrame();
     }
+
+    vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+    vkDeviceWaitIdle(device.Device());
+
     return 0;
 }

@@ -13,7 +13,7 @@ namespace SnekVk
         // 'Structors 
 
         SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-        ~SwapChain() {};
+        ~SwapChain();
 
         SwapChain(const SwapChain&) = delete;
         void operator=(const SwapChain*) = delete;
