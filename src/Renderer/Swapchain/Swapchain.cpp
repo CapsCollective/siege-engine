@@ -63,7 +63,7 @@ namespace SnekVk
 
     void SwapChain::CreateSwapChain()
     {
-        SwapChainSupportDetails details = device.GetSwapChainSupport();
+        SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
 
         VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats, details.availableFormatCount);
         VkPresentModeKHR presentMode = ChoosePresentMode(details.presentModes, details.availablePresentModeCount);
@@ -90,7 +90,7 @@ namespace SnekVk
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         
-        QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+        QueueFamilyIndices::QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
         u32 queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
         if (indices.graphicsFamily != indices.presentFamily)
@@ -125,7 +125,7 @@ namespace SnekVk
         swapChainImageFormat = surfaceFormat.format;
         swapChainExtent = extent;
 
-        SnekVk::DestroySwapChainSupportDetails(details);
+        SwapChainSupportDetails::DestroySwapChainSupportDetails(details);
     }
 
     void SwapChain::CreateImageViews()

@@ -15,14 +15,11 @@ namespace SnekVk
         CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
     }
 
-    Pipeline::~Pipeline() {}
-
-    void Pipeline::DestroyGraphicsPipeline(Pipeline& pipeline)
+    Pipeline::~Pipeline() 
     {
-        VulkanDevice& pipelineDevice = pipeline.device;
-        vkDestroyShaderModule(pipelineDevice.Device(), pipeline.vertShader, nullptr);
-        vkDestroyShaderModule(pipelineDevice.Device(), pipeline.fragShader, nullptr);
-        vkDestroyPipeline(pipelineDevice.Device(), pipeline.graphicsPipeline, nullptr);
+        vkDestroyShaderModule(device.Device(), vertShader, nullptr);
+        vkDestroyShaderModule(device.Device(), fragShader, nullptr);
+        vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }
 
     FileData Pipeline::ReadFile(const char* filePath)
@@ -62,8 +59,8 @@ namespace SnekVk
         std::cout << "Vert Size: " << vertCode.bufferSize << std::endl;
         std::cout << "Frag Size: " << fragCode.bufferSize << std::endl;
 
-        CreateShaderModule(vertCode, &vertShader);
-        CreateShaderModule(fragCode, &fragShader);
+        CreateShaderModule(vertCode, OUT &vertShader);
+        CreateShaderModule(fragCode, OUT &fragShader);
 
         std::cout << "create shader module" << std::endl;
 
@@ -118,7 +115,7 @@ namespace SnekVk
         pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
         pipelineCreateInfo.basePipelineIndex = -1;
 
-        SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &graphicsPipeline) 
+        SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
 
         DestroyFileData(vertCode);
@@ -132,7 +129,7 @@ namespace SnekVk
         createInfo.codeSize = fileData.bufferSize;
         createInfo.pCode = reinterpret_cast<const u32*>(fileData.buffer);
 
-        SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, shaderModule) == VK_SUCCESS, 
+        SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
             "Failed to create shader module!");
     }
 

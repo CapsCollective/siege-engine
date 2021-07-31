@@ -2,7 +2,7 @@
 
 #include "../../Core.h"
 
-namespace SnekVk
+namespace SnekVk::QueueFamilyIndices
 {
     struct QueueFamilyIndices {
         u32 graphicsFamily;

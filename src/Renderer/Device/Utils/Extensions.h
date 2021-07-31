@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstring>
 
-namespace SnekVk
+namespace SnekVk::Extensions
 {
     bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size);
 
