@@ -18,8 +18,6 @@ namespace SnekVk
         SwapChain(const SwapChain&) = delete;
         void operator=(const SwapChain*) = delete;
 
-        static void DestroySwapChain(VulkanDevice& device, SwapChain& swapChain);
-
         // Getters
 
         VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }

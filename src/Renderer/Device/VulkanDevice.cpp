@@ -161,7 +161,7 @@ namespace SnekVk {
 	}
 
 	void VulkanDevice::CreateCommandPool() {
-		QueueFamilyIndices::QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+		QueueFamilyIndices::QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
 
 		VkCommandPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -269,7 +269,7 @@ namespace SnekVk {
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		vkBeginCommandBuffer(OUT commandBuffer, &beginInfo);
 		return commandBuffer;
 	}
 
@@ -335,21 +335,21 @@ namespace SnekVk {
 		VkImage &image,
 		VkDeviceMemory &imageMemory) 
 	{
-		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, &image) == VK_SUCCESS, 
+		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT &image) == VK_SUCCESS, 
 			"Failed to create Image!");
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(device, image, &memRequirements);
+		vkGetImageMemoryRequirements(device, image, OUT &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		SNEK_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) == VK_SUCCESS,
+		SNEK_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT &imageMemory) == VK_SUCCESS,
 				"Failed to allocate image memory!");
 
-		SNEK_ASSERT(vkBindImageMemory(device, image, imageMemory, 0) == VK_SUCCESS,
+		SNEK_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
 				"Failed to bind image memory!");
 	}
 }
