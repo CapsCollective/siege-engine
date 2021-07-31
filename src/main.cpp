@@ -6,6 +6,14 @@
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
+
+#define WINDOWS_ATTACH_CONSOLE\
+    AttachConsole(ATTACH_PARENT_PROCESS);\
+    freopen("CON", "w", stdout);\
+    freopen("CON", "w", stderr);\
+    freopen("CON", "r", stdin);
+#else
+    #define WINDOWS_ATTACH_CONSOLE
 #endif
 
 static const constexpr int WIDTH = 800;
@@ -13,12 +21,7 @@ static const constexpr int HEIGHT = 600;
 
 int main() 
 {
-    #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG) 
-    AttachConsole(ATTACH_PARENT_PROCESS);
-    freopen("CON", "w", stdout);
-    freopen("CON", "w", stderr);
-    freopen("CON", "r", stdin);
-    #endif
+    WINDOWS_ATTACH_CONSOLE
 
     // Window initialisation
     SnekVk::Window window("Snek", WIDTH, HEIGHT);

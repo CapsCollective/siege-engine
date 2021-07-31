@@ -56,13 +56,8 @@ namespace SnekVk
         auto vertCode = ReadFile(vertFilePath);
         auto fragCode = ReadFile(fragFilePath);
 
-        std::cout << "Vert Size: " << vertCode.bufferSize << std::endl;
-        std::cout << "Frag Size: " << fragCode.bufferSize << std::endl;
-
         CreateShaderModule(vertCode, OUT &vertShader);
         CreateShaderModule(fragCode, OUT &fragShader);
-
-        std::cout << "create shader module" << std::endl;
 
         VkPipelineViewportStateCreateInfo viewportCreateInfo{};
         viewportCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

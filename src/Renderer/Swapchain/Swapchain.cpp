@@ -148,8 +148,6 @@ namespace SnekVk
             SNEK_ASSERT(vkCreateImageView(device.Device(), &createInfo, nullptr, OUT &swapChainImageViews[i]) == VK_SUCCESS,
                     "Failed to create texture image view!");
         }
-
-        std::cout << "Created ImageViews" << std::endl;
     }
 
     void SwapChain::CreateRenderPass()

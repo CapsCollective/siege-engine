@@ -6,7 +6,6 @@
 
 namespace SnekVk 
 {
-
     class Renderer
     {
         public:
