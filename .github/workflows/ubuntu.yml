@@ -48,11 +48,14 @@ jobs:
       - name: setup dependencies
         run: |
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/${{ env.VK_VERSION }}/x86_64
+          ls $VULKAN_SDK
+          export GLSLC=$VULKAN_SDK/bin/glslc
           make setup
           
       - name: make bin/app
         run: | 
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/${{ env.VK_VERSION }}/x86_64
+          export GLSLC=$VULKAN_SDK/bin/glslc
           make bin/app
         
       - name: 'export binary'
@@ -67,6 +70,7 @@ jobs:
       - name: make bin/app CXX=g++
         run: | 
           export VULKAN_SDK=${{ env.INSTALL_LOCATION }}/${{ env.VK_VERSION }}/x86_64
+          export GLSLC=$VULKAN_SDK/bin/glslc
           make bin/app CXX=g++
         
       - name: make clean
