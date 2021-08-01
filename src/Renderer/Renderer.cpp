@@ -8,9 +8,13 @@ namespace SnekVk
         : device{VulkanDevice(window)}, swapChain{SwapChain(device,  window.GetExtent())}
     {
         commandBuffers = new VkCommandBuffer[swapChain.GetImageCount()];
+        CreateCommandBuffers(graphicsPipeline);
     }
     
-    Renderer::~Renderer() {}
+    Renderer::~Renderer() 
+    {
+        vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+    }
 
     void Renderer::CreateCommandBuffers(Pipeline& pipeline)
     {
@@ -59,6 +63,29 @@ namespace SnekVk
             SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffers[i]) == VK_SUCCESS,
                 "Failed to record command buffer!");
         }
+    }
+
+    void Renderer::CreatePipelineLayout()
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0; 
+        pipelineLayoutInfo.pSetLayouts = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
+        SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
+            "Failed to create pipeline layout!");
+    }
+
+    Pipeline Renderer::CreateGraphicsPipeline()
+    {
+        CreatePipelineLayout();
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
+        pipelineConfig.renderPass = swapChain.GetRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+
+        return SnekVk::Pipeline(device, "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
     }
 
     void Renderer::DrawFrame()

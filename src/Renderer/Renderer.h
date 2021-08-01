@@ -17,11 +17,18 @@ namespace SnekVk
 
             VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
+
+            void CreatePipelineLayout();
+            void ClearDeviceQueue() { vkDeviceWaitIdle(device.Device()); } 
+            Pipeline CreateGraphicsPipeline();
         private:
             
             static VkCommandBuffer* commandBuffers;
             
             VulkanDevice device;
             SwapChain swapChain;
+
+            VkPipelineLayout pipelineLayout;
+            Pipeline graphicsPipeline{CreateGraphicsPipeline()};
     };
 }
