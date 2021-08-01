@@ -7,6 +7,7 @@ namespace SnekVk::Extensions
 {
     bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size) 
     {
+        // Get an array of all available validation layers.
         u32 layerCount;
         vkEnumerateInstanceLayerProperties(OUT &layerCount, nullptr);
 
@@ -52,6 +53,7 @@ namespace SnekVk::Extensions
 
     void HasGflwRequiredInstanceExtensions(bool enableValidationLayers) 
     {
+        // Get an array of all available instance extensions.
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, OUT &extensionCount, nullptr);
         VkExtensionProperties extensions[extensionCount];
