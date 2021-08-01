@@ -26,9 +26,7 @@ int main()
     // Window initialisation
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
-    SnekVk::VulkanDevice device(window);
-
-    SnekVk::SwapChain swapChain(device, window.GetExtent());
+    SnekVk::Renderer renderer(window);
 
     // Graphics pipeline creation
     // TODO: Edit this to allow pipelines to be configured and passed into renderer.
@@ -41,18 +39,16 @@ int main()
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
-    SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
+    SNEK_ASSERT(vkCreatePipelineLayout(renderer.GetDevice().Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
         "Failed to create pipeline layout!");
 
-    auto pipelineConfig = SnekVk::Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
-    pipelineConfig.renderPass = swapChain.GetRenderPass();
+    auto pipelineConfig = SnekVk::Pipeline::DefaultPipelineConfig(renderer.GetSwapChain().GetWidth(), renderer.GetSwapChain().GetHeight());
+    pipelineConfig.renderPass = renderer.GetSwapChain().GetRenderPass();
     pipelineConfig.pipelineLayout = pipelineLayout;
 
-    SnekVk::Pipeline pipeline(device, "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
+    SnekVk::Pipeline pipeline(renderer.GetDevice(), "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
 
-    SnekVk::Renderer renderer(&swapChain);
-
-    renderer.CreateCommandBuffers(device, pipeline);
+    renderer.CreateCommandBuffers(pipeline);
     
     // Main loop
     while(!window.WindowShouldClose()) {
@@ -60,8 +56,9 @@ int main()
         renderer.DrawFrame();
     }
 
-    vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
-    vkDeviceWaitIdle(device.Device());
+    vkDeviceWaitIdle(renderer.GetDevice().Device());
+
+    vkDestroyPipelineLayout(renderer.GetDevice().Device(), pipelineLayout, nullptr);
 
     return 0;
 }
