@@ -9,14 +9,19 @@ namespace SnekVk
     class Renderer
     {
         public:
-            Renderer(SwapChain* swapChain);
+            Renderer(SnekVk::Window& window);
             ~Renderer();
 
-            void CreateCommandBuffers(VulkanDevice& device, Pipeline& pipeline);
+            void CreateCommandBuffers(Pipeline& pipeline);
             void DrawFrame();
+
+            VulkanDevice& GetDevice() { return device; }
+            SwapChain& GetSwapChain() { return swapChain; }
         private:
             
             static VkCommandBuffer* commandBuffers;
-            SwapChain* swapChain;
+            
+            VulkanDevice device;
+            SwapChain swapChain;
     };
 }
