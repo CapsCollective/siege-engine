@@ -23,23 +23,23 @@ namespace SnekVk
         vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }
 
-    FileData Pipeline::ReadFile(const char* filePath)
+    Utils::Array<char> Pipeline::ReadFile(const char* filePath)
     {
         std::ifstream file { filePath, std::ios::ate | std::ios::binary };
 
         SNEK_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
 
         u32 size = static_cast<u32>(file.tellg());
-        
-        char* buffer = new char[size];
+
+        Utils::Array<char> buffer(size);
         
         file.seekg(0);
         
-        file.read(buffer, size);
+        file.read(buffer.Data(), size);
 
         file.close();
         
-        return { buffer, size };
+        return buffer;
     }
 
     void Pipeline::CreateGraphicsPipeline(
@@ -116,17 +116,14 @@ namespace SnekVk
 
         SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
-
-        DestroyFileData(vertCode);
-        DestroyFileData(fragCode);
     }
 
-    void Pipeline::CreateShaderModule(struct FileData fileData, VkShaderModule* shaderModule)
+    void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)
     {
         VkShaderModuleCreateInfo createInfo {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = fileData.bufferSize;
-        createInfo.pCode = reinterpret_cast<const u32*>(fileData.buffer);
+        createInfo.codeSize = fileData.Size();
+        createInfo.pCode = reinterpret_cast<const u32*>(fileData.Data());
 
         SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
             "Failed to create shader module!");
@@ -207,10 +204,5 @@ namespace SnekVk
         configInfo.depthStencilInfo.back = {};
 
         return configInfo;
-    }
-
-    void DestroyFileData(FileData& data)
-    {
-        delete [] data.buffer;
     }
 }
