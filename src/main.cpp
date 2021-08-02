@@ -2,6 +2,7 @@
 
 #include "Window/Window.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Model/Model.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -18,6 +19,12 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
+SnekVk::Model::Vertex triangleVerts[] = {
+    {{0.0f, -0.5f}},
+    {{0.5f, 0.5f}},
+    {{-0.5f, 0.5f}}
+};
+
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
@@ -25,6 +32,10 @@ int main()
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     SnekVk::Renderer renderer(window);
+
+    SnekVk::Model triangle(renderer.GetDevice(), triangleVerts, 3);
+
+    renderer.SubmitModel(triangle);
     
     while(!window.WindowShouldClose()) {
         window.Update();

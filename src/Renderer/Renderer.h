@@ -3,6 +3,7 @@
 #include "Device/VulkanDevice.h"
 #include "Swapchain/Swapchain.h"
 #include "Pipeline/Pipeline.h"
+#include "Model/Model.h"
 
 namespace SnekVk 
 {
@@ -12,7 +13,8 @@ namespace SnekVk
             Renderer(SnekVk::Window& window);
             ~Renderer();
 
-            void CreateCommandBuffers(Pipeline& pipeline);
+            void SubmitModel(Model& model);
+            void CreateCommandBuffers(Pipeline& pipeline, Model& model);
             void DrawFrame();
 
             VulkanDevice& GetDevice() { return device; }
