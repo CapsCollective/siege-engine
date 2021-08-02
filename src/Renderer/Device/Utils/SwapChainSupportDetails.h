@@ -16,12 +16,10 @@ namespace SnekVk::SwapChainSupportDetails
         VkSurfaceCapabilitiesKHR capabilities {};
 
         // An array of available surface formats
-        VkSurfaceFormatKHR* formats {};
-        size_t availableFormatCount {0};
+        Utils::Array<VkSurfaceFormatKHR> formats{};
 
         // A array of present modes
-        VkPresentModeKHR* presentModes {};
-        size_t availablePresentModeCount {0};
+        Utils::Array<VkPresentModeKHR> presentModes{};
         
         bool hasFormats = false;
         bool hasPresentModes = false;
@@ -35,9 +33,4 @@ namespace SnekVk::SwapChainSupportDetails
      * @param surface the window surface that images need to be rendered to.
      **/
     SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface);
-
-    /**
-     * Cleans up memory for the presentModes and formats arrays.  
-     **/
-    void DestroySwapChainSupportDetails(SwapChainSupportDetails& details);
 }
