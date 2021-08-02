@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <iostream>
+#include <cstdint>
 
 namespace SnekVk::Utils
 {
@@ -79,11 +80,16 @@ namespace SnekVk::Utils
             using ValueType = T;
             using Iterator = ArrayIterator<Array>;
         public:
-            Array() : size{0}, data{nullptr} {};
+            Array() : size{0} {};
 
             Array(size_t size) : size{size} 
             {
                 data = new T[size];
+            }
+
+            Array(uint32_t size) : size{static_cast<size_t>(size)} 
+            {
+                data = new T[this->size];
             }
 
             Array(std::initializer_list<T> values)
@@ -163,6 +169,6 @@ namespace SnekVk::Utils
 
         private:
             size_t size;
-            T* data;
+            T* data = nullptr;
     };
 }
