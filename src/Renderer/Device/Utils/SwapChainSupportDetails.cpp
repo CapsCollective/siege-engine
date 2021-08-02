@@ -14,10 +14,9 @@ namespace SnekVk::SwapChainSupportDetails
         if (formatCount != 0) 
         {
             // Populate our format array
-            details.formats = new VkSurfaceFormatKHR[formatCount];
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats);
+            details.formats = Utils::Array<VkSurfaceFormatKHR>(static_cast<size_t>(formatCount));
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.Data());
             
-            details.availableFormatCount = formatCount;
             details.hasFormats = true;
         }
 
@@ -27,22 +26,15 @@ namespace SnekVk::SwapChainSupportDetails
         if (presentModeCount != 0) 
         {
             // populate our presentModes array
-            details.presentModes = new VkPresentModeKHR[presentModeCount];
+            details.presentModes = Utils::Array<VkPresentModeKHR>(static_cast<u32>(presentModeCount));
             vkGetPhysicalDeviceSurfacePresentModesKHR(
                 device,
                 surface,
                 &presentModeCount,
-                details.presentModes);
+                details.presentModes.Data());
 
-            details.availablePresentModeCount = presentModeCount;
             details.hasPresentModes = true;
         }
         return details;
-    }
-
-    void DestroySwapChainSupportDetails(SwapChainSupportDetails& details)
-    {
-        delete [] details.formats;
-        delete [] details.presentModes;
     }
 }
