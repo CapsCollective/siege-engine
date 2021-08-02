@@ -5,6 +5,7 @@ namespace SnekVk::SwapChainSupportDetails
     SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface) 
     {
         SwapChainSupportDetails details;
+        // Populate the surface capabilities value
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, OUT &details.capabilities);
 
         uint32_t formatCount;
@@ -12,6 +13,7 @@ namespace SnekVk::SwapChainSupportDetails
 
         if (formatCount != 0) 
         {
+            // Populate our format array
             details.formats = new VkSurfaceFormatKHR[formatCount];
             vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats);
             
@@ -24,6 +26,7 @@ namespace SnekVk::SwapChainSupportDetails
 
         if (presentModeCount != 0) 
         {
+            // populate our presentModes array
             details.presentModes = new VkPresentModeKHR[presentModeCount];
             vkGetPhysicalDeviceSurfacePresentModesKHR(
                 device,
