@@ -5,9 +5,14 @@ namespace SnekVk
     VkCommandBuffer* Renderer::commandBuffers;
 
     Renderer::Renderer(SnekVk::Window& window) 
-        : device{VulkanDevice(window)}, swapChain{SwapChain(device,  window.GetExtent())}
+        : window{window}, 
+        device{VulkanDevice(window)}, 
+        swapChain{SwapChain(device,  
+        window.GetExtent())}
     {
+        models.reserve(100);
         commandBuffers = new VkCommandBuffer[swapChain.GetImageCount()];
+        CreateCommandBuffers(graphicsPipeline);
     }
     
     Renderer::~Renderer() 
@@ -15,12 +20,12 @@ namespace SnekVk
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
     }
 
-    void Renderer::SubmitModel(Model& model)
+    void Renderer::SubmitModel(Model* model)
     {
-        CreateCommandBuffers(graphicsPipeline, model);
+        models.emplace_back(model);
     }
 
-    void Renderer::CreateCommandBuffers(Pipeline& pipeline, Model& model)
+    void Renderer::CreateCommandBuffers(Pipeline& pipeline)
     {
         u32 size = swapChain.GetImageCount();
 
@@ -32,37 +37,74 @@ namespace SnekVk
 
         SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers) == VK_SUCCESS,
             "Failed to allocate command buffer");
+    }
 
-        for (u32 i = 0; i < size; i++)
-        {
-            VkCommandBufferBeginInfo beginInfo{};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    void Renderer::RecordCommandBuffer(int imageIndex)
+    {
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-            SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffers[i], &beginInfo) == VK_SUCCESS,
-                "Failed to begin recording command buffer");
-
-            u32 clearValueCount = 2;
+        SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffers[imageIndex], &beginInfo) == VK_SUCCESS,
+            "Failed to begin recording command buffer");
+        
+        u32 clearValueCount = 2;
             VkClearValue clearValues[clearValueCount];
             clearValues[0].color = clearValue;
             clearValues[1].depthStencil = {1.0f, 0};
 
-            RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
-                              OUT commandBuffers[i],
-                              swapChain.GetFrameBuffer(i),
-                              {0,0},
-                              swapChain.GetSwapChainExtent(),
-                              clearValues,
-                              clearValueCount);
+        RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
+                          OUT commandBuffers[imageIndex],
+                          swapChain.GetFrameBuffer(imageIndex),
+                          {0,0},
+                          swapChain.GetSwapChainExtent(),
+                          clearValues,
+                          clearValueCount);
 
-            pipeline.Bind(commandBuffers[i]);
-            model.Bind(commandBuffers[i]);
-            model.Draw(commandBuffers[i]);
+        graphicsPipeline.Bind(commandBuffers[imageIndex]);
 
-            RenderPass::End(commandBuffers[i]);
-
-            SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffers[i]) == VK_SUCCESS,
-                "Failed to record command buffer!");
+        for (auto& model : models)
+        {
+            model->Bind(commandBuffers[imageIndex]);
+            model->Draw(commandBuffers[imageIndex]);
         }
+        
+        RenderPass::End(commandBuffers[imageIndex]);
+
+        SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffers[imageIndex]) == VK_SUCCESS,
+            "Failed to record command buffer!");
+    }
+
+    void Renderer::RecreateSwapChain()
+    {
+        auto extent = window.GetExtent();
+        while(extent.width == 0 || extent.height == 0)
+        {
+            extent = window.GetExtent();
+            window.WaitEvents();
+        }
+
+        // Clear our graphics pipeline before swapchain re-creation
+        graphicsPipeline.ClearPipeline();
+
+        // Re-create swapchain
+        swapChain.RecreateSwapchain();
+
+        // Re-create the pipeline once the swapchain renderpass 
+        // becomes available again.
+        graphicsPipeline.RecreatePipeline(
+            "shaders/simpleShader.vert.spv",
+            "shaders/simpleShader.frag.spv",
+            CreateDefaultPipelineConfig()
+        );
+    }
+
+    PipelineConfigInfo Renderer::CreateDefaultPipelineConfig()
+    {
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
+        pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+
+        return pipelineConfig;
     }
 
     void Renderer::CreatePipelineLayout()
@@ -81,11 +123,13 @@ namespace SnekVk
     Pipeline Renderer::CreateGraphicsPipeline()
     {
         CreatePipelineLayout();
-        auto pipelineConfig = Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
-        pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
 
-        return SnekVk::Pipeline(device, "./shaders/simpleShader.vert.spv", "./shaders/simpleShader.frag.spv", pipelineConfig);
+        return SnekVk::Pipeline(
+            device, 
+            "shaders/simpleShader.vert.spv", 
+            "shaders/simpleShader.frag.spv", 
+            CreateDefaultPipelineConfig()
+        );
     }
 
     void Renderer::DrawFrame()
@@ -93,10 +137,25 @@ namespace SnekVk
         u32 imageIndex;
         auto result = swapChain.AcquireNextImage(&imageIndex);
 
-        SNEK_ASSERT(result == VK_SUCCESS && result != VK_SUBOPTIMAL_KHR, 
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            RecreateSwapChain();
+            return;
+        }
+
+        SNEK_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, 
             "Failed to acquire swapchain image!");
         
+        RecordCommandBuffer(imageIndex);
         result = swapChain.SubmitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+            window.WasResized())
+        {
+            window.ResetWindowResized();
+            RecreateSwapChain();
+            return;
+        }
 
         SNEK_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
     }

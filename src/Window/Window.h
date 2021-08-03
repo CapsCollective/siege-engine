@@ -59,6 +59,8 @@ namespace SnekVk
 
         void ResetWindowResized() { wasResized = false; }
 
+        void WaitEvents() { glfwWaitEvents(); }
+
     private:
 
         static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
