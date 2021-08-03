@@ -19,4 +19,14 @@ namespace SnekVk
     {
         return glfwCreateWindowSurface(instance, window, nullptr, surface) == VK_SUCCESS;
     }
+
+    void Window::ResizeCallback(GLFWwindow* windowPtr, int width, int height)
+    {
+        auto window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
+
+        window->wasResized = true;
+        
+        window->width = width;
+        window->height = height;
+    }
 }

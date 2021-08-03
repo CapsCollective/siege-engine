@@ -53,7 +53,7 @@ namespace SnekVk
 
             // Delete copy constructors
             Pipeline(const Pipeline&) = delete;
-            void operator=(const Pipeline&) = delete;
+            Pipeline& operator=(const Pipeline&) = delete;
 
             /**
              * Creates a default pipelineConfig struct. This struct currently configures
