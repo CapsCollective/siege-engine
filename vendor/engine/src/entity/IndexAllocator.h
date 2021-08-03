@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <cstdint>
+#include <sstream>
+#include <iomanip>
 
 // Utility Structs
 // TODO document this class
@@ -17,6 +19,13 @@ struct GenerationalIndex
 {
     size_t index = 0;
     uint32_t generation = 0;
+
+    std::string ToString() const
+    {
+        std::stringstream ss;
+        ss << generation << ":" << index;
+        return ss.str();
+    }
 };
 
 bool operator==(GenerationalIndex&, GenerationalIndex&);
