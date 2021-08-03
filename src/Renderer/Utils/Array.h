@@ -94,6 +94,11 @@ namespace SnekVk::Utils
             data = new T[this->size];
         }
 
+        Array(int size) : size{static_cast<size_t>(size)} 
+        {
+            data = new T[this->size];
+        }
+
         Array(std::initializer_list<T> values)
         {
             data = new T[values.size()];
