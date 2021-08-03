@@ -18,9 +18,7 @@ namespace SnekVk
 
     Pipeline::~Pipeline() 
     {
-        vkDestroyShaderModule(device.Device(), vertShader, nullptr);
-        vkDestroyShaderModule(device.Device(), fragShader, nullptr);
-        vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
+        ClearPipeline();
     }
 
     Utils::Array<char> Pipeline::ReadFile(const char* filePath)
@@ -129,6 +127,24 @@ namespace SnekVk
 
         SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
+    }
+
+    void Pipeline::RecreatePipeline(
+        const char* vertFilePath, 
+        const char* fragFilePath, 
+        const PipelineConfigInfo& configInfo)
+    {
+        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+    }
+
+    void Pipeline::ClearPipeline()
+    {
+        // TODO: Maybe we can get away without destroying the shader modules when 
+        // re-creating the pipeline?
+        vkDestroyShaderModule(device.Device(), vertShader, nullptr);
+        vkDestroyShaderModule(device.Device(), fragShader, nullptr);
+        vkDeviceWaitIdle(device.Device());
+        vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }
 
     void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)

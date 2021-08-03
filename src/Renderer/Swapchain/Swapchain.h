@@ -130,6 +130,9 @@ namespace SnekVk
          */
         VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
 
+        void ClearSwapChain();
+        void RecreateSwapchain();
+
         private:
         
         /**

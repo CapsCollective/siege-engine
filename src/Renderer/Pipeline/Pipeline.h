@@ -72,6 +72,17 @@ namespace SnekVk
              * @param commandBuffer the command buffer being bound to.
              **/
             void Bind(VkCommandBuffer commandBuffer);
+
+            // TODO: document this
+            void RecreatePipeline(
+                const char* vertFilePath, 
+                const char* fragFilePath, 
+                const PipelineConfigInfo& configInfo
+            );
+
+            // TODO: document this
+            void ClearPipeline();
+
         private:
 
             /**
