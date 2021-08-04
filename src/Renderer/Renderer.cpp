@@ -2,7 +2,7 @@
 
 namespace SnekVk
 {
-    VkCommandBuffer* Renderer::commandBuffers;
+    Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
 
     Renderer::Renderer(SnekVk::Window& window) 
         : window{window}, 
@@ -10,9 +10,9 @@ namespace SnekVk
         swapChain{SwapChain(device,  
         window.GetExtent())}
     {
+        // Currently, we're just allocating 100 possible models.
         models.reserve(100);
-        commandBuffers = new VkCommandBuffer[swapChain.GetImageCount()];
-        CreateCommandBuffers(graphicsPipeline);
+        CreateCommandBuffers();
     }
     
     Renderer::~Renderer() 
@@ -25,8 +25,9 @@ namespace SnekVk
         models.emplace_back(model);
     }
 
-    void Renderer::CreateCommandBuffers(Pipeline& pipeline)
+    void Renderer::CreateCommandBuffers()
     {
+        commandBuffers = Utils::Array<VkCommandBuffer>(swapChain.GetImageCount());
         u32 size = swapChain.GetImageCount();
 
         VkCommandBufferAllocateInfo allocInfo{};
@@ -35,7 +36,7 @@ namespace SnekVk
         allocInfo.commandPool = device.GetCommandPool();
         allocInfo.commandBufferCount = size;
 
-        SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers) == VK_SUCCESS,
+        SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) == VK_SUCCESS,
             "Failed to allocate command buffer");
     }
 
@@ -101,6 +102,12 @@ namespace SnekVk
         // Re-create swapchain
         swapChain.RecreateSwapchain();
 
+        if (swapChain.GetImageCount() != commandBuffers.Size())
+        {
+            FreeCommandBuffers();
+            CreateCommandBuffers();
+        }
+
         // Re-create the pipeline once the swapchain renderpass 
         // becomes available again.
 
@@ -112,6 +119,15 @@ namespace SnekVk
             "shaders/simpleShader.frag.spv",
             CreateDefaultPipelineConfig()
         );
+    }
+
+    void Renderer::FreeCommandBuffers()
+    {
+        vkFreeCommandBuffers(
+            device.Device(), 
+            device.GetCommandPool(), 
+            swapChain.GetImageCount(), 
+            commandBuffers.Data());
     }
 
     PipelineConfigInfo Renderer::CreateDefaultPipelineConfig()
@@ -139,6 +155,8 @@ namespace SnekVk
     Pipeline Renderer::CreateGraphicsPipeline()
     {
         CreatePipelineLayout();
+
+        SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
         return SnekVk::Pipeline(
             device, 
