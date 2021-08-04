@@ -62,14 +62,6 @@ namespace SnekVk
         CreateShaderModule(vertCode, OUT &vertShader);
         CreateShaderModule(fragCode, OUT &fragShader);
 
-        // Configure our viewport 
-        VkPipelineViewportStateCreateInfo viewportCreateInfo{};
-        viewportCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportCreateInfo.viewportCount = 1;
-        viewportCreateInfo.pViewports = &configInfo.viewport;
-        viewportCreateInfo.scissorCount = 1;
-        viewportCreateInfo.pScissors = &configInfo.scissor;
-
         // We only support the vertex and fragment stages atm. Each stage is represented
         // by a PipelineShaderStageCreateInfo struct. 
         VkPipelineShaderStageCreateInfo shaderStages[2];
@@ -111,11 +103,11 @@ namespace SnekVk
         pipelineCreateInfo.pStages = shaderStages;
         pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
         pipelineCreateInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-        pipelineCreateInfo.pViewportState = &viewportCreateInfo;
+        pipelineCreateInfo.pViewportState = &configInfo.viewportInfo;
         pipelineCreateInfo.pRasterizationState = &configInfo.rasterizationInfo;
         pipelineCreateInfo.pMultisampleState = &configInfo.multisampleInfo;
         pipelineCreateInfo.pColorBlendState = &configInfo.colorBlendInfo;
-        pipelineCreateInfo.pDynamicState = nullptr;
+        pipelineCreateInfo.pDynamicState = &configInfo.dynamicStateInfo;
         pipelineCreateInfo.pDepthStencilState = &configInfo.depthStencilInfo;
 
         pipelineCreateInfo.layout = configInfo.pipelineLayout;
@@ -165,7 +157,7 @@ namespace SnekVk
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    PipelineConfigInfo Pipeline::DefaultPipelineConfig(u32 width, u32 height)
+    PipelineConfigInfo Pipeline::DefaultPipelineConfig()
     {
         PipelineConfigInfo configInfo {};
 
@@ -176,17 +168,11 @@ namespace SnekVk
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-        // We set the viewport to be normalised between a 0 and 1 value. 
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
-
-        // If we want to cut parts of the screen off, we can change the scissor to be a larger value. 
-        configInfo.scissor.offset = {0, 0};
-        configInfo.scissor.extent = {width, height};
+        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        configInfo.viewportInfo.viewportCount = 1;
+        configInfo.viewportInfo.pViewports = nullptr;
+        configInfo.viewportInfo.scissorCount = 1;
+        configInfo.viewportInfo.pScissors = nullptr;
 
         // Defines how we handle rasterisation for our vertices. 
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;       
@@ -244,6 +230,13 @@ namespace SnekVk
         configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
         configInfo.depthStencilInfo.front = {};
         configInfo.depthStencilInfo.back = {};
+
+        configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+
+        configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.Data();
+        configInfo.dynamicStateInfo.dynamicStateCount = static_cast<u32>(configInfo.dynamicStateEnables.Size());
+        configInfo.dynamicStateInfo.flags = 0;
 
         return configInfo;
     }

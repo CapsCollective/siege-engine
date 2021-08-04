@@ -24,14 +24,17 @@ namespace SnekVk
      **/
     struct PipelineConfigInfo 
     {
-        VkViewport viewport{};
-        VkRect2D scissor{};
+        VkPipelineViewportStateCreateInfo viewportInfo{};
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
         VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
         VkPipelineMultisampleStateCreateInfo multisampleInfo{};
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
         VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
+
+        Utils::Array<VkDynamicState> dynamicStateEnables;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+
         VkPipelineLayout pipelineLayout{nullptr};
         VkRenderPass renderPass{nullptr};
         u32 subPass{0}; 
@@ -62,7 +65,7 @@ namespace SnekVk
              * @param height the image height (generally accessible from the swapchain)
              * @returns a PipleineConfigInfo struct with a default configuration.
              **/
-            static PipelineConfigInfo DefaultPipelineConfig(u32 width, u32 height);
+            static PipelineConfigInfo DefaultPipelineConfig();
 
             /**
              * Binds a pipeline to a command buffer. This tells out command buffers that 
