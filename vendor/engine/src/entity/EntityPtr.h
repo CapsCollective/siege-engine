@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYPTR_H
 #define A_DARK_DISCOMFORT_ENTITYPTR_H
 
-#include "Entity.h"
 #include "EntityStorage.h"
+#include "Entity.h"
 
 template<class E>
 class EntityPtr
@@ -47,6 +47,11 @@ public:
         return pointer;
     }
 
+    bool operator ==(Entity* rhs) const
+    {
+        return rhs == pointer;
+    }
+
     // Public methods
 
     /**
@@ -54,7 +59,7 @@ public:
      * template type
      * @return the internal pointer to the entity
      */
-    E* Get()
+    E* Get() const
     {
         return pointer;
     }
@@ -66,7 +71,7 @@ public:
      * @return the entity pointer, casted to the specified type
      */
     template<typename T>
-    T* Get()
+    T* Get() const
     {
         return dynamic_cast<T*>(pointer);
     }

@@ -40,6 +40,8 @@ struct Vec3
 
     static const Vec3 One;
 
+    static const Vec3 Up;
+
     // 'Structors
 
     Vec3() :

@@ -5,50 +5,42 @@
 // Static member initialisation
 const std::string Geometry::ENTITY_NAME("Geometry");
 
-void Geometry::OnDraw()
+void Geometry::OnStart()
 {
-    const Model& model = ResourceManager::Get<Model>(modelData.GetModelPath());
-    const Texture& texture = ResourceManager::Get<Texture>(modelData.GetTexturePath());
-
-    // Set the model's texture to this entity's texture
-    ModelData::SetTexture(model, texture);
-    DrawModelEx(model, position,Vec3(0, 1, 0), rotation, dimensions, WHITE);
-    DrawModelWiresEx(model, position, Vec3(0, 1, 0), rotation, dimensions, PINK);
+    // Register the entity with systems
+    CollisionSystem::Add(this);
+    RenderSystem::Add(this, modelPath, texturePath);
 }
 
 BoundedBox Geometry::GetBoundingBox() const
 {
     return BoundedBox {
-        position - dimensions,
-        position + dimensions,
+        position - scale,
+        position + scale,
     };
 }
 
 const Vec3& Geometry::GetDimensions()
 {
-    return dimensions;
+    return scale;
 }
 
 Entity* Geometry::Clone() const
 {
-    return new Geometry(position, rotation, dimensions, modelData);
+    return new Geometry(position, rotation, scale);
 }
 
 void Geometry::QueueFree()
 {
-    // Deregister the entity as collidable before freeing it
+    // Deregister the entity from systems before freeing it
+    RenderSystem::Remove(this);
     CollisionSystem::Remove(this);
     Entity::QueueFree();
 }
 
-const ModelData& Geometry::GetModelData()
+ModelData Geometry::GetModelData()
 {
-    return modelData;
-}
-
-void Geometry::SetModelData(const ModelData &data)
-{
-    modelData = data;
+    return {modelPath, texturePath};
 }
 
 static std::string Serialise(Entity* entity)
@@ -56,8 +48,10 @@ static std::string Serialise(Entity* entity)
     std::string fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
     fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
-    fileData += DefineField("MODEL_PATH", geometry->GetModelData().GetModelPath());
-    fileData += DefineField("TEXTURE_PATH", geometry->GetModelData().GetTexturePath());
+
+    auto modelData = geometry->GetModelData();
+    fileData += DefineField("MODEL_PATH", modelData.modelPath);
+    fileData += DefineField("TEXTURE_PATH", modelData.texturePath);
     return fileData;
 }
 
@@ -67,8 +61,7 @@ static Entity* Deserialise(const EntityData& data, const std::vector<std::string
     std::string modelPath = args[CUSTOM_FIELD_2];
     std::string texturePath = args[CUSTOM_FIELD_3];
 
-    return new Geometry(data.position, data.rotation, dimensions,
-            ModelData(modelPath, texturePath));
+    return new Geometry(data.position, data.rotation, dimensions, modelPath, texturePath);
 }
 
 REGISTER_SERIALISATION_INTERFACE(Geometry::ENTITY_NAME, Serialise, Deserialise);

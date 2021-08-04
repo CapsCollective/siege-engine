@@ -1,9 +1,18 @@
 #include "Player.h"
 #include <collision/CollisionSystem.h>
 #include <scene/SceneSerialiser.h>
+#include <render/RenderSystem.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
+
+void Player::OnStart()
+{
+    // Register the entity with systems
+    std::string modelPath = "assets/models/cube/cube.obj";
+    std::string texturePath = "assets/models/cube/cube.png";
+    RenderSystem::Add(this, modelPath, texturePath);
+}
 
 void Player::OnUpdate()
 {
@@ -28,19 +37,6 @@ void Player::OnUpdate()
     velocity = velocity * 0.9f;
 }
 
-void Player::OnDraw()
-{
-    const Model& model = ResourceManager::Get<Model>(modelData.GetModelPath());
-    const Texture& texture = ResourceManager::Get<Texture>(modelData.GetTexturePath());
-
-    // Set the model's texture to this entity's texture and draw it
-    ModelData::SetTexture(model, texture);
-    DrawModelEx(model, position,Vec3(0, 1, 0),
-                rotation, Vec3::One, WHITE);
-    DrawModelWiresEx(model, position,Vec3(0, 1, 0),
-                     rotation, Vec3::One, PINK);
-}
-
 BoundedBox Player::GetBoundingBox() const
 {
     return BoundedBox {
@@ -49,28 +45,16 @@ BoundedBox Player::GetBoundingBox() const
     };
 }
 
-const ModelData& Player::GetModelData()
-{
-    return modelData;
-}
-
-void Player::SetModelData(const ModelData& data)
-{
-    modelData = data;
-}
-
 Entity* Player::Clone() const
 {
     return new Player(position, rotation);
 }
 
-static std::string Serialise(Entity* entity)
+void Player::QueueFree()
 {
-    std::string fileData;
-    auto player = dynamic_cast<Player*>(entity);
-    fileData += DefineField("MODEL_PATH", player->GetModelData().GetModelPath());
-    fileData += DefineField("TEXTURE_PATH", player->GetModelData().GetTexturePath());
-    return fileData;
+    // Deregister the entity from systems before freeing it
+    RenderSystem::Remove(this);
+    Entity::QueueFree();
 }
 
 static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
@@ -78,4 +62,4 @@ static Entity* Deserialise(const EntityData& data, const std::vector<std::string
     return new Player(data.position, data.rotation);
 }
 
-REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_NAME, Serialise, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_NAME, nullptr, Deserialise);
