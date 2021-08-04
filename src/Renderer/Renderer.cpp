@@ -60,6 +60,18 @@ namespace SnekVk
                           clearValues,
                           clearValueCount);
 
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(swapChain.GetSwapChainExtent().width);
+        viewport.height = static_cast<float>(swapChain.GetSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor {{0,0}, swapChain.GetSwapChainExtent()};
+
+        vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+
         graphicsPipeline.Bind(commandBuffers[imageIndex]);
 
         for (auto& model : models)
@@ -91,6 +103,10 @@ namespace SnekVk
 
         // Re-create the pipeline once the swapchain renderpass 
         // becomes available again.
+
+        // NOTE: We could possibly avoid this if we check for render pass compatibility. 
+        // If the new renderpass is compatible with the old, then we can actually keep the 
+        // the same graphics pipeline.
         graphicsPipeline.RecreatePipeline(
             "shaders/simpleShader.vert.spv",
             "shaders/simpleShader.frag.spv",
@@ -100,7 +116,7 @@ namespace SnekVk
 
     PipelineConfigInfo Renderer::CreateDefaultPipelineConfig()
     {
-        auto pipelineConfig = Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
 
