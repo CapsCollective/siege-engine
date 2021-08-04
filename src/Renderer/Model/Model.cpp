@@ -7,6 +7,7 @@ namespace SnekVk
     Model::Model(VulkanDevice& device, const Vertex* vertices, u32 vertexCount)
         : device{device}, vertexCount{vertexCount}
     {
+        pushConstant = {{0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}};
         CreateVertexBuffers(vertices);
     }
 

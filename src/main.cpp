@@ -35,19 +35,30 @@ int main()
 
     renderer.SetClearValue(.1f, .1f, .1f, 1.f);
 
-    SnekVk::Model triangle0(renderer.GetDevice(), triangleVerts, 3);
-    SnekVk::Model triangle1(renderer.GetDevice(), triangleVerts, 3);
-    SnekVk::Model triangle2(renderer.GetDevice(), triangleVerts, 3);
-    SnekVk::Model triangle3(renderer.GetDevice(), triangleVerts, 3);
+    SnekVk::Model models[] = {
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3)
+    };
 
-    renderer.SubmitModel(&triangle0);
-    renderer.SubmitModel(&triangle1);
-    renderer.SubmitModel(&triangle2);
-    renderer.SubmitModel(&triangle3);
+    for (size_t i = 0; i < 4; i++) renderer.SubmitModel(&models[i]);
     
     while(!window.WindowShouldClose()) {
+        static int frame = 0;
+        frame = (frame + 1) % 200;
+
         window.Update();
         renderer.ClearDeviceQueue();
+
+        for (int i = 0; i < 4; i++)
+        {
+            models[i].SetPushConstant(
+                {{-0.5f + frame * 0.01f, -0.4f + i * 0.25f}, 
+                {0.0f, 0.0f, 0.2f + 0.2f * i}}
+            );
+        }
+
         renderer.DrawFrame();
     }
 

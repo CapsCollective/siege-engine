@@ -77,26 +77,20 @@ namespace SnekVk
 
         graphicsPipeline.Bind(commandBuffers[imageIndex]);
 
-        size_t modelIdx = 0;
         for (auto& model : models)
         {
             model->Bind(commandBuffers[imageIndex]);
-
-            Model::ModelPushConstantData data{};
-            data.offset = {-0.5f + frame * 0.01f, -0.4f + modelIdx * 0.25f};
-            data.color = {0.0f, 0.0f, 0.2f + 0.2f * modelIdx};
 
             vkCmdPushConstants(
                 commandBuffers[imageIndex],
                 pipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
-                sizeof(Model::ModelPushConstantData),
-                &data
+                sizeof(Model::PushConstantData),
+                &model->GetPushConstant()
             );
 
             model->Draw(commandBuffers[imageIndex]);
-            modelIdx++;
         }
         
         RenderPass::End(commandBuffers[imageIndex]);
@@ -162,7 +156,7 @@ namespace SnekVk
         VkPushConstantRange range{};
         range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         range.offset = 0; 
-        range.size = sizeof(Model::ModelPushConstantData);
+        range.size = sizeof(Model::PushConstantData);
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
