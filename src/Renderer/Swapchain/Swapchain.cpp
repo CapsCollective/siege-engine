@@ -60,6 +60,7 @@ namespace SnekVk
 
     void SwapChain::RecreateSwapchain()
     {
+        std::cout << "Re-creating Swapchain" << std::endl;
         // Destroy all Vulkan structs
         ClearSwapChain(true);
 
