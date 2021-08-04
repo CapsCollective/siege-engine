@@ -130,11 +130,12 @@ namespace SnekVk
          */
         VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
 
-        void ClearSwapChain(bool isRecreated = false);
         void RecreateSwapchain();
 
         private:
         
+        void Init();
+
         /**
          * @brief Create a Vulkan swapchain object. 
          */
@@ -205,8 +206,10 @@ namespace SnekVk
          * @return VkFormat - the supported image format. 
          */
         VkFormat FindDepthFormat();
-        void Init();
-        
+
+        void ClearSwapChain(bool isRecreated = false);
+        void ClearMemory();
+
         // Device and window data
         VulkanDevice& device;
         VkExtent2D windowExtent;
