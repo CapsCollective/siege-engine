@@ -3,8 +3,9 @@
 #include <iomanip>
 
 // Define static members
-const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
+const Vec3 Vec3::Zero = {0.f,0.f,0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
+const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
 
 Vec3 Vec3::Normalise() const
 {

@@ -2,10 +2,9 @@
 #define A_DARK_DISCOMFORT_PLAYER_H
 
 #include <entity/Entity.h>
-#include <resource/ModelData.h>
-#include <resource/Modelable.h>
+#include <render/RenderSystem.h>
 
-class Player : public Entity, public Modelable
+class Player : public Entity
 {
 public:
 
@@ -22,29 +21,24 @@ public:
     Player(Vec3 position, float rotation) :
         Entity(ENTITY_NAME, position, rotation),
         speed(1.5f),
-        velocity(Vec3::Zero),
-        modelData(ModelData(
-                "assets/models/cube/cube.obj",
-                "assets/models/cube/cube.png"))
+        velocity(Vec3::Zero)
     {};
 
     // Public overrides
 
     Entity* Clone() const override;
 
+    void QueueFree() override;
+
     BoundedBox GetBoundingBox() const override;
-
-    const ModelData& GetModelData() override;
-
-    void SetModelData(const ModelData& modelData) override;
 
 protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnStart() override;
 
-    void OnDraw() override;
+    void OnUpdate() override;
 
 private:
 
@@ -53,8 +47,6 @@ private:
     float speed;
 
     Vec3 velocity;
-
-    ModelData modelData;
 
 };
 

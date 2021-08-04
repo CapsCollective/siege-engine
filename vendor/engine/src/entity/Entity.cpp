@@ -46,6 +46,11 @@ float Entity::GetRotation() const
     return rotation;
 }
 
+const Vec3 &Entity::GetScale() const
+{
+    return scale;
+}
+
 int Entity::GetZIndex() const
 {
     return zIndex;
@@ -59,6 +64,11 @@ void Entity::SetPosition(Vec3 newPosition)
 void Entity::SetRotation(float newRotation)
 {
     rotation = fmod(newRotation, 360.f);
+}
+
+void Entity::SetScale(Vec3 newScale)
+{
+    scale = newScale;
 }
 
 void Entity::SetZIndex(int idx)

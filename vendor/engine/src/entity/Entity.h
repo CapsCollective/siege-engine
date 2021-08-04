@@ -24,7 +24,7 @@ public:
      * position and rotation to zero, and name to "Entity"
      */
     Entity() :
-            Entity(ENTITY_NAME)
+        Entity(ENTITY_NAME)
     {};
 
     /**
@@ -34,7 +34,7 @@ public:
      *               entity as a string
      */
     Entity(const std::string& name) :
-            Entity(name, Vec3::Zero, 0.f)
+        Entity(name, Vec3::Zero, 0.f)
     {};
 
     /**
@@ -47,12 +47,13 @@ public:
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const std::string& name, Vec3 position, float rotation, int zIndex = 0) :
-            position(position),
-            rotation(rotation),
-            name(name),
-            index(GenerationalIndex()),
-            zIndex(zIndex)
+    Entity(const std::string& name, Vec3 position, float rotation, Vec3 scale = Vec3::One, int zIndex = 0) :
+        position(position),
+        rotation(rotation),
+        scale(scale),
+        name(name),
+        index(GenerationalIndex()),
+        zIndex(zIndex)
     {};
 
     virtual ~Entity() = default;
@@ -118,7 +119,7 @@ public:
     /**
      * Getter method for the entity's position attribute
      * @return a constant reference to the entity's
-     *         position a Vector3
+     *         position as a Vector3
      */
     const Vec3& GetPosition() const;
 
@@ -127,6 +128,13 @@ public:
      * @return the entity's rotation as a float
      */
     float GetRotation() const;
+
+    /**
+     * Getter method for the entity's scale attribute
+     * @return a constant reference to the entity's
+     *         scale as a Vector3
+     */
+    const Vec3& GetScale() const;
 
     /**
      * Getter method for the entity's z-index attribute
@@ -163,6 +171,13 @@ public:
     void SetRotation(float newRotation);
 
     /**
+     * Setter method for the entity's scale attribute
+     * @param newScale - a Vector3 to set as the
+     *                      entity's scale
+     */
+    void SetScale(Vec3 newScale);
+
+    /**
      * Setter method for the entity's z-index value
      * @param idx - the index value to set
      */
@@ -181,6 +196,11 @@ protected:
      * The rotation of the entity in degrees
      */
     float rotation;
+
+    /**
+     * The scale of the entity as a Vector3
+     */
+    Vec3 scale;
 
 private:
 

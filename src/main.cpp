@@ -4,9 +4,9 @@
 #include <scene/SceneManager.h>
 
 #include <raylib/Camera3D.hpp>
-#include <raylib/Vector3.hpp>
 #include <raylib/Window.hpp>
 #include <raylib/Color.hpp>
+#include <render/RenderSystem.h>
 
 #include "tools/EditorController.h"
 #include "tools/MessageDisplay.h"
@@ -95,6 +95,8 @@ int main(int argc, char* argv[])
         window.BeginDrawing();
         bg.ClearBackground();
         camera.BeginMode();
+
+        RenderSystem::DrawFrame();
 
         // Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
