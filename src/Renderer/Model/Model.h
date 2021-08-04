@@ -16,6 +16,12 @@ namespace SnekVk
     {
         public:
 
+        struct ModelPushConstantData
+        {
+            glm::vec2 offset;
+            alignas(16) glm::vec3 color;
+        };
+
         /**
          * @brief The Vertex struct represents all the vertex data that'll be passed into our shaders.
          * Right now all we expect is a vector 2 for it's position in 2D space. 

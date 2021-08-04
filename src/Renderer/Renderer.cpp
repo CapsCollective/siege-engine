@@ -42,6 +42,8 @@ namespace SnekVk
 
     void Renderer::RecordCommandBuffer(int imageIndex)
     {
+        static int frame = 0;
+        frame = (frame + 1) % 200;
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -75,10 +77,26 @@ namespace SnekVk
 
         graphicsPipeline.Bind(commandBuffers[imageIndex]);
 
+        size_t modelIdx = 0;
         for (auto& model : models)
         {
             model->Bind(commandBuffers[imageIndex]);
+
+            Model::ModelPushConstantData data{};
+            data.offset = {-0.5f + frame * 0.01f, -0.4f + modelIdx * 0.25f};
+            data.color = {0.0f, 0.0f, 0.2f + 0.2f * modelIdx};
+
+            vkCmdPushConstants(
+                commandBuffers[imageIndex],
+                pipelineLayout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(Model::ModelPushConstantData),
+                &data
+            );
+
             model->Draw(commandBuffers[imageIndex]);
+            modelIdx++;
         }
         
         RenderPass::End(commandBuffers[imageIndex]);
@@ -141,12 +159,17 @@ namespace SnekVk
 
     void Renderer::CreatePipelineLayout()
     {
+        VkPushConstantRange range{};
+        range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        range.offset = 0; 
+        range.size = sizeof(Model::ModelPushConstantData);
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0; 
         pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
-        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &range;
 
         SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
             "Failed to create pipeline layout!");
