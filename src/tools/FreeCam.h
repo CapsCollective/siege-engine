@@ -1,7 +1,6 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
-#include <raylib/Camera3D.hpp>
 #include "../ServiceLocator.h"
 #include <entity/Entity.h>
 
@@ -17,9 +16,7 @@ public:
         camera(ServiceLocator::GetCamera()),
         rotation(Vec3(0.f, -1.f, -1.f)),
         previousMousePosition({0.f, 0.f})
-    {
-        camera->SetMode(CAMERA_CUSTOM);
-    };
+    {}
 
 protected:
 
@@ -35,7 +32,7 @@ private:
 
     float lookSpeed;
 
-    raylib::Camera3D* camera;
+    Cam* camera;
 
     Vec3 rotation;
 

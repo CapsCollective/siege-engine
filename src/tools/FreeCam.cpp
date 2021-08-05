@@ -1,4 +1,5 @@
 #include "FreeCam.h"
+#include <render/Camera.h>
 
 void FreeCam::OnUpdate()
 {

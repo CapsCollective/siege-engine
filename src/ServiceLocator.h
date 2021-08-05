@@ -1,14 +1,13 @@
 #ifndef A_DARK_DISCOMFORT_SERVICELOCATOR_H
 #define A_DARK_DISCOMFORT_SERVICELOCATOR_H
 
-#include <raylib/Camera3D.hpp>
 #include <utils/ServiceLocatorUtils.h>
 
 class ServiceLocator
 {
 public:
 
-    REGISTER_SERVICE(Camera, raylib::Camera3D)
+    REGISTER_SERVICE(Camera, class Cam)
 
     REGISTER_SERVICE(EditorController, class EditorController)
 

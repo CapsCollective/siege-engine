@@ -61,6 +61,12 @@ public:
     // Virtual methods
 
     /**
+     * A virtual start method to be overridden for entity
+     * logic (runs before update)
+     */
+    virtual void OnStart() {};
+
+    /**
      * A virtual update method to be overridden for entity
      * logic (runs before drawing)
      */

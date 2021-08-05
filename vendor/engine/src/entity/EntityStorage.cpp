@@ -70,6 +70,7 @@ void EntityStorage::RegisterEntities()
         isEntityAdded = !isTool || isEntityAdded;
 
         storage.push_back(entity);
+        entity->OnStart();
         CC_LOG_INFO("Registered {} at ({})", entity->GetName(), entity->GetIndex());
     }
 

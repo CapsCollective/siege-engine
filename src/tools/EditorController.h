@@ -5,7 +5,6 @@
 #include <entity/EntityStorage.h>
 #include <entity/EntityPtr.h>
 #include "../ServiceLocator.h"
-#include <raylib/Camera3D.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -77,7 +76,7 @@ private:
 
     size_t selectedIdx;
 
-    raylib::Camera3D* camera;
+    Cam* camera;
 
     EntityPtr<Entity> selectedEntity;
 
