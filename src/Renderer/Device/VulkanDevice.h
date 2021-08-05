@@ -33,15 +33,19 @@ namespace SnekVk {
 		
 		// 'Structors
 
-		VulkanDevice(SnekVk::Window &window);
+		VulkanDevice(SnekVk::Window *window);
+		VulkanDevice();
 
 		~VulkanDevice();
+		void DestroyDevice();
 
 		// Deleting move and copy constructors
 		VulkanDevice(const VulkanDevice &) = delete;
 		VulkanDevice& operator=(const VulkanDevice &) = delete;
 		VulkanDevice(VulkanDevice &&) = delete;
 		VulkanDevice& operator=(VulkanDevice &&) = delete;
+
+		void SetWindow(Window* window);
 		
 		/**
 		 * Returns a copy of the command pool held by the device. 
@@ -260,7 +264,7 @@ namespace SnekVk {
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		Window &window;
+		Window *window {nullptr};
 		VkCommandPool commandPool;
 
 		VkDevice device;

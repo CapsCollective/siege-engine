@@ -7,7 +7,7 @@
 
 namespace SnekVk {
 
-	VulkanDevice::VulkanDevice(Window &window) : window{window} 
+	VulkanDevice::VulkanDevice(Window* window) : window{window} 
 	{
 		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
 
@@ -19,7 +19,29 @@ namespace SnekVk {
 		CreateCommandPool();
 	}
 
+	VulkanDevice::VulkanDevice()
+	{}
+
+	void VulkanDevice::SetWindow(Window* window)
+	{
+		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+
+		SNEK_ASSERT(window != nullptr, "Must provide a valid pointer to a window!");
+
+		this->window = window;
+
+		CreateInstance();
+		SetupDebugMessenger();
+		CreateSurface();
+		PickPhysicalDevice();
+		CreateLogicalDevice();
+		CreateCommandPool();
+	}
+
 	VulkanDevice::~VulkanDevice() 
+	{}
+
+	void VulkanDevice::DestroyDevice()
 	{
 		// When the device goes out of scope, all vulkan structs must be 
 		// de-allocated in reverse order of how they were created. 
@@ -86,7 +108,7 @@ namespace SnekVk {
 		volkLoadInstance(instance);
 	}
 
-	void VulkanDevice::CreateSurface() { window.CreateWindowSurface(instance, OUT &surface); }
+	void VulkanDevice::CreateSurface() { window->CreateWindowSurface(instance, OUT &surface); }
 
 	void VulkanDevice::PickPhysicalDevice() 
 	{

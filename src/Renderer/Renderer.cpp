@@ -3,26 +3,46 @@
 namespace SnekVk
 {
     Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
+    VulkanDevice Renderer::device;
 
-    Renderer::Renderer(SnekVk::Window& window) 
-        : window{window}, 
-        device{VulkanDevice(window)}, 
-        swapChain{SwapChain(device,  
-        window.GetExtent())}
+    Renderer::Renderer(Window& window) : 
+        window{window},
+        swapChain{SwapChain(device)},
+        graphicsPipeline{Pipeline(device)}
     {
-        // Currently, we're just allocating 100 possible models.
+        device.SetWindow(&window);
+        swapChain.SetWindowExtents(window.GetExtent());
+        CreatePipelineLayout();
+        graphicsPipeline.RecreatePipeline(
+            "shaders/simpleShader.vert.spv",
+            "shaders/simpleShader.frag.spv",
+            CreateDefaultPipelineConfig()
+        );
+
         models.reserve(100);
         CreateCommandBuffers();
     }
-    
+
     Renderer::~Renderer() 
     {
+        std::cout << "Destroying renderer" << std::endl;
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+        std::cout << "Destroying Pipeline" << std::endl;
+        graphicsPipeline.ClearPipeline();
+        std::cout << "Destroying SwapChain" << std::endl;
+        swapChain.DestroySwapChain();
+        std::cout << "Destroying Device" << std::endl;
+        device.DestroyDevice();
     }
 
     void Renderer::SubmitModel(Model* model)
     {
         models.emplace_back(model);
+    }
+
+    Model Renderer::CreateModel(Model::Vertex* vertices, u32 vertexCount)
+    {
+        return Model(device, vertices, vertexCount);
     }
 
     void Renderer::CreateCommandBuffers()

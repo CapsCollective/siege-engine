@@ -18,8 +18,9 @@ namespace SnekVk
 
         struct PushConstantData
         {
-            glm::vec2 offset;
-            alignas(16) glm::vec3 color;
+            glm::mat2 transform {1.0f};
+            glm::vec2 offset {0.0f, 0.0f};
+            alignas(16) glm::vec3 color {0.0f, 0.0f, 0.0f};
         };
 
         /**
@@ -59,6 +60,8 @@ namespace SnekVk
         Model(VulkanDevice& device, const Vertex* vertices, u32 vertexCount);
 
         ~Model();
+
+        void DestroyModel();
 
         // Model is not copyable - we just delete the copy constructors.
         Model(const Model&) = delete;

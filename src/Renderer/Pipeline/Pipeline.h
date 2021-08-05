@@ -52,6 +52,8 @@ namespace SnekVk
                 const PipelineConfigInfo& configInfo
             );
 
+            Pipeline(VulkanDevice& device);
+
             ~Pipeline();
 
             // Delete copy constructors
