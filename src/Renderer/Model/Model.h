@@ -59,6 +59,7 @@ namespace SnekVk
          */
         Model(VulkanDevice& device, const Vertex* vertices, u32 vertexCount);
 
+        Model(VulkanDevice& device);
         ~Model();
 
         void DestroyModel();
@@ -66,6 +67,8 @@ namespace SnekVk
         // Model is not copyable - we just delete the copy constructors.
         Model(const Model&) = delete;
         Model& operator=(const Model&) = delete;
+
+        void SetVertices(const Vertex* vertices, u32 vertexCount);
 
         /**
          * @brief Binds the model's buffers to the current command buffer. 
