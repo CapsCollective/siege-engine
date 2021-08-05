@@ -31,3 +31,8 @@ bool BoundedBox::Intersects(const BoundedBox &other) const
     else return false;
     return true;
 }
+
+bool BoundedBox::Intersects(const RayCast &ray) const
+{
+    return CheckCollisionRayBox(ray, *this);
+}

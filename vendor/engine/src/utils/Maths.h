@@ -57,12 +57,25 @@ struct Vec3
     // Raylib conversions
 
     Vec3(raylib::Vector3 vector) :
-            Vec3(vector.x, vector.y, vector.z)
+        Vec3(vector.x, vector.y, vector.z)
+    {}
+
+    Vec3(Vector3 vector) :
+        Vec3(vector.x, vector.y, vector.z)
     {}
 
     operator raylib::Vector3() const
     {
         return {x, y, z};
+    }
+
+    Vec3(Vector2 vector) :
+        Vec3(vector.x, vector.y, 0.f)
+    {}
+
+    operator Vector2() const
+    {
+        return {x, y};
     }
 
     // Operator overloads
@@ -144,10 +157,42 @@ struct BoundedBox
 
     bool Intersects(const BoundedBox& other) const;
 
+    bool Intersects(const struct RayCast& ray) const;
+
     // Public members
 
     Vec3 min;
     Vec3 max;
+};
+
+struct RayCast
+{
+    // 'Structors
+
+    RayCast() :
+        RayCast(Vec3(), Vec3())
+    {}
+
+    RayCast(Vec3 position, Vec3 direction) :
+        position(position),
+        direction(direction)
+    {}
+
+    // Raylib conversions
+
+    RayCast(Ray ray) :
+        RayCast(Vec3(ray.position), Vec3(ray.direction))
+    {}
+
+    operator Ray() const
+    {
+        return {position, direction};
+    }
+
+    // Public members
+
+    Vec3 position;
+    Vec3 direction;
 };
 
 #endif //A_DARK_DISCOMFORT_MATHS_H

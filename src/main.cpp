@@ -3,10 +3,9 @@
 #include <entity/EntityStorage.h>
 #include <scene/SceneManager.h>
 
-#include <raylib/Camera3D.hpp>
-#include <raylib/Window.hpp>
-#include <raylib/Color.hpp>
 #include <render/RenderSystem.h>
+#include <render/Camera.h>
+#include <window/Window.h>
 
 #include "tools/EditorController.h"
 #include "tools/MessageDisplay.h"
@@ -20,22 +19,9 @@ int main(int argc, char* argv[])
     // Check for editor flag
     bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
 
-    // Initialise window
-    raylib::Color bg = RAYWHITE;
-    raylib::Window window = raylib::Window(800, 450, "A Dark Discomfort");
-    window.SetTargetFPS(60);
-
-    // Deactivate the exit key
-    SetExitKey(-1);
-
-    // Create main camera
-    raylib::Camera3D camera = raylib::Camera3D(
-            Vec3(0.f, 10.f, 10.f),
-            Vec3(0.f, 0.f, 0.f),
-            Vec3(0.f, 1.f, 0.f),
-            45.f,
-            CAMERA_PERSPECTIVE
-    );
+    // Create a window and main camera
+    Window window("A Dark Discomfort", 800, 450);
+    Cam camera;
     ServiceLocator::Provide(&camera);
 
     // Initialise the message display
@@ -92,9 +78,8 @@ int main(int argc, char* argv[])
         CollisionSystem::RegisterEntities();
 
         // Begin drawing to screen
-        window.BeginDrawing();
-        bg.ClearBackground();
-        camera.BeginMode();
+        window.BeginDraw();
+        camera.Begin3D();
 
         RenderSystem::DrawFrame();
 
@@ -102,13 +87,13 @@ int main(int argc, char* argv[])
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw();
 
-        camera.EndMode();
+        camera.End3D();
 
         // UI Draw entities
         for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
-        window.EndDrawing();
+        window.EndDraw();
 
         // Remove all entities at the end of the frame
         ResourceManager::FreeResources();
