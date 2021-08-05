@@ -28,7 +28,7 @@ SnekVk::Model::Vertex triangleVerts[] = {
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
-
+    
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     SnekVk::Renderer renderer(window);
@@ -36,10 +36,10 @@ int main()
     renderer.SetClearValue(.1f, .1f, .1f, 1.f);
 
     SnekVk::Model models[] = {
-        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
-        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
-        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
-        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3)
+        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
+        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
+        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
+        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3)
     };
 
     for (size_t i = 0; i < 4; i++) renderer.SubmitModel(&models[i]);
@@ -53,10 +53,10 @@ int main()
 
         for (int i = 0; i < 4; i++)
         {
-            models[i].SetPushConstant(
-                {{-0.5f + frame * 0.01f, -0.4f + i * 0.25f}, 
-                {0.0f, 0.0f, 0.2f + 0.2f * i}}
-            );
+            SnekVk::Model::PushConstantData push{};
+            push.offset = {-0.5f + frame * 0.01f, -0.4f + i * 0.25f};
+            push.color = {0.0f, 0.0f, 0.2f + 0.2f * i};
+            models[i].SetPushConstant(push);
         }
 
         renderer.DrawFrame();

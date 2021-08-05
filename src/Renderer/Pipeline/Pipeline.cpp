@@ -16,10 +16,11 @@ namespace SnekVk
         CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
     }
 
+    Pipeline::Pipeline(VulkanDevice& device) : device{device}
+    {}
+
     Pipeline::~Pipeline() 
-    {
-        ClearPipeline();
-    }
+    {}
 
     Utils::Array<char> Pipeline::ReadFile(const char* filePath)
     {
@@ -135,7 +136,7 @@ namespace SnekVk
         // re-creating the pipeline?
         vkDestroyShaderModule(device.Device(), vertShader, nullptr);
         vkDestroyShaderModule(device.Device(), fragShader, nullptr);
-        vkDeviceWaitIdle(device.Device());
+        
         vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }
 

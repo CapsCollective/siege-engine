@@ -44,7 +44,10 @@ namespace SnekVk
          * must follow the extents of the window. 
          */
         SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
+        SwapChain(VulkanDevice& device);
         ~SwapChain();
+
+        void DestroySwapChain();
 
         // Delete copy constructors. 
         SwapChain(const SwapChain&) = delete;
@@ -112,6 +115,8 @@ namespace SnekVk
          * @return RenderPass - the raw vulkan render pass object.
          */
         RenderPass* GetRenderPass() { return &renderPass; }
+
+        void SetWindowExtents(VkExtent2D windowExtent);
 
         /**
          * @brief Loads in the next image to be written to in the Swapchain. 
