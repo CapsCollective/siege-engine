@@ -164,7 +164,6 @@ namespace SnekVk
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) 
         {
-            std::cout << "recreating..." << std::endl;
             RecreateSwapChain();
             return false;
         }

@@ -30,7 +30,6 @@ namespace SnekVk
         struct Vertex
         {
             glm::vec2 position;
-            glm::vec3 color;
 
             /**
              * @brief Get a list of binding colorDescriptions for this Vertex. A binding description details
@@ -46,7 +45,7 @@ namespace SnekVk
              * 
              * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
-            static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
+            static std::array<VkVertexInputAttributeDescription, 1> GetAttributeDescriptions();
         };
 
         // 'Structors
