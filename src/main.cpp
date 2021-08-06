@@ -43,25 +43,35 @@ int main()
     for (size_t i = 0; i < 4; i++) 
     {
         triangles[i] = Components::Shape(&triangleModel);
-        renderer.SubmitModel(triangles[i].GetModel());
     }
     
     while(!window.WindowShouldClose()) {
 
         window.Update();
+
         renderer.ClearDeviceQueue();
 
-        for (int i = 0; i < 4; i++)
+        if (renderer.StartFrame()) 
         {
-            float sine = glm::sin(glfwGetTime()) + 0.5f / 2;
-            triangles[i].SetTransform({0.0f, sine});
-            triangles[i].SetColor({0.0f, 0.0f, 0.2f + 0.2f * i});
-            triangles[i].SetScale({sine, sine});
-            triangles[i].SetRotation(
-                glm::mod(triangles[i].GetTransform().rotation + 0.01f, glm::two_pi<float>()));
-        }
+            for (int i = 0; i < 4; i++)
+            {
+                auto& triangle = triangles[i];
+                auto model = triangle.GetModel();
+                
+                float sine = glm::sin(glfwGetTime());
+                float position = static_cast<float>(i);
 
-        renderer.DrawFrame();
+                triangle.SetTransform({-0.75f + ((position / 4) + (position / 4)), sine / 4});
+                triangle.SetColor({0.0f, 0.0f, 0.2f + 0.2f * i});
+                triangle.SetScale({sine, sine});
+                triangle.SetRotation(
+                    glm::mod(triangle.GetTransform().rotation + 0.01f, glm::two_pi<float>()));
+
+                renderer.DrawModel(model);
+            }
+
+            renderer.EndFrame();
+        }
     }
 
     renderer.ClearDeviceQueue();
