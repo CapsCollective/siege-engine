@@ -54,7 +54,7 @@ namespace SnekVk
             "Failed to allocate command buffer");
     }
 
-    void Renderer::DrawModel(Model* model)
+    void Renderer::DrawModel(Model* model, const Model::PushConstantData& pushData)
     {
         auto commandBuffer = GetCurrentCommandBuffer();
         graphicsPipeline.Bind(commandBuffer);
@@ -67,7 +67,7 @@ namespace SnekVk
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             0,
             sizeof(Model::PushConstantData),
-            &model->GetPushConstant()
+            &pushData
         );
 
         model->Draw(commandBuffer);

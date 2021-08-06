@@ -38,6 +38,12 @@ SnekVk::Model::Vertex squareVerts[] = {
     {{0.5f, 0.5f}}, 
 };
 
+struct RigidBody2D 
+{
+    glm::vec2 velocity;
+    float mass{1.0f};
+};
+
 std::vector<SnekVk::Model::Vertex> GenerateCircleVertices(u32 numSides)
 {
     std::vector<SnekVk::Model::Vertex> uniqueVertices {};
@@ -74,11 +80,23 @@ int main()
 
     SnekVk::Model circleModel(SnekVk::Renderer::GetDevice(), circleVertices.data(), circleVertices.size());
 
-    Components::Shape shapes[4] = {
-        Components::Shape(&triangleModel),
-        Components::Shape(&squareModel),
-        Components::Shape(&circleModel),
-        Components::Shape(&squareModel)
+    RigidBody2D redCircleBody{};
+    auto redCircle = Components::Shape(&circleModel);
+    redCircle.SetScale(glm::vec2(0.05f));
+    redCircle.SetTransform({.5f, .5f});
+    redCircle.SetColor({1.0f, 0.0f, 0.0f});
+    redCircleBody.velocity = {-.5f, 0.0f};
+
+    RigidBody2D blueCircleBody{};
+    auto blueCircle = Components::Shape(&circleModel);
+    blueCircle.SetScale(glm::vec2(0.05f));
+    blueCircle.SetTransform({-.45f, -.25f});
+    blueCircle.SetColor({0.0f, 0.0f, 1.0f});
+    blueCircleBody.velocity = {-.5f, 0.0f};
+
+    Components::Shape circles[] = {
+        redCircle,
+        blueCircle
     };
     
     while(!window.WindowShouldClose()) {
@@ -87,23 +105,10 @@ int main()
 
         if (renderer.StartFrame()) 
         {
-            for (int i = 0; i < 4; i++)
+            for (size_t i = 0; i < 2; i++)
             {
-                auto& shape = shapes[i];
-                auto model = shape.GetModel();
-                
-                float sine = glm::sin(glfwGetTime());
-                float position = static_cast<float>(i);
-
-                shape.SetTransform({-0.75f + ((position / 4) + (position / 4)), sine / 4});
-                shape.SetColor({0.0f, 0.0f, 0.2f + 0.2f * i});
-                shape.SetScale({sine, sine});
-                shape.SetRotation(
-                    glm::mod(shape.GetTransform().rotation + 0.01f, glm::two_pi<float>()));
-
-                renderer.DrawModel(model);
+                renderer.DrawModel(circles[i].GetModel(), circles[i].GetPushConstantData());
             }
-
             renderer.EndFrame();
         }
     }

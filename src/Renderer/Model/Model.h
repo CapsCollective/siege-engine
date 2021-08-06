@@ -87,10 +87,6 @@ namespace SnekVk
          */
         void Draw(VkCommandBuffer commandBuffer);
 
-        // TODO: Remove this when no longer relevant. 
-        PushConstantData& GetPushConstant() { return pushConstant; }
-        void SetPushConstant(PushConstantData newData) { pushConstant = newData; }
-
         private:
 
         /**
@@ -104,7 +100,5 @@ namespace SnekVk
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         u32 vertexCount;
-
-        PushConstantData pushConstant;
     };
 }
