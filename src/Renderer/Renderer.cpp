@@ -12,6 +12,7 @@ namespace SnekVk
     {
         device.SetWindow(&window);
         swapChain.SetWindowExtents(window.GetExtent());
+        
         CreatePipelineLayout();
         graphicsPipeline.RecreatePipeline(
             "shaders/simpleShader.vert.spv",
@@ -19,7 +20,6 @@ namespace SnekVk
             CreateDefaultPipelineConfig()
         );
 
-        models.reserve(100);
         CreateCommandBuffers();
     }
 
@@ -33,11 +33,6 @@ namespace SnekVk
         swapChain.DestroySwapChain();
         std::cout << "Destroying Device" << std::endl;
         device.DestroyDevice();
-    }
-
-    void Renderer::SubmitModel(Model* model)
-    {
-        models.emplace_back(model);
     }
 
     Model Renderer::CreateModel(Model::Vertex* vertices, u32 vertexCount)
@@ -60,67 +55,28 @@ namespace SnekVk
             "Failed to allocate command buffer");
     }
 
-    void Renderer::RecordCommandBuffer(int imageIndex)
+    void Renderer::DrawModel(Model* model)
     {
-        static int frame = 0;
-        frame = (frame + 1) % 200;
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        auto commandBuffer = GetCurrentCommandBuffer();
+        graphicsPipeline.Bind(commandBuffer);
 
-        SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffers[imageIndex], &beginInfo) == VK_SUCCESS,
-            "Failed to begin recording command buffer");
-        
-        u32 clearValueCount = 2;
-            VkClearValue clearValues[clearValueCount];
-            clearValues[0].color = clearValue;
-            clearValues[1].depthStencil = {1.0f, 0};
+        model->Bind(commandBuffer);
 
-        RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
-                          OUT commandBuffers[imageIndex],
-                          swapChain.GetFrameBuffer(imageIndex),
-                          {0,0},
-                          swapChain.GetSwapChainExtent(),
-                          clearValues,
-                          clearValueCount);
+        vkCmdPushConstants(
+            commandBuffer,
+            pipelineLayout,
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            0,
+            sizeof(Model::PushConstantData),
+            &model->GetPushConstant()
+        );
 
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(swapChain.GetSwapChainExtent().width);
-        viewport.height = static_cast<float>(swapChain.GetSwapChainExtent().height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        VkRect2D scissor {{0,0}, swapChain.GetSwapChainExtent()};
-
-        vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
-        vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
-
-        graphicsPipeline.Bind(commandBuffers[imageIndex]);
-
-        for (auto& model : models)
-        {
-            model->Bind(commandBuffers[imageIndex]);
-
-            vkCmdPushConstants(
-                commandBuffers[imageIndex],
-                pipelineLayout,
-                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-                0,
-                sizeof(Model::PushConstantData),
-                &model->GetPushConstant()
-            );
-
-            model->Draw(commandBuffers[imageIndex]);
-        }
-        
-        RenderPass::End(commandBuffers[imageIndex]);
-
-        SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffers[imageIndex]) == VK_SUCCESS,
-            "Failed to record command buffer!");
+        model->Draw(commandBuffer);
     }
 
     void Renderer::RecreateSwapChain()
     {
+        ClearDeviceQueue();
         auto extent = window.GetExtent();
         while(extent.width == 0 || extent.height == 0)
         {
@@ -203,31 +159,100 @@ namespace SnekVk
         );
     }
 
-    void Renderer::DrawFrame()
+    bool Renderer::StartFrame()
     {
+        SNEK_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
+
         u32 imageIndex;
-        auto result = swapChain.AcquireNextImage(&imageIndex);
+        auto result = swapChain.AcquireNextImage(&currentImageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) 
         {
             RecreateSwapChain();
-            return;
+            return false;
         }
 
         SNEK_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, 
             "Failed to acquire swapchain image!");
+
+        isFrameStarted = true;
+
+        VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
+            "Failed to begin recording command buffer");
         
-        RecordCommandBuffer(imageIndex);
-        result = swapChain.SubmitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+        
+        BeginSwapChainRenderPass(commandBuffer);
+        
+        return true;
+    }
+
+    void Renderer::EndFrame()
+    {
+        SNEK_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!");
+
+        VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
+
+        EndSwapChainRenderPass(commandBuffer);
+
+        SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
+            "Failed to record command buffer!");
+
+        auto result = swapChain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
             window.WasResized())
         {
             window.ResetWindowResized();
             RecreateSwapChain();
-            return;
+        } else if (result != VK_SUCCESS) 
+        {
+            SNEK_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
         }
 
-        SNEK_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
+        isFrameStarted = false;
+    }
+
+    void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
+    {
+        SNEK_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
+        SNEK_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
+
+        u32 clearValueCount = 2;
+            VkClearValue clearValues[clearValueCount];
+            clearValues[0].color = clearValue;
+            clearValues[1].depthStencil = {1.0f, 0};
+
+        RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
+                          OUT commandBuffers[currentImageIndex],
+                          swapChain.GetFrameBuffer(currentImageIndex),
+                          {0,0},
+                          swapChain.GetSwapChainExtent(),
+                          clearValues,
+                          clearValueCount);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(swapChain.GetSwapChainExtent().width);
+        viewport.height = static_cast<float>(swapChain.GetSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor {{0,0}, swapChain.GetSwapChainExtent()};
+
+        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    }
+
+    void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
+    {
+        SNEK_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
+        SNEK_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
+        
+        RenderPass::End(commandBuffers[currentImageIndex]);
     }
 }
