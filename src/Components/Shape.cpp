@@ -10,10 +10,12 @@ namespace Components
 
     void Shape::SetColor(glm::vec3 newColor) 
     { 
+        fillColor = newColor;
         pushConstantData.color = newColor;
     }
     void Shape::SetTransform(glm::vec2 newPos) 
     { 
+        transform.position = newPos;
         pushConstantData.offset = newPos;
     }
 
