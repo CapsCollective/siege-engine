@@ -20,13 +20,19 @@ namespace SnekVk
             static VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
             VkRenderPass GetSwapChanRenderPass() { return swapChain.GetRenderPass()->GetRenderPass(); }
+
+            int GetCurrentFrameIndex() const
+            {
+                SNEK_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+                return currentFrameIndex;
+            }
             
             bool IsFrameStarted() { return isFrameStarted; }
 
             VkCommandBuffer GetCurrentCommandBuffer() const 
             { 
                 SNEK_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
-                return commandBuffers[currentImageIndex]; 
+                return commandBuffers[currentFrameIndex]; 
             }
             
             void DrawModel(Model* model);
@@ -64,5 +70,6 @@ namespace SnekVk
 
             u32 currentImageIndex;
             bool isFrameStarted{false};
+            int currentFrameIndex{0};
     };
 }
