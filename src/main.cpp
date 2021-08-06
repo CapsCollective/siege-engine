@@ -22,6 +22,7 @@
 
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
+const float GRAVITY_STRENGTH = 0.81f;
 
 SnekVk::Model::Vertex triangleVerts[] = {
     {{0.0f, -0.5f}},
@@ -64,6 +65,25 @@ std::vector<SnekVk::Model::Vertex> GenerateCircleVertices(u32 numSides)
     return vertices;
 }
 
+glm::vec2 ComputeForce(
+    Components::Shape& modelA, 
+    RigidBody2D& modelARigid, 
+    Components::Shape& modelB, 
+    RigidBody2D& modelBRigid)
+{
+    auto offset = modelA.GetTransform().position - modelB.GetTransform().position;
+    float distanceSquared = glm::dot(offset, offset);
+ 
+    // clown town - just going to return 0 if objects are too close together...
+    if (glm::abs(distanceSquared) < 1e-10f) {
+      return {.0f, .0f};
+    }
+ 
+    float force =
+        GRAVITY_STRENGTH * modelBRigid.mass * modelARigid.mass / distanceSquared;
+    return force * offset / glm::sqrt(distanceSquared);
+}
+
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
@@ -82,33 +102,51 @@ int main()
 
     RigidBody2D redCircleBody{};
     auto redCircle = Components::Shape(&circleModel);
-    redCircle.SetScale(glm::vec2(0.05f));
+    redCircle.SetScale(glm::vec2(.05f));
     redCircle.SetTransform({.5f, .5f});
     redCircle.SetColor({1.0f, 0.0f, 0.0f});
-    redCircleBody.velocity = {-.5f, 0.0f};
+    redCircleBody.velocity = {-.5f, .0f};
 
     RigidBody2D blueCircleBody{};
     auto blueCircle = Components::Shape(&circleModel);
-    blueCircle.SetScale(glm::vec2(0.05f));
+    blueCircle.SetScale(glm::vec2(.05f));
     blueCircle.SetTransform({-.45f, -.25f});
     blueCircle.SetColor({0.0f, 0.0f, 1.0f});
-    blueCircleBody.velocity = {-.5f, 0.0f};
+    blueCircleBody.velocity = {.5f, .0f};
 
     Components::Shape circles[] = {
         redCircle,
         blueCircle
     };
+
+    int subSteps = 5;
     
     while(!window.WindowShouldClose()) {
 
         window.Update();
 
+        float dt = 1.0f / 60;
+
+        const float stepDelta = dt / subSteps;
+
+        auto forceA = ComputeForce(redCircle, redCircleBody, blueCircle, blueCircleBody);
+        std::cout << "FORCE A" << forceA.x << forceA.y << std::endl;
+        redCircleBody.velocity += dt * -forceA / redCircleBody.mass; 
+        blueCircleBody.velocity += dt * forceA / blueCircleBody.mass;
+
+        auto forceB = ComputeForce(blueCircle, blueCircleBody, redCircle, redCircleBody);
+        std::cout << "FORCE B " << forceB.x << forceB.y << std::endl;
+        blueCircleBody.velocity += dt * -forceB / blueCircleBody.mass; 
+        redCircleBody.velocity += dt * forceB / redCircleBody.mass; 
+
+        redCircle.SetTransform(redCircle.GetTransform().position += dt * redCircleBody.velocity * 0.001f);
+        blueCircle.SetTransform(blueCircle.GetTransform().position += dt * blueCircleBody.velocity * 0.001f);
+
         if (renderer.StartFrame()) 
         {
-            for (size_t i = 0; i < 2; i++)
-            {
-                renderer.DrawModel(circles[i].GetModel(), circles[i].GetPushConstantData());
-            }
+
+            renderer.DrawModel(redCircle.GetModel(), redCircle.GetPushConstantData());
+            renderer.DrawModel(blueCircle.GetModel(), blueCircle.GetPushConstantData());
             renderer.EndFrame();
         }
     }
