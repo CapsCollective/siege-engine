@@ -49,8 +49,6 @@ int main()
 
         window.Update();
 
-        renderer.ClearDeviceQueue();
-
         if (renderer.StartFrame()) 
         {
             for (int i = 0; i < 4; i++)

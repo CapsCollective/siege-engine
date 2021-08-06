@@ -42,14 +42,13 @@ namespace SnekVk
 
     void Renderer::CreateCommandBuffers()
     {
-        commandBuffers = Utils::Array<VkCommandBuffer>(swapChain.GetImageCount());
-        u32 size = swapChain.GetImageCount();
+        commandBuffers = Utils::Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandPool = device.GetCommandPool();
-        allocInfo.commandBufferCount = size;
+        allocInfo.commandBufferCount = static_cast<u32>(commandBuffers.Size());
 
         SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) == VK_SUCCESS,
             "Failed to allocate command buffer");
@@ -84,29 +83,27 @@ namespace SnekVk
             window.WaitEvents();
         }
 
-        // Clear our graphics pipeline before swapchain re-creation
-        graphicsPipeline.ClearPipeline();
+        auto oldImageFormat = swapChain.GetImageFormat();
+        auto oldDepthFormat = swapChain.GetDepthFormat();
 
         // Re-create swapchain
         swapChain.RecreateSwapchain();
 
-        if (swapChain.GetImageCount() != commandBuffers.Size())
-        {
-            FreeCommandBuffers();
-            CreateCommandBuffers();
-        }
-
         // Re-create the pipeline once the swapchain renderpass 
         // becomes available again.
+        if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat)) {
+            // Clear our graphics pipeline before swapchain re-creation
+            graphicsPipeline.ClearPipeline();
 
-        // NOTE: We could possibly avoid this if we check for render pass compatibility. 
-        // If the new renderpass is compatible with the old, then we can actually keep the 
-        // the same graphics pipeline.
-        graphicsPipeline.RecreatePipeline(
-            "shaders/simpleShader.vert.spv",
-            "shaders/simpleShader.frag.spv",
-            CreateDefaultPipelineConfig()
-        );
+            // NOTE: We could possibly avoid this if we check for render pass compatibility.
+            // If the new renderpass is compatible with the old, then we can actually keep the
+            // the same graphics pipeline.
+            graphicsPipeline.RecreatePipeline(
+                    "shaders/simpleShader.vert.spv",
+                    "shaders/simpleShader.frag.spv",
+                    CreateDefaultPipelineConfig()
+            );
+        }
     }
 
     void Renderer::FreeCommandBuffers()
@@ -163,11 +160,11 @@ namespace SnekVk
     {
         SNEK_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
 
-        u32 imageIndex;
         auto result = swapChain.AcquireNextImage(&currentImageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) 
         {
+            std::cout << "recreating..." << std::endl;
             RecreateSwapChain();
             return false;
         }
@@ -215,6 +212,7 @@ namespace SnekVk
         }
 
         isFrameStarted = false;
+        currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT; 
     }
 
     void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
@@ -228,7 +226,7 @@ namespace SnekVk
             clearValues[1].depthStencil = {1.0f, 0};
 
         RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
-                          OUT commandBuffers[currentImageIndex],
+                          OUT commandBuffer,
                           swapChain.GetFrameBuffer(currentImageIndex),
                           {0,0},
                           swapChain.GetSwapChainExtent(),
@@ -253,6 +251,6 @@ namespace SnekVk
         SNEK_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
         SNEK_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
         
-        RenderPass::End(commandBuffers[currentImageIndex]);
+        RenderPass::End(commandBuffer);
     }
 }
