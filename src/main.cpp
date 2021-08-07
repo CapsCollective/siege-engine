@@ -84,6 +84,37 @@ glm::vec2 ComputeForce(
     return force * offset / glm::sqrt(distanceSquared);
 }
 
+void StepSimulation(std::vector<Components::Shape>& physicsObjs, std::vector<RigidBody2D>& rigidbodies, float dt) {
+    // Loops through all pairs of objects and applies attractive force between them
+    size_t firstObjIndex = 0;
+    for (auto iterA = physicsObjs.begin(); iterA != physicsObjs.end(); ++iterA) {
+        auto& objA = *iterA;
+        size_t secondObjIndex = 0;
+        for (auto iterB = iterA; iterB != physicsObjs.end(); ++iterB) {
+            if (iterA == iterB) 
+            {
+                secondObjIndex++;
+                continue;
+            }
+            auto& objB = *iterB;
+
+            auto force = ComputeForce(objA, rigidbodies[firstObjIndex], objB, rigidbodies[secondObjIndex]);
+            rigidbodies[firstObjIndex].velocity += dt * -force / rigidbodies[firstObjIndex].mass;
+            rigidbodies[secondObjIndex].velocity += dt * force / rigidbodies[secondObjIndex].mass;
+
+            secondObjIndex++;
+        }
+        firstObjIndex++;
+    }
+
+    // update each objects position based on its final velocity
+    size_t index = 0; 
+    for (auto& obj : physicsObjs) {
+        obj.SetTransform(obj.GetTransform().position += dt * rigidbodies[index].velocity);
+        index++;
+    }
+}
+
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
@@ -100,24 +131,19 @@ int main()
 
     SnekVk::Model circleModel(SnekVk::Renderer::GetDevice(), circleVertices.data(), circleVertices.size());
 
-    RigidBody2D redCircleBody{};
-    auto redCircle = Components::Shape(&circleModel);
-    redCircle.SetScale(glm::vec2(.05f));
-    redCircle.SetTransform({.5f, .5f});
-    redCircle.SetColor({1.0f, 0.0f, 0.0f});
-    redCircleBody.velocity = {-.5f, .0f};
+    std::vector<Components::Shape> circles = {Components::Shape(&circleModel), Components::Shape(&circleModel)};
 
-    RigidBody2D blueCircleBody{};
-    auto blueCircle = Components::Shape(&circleModel);
-    blueCircle.SetScale(glm::vec2(.05f));
-    blueCircle.SetTransform({-.45f, -.25f});
-    blueCircle.SetColor({0.0f, 0.0f, 1.0f});
-    blueCircleBody.velocity = {.5f, .0f};
+    std::vector<RigidBody2D> rigidBodies = {{}, {}};
 
-    Components::Shape circles[] = {
-        redCircle,
-        blueCircle
-    };
+    circles[0].SetScale(glm::vec2(.05f));
+    circles[0].SetTransform({.5f, .5f});
+    circles[0].SetColor({1.0f, 0.0f, 0.0f});
+    rigidBodies[0].velocity = {-.5f, .0f};
+
+    circles[1].SetScale(glm::vec2(.05f));
+    circles[1].SetTransform({-.45f, -.25f});
+    circles[1].SetColor({0.0f, 0.0f, 1.0f});
+    rigidBodies[1].velocity = {.5f, .0f};
 
     int subSteps = 5;
     
@@ -129,24 +155,14 @@ int main()
 
         const float stepDelta = dt / subSteps;
 
-        auto forceA = ComputeForce(redCircle, redCircleBody, blueCircle, blueCircleBody);
-        std::cout << "FORCE A" << forceA.x << forceA.y << std::endl;
-        redCircleBody.velocity += dt * -forceA / redCircleBody.mass; 
-        blueCircleBody.velocity += dt * forceA / blueCircleBody.mass;
-
-        auto forceB = ComputeForce(blueCircle, blueCircleBody, redCircle, redCircleBody);
-        std::cout << "FORCE B " << forceB.x << forceB.y << std::endl;
-        blueCircleBody.velocity += dt * -forceB / blueCircleBody.mass; 
-        redCircleBody.velocity += dt * forceB / redCircleBody.mass; 
-
-        redCircle.SetTransform(redCircle.GetTransform().position += dt * redCircleBody.velocity * 0.001f);
-        blueCircle.SetTransform(blueCircle.GetTransform().position += dt * blueCircleBody.velocity * 0.001f);
+        for (size_t i = 0; i < subSteps; i++) StepSimulation(circles, rigidBodies, stepDelta);
 
         if (renderer.StartFrame()) 
         {
-
-            renderer.DrawModel(redCircle.GetModel(), redCircle.GetPushConstantData());
-            renderer.DrawModel(blueCircle.GetModel(), blueCircle.GetPushConstantData());
+            for (auto& circle : circles)
+            {
+                renderer.DrawModel(circle.GetModel(), circle.GetPushConstantData());
+            }
             renderer.EndFrame();
         }
     }
