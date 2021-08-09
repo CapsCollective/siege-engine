@@ -121,12 +121,12 @@ int main()
     auto circleVertices = GenerateCircleVertices(64);
 
     auto cubeVertices = GenerateCubeVertices();
-
-    std::cout << cubeVertices.Size() << std::endl;
     
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     SnekVk::Renderer renderer(window);
+
+    SnekVk::Camera camera;
 
     // Generate models
 
@@ -145,12 +145,18 @@ int main()
         Components::Shape(&cubeModel)
     };
 
-    shapes[0].SetPosition({0.f, 0.f, 0.5f});
+    shapes[0].SetPosition({0.f, 0.f, 2.5f});
     shapes[0].SetScale({.5f, .5f, .5f});
+    shapes[0].SetColor({.5f, 0.f, 0.f});
 
     while(!window.WindowShouldClose()) {
 
         window.Update();
+
+        float aspect = renderer.GetAspectRatio();
+
+        //camera.SetOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
 
         if (renderer.StartFrame()) 
         {
@@ -159,7 +165,7 @@ int main()
                 shape.SetRotationY(glm::mod(shape.GetRotation().y + 0.01f, glm::two_pi<float>()));
                 shape.SetRotationX(glm::mod(shape.GetRotation().x + 0.005f, glm::two_pi<float>()));
 
-                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), shape.GetColor());
+                renderer.DrawModel(shape.GetModel(), camera.GetProjection() * shape.GetTransform(), shape.GetColor());
             }
             renderer.EndFrame();
         }
