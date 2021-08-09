@@ -35,7 +35,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
-            void DrawModel(Model* model, const Model::PushConstantData& pushData);
+            void DrawModel(Model* model, glm::mat4 transform, glm::vec3 color);
 
             bool StartFrame();
             void EndFrame();

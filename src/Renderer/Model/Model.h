@@ -18,8 +18,7 @@ namespace SnekVk
 
         struct PushConstantData
         {
-            glm::mat2 transform {1.0f};
-            glm::vec2 offset {0.0f, 0.0f};
+            glm::mat4 transform {1.0f};
             alignas(16) glm::vec3 color {0.0f, 0.0f, 0.0f};
         };
 
@@ -29,7 +28,8 @@ namespace SnekVk
          */
         struct Vertex
         {
-            glm::vec2 position;
+            glm::vec3 position;
+            glm::vec3 color;
 
             /**
              * @brief Get a list of binding colorDescriptions for this Vertex. A binding description details
@@ -45,7 +45,7 @@ namespace SnekVk
              * 
              * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
-            static std::array<VkVertexInputAttributeDescription, 1> GetAttributeDescriptions();
+            static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
         };
 
         // 'Structors
