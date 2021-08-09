@@ -128,6 +128,9 @@ int main()
 
     SnekVk::Camera camera;
 
+    //camera.SetViewDirection(glm::vec3{0.f}, glm::vec3{.5f, 0.f, 1.f});
+    camera.SetViewTarget(glm::vec3(-1.f,-2.f,2.f), glm::vec3(0.f, 0.f, 2.5f));
+
     // Generate models
 
     SnekVk::Model triangleModel(SnekVk::Renderer::GetDevice(), triangleVerts, 3);
@@ -158,6 +161,8 @@ int main()
         //camera.SetOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
         camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
 
+        auto projectionView = camera.GetProjection() * camera.GetView();
+
         if (renderer.StartFrame()) 
         {
             for (auto& shape : shapes)
@@ -165,7 +170,7 @@ int main()
                 shape.SetRotationY(glm::mod(shape.GetRotation().y + 0.01f, glm::two_pi<float>()));
                 shape.SetRotationX(glm::mod(shape.GetRotation().x + 0.005f, glm::two_pi<float>()));
 
-                renderer.DrawModel(shape.GetModel(), camera.GetProjection() * shape.GetTransform(), shape.GetColor());
+                renderer.DrawModel(shape.GetModel(), projectionView * shape.GetTransform(), shape.GetColor());
             }
             renderer.EndFrame();
         }
