@@ -47,6 +47,8 @@ namespace SnekVk
 
         VkExtent2D GetExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
 
+        GLFWwindow* GetGlfwWindow() { return window; }
+
         // Public Functions
 
         void Update();

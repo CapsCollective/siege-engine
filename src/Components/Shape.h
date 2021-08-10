@@ -31,6 +31,7 @@ namespace Components
         glm::vec3& GetColor() { return fillColor; }
         SnekVk::Model* GetModel() { return model; }
         glm::vec3& GetRotation() { return transform.rotation; }
+        glm::vec3 GetPosition() { return transform.position; }
 
         void SetColor(glm::vec3 newColor);
         void SetScale(glm::vec3 newScale);
