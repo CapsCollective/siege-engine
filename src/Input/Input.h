@@ -1,6 +1,9 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "../Utils/Math.h"
+#include "../Window/Window.h"
+
+#include <map>
 
 #define KEY_W GLFW_KEY_W
 #define KEY_A GLFW_KEY_A
@@ -13,11 +16,28 @@
 #define KEY_RIGHT GLFW_KEY_RIGHT
 #define KEY_LEFT GLFW_KEY_LEFT
 
+#define KEY_ESCAPE GLFW_KEY_ESCAPE
+
 class Input 
 {
     public:
-        static void SetWindowPointer(GLFWwindow* window);
+        struct MouseCoordinates
+        {
+            double x;
+            double y;
+        };
+        static void SetWindowPointer(SnekVk::Window* window);
         static bool IsKeyDown(int key);
+        static bool IsKeyJustPressed(int key);
+
+        static const MouseCoordinates& GetCursorPosition();
+        static MouseCoordinates GetNormalisedMousePosition();
     private:
-        static GLFWwindow* windowPtr;
+        static SnekVk::Window* windowPtr;
+        static bool movedLastFrame;
+        static MouseCoordinates currentMouseCoordinates;
+        static std::map<int, int> keyMap;
+
+        static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+
 };

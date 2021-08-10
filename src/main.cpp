@@ -118,13 +118,17 @@ std::vector<SnekVk::Model::Vertex> GenerateCircleVertices(u32 numSides)
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
+    static auto oldMousePos = Input::GetCursorPosition();
+    auto mousePos = Input::GetNormalisedMousePosition();
+
     glm::vec3 rotate{0};
     float lookSpeed = 2.f;
 
-    if (Input::IsKeyDown(KEY_RIGHT)) rotate.y += 1;
-    if (Input::IsKeyDown(KEY_LEFT)) rotate.y -= 1;
-    if (Input::IsKeyDown(KEY_UP)) rotate.x += 1;
-    if (Input::IsKeyDown(KEY_DOWN)) rotate.x -= 1;
+    float differenceX = mousePos.x - oldMousePos.x;
+    float differenceY = oldMousePos.y - mousePos.y;
+
+    rotate.y += differenceX;
+    rotate.x += differenceY;
 
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {
@@ -153,6 +157,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     {
         viewerObject.SetPosition(viewerObject.GetPosition() + lookSpeed * deltaTime * glm::normalize(moveDir));
     }
+
+    oldMousePos = mousePos;
 }
 
 int main() 
@@ -165,7 +171,9 @@ int main()
     
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
-    Input::SetWindowPointer(window.GetGlfwWindow());
+    window.DisableCursor();
+
+    Input::SetWindowPointer(&window);
 
     SnekVk::Renderer renderer(window);
 
@@ -198,20 +206,31 @@ int main()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
-    while(!window.WindowShouldClose()) {
+    bool inputEnabled = true;
 
+    while(!window.WindowShouldClose()) {
+        
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
 
         window.Update();
 
+        if (Input::IsKeyJustPressed(KEY_ESCAPE)) 
+        {
+            inputEnabled = !inputEnabled;
+            window.ToggleCursor(inputEnabled);
+        }
+
         float aspect = renderer.GetAspectRatio();
 
-        MoveCameraXZ(frameTime, cameraObject);
-        camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
-
         camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+
+        if (inputEnabled)
+        {
+            MoveCameraXZ(frameTime, cameraObject);
+            camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
+        }
 
         auto projectionView = camera.GetProjection() * camera.GetView();
 
