@@ -4,9 +4,11 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Model/Model.h"
 #include "Components/Shape.h"
+#include "Input/Input.h"
 
 #include <glm/gtc/constants.hpp>
 #include <vector>
+#include <chrono>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -114,6 +116,45 @@ std::vector<SnekVk::Model::Vertex> GenerateCircleVertices(u32 numSides)
     return vertices;
 }
 
+void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
+{
+    glm::vec3 rotate{0};
+    float lookSpeed = 2.f;
+
+    if (Input::IsKeyDown(KEY_RIGHT)) rotate.y += 1;
+    if (Input::IsKeyDown(KEY_LEFT)) rotate.y -= 1;
+    if (Input::IsKeyDown(KEY_UP)) rotate.x += 1;
+    if (Input::IsKeyDown(KEY_DOWN)) rotate.x -= 1;
+
+    if (glm::dot(rotate, rotate) > glm::epsilon<float>())
+    {
+        viewerObject.SetRotation(viewerObject.GetRotation() + lookSpeed * deltaTime * glm::normalize(rotate));
+    }
+
+    // Limit the pitch values to avoid objects rotating upside-down.
+    viewerObject.SetRotationX(glm::clamp(viewerObject.GetRotation().x, -1.5f, 1.5f));
+    viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
+
+    float yaw = viewerObject.GetRotation().y;
+    const glm::vec3 forwardDir = {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const glm::vec3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
+    const glm::vec3 upDir{0.f, -1.f, 0.f};
+
+    glm::vec3 moveDir{0.f};
+    if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
+    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
+    if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
+    if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
+
+    if (Input::IsKeyDown(KEY_Q)) moveDir += upDir;
+    if (Input::IsKeyDown(KEY_E)) moveDir -= upDir;
+
+    if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
+    {
+        viewerObject.SetPosition(viewerObject.GetPosition() + lookSpeed * deltaTime * glm::normalize(moveDir));
+    }
+}
+
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
@@ -124,11 +165,14 @@ int main()
     
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
+    Input::SetWindowPointer(window.GetGlfwWindow());
+
     SnekVk::Renderer renderer(window);
 
     SnekVk::Camera camera;
 
-    //camera.SetViewDirection(glm::vec3{0.f}, glm::vec3{.5f, 0.f, 1.f});
+    Components::Shape cameraObject;
+
     camera.SetViewTarget(glm::vec3(-1.f,-2.f,2.f), glm::vec3(0.f, 0.f, 2.5f));
 
     // Generate models
@@ -152,13 +196,21 @@ int main()
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
+    auto currentTime = std::chrono::high_resolution_clock::now();
+
     while(!window.WindowShouldClose()) {
+
+        auto newTime = std::chrono::high_resolution_clock::now();
+        float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+        currentTime = newTime;
 
         window.Update();
 
         float aspect = renderer.GetAspectRatio();
 
-        //camera.SetOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+        MoveCameraXZ(frameTime, cameraObject);
+        camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
+
         camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
 
         auto projectionView = camera.GetProjection() * camera.GetView();
@@ -167,9 +219,6 @@ int main()
         {
             for (auto& shape : shapes)
             {
-                shape.SetRotationY(glm::mod(shape.GetRotation().y + 0.01f, glm::two_pi<float>()));
-                shape.SetRotationX(glm::mod(shape.GetRotation().x + 0.005f, glm::two_pi<float>()));
-
                 renderer.DrawModel(shape.GetModel(), projectionView * shape.GetTransform(), shape.GetColor());
             }
             renderer.EndFrame();
