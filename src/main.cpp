@@ -36,10 +36,20 @@ SnekVk::Model::Vertex squareVerts[] = {
     {{0.5f, -0.5f, 0.f}},
     {{-0.5f, -0.5f, 0.f}},
     {{-0.5f, 0.5f, 0.f}},
+
+    // Movement on any axis requires offsetting 
+    // each vertex by the desired offset. 
+    // i.e: Moving this square right requires all 
+    // x vertices to be incremented by 1.
+    {{3.f, 0.f, 0.f}, {1.f, 0.f, 0.f}},
+    {{3.f, -2.f, 0.f}, {1.f, 0.f, 0.f}},
+    {{1.f, -2.f, 0.f}, {1.f, 0.f, 0.f}},
+    {{1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}},
 };
 
 u32 squareIndices[] = {
-    0, 1, 3, 1, 2, 3
+    0, 1, 3, 1, 2, 3,
+    4, 5, 7, 5, 6, 7
 };
 
 SnekVk::Model::Vertex cubeVerts[] =  {
@@ -145,13 +155,11 @@ int main()
 
     Components::Shape cameraObject;
 
-    camera.SetViewTarget(glm::vec3(-1.f,-2.f,2.f), glm::vec3(0.f, 0.f, 2.5f));
-
     // Generate models
 
     SnekVk::Model triangleModel(renderer.GetDevice(), { triangleVerts, 3, nullptr, 0});
 
-    SnekVk::Model squareModel(renderer.GetDevice(), {squareVerts, 4, squareIndices, 6});
+    SnekVk::Model squareModel(renderer.GetDevice(), {squareVerts, 8, squareIndices, 12});
 
     SnekVk::Model cubeModel(renderer.GetDevice(), {cubeVerts, 24, cubeIndices, 36});
 
@@ -159,7 +167,7 @@ int main()
 
     std::vector<Components::Shape> shapes = 
     {
-        Components::Shape(&cubeModel)
+        Components::Shape(&squareModel)
     };
 
     shapes[0].SetPosition({0.f, 0.f, 2.5f});
