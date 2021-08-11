@@ -39,9 +39,6 @@ namespace SnekVk {
 	}
 
 	VulkanDevice::~VulkanDevice() 
-	{}
-
-	void VulkanDevice::DestroyDevice()
 	{
 		// When the device goes out of scope, all vulkan structs must be 
 		// de-allocated in reverse order of how they were created. 
@@ -268,10 +265,8 @@ namespace SnekVk {
 		bufferInfo.usage = usage;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-		if (vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to create vertex buffer!");
-		}
+		SNEK_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) == VK_SUCCESS,
+			"failed to create vertex buffer!");
 
 		VkMemoryRequirements memRequirements;
 		vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
@@ -281,10 +276,8 @@ namespace SnekVk {
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		if (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to allocate vertex buffer memory!");
-		}
+		SNEK_ASSERT (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) == VK_SUCCESS,
+			"failed to allocate vertex buffer memory!");
 
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);
 	}

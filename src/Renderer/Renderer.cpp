@@ -3,7 +3,7 @@
 namespace SnekVk
 {
     Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
-    VulkanDevice Renderer::device;
+    VulkanDevice* Renderer::deviceInstance = nullptr;
 
     Renderer::Renderer(Window& window) : 
         window{window},
@@ -27,12 +27,6 @@ namespace SnekVk
     {
         std::cout << "Destroying renderer" << std::endl;
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
-        std::cout << "Destroying Pipeline" << std::endl;
-        graphicsPipeline.ClearPipeline();
-        std::cout << "Destroying SwapChain" << std::endl;
-        swapChain.DestroySwapChain();
-        std::cout << "Destroying Device" << std::endl;
-        device.DestroyDevice();
     }
 
     void Renderer::CreateCommandBuffers()

@@ -37,7 +37,6 @@ namespace SnekVk {
 		VulkanDevice();
 
 		~VulkanDevice();
-		void DestroyDevice();
 
 		// Deleting move and copy constructors
 		VulkanDevice(const VulkanDevice &) = delete;

@@ -16,7 +16,9 @@ namespace SnekVk
 
             void DestroyRenderer();
 
-            static VulkanDevice& GetDevice() { return device; }
+            static VulkanDevice* GetDevicePtr() { return deviceInstance; }
+
+            VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
             VkRenderPass GetSwapChanRenderPass() { return swapChain.GetRenderPass()->GetRenderPass(); }
 
@@ -48,6 +50,7 @@ namespace SnekVk
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
             
+            static VulkanDevice* deviceInstance;
             static Utils::Array<VkCommandBuffer> commandBuffers;
             
             VkClearColorValue clearValue {0, 0, 0, 1.f};
@@ -63,9 +66,10 @@ namespace SnekVk
 
             SnekVk::Window& window;
             
-            static VulkanDevice device;
+            VulkanDevice device;
             SwapChain swapChain;
 
+            // Graphics pipeline-specific data
             VkPipelineLayout pipelineLayout{nullptr};
             Pipeline graphicsPipeline;
 
