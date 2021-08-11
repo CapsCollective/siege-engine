@@ -12,6 +12,8 @@ namespace SnekVk
     {
         device.SetWindow(&window);
         swapChain.SetWindowExtents(window.GetExtent());
+
+        if (deviceInstance == nullptr) deviceInstance = &device;
         
         CreatePipelineLayout();
         graphicsPipeline.RecreatePipeline(
