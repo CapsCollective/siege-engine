@@ -105,6 +105,7 @@ namespace SnekVk
         void CreateIndexBuffer(const u32* indices);
         
         VulkanDevice& device;
+        
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         u32 vertexCount;

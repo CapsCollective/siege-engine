@@ -149,11 +149,11 @@ int main()
 
     // Generate models
 
-    SnekVk::Model triangleModel(SnekVk::Renderer::GetDevice(), { triangleVerts, 3, nullptr, 0});
+    SnekVk::Model triangleModel(renderer.GetDevice(), { triangleVerts, 3, nullptr, 0});
 
-    SnekVk::Model squareModel(SnekVk::Renderer::GetDevice(), {squareVerts, 4, squareIndices, 6});
+    SnekVk::Model squareModel(renderer.GetDevice(), {squareVerts, 4, squareIndices, 6});
 
-    SnekVk::Model cubeModel(SnekVk::Renderer::GetDevice(), {cubeVerts, 24, cubeIndices, 36});
+    SnekVk::Model cubeModel(renderer.GetDevice(), {cubeVerts, 24, cubeIndices, 36});
 
     // Create shapes for use
 
