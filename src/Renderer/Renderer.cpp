@@ -35,11 +35,6 @@ namespace SnekVk
         device.DestroyDevice();
     }
 
-    Model Renderer::CreateModel(Model::Vertex* vertices, u32 vertexCount)
-    {
-        return Model(device, vertices, vertexCount);
-    }
-
     void Renderer::CreateCommandBuffers()
     {
         commandBuffers = Utils::Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);

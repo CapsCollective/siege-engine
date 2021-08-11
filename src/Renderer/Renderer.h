@@ -11,8 +11,6 @@ namespace SnekVk
     class Renderer
     {
         public:
-            Model CreateModel(Model::Vertex* vertices, u32 vertexCount);
-
             Renderer(Window& window);
             ~Renderer();
 
