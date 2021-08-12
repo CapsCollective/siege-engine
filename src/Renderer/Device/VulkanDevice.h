@@ -44,6 +44,8 @@ namespace SnekVk {
 		VulkanDevice(VulkanDevice &&) = delete;
 		VulkanDevice& operator=(VulkanDevice &&) = delete;
 
+		static VulkanDevice* GetDeviceInstance() { return vulkanDeviceInstance; }
+
 		void SetWindow(Window* window);
 		
 		/**
@@ -260,10 +262,14 @@ namespace SnekVk {
 		 **/
 		void CreateCommandPool();
 
+		static void SetVulkanDeviceInstance(VulkanDevice* device) { vulkanDeviceInstance = device; }
+
+		static VulkanDevice* vulkanDeviceInstance;
+
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		Window *window {nullptr};
+		Window* window {nullptr};
 		VkCommandPool commandPool;
 
 		VkDevice device;
