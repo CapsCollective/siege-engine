@@ -7,6 +7,8 @@
 
 namespace SnekVk {
 
+	VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
+
 	VulkanDevice::VulkanDevice(Window* window) : window{window} 
 	{
 		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
@@ -17,6 +19,8 @@ namespace SnekVk {
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateCommandPool();
+
+		SetVulkanDeviceInstance(this);
 	}
 
 	VulkanDevice::VulkanDevice()
@@ -36,6 +40,8 @@ namespace SnekVk {
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateCommandPool();
+
+		SetVulkanDeviceInstance(this);
 	}
 
 	VulkanDevice::~VulkanDevice() 
@@ -282,7 +288,8 @@ namespace SnekVk {
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);
 	}
 
-	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() {
+	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() 
+	{
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
