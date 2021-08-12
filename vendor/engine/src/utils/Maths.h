@@ -195,4 +195,49 @@ struct RayCast
     Vec3 direction;
 };
 
+struct Colour
+{
+    // Public constants
+
+    static const Colour Red;
+
+    static const Colour Green;
+
+    static const Colour Blue;
+
+    // 'Structors
+
+    Colour() :
+        Colour(0, 0, 0, 0)
+    {}
+
+    Colour(int r, int g, int b, int a) :
+        r(r),
+        g(g),
+        b(b),
+        a(a)
+    {}
+
+    // Raylib conversions
+
+    Colour(Color color) :
+        Colour(color.r, color.g, color.b, color.a)
+    {}
+
+    operator Color() const
+    {
+        return {(unsigned char) r,
+                (unsigned char) g,
+                (unsigned char) b,
+                (unsigned char) a};
+    }
+
+    // Public members
+
+    int r;
+    int g;
+    int b;
+    int a;
+};
+
 #endif //A_DARK_DISCOMFORT_MATHS_H
