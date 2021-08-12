@@ -5,6 +5,7 @@
 #include "Renderer/Model/Model.h"
 #include "Components/Shape.h"
 #include "Input/Input.h"
+#include "Utils/Math.h"
 
 #include <glm/gtc/constants.hpp>
 #include <vector>
@@ -113,7 +114,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {
-        viewerObject.SetRotation(viewerObject.GetRotation() + lookSpeed * deltaTime * glm::normalize(rotate));
+        glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
+        viewerObject.SetRotation(Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -136,7 +138,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
     {
-        viewerObject.SetPosition(viewerObject.GetPosition() + lookSpeed * deltaTime * glm::normalize(moveDir));
+        glm::vec3 newMove = viewerObject.GetPosition() + lookSpeed * glm::normalize(moveDir);
+        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;
@@ -160,7 +163,7 @@ int main()
 
     // Generate models
 
-    SnekVk::Model triangleModel({ triangleVerts, 3, nullptr, 0});
+    SnekVk::Model triangleModel({triangleVerts, 3, nullptr, 0});
 
     SnekVk::Model squareModel({squareVerts, 4, squareIndices, 6});
 

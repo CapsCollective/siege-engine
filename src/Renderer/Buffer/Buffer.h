@@ -29,7 +29,7 @@ namespace SnekVk::Buffer
 		VkDeviceMemory &bufferMemory);
 
     /**
-     * Returns a bitmask value representing the memory typre required to allocate GPU memory. 
+     * Returns a bitmask value representing the memory type required to allocate GPU memory.
      * Different rendering operations require different memory types. These are typically
      * differentiated using a bitmask. This functions throws an exception if the required 
      * memory type is unavailable.
