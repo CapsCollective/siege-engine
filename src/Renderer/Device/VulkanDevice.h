@@ -122,24 +122,6 @@ namespace SnekVk {
 
 		// Buffer Helper Functions
 
-		/**
-		 * Creates a memory buffer for transferring data to our GPU. Allocates resulting data to the 'buffer'
-		 * and 'bufferMemory' variables respectively. 
-		 * 
-		 * @param size - specifies the size of the buffer.
-		 * @param usage - specifies what the buffer will be used for (i.e: vertex definitions).
-		 * @param properties - specifies the the properties the buffer should have.
-		 * @param buffer - the buffer that the function should write data to.
-		 * @param bufferMemory - the buffer memory data the function should write data to.
-		 **/
-		void CreateBuffer(
-			VkDeviceSize size,
-			VkBufferUsageFlags usage,
-			VkMemoryPropertyFlags properties,
-			VkBuffer &buffer,
-			VkDeviceMemory &bufferMemory);
-
-
 		/** 
 		 * Prepares a command buffer for writing.
 		 * @returns - a command buffer that's been activated.

@@ -258,36 +258,6 @@ namespace SnekVk {
 		SNEK_ASSERT(false, "Failed to find suitable memory type!");
 	}
 
-	void VulkanDevice::CreateBuffer(
-		VkDeviceSize size,
-		VkBufferUsageFlags usage,
-		VkMemoryPropertyFlags properties,
-		VkBuffer &buffer,
-		VkDeviceMemory &bufferMemory) 
-	{
-		VkBufferCreateInfo bufferInfo{};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = size;
-		bufferInfo.usage = usage;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		SNEK_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) == VK_SUCCESS,
-			"failed to create vertex buffer!");
-
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
-
-		SNEK_ASSERT (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) == VK_SUCCESS,
-			"failed to allocate vertex buffer memory!");
-
-  		vkBindBufferMemory(device, buffer, bufferMemory, 0);
-	}
-
 	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() 
 	{
 		VkCommandBufferAllocateInfo allocInfo{};
