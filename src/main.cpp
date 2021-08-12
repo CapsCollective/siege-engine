@@ -32,24 +32,27 @@ SnekVk::Model::Vertex triangleVerts[] = {
 };
 
 SnekVk::Model::Vertex squareVerts[] = {
-    {{0.5f, 0.5f, 0.f}},
-    {{0.5f, -0.5f, 0.f}},
-    {{-0.5f, -0.5f, 0.f}},
-    {{-0.5f, 0.5f, 0.f}},
+    {{0.5f, 0.5f, 0.f}}, // top right
+    {{0.5f, -0.5f, 0.f}}, // bottom right
+    {{-0.5f, -0.5f, 0.f}}, // bottom left
+    {{-0.5f, 0.5f, 0.f}}, // top left
 
     // Movement on any axis requires offsetting 
     // each vertex by the desired offset. 
     // i.e: Moving this square right requires all 
     // x vertices to be incremented by 1.
-    {{3.f, 0.f, 0.f}, {1.f, 0.f, 0.f}},
-    {{3.f, -2.f, 0.f}, {1.f, 0.f, 0.f}},
-    {{1.f, -2.f, 0.f}, {1.f, 0.f, 0.f}},
-    {{1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}},
+    // {{3.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top right
+    // {{3.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
+    // {{1.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
+    // {{1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
+// Indices would be incremented by unique index count. 
+// I.e: indices for second square would be index + size. 
+// (0 = 4, 1 = 5...etc).
 u32 squareIndices[] = {
     0, 1, 3, 1, 2, 3,
-    4, 5, 7, 5, 6, 7
+    // 4, 5, 7, 5, 6, 7
 };
 
 SnekVk::Model::Vertex cubeVerts[] =  {
@@ -118,7 +121,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
 
     float yaw = viewerObject.GetRotation().y;
-    const glm::vec3 forwardDir = {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const glm::vec3 forwardDir{glm::sin(yaw), 0.f, glm::cos(yaw)};
     const glm::vec3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
     const glm::vec3 upDir{0.f, -1.f, 0.f};
 
@@ -157,17 +160,17 @@ int main()
 
     // Generate models
 
-    SnekVk::Model triangleModel(renderer.GetDevice(), { triangleVerts, 3, nullptr, 0});
+    SnekVk::Model triangleModel({ triangleVerts, 3, nullptr, 0});
 
-    SnekVk::Model squareModel(renderer.GetDevice(), {squareVerts, 8, squareIndices, 12});
+    SnekVk::Model squareModel({squareVerts, 4, squareIndices, 6});
 
-    SnekVk::Model cubeModel(renderer.GetDevice(), {cubeVerts, 24, cubeIndices, 36});
+    SnekVk::Model cubeModel({cubeVerts, 24, cubeIndices, 36});
 
     // Create shapes for use
 
     std::vector<Components::Shape> shapes = 
     {
-        Components::Shape(&squareModel)
+        Components::Shape(&cubeModel)
     };
 
     shapes[0].SetPosition({0.f, 0.f, 2.5f});

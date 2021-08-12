@@ -4,33 +4,29 @@
 
 namespace SnekVk
 {
-    Model::Model(VulkanDevice& device, const Data& configData)
-        : device{device}, vertexCount{configData.vertexCount}, indexCount{configData.indexCount}
+    Model::Model(const Data& configData)
+        : vertexCount{configData.vertexCount}, indexCount{configData.indexCount}
     {
         CreateVertexBuffers(configData.vertices);
         CreateIndexBuffer(configData.indices);
     }
 
-    Model::Model(VulkanDevice& device) : device{device} {}
+    Model::Model() {}
 
     // Destroy the vertex buffer and free the memory
     Model::~Model() 
     {
         std::cout << "Destroying Model" << std::endl;
-        vkDestroyBuffer(device.Device(), vertexBuffer, nullptr);
-        vkFreeMemory(device.Device(), vertexBufferMemory, nullptr);
+        Buffer::DestroyBuffer(vertexBuffer);
 
-        if (hasIndexBuffer)
-        {
-            vkDestroyBuffer(device.Device(), indexBuffer, nullptr);
-            vkFreeMemory(device.Device(), indexBufferMemory, nullptr);
-        }
+        if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
     }
 
     void Model::DestroyModel()
     {
-        vkDestroyBuffer(device.Device(), vertexBuffer, nullptr);
-        vkFreeMemory(device.Device(), vertexBufferMemory, nullptr);
+        Buffer::DestroyBuffer(vertexBuffer);
+
+        if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
     }
 
     void Model::CreateVertexBuffers(const Vertex* vertices)
@@ -39,39 +35,33 @@ namespace SnekVk
 
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingMemory;
+        Buffer::Buffer stagingBuffer;
 
-        device.CreateBuffer(
+        Buffer::CreateBuffer(
             bufferSize,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             // specifies that data is accessible on the CPU.
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
             // Ensures that CPU and GPU memory are consistent across both devices.
             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingMemory
-        );
+            OUT stagingBuffer.buffer,
+            OUT stagingBuffer.bufferMemory);
 
-        // Map the vertex buffer to GPU memory
-        void* data;
-        vkMapMemory(device.Device(), stagingMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices, bufferSize);
-        vkUnmapMemory(device.Device(), stagingMemory);
+        // Copy the data in the staging buffer to the index buffer
+        Buffer::CopyData<Vertex>(stagingBuffer, bufferSize, vertices);
 
-        device.CreateBuffer(
+        Buffer::CreateBuffer(
             bufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             // specifies that data is accessible on the CPU.
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            vertexBuffer,
-            vertexBufferMemory
+            OUT vertexBuffer.buffer,
+            OUT vertexBuffer.bufferMemory
         );
 
-        device.CopyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+        Buffer::CopyBuffer(stagingBuffer.buffer, vertexBuffer.buffer, bufferSize);
 
-        vkDestroyBuffer(device.Device(), stagingBuffer, nullptr);
-        vkFreeMemory(device.Device(), stagingMemory, nullptr);
+        Buffer::DestroyBuffer(stagingBuffer);
     }
 
     void Model::CreateIndexBuffer(const u32* indices)
@@ -82,38 +72,33 @@ namespace SnekVk
 
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingMemory;
+        Buffer::Buffer stagingBuffer;
 
-        device.CreateBuffer(
+        Buffer::CreateBuffer(
             bufferSize,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             // specifies that data is accessible on the CPU.
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
             // Ensures that CPU and GPU memory are consistent across both devices.
             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingMemory
+            OUT stagingBuffer.buffer,
+            OUT stagingBuffer.bufferMemory
         );
 
-        void* data;
-        vkMapMemory(device.Device(), stagingMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices, bufferSize);
-        vkUnmapMemory(device.Device(), stagingMemory);
+        Buffer::CopyData<u32>(stagingBuffer, bufferSize, indices);
 
-        device.CreateBuffer(
+        Buffer::CreateBuffer(
             bufferSize,
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             // specifies that data is accessible on the CPU.
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            indexBuffer,
-            indexBufferMemory
+            indexBuffer.buffer,
+            indexBuffer.bufferMemory
         );
 
-        device.CopyBuffer(stagingBuffer, indexBuffer, bufferSize);
+        Buffer::CopyBuffer(stagingBuffer.buffer, indexBuffer.buffer, bufferSize);
 
-        vkDestroyBuffer(device.Device(), stagingBuffer, nullptr);
-        vkFreeMemory(device.Device(), stagingMemory, nullptr);
+        Buffer::DestroyBuffer(stagingBuffer);
     }
 
     void Model::SetVertices(const Vertex* vertices, u32 vertexCount)
@@ -123,7 +108,7 @@ namespace SnekVk
 
     void Model::Bind(VkCommandBuffer commandBuffer)
     {
-        VkBuffer buffers[] = {vertexBuffer};
+        VkBuffer buffers[] = {vertexBuffer.buffer};
         VkDeviceSize offsets[] = {0};
         /**
          * BindVertexBuffer allows us to bind the type of buffers we want to send to the GPU. 
@@ -136,7 +121,7 @@ namespace SnekVk
          */
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
-        if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     void Model::Draw(VkCommandBuffer commandBuffer)
