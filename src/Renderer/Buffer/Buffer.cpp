@@ -18,7 +18,8 @@ namespace SnekVk::Buffer
 		bufferInfo.usage = usage;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        VkDevice device = VulkanDevice::GetDeviceInstance()->Device();
+        auto deviceInstance = VulkanDevice::GetDeviceInstance();
+        VkDevice device = deviceInstance->Device();
 
 		SNEK_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) == VK_SUCCESS,
 			"failed to create vertex buffer!");
@@ -29,18 +30,13 @@ namespace SnekVk::Buffer
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = deviceInstance->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		SNEK_ASSERT (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) == VK_SUCCESS,
 			"failed to allocate vertex buffer memory!");
 
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);
     };
-
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
-	{
-        return VulkanDevice::GetDeviceInstance()->FindMemoryType(typeFilter, properties);
-	}
 
     void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
     {
