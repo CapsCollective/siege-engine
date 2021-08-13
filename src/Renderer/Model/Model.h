@@ -1,10 +1,15 @@
 #pragma once
 
 #include "../Buffer/Buffer.h"
+#include "../Utils/Hash.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
+
+#include <unordered_map>
 
 namespace SnekVk 
 {
@@ -30,6 +35,8 @@ namespace SnekVk
         {
             glm::vec3 position;
             glm::vec3 color;
+            glm::vec3 normal;
+            glm::vec2 uv;
 
             /**
              * @brief Get a list of binding colorDescriptions for this Vertex. A binding description details
@@ -46,14 +53,19 @@ namespace SnekVk
              * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
             static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
+
+            bool operator==(const Vertex& other) const
+            {
+                return position == other.position && color == other.color && normal == other.normal && uv == other.uv;
+            };
         };
 
         struct Data 
         {
-            Vertex* vertices;
-            u32 vertexCount;
-            u32* indices;
-            u32 indexCount;
+            Vertex* vertices {nullptr};
+            u32 vertexCount {0};
+            u32* indices {nullptr};
+            u32 indexCount {0};
         };
 
         // 'Structors
@@ -64,6 +76,7 @@ namespace SnekVk
          * @param configData a struct specifying the config information required to create a model
          */
         Model(const Data& configData);
+        Model(const char* filePath);
         Model();
         ~Model();
 
@@ -102,6 +115,8 @@ namespace SnekVk
          */
         void CreateVertexBuffers(const Vertex* vertices);
         void CreateIndexBuffer(const u32* indices);
+
+        void LoadModelFromFile(Data& builder, const char* filePath);
 
         Buffer::Buffer vertexBuffer;
         u32 vertexCount;

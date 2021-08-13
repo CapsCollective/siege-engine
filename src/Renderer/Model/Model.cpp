@@ -1,6 +1,23 @@
 #include "Model.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 #include <cstring>
+
+namespace std 
+{
+    template<>
+    struct hash<SnekVk::Model::Vertex>
+    {
+        size_t operator()(const SnekVk::Model::Vertex &vertex) const 
+        {
+            size_t seed = 0;
+            SnekVk::Utils::HashCombine(seed, vertex.color, vertex.normal, vertex.uv);
+            return seed;
+        };
+    };
+}
 
 namespace SnekVk
 {
@@ -9,6 +26,22 @@ namespace SnekVk
     {
         CreateVertexBuffers(configData.vertices);
         CreateIndexBuffer(configData.indices);
+    }
+
+    Model::Model(const char* filePath)
+    {
+        Data data{};
+        LoadModelFromFile(data, filePath);
+        std::cout << "Vertex Count: " << data.vertexCount << std::endl;
+
+        vertexCount = data.vertexCount;
+        indexCount = data.indexCount;
+
+        CreateVertexBuffers(data.vertices);
+        CreateIndexBuffer(data.indices);
+        
+        delete [] data.vertices;
+        delete [] data.indices;
     }
 
     Model::Model() {}
@@ -99,6 +132,84 @@ namespace SnekVk
         Buffer::CopyBuffer(stagingBuffer.buffer, indexBuffer.buffer, bufferSize);
 
         Buffer::DestroyBuffer(stagingBuffer);
+    }
+
+    void Model::LoadModelFromFile(Data& data, const char* filePath)
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        SNEK_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
+            warn + err);
+        
+        std::vector<Vertex> objVertices;
+        std::vector<u32> objIndices;
+        std::unordered_map<Vertex, u32> uniqueVertices{};
+
+        for (const auto& shape : shapes)
+        {
+            for (const auto& index : shape.mesh.indices)
+            {
+                Vertex vertex{};
+
+                if (index.vertex_index >= 0)
+                {
+                    vertex.position = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                    };
+                }
+
+                auto colorIndex = 3 * index.vertex_index + 2;
+
+                if (colorIndex < attrib.colors.size())
+                {
+                    vertex.color = 
+                    {
+                        attrib.colors[colorIndex - 2],
+                        attrib.colors[colorIndex - 1],
+                        attrib.colors[colorIndex - 0]
+                    };
+                } else vertex.color = {1.f, 1.f, 1.f};
+
+                if (index.normal_index >= 0)
+                {
+                    vertex.normal = {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
+                    };
+                }
+
+                if (index.texcoord_index >= 0)
+                {
+                    std::cout << "texccord: " << index.texcoord_index << std::endl;
+                    vertex.uv = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        attrib.texcoords[2 * index.texcoord_index + 1]
+                    };
+                }
+
+                if (uniqueVertices.count(vertex) == 0)
+                {
+                    uniqueVertices[vertex] = static_cast<u32>(objVertices.size());
+                    objVertices.push_back(vertex);
+                }
+                objIndices.push_back(uniqueVertices[vertex]);
+            }
+        }
+
+        data.vertices = new Vertex[objVertices.size()];
+        data.indices = new u32[objIndices.size()];
+
+        memcpy(data.vertices, objVertices.data(), sizeof(Vertex) * objVertices.size());
+        memcpy(data.indices, objIndices.data(), sizeof(u32) * objIndices.size());
+
+        data.vertexCount = static_cast<u32>(objVertices.size());
+        data.indexCount = static_cast<u32>(objIndices.size());
     }
 
     void Model::SetVertices(const Vertex* vertices, u32 vertexCount)
