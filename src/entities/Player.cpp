@@ -11,7 +11,7 @@ void Player::OnStart()
     // Register the entity with systems
     std::string modelPath = "assets/models/cube/cube.obj";
     std::string texturePath = "assets/models/cube/cube.png";
-    RenderSystem::Add(this, modelPath, texturePath);
+    RenderSystem::Add(this, {modelPath, texturePath});
 }
 
 void Player::OnUpdate()
@@ -23,6 +23,7 @@ void Player::OnUpdate()
             (float)(-IsKeyDown(KEY_UP) + IsKeyDown(KEY_DOWN)),
     };
 
+
     // Normalise and apply move to velocity
     velocity += move.Normalise() * speed * GetFrameTime();
 
@@ -31,14 +32,21 @@ void Player::OnUpdate()
 
     // Set the resulting attempted move's velocity to the object's position
     velocity = CollisionSystem::MoveAndSlide(GetBoundingBox(), velocity);
-    position += velocity;
+    transform.SetPosition(transform.GetPosition() + velocity);
 
     // Dampen velocity
     velocity = velocity * 0.9f;
 }
 
+void Player::OnDestroy()
+{
+    // Deregister the entity from systems before freeing it
+    RenderSystem::Remove(this);
+}
+
 BoundedBox Player::GetBoundingBox() const
 {
+    Vec3 position = transform.GetPosition();
     return BoundedBox {
         position - Vec3::One,
         position + Vec3::One,
@@ -47,19 +55,12 @@ BoundedBox Player::GetBoundingBox() const
 
 Entity* Player::Clone() const
 {
-    return new Player(position, rotation);
-}
-
-void Player::QueueFree()
-{
-    // Deregister the entity from systems before freeing it
-    RenderSystem::Remove(this);
-    Entity::QueueFree();
+    return new Player(transform);
 }
 
 static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
 {
-    return new Player(data.position, data.rotation);
+    return new Player({data.position, data.rotation});
 }
 
 REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_NAME, nullptr, Deserialise);

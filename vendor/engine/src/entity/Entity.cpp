@@ -1,3 +1,4 @@
+#include "../utils/Logging.h"
 #include "EntityStorage.h"
 #include "Entity.h"
 #include <utility>
@@ -6,9 +7,19 @@
 // Static member initialisation
 const std::string Entity::ENTITY_NAME("Entity");
 
+Entity::Entity(const std::string& name, const Xform& transform, int zIndex) :
+    transform(transform),
+    name(name),
+    index(GenerationalIndex()),
+    zIndex(zIndex)
+{
+    CC_LOG_INFO("Registered {} at ({})", GetName(), GetIndex());
+}
+
+
 BoundedBox Entity::GetBoundingBox() const
 {
-    return BoundedBox();
+    return {};
 }
 
 Entity* Entity::Clone() const
@@ -18,6 +29,8 @@ Entity* Entity::Clone() const
 
 void Entity::QueueFree()
 {
+    OnDestroy();
+    CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex());
     EntityStorage::QueueFree(this);
 }
 
@@ -36,19 +49,9 @@ void Entity::SetIndex(GenerationalIndex idx)
     index = idx;
 }
 
-const Vec3& Entity::GetPosition() const
+const Xform& Entity::GetTransform() const
 {
-    return position;
-}
-
-float Entity::GetRotation() const
-{
-    return rotation;
-}
-
-const Vec3 &Entity::GetScale() const
-{
-    return scale;
+    return transform;
 }
 
 int Entity::GetZIndex() const
@@ -56,19 +59,34 @@ int Entity::GetZIndex() const
     return zIndex;
 }
 
-void Entity::SetPosition(Vec3 newPosition)
+const Vec3& Entity::GetPosition() const
 {
-    position = newPosition;
+    return transform.GetPosition();
 }
 
-void Entity::SetRotation(float newRotation)
+float Entity::GetRotation() const
 {
-    rotation = fmod(newRotation, 360.f);
+    return transform.GetRotation();
 }
 
-void Entity::SetScale(Vec3 newScale)
+const Vec3& Entity::GetScale() const
 {
-    scale = newScale;
+    return transform.GetScale();
+}
+
+void Entity::SetPosition(const Vec3& position)
+{
+    transform.SetPosition(position);
+}
+
+void Entity::SetRotation(float rotation)
+{
+    transform.SetRotation(fmod(rotation, 360.f));
+}
+
+void Entity::SetScale(const Vec3& scale)
+{
+    transform.SetScale(scale);
 }
 
 void Entity::SetZIndex(int idx)

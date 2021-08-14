@@ -133,6 +133,65 @@ struct Vec3
     float z;
 };
 
+struct Xform
+{
+public:
+
+    Xform() :
+        Xform(Vec3::Zero)
+    {}
+
+    Xform(Vec3 position) :
+        Xform(position, 0.f)
+    {}
+
+    Xform(Vec3 position, float rotation) :
+        Xform(position, rotation, Vec3::One)
+    {}
+
+    Xform(Vec3 position, float rotation, Vec3 scale) :
+        position(position),
+        rotation(rotation),
+        scale(scale)
+    {}
+
+    const Vec3& GetPosition() const
+    {
+        return position;
+    }
+
+    float GetRotation() const
+    {
+        return rotation;
+    }
+
+    const Vec3& GetScale() const
+    {
+        return scale;
+    }
+
+    void SetPosition(const Vec3& newPosition)
+    {
+        position = newPosition;
+    }
+
+    void SetRotation(float newRotation)
+    {
+        rotation = fmod(newRotation, 360.f);
+    }
+
+    void SetScale(const Vec3& newScale)
+    {
+        scale = newScale;
+    }
+
+private:
+
+    Vec3 position;
+    float rotation;
+    Vec3 scale;
+};
+
 struct BoundedBox
 {
     // 'Structors

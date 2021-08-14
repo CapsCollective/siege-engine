@@ -34,7 +34,7 @@ public:
      *               entity as a string
      */
     Entity(const std::string& name) :
-        Entity(name, Vec3::Zero, 0.f)
+        Entity(name, {Vec3::Zero, 0.f})
     {};
 
     /**
@@ -42,19 +42,11 @@ public:
      * generational index to zero
      * @param name - a const reference to the name of the
      *               entity as a string
-     * @param position - the initial position of the entity
-     * @param rotation - the initial rotation of the entity
+     * @param transform - the initial transition of the entity
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const std::string& name, Vec3 position, float rotation, Vec3 scale = Vec3::One, int zIndex = 0) :
-        position(position),
-        rotation(rotation),
-        scale(scale),
-        name(name),
-        index(GenerationalIndex()),
-        zIndex(zIndex)
-    {};
+    Entity(const std::string& name, const Xform& transform, int zIndex = 0);
 
     virtual ~Entity() = default;
 
@@ -73,22 +65,16 @@ public:
     virtual void OnUpdate() {};
 
     /**
-    * A virtual update method to be overridden for entity
-    * drawing instructions (runs after game logic)
-    */
-    virtual void OnDraw() {};
+     * A virtual destroy method to be overridden for entity
+     * logic (runs before freeing)
+     */
+    virtual void OnDestroy() {};
 
     /**
      * A virtual update method to be overridden for 2D
      * drawing instructions
      */
     virtual void OnDraw2D() {};
-
-    /**
-     * Queues the entity to be freed from storage safely at
-     * the end of a frame
-     */
-    virtual void QueueFree();
 
     /**
      * A virtual method for implementing a definition of an
@@ -105,6 +91,14 @@ public:
      * @return a pointer to the cloned entity object
      */
     virtual Entity* Clone() const;
+
+    // Public methods
+
+    /**
+     * Queues the entity to be freed from storage safely at
+     * the end of a frame
+     */
+    void QueueFree();
 
     // Public getters
 
@@ -125,7 +119,7 @@ public:
     /**
      * Getter method for the entity's position attribute
      * @return a constant reference to the entity's
-     *         position as a Vector3
+     *         position as a Vec3
      */
     const Vec3& GetPosition() const;
 
@@ -137,10 +131,16 @@ public:
 
     /**
      * Getter method for the entity's scale attribute
-     * @return a constant reference to the entity's
-     *         scale as a Vector3
+     * @return the entity's scale as a Vec3
      */
     const Vec3& GetScale() const;
+
+    /**
+     * Getter method for the entity's transform
+     * @return a constant reference to the entity's
+     *         transform values
+     */
+    const Xform& GetTransform() const;
 
     /**
      * Getter method for the entity's z-index attribute
@@ -161,27 +161,27 @@ public:
 
     /**
      * Setter method for the entity's position attribute
-     * @param newPosition - a Vector3 to set as the
-     *                      entity's position
+     * @param position - a Vector3 to set as the entity's
+     *                   position
      */
-    void SetPosition(Vec3 newPosition);
+    void SetPosition(const Vec3& position);
 
     /**
      * Setter method for the entity's rotation attribute
-     * @param newRotation - a float to set as the
-     *                      entity's rotation
+     * @param rotation - a float to set as the entity's
+     *                   rotation
      * @note While negative rotations are accepted,
      *       rotations beyond 360 degrees are
      *       automatically wrapped
      */
-    void SetRotation(float newRotation);
+    void SetRotation(float rotation);
 
     /**
      * Setter method for the entity's scale attribute
-     * @param newScale - a Vector3 to set as the
-     *                      entity's scale
+     * @param scale - a Vector3 to set as the entity's
+     *                scale
      */
-    void SetScale(Vec3 newScale);
+    void SetScale(const Vec3& scale);
 
     /**
      * Setter method for the entity's z-index value
@@ -194,19 +194,9 @@ protected:
     // Protected fields
 
     /**
-     * The position of the entity as a Vector3
+     * The transform of the entity as an Xform
      */
-    Vec3 position;
-
-    /**
-     * The rotation of the entity in degrees
-     */
-    float rotation;
-
-    /**
-     * The scale of the entity as a Vector3
-     */
-    Vec3 scale;
+    Xform transform;
 
 private:
 

@@ -1,44 +1,49 @@
 #include "RenderSystem.h"
 #include "../resource/ResourceManager.h"
-#include <raylib/raylib-cpp.hpp>
 
-std::vector<RenderItem> RenderSystem::renderItems;
+std::map<EntityPtr<Entity>, RenderItem> RenderSystem::renderItems;
 
-void RenderSystem::Add(Entity* entity, const std::string& modelPath, const std::string& texturePath)
+RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {
-    ResourceManager::Register<Model>(modelPath);
-    ResourceManager::Register<Texture>(texturePath);
-    renderItems.emplace_back(entity, modelPath, texturePath);
+    return Add(entity, modelData, entity->GetTransform());
+}
+
+RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData, const Xform& transform)
+{
+    ResourceManager::Register<Model>(modelData.modelPath);
+    ResourceManager::Register<Texture>(modelData.texturePath);
+    renderItems.emplace(entity, RenderItem(modelData, transform));
+    return nullptr;
 }
 
 void RenderSystem::DrawFrame()
 {
-    for (const auto& item : renderItems)
+    for (const auto& pair : renderItems)
     {
-        const Model& model = ResourceManager::Get<Model>(item.modelData.modelPath);
-        const Texture& texture = ResourceManager::Get<Texture>(item.modelData.texturePath);
+        const auto& item = pair.second;
+        if (!item.isEnabled) continue;
+
+        const Model& model = ResourceManager::Get<Model>(item.data.modelPath);
+        const Texture& texture = ResourceManager::Get<Texture>(item.data.texturePath);
 
         // Set model texture using raylib
         model.materials[0].maps[MAP_DIFFUSE].texture = texture;
 
         // Draw the model
-        DrawModelEx(model, item.entity->GetPosition(), Vec3::Up, item.entity->GetRotation(), item.entity->GetScale(), WHITE);
-        DrawModelWiresEx(model, item.entity->GetPosition(), Vec3::Up, item.entity->GetRotation(), item.entity->GetScale(), PINK);
+        DrawModelEx(model, item.transform.GetPosition(), Vec3::Up,
+                    item.transform.GetRotation(), item.transform.GetScale(), WHITE);
+        DrawModelWiresEx(model, item.transform.GetPosition(), Vec3::Up,
+                         item.transform.GetRotation(), item.transform.GetScale(), PINK);
     }
-}
-
-RenderItem* RenderSystem::Get(Entity* entity)
-{
-    auto it = std::find_if(renderItems.begin(), renderItems.end(), [&entity] (const RenderItem& r) {
-        return r.entity == entity;
-    });
-    return it != renderItems.end() ? &(*it) : nullptr;
 }
 
 void RenderSystem::Remove(Entity* entity)
 {
-    auto it = std::find_if(renderItems.begin(), renderItems.end(), [&entity] (const RenderItem& r) {
-        return r.entity == entity;
-    });
+    auto it = renderItems.find(EntityPtr<Entity>(entity));
     if (it != renderItems.end()) renderItems.erase(it);
+}
+
+void RenderSystem::DrawFrame2D()
+{
+    // TODO implement me
 }

@@ -81,16 +81,13 @@ int main(int argc, char* argv[])
         window.BeginDraw();
         camera.Begin3D();
 
-        RenderSystem::DrawFrame();
-
         // Draw entities
-        for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw();
-        for (auto& entity : EntityStorage::GetTools()) entity->OnDraw();
+        RenderSystem::DrawFrame();
 
         camera.End3D();
 
         // UI Draw entities
-        for (auto& entity : EntityStorage::GetEntities()) entity->OnDraw2D();
+        RenderSystem::DrawFrame2D();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
         window.EndDraw();

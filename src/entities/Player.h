@@ -15,11 +15,11 @@ public:
     // 'Structors
 
     Player() :
-        Player(Vec3::Zero, 0.f)
+        Player({Vec3::Zero, 0.f})
     {};
 
-    Player(Vec3 position, float rotation) :
-        Entity(ENTITY_NAME, position, rotation),
+    explicit Player(const Xform& transform) :
+        Entity(ENTITY_NAME, transform),
         speed(1.5f),
         velocity(Vec3::Zero)
     {};
@@ -27,8 +27,6 @@ public:
     // Public overrides
 
     Entity* Clone() const override;
-
-    void QueueFree() override;
 
     BoundedBox GetBoundingBox() const override;
 
@@ -39,6 +37,8 @@ protected:
     void OnStart() override;
 
     void OnUpdate() override;
+
+    void OnDestroy() override;
 
 private:
 

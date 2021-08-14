@@ -19,17 +19,15 @@ public:
     // 'Structors
 
     Geometry() :
-        Geometry(Vec3::Zero, 0.f, Vec3::One)
+        Geometry({Vec3::Zero, 0.f})
     {};
 
-    Geometry(Vec3 position, float rotation, Vec3 scale) :
-        Geometry(position, rotation, scale,
-                "assets/models/cube/cube.obj",
-                "assets/models/cube/cube.png")
+    explicit Geometry(const Xform& transform) :
+        Geometry(transform,"assets/models/cube/cube.obj","assets/models/cube/cube.png")
     {};
 
-    Geometry(Vec3 position, float rotation, Vec3 scale, std::string modelPath, std::string texturePath) :
-        Entity(ENTITY_NAME, position, rotation, scale),
+    Geometry(const Xform& transform, std::string modelPath, std::string texturePath) :
+        Entity(ENTITY_NAME, transform),
         modelPath(std::move(modelPath)),
         texturePath(std::move(texturePath))
     {};
@@ -37,8 +35,6 @@ public:
     // Public overrides
 
     Entity* Clone() const override;
-
-    void QueueFree() override;
 
     BoundedBox GetBoundingBox() const override;
 
@@ -53,6 +49,8 @@ protected:
     // Protected overrides
 
     void OnStart() override;
+
+    void OnDestroy() override;
 
 private:
 
