@@ -3,29 +3,33 @@
 
 #include "../utils/Maths.h"
 #include "../entity/EntityPtr.h"
+#include <variant>
 #include <utility>
-#include <vector>
+#include <map>
 
 struct ModelData
 {
-    ModelData(std::string modelPath, std::string texturePath) :
-        modelPath(std::move(modelPath)),
-        texturePath(std::move(texturePath))
-    {}
-
     std::string modelPath;
     std::string texturePath;
 };
 
+struct LineData
+{
+    Vec3 trajectory;
+    Colour colour;
+};
+
 struct RenderItem
 {
-    RenderItem(Entity* entity, const std::string& modelPath, const std::string& texturePath) :
-        entity(entity),
-        modelData(modelPath, texturePath)
+    RenderItem(ModelData modelData, const Xform& transform, bool isEnabled = true) :
+        isEnabled(isEnabled),
+        data(std::move(modelData)),
+        transform(transform)
     {}
 
-    EntityPtr<Entity> entity;
-    ModelData modelData;
+    bool isEnabled;
+    ModelData data;
+    const Xform& transform;
 };
 
 
@@ -33,17 +37,21 @@ class RenderSystem
 {
 public:
 
-    static void Add(Entity* entity, const std::string& modelPath, const std::string& texturePath);
+    static RenderItem* Add(Entity* entity, const ModelData& modelData);
 
-    static RenderItem* Get(Entity* entity);
+    static RenderItem* Add(Entity* entity, const ModelData& modelData, const Xform& transform);
 
     static void Remove(Entity* entity);
 
     static void DrawFrame();
 
+    static void DrawFrame2D();
+
 private:
 
-    static std::vector<RenderItem> renderItems;
+    static std::map<EntityPtr<Entity>, RenderItem> renderItems;
+
+    static std::map<EntityPtr<Entity>, RenderItem> renderItems2D;
 };
 
 

@@ -13,6 +13,18 @@
 float EditorController::moveLevels[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
 float EditorController::rotateLevels[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
 
+void EditorController::OnStart()
+{
+    // TODO temporarily disabled transform gizmo and grid
+//    Vec3 extents(3.f, 3.f, 3.f);
+//    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Colour::Red}, gizmoPos);
+//    gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(), Colour::Green}, gizmoPos);
+//    gizmoRenderItem = RenderSystem::Add(this, {extents.ZComp(), Colour::Blue}, gizmoPos);
+
+//if (isGridActive) DrawGrid(100, 1.0f);
+//gizmoRenderItem->isEnabled = selectedEntity;
+}
+
 void EditorController::OnUpdate()
 {
     if (!camera || !messageDisplay) return;
@@ -131,22 +143,6 @@ void EditorController::OnUpdate()
                 break;
             }
         }
-    }
-}
-
-void EditorController::OnDraw()
-{
-    // Draw a reference grid at the centre of the scene if toggled on
-    if (isGridActive) DrawGrid(100, 1.0f);
-
-    if (selectedEntity)
-    {
-        // Draw gizmo display to its location
-        Vec3 entityPos = selectedEntity->GetPosition();
-        Vec3 extents(3.f, 3.f, 3.f);
-        DrawLine3D(entityPos, (entityPos + extents.XComp()), RED);
-        DrawLine3D(entityPos, (entityPos + extents.YComp()), GREEN);
-        DrawLine3D(entityPos, (entityPos + extents.ZComp()), BLUE);
     }
 }
 

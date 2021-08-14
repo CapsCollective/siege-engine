@@ -48,9 +48,9 @@ protected:
 
     // Protected overrides
 
-    void OnUpdate() override;
+    void OnStart() override;
 
-    void OnDraw() override;
+    void OnUpdate() override;
 
     void OnDraw2D() override;
 

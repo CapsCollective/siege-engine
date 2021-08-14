@@ -1,6 +1,5 @@
 #include "EntityStorage.h"
 #include "./Entity.h"
-#include "../utils/Logging.h"
 #include <cstdint>
 #include <algorithm>
 
@@ -71,7 +70,6 @@ void EntityStorage::RegisterEntities()
 
         storage.push_back(entity);
         entity->OnStart();
-        CC_LOG_INFO("Registered {} at ({})", entity->GetName(), entity->GetIndex());
     }
 
     // Once all entities are added, sort the packed storage
@@ -182,7 +180,6 @@ void EntityStorage::FreeEntities()
     for (auto& entity : freedEntities)
     {
         // Remove them and free their memory
-        CC_LOG_INFO("Freeing {} at ({})", entity->GetName(), entity->GetIndex());
         Remove(entity, packedEntities);
     }
     // Clear the storage.

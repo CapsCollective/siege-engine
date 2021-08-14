@@ -37,7 +37,7 @@ public:
         return *this;
     }
 
-    explicit operator bool() const
+    operator bool() const
     {
         return pointer && EntityStorage::IsLive(index);
     }
@@ -50,6 +50,11 @@ public:
     bool operator ==(Entity* rhs) const
     {
         return rhs == pointer;
+    }
+
+    bool operator <(EntityPtr<Entity> rhs) const
+    {
+        return pointer < rhs.pointer;
     }
 
     // Public methods
