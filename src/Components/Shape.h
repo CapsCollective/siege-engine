@@ -18,6 +18,8 @@ namespace Components
     // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
     glm::mat4 CalculateTransform(Transform& transform);
 
+    glm::mat3 CalculateNormalMatrix(Transform& transform);
+
     class Shape
     {
         public: 
@@ -27,7 +29,7 @@ namespace Components
 
         ~Shape();
 
-        glm::mat4 GetTransform() { return CalculateTransform(transform); };
+        SnekVk::Model::Transform GetTransform() { return { CalculateTransform(transform), CalculateNormalMatrix(transform) }; };
         glm::vec3& GetColor() { return fillColor; }
         SnekVk::Model* GetModel() { return model; }
         glm::vec3& GetRotation() { return transform.rotation; }

@@ -22,6 +22,7 @@ platformpth = $(subst /,$(PATHSEP),$1)
 libDir := $(abspath lib)
 buildDir := $(abspath bin)
 vendorDir := $(abspath vendor)
+assetsDir := $(abspath assets)
 scriptsDir := $(abspath scripts)
 outputDir := $(abspath output)
 executable := app
@@ -92,7 +93,7 @@ all: app release clean
 app: $(target)
 
 # Link the program and create the executable
-$(target): $(objects) $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(buildDir)/lib
+$(target): $(objects) $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(buildDir)/lib $(buildDir)/assets
 	$(CXX) $(objects) -o $(target) $(linkFlags)
 
 $(buildDir)/%.spv: % 
@@ -106,6 +107,10 @@ $(glfwLib):
 $(buildDir)/lib:
 	$(MKDIR) $(call platformpth,$(buildDir)/lib)
 	$(call COPY_DIR,$(call platformpth,$(vendorDir)/vulkan/lib),$(call platformpth,$(buildDir)/lib))
+
+$(buildDir)/assets:
+	$(MKDIR) $(call platformpth,$(buildDir)/assets)
+	$(call COPY_DIR,$(call platformpth,$(assetsDir)),$(call platformpth,$(buildDir)/assets))
 
 # Add all rules from dependency files
 -include $(depends)
