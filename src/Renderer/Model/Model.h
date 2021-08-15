@@ -23,8 +23,8 @@ namespace SnekVk
 
         struct PushConstantData
         {
-            glm::mat4 transform {1.0f};
-            alignas(16) glm::vec3 color {0.0f, 0.0f, 0.0f};
+            glm::mat4 transform {1.f};
+            glm::mat4 normalMatrix {1.f};
         };
 
         /**
@@ -52,7 +52,7 @@ namespace SnekVk
              * 
              * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
-            static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
+            static std::array<VkVertexInputAttributeDescription, 4> GetAttributeDescriptions();
 
             bool operator==(const Vertex& other) const
             {
@@ -66,6 +66,12 @@ namespace SnekVk
             u32 vertexCount {0};
             u32* indices {nullptr};
             u32 indexCount {0};
+        };
+
+        struct Transform
+        {
+            glm::mat4 transform;
+            glm::mat4 normalMatrix;
         };
 
         // 'Structors
