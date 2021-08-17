@@ -32,28 +32,29 @@ SnekVk::Vertex triangleVerts[] = {
     {{-0.5f, 0.5f, 0.f}}
 };
 
+SnekVk::Mesh::MeshData triangleMeshData {
+    triangleVerts, // Vertex array
+    3, // 3 vertices
+    0, // no indices
+    0  // no indices specified
+};
+
 SnekVk::Vertex squareVerts[] = {
     {{0.5f, 0.5f, 0.f}}, // top right
     {{0.5f, -0.5f, 0.f}}, // bottom right
     {{-0.5f, -0.5f, 0.f}}, // bottom left
     {{-0.5f, 0.5f, 0.f}}, // top left
-
-    // Movement on any axis requires offsetting 
-    // each vertex by the desired offset. 
-    // i.e: Moving this square right requires all 
-    // x vertices to be incremented by 1.
-    // {{3.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top right
-    // {{3.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
-    // {{1.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
-    // {{1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
-// Indices would be incremented by unique index count. 
-// I.e: indices for second square would be index + size. 
-// (0 = 4, 1 = 5...etc).
 u32 squareIndices[] = {
-    0, 1, 3, 1, 2, 3,
-    // 4, 5, 7, 5, 6, 7
+    0, 1, 3, 1, 2, 3
+};
+
+SnekVk::Mesh::MeshData squareMeshData {
+    squareVerts,
+    4,
+    squareIndices,
+    6
 };
 
 SnekVk::Vertex cubeVerts[] =  {
@@ -96,6 +97,13 @@ SnekVk::Vertex cubeVerts[] =  {
 u32 cubeIndices[] = {
     0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
     12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21
+};
+
+SnekVk::Mesh::MeshData cubeMeshData {
+    cubeVerts,
+    24,
+    cubeIndices,
+    36
 };
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
@@ -165,11 +173,11 @@ int main()
 
     // Generate models
 
-    SnekVk::Model triangleModel({triangleVerts, 3, nullptr, 0});
+    SnekVk::Model triangleModel(triangleMeshData);
 
-    SnekVk::Model squareModel({squareVerts, 4, squareIndices, 6});
+    SnekVk::Model squareModel(squareMeshData);
 
-    SnekVk::Model cubeModel({cubeVerts, 24, cubeIndices, 36});
+    SnekVk::Model cubeModel(cubeMeshData);
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
 

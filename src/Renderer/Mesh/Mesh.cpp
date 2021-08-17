@@ -46,9 +46,9 @@ namespace SnekVk
 
     Mesh::Mesh() {}
 
-    Mesh::Mesh(Vertex* vertices, u32 vertexCount, u32* indices, u32 indexCount)
+    Mesh::Mesh(const MeshData& meshData)
     {
-        LoadVertices(vertices, vertexCount, indices, indexCount);
+        LoadVertices(meshData);
     }
 
     Mesh::~Mesh()
@@ -59,13 +59,13 @@ namespace SnekVk
         if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
     }
 
-    void Mesh::LoadVertices(Vertex* vertices, u32 vertexCount, u32* indices, u32 indexCount)
+    void Mesh::LoadVertices(const Mesh::MeshData& meshData)
     {
-        this->vertexCount = vertexCount;
-        this->indexCount = indexCount;
+        this->vertexCount = meshData.vertexCount;
+        this->indexCount = meshData.indexCount;
 
-        CreateVertexBuffers(vertices);
-        CreateIndexBuffer(indices);
+        CreateVertexBuffers(meshData.vertices);
+        CreateIndexBuffer(meshData.indices);
     }
 
     void Mesh::CreateVertexBuffers(const Vertex* vertices)

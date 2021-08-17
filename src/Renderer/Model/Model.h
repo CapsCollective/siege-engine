@@ -22,34 +22,13 @@ namespace SnekVk
     {
         public:
 
-        struct PushConstantData
-        {
-            glm::mat4 transform {1.f};
-            glm::mat4 normalMatrix {1.f};
-        };
-
-        struct Data 
-        {
-            Vertex* vertices {nullptr};
-            u32 vertexCount {0};
-            u32* indices {nullptr};
-            u32 indexCount {0};
-        };
-
         struct Transform
         {
             glm::mat4 transform;
             glm::mat4 normalMatrix;
         };
 
-        // 'Structors
-
-        /**
-         * @brief Constructor for creating a new model.
-         * 
-         * @param configData a struct specifying the config information required to create a model
-         */
-        Model(const Data& configData);
+        Model(const Mesh::MeshData& meshData);
         Model(const char* filePath);
         Model();
         ~Model();
@@ -71,7 +50,7 @@ namespace SnekVk
 
         private:
 
-        void LoadModelFromFile(const Data& builder, const char* filePath);
+        void LoadModelFromFile(const char* filePath);
 
         Mesh modelMesh;
     };
