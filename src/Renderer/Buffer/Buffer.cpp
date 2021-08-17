@@ -46,7 +46,7 @@ namespace SnekVk::Buffer
     void DestroyBuffer(Buffer& buffer)
     {
         VkDevice device = VulkanDevice::GetDeviceInstance()->Device();
-        vkDestroyBuffer(device, buffer.buffer, nullptr);
-        vkFreeMemory(device, buffer.bufferMemory, nullptr);
+        if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
+        if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
     }
 }
