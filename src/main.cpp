@@ -26,13 +26,13 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-SnekVk::Model::Vertex triangleVerts[] = {
+SnekVk::Vertex triangleVerts[] = {
     {{0.0f, -0.5f, 0.f}},
     {{0.5f, 0.5f, 0.f}}, 
     {{-0.5f, 0.5f, 0.f}}
 };
 
-SnekVk::Model::Vertex squareVerts[] = {
+SnekVk::Vertex squareVerts[] = {
     {{0.5f, 0.5f, 0.f}}, // top right
     {{0.5f, -0.5f, 0.f}}, // bottom right
     {{-0.5f, -0.5f, 0.f}}, // bottom left
@@ -56,7 +56,7 @@ u32 squareIndices[] = {
     // 4, 5, 7, 5, 6, 7
 };
 
-SnekVk::Model::Vertex cubeVerts[] =  {
+SnekVk::Vertex cubeVerts[] =  {
     {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
     {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
     {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
@@ -101,10 +101,10 @@ u32 cubeIndices[] = {
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
     static auto oldMousePos = Input::GetCursorPosition();
-    auto mousePos = Input::GetNormalisedMousePosition();
+    auto mousePos = Input::GetCursorPosition();
 
     glm::vec3 rotate{0};
-    float lookSpeed = 3.f;
+    float lookSpeed = 2.1f;
 
     float differenceX = mousePos.x - oldMousePos.x;
     float differenceY = oldMousePos.y - mousePos.y;
@@ -136,9 +136,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     if (Input::IsKeyDown(KEY_Q)) moveDir += upDir;
     if (Input::IsKeyDown(KEY_E)) moveDir -= upDir;
 
+    float moveSpeed = 2.f;
+
     if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
     {
-        glm::vec3 newMove = viewerObject.GetPosition() + lookSpeed * glm::normalize(moveDir);
+        glm::vec3 newMove = viewerObject.GetPosition() + moveSpeed * glm::normalize(moveDir);
         viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
