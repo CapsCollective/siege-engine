@@ -21,15 +21,14 @@ namespace std
 
 namespace SnekVk
 {
-    Model::Model(const Data& configData)
+    Model::Model(const Mesh::MeshData& meshData)
     {
-        modelMesh.LoadVertices(configData.vertices, configData.vertexCount, configData.indices, configData.indexCount);
+        modelMesh.LoadVertices(meshData);
     }
 
     Model::Model(const char* filePath)
     {
-        Data data{};
-        LoadModelFromFile(data, filePath);
+        LoadModelFromFile(filePath);
     }
 
     Model::Model() {}
@@ -41,7 +40,7 @@ namespace SnekVk
     void Model::DestroyModel()
     {}
 
-    void Model::LoadModelFromFile(const Data& data, const char* filePath)
+    void Model::LoadModelFromFile(const char* filePath)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -103,7 +102,13 @@ namespace SnekVk
         }
 
         modelMesh.LoadVertices(
-            objVertices.data(), static_cast<u32>(objVertices.size()), objIndices.data(), static_cast<u32>(objIndices.size()));
+            {
+                objVertices.data(), 
+                static_cast<u32>(objVertices.size()), 
+                objIndices.data(), 
+                static_cast<u32>(objIndices.size())
+            }
+        );
     }
 
     void Model::Bind(VkCommandBuffer commandBuffer)

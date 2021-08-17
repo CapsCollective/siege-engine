@@ -29,14 +29,22 @@ namespace SnekVk
     {
         public:
 
+        struct MeshData
+        {
+            Vertex* vertices {nullptr};
+            u32 vertexCount {0}; 
+            u32* indices {nullptr}; 
+            u32 indexCount {0};
+        };
+
         Mesh();
-        Mesh(Vertex* vertices, u32 vertexCount, u32* indices, u32 indexCount);
+        Mesh(const MeshData& meshData);
         ~Mesh();
 
         Mesh(const Mesh&) = delete;
         void operator=(const Mesh& other) = delete;
 
-        void LoadVertices(Vertex* vertices, u32 vertexCount, u32* indices, u32 indexCount);
+        void LoadVertices(const Mesh::MeshData& meshData);
         void Bind(VkCommandBuffer commandBuffer);
 
         bool HasIndexBuffer() { return hasIndexBuffer; }
@@ -45,6 +53,11 @@ namespace SnekVk
         u32 GetIndexCount() { return indexCount; }
 
         private:
+
+        // NOTE: This will likely need to be moved at some point. 
+        // We'd like to try and get this to a point where we can 
+        // bindlessly render models. This would require an allocation
+        // of a single, large vertex and index buffer. 
 
         void CreateVertexBuffers(const Vertex* vertices);
         void CreateIndexBuffer(const u32* indices);
