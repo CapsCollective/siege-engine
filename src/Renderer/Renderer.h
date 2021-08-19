@@ -29,6 +29,8 @@ namespace SnekVk
             }
 
             float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
+
+            void SetMainCamera(Camera* camera) { mainCamera = camera; }
             
             bool IsFrameStarted() { return isFrameStarted; }
 
@@ -38,7 +40,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
-            void DrawModel(Model* model, Model::Transform transform, Camera::GPUCameraData cameraData);
+            void DrawModel(Model* model, Model::Transform transform);
 
             bool StartFrame();
             void EndFrame();
@@ -79,9 +81,13 @@ namespace SnekVk
             bool isFrameStarted{false};
             int currentFrameIndex{0};
 
+            // Uniform buffer data - need to find a better way
+            // to package these
             Buffer::Buffer uniformCamBuffer;
             VkDescriptorPool descriptorPool;
             VkDescriptorSetLayout globalLayout;
             VkDescriptorSet globalDescriptor;
+
+            Camera* mainCamera;
     };
 }

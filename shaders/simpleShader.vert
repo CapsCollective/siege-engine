@@ -8,11 +8,13 @@ layout(location = 3) in vec2 uv;
 
 layout(location = 0) out vec3 fragColor;
 
+// Push constant for the model transform data
 layout (push_constant) uniform Push {
     mat4 transform;
     mat4 normalMatrix;
 } push;
 
+// Uniform buffer for storing camera data
 layout (set = 0, binding = 0) uniform CameraBuffer {
     mat4 projection;
     mat4 view;

@@ -86,6 +86,8 @@ namespace SnekVk {
 		 **/
 		VkQueue PresentQueue() { return presentQueue; }
 
+		size_t GetDeviceAlignment() { return properties.limits.minUniformBufferOffsetAlignment; }
+
 		/**
 		 * Returns a struct containing all relevant swapChain support information. 
 		 **/
@@ -250,7 +252,9 @@ namespace SnekVk {
 
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
+
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
 		Window* window {nullptr};
 		VkCommandPool commandPool;
 
