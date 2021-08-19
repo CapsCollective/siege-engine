@@ -12,6 +12,13 @@ namespace SnekVk
     {
         public:
 
+        struct GPUCameraData
+        {
+            glm::mat4 projection;
+            glm::mat4 view;
+            glm::mat4 projView;
+        };
+
         void SetOrthographicProjection(
             float left, float right, float top, float bottom, float near, float far);
 
@@ -25,6 +32,8 @@ namespace SnekVk
 
         const glm::mat4& GetProjection() { return projectionMatrix; }
         const glm::mat4& GetView() { return viewMatrix; }
+        glm::mat4 GetProjView() { return projectionMatrix * viewMatrix; }
+        GPUCameraData GetCameraData() { return { projectionMatrix, viewMatrix, GetProjView() }; }
 
         private:
         
