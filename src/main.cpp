@@ -188,7 +188,9 @@ int main()
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),
-        Components::Shape(&vaseObjModel)
+        Components::Shape(&vaseObjModel),
+        Components::Shape(&triangleModel),
+        Components::Shape(&squareModel)
     };
 
     shapes[0].SetPosition({0.f, 0.5f, 2.5f});
@@ -199,9 +201,15 @@ int main()
     shapes[1].SetScale({2.f, 2.f, 2.f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
 
+    shapes[2].SetPosition({1.5f, 0.f, 2.5f});
+
+    shapes[3].SetPosition({-1.5f, 0.f, 2.5f});
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
+
+    renderer.SetMainCamera(&camera);
 
     while(!window.WindowShouldClose()) {
         
@@ -227,14 +235,14 @@ int main()
             camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
         }
 
-        if (renderer.StartFrame()) 
+        if (!renderer.StartFrame()) continue;
+        
+        for (auto& shape : shapes)
         {
-            for (auto& shape : shapes)
-            {
-                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), camera.GetCameraData());
-            }
-            renderer.EndFrame();
+            renderer.DrawModel(shape.GetModel(), shape.GetTransform());
         }
+        
+        renderer.EndFrame();
     }
 
     renderer.ClearDeviceQueue();

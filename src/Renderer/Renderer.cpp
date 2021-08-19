@@ -120,7 +120,7 @@ namespace SnekVk
         vkUpdateDescriptorSets(device.Device(), 1, &writeDescriptorSet, 0,nullptr);
     }
 
-    void Renderer::DrawModel(Model* model, Model::Transform transform, Camera::GPUCameraData cameraData)
+    void Renderer::DrawModel(Model* model, Model::Transform transform)
     {
         auto commandBuffer = GetCurrentCommandBuffer();
 
@@ -134,10 +134,6 @@ namespace SnekVk
             sizeof(Model::Transform),
             &transform
         );
-
-        Buffer::CopyData<Camera::GPUCameraData>(uniformCamBuffer, sizeof(Camera::GPUCameraData), &cameraData);
-
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &globalDescriptor, 0, nullptr);
 
         model->Draw(commandBuffer);
     }
@@ -253,7 +249,17 @@ namespace SnekVk
         
         BeginSwapChainRenderPass(commandBuffer);
 
+        // Might need to find a better way to structure this section.
+        // We should be able to only re-bind a pipeline when a new one is 
+        // provided.
+        // This can probably be bundled with a material system when ready.
         graphicsPipeline.Bind(commandBuffer);
+
+        auto camData = mainCamera->GetCameraData();
+
+        Buffer::CopyData<Camera::GPUCameraData>(uniformCamBuffer, sizeof(Camera::GPUCameraData), &camData);
+        
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &globalDescriptor, 0, nullptr);
         
         return true;
     }
