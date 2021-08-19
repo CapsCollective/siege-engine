@@ -13,11 +13,19 @@ layout (push_constant) uniform Push {
     mat4 normalMatrix;
 } push;
 
+layout (set = 0, binding = 0) uniform CameraBuffer {
+    mat4 projection;
+    mat4 view;
+    mat4 viewProj;
+} cameraData;
+
 const vec3 DIRECTION_TO_LIGHT = normalize(vec3(1.0, -3.0, -1.0));
 const float AMBIENT = 0.03;
 
 void main() {
-    gl_Position = push.transform * vec4(position, 1.0);
+    mat4 transformMatrix = cameraData.viewProj * push.transform;
+
+    gl_Position = transformMatrix * vec4(position, 1.0);
 
     vec3 normalWorldSpace = normalize(mat3(push.normalMatrix) * normal);
 
