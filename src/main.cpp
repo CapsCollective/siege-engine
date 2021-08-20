@@ -27,9 +27,9 @@ static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
 SnekVk::Vertex triangleVerts[] = {
-    {{0.0f, -0.5f, 0.f}},
-    {{0.5f, 0.5f, 0.f}}, 
-    {{-0.5f, 0.5f, 0.f}}
+    {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
+    {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
+    {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
@@ -40,10 +40,10 @@ SnekVk::Mesh::MeshData triangleMeshData {
 };
 
 SnekVk::Vertex squareVerts[] = {
-    {{0.5f, 0.5f, 0.f}}, // top right
-    {{0.5f, -0.5f, 0.f}}, // bottom right
-    {{-0.5f, -0.5f, 0.f}}, // bottom left
-    {{-0.5f, 0.5f, 0.f}}, // top left
+    {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
+    {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
+    {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
+    {{-0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
 u32 squareIndices[] = {
@@ -173,11 +173,15 @@ int main()
 
     // Generate models
 
+    // Generating models from raw vertices
+
     SnekVk::Model triangleModel(triangleMeshData);
 
     SnekVk::Model squareModel(squareMeshData);
 
     SnekVk::Model cubeModel(cubeMeshData);
+
+    // Generating models from .obj files
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
 
