@@ -25,12 +25,13 @@ namespace SnekVk
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
+            window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+
             if (glfwRawMouseMotionSupported())
             {
                 glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             }
 
-            window = glfwCreateWindow(width, height, name, nullptr, nullptr);
             glfwSetWindowUserPointer(window, this);
             glfwSetWindowSizeCallback(window, ResizeCallback);
             glfwWindows++;
