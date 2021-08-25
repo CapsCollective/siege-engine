@@ -116,9 +116,9 @@ namespace SnekVk
         modelMesh.Bind(commandBuffer);
     }
 
-    void Model::Draw(VkCommandBuffer commandBuffer)
+    void Model::Draw(VkCommandBuffer commandBuffer, u32 instance)
     {
-        if (modelMesh.HasIndexBuffer()) vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, 0);
-        else vkCmdDraw(commandBuffer, modelMesh.GetVertexCount(), 1, 0, 0);
+        if (modelMesh.HasIndexBuffer()) vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, instance);
+        else vkCmdDraw(commandBuffer, modelMesh.GetVertexCount(), 1, 0, instance);
     }
 }

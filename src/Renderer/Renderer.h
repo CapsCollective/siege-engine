@@ -66,6 +66,8 @@ namespace SnekVk
             void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
             void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
+            void DrawFrame();
+
             PipelineConfigInfo CreateDefaultPipelineConfig();
 
             SnekVk::Window& window;
@@ -84,9 +86,20 @@ namespace SnekVk
             // Uniform buffer data - need to find a better way
             // to package these
             Buffer::Buffer uniformCamBuffer;
+
             VkDescriptorPool descriptorPool;
             VkDescriptorSetLayout globalLayout;
             VkDescriptorSet globalDescriptor;
+
+            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
+            Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
+            Model* models[MAX_OBJECT_TRANSFORMS];
+            size_t modelCount = 0;
+
+            Buffer::Buffer objectTransforms;
+
+            VkDescriptorSetLayout objectLayout;
+            VkDescriptorSet objectDescriptor;
 
             Camera* mainCamera;
     };
