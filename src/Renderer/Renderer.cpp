@@ -35,7 +35,7 @@ namespace SnekVk
         vkDestroyDescriptorPool(device.Device(), descriptorPool, nullptr);
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
         Buffer::DestroyBuffer(uniformCamBuffer);
-        Buffer::DestroyBuffer(objectTransforms);
+        Buffer::DestroyBuffer(objectTransformsBuffer);
     }
 
     void Renderer::CreateCommandBuffers()
@@ -71,8 +71,8 @@ namespace SnekVk
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
             // Ensures that CPU and GPU memory are consistent across both devices.
             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            OUT objectTransforms.buffer,
-            OUT objectTransforms.bufferMemory
+            OUT objectTransformsBuffer.buffer,
+            OUT objectTransformsBuffer.bufferMemory
         );
 
         // Create a descriptor set for camera data
@@ -154,7 +154,7 @@ namespace SnekVk
         bufferInfo.range = sizeof(Camera::GPUCameraData);
 
         VkDescriptorBufferInfo objBufferInfo {};
-        objBufferInfo.buffer = objectTransforms.buffer;
+        objBufferInfo.buffer = objectTransformsBuffer.buffer;
         objBufferInfo.offset = 0;
         objBufferInfo.range = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
 
@@ -181,21 +181,24 @@ namespace SnekVk
         vkUpdateDescriptorSets(device.Device(), 2, writeDescriptorSets, 0,nullptr);
     }
 
-    void Renderer::DrawModel(Model* model, Model::Transform transform)
+    void Renderer::DrawModel(Model* model, const Model::Transform& transform)
     {
         models[modelCount] = model;
         transforms[modelCount] = transform;
-        modelCount++;
+        SNEK_ASSERT(modelCount++ <= MAX_OBJECT_TRANSFORMS, 
+                "LIMIT REACHED ON RENDERABLE MODELS");
     }
 
     void Renderer::DrawFrame()
     {
+        if (modelCount == 0) return;
+
         auto commandBuffer = GetCurrentCommandBuffer();
 
         VkDeviceSize bufferSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
 
-        // TODO - create a copy function that lets you only copy to specific regions
-        Buffer::CopyData<Model::Transform>(objectTransforms, bufferSize, transforms);
+        // TODO - profile this as we're unsure whether one big copy is better than a few small ones
+        Buffer::CopyData<Model::Transform>(objectTransformsBuffer, bufferSize, transforms);
 
         for (size_t i = 0; i < modelCount; i++)
         {
@@ -327,7 +330,6 @@ namespace SnekVk
         SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
             "Failed to begin recording command buffer");
         
-        
         BeginSwapChainRenderPass(commandBuffer);
 
         // Might need to find a better way to structure this section.
@@ -372,6 +374,10 @@ namespace SnekVk
 
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT; 
+
+        // Reset the collections of models
+        memset(transforms, 0, sizeof(Model::Transform) * modelCount);
+        memset(models, 0, sizeof(Model*) * modelCount);
         modelCount = 0;
     }
 

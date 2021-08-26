@@ -40,7 +40,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
-            void DrawModel(Model* model, Model::Transform transform);
+            void DrawModel(Model* model, const Model::Transform& transform);
 
             bool StartFrame();
             void EndFrame();
@@ -51,6 +51,8 @@ namespace SnekVk
 
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
+
+            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
             
             static VulkanDevice* deviceInstance;
             static Utils::Array<VkCommandBuffer> commandBuffers;
@@ -83,23 +85,21 @@ namespace SnekVk
             bool isFrameStarted{false};
             int currentFrameIndex{0};
 
-            // Uniform buffer data - need to find a better way
-            // to package these
+            // 
             Buffer::Buffer uniformCamBuffer;
+            Buffer::Buffer objectTransformsBuffer;
 
             VkDescriptorPool descriptorPool;
+
             VkDescriptorSetLayout globalLayout;
             VkDescriptorSet globalDescriptor;
 
-            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
+            VkDescriptorSetLayout objectLayout;
+            VkDescriptorSet objectDescriptor;
+
             Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
             Model* models[MAX_OBJECT_TRANSFORMS];
             size_t modelCount = 0;
-
-            Buffer::Buffer objectTransforms;
-
-            VkDescriptorSetLayout objectLayout;
-            VkDescriptorSet objectDescriptor;
 
             Camera* mainCamera;
     };

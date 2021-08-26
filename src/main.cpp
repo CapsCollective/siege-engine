@@ -112,7 +112,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     auto mousePos = Input::GetCursorPosition();
 
     glm::vec3 rotate{0};
-    float lookSpeed = 2.1f;
+    float lookSpeed = 4.0f;
 
     float differenceX = mousePos.x - oldMousePos.x;
     float differenceY = oldMousePos.y - mousePos.y;
