@@ -167,31 +167,19 @@ namespace SnekVk
     {
         PipelineConfigInfo configInfo {};
 
-        // Input Assembly specifies how vertices are interpreted in the pipeline. 
-        configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        // Here we specify that all vertices should be interpreted as a list of triangles. Every three
-        // vertices will therefore be considered to be attached as a triangle.
-        configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
-
-        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.viewportInfo.viewportCount = 1;
-        configInfo.viewportInfo.pViewports = nullptr;
-        configInfo.viewportInfo.scissorCount = 1;
-        configInfo.viewportInfo.pScissors = nullptr;
-
-        // Defines how we handle rasterisation for our vertices. 
-        configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;       
-        configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
-        configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL; // fill the space between vertices.
-        configInfo.rasterizationInfo.lineWidth = 1.0f;
-        configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
-        configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // clockwise front-face. 
-        configInfo.rasterizationInfo.depthBiasEnable = VK_FALSE;
-        configInfo.rasterizationInfo.depthBiasConstantFactor = 0.0f;
-        configInfo.rasterizationInfo.depthBiasClamp = 0.0f;
-        configInfo.rasterizationInfo.depthBiasSlopeFactor = 0.0f;
+        configInfo.inputAssemblyInfo = PipelineConfig::InitInputAssemblyStateCreateInfo();
+        
+        configInfo.viewportInfo = 
+                PipelineConfig::InitViewPortCreateInfo(1, nullptr, 1, nullptr);
+        
+        configInfo.rasterizationInfo = PipelineConfig::InitRasterizationCreateInfo(
+            VK_FALSE, 
+            VK_FALSE, 
+            VK_POLYGON_MODE_FILL, 
+            VK_CULL_MODE_NONE, 
+            VK_FRONT_FACE_CLOCKWISE,
+            VK_FALSE
+        );
 
         // Defines how multi-sampling is handled. 
         configInfo.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;

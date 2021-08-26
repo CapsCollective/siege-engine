@@ -2,6 +2,7 @@
 
 #include "../Core.h"
 #include "../Device/VulkanDevice.h"
+#include "PipelineConfig.h"
 
 namespace SnekVk 
 {
