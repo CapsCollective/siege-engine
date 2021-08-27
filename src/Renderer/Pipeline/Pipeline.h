@@ -36,7 +36,9 @@ namespace SnekVk
         Utils::Array<VkDynamicState> dynamicStateEnables;
         VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 
-        VkPipelineLayout pipelineLayout{nullptr};
+        // Dependent structs on other data. 
+
+        VkPipelineLayout pipelineLayout{nullptr}; // needs descriptor sets & push constants
         VkRenderPass renderPass{nullptr};
         u32 subPass{0}; 
     };

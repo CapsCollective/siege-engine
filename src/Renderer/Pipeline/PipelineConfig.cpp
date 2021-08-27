@@ -181,4 +181,36 @@ namespace SnekVk
             pDynamicStates
         };
     }
+
+    VkPushConstantRange PipelineConfig::CreatePushConstantRange(VkShaderStageFlags stageflags, u32 offset, u32 size)
+    {
+        return { stageflags, offset, size};
+    }
+
+    VkPipelineLayoutCreateInfo PipelineConfig::CreatePipelineLayoutCreateInfo(
+            VkDescriptorSetLayout* layouts, 
+            u32 layoutCount, 
+            VkPushConstantRange* pushConstants, 
+            u32 pushConstantCount)
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+        return { sType, nullptr, 0, layoutCount, layouts, pushConstantCount, pushConstants};
+    }
+
+    void PipelineConfig::CreatePipelineLayout(
+            VkDevice device,
+            VkPipelineLayout* pipelineLayout,
+            VkDescriptorSetLayout* layouts, 
+            u32 layoutCount, 
+            VkPushConstantRange* pushConstants, 
+            u32 pushConstantCount
+    )
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = 
+                CreatePipelineLayoutCreateInfo(layouts, layoutCount, pushConstants, pushConstantCount);
+
+        SNEK_ASSERT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, pipelineLayout) == VK_SUCCESS, 
+            "Failed to create pipeline layout!");
+    }
 }

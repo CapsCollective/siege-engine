@@ -117,6 +117,20 @@ namespace SnekVk
                 | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
         );
 
+        /**
+         * Creates an info struct for configuring the pipeline's color blend state.
+         * @param logicOpEnable controls whether logical operations are applied to colors. 
+         * @param logicOp selects which logical opeartion to apply
+         * @param attachmentCount specifies the number of color blend attachments applied
+         * @param pAttachments a pointer to an array of color blend attachments
+         * @param blendConstantR the R value to be used for color blending. Defaults to 0.0f.
+         * @param blendConstantG the G value to be used for color blending. Defaults to 0.0f.
+         * @param blendConstantB the B value to be used for color blending. Defaults to 0.0f.
+         * @param blendConstantA the A value to be used for color blending. Defaults to 0.0f.
+         * @param flags configuration flags. Defaults to 0
+         * @param pNext and structs which extend this struct. Defaults to nullptr.
+         * @returns a VkPipelineColorBlendStateCreateInfo struct. 
+         **/
         static VkPipelineColorBlendStateCreateInfo InitColorBlendCreateInfo(
             VkBool32 logicOpEnable,
             VkLogicOp logicOp, 
@@ -149,6 +163,24 @@ namespace SnekVk
             const VkDynamicState* pDynamicStates,
             VkPipelineDynamicStateCreateFlags flags = 0,
             const void* pNext = nullptr
+        );
+
+        static VkPushConstantRange CreatePushConstantRange(VkShaderStageFlags stageflags, u32 offset, u32 size);
+
+        static VkPipelineLayoutCreateInfo CreatePipelineLayoutCreateInfo(
+            VkDescriptorSetLayout* layouts, 
+            u32 layoutCount, 
+            VkPushConstantRange* pushConstants, 
+            u32 pushConstantCount
+        );
+
+        static void CreatePipelineLayout(
+            VkDevice device,
+            VkPipelineLayout* pipelineLayout,
+            VkDescriptorSetLayout* layouts, 
+            u32 layoutCount, 
+            VkPushConstantRange* pushConstants, 
+            u32 pushConstantCount
         );
 
         private:
