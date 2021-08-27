@@ -69,6 +69,88 @@ namespace SnekVk
             VkPipelineRasterizationStateCreateFlags flags = 0,
             const void* pNext = nullptr
         );
+
+        /**
+         * Creates a multi-sampling state. This allows us to specify how multi-sampling would
+         * work for our pipelines. For more info, please check: https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#fragops-covg
+         * @param rasterisationSamples a bitmask specifying the number of samples to use.
+         * @param sampleShadingEnable a bool specifying if sample shading is enabled.
+         * @param minSampleShading if sample shading is enabled, specify the minimum fraction fraction to use.
+         * @param pSampleMask a pointer to an array of sample masks to be used for multi-sampling.
+         * @param alphaToCoverageEnable specifies if a temporary coverage value is generated for the alpha component. 
+         * @param alphaToOneEnable specifies if an alpha component is replaced in accordance to multi-sampling rules. 
+         * @returns a VkPipelineMultisampleStateCreateInfo struct. 
+         **/
+        static VkPipelineMultisampleStateCreateInfo InitMultiSampleCreateInfo(
+            VkSampleCountFlagBits rasterisationSamples,
+            VkBool32 sampleShadingEnable, 
+            float minSampleShading, 
+            const VkSampleMask* pSampleMask, 
+            VkBool32 alphaToCoverageEnable,
+            VkBool32 alphaToOneEnable,
+            VkPipelineMultisampleStateCreateFlags flags = 0,
+            const void* pNext = nullptr
+        );
+
+        /**
+         * A config struct which specifies how colors are blended by the pipeline.
+         * @param blendEnable specifies if color blending is enabled. 
+         * @param srcColorBlendFactor specifies the blend factor used for the source.
+         * @param dstColorBlendFactor specifies the blend factor used for the destination.
+         * @param colorBlendOp selects which blend operation to use to calculate RGB values.
+         * @param srcAlphaBlendFactor specifies the blend factor to be used for alpha values on the source. 
+         * @param dstAlphaBlendFactor specifies the blend factor to be used for alpha values on the destination.
+         * @param alphaBlendOp selects which operation to use to calculate alpha values. 
+         * @param colorWriteMask a bitmask which specifies which color channels to expect. Defaults to RGBA.
+         * @returns a configured VkPipelineColorBlendAttachmentState struct
+         **/
+        static VkPipelineColorBlendAttachmentState InitColorBlendAttachment(
+            VkBool32 blendEnable,
+            VkBlendFactor srcColorBlendFactor,
+            VkBlendFactor dstColorBlendFactor,
+            VkBlendOp colorBlendOp,
+            VkBlendFactor srcAlphaBlendFactor,
+            VkBlendFactor dstAlphaBlendFactor,
+            VkBlendOp alphaBlendOp,
+            VkColorComponentFlags colorWriteMask = 
+                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT 
+                | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+        );
+
+        static VkPipelineColorBlendStateCreateInfo InitColorBlendCreateInfo(
+            VkBool32 logicOpEnable,
+            VkLogicOp logicOp, 
+            u32 attachmentCount,
+            const VkPipelineColorBlendAttachmentState* pAttachments,
+            float blendConstantR = 0.0f,
+            float blendConstantG = 0.0f,
+            float blendConstantB = 0.0f,
+            float blendConstantA = 0.0f,
+            VkPipelineColorBlendStateCreateFlags flags = 0,
+            const void* pNext = nullptr
+        );
+
+        static VkPipelineDepthStencilStateCreateInfo InitDepthStencilCreateInfo(
+            VkBool32 depthTestEnable,
+            VkBool32 depthWriteEnable, 
+            VkCompareOp depthCompareOp,
+            VkBool32 depthBoundsTestEnable,
+            VkBool32 stencilTestEnable,
+            VkStencilOpState front = {},
+            VkStencilOpState back = {}, 
+            float minDepthBounds = 0.0f,
+            float maxDepthBounds = 1.0f,
+            VkPipelineDepthStencilStateCreateFlags flags = 0, 
+            const void* pNext = nullptr
+        );
+
+        static VkPipelineDynamicStateCreateInfo InitDynamicStateCreateInfo(
+            u32 dynamicStateCount,
+            const VkDynamicState* pDynamicStates,
+            VkPipelineDynamicStateCreateFlags flags = 0,
+            const void* pNext = nullptr
+        );
+
         private:
     };
 }
