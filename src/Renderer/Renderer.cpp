@@ -273,22 +273,14 @@ namespace SnekVk
 
     void Renderer::CreatePipelineLayout()
     {
-        VkPushConstantRange range{};
-        range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-        range.offset = 0; 
-        range.size = sizeof(Model::Transform);
+        VkPushConstantRange range = PipelineConfig::CreatePushConstantRange(
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
+                0, 
+                sizeof(Model::Transform));
 
         VkDescriptorSetLayout layouts[] = { globalLayout, objectLayout};
 
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 2; 
-        pipelineLayoutInfo.pSetLayouts = layouts;
-        pipelineLayoutInfo.pushConstantRangeCount = 1;
-        pipelineLayoutInfo.pPushConstantRanges = &range;
-
-        SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
-            "Failed to create pipeline layout!");
+        PipelineConfig::CreatePipelineLayout(device.Device(), OUT &pipelineLayout, layouts, 2, &range, 1);
     }
 
     Pipeline Renderer::CreateGraphicsPipeline()
