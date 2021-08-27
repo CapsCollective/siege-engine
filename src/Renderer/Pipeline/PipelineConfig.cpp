@@ -56,4 +56,129 @@ namespace SnekVk
             lineWidth
         };
     }
+
+    VkPipelineMultisampleStateCreateInfo PipelineConfig::InitMultiSampleCreateInfo(
+            VkSampleCountFlagBits rasterisationSamples,
+            VkBool32 sampleShadingEnable, 
+            float minSampleShading, 
+            const VkSampleMask* pSampleMask, 
+            VkBool32 alphaToCoverageEnable,
+            VkBool32 alphaToOneEnable,
+            VkPipelineMultisampleStateCreateFlags flags,
+            const void* pNext)
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        return {
+            sType, 
+            pNext, 
+            flags, 
+            rasterisationSamples, 
+            sampleShadingEnable, 
+            minSampleShading, 
+            pSampleMask, 
+            alphaToCoverageEnable, 
+            alphaToOneEnable
+        };
+    }
+
+    VkPipelineColorBlendAttachmentState PipelineConfig::InitColorBlendAttachment(
+            VkBool32 blendEnable,
+            VkBlendFactor srcColorBlendFactor,
+            VkBlendFactor dstColorBlendFactor,
+            VkBlendOp colorBlendOp,
+            VkBlendFactor srcAlphaBlendFactor,
+            VkBlendFactor dstAlphaBlendFactor,
+            VkBlendOp alphaBlendOp,
+            VkColorComponentFlags colorWriteMask)
+    {
+        return {
+            blendEnable, 
+            srcColorBlendFactor,
+            dstColorBlendFactor,
+            colorBlendOp,
+            srcAlphaBlendFactor,
+            dstAlphaBlendFactor,
+            alphaBlendOp,
+            colorWriteMask
+        };
+    }
+
+    VkPipelineColorBlendStateCreateInfo PipelineConfig::InitColorBlendCreateInfo(
+            VkBool32 logicOpEnable,
+            VkLogicOp logicOp, 
+            u32 attachmentCount,
+            const VkPipelineColorBlendAttachmentState* pAttachments,
+            float blendConstantR,
+            float blendConstantG,
+            float blendConstantB,
+            float blendConstantA,
+            VkPipelineColorBlendStateCreateFlags flags,
+            const void* pNext)
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        VkPipelineColorBlendStateCreateInfo createInfo = {
+            sType, 
+            pNext,
+            flags, 
+            logicOpEnable,
+            logicOp,
+            attachmentCount, 
+            pAttachments,
+        };
+
+        createInfo.blendConstants[0] = blendConstantR;
+        createInfo.blendConstants[1] = blendConstantG;
+        createInfo.blendConstants[2] = blendConstantB;
+        createInfo.blendConstants[3] = blendConstantA;
+
+        return createInfo;
+    }
+
+    VkPipelineDepthStencilStateCreateInfo PipelineConfig::InitDepthStencilCreateInfo(
+            VkBool32 depthTestEnable,
+            VkBool32 depthWriteEnable, 
+            VkCompareOp depthCompareOp,
+            VkBool32 depthBoundsTestEnable,
+            VkBool32 stencilTestEnable,
+            VkStencilOpState front,
+            VkStencilOpState back, 
+            float minDepthBounds,
+            float maxDepthBounds,
+            VkPipelineDepthStencilStateCreateFlags flags, 
+            const void* pNext)
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        return 
+        {
+            sType, 
+            pNext, 
+            flags, 
+            depthTestEnable, 
+            depthWriteEnable, 
+            depthCompareOp, 
+            depthBoundsTestEnable, 
+            stencilTestEnable, 
+            front, 
+            back, 
+            minDepthBounds, 
+            maxDepthBounds
+        };
+    }
+
+    VkPipelineDynamicStateCreateInfo PipelineConfig::InitDynamicStateCreateInfo(
+            u32 dynamicStateCount,
+            const VkDynamicState* pDynamicStates,
+            VkPipelineDynamicStateCreateFlags flags,
+            const void* pNext)
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        return 
+        {
+            sType, 
+            pNext, 
+            flags, 
+            dynamicStateCount,
+            pDynamicStates
+        };
+    }
 }
