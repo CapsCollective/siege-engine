@@ -2,6 +2,23 @@
 
 namespace SnekVk
 {
+    VkVertexInputBindingDescription VertexDescription::CreateBinding(
+            u32 binding,
+            u32 stride, 
+            VkVertexInputRate inputRate)
+    {
+        return { binding, stride, inputRate };
+    }
+
+    VkVertexInputAttributeDescription VertexDescription::CreateAttribute(
+            u32 location, 
+            u32 binding, 
+            VkFormat format, 
+            u32 offset)
+    {
+        return { location, binding, format, offset };
+    }
+
     VkPipelineInputAssemblyStateCreateInfo PipelineConfig::InitInputAssemblyStateCreateInfo(
             const void* pNext, 
             VkPipelineInputAssemblyStateCreateFlags flags, 
@@ -212,5 +229,39 @@ namespace SnekVk
 
         SNEK_ASSERT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, pipelineLayout) == VK_SUCCESS, 
             "Failed to create pipeline layout!");
+    }
+
+    VkPipelineShaderStageCreateInfo PipelineConfig::CreateShaderStage(
+            VkShaderStageFlagBits stage, 
+            VkShaderModule module, 
+            const char* pName,
+            VkPipelineShaderStageCreateFlags flags,
+            const void* pNext,
+            const VkSpecializationInfo* pSpecialisationInfo
+    )
+    {
+        auto sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        return 
+        {
+            sType, 
+            pNext, 
+            flags, 
+            stage, 
+            module, 
+            pName, 
+            pSpecialisationInfo
+        };
+    }
+
+    void PipelineConfig::CreateDefaultPipelineStages(
+            VkPipelineShaderStageCreateInfo* pShaderStageCreateInfos,
+            PipelineStage* stages, 
+            VkShaderModule* modules,
+            u32 stageCount)
+    {
+        for (size_t i = 0; i < stageCount; i++)
+        {
+            pShaderStageCreateInfos[i] = CreateShaderStage((VkShaderStageFlagBits)stages[i], modules[i]);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "../Core.h"
 #include "../Buffer/Buffer.h"
+#include "../Pipeline/PipelineConfig.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
@@ -21,6 +22,8 @@ namespace SnekVk
     };
 
     bool operator==(const Vertex& left, const Vertex& right);
+
+    VertexDescription::VertexDescriptionData<1, 4> GetDescriptionData();
 
     std::array<VkVertexInputBindingDescription, 1> GetVertexBindingDescriptions();
     std::array<VkVertexInputAttributeDescription, 4> GetVertexAttributeDescriptions();
