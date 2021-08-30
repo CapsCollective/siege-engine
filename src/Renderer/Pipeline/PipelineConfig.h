@@ -3,10 +3,42 @@
 #include "../Core.h"
 
 namespace SnekVk
-{   
+{
+    // TEMPORARY
+    class VertexDescription
+    {
+        public:
+        
+        template<size_t X, size_t Y>
+        struct VertexDescriptionData
+        {
+            std::array<VkVertexInputBindingDescription, X> bindings;
+            std::array<VkVertexInputAttributeDescription, Y> attributes; 
+        };
+
+        static VkVertexInputBindingDescription CreateBinding(
+            u32 binding,
+            u32 stride, 
+            VkVertexInputRate inputRate
+        );
+
+        static VkVertexInputAttributeDescription CreateAttribute(
+            u32 location, 
+            u32 binding, 
+            VkFormat format, 
+            u32 offset
+        );
+    };   
+
     class PipelineConfig
     {
         public:
+        enum PipelineStage
+        {
+            VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
+            FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT
+        };
+
         /**
          * @param pNext a pointer to a struct that's extending this struct. Defaults to nullptr.
          * @param flags any specific flags that need to be set. Defaults to 0.
@@ -181,6 +213,22 @@ namespace SnekVk
             u32 layoutCount, 
             VkPushConstantRange* pushConstants, 
             u32 pushConstantCount
+        );
+
+        static VkPipelineShaderStageCreateInfo CreateShaderStage(
+            VkShaderStageFlagBits stage, 
+            VkShaderModule module, 
+            const char* pName = "main",
+            VkPipelineShaderStageCreateFlags flags = 0,
+            const void* pNext = nullptr,
+            const VkSpecializationInfo* pSpecialisationInfo = nullptr
+        );
+
+        static void CreateDefaultPipelineStages(
+            VkPipelineShaderStageCreateInfo* pShaderStageCreateInfos, 
+            PipelineStage* stages, 
+            VkShaderModule* modules,
+            u32 stageCount
         );
 
         private:

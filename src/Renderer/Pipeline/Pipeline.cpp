@@ -65,24 +65,15 @@ namespace SnekVk
         CreateShaderModule(vertCode, OUT &vertShader);
         CreateShaderModule(fragCode, OUT &fragShader);
 
-        // We only support the vertex and fragment stages atm. Each stage is represented
-        // by a PipelineShaderStageCreateInfo struct. 
         VkPipelineShaderStageCreateInfo shaderStages[2];
-        shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT; // vertex stage of the pipeline
-        shaderStages[0].module = vertShader;
-        shaderStages[0].pName = "main";
-        shaderStages[0].flags = 0;
-        shaderStages[0].pNext = nullptr;
-        shaderStages[0].pSpecializationInfo = nullptr;
 
-        shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT; // fragment stage of the pipeline
-        shaderStages[1].module = fragShader;
-        shaderStages[1].pName = "main";
-        shaderStages[1].flags = 0;
-        shaderStages[1].pNext = nullptr;
-        shaderStages[1].pSpecializationInfo = nullptr;
+        VkShaderModule modules[] = { vertShader, fragShader };
+
+        PipelineConfig::PipelineStage stages[] = {
+            PipelineConfig::VERTEX, PipelineConfig::FRAGMENT
+        };
+
+        PipelineConfig::CreateDefaultPipelineStages(OUT shaderStages, stages, modules, 2);
 
         // In order to pass in vertex information, we must assign a set of descriptions to the shader.
         // These descriptions detail all data binding and which locations these bindings must be set to. 
@@ -90,8 +81,10 @@ namespace SnekVk
 
         // TODO: Maybe inject these into the config. Right now the pipeline is highly coupled 
         // to the models. 
-        auto bindingDescriptions = GetVertexBindingDescriptions();
-        auto attributeDescriptions = GetVertexAttributeDescriptions();
+        auto vertexData = GetDescriptionData();
+        
+        auto bindingDescriptions = vertexData.bindings;
+        auto attributeDescriptions = vertexData.attributes;
 
         // Bind the descriptions to the pipeline to allow us to pass in vertex info via 
         // vertex buffers.
