@@ -9,11 +9,10 @@ namespace SnekVk
     {
         public:
         
-        template<size_t X, size_t Y>
         struct VertexDescriptionData
         {
-            std::array<VkVertexInputBindingDescription, X> bindings;
-            std::array<VkVertexInputAttributeDescription, Y> attributes; 
+            Utils::Array<VkVertexInputBindingDescription> bindings;
+            Utils::Array<VkVertexInputAttributeDescription> attributes; 
         };
 
         static VkVertexInputBindingDescription CreateBinding(

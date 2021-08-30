@@ -267,6 +267,7 @@ namespace SnekVk
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
+        pipelineConfig.vertexData = GetDescriptionData();
 
         return pipelineConfig;
     }
