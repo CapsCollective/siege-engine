@@ -1,5 +1,4 @@
 #include "Pipeline.h"
-#include "../Mesh/Mesh.h"
 
 #include <fstream>
 #include <string>
@@ -81,19 +80,18 @@ namespace SnekVk
 
         // TODO: Maybe inject these into the config. Right now the pipeline is highly coupled 
         // to the models. 
-        auto vertexData = GetDescriptionData();
         
-        auto bindingDescriptions = vertexData.bindings;
-        auto attributeDescriptions = vertexData.attributes;
+        auto bindingDescriptions = configInfo.vertexData.bindings;
+        auto attributeDescriptions = configInfo.vertexData.attributes;
 
         // Bind the descriptions to the pipeline to allow us to pass in vertex info via 
         // vertex buffers.
         VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo{};
         vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<u32>(attributeDescriptions.size());
-        vertexInputCreateInfo.vertexBindingDescriptionCount = static_cast<u32>(bindingDescriptions.size());
-        vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        vertexInputCreateInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+        vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<u32>(attributeDescriptions.Size());
+        vertexInputCreateInfo.vertexBindingDescriptionCount = static_cast<u32>(bindingDescriptions.Size());
+        vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.Data();
+        vertexInputCreateInfo.pVertexBindingDescriptions = bindingDescriptions.Data();
 
         // Pass in all pipeline config details to the pipeline create info struct. 
         VkGraphicsPipelineCreateInfo pipelineCreateInfo{};

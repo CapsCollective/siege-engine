@@ -23,10 +23,10 @@ namespace SnekVk
 
     bool operator==(const Vertex& left, const Vertex& right);
 
-    VertexDescription::VertexDescriptionData<1, 4> GetDescriptionData();
+    VertexDescription::VertexDescriptionData GetDescriptionData();
 
-    std::array<VkVertexInputBindingDescription, 1> GetVertexBindingDescriptions();
-    std::array<VkVertexInputAttributeDescription, 4> GetVertexAttributeDescriptions();
+    Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions();
+    Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions();
 
     class Mesh
     {

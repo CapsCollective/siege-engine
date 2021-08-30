@@ -8,9 +8,9 @@ namespace SnekVk
             && left.normal == right.normal && left.uv == right.uv;
     }
 
-    std::array<VkVertexInputBindingDescription, 1> GetVertexBindingDescriptions()
+    Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions()
     {
-        std::array<VkVertexInputBindingDescription, 1> bindingDescriptions = 
+        Utils::Array<VkVertexInputBindingDescription> bindingDescriptions = 
         {
             VertexDescription::CreateBinding(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX)
         };
@@ -18,9 +18,9 @@ namespace SnekVk
         return bindingDescriptions;
     }
 
-    std::array<VkVertexInputAttributeDescription, 4> GetVertexAttributeDescriptions()
+    Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions()
     {
-        std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions = {
+        Utils::Array<VkVertexInputAttributeDescription> attributeDescriptions = {
             VertexDescription::CreateAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)),
             VertexDescription::CreateAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)),
             VertexDescription::CreateAttribute(2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
@@ -30,9 +30,13 @@ namespace SnekVk
         return attributeDescriptions;
     }
 
-    VertexDescription::VertexDescriptionData<1, 4> GetDescriptionData()
+    VertexDescription::VertexDescriptionData GetDescriptionData()
     {
-        return { GetVertexBindingDescriptions(), GetVertexAttributeDescriptions()};
+        return 
+        { 
+            GetVertexBindingDescriptions(), 
+            GetVertexAttributeDescriptions()
+        };
     }
 
     Mesh::Mesh() {}

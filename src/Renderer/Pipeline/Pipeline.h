@@ -41,6 +41,8 @@ namespace SnekVk
         VkPipelineLayout pipelineLayout{nullptr}; // needs descriptor sets & push constants
         VkRenderPass renderPass{nullptr};
         u32 subPass{0}; 
+
+        VertexDescription::VertexDescriptionData vertexData;
     };
 
     class Pipeline 
