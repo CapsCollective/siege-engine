@@ -273,10 +273,28 @@ namespace SnekVk
 
     PipelineConfigInfo Renderer::CreateDefaultPipelineConfig()
     {
+        // TODO: wrap this in a function.
+        VertexDescription::Binding vertexBinding;
+
+        vertexBinding.binding = 0;
+        vertexBinding.stride = sizeof(Vertex);
+        vertexBinding.inputRate = VertexDescription::InputRate::VERTEX;
+
+        VertexDescription::Attribute vertexAttributes[] = {
+            { offsetof(Vertex, position), VertexDescription::AttributeType::VEC3 },
+            { offsetof(Vertex, color), VertexDescription::AttributeType::VEC3 },
+            { offsetof(Vertex, normal), VertexDescription::AttributeType::VEC3 },
+            { offsetof(Vertex, uv), VertexDescription::AttributeType::VEC2 }
+        };
+
+        vertexBinding.attributes = vertexAttributes;
+        vertexBinding.attributeCount = 4;
+
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
-        pipelineConfig.vertexData = GetDescriptionData();
+        
+        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(1, &vertexBinding);
 
         return pipelineConfig;
     }

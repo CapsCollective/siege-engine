@@ -118,19 +118,6 @@ namespace SnekVk
              **/
             static Utils::Array<char> ReadFile(const char* filePath);
 
-            /**
-             * Creates the vulkan graphics pipeline and assigns it to the 'graphicsPipeline' 
-             * member variable. 
-             * @param vertFilePath the path to vertex shader.
-             * @param fragFilePath the path to the fragment shader.
-             * @param configInfo the configuration struct for the pipeline. 
-             **/
-            void CreateGraphicsPipeline(
-                char const* vertFilePath, 
-                char const* fragFilePath, 
-                const PipelineConfigInfo& configInfo
-            );
-
             void CreateGraphicsPipeline(
                 const PipelineConfig::ShaderConfig* shaders,
                 u32 shaderCount,
