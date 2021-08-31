@@ -9,7 +9,7 @@ namespace SnekVk
     {
         public:
         
-        struct VertexDescriptionData
+        struct Data
         {
             Utils::Array<VkVertexInputBindingDescription> bindings;
             Utils::Array<VkVertexInputAttributeDescription> attributes; 
@@ -36,6 +36,12 @@ namespace SnekVk
         {
             VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
             FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT
+        };
+
+        struct ShaderConfig
+        {
+            const char* filePath { nullptr }; 
+            PipelineStage stage;
         };
 
         /**
