@@ -25,6 +25,9 @@ namespace SnekVk
 
     VertexDescription::Data GetDescriptionData();
 
+    void SetVertexBindingDescriptions(VertexDescription::Data* vertexData);
+    void SetVertexAttributeDescriptions(VertexDescription::Data* vertexData);
+
     Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions();
     Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions();
 

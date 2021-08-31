@@ -8,12 +8,87 @@ namespace SnekVk
     class VertexDescription
     {
         public:
+
+        enum AttributeType
+        {
+            VEC2 = VK_FORMAT_R32G32_SFLOAT,
+            VEC3 = VK_FORMAT_R32G32B32_SFLOAT
+        };
+
+        enum InputRate
+        {
+            VERTEX = VK_VERTEX_INPUT_RATE_VERTEX,
+            INSTANCE = VK_VERTEX_INPUT_RATE_INSTANCE
+        };
+
+        struct Attribute
+        {
+            u32 offset = 0;
+            AttributeType type;
+        };
+
+        struct Binding
+        {
+            u32 binding;
+            u32 stride;
+            InputRate inputRate;
+            u32 attributeCount;
+            Attribute* attributes; 
+        };
         
         struct Data
         {
             Utils::Array<VkVertexInputBindingDescription> bindings;
             Utils::Array<VkVertexInputAttributeDescription> attributes; 
         };
+
+        template<typename T>
+        static Data CreateDescriptions(size_t attributeCount, Attribute* attributes)
+        {   
+            Data vertexData;
+            vertexData.bindings = { CreateBinding(0, sizeof(T), VK_VERTEX_INPUT_RATE_VERTEX) };
+            vertexData.attributes = Utils::Array<VkVertexInputAttributeDescription>(attributeCount);
+            for (u32 i = 0; i < attributeCount; i++)
+            {
+                auto attribute = attributes[i];
+                vertexData.attributes[i] = CreateAttribute(i, 0, (VkFormat)attribute.type, attribute.offset);
+            }
+
+            return vertexData;
+        }
+
+        // TODO clean this mess
+        static Data CreateDescriptions(size_t bindingCount, Binding* bindings)
+        {   
+            Data vertexData;
+
+            size_t totalAttributes = 0;
+            for (size_t i = 0; i < bindingCount; i++)
+            {
+                totalAttributes += bindings[i].attributeCount;
+            }
+
+            size_t processedAttributes = 0;
+            for (size_t i = 0; i < bindingCount; i++)
+            {
+                auto& binding = bindings[i];
+                vertexData.bindings = { CreateBinding(i, binding.stride, (VkVertexInputRate)binding.inputRate) };
+
+                vertexData.attributes = Utils::Array<VkVertexInputAttributeDescription>(totalAttributes);
+
+                for (u32 j = 0; j< binding.attributeCount; j++)
+                {
+                    auto attribute = binding.attributes[j];
+                    size_t attributeIndex = j + processedAttributes;
+                    vertexData.attributes[attributeIndex] = 
+                        CreateAttribute(j, i, (VkFormat)attribute.type, attribute.offset);
+                }
+
+                processedAttributes += binding.attributeCount;
+            }
+
+            return vertexData;
+        }
 
         static VkVertexInputBindingDescription CreateBinding(
             u32 binding,
