@@ -8,11 +8,12 @@ namespace SnekVk
 {
     Pipeline::Pipeline(
         VulkanDevice& device, 
-        const char* vertFilePath, 
-        const char* fragFilePath, 
-        const PipelineConfigInfo& configInfo) : device{device}
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
+        const PipelineConfigInfo& configInfo
+    ) : Pipeline(device)
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+        CreateGraphicsPipeline(shaders, shaderCount, configInfo);
     }
 
     Pipeline::Pipeline(VulkanDevice& device) : device{device}
@@ -47,8 +48,8 @@ namespace SnekVk
     }
 
     void Pipeline::CreateGraphicsPipeline(
-        char const* vertFilePath, 
-        char const* fragFilePath, 
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
         const PipelineConfigInfo& configInfo)
     {
 
@@ -57,22 +58,25 @@ namespace SnekVk
         
         SNEK_ASSERT(configInfo.renderPass != VK_NULL_HANDLE, 
                 "Cannot create graphics pipeline: no renderpass config provided in configInfo");
+        
+        SNEK_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.");
 
-        auto vertCode = ReadFile(vertFilePath);
-        auto fragCode = ReadFile(fragFilePath);
+        shaderModuleCount = shaderCount;
+        
+        VkPipelineShaderStageCreateInfo shaderStages[shaderCount];
 
-        CreateShaderModule(vertCode, OUT &vertShader);
-        CreateShaderModule(fragCode, OUT &fragShader);
+        PipelineConfig::PipelineStage stages[shaderCount];
 
-        VkPipelineShaderStageCreateInfo shaderStages[2];
+        for (size_t i = 0; i < shaderCount; i++)
+        {
+            auto shaderCode = ReadFile(shaders[i].filePath);
 
-        VkShaderModule modules[] = { vertShader, fragShader };
+            CreateShaderModule(shaderCode, OUT &shaderModules[i]);
 
-        PipelineConfig::PipelineStage stages[] = {
-            PipelineConfig::VERTEX, PipelineConfig::FRAGMENT
-        };
+            stages[i] = shaders[i].stage;
+        }
 
-        PipelineConfig::CreateDefaultPipelineStages(OUT shaderStages, stages, modules, 2);
+        PipelineConfig::CreateDefaultPipelineStages(OUT shaderStages, stages, shaderModules, shaderCount);
 
         // In order to pass in vertex information, we must assign a set of descriptions to the shader.
         // These descriptions detail all data binding and which locations these bindings must be set to. 
@@ -96,7 +100,7 @@ namespace SnekVk
         // Pass in all pipeline config details to the pipeline create info struct. 
         VkGraphicsPipelineCreateInfo pipelineCreateInfo{};
         pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineCreateInfo.stageCount = 2;
+        pipelineCreateInfo.stageCount = shaderCount;
         pipelineCreateInfo.pStages = shaderStages;
         pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
         pipelineCreateInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
@@ -119,19 +123,21 @@ namespace SnekVk
     }
 
     void Pipeline::RecreatePipeline(
-        const char* vertFilePath, 
-        const char* fragFilePath, 
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
         const PipelineConfigInfo& configInfo)
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+        CreateGraphicsPipeline(shaders, shaderCount, configInfo);
     }
 
     void Pipeline::ClearPipeline()
     {
         // TODO: Maybe we can get away without destroying the shader modules when 
         // re-creating the pipeline?
-        vkDestroyShaderModule(device.Device(), vertShader, nullptr);
-        vkDestroyShaderModule(device.Device(), fragShader, nullptr);
+        for (size_t i = 0; i < shaderModuleCount; i++)
+        {
+            vkDestroyShaderModule(device.Device(), shaderModules[i], nullptr);
+        }
         
         vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }

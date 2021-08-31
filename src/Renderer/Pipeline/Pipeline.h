@@ -42,7 +42,7 @@ namespace SnekVk
         VkRenderPass renderPass{nullptr};
         u32 subPass{0}; 
 
-        VertexDescription::VertexDescriptionData vertexData;
+        VertexDescription::Data vertexData;
     };
 
     class Pipeline 
@@ -54,6 +54,13 @@ namespace SnekVk
                 VulkanDevice& device, 
                 const char* vertFilePath, 
                 const char* fragFilePath, 
+                const PipelineConfigInfo& configInfo
+            );
+
+            Pipeline(
+                VulkanDevice& device, 
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
                 const PipelineConfigInfo& configInfo
             );
 
@@ -90,10 +97,18 @@ namespace SnekVk
                 const PipelineConfigInfo& configInfo
             );
 
+            void RecreatePipeline(
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
+                const PipelineConfigInfo& configInfo
+            );
+
             // TODO: document this
             void ClearPipeline();
 
         private:
+
+            static constexpr size_t MAX_SHADER_MODULES = 2;
 
             /**
              * Reads a file and returns the contents in binary. This is particularly
@@ -113,6 +128,12 @@ namespace SnekVk
             void CreateGraphicsPipeline(
                 char const* vertFilePath, 
                 char const* fragFilePath, 
+                const PipelineConfigInfo& configInfo
+            );
+
+            void CreateGraphicsPipeline(
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
                 const PipelineConfigInfo& configInfo
             );
 
@@ -137,8 +158,7 @@ namespace SnekVk
              **/
             VkPipeline graphicsPipeline;
 
-            // Shader modules for our vertex and index shaders.
-            VkShaderModule vertShader;
-            VkShaderModule fragShader; 
+            VkShaderModule shaderModules[MAX_SHADER_MODULES];
+            size_t shaderModuleCount = 0; 
     };
 }

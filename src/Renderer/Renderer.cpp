@@ -18,9 +18,16 @@ namespace SnekVk
         CreateDescriptors();
         
         CreatePipelineLayout();
+
+        PipelineConfig::ShaderConfig shaders[] = 
+        {
+            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
+            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
+        };
+
         graphicsPipeline.RecreatePipeline(
-            "shaders/simpleShader.vert.spv",
-            "shaders/simpleShader.frag.spv",
+            shaders,
+            2,
             CreateDefaultPipelineConfig()
         );
 
@@ -242,14 +249,16 @@ namespace SnekVk
             // Clear our graphics pipeline before swapchain re-creation
             graphicsPipeline.ClearPipeline();
 
-            // NOTE: We could possibly avoid this if we check for render pass compatibility.
-            // If the new renderpass is compatible with the old, then we can actually keep the
-            // the same graphics pipeline.
+            PipelineConfig::ShaderConfig shaders[] = 
+            {
+                { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
+                { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
+            };
+
             graphicsPipeline.RecreatePipeline(
-                    "shaders/simpleShader.vert.spv",
-                    "shaders/simpleShader.frag.spv",
-                    CreateDefaultPipelineConfig()
-            );
+                shaders,
+                2,
+                CreateDefaultPipelineConfig());
         }
     }
 
@@ -290,10 +299,16 @@ namespace SnekVk
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
+        PipelineConfig::ShaderConfig shaders[] = 
+        {
+            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
+            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
+        };
+
         return SnekVk::Pipeline(
             device, 
-            "shaders/simpleShader.vert.spv", 
-            "shaders/simpleShader.frag.spv", 
+            shaders,
+            2,
             CreateDefaultPipelineConfig()
         );
     }

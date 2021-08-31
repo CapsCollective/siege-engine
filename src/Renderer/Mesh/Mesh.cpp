@@ -30,7 +30,7 @@ namespace SnekVk
         return attributeDescriptions;
     }
 
-    VertexDescription::VertexDescriptionData GetDescriptionData()
+    VertexDescription::Data GetDescriptionData()
     {
         return 
         { 

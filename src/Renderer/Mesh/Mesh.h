@@ -23,7 +23,7 @@ namespace SnekVk
 
     bool operator==(const Vertex& left, const Vertex& right);
 
-    VertexDescription::VertexDescriptionData GetDescriptionData();
+    VertexDescription::Data GetDescriptionData();
 
     Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions();
     Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions();
