@@ -14,22 +14,9 @@ struct ObjectData
     mat4 normalMatrix;
 };
 
-layout (std140, set = 1, binding = 0) readonly buffer ObjectBuffer{
+layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
     ObjectData objects[];
 } objectBuffer;
-
-// Push constant for the model transform data
-// layout (push_constant) uniform Push {
-//     mat4 transform;
-//     mat4 normalMatrix;
-// } push;
-
-// Uniform buffer for storing camera data
-layout (set = 0, binding = 0) uniform CameraBuffer {
-    mat4 projection;
-    mat4 view;
-    mat4 viewProj;
-} cameraData;
 
 const vec3 DIRECTION_TO_LIGHT = normalize(vec3(1.0, -3.0, -1.0));
 const float AMBIENT = 0.03;
@@ -37,7 +24,7 @@ const float AMBIENT = 0.03;
 void main() {
 
     ObjectData object = objectBuffer.objects[gl_BaseInstance];
-    mat4 transformMatrix = cameraData.viewProj * object.transform;
+    mat4 transformMatrix = object.transform;
 
     gl_Position = transformMatrix * vec4(position, 1.0);
 

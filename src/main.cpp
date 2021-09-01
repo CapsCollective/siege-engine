@@ -188,7 +188,6 @@ int main()
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
 
     // Create shapes for use
-
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),

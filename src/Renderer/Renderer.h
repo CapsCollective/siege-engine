@@ -84,15 +84,10 @@ namespace SnekVk
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
-
-            // 
-            Buffer::Buffer uniformCamBuffer;
+            
             Buffer::Buffer objectTransformsBuffer;
 
             VkDescriptorPool descriptorPool;
-
-            VkDescriptorSetLayout globalLayout;
-            VkDescriptorSet globalDescriptor;
 
             VkDescriptorSetLayout objectLayout;
             VkDescriptorSet objectDescriptor;
