@@ -19,6 +19,49 @@ namespace SnekVk
         return { location, binding, format, offset };
     }
 
+    VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCount, Binding* bindings)
+    {
+        Data vertexData;
+
+        size_t totalAttributes = 0;
+        for (size_t i = 0; i < bindingCount; i++)
+        {
+            totalAttributes += bindings[i].attributeCount;
+        }
+
+        vertexData.bindings = Utils::Array<VkVertexInputBindingDescription>(bindingCount);
+        vertexData.attributes = Utils::Array<VkVertexInputAttributeDescription>(totalAttributes);
+
+        size_t processedAttributes = 0;
+        for (size_t i = 0; i < bindingCount; i++)
+        {
+            auto& binding = bindings[i];
+            vertexData.bindings[i] = CreateBinding(i, binding.stride, (VkVertexInputRate)binding.inputRate);
+
+            for (u32 j = 0; j < binding.attributeCount; j++)
+            {
+                auto attribute = binding.attributes[j];
+                size_t attributeIndex = j + processedAttributes;
+                vertexData.attributes[attributeIndex] = 
+                    CreateAttribute(j, i, (VkFormat)attribute.type, attribute.offset);
+            }
+
+            processedAttributes += binding.attributeCount;
+        }
+
+        return vertexData;
+    }
+
+    VertexDescription::Binding VertexDescription::CreateBinding(
+        u32 binding, 
+        u32 stride, 
+        InputRate inputRate, 
+        Attribute* attributes, 
+        u32 attibuteCount)
+    {
+        return { binding, stride, inputRate, attibuteCount, attributes};
+    }
+
     VkPipelineInputAssemblyStateCreateInfo PipelineConfig::InitInputAssemblyStateCreateInfo(
             const void* pNext, 
             VkPipelineInputAssemblyStateCreateFlags flags, 
