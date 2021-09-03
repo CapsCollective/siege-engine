@@ -59,13 +59,10 @@ namespace SnekVk
 
     void Renderer::CreateDescriptors()
     {
-
         Buffer::CreateBuffer(
             sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS,
-            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-            // Ensures that CPU and GPU memory are consistent across both devices.
-            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
             OUT objectTransformsBuffer.buffer,
             OUT objectTransformsBuffer.bufferMemory
         );
@@ -136,6 +133,7 @@ namespace SnekVk
     void Renderer::DrawModel(Model* model, const Model::Transform& transform)
     {
         models[modelCount] = model;
+        // might need to see if there's a way to avoid a copy here.
         transforms[modelCount] = { mainCamera->GetProjView() * transform.transform, transform.normalMatrix };
         SNEK_ASSERT(modelCount++ <= MAX_OBJECT_TRANSFORMS, 
                 "LIMIT REACHED ON RENDERABLE MODELS");
@@ -233,7 +231,7 @@ namespace SnekVk
 
     void Renderer::CreatePipelineLayout()
     {
-        VkDescriptorSetLayout layouts[] = { objectLayout};
+        VkDescriptorSetLayout layouts[] = { objectLayout };
 
         PipelineConfig::CreatePipelineLayout(device.Device(), OUT &pipelineLayout, layouts, 1);
     }
