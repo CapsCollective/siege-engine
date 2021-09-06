@@ -106,6 +106,16 @@ namespace SnekVk
         vkUpdateDescriptorSets(device.Device(), 1, writeDescriptorSets, 0, nullptr);
     }
 
+    void Material::AddVertexAttribute(u32 offset, VertexDescription::AttributeType type)
+    {
+        SNEK_ASSERT(attributeStorage.attributeCount < AttributeStorage::MAX_VERTEX_ATTRIBUTES, 
+                "Cannot assign more than 10 vertex attributes per material"); 
+
+        attributeStorage.attributes[attributeStorage.attributeCount] = {offset, type};
+
+        attributeStorage.attributeCount++;
+    }
+
     void Material::BuildMaterial()
     {
         CreateLayout(&layout, 1);
