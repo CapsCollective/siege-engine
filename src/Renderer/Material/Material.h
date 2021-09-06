@@ -22,6 +22,13 @@ namespace SnekVk
             u64 size;
         };
 
+        struct AttributeStorage
+        {
+            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
+            size_t attributeCount = 0;
+            VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
+        };
+
         Material();
 
         Material(const Material&) = delete;
@@ -31,6 +38,7 @@ namespace SnekVk
 
         void SetDescriptor(Descriptor descriptor);
         void BuildMaterial();
+        void AddVertexAttribute(u32 offset, VertexDescription::AttributeType type);
 
         private:
 
@@ -43,6 +51,8 @@ namespace SnekVk
         );
 
         static VkDescriptorPool descriptorPool;
+
+        AttributeStorage attributeStorage;
 
         VulkanDevice& device;
 
