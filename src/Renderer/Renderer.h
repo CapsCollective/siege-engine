@@ -5,6 +5,7 @@
 #include "Pipeline/Pipeline.h"
 #include "Model/Model.h"
 #include "Camera/Camera.h"
+#include "Material/Material.h"
 
 namespace SnekVk 
 {

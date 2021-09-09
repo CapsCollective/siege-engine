@@ -40,6 +40,13 @@ namespace SnekVk
         void BuildMaterial();
         void AddVertexAttribute(u32 offset, VertexDescription::AttributeType type);
 
+        static void DestroyDescriptorPool() 
+        { 
+            if (descriptorPool != VK_NULL_HANDLE) {
+                vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(), descriptorPool, nullptr);
+            }
+        }
+
         private:
 
         void CreateDescriptors();
