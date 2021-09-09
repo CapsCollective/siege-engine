@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "../Mesh/Mesh.h"
+#include "../Swapchain/Swapchain.h"
 
 namespace SnekVk
 {
@@ -30,7 +31,10 @@ namespace SnekVk
 
     Material::~Material() 
     {
-
+        vkDestroyDescriptorSetLayout(device.Device(), layout, nullptr);
+        vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+        Buffer::DestroyBuffer(buffer);
+        Material::DestroyDescriptorPool();
     }
 
     void Material::CreateLayout(
@@ -124,38 +128,35 @@ namespace SnekVk
 
         PipelineConfig::ShaderConfig shaders[] = 
         {
-            { "bin/shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-            { "bin/shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
+            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
+            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
         };
 
-        // Need to find a way to configure vertex data into the material.
+        AddVertexAttribute(offsetof(Vertex, position), VertexDescription::AttributeType::VEC3);
+        AddVertexAttribute(offsetof(Vertex, color), VertexDescription::AttributeType::VEC3);
+        AddVertexAttribute(offsetof(Vertex, normal), VertexDescription::AttributeType::VEC3);
+        AddVertexAttribute(offsetof(Vertex, uv), VertexDescription::AttributeType::VEC2);
 
-        // VertexDescription::Attribute vertexAttributes[] = {
-        //     { offsetof(Vertex, position), VertexDescription::AttributeType::VEC3 },
-        //     { offsetof(Vertex, color), VertexDescription::AttributeType::VEC3 },
-        //     { offsetof(Vertex, normal), VertexDescription::AttributeType::VEC3 },
-        //     { offsetof(Vertex, uv), VertexDescription::AttributeType::VEC2 }
-        // };
+        //Need to find a way to configure vertex data into the material.
 
-        // auto vertexBinding = VertexDescription::CreateBinding(
-        //     0, 
-        //     sizeof(Vertex), 
-        //     VertexDescription::InputRate::VERTEX, 
-        //     vertexAttributes, 
-        //     4);
+        auto vertexBinding = VertexDescription::CreateBinding(
+            0, 
+            sizeof(Vertex), 
+            VertexDescription::InputRate::VERTEX, 
+            attributeStorage.attributes, 
+            attributeStorage.attributeCount);
 
-        // auto pipelineConfig = Pipeline::DefaultPipelineConfig();
-        // pipelineConfig.renderPass = swapChain.GetRenderPass();
-        // pipelineConfig.pipelineLayout = pipelineLayout;
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig();
+        pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
         
-        // pipelineConfig.vertexData = VertexDescription::CreateDescriptions(1, &vertexBinding);
+        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(1, &vertexBinding);
 
-        // pipeline.RecreatePipeline(
-        //     device, 
-        //     shaders,
-        //     2,
-        //     CreateDefaultPipelineConfig()
-        // );
+        pipeline.RecreatePipeline(
+            shaders,
+            2,
+            pipelineConfig
+        );
     }
 
     void Material::CreateDescriptors()

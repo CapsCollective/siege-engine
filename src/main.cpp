@@ -187,6 +187,11 @@ int main()
 
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
 
+    // Create base diffuse shader
+    SnekVk::Material diffuseShader;
+    diffuseShader.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
+    diffuseShader.BuildMaterial();
+
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
     {
