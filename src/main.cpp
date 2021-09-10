@@ -171,6 +171,12 @@ int main()
 
     Components::Shape cameraObject;
 
+    SnekVk::Material diffuseMat; 
+    diffuseMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
+    diffuseMat.BuildMaterial();
+
+    renderer.RegisterMaterial(&diffuseMat);
+
     // Generate models
 
     // Generating models from raw vertices
@@ -186,11 +192,6 @@ int main()
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
 
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
-
-    // Create base diffuse shader
-    SnekVk::Material diffuseShader;
-    diffuseShader.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
-    diffuseShader.BuildMaterial();
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 

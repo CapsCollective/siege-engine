@@ -42,10 +42,20 @@ namespace SnekVk
 
         static void DestroyDescriptorPool() 
         { 
-            if (descriptorPool != VK_NULL_HANDLE) {
+            if (descriptorPool != VK_NULL_HANDLE) 
+            {
                 vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(), descriptorPool, nullptr);
             }
         }
+
+        template<typename T>
+        void SetUniformData(VkDeviceSize dataSize, const T* data)
+        {
+            Buffer::CopyData<T>(buffer, dataSize, data);
+        }
+
+        void Bind(VkCommandBuffer commandBuffer);
+        void RecreatePipeline();
 
         private:
 

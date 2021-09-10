@@ -34,7 +34,6 @@ namespace SnekVk
         vkDestroyDescriptorSetLayout(device.Device(), layout, nullptr);
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
         Buffer::DestroyBuffer(buffer);
-        Material::DestroyDescriptorPool();
     }
 
     void Material::CreateLayout(
@@ -50,6 +49,26 @@ namespace SnekVk
             layoutCount, 
             pushConstants, 
             pushConstantCount);
+    }
+
+    void Material::Bind(VkCommandBuffer commandBuffer)
+    {
+        pipeline.Bind(commandBuffer);
+        if (descriptorSet) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+    }
+
+    void Material::RecreatePipeline()
+    {
+        // Clear our graphics pipeline before swapchain re-creation
+            pipeline.ClearPipeline();
+
+            PipelineConfig::ShaderConfig shaders[] = 
+            {
+                { "bin/shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
+                { "bin/shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
+            };
+
+            BuildMaterial();
     }
 
     void Material::SetDescriptor(Descriptor descriptor)
@@ -122,7 +141,7 @@ namespace SnekVk
 
     void Material::BuildMaterial()
     {
-        CreateLayout(&layout, 1);
+        if (layout != VK_NULL_HANDLE) CreateLayout(&layout, 1);
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
@@ -132,10 +151,10 @@ namespace SnekVk
             { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
         };
 
-        AddVertexAttribute(offsetof(Vertex, position), VertexDescription::AttributeType::VEC3);
-        AddVertexAttribute(offsetof(Vertex, color), VertexDescription::AttributeType::VEC3);
-        AddVertexAttribute(offsetof(Vertex, normal), VertexDescription::AttributeType::VEC3);
-        AddVertexAttribute(offsetof(Vertex, uv), VertexDescription::AttributeType::VEC2);
+        AddVertexAttribute(offsetof(Vertex, position), VertexDescription::VEC3);
+        AddVertexAttribute(offsetof(Vertex, color), VertexDescription::VEC3);
+        AddVertexAttribute(offsetof(Vertex, normal), VertexDescription::VEC3);
+        AddVertexAttribute(offsetof(Vertex, uv), VertexDescription::VEC2);
 
         //Need to find a way to configure vertex data into the material.
 
