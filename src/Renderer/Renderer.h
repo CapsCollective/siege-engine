@@ -43,10 +43,11 @@ namespace SnekVk
             
             void DrawModel(Model* model, const Model::Transform& transform);
 
+            void RegisterMaterial(Material* mat) { currentMat = mat; }
+
             bool StartFrame();
             void EndFrame();
 
-            void CreatePipelineLayout();
             void ClearDeviceQueue() { vkDeviceWaitIdle(device.Device()); } 
             Pipeline CreateGraphicsPipeline();
 
@@ -61,7 +62,6 @@ namespace SnekVk
             VkClearColorValue clearValue {0, 0, 0, 1.f};
 
             void CreateCommandBuffers();
-            void CreateDescriptors();
 
             void RecreateSwapChain();
             void FreeCommandBuffers();
@@ -78,20 +78,11 @@ namespace SnekVk
             VulkanDevice device;
             SwapChain swapChain;
 
-            // Graphics pipeline-specific data
-            VkPipelineLayout pipelineLayout{nullptr};
-            Pipeline graphicsPipeline;
-
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
             
-            Buffer::Buffer objectTransformsBuffer;
-
-            VkDescriptorPool descriptorPool;
-
-            VkDescriptorSetLayout objectLayout;
-            VkDescriptorSet objectDescriptor;
+            Material* currentMat{nullptr};
 
             Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
             Model* models[MAX_OBJECT_TRANSFORMS];

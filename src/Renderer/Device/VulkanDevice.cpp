@@ -24,7 +24,9 @@ namespace SnekVk {
 	}
 
 	VulkanDevice::VulkanDevice()
-	{}
+	{
+		SetVulkanDeviceInstance(this);
+	}
 
 	void VulkanDevice::SetWindow(Window* window)
 	{
