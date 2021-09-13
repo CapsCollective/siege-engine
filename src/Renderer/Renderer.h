@@ -17,8 +17,6 @@ namespace SnekVk
 
             void DestroyRenderer();
 
-            static VulkanDevice* GetDevicePtr() { return deviceInstance; }
-
             VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
             VkRenderPass GetSwapChanRenderPass() { return swapChain.GetRenderPass()->GetRenderPass(); }

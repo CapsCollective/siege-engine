@@ -22,13 +22,6 @@ namespace SnekVk
             u64 size;
         };
 
-        struct AttributeStorage
-        {
-            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-            size_t attributeCount = 0;
-            VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
-        };
-
         Material();
 
         Material(const Material&) = delete;
@@ -38,7 +31,8 @@ namespace SnekVk
 
         void SetDescriptor(Descriptor descriptor);
         void BuildMaterial();
-        void AddVertexAttribute(u32 offset, VertexDescription::AttributeType type);
+        void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
+        void AddShader(const char* filePath, PipelineConfig::PipelineStage stage);
 
         static void DestroyDescriptorPool() 
         { 
@@ -59,6 +53,27 @@ namespace SnekVk
 
         private:
 
+        struct VertexBinding
+        {
+            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
+            size_t attributeCount = 0;
+            VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
+        };
+
+        struct VertexStorage
+        {
+            static constexpr size_t MAX_VERTEX_BINDINGS = 5;
+            size_t bindingCount = 0; 
+            VertexBinding bindings[MAX_VERTEX_BINDINGS];
+        };
+
+        struct ShaderStorage
+        {
+            static constexpr size_t MAX_SHADER_STAGES = 5;
+            size_t shaderCount = 0; 
+            PipelineConfig::ShaderConfig shaders[MAX_SHADER_STAGES];
+        };
+
         void CreateDescriptors();
         void CreateLayout(
             VkDescriptorSetLayout* layouts = nullptr, 
@@ -69,9 +84,8 @@ namespace SnekVk
 
         static VkDescriptorPool descriptorPool;
 
-        AttributeStorage attributeStorage;
-
-        VulkanDevice& device;
+        VertexStorage vertexStorage;
+        ShaderStorage shaderStorage;
 
         Buffer::Buffer buffer;
 
