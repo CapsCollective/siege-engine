@@ -51,20 +51,18 @@ namespace SnekVk
             // 'Structors
 
             Pipeline(
-                VulkanDevice& device, 
                 const char* vertFilePath, 
                 const char* fragFilePath, 
                 const PipelineConfigInfo& configInfo
             );
 
             Pipeline(
-                VulkanDevice& device, 
                 const PipelineConfig::ShaderConfig* shaders,
                 u32 shaderCount,
                 const PipelineConfigInfo& configInfo
             );
 
-            Pipeline(VulkanDevice& device);
+            Pipeline();
 
             ~Pipeline();
 
@@ -132,13 +130,6 @@ namespace SnekVk
              * @param shaderModule a pointer to a shaderModule that we want to populate. 
              **/
             void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
-
-            /**
-             * A reference to our device. A reference is safe here since we 
-             * can guarantee that our device will outlive the pipeline (since
-             * the device is destroyed last) 
-             **/
-            VulkanDevice& device;
 
             /**
              * The vulkan representation of a graphics pipeline. 

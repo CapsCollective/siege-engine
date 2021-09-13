@@ -6,10 +6,10 @@ namespace SnekVk
 {
     VkDescriptorPool Material::descriptorPool = {VK_NULL_HANDLE};
 
-    Material::Material() : 
-        device{*VulkanDevice::GetDeviceInstance()},
-        pipeline{Pipeline(device)}
+    Material::Material()
     {
+        auto device = VulkanDevice::GetDeviceInstance();
+
         if (descriptorPool == VK_NULL_HANDLE) 
         {
             VkDescriptorPoolSize poolSizes[] = {
@@ -24,15 +24,17 @@ namespace SnekVk
             poolCreateInfo.poolSizeCount = 2;
             poolCreateInfo.pPoolSizes = poolSizes;
 
-            SNEK_ASSERT(vkCreateDescriptorPool(device.Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
+            SNEK_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
                 "Unable to create descriptor pool!");
         }
     }
 
     Material::~Material() 
     {
-        vkDestroyDescriptorSetLayout(device.Device(), layout, nullptr);
-        vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+        auto device = VulkanDevice::GetDeviceInstance();
+
+        vkDestroyDescriptorSetLayout(device->Device(), layout, nullptr);
+        vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
         Buffer::DestroyBuffer(buffer);
     }
 
@@ -42,8 +44,10 @@ namespace SnekVk
             VkPushConstantRange* pushConstants, 
             u32 pushConstantCount) 
     {
+        auto device = VulkanDevice::GetDeviceInstance();
+
         PipelineConfig::CreatePipelineLayout(
-            device.Device(), 
+            device->Device(), 
             OUT &pipelineLayout, 
             layouts, 
             layoutCount, 
@@ -73,6 +77,8 @@ namespace SnekVk
 
     void Material::SetDescriptor(Descriptor descriptor)
     {
+        auto device = VulkanDevice::GetDeviceInstance();
+
         Buffer::CreateBuffer(
             descriptor.size,
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -97,7 +103,7 @@ namespace SnekVk
         layoutCreateInfo.flags = 0;
         layoutCreateInfo.pBindings = &bufferBinding;
 
-        SNEK_ASSERT(vkCreateDescriptorSetLayout(device.Device(), &layoutCreateInfo, nullptr, &layout) == VK_SUCCESS,
+        SNEK_ASSERT(vkCreateDescriptorSetLayout(device->Device(), &layoutCreateInfo, nullptr, &layout) == VK_SUCCESS,
                 "Failed to create descriptor set!");
         
         // Object transform allocate info
@@ -108,7 +114,7 @@ namespace SnekVk
         allocateInfo.descriptorSetCount = 1;
         allocateInfo.pSetLayouts = &layout;
         
-        vkAllocateDescriptorSets(device.Device(), &allocateInfo, &descriptorSet);
+        vkAllocateDescriptorSets(device->Device(), &allocateInfo, &descriptorSet);
 
         VkDescriptorBufferInfo bufferInfo {};
         bufferInfo.buffer = buffer.buffer;
@@ -126,17 +132,32 @@ namespace SnekVk
 
         VkWriteDescriptorSet writeDescriptorSets[] = {writeDescriptorSet};
 
-        vkUpdateDescriptorSets(device.Device(), 1, writeDescriptorSets, 0, nullptr);
+        vkUpdateDescriptorSets(device->Device(), 1, writeDescriptorSets, 0, nullptr);
     }
 
-    void Material::AddVertexAttribute(u32 offset, VertexDescription::AttributeType type)
+    void Material::AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type)
     {
-        SNEK_ASSERT(attributeStorage.attributeCount < AttributeStorage::MAX_VERTEX_ATTRIBUTES, 
-                "Cannot assign more than 10 vertex attributes per material"); 
+        SNEK_ASSERT(vertexStorage.bindingCount < VertexStorage::MAX_VERTEX_BINDINGS, 
+                "Cannot assign more than 5 vertex bindings per material"); 
+        
+        SNEK_ASSERT(binding < VertexStorage::MAX_VERTEX_BINDINGS, 
+                "Cannot assign attributes to more than 5 bindings!");
+        
+        u32 attributeCount = vertexStorage.bindings[binding].attributeCount;
 
-        attributeStorage.attributes[attributeStorage.attributeCount] = {offset, type};
+        if (attributeCount == 0) vertexStorage.bindingCount++;
 
-        attributeStorage.attributeCount++;
+        vertexStorage.bindings[binding].attributes[attributeCount] = {offset, type};
+        vertexStorage.bindings[binding].attributeCount++;
+    }
+
+    void Material::AddShader(const char* filePath, PipelineConfig::PipelineStage stage)
+    {
+        SNEK_ASSERT(shaderStorage.shaderCount < ShaderStorage::MAX_SHADER_STAGES, 
+                "Cannot assign more than 5 shaders per material!");
+
+        shaderStorage.shaders[shaderStorage.shaderCount] = {filePath, stage};
+        shaderStorage.shaderCount++;
     }
 
     void Material::BuildMaterial()
@@ -145,35 +166,31 @@ namespace SnekVk
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
-        PipelineConfig::ShaderConfig shaders[] = 
-        {
-            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
-        };
-
-        AddVertexAttribute(offsetof(Vertex, position), VertexDescription::VEC3);
-        AddVertexAttribute(offsetof(Vertex, color), VertexDescription::VEC3);
-        AddVertexAttribute(offsetof(Vertex, normal), VertexDescription::VEC3);
-        AddVertexAttribute(offsetof(Vertex, uv), VertexDescription::VEC2);
+        VertexDescription::Binding bindings[vertexStorage.bindingCount];
 
         //Need to find a way to configure vertex data into the material.
 
-        auto vertexBinding = VertexDescription::CreateBinding(
-            0, 
-            sizeof(Vertex), 
-            VertexDescription::InputRate::VERTEX, 
-            attributeStorage.attributes, 
-            attributeStorage.attributeCount);
+        for (u32 i = 0; i < vertexStorage.bindingCount; i++)
+        {
+            // TODO: Made this configurable for the size and inputRate
+            auto attributes = vertexStorage.bindings[i];
+            bindings[i] = VertexDescription::CreateBinding(
+                    i, 
+                    sizeof(Vertex), 
+                    VertexDescription::InputRate::VERTEX, 
+                    attributes.attributes, 
+                    attributes.attributeCount);
+        }
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         
-        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(1, &vertexBinding);
+        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexStorage.bindingCount, bindings);
 
         pipeline.RecreatePipeline(
-            shaders,
-            2,
+            shaderStorage.shaders,
+            static_cast<u32>(shaderStorage.shaderCount),
             pipelineConfig
         );
     }
