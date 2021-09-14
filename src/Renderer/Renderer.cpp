@@ -54,16 +54,30 @@ namespace SnekVk
 
         VkDeviceSize bufferSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
 
-        if (currentMat) currentMat->SetUniformData<Model::Transform>(bufferSize, transforms);
-
         for (size_t i = 0; i < modelCount; i++)
         {
-            auto& model = models[i];
-            
-            model->Bind(commandBuffer);
+            auto model = models[i];
+
+            if (currentMat != model->GetMaterial())
+            {
+                currentMat = model->GetMaterial();
+
+                currentMat->SetUniformData<Model::Transform>(bufferSize, transforms);
+
+                currentMat->Bind(commandBuffer);
+            } 
+
+            if (currentModel != model)
+            {
+                currentModel = model;
+                currentModel->Bind(commandBuffer);
+            }
 
             model->Draw(commandBuffer, i);
         }
+
+        currentModel = nullptr;
+        currentMat = nullptr;
     }
 
     void Renderer::RecreateSwapChain()
