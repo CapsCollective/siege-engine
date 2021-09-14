@@ -81,6 +81,7 @@ namespace SnekVk
             int currentFrameIndex{0};
             
             Material* currentMat{nullptr};
+            Model* currentModel{nullptr};
 
             Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
             Model* models[MAX_OBJECT_TRANSFORMS];

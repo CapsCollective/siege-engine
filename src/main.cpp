@@ -187,8 +187,6 @@ int main()
 
     diffuseMat.BuildMaterial();
 
-    renderer.RegisterMaterial(&diffuseMat);
-
     // Generate models
 
     // Generating models from raw vertices
@@ -199,8 +197,6 @@ int main()
     SnekVk::Model squareModel(squareMeshData);
     squareModel.SetMaterial(&diffuseMat);
 
-    SnekVk::Model cubeModel(cubeMeshData);
-    cubeModel.SetMaterial(&diffuseMat);
     // Generating models from .obj files
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
