@@ -172,11 +172,13 @@ int main()
     Components::Shape cameraObject;
 
     SnekVk::Material diffuseMat; 
-    
+
     diffuseMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
 
     diffuseMat.AddShader("shaders/simpleShader.vert.spv", SnekVk::PipelineConfig::VERTEX);
     diffuseMat.AddShader("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+
+    diffuseMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
 
     diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
     diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);

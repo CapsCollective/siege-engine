@@ -31,7 +31,9 @@ namespace SnekVk
 
         void SetDescriptor(Descriptor descriptor);
         void BuildMaterial();
+
         void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
+        void SetVertexInputSize(u32 binding, u32 offset);
         void AddShader(const char* filePath, PipelineConfig::PipelineStage stage);
 
         static void DestroyDescriptorPool() 
@@ -57,7 +59,16 @@ namespace SnekVk
         {
             static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
             size_t attributeCount = 0;
+            u32 vertexStride = 0;
             VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
+        };
+
+        template<typename T, size_t S>
+        struct Storage
+        {
+            static constexpr size_t MAX_COUNT = S;
+            size_t count = 0; 
+            T data[MAX_COUNT];
         };
 
         struct VertexStorage
@@ -65,13 +76,6 @@ namespace SnekVk
             static constexpr size_t MAX_VERTEX_BINDINGS = 5;
             size_t bindingCount = 0; 
             VertexBinding bindings[MAX_VERTEX_BINDINGS];
-        };
-
-        struct ShaderStorage
-        {
-            static constexpr size_t MAX_SHADER_STAGES = 5;
-            size_t shaderCount = 0; 
-            PipelineConfig::ShaderConfig shaders[MAX_SHADER_STAGES];
         };
 
         void CreateDescriptors();
@@ -84,8 +88,8 @@ namespace SnekVk
 
         static VkDescriptorPool descriptorPool;
 
-        VertexStorage vertexStorage;
-        ShaderStorage shaderStorage;
+        Storage<VertexBinding, 5> vertexStorage;
+        Storage<PipelineConfig::ShaderConfig, 5> shaderStorage;
 
         Buffer::Buffer buffer;
 
