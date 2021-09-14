@@ -58,11 +58,11 @@ namespace SnekVk
 
         for (size_t i = 0; i < modelCount; i++)
         {
-            models[i]->Bind(commandBuffer);
+            auto& model = models[i];
+            
+            model->Bind(commandBuffer);
 
-            currentMat->Bind(commandBuffer);
-
-            models[i]->Draw(commandBuffer, i);
+            model->Draw(commandBuffer, i);
         }
     }
 

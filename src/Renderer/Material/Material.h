@@ -78,7 +78,6 @@ namespace SnekVk
             VertexBinding bindings[MAX_VERTEX_BINDINGS];
         };
 
-        void CreateDescriptors();
         void CreateLayout(
             VkDescriptorSetLayout* layouts = nullptr, 
             u32 layoutCount = 0, 

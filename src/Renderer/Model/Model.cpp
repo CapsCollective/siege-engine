@@ -113,6 +113,7 @@ namespace SnekVk
 
     void Model::Bind(VkCommandBuffer commandBuffer)
     {
+        if (material) material->Bind(commandBuffer);
         modelMesh.Bind(commandBuffer);
     }
 
