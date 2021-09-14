@@ -61,9 +61,7 @@ namespace SnekVk
             if (currentMat != model->GetMaterial())
             {
                 currentMat = model->GetMaterial();
-
                 currentMat->SetUniformData<Model::Transform>(bufferSize, transforms);
-
                 currentMat->Bind(commandBuffer);
             } 
 

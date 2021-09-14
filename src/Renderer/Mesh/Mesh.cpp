@@ -8,52 +8,6 @@ namespace SnekVk
             && left.normal == right.normal && left.uv == right.uv;
     }
 
-    void SetVertexBindingDescriptions(VertexDescription::Data* vertexData)
-    {
-        vertexData->bindings = { VertexDescription::CreateBinding(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX) }; 
-    }
-
-    void SetVertexAttributeDescriptions(VertexDescription::Data* vertexData)
-    {
-        vertexData->attributes = {
-            VertexDescription::CreateAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)),
-            VertexDescription::CreateAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)),
-            VertexDescription::CreateAttribute(2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
-            VertexDescription::CreateAttribute(3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv))
-        };
-    }
-
-    Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions()
-    {
-        Utils::Array<VkVertexInputBindingDescription> bindingDescriptions = 
-        {
-            VertexDescription::CreateBinding(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX)
-        };
-                
-        return bindingDescriptions;
-    }
-
-    Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions()
-    {
-        Utils::Array<VkVertexInputAttributeDescription> attributeDescriptions = {
-            VertexDescription::CreateAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)),
-            VertexDescription::CreateAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)),
-            VertexDescription::CreateAttribute(2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
-            VertexDescription::CreateAttribute(3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv))
-        };
-
-        return attributeDescriptions;
-    }
-
-    VertexDescription::Data GetDescriptionData()
-    {
-        return 
-        { 
-            GetVertexBindingDescriptions(), 
-            GetVertexAttributeDescriptions()
-        };
-    }
-
     Mesh::Mesh() {}
 
     Mesh::Mesh(const MeshData& meshData)

@@ -179,7 +179,7 @@ int main()
     diffuseMat.AddShader("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     diffuseMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
-
+    
     diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
     diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
     diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
@@ -187,15 +187,31 @@ int main()
 
     diffuseMat.BuildMaterial();
 
+    SnekVk::Material spriteMat;
+
+    spriteMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
+
+    spriteMat.AddShader("bin/shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
+    spriteMat.AddShader("bin/shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+
+    spriteMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
+
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
+
+    spriteMat.BuildMaterial();
+
     // Generate models
 
     // Generating models from raw vertices
 
     SnekVk::Model triangleModel(triangleMeshData);
-    triangleModel.SetMaterial(&diffuseMat);
+    triangleModel.SetMaterial(&spriteMat);
 
     SnekVk::Model squareModel(squareMeshData);
-    squareModel.SetMaterial(&diffuseMat);
+    squareModel.SetMaterial(&spriteMat);
 
     // Generating models from .obj files
 
