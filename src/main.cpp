@@ -194,16 +194,20 @@ int main()
     // Generating models from raw vertices
 
     SnekVk::Model triangleModel(triangleMeshData);
+    triangleModel.SetMaterial(&diffuseMat);
 
     SnekVk::Model squareModel(squareMeshData);
+    squareModel.SetMaterial(&diffuseMat);
 
     SnekVk::Model cubeModel(cubeMeshData);
-
+    cubeModel.SetMaterial(&diffuseMat);
     // Generating models from .obj files
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
+    cubeObjModel.SetMaterial(&diffuseMat);
 
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
+    vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 

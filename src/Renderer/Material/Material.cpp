@@ -203,9 +203,4 @@ namespace SnekVk
             pipelineConfig
         );
     }
-
-    void Material::CreateDescriptors()
-    {
-        
-    }
 }

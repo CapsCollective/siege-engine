@@ -3,6 +3,7 @@
 #include "../Buffer/Buffer.h"
 #include "../Utils/Hash.h"
 #include "../Mesh/Mesh.h"
+#include "../Material/Material.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
@@ -48,6 +49,9 @@ namespace SnekVk
          */
         void Draw(VkCommandBuffer commandBuffer, u32 instance = 0);
 
+        Material* GetMaterial() { return material; }
+        void SetMaterial(Material* newMaterial) { material = newMaterial; }
+
         bool IsIndexed() { return modelMesh.HasIndexBuffer(); }
 
         private:
@@ -55,5 +59,6 @@ namespace SnekVk
         void LoadModelFromFile(const char* filePath);
 
         Mesh modelMesh;
+        Material* material{nullptr};
     };
 }
