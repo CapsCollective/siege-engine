@@ -66,12 +66,6 @@ namespace SnekVk
         // Clear our graphics pipeline before swapchain re-creation
             pipeline.ClearPipeline();
 
-            PipelineConfig::ShaderConfig shaders[] = 
-            {
-                { "bin/shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-                { "bin/shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
-            };
-
             BuildMaterial();
     }
 
@@ -137,27 +131,40 @@ namespace SnekVk
 
     void Material::AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type)
     {
-        SNEK_ASSERT(vertexStorage.bindingCount < VertexStorage::MAX_VERTEX_BINDINGS, 
-                "Cannot assign more than 5 vertex bindings per material"); 
+        SNEK_ASSERT(vertexStorage.count < vertexStorage.MAX_COUNT, 
+                std::string("Too many vertex attributes assigned. Max is ")
+                .append(std::to_string(vertexStorage.MAX_COUNT)).c_str()); 
         
-        SNEK_ASSERT(binding < VertexStorage::MAX_VERTEX_BINDINGS, 
+        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
                 "Cannot assign attributes to more than 5 bindings!");
         
-        u32 attributeCount = vertexStorage.bindings[binding].attributeCount;
+        u32 attributeCount = vertexStorage.data[binding].attributeCount;
 
-        if (attributeCount == 0) vertexStorage.bindingCount++;
+        if (attributeCount == 0) vertexStorage.count++;
 
-        vertexStorage.bindings[binding].attributes[attributeCount] = {offset, type};
-        vertexStorage.bindings[binding].attributeCount++;
+        vertexStorage.data[binding].attributes[attributeCount] = {offset, type};
+        vertexStorage.data[binding].attributeCount++;
+    }
+
+    void Material::SetVertexInputSize(u32 binding, u32 stride)
+    {
+        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
+                "Cannot assign attributes to more than 5 bindings!");
+        
+        vertexStorage.data[binding].vertexStride = stride;
     }
 
     void Material::AddShader(const char* filePath, PipelineConfig::PipelineStage stage)
     {
-        SNEK_ASSERT(shaderStorage.shaderCount < ShaderStorage::MAX_SHADER_STAGES, 
-                "Cannot assign more than 5 shaders per material!");
+        SNEK_ASSERT(shaderStorage.count < shaderStorage.MAX_COUNT, 
+                std::string("Too many shaders assigned. Max is ")
+                .append(std::to_string(shaderStorage.MAX_COUNT)).c_str());
+        
+        shaderStorage.data[shaderStorage.count] = {filePath, stage};
+        shaderStorage.count++;
 
-        shaderStorage.shaders[shaderStorage.shaderCount] = {filePath, stage};
-        shaderStorage.shaderCount++;
+        // shaderStorage.shaders[shaderStorage.shaderCount] = {filePath, stage};
+        // shaderStorage.shaderCount++;
     }
 
     void Material::BuildMaterial()
@@ -166,18 +173,20 @@ namespace SnekVk
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
-        VertexDescription::Binding bindings[vertexStorage.bindingCount];
+        VertexDescription::Binding bindings[vertexStorage.count];
 
         //Need to find a way to configure vertex data into the material.
 
-        for (u32 i = 0; i < vertexStorage.bindingCount; i++)
+        for (u32 i = 0; i < vertexStorage.count; i++)
         {
-            // TODO: Made this configurable for the size and inputRate
-            auto attributes = vertexStorage.bindings[i];
+            auto attributes = vertexStorage.data[i];
+
+            if (attributes.attributeCount == 0) continue;
+
             bindings[i] = VertexDescription::CreateBinding(
                     i, 
-                    sizeof(Vertex), 
-                    VertexDescription::InputRate::VERTEX, 
+                    attributes.vertexStride, 
+                    VertexDescription::VERTEX, 
                     attributes.attributes, 
                     attributes.attributeCount);
         }
@@ -186,11 +195,11 @@ namespace SnekVk
         pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         
-        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexStorage.bindingCount, bindings);
+        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexStorage.count, bindings);
 
         pipeline.RecreatePipeline(
-            shaderStorage.shaders,
-            static_cast<u32>(shaderStorage.shaderCount),
+            shaderStorage.data,
+            static_cast<u32>(shaderStorage.count),
             pipelineConfig
         );
     }
