@@ -26,20 +26,21 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-SnekVk::Vertex triangleVerts[] = {
+SnekVk::Vertex2D triangleVerts[] = {
     {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
     {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
     {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
+    sizeof(triangleVerts),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
     0  // no indices specified
 };
 
-SnekVk::Vertex squareVerts[] = {
+SnekVk::Vertex2D squareVerts[] = {
     {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
     {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
     {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
@@ -51,6 +52,7 @@ u32 squareIndices[] = {
 };
 
 SnekVk::Mesh::MeshData squareMeshData {
+    sizeof(squareVerts),
     squareVerts,
     4,
     squareIndices,
@@ -100,6 +102,7 @@ u32 cubeIndices[] = {
 };
 
 SnekVk::Mesh::MeshData cubeMeshData {
+    sizeof(cubeVerts),
     cubeVerts,
     24,
     cubeIndices,
@@ -194,12 +197,10 @@ int main()
     spriteMat.AddShader("bin/shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
     spriteMat.AddShader("bin/shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
-    spriteMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
+    spriteMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
 
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
+    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
     spriteMat.BuildMaterial();
 

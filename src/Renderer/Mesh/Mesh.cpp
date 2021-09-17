@@ -8,6 +8,11 @@ namespace SnekVk
             && left.normal == right.normal && left.uv == right.uv;
     }
 
+    bool operator==(const Vertex2D& left, const Vertex2D& right)
+    {
+        return left.color == right.color && left.position == right.position;
+    }
+
     Mesh::Mesh() {}
 
     Mesh::Mesh(const MeshData& meshData)
@@ -25,18 +30,19 @@ namespace SnekVk
 
     void Mesh::LoadVertices(const Mesh::MeshData& meshData)
     {
-        this->vertexCount = meshData.vertexCount;
-        this->indexCount = meshData.indexCount;
+        vertexCount = meshData.vertexCount;
+        indexCount = meshData.indexCount;
+        vertexSize = meshData.vertexSize;
 
         CreateVertexBuffers(meshData.vertices);
         CreateIndexBuffer(meshData.indices);
     }
 
-    void Mesh::CreateVertexBuffers(const Vertex* vertices)
+    void Mesh::CreateVertexBuffers(const void* vertices)
     {
         SNEK_ASSERT(vertexCount >= 3, "Vertex count must be at least 3!");
 
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        VkDeviceSize bufferSize = vertexSize;
 
         Buffer::Buffer stagingBuffer;
 
@@ -50,7 +56,7 @@ namespace SnekVk
             OUT stagingBuffer.buffer,
             OUT stagingBuffer.bufferMemory);
 
-        Buffer::CopyData<Vertex>(stagingBuffer, bufferSize, vertices);
+        Buffer::CopyData<const void>(stagingBuffer, bufferSize, vertices);
 
         Buffer::CreateBuffer(
             bufferSize,

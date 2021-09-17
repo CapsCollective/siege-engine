@@ -21,7 +21,14 @@ namespace SnekVk
         glm::vec2 uv;
     };
 
+    struct Vertex2D
+    {
+        glm::vec3 position;
+        glm::vec3 color;
+    };
+
     bool operator==(const Vertex& left, const Vertex& right);
+    bool operator==(const Vertex2D& left, const Vertex2D& right);
 
     class Mesh
     {
@@ -29,7 +36,8 @@ namespace SnekVk
 
         struct MeshData
         {
-            Vertex* vertices {nullptr};
+            u64 vertexSize {0};
+            const void* vertices {nullptr};
             u32 vertexCount {0}; 
             u32* indices {nullptr}; 
             u32 indexCount {0};
@@ -57,7 +65,7 @@ namespace SnekVk
         // bindlessly render models. This would require an allocation
         // of a single, large vertex and index buffer. 
 
-        void CreateVertexBuffers(const Vertex* vertices);
+        void CreateVertexBuffers(const void* vertices);
         void CreateIndexBuffer(const u32* indices);
 
         Buffer::Buffer vertexBuffer;
@@ -66,5 +74,7 @@ namespace SnekVk
         bool hasIndexBuffer = false;
         Buffer::Buffer indexBuffer;
         u32 indexCount = 0;
+
+        u64 vertexSize = 0;
     };
 }
