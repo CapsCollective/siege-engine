@@ -162,9 +162,6 @@ namespace SnekVk
         
         shaderStorage.data[shaderStorage.count] = {filePath, stage};
         shaderStorage.count++;
-
-        // shaderStorage.shaders[shaderStorage.shaderCount] = {filePath, stage};
-        // shaderStorage.shaderCount++;
     }
 
     void Material::BuildMaterial()
@@ -192,6 +189,8 @@ namespace SnekVk
         }
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
+        pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
+        
         pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         

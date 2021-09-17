@@ -15,6 +15,13 @@ namespace SnekVk
             UNIFORM = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 
             STORAGE = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         };
+
+        enum PolygonMode
+        {
+            FILL = 0, 
+            LINE = 1, 
+            POINT = 2
+        };
         
         struct Descriptor
         {
@@ -30,6 +37,7 @@ namespace SnekVk
         ~Material();
 
         void SetDescriptor(Descriptor descriptor);
+        void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
         void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
@@ -84,6 +92,10 @@ namespace SnekVk
             VkPushConstantRange* pushConstants = nullptr, 
             u32 pushConstantCount = 0
         );
+
+        struct {
+            PolygonMode mode = PolygonMode::FILL;
+        } shaderSettings;
 
         static VkDescriptorPool descriptorPool;
 
