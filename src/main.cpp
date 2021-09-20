@@ -6,6 +6,8 @@
 #include "Components/Shape.h"
 #include "Input/Input.h"
 #include "Utils/Math.h"
+#include "Renderer/Material/Material.h"
+#include "Renderer/Shader/Shader.h"
 
 #include <glm/gtc/constants.hpp>
 #include <vector>
@@ -175,6 +177,17 @@ int main()
     Components::Shape cameraObject;
 
     SnekVk::Material diffuseMat; 
+
+    SnekVk::Shader diffuseShader("bin/shaders/simpleShader.vert.spv");
+
+    diffuseShader.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
+
+    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
+    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
+    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
+    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
+
+    diffuseShader.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
 
     diffuseMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
 
