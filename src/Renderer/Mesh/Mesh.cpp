@@ -56,7 +56,7 @@ namespace SnekVk
             OUT stagingBuffer.buffer,
             OUT stagingBuffer.bufferMemory);
 
-        Buffer::CopyData<const void>(stagingBuffer, bufferSize, vertices);
+        Buffer::CopyData(stagingBuffer, bufferSize, vertices);
 
         Buffer::CreateBuffer(
             bufferSize,
@@ -93,7 +93,7 @@ namespace SnekVk
             OUT stagingBuffer.bufferMemory
         );
 
-        Buffer::CopyData<u32>(stagingBuffer, bufferSize, indices);
+        Buffer::CopyData(stagingBuffer, bufferSize, indices);
 
         Buffer::CreateBuffer(
             bufferSize,
