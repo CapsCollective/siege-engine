@@ -129,46 +129,11 @@ namespace SnekVk
         vkUpdateDescriptorSets(device->Device(), 1, writeDescriptorSets, 0, nullptr);
     }
 
-    void Material::AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type)
-    {
-        SNEK_ASSERT(vertexStorage.count < vertexStorage.MAX_COUNT, 
-                std::string("Too many vertex attributes assigned. Max is ")
-                .append(std::to_string(vertexStorage.MAX_COUNT)).c_str()); 
-        
-        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
-                "Cannot assign attributes to more than 5 bindings!");
-        
-        u32 attributeCount = vertexStorage.data[binding].attributeCount;
-
-        if (attributeCount == 0) vertexStorage.count++;
-
-        vertexStorage.data[binding].attributes[attributeCount] = {offset, type};
-        vertexStorage.data[binding].attributeCount++;
-    }
-
-    void Material::SetVertexInputSize(u32 binding, u32 stride)
-    {
-        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
-                "Cannot assign attributes to more than 5 bindings!");
-        
-        vertexStorage.data[binding].vertexStride = stride;
-    }
-
-    void Material::AddShader(const char* filePath, PipelineConfig::PipelineStage stage)
-    {
-        SNEK_ASSERT(shaderStorage.count < shaderStorage.MAX_COUNT, 
-                std::string("Too many shaders assigned. Max is ")
-                .append(std::to_string(shaderStorage.MAX_COUNT)).c_str());
-        
-        shaderStorage.data[shaderStorage.count] = {filePath, stage};
-        shaderStorage.count++;
-    }
-
     void Material::AddShader(Shader shader)
     {
-        SNEK_ASSERT(shaderStorage.count < shaderStorage.MAX_COUNT, 
+        SNEK_ASSERT(shaders.count < shaders.MAX_COUNT, 
             std::string("Too many shaders assigned. Max is ")
-            .append(std::to_string(shaderStorage.MAX_COUNT)).c_str());
+            .append(std::to_string(shaders.MAX_COUNT)).c_str());
 
         auto uniforms = shader.GetUniformStructs();
 
@@ -206,9 +171,6 @@ namespace SnekVk
         VertexDescription::Binding bindings[vertexCount];
         PipelineConfig::ShaderConfig shaderConfigs[shaders.count];
 
-        std::cout << "VERTEX COUNT: " << vertexCount << std::endl;
-        std::cout << vertexStorage.count << std::endl;
-
         for(size_t i = 0; i < shaders.count; i++)
         {
             auto vertices = shaders.data[i].GetVertexBindings();
@@ -237,8 +199,6 @@ namespace SnekVk
         pipelineConfig.pipelineLayout = pipelineLayout;
         
         pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexCount, bindings);
-
-        std::cout << "Finished unpacking vertex data" << std::endl;
 
         pipeline.RecreatePipeline(
             shaderConfigs,

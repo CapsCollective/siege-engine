@@ -11,6 +11,8 @@ namespace SnekVk
     {
         public:
 
+        static constexpr size_t MAX_SHADER_COUNT = 5;
+
         enum DescriptorType
         {
             UNIFORM = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 
@@ -41,9 +43,6 @@ namespace SnekVk
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
-        void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
-        void SetVertexInputSize(u32 binding, u32 offset);
-        void AddShader(const char* filePath, PipelineConfig::PipelineStage stage);
         void AddShader(Shader shader);
 
         static void DestroyDescriptorPool() 
@@ -83,9 +82,7 @@ namespace SnekVk
 
         static VkDescriptorPool descriptorPool;
 
-        Storage<VertexBinding, 5> vertexStorage;
-        Storage<Shader, 5> shaders;
-        Storage<PipelineConfig::ShaderConfig, 5> shaderStorage;
+        Storage<Shader, MAX_SHADER_COUNT> shaders;
 
         Buffer::Buffer buffer;
 
