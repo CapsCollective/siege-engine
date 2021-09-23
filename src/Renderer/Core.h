@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/Array.h"
+#include "Utils/Hash.h"
 
 #include <volk/volk.h>
 #include <iostream>
@@ -33,6 +34,8 @@ typedef size_t size;
     } \
 
 #define OUT
+
+#define INTERN_STR(str) Utils::WSID(str)
 
 namespace SnekVk 
 {

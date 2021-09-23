@@ -53,7 +53,7 @@ namespace SnekVk
         SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
             "Cannot assign more than 5 uniform structs per shader!");
 
-        Utils::StringId strId = Utils::WSID(name);
+        Utils::StringId strId = INTERN_STR(name);
 
         u32 uniformIdx = GetUniformStructIdx(strId);
 
@@ -80,22 +80,16 @@ namespace SnekVk
 
     u32 Shader::GetUniformStructIdx(const char* name)
     {
-        return GetUniformStructIdx(Utils::WSID(name));
+        return GetUniformStructIdx(INTERN_STR(name));
     }
 
     u32 Shader::GetUniformStructIdx(Utils::StringId strId)
     {
-        u32 uniformIdx = -1;
-
         for (size_t i = 0; i < uniformStructs.count; i++)
         {
-            if (strId == uniformStructs.data[i].id)
-            {
-                uniformIdx = i;
-                break;
-            }
+            if (strId == uniformStructs.data[i].id) return i;
         }
 
-        return uniformIdx;
+        return -1;
     }
 }
