@@ -181,6 +181,7 @@ int main()
     // Shader Declaration
 
     SnekVk::Shader diffuseShaderVert("shaders/simpleShader.vert.spv", SnekVk::PipelineConfig::VERTEX);
+    SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     diffuseShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
 
@@ -190,8 +191,6 @@ int main()
     diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
 
     diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
-
-    SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     // Material Declaration
 
