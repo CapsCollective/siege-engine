@@ -54,38 +54,20 @@ namespace SnekVk
             }
         }
 
-        template<typename T>
-        void SetUniformData(VkDeviceSize dataSize, const T* data)
-        {
-            Buffer::CopyData<T>(buffer, dataSize, data);
-        }
+        void SetUniformData(VkDeviceSize dataSize, const void* data);
 
         void Bind(VkCommandBuffer commandBuffer);
         void RecreatePipeline();
 
         private:
-
-        struct VertexBinding
-        {
-            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-            size_t attributeCount = 0;
-            u32 vertexStride = 0;
-            VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
-        };
-
+        
+        // TODO: Change this to std::array?
         template<typename T, size_t S>
         struct Storage
         {
             static constexpr size_t MAX_COUNT = S;
             size_t count = 0; 
             T data[MAX_COUNT];
-        };
-
-        struct VertexStorage
-        {
-            static constexpr size_t MAX_VERTEX_BINDINGS = 5;
-            size_t bindingCount = 0; 
-            VertexBinding bindings[MAX_VERTEX_BINDINGS];
         };
 
         void CreateLayout(

@@ -38,6 +38,16 @@ namespace SnekVk::Buffer
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);
     };
 
+    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset)
+    {
+        auto device = VulkanDevice::GetDeviceInstance()->Device();
+
+        void* data;
+        vkMapMemory(device, dstBuffer.bufferMemory, offset, size, 0, &data);
+        memcpy(data, bufferData, size);
+        vkUnmapMemory(device, dstBuffer.bufferMemory);
+    }
+
     void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
     {
         VulkanDevice::GetDeviceInstance()->CopyBuffer(srcBuffer, dstBuffer, size);

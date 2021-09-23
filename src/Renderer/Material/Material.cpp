@@ -183,6 +183,11 @@ namespace SnekVk
         shaders.count++;
     }
 
+    void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
+    {
+        Buffer::CopyData(buffer, dataSize, data);
+    }
+
     void Material::BuildMaterial()
     {
         if (layout != VK_NULL_HANDLE) CreateLayout(&layout, 1);
