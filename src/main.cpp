@@ -178,42 +178,41 @@ int main()
 
     SnekVk::Material diffuseMat; 
 
-    SnekVk::Shader diffuseShader("bin/shaders/simpleShader.vert.spv");
+    // Shader Declaration
 
-    diffuseShader.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
+    SnekVk::Shader diffuseShaderVert("shaders/simpleShader.vert.spv", SnekVk::PipelineConfig::VERTEX);
 
-    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
-    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
-    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
-    diffuseShader.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
+    diffuseShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
 
-    diffuseShader.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+    diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
+    diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
+    diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
+    diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
 
-    diffuseMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
+    diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
 
-    diffuseMat.AddShader("shaders/simpleShader.vert.spv", SnekVk::PipelineConfig::VERTEX);
-    diffuseMat.AddShader("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+    SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
-    diffuseMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
+    // Material Declaration
 
-    diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
-    diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3);
-    diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
-    diffuseMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
+    diffuseMat.AddShader(diffuseShaderVert);
+    diffuseMat.AddShader(diffuseShaderFrag);
 
     diffuseMat.BuildMaterial();
 
     SnekVk::Material spriteMat;
 
-    spriteMat.SetDescriptor({SnekVk::PipelineConfig::VERTEX, sizeof(SnekVk::Model::Transform) * 10000});
+    SnekVk::Shader spriteShaderVert("shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
 
-    spriteMat.AddShader("shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
-    spriteMat.AddShader("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+    spriteShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
 
-    spriteMat.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
+    spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
+    spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
-    spriteMat.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
+    spriteShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+    
+    spriteMat.AddShader(spriteShaderVert);
+    spriteMat.AddShader(diffuseShaderFrag);
 
     spriteMat.BuildMaterial();
 

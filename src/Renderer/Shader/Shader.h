@@ -12,8 +12,11 @@ namespace SnekVk
     {
         public: 
 
+        static constexpr size_t MAX_VERTEX_ATTRIBUTE_SIZE = 5;
+        static constexpr size_t MAX_UNIFORM_SIZE = 5;
+
         Shader();
-        Shader(const char* filePath);
+        Shader(const char* filePath, PipelineConfig::PipelineStage stage);
         ~Shader();
 
         struct VertexBinding
@@ -54,21 +57,22 @@ namespace SnekVk
         void SetShaderPath(const char* filePath);
 
         void SetUniformStruct(u32 location, u32 binding, const char* name, u64 size);
+        void SetUniformStruct(u32 location, u32 binding, Utils::StringId strId, u64 size);
 
         u32 GetUniformStructIdx(const char* name);
         u32 GetUniformStructIdx(Utils::StringId strId);
 
+        Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> GetUniformStructs() { return uniformStructs; }
+        Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> GetVertexBindings() { return vertexStorage; }
+        PipelineConfig::PipelineStage GetStage() { return stage; }
+        const char* GetPath() { return filePath; }
+
         private:
 
-        static constexpr size_t MAX_VERTEX_ATTRIBUTE_SIZE = 5;
-        static constexpr size_t MAX_UNIFORM_SIZE = 5;
-
         Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> uniformStructs;
-        Storage<Uniform<glm::mat4>, MAX_UNIFORM_SIZE> uniformMat4;
-        Storage<Uniform<glm::vec3>, MAX_UNIFORM_SIZE> uniformVec2;
-
         Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> vertexStorage;
         
         const char* filePath;
+        PipelineConfig::PipelineStage stage;
     };
 }
