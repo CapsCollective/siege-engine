@@ -3,6 +3,7 @@
 #include "../Core.h"
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
+#include "../Shader/Shader.h"
 
 namespace SnekVk
 {
@@ -43,6 +44,7 @@ namespace SnekVk
         void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
         void SetVertexInputSize(u32 binding, u32 offset);
         void AddShader(const char* filePath, PipelineConfig::PipelineStage stage);
+        void AddShader(Shader shader);
 
         static void DestroyDescriptorPool() 
         { 
@@ -100,6 +102,7 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         Storage<VertexBinding, 5> vertexStorage;
+        Storage<Shader, 5> shaders;
         Storage<PipelineConfig::ShaderConfig, 5> shaderStorage;
 
         Buffer::Buffer buffer;

@@ -7,9 +7,10 @@ namespace SnekVk
 
     }
 
-    Shader::Shader(const char* filePath) : filePath{filePath}
+    Shader::Shader(const char* filePath, PipelineConfig::PipelineStage stage) 
+            : filePath{filePath}, stage{stage}
     {
-
+        
     }
 
     Shader::~Shader()
@@ -61,6 +62,20 @@ namespace SnekVk
         uniformStructs.data[uniformIdx] = {strId, location, binding, size};
 
         std::cout << "Added uniform: " << name << " at index: " << uniformIdx << std::endl;
+    }
+
+    void Shader::SetUniformStruct(u32 location, u32 binding, Utils::StringId strId, u64 size)
+    {
+        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
+            "Cannot assign more than 5 uniform structs per shader!");
+        
+        u32 uniformIdx = GetUniformStructIdx(strId);
+
+        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
+
+        uniformStructs.data[uniformIdx] = {strId, location, binding, size};
+
+        std::cout << "Added uniform at index: " << uniformIdx << std::endl;
     }
 
     u32 Shader::GetUniformStructIdx(const char* name)
