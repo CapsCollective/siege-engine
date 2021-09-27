@@ -59,4 +59,15 @@ namespace SnekVk::Buffer
         if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
         if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
     }
+
+    size_t PadUniformBufferSize(size_t originalSize)
+    {
+        // Calculate required alignment based on minimum device offset alignment
+        size_t minUboAlignment = VulkanDevice::GetDeviceInstance()->GetDeviceAlignment();
+        size_t alignedSize = originalSize;
+        if (minUboAlignment > 0) {
+            alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+        }
+        return alignedSize;
+    }
 }

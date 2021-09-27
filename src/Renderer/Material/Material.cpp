@@ -14,14 +14,16 @@ namespace SnekVk
         {
             VkDescriptorPoolSize poolSizes[] = {
                 {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
-                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10}
+                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10},
+                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10},
+                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 10}
             };
 
             VkDescriptorPoolCreateInfo poolCreateInfo {};
             poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
             poolCreateInfo.flags = 0;
             poolCreateInfo.maxSets = 10;
-            poolCreateInfo.poolSizeCount = 2;
+            poolCreateInfo.poolSizeCount = 4;
             poolCreateInfo.pPoolSizes = poolSizes;
 
             SNEK_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
