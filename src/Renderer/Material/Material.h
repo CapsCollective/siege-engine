@@ -59,6 +59,8 @@ namespace SnekVk
         void Bind(VkCommandBuffer commandBuffer);
         void RecreatePipeline();
 
+        static void BuildMaterials(std::initializer_list<Material*> materials);
+
         private:
         
         // TODO: Change this to std::array?
