@@ -64,4 +64,6 @@ namespace SnekVk::Buffer
      * @param buffer - the buffer to be destroyed.
      **/
     void DestroyBuffer(Buffer& buffer);
+
+    size_t PadUniformBufferSize(size_t originalSize);
 }

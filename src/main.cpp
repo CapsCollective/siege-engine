@@ -182,7 +182,7 @@ int main()
     SnekVk::Shader spriteShaderVert("shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
 
     // Fragment shaders
-    SnekVk::Shader diffuseShaderFrag("bin/shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+    SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     // Set diffuse shader vertex properties
     diffuseShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
