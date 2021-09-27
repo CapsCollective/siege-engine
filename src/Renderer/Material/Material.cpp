@@ -148,6 +148,11 @@ namespace SnekVk
         shaders.count++;
     }
 
+    void Material::AddShaders(std::initializer_list<Shader> shaders)
+    {
+        for (auto& shader : shaders) AddShader(shader);
+    }
+
     void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     {
         Buffer::CopyData(buffer, dataSize, data);
