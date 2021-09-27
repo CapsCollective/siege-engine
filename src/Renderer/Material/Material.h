@@ -44,6 +44,7 @@ namespace SnekVk
         void BuildMaterial();
 
         void AddShader(Shader shader);
+        void AddShaders(std::initializer_list<Shader> shaders);
 
         static void DestroyDescriptorPool() 
         { 

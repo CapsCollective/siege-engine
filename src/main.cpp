@@ -9,7 +9,6 @@
 #include "Renderer/Material/Material.h"
 #include "Renderer/Shader/Shader.h"
 
-#include <glm/gtc/constants.hpp>
 #include <vector>
 #include <chrono>
 
@@ -176,12 +175,14 @@ int main()
 
     Components::Shape cameraObject;
 
-    SnekVk::Material diffuseMat; 
-
     // Shader Declaration
 
+    // Vertex shaders
     SnekVk::Shader diffuseShaderVert("shaders/simpleShader.vert.spv", SnekVk::PipelineConfig::VERTEX);
-    SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
+    SnekVk::Shader spriteShaderVert("shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
+
+    // Fragment shaders
+    SnekVk::Shader diffuseShaderFrag("bin/shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     diffuseShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
 
@@ -192,26 +193,23 @@ int main()
 
     diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
 
-    // Material Declaration
-
-    diffuseMat.AddShader(diffuseShaderVert);
-    diffuseMat.AddShader(diffuseShaderFrag);
-
-    diffuseMat.BuildMaterial();
-
-    SnekVk::Material spriteMat;
-
-    SnekVk::Shader spriteShaderVert("shaders/simpleShader2D.vert.spv", SnekVk::PipelineConfig::VERTEX);
-
     spriteShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
 
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
     spriteShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+
+    // Material Declaration
+
+    SnekVk::Material diffuseMat; // 3D diffuse material
+    SnekVk::Material spriteMat;  // 2D sprite material     
+
+    diffuseMat.AddShaders({diffuseShaderVert, diffuseShaderFrag});
+
+    diffuseMat.BuildMaterial();
     
-    spriteMat.AddShader(spriteShaderVert);
-    spriteMat.AddShader(diffuseShaderFrag);
+    spriteMat.AddShaders({spriteShaderVert, diffuseShaderFrag});
 
     spriteMat.BuildMaterial();
 
@@ -220,17 +218,19 @@ int main()
     // Generating models from raw vertices
 
     SnekVk::Model triangleModel(triangleMeshData);
-    triangleModel.SetMaterial(&spriteMat);
-
     SnekVk::Model squareModel(squareMeshData);
-    squareModel.SetMaterial(&spriteMat);
 
     // Generating models from .obj files
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
-    cubeObjModel.SetMaterial(&diffuseMat);
-
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
+
+    // Set 2D sprite material
+    triangleModel.SetMaterial(&spriteMat);
+    squareModel.SetMaterial(&spriteMat);
+
+    // Set 3D diffuse material
+    cubeObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
