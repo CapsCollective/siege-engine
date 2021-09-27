@@ -158,6 +158,11 @@ namespace SnekVk
         Buffer::CopyData(buffer, dataSize, data);
     }
 
+    void Material::BuildMaterials(std::initializer_list<Material*> materials)
+    {
+        for (auto material : materials) material->BuildMaterial();
+    }
+
     void Material::BuildMaterial()
     {
         if (layout != VK_NULL_HANDLE) CreateLayout(&layout, 1);

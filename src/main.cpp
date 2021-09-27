@@ -184,6 +184,7 @@ int main()
     // Fragment shaders
     SnekVk::Shader diffuseShaderFrag("bin/shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
+    // Set diffuse shader vertex properties
     diffuseShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex));
 
     diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3);
@@ -193,6 +194,7 @@ int main()
 
     diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
 
+    // Set sprite shader vertex properties
     spriteShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
 
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
@@ -206,12 +208,9 @@ int main()
     SnekVk::Material spriteMat;  // 2D sprite material     
 
     diffuseMat.AddShaders({diffuseShaderVert, diffuseShaderFrag});
-
-    diffuseMat.BuildMaterial();
-    
     spriteMat.AddShaders({spriteShaderVert, diffuseShaderFrag});
 
-    spriteMat.BuildMaterial();
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     // Generate models
 
