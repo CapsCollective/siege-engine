@@ -1,6 +1,7 @@
 #include "Material.h"
 #include "../Mesh/Mesh.h"
 #include "../Swapchain/Swapchain.h"
+#include "../Utils/Descriptor.h"
 
 namespace SnekVk
 {
@@ -66,9 +67,9 @@ namespace SnekVk
     void Material::RecreatePipeline()
     {
         // Clear our graphics pipeline before swapchain re-creation
-            pipeline.ClearPipeline();
+        pipeline.ClearPipeline();
 
-            BuildMaterial();
+        BuildMaterial();
     }
 
     void Material::SetDescriptor(Descriptor descriptor)
@@ -85,50 +86,33 @@ namespace SnekVk
 
         // Create a descriptor set for our object transforms.
 
-        VkDescriptorSetLayoutBinding bufferBinding {};
-        bufferBinding.binding = 0;
-        bufferBinding.descriptorCount = 1;
-        bufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        bufferBinding.stageFlags = (VkShaderStageFlags)descriptor.stage;
+        auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
+            0, 
+            1, 
+            Utils::Descriptor::STORAGE, 
+            (VkShaderStageFlags)descriptor.stage
+        );
 
-        VkDescriptorSetLayoutCreateInfo layoutCreateInfo{};
-        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutCreateInfo.pNext = nullptr;
-
-        layoutCreateInfo.bindingCount = 1;
-        layoutCreateInfo.flags = 0;
-        layoutCreateInfo.pBindings = &bufferBinding;
-
-        SNEK_ASSERT(vkCreateDescriptorSetLayout(device->Device(), &layoutCreateInfo, nullptr, &layout) == VK_SUCCESS,
+        SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT layout, &bufferBinding, 1),
                 "Failed to create descriptor set!");
         
-        // Object transform allocate info
-        VkDescriptorSetAllocateInfo allocateInfo {};
-        allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocateInfo.pNext = nullptr;
-        allocateInfo.descriptorPool = descriptorPool;
-        allocateInfo.descriptorSetCount = 1;
-        allocateInfo.pSetLayouts = &layout;
-        
-        vkAllocateDescriptorSets(device->Device(), &allocateInfo, &descriptorSet);
+        Utils::Descriptor::AllocateSets(device->Device(), descriptorSet, descriptorPool, 1, &layout);
 
-        VkDescriptorBufferInfo bufferInfo {};
-        bufferInfo.buffer = buffer.buffer;
-        bufferInfo.offset = 0;
-        bufferInfo.range = descriptor.size;
+        auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, descriptor.size);
 
-        VkWriteDescriptorSet writeDescriptorSet {};
-        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.pNext = nullptr;
-        writeDescriptorSet.dstBinding = 0;
-        writeDescriptorSet.dstSet = descriptorSet;
-        writeDescriptorSet.descriptorCount = 1;
-        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        writeDescriptorSet.pBufferInfo = &bufferInfo;
+        // TODO: Set this up to create bindings for different sets. 
 
-        VkWriteDescriptorSet writeDescriptorSets[] = {writeDescriptorSet};
+        auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
+            0, 
+            descriptorSet, 
+            1, 
+            Utils::Descriptor::STORAGE, 
+            bufferInfo
+        );
 
-        vkUpdateDescriptorSets(device->Device(), 1, writeDescriptorSets, 0, nullptr);
+        VkWriteDescriptorSet writeDescriptorSets[] = { writeDescriptorSet };
+
+        Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, 1);
     }
 
     void Material::AddShader(Shader shader)
