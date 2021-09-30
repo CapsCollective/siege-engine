@@ -101,6 +101,15 @@ namespace SnekVk
         auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, descriptor.size);
 
         // TODO: Set this up to create bindings for different sets. 
+        // Will likely need to create a container for descriptors that 
+        // can sort them based on the uniforms defined by the shader.
+
+        // something like:
+        // struct DescriptorStorage {
+        //     ...   
+        // }
+
+        // Will then need to add the descriptor to the buffer at a specific offset.
 
         auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
             0, 

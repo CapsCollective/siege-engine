@@ -3,6 +3,7 @@
 
 namespace SnekVk::Utils
 {
+    // TODO document this
     class Descriptor
     {
         public: 
