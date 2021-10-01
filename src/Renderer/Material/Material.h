@@ -72,6 +72,14 @@ namespace SnekVk
             T data[MAX_COUNT];
         };
 
+        struct Property
+        {
+            Utils::StringId id;
+            u64 offset;
+            u64 size;
+            const void* data;
+        };
+
         void CreateLayout(
             VkDescriptorSetLayout* layouts = nullptr, 
             u32 layoutCount = 0, 
@@ -86,6 +94,7 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         Storage<Shader, MAX_SHADER_COUNT> shaders;
+        Storage<Property, 10> properties;
 
         Buffer::Buffer buffer;
 

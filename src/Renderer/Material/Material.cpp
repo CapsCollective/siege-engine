@@ -137,6 +137,14 @@ namespace SnekVk
             auto uniform = uniforms.data[i];
 
             SetDescriptor({shader.GetStage(), uniform.size });
+
+            if (properties.count < properties.MAX_COUNT)
+            {
+                size_t count = properties.count;
+                properties.data[count] = {uniform.id, count, uniform.size, nullptr};
+                std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << count << std::endl;
+                properties.count++;
+            }
         }
 
         shaders.data[shaders.count] = shader;
