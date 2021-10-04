@@ -61,7 +61,8 @@ namespace SnekVk
     void Material::Bind(VkCommandBuffer commandBuffer)
     {
         pipeline.Bind(commandBuffer);
-        if (descriptorSet) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+        u32 uniformOffset = 0;
+        if (descriptorSet) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 1, &uniformOffset);
     }
 
     void Material::RecreatePipeline()
@@ -74,10 +75,15 @@ namespace SnekVk
 
     void Material::SetDescriptor(Descriptor descriptor)
     {
+        // TODO: refactor this. 
+        // Function should do the following:
+        // 1. Allocate a buffer which stores the full siz of all stored properties. 
+        // 2. Create appropriate bindings and layouts.
+        // 3. Write data to the sets.
         auto device = VulkanDevice::GetDeviceInstance();
 
         Buffer::CreateBuffer(
-            descriptor.size,
+            Buffer::PadUniformBufferSize(descriptor.size),
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
             OUT buffer.buffer,
@@ -85,11 +91,10 @@ namespace SnekVk
         );
 
         // Create a descriptor set for our object transforms.
-
         auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
             0, 
             1, 
-            Utils::Descriptor::STORAGE, 
+            Utils::Descriptor::STORAGE_DYNAMIC, 
             (VkShaderStageFlags)descriptor.stage
         );
 
@@ -100,22 +105,11 @@ namespace SnekVk
 
         auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, descriptor.size);
 
-        // TODO: Set this up to create bindings for different sets. 
-        // Will likely need to create a container for descriptors that 
-        // can sort them based on the uniforms defined by the shader.
-
-        // something like:
-        // struct DescriptorStorage {
-        //     ...   
-        // }
-
-        // Will then need to add the descriptor to the buffer at a specific offset.
-
         auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
             0, 
             descriptorSet, 
             1, 
-            Utils::Descriptor::STORAGE, 
+            Utils::Descriptor::STORAGE_DYNAMIC, 
             bufferInfo
         );
 
@@ -129,23 +123,6 @@ namespace SnekVk
         SNEK_ASSERT(shaders.count < shaders.MAX_COUNT, 
             std::string("Too many shaders assigned. Max is ")
             .append(std::to_string(shaders.MAX_COUNT)).c_str());
-
-        auto uniforms = shader.GetUniformStructs();
-
-        for(size_t i = 0; i < uniforms.count; i++)
-        {
-            auto uniform = uniforms.data[i];
-
-            SetDescriptor({shader.GetStage(), uniform.size });
-
-            if (properties.count < properties.MAX_COUNT)
-            {
-                size_t count = properties.count;
-                properties.data[count] = {uniform.id, count, uniform.size, nullptr};
-                std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << count << std::endl;
-                properties.count++;
-            }
-        }
 
         shaders.data[shaders.count] = shader;
         shaders.count++;
@@ -166,14 +143,40 @@ namespace SnekVk
         for (auto material : materials) material->BuildMaterial();
     }
 
+    // TODO: Break this up into multiple smaller functions
     void Material::BuildMaterial()
     {
+        // TODO: Extract this into another function
+        for(size_t i = 0; i < shaders.count; i++)
+        {
+            auto shader = shaders.data[i];
+            auto uniforms = shader.GetUniformStructs();
+
+            for(size_t j = 0; j < uniforms.count; j++)
+            {
+                auto uniform = uniforms.data[j];
+
+                SetDescriptor({shader.GetStage(), uniform.size });
+
+                size_t count = properties.count;
+
+                if (count < properties.MAX_COUNT)
+                {
+                    u64 offset = count == 0 ? count : properties.data[count-1].size;
+                    properties.data[count] = {uniform.id, count, uniform.size, nullptr};
+                    properties.count++;
+                    std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
+                }
+            }
+        }
+
         if (layout != VK_NULL_HANDLE) CreateLayout(&layout, 1);
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
         size_t vertexCount = 0;
 
+        // TODO: Precompute this value
         for(size_t i = 0; i < shaders.count; i++)
         {
             auto vertices = shaders.data[i].GetVertexBindings();
