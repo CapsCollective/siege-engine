@@ -73,29 +73,24 @@ namespace SnekVk
         BuildMaterial();
     }
 
-    void Material::SetDescriptor(Descriptor descriptor)
+    void Material::SetDescriptor(Shader::Uniform<const void*>& uniform, VkShaderStageFlags stage, u64 offset)
     {
         // TODO: refactor this. 
         // Function should do the following:
-        // 1. Allocate a buffer which stores the full siz of all stored properties. 
+        // 1. Allocate a buffer which stores the full size of all stored properties. 
         // 2. Create appropriate bindings and layouts.
         // 3. Write data to the sets.
         auto device = VulkanDevice::GetDeviceInstance();
-
-        Buffer::CreateBuffer(
-            Buffer::PadUniformBufferSize(descriptor.size),
-            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            OUT buffer.buffer,
-            OUT buffer.bufferMemory
-        );
+        
+        // TODO: Will need to find a way to find common uniforms across multiple shaders
+        // will likely need to group them by stages
 
         // Create a descriptor set for our object transforms.
         auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
-            0, 
+            uniform.binding, 
             1, 
             Utils::Descriptor::STORAGE_DYNAMIC, 
-            (VkShaderStageFlags)descriptor.stage
+            stage
         );
 
         SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT layout, &bufferBinding, 1),
@@ -103,10 +98,10 @@ namespace SnekVk
         
         Utils::Descriptor::AllocateSets(device->Device(), descriptorSet, descriptorPool, 1, &layout);
 
-        auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, descriptor.size);
+        auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
 
         auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
-            0, 
+            uniform.binding, 
             descriptorSet, 
             1, 
             Utils::Descriptor::STORAGE_DYNAMIC, 
@@ -125,6 +120,10 @@ namespace SnekVk
             .append(std::to_string(shaders.MAX_COUNT)).c_str());
 
         shaders.data[shaders.count] = shader;
+
+        bufferSize += shader.GetUniformSize();
+
+        std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
         shaders.count++;
     }
 
@@ -146,7 +145,17 @@ namespace SnekVk
     // TODO: Break this up into multiple smaller functions
     void Material::BuildMaterial()
     {
+        // Allocate buffer which can store all the data we need
+        Buffer::CreateBuffer(
+            Buffer::PadUniformBufferSize(bufferSize),
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            OUT buffer.buffer,
+            OUT buffer.bufferMemory
+        );
+
         // TODO: Extract this into another function
+        u64 offset = 0;
         for(size_t i = 0; i < shaders.count; i++)
         {
             auto shader = shaders.data[i];
@@ -156,16 +165,16 @@ namespace SnekVk
             {
                 auto uniform = uniforms.data[j];
 
-                SetDescriptor({shader.GetStage(), uniform.size });
+                SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
 
                 size_t count = properties.count;
 
                 if (count < properties.MAX_COUNT)
                 {
-                    u64 offset = count == 0 ? count : properties.data[count-1].size;
                     properties.data[count] = {uniform.id, count, uniform.size, nullptr};
                     properties.count++;
                     std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
+                    offset += uniform.size;
                 }
             }
         }

@@ -61,6 +61,7 @@ namespace SnekVk
 
         u32 GetUniformStructIdx(const char* name);
         u32 GetUniformStructIdx(Utils::StringId strId);
+        u64 GetUniformSize() { return uniformSize; }
 
         Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> GetUniformStructs() { return uniformStructs; }
         Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> GetVertexBindings() { return vertexStorage; }
@@ -70,6 +71,7 @@ namespace SnekVk
         private:
 
         Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> uniformStructs;
+        u64 uniformSize = 0;
         Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> vertexStorage;
         
         const char* filePath;
