@@ -62,6 +62,8 @@ namespace SnekVk
         uniformStructs.data[uniformIdx] = {strId, location, binding, size};
 
         std::cout << "Added uniform: " << name << " at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
     }
 
     void Shader::SetUniformStruct(u32 location, u32 binding, Utils::StringId strId, u64 size)
@@ -76,6 +78,8 @@ namespace SnekVk
         uniformStructs.data[uniformIdx] = {strId, location, binding, size};
 
         std::cout << "Added uniform at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
     }
 
     u32 Shader::GetUniformStructIdx(const char* name)

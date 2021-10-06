@@ -39,7 +39,7 @@ namespace SnekVk
 
         ~Material();
 
-        void SetDescriptor(Descriptor descriptor);
+        void SetDescriptor(Shader::Uniform<const void*>& uniform, VkShaderStageFlags stage, u64 offset);
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
@@ -97,6 +97,7 @@ namespace SnekVk
         Storage<Property, 10> properties;
 
         Buffer::Buffer buffer;
+        u64 bufferSize = 0;
 
         VkDescriptorSetLayout layout {VK_NULL_HANDLE}; 
         VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
