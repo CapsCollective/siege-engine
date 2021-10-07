@@ -55,6 +55,7 @@ namespace SnekVk
         }
 
         void SetUniformData(VkDeviceSize dataSize, const void* data);
+        void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
 
         void Bind(VkCommandBuffer commandBuffer);
         void RecreatePipeline();

@@ -137,6 +137,17 @@ namespace SnekVk
         Buffer::CopyData(buffer, dataSize, data);
     }
 
+    void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data)
+    {
+        // TODO: change this to use a dictionary
+        for(size_t i = 0; i < properties.count; i++)
+        {
+            auto property = properties.data[i];
+
+            if (id == property.id) Buffer::CopyData(buffer, dataSize, data, property.offset);
+        }
+    }
+
     void Material::BuildMaterials(std::initializer_list<Material*> materials)
     {
         for (auto material : materials) material->BuildMaterial();
@@ -171,7 +182,7 @@ namespace SnekVk
 
                 if (count < properties.MAX_COUNT)
                 {
-                    properties.data[count] = {uniform.id, count, uniform.size, nullptr};
+                    properties.data[count] = {uniform.id, offset, uniform.size, nullptr};
                     properties.count++;
                     std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
                     offset += uniform.size;

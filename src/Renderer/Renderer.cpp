@@ -14,6 +14,8 @@ namespace SnekVk
 
         if (deviceInstance == nullptr) deviceInstance = &device;
 
+        bufferId = INTERN_STR("objectBuffer");
+
         CreateCommandBuffers();
     }
 
@@ -61,7 +63,7 @@ namespace SnekVk
             if (currentMat != model->GetMaterial())
             {
                 currentMat = model->GetMaterial();
-                currentMat->SetUniformData(bufferSize, transforms);
+                currentMat->SetUniformData(bufferId, bufferSize, transforms);
                 currentMat->Bind(commandBuffer);
             } 
 

@@ -87,6 +87,8 @@ namespace SnekVk
             Model* models[MAX_OBJECT_TRANSFORMS];
             size_t modelCount = 0;
 
+            Utils::StringId bufferId;
+
             Camera* mainCamera;
     };
 }
