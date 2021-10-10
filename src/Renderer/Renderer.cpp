@@ -48,13 +48,22 @@ namespace SnekVk
                 "LIMIT REACHED ON RENDERABLE MODELS");
     }
 
+    void Renderer::DrawModel2D(Model* model, const Model::Transform2D& transform)
+    {
+        models2D[model2DCount] = model;
+        // might need to see if there's a way to avoid a copy here.
+        transforms2D[model2DCount] = { mainCamera->GetProjView() * transform.transform };
+        SNEK_ASSERT(model2DCount++ <= MAX_OBJECT_TRANSFORMS, 
+                "LIMIT REACHED ON RENDERABLE MODELS");
+    }
+
     void Renderer::DrawFrame()
     {
         if (modelCount == 0) return;
 
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        VkDeviceSize bufferSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
+        VkDeviceSize bufferSize = sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS;
 
         for (size_t i = 0; i < modelCount; i++)
         {
@@ -64,6 +73,28 @@ namespace SnekVk
             {
                 currentMat = model->GetMaterial();
                 currentMat->SetUniformData(bufferId, bufferSize, transforms);
+                currentMat->Bind(commandBuffer);
+            } 
+
+            if (currentModel != model)
+            {
+                currentModel = model;
+                currentModel->Bind(commandBuffer);
+            }
+
+            model->Draw(commandBuffer, i);
+        }
+
+        VkDeviceSize bufferSize2D = sizeof(transforms2D[0]) * MAX_OBJECT_TRANSFORMS;
+
+        for (size_t i = 0; i < model2DCount; i++)
+        {
+            auto model = models2D[i];
+
+            if (currentMat != model->GetMaterial())
+            {
+                currentMat = model->GetMaterial();
+                currentMat->SetUniformData(bufferId, bufferSize2D, transforms2D);
                 currentMat->Bind(commandBuffer);
             } 
 
@@ -172,9 +203,14 @@ namespace SnekVk
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT; 
 
         // Reset the collections of models
-        memset(transforms, 0, sizeof(Model::Transform) * modelCount);
-        memset(models, 0, sizeof(Model*) * modelCount);
+        memset(transforms, 0, sizeof(transforms[0]) * modelCount);
+        memset(models, 0, sizeof(models[0]) * modelCount);
         modelCount = 0;
+
+        // TODO: Duplicated logic, might be good to create standalone container
+        memset(transforms2D, 0, sizeof(transforms2D[0]) * model2DCount);
+        memset(models, 0, sizeof(models2D[0]) * model2DCount);
+        model2DCount = 0;
     }
 
     void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)

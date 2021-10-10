@@ -200,7 +200,7 @@ int main()
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
-    spriteShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+    spriteShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
 
     // Material Declaration
 
@@ -236,7 +236,11 @@ int main()
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),
-        Components::Shape(&vaseObjModel),
+        Components::Shape(&vaseObjModel)
+    };
+
+    std::vector<Components::Shape> shapes2D = 
+    {
         Components::Shape(&triangleModel),
         Components::Shape(&squareModel)
     };
@@ -249,9 +253,9 @@ int main()
     shapes[1].SetScale({2.f, 2.f, 2.f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
 
-    shapes[2].SetPosition({1.5f, 0.f, 2.5f});
+    shapes2D[0].SetPosition({1.5f, 0.f, 2.5f});
 
-    shapes[3].SetPosition({-1.5f, 0.f, 2.5f});
+    shapes2D[1].SetPosition({-1.5f, 0.f, 2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -288,6 +292,11 @@ int main()
         for (auto& shape : shapes)
         {
             renderer.DrawModel(shape.GetModel(), shape.GetTransform());
+        }
+
+        for (auto& shape : shapes2D)
+        {
+            renderer.DrawModel2D(shape.GetModel(), shape.GetTransform2D());
         }
         
         renderer.EndFrame();

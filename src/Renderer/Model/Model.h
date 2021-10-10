@@ -29,6 +29,12 @@ namespace SnekVk
             glm::mat4 normalMatrix;
         };
 
+        // Placeholder - in case we need to add more unique 2D data
+        struct Transform2D
+        {
+            glm::mat4 transform;
+        };
+
         Model(const Mesh::MeshData& meshData);
         Model(const char* filePath);
         Model();

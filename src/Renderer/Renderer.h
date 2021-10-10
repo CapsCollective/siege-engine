@@ -40,6 +40,7 @@ namespace SnekVk
             }
             
             void DrawModel(Model* model, const Model::Transform& transform);
+            void DrawModel2D(Model* model, const Model::Transform2D& transform);
 
             void RegisterMaterial(Material* mat) { currentMat = mat; }
 
@@ -83,9 +84,18 @@ namespace SnekVk
             Material* currentMat{nullptr};
             Model* currentModel{nullptr};
 
+            // TODO: there's some duplicated logic here. Will need to 
+            // create a separate object for managing models and uniforms.
             Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
+            Model::Transform2D transforms2D[MAX_OBJECT_TRANSFORMS];
+
             Model* models[MAX_OBJECT_TRANSFORMS];
             size_t modelCount = 0;
+
+            Model* models2D[MAX_OBJECT_TRANSFORMS];
+            size_t model2DCount = 0;
+
+            // End of duplicated logic
 
             Utils::StringId bufferId;
 
