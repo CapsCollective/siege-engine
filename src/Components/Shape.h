@@ -30,6 +30,7 @@ namespace Components
         ~Shape();
 
         SnekVk::Model::Transform GetTransform() { return { CalculateTransform(transform), CalculateNormalMatrix(transform) }; };
+        SnekVk::Model::Transform2D GetTransform2D() { return { CalculateTransform(transform) }; };
         glm::vec3& GetColor() { return fillColor; }
         SnekVk::Model* GetModel() { return model; }
         glm::vec3& GetRotation() { return transform.rotation; }
