@@ -263,6 +263,8 @@ int main()
 
     renderer.SetMainCamera(&camera);
 
+    SnekVk::Utils::StackArray<int, 5> stackArray { 1, 2, 3 };
+
     while(!window.WindowShouldClose()) {
         
         auto newTime = std::chrono::high_resolution_clock::now();

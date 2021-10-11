@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/Array.h"
+#include "Utils/StackArray.h"
 #include "Utils/Hash.h"
 
 #include <volk/volk.h>
