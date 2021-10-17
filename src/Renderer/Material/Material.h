@@ -94,7 +94,8 @@ namespace SnekVk
 
         static VkDescriptorPool descriptorPool;
 
-        Storage<Shader, MAX_SHADER_COUNT> shaders;
+        Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
+
         Storage<Property, 10> properties;
 
         Buffer::Buffer buffer;
