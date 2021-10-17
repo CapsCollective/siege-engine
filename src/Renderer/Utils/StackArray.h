@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Array.h"
 #include <memory>
 #include <iostream>
 #include <cstdint>
@@ -9,17 +10,15 @@ namespace SnekVk::Utils
 {
     template<typename T, size_t S>
     
-    // TODO: Implement iterator for this array
     class StackArray
     {
+        public:
+        using ValueType = T;
+        using Iterator = ArrayIterator<StackArray>;
+
         public: 
 
-        StackArray() 
-        {
-            // Set all values to nullptr to start with
-            memset(data, 0, sizeof(T) * S);
-            memset(states, false, sizeof(bool) * S);
-        }
+        StackArray() { memset(states, false, sizeof(bool) * S); }
 
         StackArray(std::initializer_list<T> values)
         {
@@ -34,9 +33,6 @@ namespace SnekVk::Utils
         // TODO: Implement copy constructor
         StackArray(StackArray& other);
 
-        // TODO: Implement move constructor
-        StackArray(StackArray&& other);
-
         ~StackArray() {}
 
         size_t Count() { return count; }
@@ -44,13 +40,19 @@ namespace SnekVk::Utils
         
         void Set(size_t index, T value)
         {
-            if (!Exists(index)) 
-            {
-                count++;
-                states[index] = true;
-            }
+            count += !Exists(index);
 
+            states[index] = true; 
             data[index] = value;
+        }
+
+        void Append(T value)
+        {
+            assert(count < S 
+                    && std::string("Too many elements added to array. Max is ")
+                    .append(std::to_string(S)).c_str());
+
+            Set(count, value);
         }
 
         void Remove(size_t index)
@@ -71,6 +73,12 @@ namespace SnekVk::Utils
         T& operator[] (size_t index) { return Get(index); }
 
         const T& operator[] (size_t index) const { return Get(index); }
+
+        Iterator begin() { return Iterator(data); }
+        Iterator end() { return Iterator(data + count); }
+
+        const Iterator begin() const { return Iterator(data); }
+        const Iterator end() const { return Iterator(data + count); }
 
         private:
 

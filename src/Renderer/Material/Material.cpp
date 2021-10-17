@@ -115,16 +115,11 @@ namespace SnekVk
 
     void Material::AddShader(Shader shader)
     {
-        SNEK_ASSERT(shaders.count < shaders.MAX_COUNT, 
-            std::string("Too many shaders assigned. Max is ")
-            .append(std::to_string(shaders.MAX_COUNT)).c_str());
-
-        shaders.data[shaders.count] = shader;
+        shaders.Append(shader);
 
         bufferSize += shader.GetUniformSize();
 
         std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
-        shaders.count++;
     }
 
     void Material::AddShaders(std::initializer_list<Shader> shaders)
@@ -167,9 +162,9 @@ namespace SnekVk
 
         // TODO: Extract this into another function
         u64 offset = 0;
-        for(size_t i = 0; i < shaders.count; i++)
+
+        for (auto& shader : shaders)
         {
-            auto shader = shaders.data[i];
             auto uniforms = shader.GetUniformStructs();
 
             for(size_t j = 0; j < uniforms.count; j++)
@@ -197,19 +192,18 @@ namespace SnekVk
         size_t vertexCount = 0;
 
         // TODO: Precompute this value
-        for(size_t i = 0; i < shaders.count; i++)
+        for (auto& shader: shaders)
         {
-            auto vertices = shaders.data[i].GetVertexBindings();
-
-            vertexCount += vertices.count;
+            vertexCount += shader.GetVertexBindings().count;
         }
 
         VertexDescription::Binding bindings[vertexCount];
-        PipelineConfig::ShaderConfig shaderConfigs[shaders.count];
+        PipelineConfig::ShaderConfig shaderConfigs[shaders.Count()];
 
-        for(size_t i = 0; i < shaders.count; i++)
+        for(size_t i = 0; i < shaders.Count(); i++)
         {
-            auto vertices = shaders.data[i].GetVertexBindings();
+            auto shader = shaders[i];
+            auto vertices = shader.GetVertexBindings();
             
             for (u32 j = 0; j < vertices.count; j++)
             {
@@ -225,7 +219,7 @@ namespace SnekVk
                         attributes.attributeCount);
             }
 
-            shaderConfigs[i] = { shaders.data[i].GetPath(), shaders.data[i].GetStage() };
+            shaderConfigs[i] = { shader.GetPath(), shader.GetStage() };
         }
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
@@ -238,7 +232,7 @@ namespace SnekVk
 
         pipeline.RecreatePipeline(
             shaderConfigs,
-            static_cast<u32>(shaders.count),
+            static_cast<u32>(shaders.Count()),
             pipelineConfig
         );
     }
