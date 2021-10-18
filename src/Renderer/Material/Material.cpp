@@ -135,10 +135,8 @@ namespace SnekVk
     void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data)
     {
         // TODO: change this to use a dictionary
-        for(size_t i = 0; i < properties.count; i++)
+        for(auto& property : propertiesArray)
         {
-            auto property = properties.data[i];
-
             if (id == property.id) Buffer::CopyData(buffer, dataSize, data, property.offset);
         }
     }
@@ -173,15 +171,9 @@ namespace SnekVk
 
                 SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
 
-                size_t count = properties.count;
-
-                if (count < properties.MAX_COUNT)
-                {
-                    properties.data[count] = {uniform.id, offset, uniform.size, nullptr};
-                    properties.count++;
-                    std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
-                    offset += uniform.size;
-                }
+                propertiesArray.Append({uniform.id, offset, uniform.size, nullptr});
+                std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
+                offset += uniform.size;
             }
         }
 

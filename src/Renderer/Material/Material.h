@@ -12,6 +12,7 @@ namespace SnekVk
         public:
 
         static constexpr size_t MAX_SHADER_COUNT = 5;
+        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
 
         enum DescriptorType
         {
@@ -63,15 +64,6 @@ namespace SnekVk
         static void BuildMaterials(std::initializer_list<Material*> materials);
 
         private:
-        
-        // TODO: Change this to std::array?
-        template<typename T, size_t S>
-        struct Storage
-        {
-            static constexpr size_t MAX_COUNT = S;
-            size_t count = 0; 
-            T data[MAX_COUNT];
-        };
 
         struct Property
         {
@@ -95,8 +87,7 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
-
-        Storage<Property, 10> properties;
+        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
 
         Buffer::Buffer buffer;
         u64 bufferSize = 0;
