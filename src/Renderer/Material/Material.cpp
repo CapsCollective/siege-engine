@@ -86,20 +86,30 @@ namespace SnekVk
         // will likely need to group them by stages
 
         // Create a descriptor set for our object transforms.
+
+        // A layout binding must be created for each resorce used by a shader. 
+        // If we have two uniforms at different bindings (binding 0, 1, 2...etc), then we need
+        // a new layout binding for each one. 
+
+        // TODO: iterate over all uniforms in the material and create a binding for each one. 
+        // TODO: add all bindings to an array. All common bindings should be grouped together. 
         auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
             uniform.binding, 
             1, 
-            Utils::Descriptor::STORAGE_DYNAMIC, 
+            Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC, 
             stage
         );
-
+        
+        // TODO: Once all bindings are together, place them into an array and create the layout. 
         SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT layout, &bufferBinding, 1),
                 "Failed to create descriptor set!");
         
         Utils::Descriptor::AllocateSets(device->Device(), descriptorSet, descriptorPool, 1, &layout);
 
+        // TODO: Create an offset for each uniform in question.
         auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
 
+        // TODO: Write a set for each bufferInfo.
         auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
             uniform.binding, 
             descriptorSet, 
@@ -110,6 +120,7 @@ namespace SnekVk
 
         VkWriteDescriptorSet writeDescriptorSets[] = { writeDescriptorSet };
 
+        // TODO: Write all the sets
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, 1);
     }
 

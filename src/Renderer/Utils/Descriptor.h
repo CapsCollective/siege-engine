@@ -19,7 +19,7 @@ namespace SnekVk::Utils
         static VkDescriptorSetLayoutBinding CreateLayoutBinding(
             uint32_t binding, 
             uint32_t count, 
-            Type type, 
+            uint32_t type, 
             VkShaderStageFlags stageFlags,
             const VkSampler* sampler = nullptr
         );
