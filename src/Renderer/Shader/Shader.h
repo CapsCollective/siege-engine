@@ -19,6 +19,7 @@ namespace SnekVk
         Shader(const char* filePath, PipelineConfig::PipelineStage stage);
         ~Shader();
 
+        // TODO: Change this into a specialised class with internal logic
         struct VertexBinding
         {
             static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
@@ -33,13 +34,6 @@ namespace SnekVk
             static constexpr size_t MAX_COUNT = S;
             size_t count = 0; 
             T data[MAX_COUNT];
-        };
-
-        struct VertexStorage
-        {
-            static constexpr size_t MAX_VERTEX_BINDINGS = 5;
-            size_t bindingCount = 0; 
-            VertexBinding bindings[MAX_VERTEX_BINDINGS];
         };
 
         template<typename T> 
@@ -70,8 +64,10 @@ namespace SnekVk
 
         private:
 
+        // Maybe change this into a specialised class?
         Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> uniformStructs;
         u64 uniformSize = 0;
+
         Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> vertexStorage;
         
         const char* filePath;

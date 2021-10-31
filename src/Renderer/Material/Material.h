@@ -87,7 +87,9 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
+        
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
+        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> storagePropertiesArray;
 
         Buffer::Buffer buffer;
         u64 bufferSize = 0;
