@@ -35,7 +35,8 @@ namespace SnekVk
     {
         SNEK_ASSERT(vertexStorage.count < vertexStorage.MAX_COUNT, 
                 std::string("Too many vertex attributes assigned. Max is ")
-                .append(std::to_string(vertexStorage.MAX_COUNT)).c_str()); 
+                .append(std::to_string(vertexStorage.MAX_COUNT))
+                .c_str()); 
         
         SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
                 "Cannot assign attributes to more than 5 bindings!");

@@ -22,16 +22,13 @@ namespace SnekVk::Utils
 
         StackArray(std::initializer_list<T> values)
         {
-            size_t index = 0; 
-            for(auto& value : values)
-            {
-                Set(index, value);
-                index++;
-            }
+            for(auto& value : values) Append(value);
         }
 
-        // TODO: Implement copy constructor
-        StackArray(StackArray& other);
+        StackArray(const StackArray<T, S>& other)
+        {
+            for(auto& value : other) Append(value);
+        }
 
         ~StackArray() {}
 
