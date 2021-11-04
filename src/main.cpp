@@ -193,6 +193,7 @@ int main()
     diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
 
     diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+    diffuseShaderVert.SetUniformStruct(0, 0, "lightDir", sizeof(glm::vec3));
 
     // Set sprite shader vertex properties
     spriteShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));

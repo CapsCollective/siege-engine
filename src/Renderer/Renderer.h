@@ -52,7 +52,6 @@ namespace SnekVk
 
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
-
             static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
             
             static VulkanDevice* deviceInstance;
