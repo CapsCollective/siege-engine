@@ -18,7 +18,7 @@ layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
     ObjectData objects[];
 } objectBuffer;
 
-layout (set = 1, binding = 0) uniform LightDir {
+layout (set = 0, binding = 1) uniform LightDir {
     vec3 dir;
 } lightDir;
 
