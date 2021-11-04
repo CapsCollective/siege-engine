@@ -34,6 +34,7 @@ namespace SnekVk::Utils
 
         size_t Count() { return count; }
         size_t Size() { return S; }
+        T* Data() { return data; }
         
         void Set(size_t index, T value)
         {
@@ -77,18 +78,47 @@ namespace SnekVk::Utils
         const Iterator begin() const { return Iterator(data); }
         const Iterator end() const { return Iterator(data + count); }
 
-        private:
-
-        bool isValidIndex(size_t index)
-        {
-            return index < S;
-        }
-
         bool Exists(size_t index)
         {
             assert(isValidIndex(index) && "Error: index is out of bounds!");
 
             return states[index];
+        }
+
+        void Activate(size_t index)
+        {
+            assert(isValidIndex(index) && "Error: index is out of bounds!");
+
+            states[index] = true;
+
+            count++;
+        }
+
+        void Allocate(size_t slots)
+        {
+            assert(slots < S && count + slots < S && "Error: trying to allocate more slots than actually exist");
+
+            for (size_t i = 0; i < slots; i++)
+            {
+                Activate(i);
+            }
+        }
+
+        void Allocate(size_t slots, T defaultValue)
+        {
+            assert(slots < S && count + slots < S && "Error: trying to allocate more slots than actually exist");
+
+            for (size_t i = 0; i < slots; i++)
+            {
+                Set(i, defaultValue);
+            }
+        }
+
+        private:
+
+        bool isValidIndex(size_t index)
+        {
+            return index < S;
         }
 
         bool states[S];

@@ -1,4 +1,5 @@
 #include "Descriptor.h"
+#include <iostream>
 
 namespace SnekVk::Utils
 {
@@ -46,7 +47,7 @@ namespace SnekVk::Utils
 
     void Descriptor::AllocateSets(
         VkDevice device, 
-        VkDescriptorSet& descriptorSet,
+        VkDescriptorSet* descriptorSets,
         VkDescriptorPool descriptorPool, 
         uint32_t setCount, 
         const VkDescriptorSetLayout* layouts, 
@@ -55,7 +56,7 @@ namespace SnekVk::Utils
     {
         auto allocateInfo = CreateAllocateInfo(descriptorPool, setCount, layouts, pNext);
         
-        vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet);
+        vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
     }
 
     VkDescriptorSetAllocateInfo Descriptor::CreateAllocateInfo(
@@ -65,6 +66,7 @@ namespace SnekVk::Utils
         const void* pNext
     )
     {
+        std::cout << setCount << std::endl;
         return 
         {
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,

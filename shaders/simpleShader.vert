@@ -18,6 +18,10 @@ layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
     ObjectData objects[];
 } objectBuffer;
 
+layout (set = 1, binding = 0) uniform LightDir {
+    vec3 dir;
+} lightDir;
+
 const vec3 DIRECTION_TO_LIGHT = normalize(vec3(1.0, -3.0, -1.0));
 const float AMBIENT = 0.03;
 

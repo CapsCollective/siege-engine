@@ -41,6 +41,8 @@ namespace SnekVk
         ~Material();
 
         void SetDescriptor(Shader::Uniform<const void*>& uniform, VkShaderStageFlags stage, u64 offset);
+        void SetDescriptors(Utils::StackArray<Utils::StackArray<Shader::Uniform<const void*>, MAX_PROPERTIES_COUNT>, 5>&);
+
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
@@ -68,6 +70,7 @@ namespace SnekVk
         struct Property
         {
             Utils::StringId id;
+            VkShaderStageFlags stage;
             u64 offset;
             u64 size;
             const void* data;
@@ -96,6 +99,9 @@ namespace SnekVk
 
         VkDescriptorSetLayout layout {VK_NULL_HANDLE}; 
         VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
+
+        Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
+        Utils::StackArray<VkDescriptorSetLayout, 5> layouts;
 
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

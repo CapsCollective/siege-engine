@@ -42,7 +42,7 @@ namespace SnekVk::Utils
 
         static void AllocateSets(
             VkDevice device, 
-            VkDescriptorSet& descriptorSet,
+            VkDescriptorSet* descriptorSets,
             VkDescriptorPool descriptorPool, 
             uint32_t setCount, 
             const VkDescriptorSetLayout* layouts, 
