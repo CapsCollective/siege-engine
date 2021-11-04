@@ -13,6 +13,7 @@ namespace SnekVk
 
         static constexpr size_t MAX_SHADER_COUNT = 5;
         static constexpr size_t MAX_PROPERTIES_COUNT = 10;
+        static constexpr uint32_t MAX_SETS_PER_BINDING = 5;
 
         enum DescriptorType
         {
@@ -25,12 +26,6 @@ namespace SnekVk
             FILL = 0, 
             LINE = 1, 
             POINT = 2
-        };
-        
-        struct Descriptor
-        {
-            PipelineConfig::PipelineStage stage; 
-            u64 size;
         };
 
         Material();
@@ -67,6 +62,13 @@ namespace SnekVk
 
         private:
 
+        struct DescriptorBinding {
+            uint32_t binding = 0;
+            VkDescriptorSetLayout layout {VK_NULL_HANDLE};
+            VkDescriptorSet descriptorSets[MAX_SETS_PER_BINDING];
+            size_t descriptorCount = 0;
+        }; 
+
         struct Property
         {
             Utils::StringId id;
@@ -102,6 +104,8 @@ namespace SnekVk
 
         Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
         Utils::StackArray<VkDescriptorSetLayout, 5> layouts;
+
+        Utils::StackArray<DescriptorBinding, 5> descriptorBindings;
 
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

@@ -150,9 +150,6 @@ namespace SnekVk
         {
             auto& uniformArray = uniformBindings.Get(i);
 
-            std::cout << (Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC) << std::endl;
-            std::cout << (VK_DESCRIPTOR_TYPE_SAMPLER | VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) << std::endl;
-
             layoutBindings[i] = Utils::Descriptor::CreateLayoutBinding(
                 i, 
                 uniformArray.Count(), 
@@ -173,11 +170,9 @@ namespace SnekVk
 
         for (size_t i = 0; i < uniformBindings.Count(); i++)
         {
-            VkDescriptorSetLayout newLayout;
-            SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT newLayout, &layoutBindings[i], 1),
+            auto& binding = descriptorBindings.Get(i);
+            SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBindings[i], 1),
             "Failed to create descriptor set!");
-
-            layouts.Set(i, newLayout);
         }
 
         std::cout << "Successfully created all required layouts!" << std::endl;
@@ -188,10 +183,12 @@ namespace SnekVk
         size_t count = 0;
         for(size_t i = 0; i < uniformBindings.Count(); i++)
         {
+            auto& binding = descriptorBindings.Get(i);
+            
             for (auto& uniformArray : uniformBindings)
             {
                 std::cout << "Allocating " << uniformArray.Count() << " descriptor sets for binding " << i << std::endl;
-                Utils::Descriptor::AllocateSets(device->Device(), &descriptorSets.Get(i), descriptorPool, uniformArray.Count(), &layouts.Get(i));
+                Utils::Descriptor::AllocateSets(device->Device(), binding.descriptorSets, descriptorPool, uniformArray.Count(), &binding.layout);
                 count++;
             }
         }
@@ -298,6 +295,13 @@ namespace SnekVk
                 SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
 
                 propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader.GetStage(), offset,  uniform.size, nullptr});
+
+                if (!descriptorBindings.Exists(uniform.binding))
+                {
+                    std::cout << "Added new binding at position: " << uniform.binding << std::endl;
+                    descriptorBindings.Activate(uniform.binding);
+                    descriptorBindings.Get(uniform.binding).binding = uniform.binding;
+                }
 
                 if(!uniformBindings.Exists(uniform.binding)) 
                 {
