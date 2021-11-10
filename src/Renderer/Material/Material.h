@@ -62,6 +62,7 @@ namespace SnekVk
 
         private:
 
+        // Add stage and dynamic offset to this
         struct DescriptorBinding {
             uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
