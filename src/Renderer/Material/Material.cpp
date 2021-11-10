@@ -67,8 +67,7 @@ namespace SnekVk
         // TODO: 2. Extract all descriptorSets into a single array.
         // TODO: 3. Extract all dynamic offsets into a single array.
         // TODO: 4. Plug both into this function
-        u32 uniformOffset = 0;
-        if (descriptorSet) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 1, &uniformOffset);
+        if (descriptorSets.Count() > 0) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptorSets.Count(), descriptorSets.Data(), descriptorOffsets.Count(), descriptorOffsets.Data());
     }
 
     void Material::RecreatePipeline()
@@ -144,7 +143,7 @@ namespace SnekVk
 
         // Create a descriptor set for our object transforms.
 
-        // A layout binding must be created for each resorce used by a shader. 
+        // A layout binding must be created for each resou rce used by a shader. 
         // If we have two uniforms at different bindings (binding 0, 1, 2...etc), then we need
         // a new layout binding for each one. 
 
@@ -189,11 +188,17 @@ namespace SnekVk
         for (auto& binding : descriptorBindings)
         {
             auto& uniformArray = uniformBindings.Get(binding.binding);
+
+            binding.descriptorCount = uniformArray.Count();
             
             std::cout << "Allocating " << binding.descriptorCount << " descriptor sets for binding " << binding.binding << std::endl;
             Utils::Descriptor::AllocateSets(device->Device(), binding.descriptorSets, descriptorPool, uniformArray.Count(), &binding.layout);
+            
             descriptorCount += uniformArray.Count();
+            std::cout << "Binding count: " << binding.descriptorCount << std::endl;
+            
             // TODO: Add offsets to an offsets array at the top level. 
+            descriptorSets.Set(binding.binding, binding.descriptorSets[0]);
         }
 
         std::cout << "Total descriptor sets: " <<  descriptorCount << std::endl;
@@ -209,19 +214,23 @@ namespace SnekVk
             auto& uniform = uniformArray.Get(0);
 
             auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
+            descriptorOffsets.Append(Buffer::PadUniformBufferSize(offset));
             // TODO: Add this offset to an offsets array. 
             offset += uniform.size;
 
             writeDescriptorSets[writtenDescriptors] = Utils::Descriptor::CreateWriteSet(
                 uniform.binding, 
-                descriptorSet, 
+                descriptorSets[binding.binding], 
                 1, 
-                Utils::Descriptor::STORAGE_DYNAMIC, // change this to repsond to multiple types
+                Utils::Descriptor::STORAGE_DYNAMIC, // TODO: change this to respond to multiple types
                 bufferInfo
             );
 
             writtenDescriptors++;
         }     
+
+        std::cout << "offsets: " << descriptorOffsets.Count() << std::endl;
+        std::cout << "sets: " << descriptorSets.Count() << std::endl;
 
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, descriptorCount);
     }
@@ -289,7 +298,7 @@ namespace SnekVk
             {
                 auto uniform = uniforms.data[j];
 
-                SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
+                //SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
 
                 propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader.GetStage(), offset,  uniform.size, nullptr});
 
@@ -322,7 +331,13 @@ namespace SnekVk
 
         SetDescriptors(uniformBindings);
 
-        if (layout != VK_NULL_HANDLE) CreateLayout(&layout, 1);
+        VkDescriptorSetLayout layouts[descriptorBindings.Count()];
+        for(size_t i = 0; i < descriptorBindings.Count(); i++)
+        {
+            layouts[i] = descriptorBindings[i].layout;
+        }
+
+        CreateLayout(layouts, descriptorBindings.Count());
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
 
