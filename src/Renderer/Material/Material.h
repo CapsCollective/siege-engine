@@ -4,6 +4,7 @@
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
 #include "../Shader/Shader.h"
+#include "../Utils/Descriptor.h"
 
 namespace SnekVk
 {
@@ -68,6 +69,8 @@ namespace SnekVk
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
             VkDescriptorSet descriptorSets[MAX_SETS_PER_BINDING];
             size_t descriptorCount = 0;
+            // TODO: Allow the descriptorType to be set.
+            Utils::Descriptor descriptorType;
         }; 
 
         struct Property
@@ -104,10 +107,11 @@ namespace SnekVk
         VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
 
         Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
+        Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
         Utils::StackArray<VkDescriptorSetLayout, 5> layouts;
 
         Utils::StackArray<DescriptorBinding, 5> descriptorBindings;
-
+        
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
     };
