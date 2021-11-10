@@ -62,6 +62,11 @@ namespace SnekVk
     {
         pipeline.Bind(commandBuffer);
         // An array of all offsets for these descriptor sets
+        // TODO: Need to do the following: 
+        // TODO: 1. Iterate over all bindings
+        // TODO: 2. Extract all descriptorSets into a single array.
+        // TODO: 3. Extract all dynamic offsets into a single array.
+        // TODO: 4. Plug both into this function
         u32 uniformOffset = 0;
         if (descriptorSet) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 1, &uniformOffset);
     }
@@ -180,53 +185,45 @@ namespace SnekVk
         // TODO: Need to find a way to package all relevant descriptor sets into a single array per
         // binding
 
-        size_t count = 0;
-        for(size_t i = 0; i < uniformBindings.Count(); i++)
+        size_t descriptorCount = 0;
+        for (auto& binding : descriptorBindings)
         {
-            auto& binding = descriptorBindings.Get(i);
+            auto& uniformArray = uniformBindings.Get(binding.binding);
             
-            for (auto& uniformArray : uniformBindings)
-            {
-                std::cout << "Allocating " << uniformArray.Count() << " descriptor sets for binding " << i << std::endl;
-                Utils::Descriptor::AllocateSets(device->Device(), binding.descriptorSets, descriptorPool, uniformArray.Count(), &binding.layout);
-                count++;
-            }
+            std::cout << "Allocating " << binding.descriptorCount << " descriptor sets for binding " << binding.binding << std::endl;
+            Utils::Descriptor::AllocateSets(device->Device(), binding.descriptorSets, descriptorPool, uniformArray.Count(), &binding.layout);
+            descriptorCount += uniformArray.Count();
+            // TODO: Add offsets to an offsets array at the top level. 
         }
 
-        std::cout << "Total descriptor sets: " << descriptorSets.Count() << std::endl;
-        
+        std::cout << "Total descriptor sets: " <<  descriptorCount << std::endl;
 
-        // TODO: iterate over all uniforms in the material and create a binding for each one. 
-        // TODO: add all bindings to an array. All common bindings should be grouped together. 
-        // auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
-        //     uniform.binding, 
-        //     1, 
-        //     Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC, 
-        //     stage
-        // );
-        
-        // // TODO: Once all bindings are together, place them into an array and create the layout. 
-        // SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT layout, &bufferBinding, 1),
-        //         "Failed to create descriptor set!");
-        
-        // Utils::Descriptor::AllocateSets(device->Device(), descriptorSet, descriptorPool, 1, &layout);
+        VkWriteDescriptorSet writeDescriptorSets[descriptorCount];
+        size_t writtenDescriptors = 0;
 
-        // // TODO: Create an offset for each uniform in question.
-        // auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
+        size_t offset = 0;
+        for (auto& binding : descriptorBindings)
+        {
+            auto& uniformArray = uniformBindings.Get(binding.binding);
 
-        // // TODO: Write a set for each bufferInfo.
-        // auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
-        //     uniform.binding, 
-        //     descriptorSet, 
-        //     1, 
-        //     Utils::Descriptor::STORAGE_DYNAMIC, 
-        //     bufferInfo
-        // );
+            auto& uniform = uniformArray.Get(0);
 
-        // VkWriteDescriptorSet writeDescriptorSets[] = { writeDescriptorSet };
+            auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
+            // TODO: Add this offset to an offsets array. 
+            offset += uniform.size;
 
-        // // TODO: Write all the sets
-        // Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, 1);
+            writeDescriptorSets[writtenDescriptors] = Utils::Descriptor::CreateWriteSet(
+                uniform.binding, 
+                descriptorSet, 
+                1, 
+                Utils::Descriptor::STORAGE_DYNAMIC, // change this to repsond to multiple types
+                bufferInfo
+            );
+
+            writtenDescriptors++;
+        }     
+
+        Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, descriptorCount);
     }
 
     void Material::AddShader(Shader shader)
@@ -320,6 +317,8 @@ namespace SnekVk
                 offset += uniform.size;
             }
         }
+
+        std::cout << "Total bindings: " << uniformBindings.Count() << std::endl;
 
         SetDescriptors(uniformBindings);
 
