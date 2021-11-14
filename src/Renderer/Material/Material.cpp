@@ -67,6 +67,7 @@ namespace SnekVk
         // TODO: 2. Extract all descriptorSets into a single array.
         // TODO: 3. Extract all dynamic offsets into a single array.
         // TODO: 4. Plug both into this function
+
         if (descriptorSets.Count() > 0) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptorSets.Count(), descriptorSets.Data(), descriptorOffsets.Count(), descriptorOffsets.Data());
     }
 
@@ -148,7 +149,6 @@ namespace SnekVk
         // a new layout binding for each one. 
 
         VkDescriptorSetLayoutBinding layoutBindings[uniformBindings.Count()];
-        uint32_t uniformCounts[uniformBindings.Count()];
         
         for (size_t i = 0; i < uniformBindings.Count(); i++)
         {
@@ -160,8 +160,6 @@ namespace SnekVk
                 Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC, 
                 VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this
             );
-
-            uniformCounts[i] = uniformArray.Count();
 
             descriptorSets.Allocate(uniformArray.Count(), VK_NULL_HANDLE);
 
@@ -207,22 +205,32 @@ namespace SnekVk
         size_t writtenDescriptors = 0;
 
         size_t offset = 0;
+        size_t totalSize = 0;
         for (auto& binding : descriptorBindings)
         {
             auto& uniformArray = uniformBindings.Get(binding.binding);
 
             auto& uniform = uniformArray.Get(0);
 
+            std::cout << "Offset: " << offset << std::endl;
+            std::cout << "Buffer Size: " << bufferSize << std::endl;
+            std::cout << "Uniform Size: " << uniform.size << std::endl;
+
             auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
             descriptorOffsets.Append(Buffer::PadUniformBufferSize(offset));
+
+            std::cout << "Offset for binding " << binding.binding << " is set to " << offset << "/" << bufferSize << std::endl;
             // TODO: Add this offset to an offsets array. 
             offset += uniform.size;
+            totalSize += uniform.size;
+
+            std::cout << "Total size of all uniforms is " << totalSize << "/" << bufferSize << std::endl;
 
             writeDescriptorSets[writtenDescriptors] = Utils::Descriptor::CreateWriteSet(
                 uniform.binding, 
                 descriptorSets[binding.binding], 
                 1, 
-                Utils::Descriptor::STORAGE_DYNAMIC, // TODO: change this to respond to multiple types
+                (SnekVk::Utils::Descriptor::Type)binding.type, // TODO: change this to respond to multiple types
                 bufferInfo
             );
 
@@ -307,6 +315,7 @@ namespace SnekVk
                     std::cout << "Added new binding at position: " << uniform.binding << std::endl;
                     descriptorBindings.Activate(uniform.binding);
                     descriptorBindings.Get(uniform.binding).binding = uniform.binding;
+                    descriptorBindings.Get(uniform.binding).type = (DescriptorType)uniform.type;
                 }
 
                 if(!uniformBindings.Exists(uniform.binding)) 

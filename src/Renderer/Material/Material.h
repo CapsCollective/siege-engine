@@ -69,8 +69,7 @@ namespace SnekVk
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
             VkDescriptorSet descriptorSets[MAX_SETS_PER_BINDING];
             size_t descriptorCount = 0;
-            // TODO: Allow the descriptorType to be set.
-            Utils::Descriptor descriptorType;
+            DescriptorType type;
         }; 
 
         struct Property
@@ -100,6 +99,7 @@ namespace SnekVk
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> storagePropertiesArray;
 
+        // TODO: Add a separate buffer for storing SSBOs
         Buffer::Buffer buffer;
         u64 bufferSize = 0;
 

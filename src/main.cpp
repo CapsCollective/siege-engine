@@ -192,8 +192,8 @@ int main()
     diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3);
     diffuseShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2);
 
-    diffuseShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
-    diffuseShaderVert.SetUniformStruct(0, 1, "lightDir", sizeof(glm::vec3));
+    diffuseShaderVert.SetStorage(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000);
+    diffuseShaderVert.SetUniform(0, 1, "lightDir", sizeof(glm::vec3));
 
     // Set sprite shader vertex properties
     spriteShaderVert.SetVertexInputSize(0, sizeof(SnekVk::Vertex2D));
@@ -201,7 +201,7 @@ int main()
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
-    spriteShaderVert.SetUniformStruct(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
+    spriteShaderVert.SetUniform(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
 
     // Material Declaration
 

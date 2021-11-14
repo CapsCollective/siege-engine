@@ -43,6 +43,7 @@ namespace SnekVk
             u32 location = 0;
             u32 binding = 0; 
             u64 size;
+            VkDescriptorType type;
         };
 
         void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
@@ -52,6 +53,12 @@ namespace SnekVk
 
         void SetUniformStruct(u32 location, u32 binding, const char* name, u64 size);
         void SetUniformStruct(u32 location, u32 binding, Utils::StringId strId, u64 size);
+
+         void SetUniform(u32 location, u32 binding, const char* name, u64 size);
+         void SetUniform(u32 location, u32 binding, Utils::StringId strId, u64 size);
+         
+         void SetStorage(u32 location, u32 binding, const char* name, u64 size);
+         void SetStorage(u32 location, u32 binding, Utils::StringId strId, u64 size);
 
         u32 GetUniformStructIdx(const char* name);
         u32 GetUniformStructIdx(Utils::StringId strId);
