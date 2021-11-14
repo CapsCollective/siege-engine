@@ -83,6 +83,74 @@ namespace SnekVk
         uniformSize += size;
     }
 
+    void Shader::SetUniform(u32 location, u32 binding, const char* name, u64 size)
+    {
+        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
+            "Cannot assign more than 5 uniform structs per shader!");
+
+        Utils::StringId strId = INTERN_STR(name);
+
+        u32 uniformIdx = GetUniformStructIdx(strId);
+
+        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
+
+        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC};
+
+        std::cout << "Added uniform: " << name << " at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
+    }
+
+    void Shader::SetUniform(u32 location, u32 binding, Utils::StringId strId, u64 size)
+    {
+        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
+            "Cannot assign more than 5 uniform structs per shader!");
+        
+        u32 uniformIdx = GetUniformStructIdx(strId);
+
+        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
+
+        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC};
+
+        std::cout << "Added uniform at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
+    }
+
+    void Shader::SetStorage(u32 location, u32 binding, const char* name, u64 size)
+    {
+        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
+            "Cannot assign more than 5 uniform structs per shader!");
+
+        Utils::StringId strId = INTERN_STR(name);
+
+        u32 uniformIdx = GetUniformStructIdx(strId);
+
+        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
+
+        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC};
+
+        std::cout << "Added storage buffer: " << name << " at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
+    }
+
+    void Shader::SetStorage(u32 location, u32 binding, Utils::StringId strId, u64 size)
+    {
+        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
+            "Cannot assign more than 5 uniform structs per shader!");
+        
+        u32 uniformIdx = GetUniformStructIdx(strId);
+
+        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
+
+        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC};
+
+        std::cout << "Added storage at index: " << uniformIdx << std::endl;
+
+        uniformSize += size;
+    }
+
     u32 Shader::GetUniformStructIdx(const char* name)
     {
         return GetUniformStructIdx(INTERN_STR(name));
