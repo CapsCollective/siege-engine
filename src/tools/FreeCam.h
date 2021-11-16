@@ -15,7 +15,7 @@ public:
         lookSpeed(0.1f),
         camera(ServiceLocator::GetCamera()),
         rotation(Vec3(0.f, -1.f, -1.f)),
-        previousMousePosition({0.f, 0.f})
+        previousMousePosition({0.f, 0.f, 0.f})
     {}
 
 protected:
@@ -36,7 +36,7 @@ private:
 
     Vec3 rotation;
 
-    Vector2 previousMousePosition;
+    Vec3 previousMousePosition;
 };
 
 
