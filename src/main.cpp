@@ -162,7 +162,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
-    
+
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     window.DisableCursor();
@@ -201,7 +201,7 @@ int main()
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3);
     spriteShaderVert.AddVertexAttribute(0, offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3);
 
-    spriteShaderVert.SetUniform(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
+    spriteShaderVert.SetStorage(0, 0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
 
     // Material Declaration
 

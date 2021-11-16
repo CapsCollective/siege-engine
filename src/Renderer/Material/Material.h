@@ -103,9 +103,6 @@ namespace SnekVk
         Buffer::Buffer buffer;
         u64 bufferSize = 0;
 
-        VkDescriptorSetLayout layout {VK_NULL_HANDLE}; 
-        VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
-
         Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
         Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
         Utils::StackArray<VkDescriptorSetLayout, 5> layouts;

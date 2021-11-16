@@ -18,14 +18,15 @@ layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
     ObjectData objects[];
 } objectBuffer;
 
-layout (set = 0, binding = 1) uniform LightDir {
+layout (set = 1, binding = 1) uniform LightDir {
     vec3 dir;
 } lightDir;
 
-const vec3 DIRECTION_TO_LIGHT = normalize(vec3(1.0, -3.0, -1.0));
 const float AMBIENT = 0.03;
 
 void main() {
+
+    vec3 dirToLight = normalize(lightDir.dir);
 
     ObjectData object = objectBuffer.objects[gl_BaseInstance];
     mat4 transformMatrix = object.transform;
@@ -34,7 +35,7 @@ void main() {
 
     vec3 normalWorldSpace = normalize(mat3(object.normalMatrix) * normal);
 
-    float lightIntensity = AMBIENT + max(dot(normalWorldSpace, DIRECTION_TO_LIGHT), 0);
+    float lightIntensity = AMBIENT + max(dot(normalWorldSpace, dirToLight), 0);
 
     fragColor = lightIntensity * color;
 }
