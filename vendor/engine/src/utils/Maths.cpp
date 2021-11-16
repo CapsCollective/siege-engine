@@ -7,6 +7,8 @@ const Vec3 Vec3::Zero = {0.f,0.f,0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
 const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
 
+const Colour Colour::Black = {0, 0, 0, 255};
+const Colour Colour::White = {255, 255, 255, 255};
 const Colour Colour::Red = {230, 41, 55, 255};
 const Colour Colour::Green = {0, 228, 48, 255};
 const Colour Colour::Blue = {0, 121, 241, 255};

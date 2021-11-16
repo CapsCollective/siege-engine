@@ -6,12 +6,13 @@
 #include <scene/SceneManager.h>
 #include <render/Camera.h>
 
-// Define macros
-#define BRIGHT_PINK CLITERAL(Color){ 255, 5, 146, 255 }
-
 // Static member initialisation
-float EditorController::moveLevels[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
-float EditorController::rotateLevels[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
+static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
+static float ROTATE_LEVELS[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
+
+// Define colours
+static Colour NORMAL_PINK(255, 109, 194);
+static Colour BRIGHT_PINK(255, 5, 146);
 
 void EditorController::OnStart()
 {
@@ -123,7 +124,7 @@ void EditorController::OnUpdate()
             case POSITION: {
                 // Calculate move from input
                 Vec3 move = Vec3::Zero;
-                float precision = moveLevels[movePrecision];
+                float precision = MOVE_LEVELS[movePrecision];
                 move.x = precision * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
 
                 // Switch vertical move input between z and y axis based on shift key down
@@ -137,7 +138,7 @@ void EditorController::OnUpdate()
             }
             case ROTATION: {
                 // Calculate rotation from input and apply it to the rotation of the entity
-                float precision = rotateLevels[rotatePrecision];
+                float precision = ROTATE_LEVELS[rotatePrecision];
                 float rotation = precision * (float) (-IsKeyPressed(KEY_LEFT) + IsKeyPressed(KEY_RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
@@ -163,9 +164,9 @@ void EditorController::OnDraw2D()
     DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
              (int) screenPosition.y, 20, PINK);
     DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : PINK);
+             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : NORMAL_PINK);
     DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : PINK);
+             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : NORMAL_PINK);
 }
 
 void EditorController::SelectEntity(Entity* entity)
@@ -201,22 +202,22 @@ void EditorController::AdjustPrecision(int adjustment)
         case POSITION: {
             // Check boundaries on move precision
             int newPrecision = movePrecision + adjustment;
-            if (newPrecision >= 0 && newPrecision < sizeof(moveLevels)/sizeof(int))
+            if (newPrecision >= 0 && newPrecision < sizeof(MOVE_LEVELS)/sizeof(int))
             {
                 // Apply the new precision value
                 movePrecision = newPrecision;
-                messageDisplay->DisplayMessage(FormatText("Move precision set to %.2f", moveLevels[movePrecision]));
+                messageDisplay->DisplayMessage(FormatText("Move precision set to %.2f", MOVE_LEVELS[movePrecision]));
             }
             break;
         }
         case ROTATION: {
             // Check boundaries on rotate precision
             int newPrecision = rotatePrecision + adjustment;
-            if (newPrecision >= 0 && newPrecision < sizeof(rotateLevels)/sizeof(int))
+            if (newPrecision >= 0 && newPrecision < sizeof(ROTATE_LEVELS)/sizeof(int))
             {
                 // Apply the new precision value
                 rotatePrecision = newPrecision;
-                messageDisplay->DisplayMessage(FormatText("Rotate precision set to %.2f°", rotateLevels[rotatePrecision]));
+                messageDisplay->DisplayMessage(FormatText("Rotate precision set to %.2f°", ROTATE_LEVELS[rotatePrecision]));
             }
             break;
         }
