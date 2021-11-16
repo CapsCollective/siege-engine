@@ -258,6 +258,10 @@ struct Colour
 {
     // Public constants
 
+    static const Colour Black;
+
+    static const Colour White;
+
     static const Colour Red;
 
     static const Colour Green;
@@ -268,6 +272,13 @@ struct Colour
 
     Colour() :
         Colour(0, 0, 0, 0)
+    {}
+
+    Colour(int r, int g, int b) :
+        r(r),
+        g(g),
+        b(b),
+        a(255)
     {}
 
     Colour(int r, int g, int b, int a) :

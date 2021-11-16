@@ -2,7 +2,7 @@
 #define A_DARK_DISCOMFORT_WINDOW_H
 
 #include <raylib/Window.hpp>
-#include <raylib/Color.hpp>
+#include "../utils/Maths.h"
 
 class Window
 {
@@ -11,7 +11,7 @@ public:
     // 'Structors
 
     Window(const std::string& title, int width, int height) :
-        backgroundColour(RAYWHITE),
+        backgroundColour(245, 245, 245),
         window(width, height, title)
     {
         window.SetTargetFPS(60);
@@ -28,7 +28,7 @@ public:
     void BeginDraw()
     {
         window.BeginDrawing();
-        backgroundColour.ClearBackground();
+        ClearBackground(backgroundColour);
     }
 
     void EndDraw()
@@ -40,7 +40,7 @@ private:
 
     // Private fields
 
-    raylib::Color backgroundColour;
+    Colour backgroundColour;
 
     raylib::Window window;
 

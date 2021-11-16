@@ -62,10 +62,6 @@ private:
 
     // Private fields
 
-    static float moveLevels[];
-
-    static float rotateLevels[];
-
     bool isGridActive;
 
     EditorMode currentMode;
