@@ -97,6 +97,7 @@ namespace SnekVk
             // End of duplicated logic
 
             Utils::StringId bufferId;
+            Utils::StringId lightId;
 
             Camera* mainCamera;
     };

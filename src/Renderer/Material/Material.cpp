@@ -36,7 +36,11 @@ namespace SnekVk
     {
         auto device = VulkanDevice::GetDeviceInstance();
 
-        vkDestroyDescriptorSetLayout(device->Device(), layout, nullptr);
+        for (auto& binding : descriptorBindings)
+        {
+            vkDestroyDescriptorSetLayout(device->Device(), binding.layout, nullptr);
+        }
+        
         vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
         Buffer::DestroyBuffer(buffer);
     }
@@ -61,12 +65,6 @@ namespace SnekVk
     void Material::Bind(VkCommandBuffer commandBuffer)
     {
         pipeline.Bind(commandBuffer);
-        // An array of all offsets for these descriptor sets
-        // TODO: Need to do the following: 
-        // TODO: 1. Iterate over all bindings
-        // TODO: 2. Extract all descriptorSets into a single array.
-        // TODO: 3. Extract all dynamic offsets into a single array.
-        // TODO: 4. Plug both into this function
 
         if (descriptorSets.Count() > 0) vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptorSets.Count(), descriptorSets.Data(), descriptorOffsets.Count(), descriptorOffsets.Data());
     }
@@ -77,57 +75,6 @@ namespace SnekVk
         pipeline.ClearPipeline();
 
         BuildMaterial();
-    }
-
-    void Material::SetDescriptor(Shader::Uniform<const void*>& uniform, VkShaderStageFlags stage, u64 offset)
-    {
-        // TODO: refactor this. 
-        // Function should do the following:
-        // 1. Allocate a buffer which stores the full size of all stored properties. 
-        // 2. Create appropriate bindings and layouts.
-        // 3. Write data to the sets.
-        auto device = VulkanDevice::GetDeviceInstance();
-        
-        // TODO: Will need to find a way to find common uniforms across multiple shaders
-        // will likely need to group them by stages
-
-        // Create a descriptor set for our object transforms.
-
-        // A layout binding must be created for each resorce used by a shader. 
-        // If we have two uniforms at different bindings (binding 0, 1, 2...etc), then we need
-        // a new layout binding for each one. 
-
-        // TODO: iterate over all uniforms in the material and create a binding for each one. 
-        // TODO: add all bindings to an array. All common bindings should be grouped together. 
-        auto bufferBinding = Utils::Descriptor::CreateLayoutBinding(
-            uniform.binding, 
-            1, 
-            Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC, 
-            stage
-        );
-        
-        // TODO: Once all bindings are together, place them into an array and create the layout. 
-        SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT layout, &bufferBinding, 1),
-                "Failed to create descriptor set!");
-        
-        Utils::Descriptor::AllocateSets(device->Device(), &descriptorSet, descriptorPool, 1, &layout);
-
-        // TODO: Create an offset for each uniform in question.
-        auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
-
-        // TODO: Write a set for each bufferInfo.
-        auto writeDescriptorSet = Utils::Descriptor::CreateWriteSet(
-            uniform.binding, 
-            descriptorSet, 
-            1, 
-            Utils::Descriptor::STORAGE_DYNAMIC, 
-            bufferInfo
-        );
-
-        VkWriteDescriptorSet writeDescriptorSets[] = { writeDescriptorSet };
-
-        // TODO: Write all the sets
-        Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, 1);
     }
 
     void Material::SetDescriptors(Utils::StackArray<Utils::StackArray<Shader::Uniform<const void*>, MAX_PROPERTIES_COUNT>, 5>& uniformBindings)
@@ -157,7 +104,7 @@ namespace SnekVk
             layoutBindings[i] = Utils::Descriptor::CreateLayoutBinding(
                 i, 
                 uniformArray.Count(), 
-                Utils::Descriptor::STORAGE_DYNAMIC | Utils::Descriptor::UNIFORM_DYNAMIC, 
+                descriptorBindings[i].type,
                 VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this
             );
 
@@ -205,7 +152,6 @@ namespace SnekVk
         size_t writtenDescriptors = 0;
 
         size_t offset = 0;
-        size_t totalSize = 0;
         for (auto& binding : descriptorBindings)
         {
             auto& uniformArray = uniformBindings.Get(binding.binding);
@@ -216,15 +162,14 @@ namespace SnekVk
             std::cout << "Buffer Size: " << bufferSize << std::endl;
             std::cout << "Uniform Size: " << uniform.size << std::endl;
 
-            auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, uniform.size);
+            auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, uniform.size);
             descriptorOffsets.Append(Buffer::PadUniformBufferSize(offset));
 
             std::cout << "Offset for binding " << binding.binding << " is set to " << offset << "/" << bufferSize << std::endl;
-            // TODO: Add this offset to an offsets array. 
-            offset += uniform.size;
-            totalSize += uniform.size;
 
-            std::cout << "Total size of all uniforms is " << totalSize << "/" << bufferSize << std::endl;
+            offset += uniform.size;
+
+            std::cout << "Total size of all uniforms is " << offset << "/" << bufferSize << std::endl;
 
             writeDescriptorSets[writtenDescriptors] = Utils::Descriptor::CreateWriteSet(
                 uniform.binding, 
@@ -247,7 +192,7 @@ namespace SnekVk
     {
         shaders.Append(shader);
 
-        bufferSize += shader.GetUniformSize();
+        bufferSize += Buffer::PadUniformBufferSize(shader.GetUniformSize());
 
         std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
     }
@@ -279,9 +224,10 @@ namespace SnekVk
     // TODO: Break this up into multiple smaller functions
     void Material::BuildMaterial()
     {
+        std::cout << "Buffer size: " << Buffer::PadUniformBufferSize(bufferSize) << std::endl; 
         // Allocate buffer which can store all the data we need
         Buffer::CreateBuffer(
-            Buffer::PadUniformBufferSize(bufferSize),
+            bufferSize,
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
             OUT buffer.buffer,
