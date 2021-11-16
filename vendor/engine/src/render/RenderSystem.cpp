@@ -26,7 +26,7 @@ void RenderSystem::DrawFrame()
         const Model& model = ResourceManager::Get<Model>(item.data.modelPath);
         const Texture& texture = ResourceManager::Get<Texture>(item.data.texturePath);
 
-        // Set model texture using raylib
+        // Set model texture
         model.materials[0].maps[MAP_DIFFUSE].texture = texture;
 
         // Draw the model

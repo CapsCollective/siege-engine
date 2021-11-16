@@ -1,0 +1,10 @@
+#ifndef A_DARK_DISCOMFORT_RESOURCEMANAGERFACADE_H
+#define A_DARK_DISCOMFORT_RESOURCEMANAGERFACADE_H
+
+class ResourceManagerFacade
+{
+public:
+    static void FreeResources();
+};
+
+#endif //A_DARK_DISCOMFORT_RESOURCEMANAGERFACADE_H

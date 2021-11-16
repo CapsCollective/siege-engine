@@ -1,7 +1,6 @@
 #ifndef A_DARK_DISCOMFORT_WINDOW_H
 #define A_DARK_DISCOMFORT_WINDOW_H
 
-#include <raylib/Window.hpp>
 #include "../utils/Maths.h"
 
 class Window
@@ -10,39 +9,21 @@ public:
 
     // 'Structors
 
-    Window(const std::string& title, int width, int height) :
-        backgroundColour(245, 245, 245),
-        window(width, height, title)
-    {
-        window.SetTargetFPS(60);
-        SetExitKey(-1); // Deactivate the exit key
-    }
+    Window(const std::string& title, int width, int height);
 
     // Public methods
 
-    bool ShouldClose()
-    {
-        return window.ShouldClose();
-    }
+    bool ShouldClose();
 
-    void BeginDraw()
-    {
-        window.BeginDrawing();
-        ClearBackground(backgroundColour);
-    }
+    void BeginDraw();
 
-    void EndDraw()
-    {
-        window.EndDrawing();
-    }
+    void EndDraw();
 
 private:
 
     // Private fields
 
     Colour backgroundColour;
-
-    raylib::Window window;
 
 };
 

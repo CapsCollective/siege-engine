@@ -13,12 +13,6 @@ struct ModelData
     std::string texturePath;
 };
 
-struct LineData
-{
-    Vec3 trajectory;
-    Colour colour;
-};
-
 struct RenderItem
 {
     RenderItem(ModelData modelData, const Xform& transform, bool isEnabled = true) :
@@ -51,7 +45,7 @@ private:
 
     static std::map<EntityPtr<Entity>, RenderItem> renderItems;
 
-    static std::map<EntityPtr<Entity>, RenderItem> renderItems2D;
+    static std::map<EntityPtr<Entity>, class RenderItem2D> renderItems2D;
 };
 
 

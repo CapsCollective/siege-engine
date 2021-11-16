@@ -1,11 +1,11 @@
 #include <collision/CollisionSystem.h>
-#include <resource/ResourceManager.h>
 #include <entity/EntityStorage.h>
 #include <scene/SceneManager.h>
 
 #include <render/RenderSystem.h>
 #include <render/Camera.h>
 #include <window/Window.h>
+#include <resource/ResourceManagerFacade.h>
 
 #include "tools/EditorController.h"
 #include "tools/MessageDisplay.h"
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
         window.EndDraw();
 
         // Remove all entities at the end of the frame
-        ResourceManager::FreeResources();
+        ResourceManagerFacade::FreeResources();
         CollisionSystem::FreeEntities();
         EntityStorage::FreeEntities();
         SceneManager::LoadNextScene();
