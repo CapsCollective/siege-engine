@@ -10,7 +10,7 @@ static std::string Serialise(Entity* entity)
 
 static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
 {
-    return new TestEntity(data.position, data.rotation);
+    return new TestEntity(Xform(data.position, data.rotation));
 }
 
 REGISTER_SERIALISATION_INTERFACE(TestEntity::ENTITY_NAME, Serialise, Deserialise);
