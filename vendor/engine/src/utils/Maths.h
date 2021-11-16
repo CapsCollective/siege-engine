@@ -3,7 +3,7 @@
 
 #include "Macros.h"
 #include <string>
-#include <raylib/Vector3.hpp>
+#include <cmath>
 
 // Define macros
 
@@ -53,30 +53,6 @@ struct Vec3
         y(y),
         z(z)
     {}
-
-    // Raylib conversions
-
-    Vec3(raylib::Vector3 vector) :
-        Vec3(vector.x, vector.y, vector.z)
-    {}
-
-    Vec3(Vector3 vector) :
-        Vec3(vector.x, vector.y, vector.z)
-    {}
-
-    operator raylib::Vector3() const
-    {
-        return {x, y, z};
-    }
-
-    Vec3(Vector2 vector) :
-        Vec3(vector.x, vector.y, 0.f)
-    {}
-
-    operator Vector2() const
-    {
-        return {x, y};
-    }
 
     // Operator overloads
 
@@ -141,7 +117,7 @@ public:
         Xform(Vec3::Zero)
     {}
 
-    Xform(Vec3 position) :
+    explicit Xform(Vec3 position) :
         Xform(position, 0.f)
     {}
 
@@ -205,13 +181,6 @@ struct BoundedBox
         max(max)
     {}
 
-    // Raylib conversions
-
-    operator BoundingBox() const
-    {
-        return {min, max};
-    }
-
     // Public methods
 
     bool Intersects(const BoundedBox& other) const;
@@ -236,17 +205,6 @@ struct RayCast
         position(position),
         direction(direction)
     {}
-
-    // Raylib conversions
-
-    RayCast(Ray ray) :
-        RayCast(Vec3(ray.position), Vec3(ray.direction))
-    {}
-
-    operator Ray() const
-    {
-        return {position, direction};
-    }
 
     // Public members
 
@@ -287,20 +245,6 @@ struct Colour
         b(b),
         a(a)
     {}
-
-    // Raylib conversions
-
-    Colour(Color color) :
-        Colour(color.r, color.g, color.b, color.a)
-    {}
-
-    operator Color() const
-    {
-        return {(unsigned char) r,
-                (unsigned char) g,
-                (unsigned char) b,
-                (unsigned char) a};
-    }
 
     // Public members
 

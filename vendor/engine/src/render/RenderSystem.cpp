@@ -1,5 +1,6 @@
 #include "RenderSystem.h"
 #include "../resource/ResourceManager.h"
+#include "../utils/TransitionAdapter.h"
 
 std::map<EntityPtr<Entity>, RenderItem> RenderSystem::renderItems;
 
@@ -30,10 +31,10 @@ void RenderSystem::DrawFrame()
         model.materials[0].maps[MAP_DIFFUSE].texture = texture;
 
         // Draw the model
-        DrawModelEx(model, item.transform.GetPosition(), Vec3::Up,
-                    item.transform.GetRotation(), item.transform.GetScale(), WHITE);
-        DrawModelWiresEx(model, item.transform.GetPosition(), Vec3::Up,
-                         item.transform.GetRotation(), item.transform.GetScale(), PINK);
+        DrawModelEx(model, FromVec3(item.transform.GetPosition()), FromVec3(Vec3::Up),
+                    item.transform.GetRotation(), FromVec3(item.transform.GetScale()), WHITE);
+        DrawModelWiresEx(model, FromVec3(item.transform.GetPosition()), FromVec3(Vec3::Up),
+                         item.transform.GetRotation(), FromVec3(item.transform.GetScale()), PINK);
     }
 }
 

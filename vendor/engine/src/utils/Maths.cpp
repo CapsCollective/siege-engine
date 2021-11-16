@@ -1,4 +1,5 @@
 #include "Maths.h"
+#include "TransitionAdapter.h"
 #include <sstream>
 #include <iomanip>
 
@@ -40,5 +41,5 @@ bool BoundedBox::Intersects(const BoundedBox &other) const
 
 bool BoundedBox::Intersects(const RayCast &ray) const
 {
-    return CheckCollisionRayBox(ray, *this);
+    return CheckCollisionRayBox(FromRayCast(ray), FromBoundedBox(*this));
 }

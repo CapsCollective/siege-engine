@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <raylib/Window.hpp>
+#include "../utils/TransitionAdapter.h"
 
 static std::string windowTitle;
 static int windowWidth;
@@ -30,7 +31,7 @@ bool Window::ShouldClose()
 void Window::BeginDraw()
 {
     GetWindow().BeginDrawing();
-    ClearBackground(backgroundColour);
+    ClearBackground(FromColour(backgroundColour));
 }
 
 void Window::EndDraw()
