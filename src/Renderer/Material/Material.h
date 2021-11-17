@@ -67,7 +67,7 @@ namespace SnekVk
         struct DescriptorBinding {
             uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
-            VkDescriptorSet descriptorSets[MAX_SETS_PER_BINDING];
+            VkDescriptorSet descriptorSet;
             size_t descriptorCount = 0;
             DescriptorType type;
         }; 
@@ -95,19 +95,17 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
-        
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
-        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> storagePropertiesArray;
 
-        // TODO: Add a separate buffer for storing SSBOs
         Buffer::Buffer buffer;
         u64 bufferSize = 0;
 
         Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
         Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
-        Utils::StackArray<VkDescriptorSetLayout, 5> layouts;
 
-        Utils::StackArray<DescriptorBinding, 5> descriptorBindings;
+        Utils::StackArray<VkDescriptorSetLayout, MAX_PROPERTIES_COUNT> layouts;
+
+        Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT> descriptorBindings;
         
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

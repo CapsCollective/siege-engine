@@ -79,55 +79,41 @@ namespace SnekVk
 
     void Material::SetDescriptors(Utils::StackArray<Utils::StackArray<Shader::Uniform<const void*>, MAX_PROPERTIES_COUNT>, 5>& uniformBindings)
     {
-        // TODO: refactor this. 
-        // Function should do the following:
-        // 1. Allocate a buffer which stores the full size of all stored properties. 
-        // 2. Create appropriate bindings and layouts.
-        // 3. Write data to the sets.
         auto device = VulkanDevice::GetDeviceInstance();
-        
-        // TODO: Will need to find a way to find common uniforms across multiple shaders
-        // will likely need to group them by stages
 
         // Create a descriptor set for our object transforms.
 
-        // A layout binding must be created for each resou rce used by a shader. 
+        // A layout binding must be created for each resource used by a shader. 
         // If we have two uniforms at different bindings (binding 0, 1, 2...etc), then we need
         // a new layout binding for each one. 
 
-        VkDescriptorSetLayoutBinding layoutBindings[uniformBindings.Count()];
+        size_t propertiesCount = propertiesArray.Count();
+        VkDescriptorSetLayoutBinding layoutBindings[propertiesCount];
         
-        for (size_t i = 0; i < uniformBindings.Count(); i++)
-        {
-            auto& uniformArray = uniformBindings.Get(i);
+        descriptorSets.Allocate(propertiesArray.Count(), VK_NULL_HANDLE);
+        layouts.Allocate(propertiesCount, VK_NULL_HANDLE);
 
+        std::cout << "Allocating descriptor set storage of " << propertiesCount << std::endl;
+
+        for (size_t i = 0; i < propertiesCount; i++)
+        {
             layoutBindings[i] = Utils::Descriptor::CreateLayoutBinding(
                 i, 
-                uniformArray.Count(), 
+                1, 
                 descriptorBindings[i].type,
                 VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this
             );
 
-            descriptorSets.Allocate(uniformArray.Count(), VK_NULL_HANDLE);
+            std::cout << "Creating a layout binding for binding " << i << std::endl;
 
-            std::cout << "Allocating descriptor set storage of " << uniformArray.Count() << std::endl;
-
-            std::cout << "Creating a layout binding for binding " << i << " with " << uniformArray.Count() << " uniforms" << std::endl;
-        }
-
-        layouts.Allocate(uniformBindings.Count(), VK_NULL_HANDLE);
-
-        for (size_t i = 0; i < uniformBindings.Count(); i++)
-        {
+            // Create all layouts
             auto& binding = descriptorBindings.Get(i);
+            
             SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBindings[i], 1),
             "Failed to create descriptor set!");
         }
 
         std::cout << "Successfully created all required layouts!" << std::endl;
-
-        // TODO: Need to find a way to package all relevant descriptor sets into a single array per
-        // binding
 
         size_t descriptorCount = 0;
         for (auto& binding : descriptorBindings)
@@ -137,13 +123,13 @@ namespace SnekVk
             binding.descriptorCount = uniformArray.Count();
             
             std::cout << "Allocating " << binding.descriptorCount << " descriptor sets for binding " << binding.binding << std::endl;
-            Utils::Descriptor::AllocateSets(device->Device(), binding.descriptorSets, descriptorPool, uniformArray.Count(), &binding.layout);
+            Utils::Descriptor::AllocateSets(device->Device(), &binding.descriptorSet, descriptorPool, uniformArray.Count(), &binding.layout);
             
             descriptorCount += uniformArray.Count();
             std::cout << "Binding count: " << binding.descriptorCount << std::endl;
             
             // TODO: Add offsets to an offsets array at the top level. 
-            descriptorSets.Set(binding.binding, binding.descriptorSets[0]);
+            descriptorSets.Set(binding.binding, binding.descriptorSet);
         }
 
         std::cout << "Total descriptor sets: " <<  descriptorCount << std::endl;
@@ -157,10 +143,6 @@ namespace SnekVk
             auto& uniformArray = uniformBindings.Get(binding.binding);
 
             auto& uniform = uniformArray.Get(0);
-
-            std::cout << "Offset: " << offset << std::endl;
-            std::cout << "Buffer Size: " << bufferSize << std::endl;
-            std::cout << "Uniform Size: " << uniform.size << std::endl;
 
             auto bufferInfo = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, uniform.size);
             descriptorOffsets.Append(Buffer::PadUniformBufferSize(offset));
@@ -181,9 +163,6 @@ namespace SnekVk
 
             writtenDescriptors++;
         }     
-
-        std::cout << "offsets: " << descriptorOffsets.Count() << std::endl;
-        std::cout << "sets: " << descriptorSets.Count() << std::endl;
 
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, descriptorCount);
     }
@@ -224,7 +203,6 @@ namespace SnekVk
     // TODO: Break this up into multiple smaller functions
     void Material::BuildMaterial()
     {
-        std::cout << "Buffer size: " << Buffer::PadUniformBufferSize(bufferSize) << std::endl; 
         // Allocate buffer which can store all the data we need
         Buffer::CreateBuffer(
             bufferSize,
@@ -237,9 +215,6 @@ namespace SnekVk
         // TODO: Extract this into another function
         u64 offset = 0;
 
-        // TODO: Need to get the full size of all descriptors so we can 
-        // allocate an appropriate array.
-
         Utils::StackArray<Utils::StackArray<Shader::Uniform<const void*>, MAX_PROPERTIES_COUNT>, 5> uniformBindings;
         for (auto& shader : shaders)
         {
@@ -251,8 +226,6 @@ namespace SnekVk
             for(size_t j = 0; j < uniforms.count; j++)
             {
                 auto uniform = uniforms.data[j];
-
-                //SetDescriptor(uniform, (VkShaderStageFlags)shader.GetStage(), offset);
 
                 propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader.GetStage(), offset,  uniform.size, nullptr});
 

@@ -51,9 +51,6 @@ namespace SnekVk
         void SetVertexInputSize(u32 binding, u32 offset);
         void SetShaderPath(const char* filePath);
 
-        void SetUniformStruct(u32 location, u32 binding, const char* name, u64 size);
-        void SetUniformStruct(u32 location, u32 binding, Utils::StringId strId, u64 size);
-
          void SetUniform(u32 location, u32 binding, const char* name, u64 size);
          void SetUniform(u32 location, u32 binding, Utils::StringId strId, u64 size);
          
