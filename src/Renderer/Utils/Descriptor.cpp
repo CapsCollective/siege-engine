@@ -66,7 +66,6 @@ namespace SnekVk::Utils
         const void* pNext
     )
     {
-        std::cout << setCount << std::endl;
         return 
         {
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,

@@ -36,8 +36,7 @@ namespace SnekVk
 
         ~Material();
 
-        void SetDescriptor(Shader::Uniform<const void*>& uniform, VkShaderStageFlags stage, u64 offset);
-        void SetDescriptors(Utils::StackArray<Utils::StackArray<Shader::Uniform<const void*>, MAX_PROPERTIES_COUNT>, 5>&);
+        void SetDescriptors();
 
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
@@ -68,7 +67,6 @@ namespace SnekVk
             uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
             VkDescriptorSet descriptorSet;
-            size_t descriptorCount = 0;
             DescriptorType type;
         }; 
 
@@ -94,7 +92,10 @@ namespace SnekVk
 
         static VkDescriptorPool descriptorPool;
 
+        size_t vertexCount = 0;
+
         Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
+        // TODO: Split properties into their shader stages
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
 
         Buffer::Buffer buffer;
@@ -102,8 +103,6 @@ namespace SnekVk
 
         Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
         Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
-
-        Utils::StackArray<VkDescriptorSetLayout, MAX_PROPERTIES_COUNT> layouts;
 
         Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT> descriptorBindings;
         
