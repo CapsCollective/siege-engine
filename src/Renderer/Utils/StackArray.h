@@ -9,12 +9,11 @@
 namespace SnekVk::Utils
 {
     template<typename T, size_t S>
-    
     class StackArray
     {
         public:
         using ValueType = T;
-        using Iterator = ArrayIterator<StackArray>;
+        using Iterator = ArrayIterator<StackArray<T, S>>;
 
         public: 
 
@@ -25,7 +24,7 @@ namespace SnekVk::Utils
             for(auto& value : values) Append(value);
         }
 
-        StackArray(const StackArray<T, S>& other)
+        StackArray(StackArray<T, S>& other)
         {
             for(auto& value : other) Append(value);
         }
@@ -72,11 +71,11 @@ namespace SnekVk::Utils
 
         const T& operator[] (size_t index) const { return Get(index); }
 
-        Iterator begin() { return Iterator(data); }
-        Iterator end() { return Iterator(data + count); }
+        Iterator begin() { return Iterator(&data[0]); }
+        Iterator end() { return Iterator(&data[count]); }
 
-        const Iterator begin() const { return Iterator(data); }
-        const Iterator end() const { return Iterator(data + count); }
+        const Iterator begin() const { return Iterator(&data[0]); }
+        const Iterator end() const { return Iterator(&data[count]); }
 
         bool Exists(size_t index)
         {

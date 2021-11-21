@@ -106,7 +106,7 @@ namespace SnekVk
                 i, 
                 1, 
                 descriptorBindings[i].type,
-                VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this
+                VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this to respond to different stages
             );
 
             std::cout << "Creating a layout binding for binding " << i << std::endl;
