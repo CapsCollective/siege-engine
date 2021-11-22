@@ -273,4 +273,37 @@ namespace SnekVk
             pipelineConfig
         );
     }
+
+    Material::MaterialBuilder& Material::MaterialBuilder::WithVertexShader(ShaderBuilder* vertexShader)
+    {
+        this->vertexShader = vertexShader;
+
+        bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
+
+        vertexCount += vertexShader->GetVertexBindings().Count();
+        
+        shaderCount++;
+
+        return *this;
+    }
+
+    Material::MaterialBuilder& Material::MaterialBuilder::WithFragmentShader(ShaderBuilder* fragmentShader)
+    {
+        this->fragmentShader = fragmentShader;
+
+        bufferSize += Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize());
+
+        vertexCount += fragmentShader->GetVertexBindings().Count();
+        
+        shaderCount++;
+
+        return *this;
+    }
+
+    Material::MaterialBuilder& Material::MaterialBuilder::WithPolygonMode(PolygonMode mode) 
+    {
+        shaderSettings.mode = mode;
+
+        return *this;
+    }
 }

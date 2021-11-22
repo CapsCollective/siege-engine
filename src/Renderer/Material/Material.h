@@ -4,6 +4,7 @@
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
 #include "../Shader/Shader.h"
+#include "../Shader/Shader2.h"
 #include "../Utils/Descriptor.h"
 
 namespace SnekVk
@@ -11,10 +12,6 @@ namespace SnekVk
     class Material
     {
         public:
-
-        static constexpr size_t MAX_SHADER_COUNT = 5;
-        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
-        static constexpr uint32_t MAX_SETS_PER_BINDING = 5;
 
         enum DescriptorType
         {
@@ -29,6 +26,38 @@ namespace SnekVk
             POINT = 2
         };
 
+        // TODO: Finish this class
+        class MaterialBuilder
+        {
+            public: 
+
+            MaterialBuilder() = default;
+
+            ~MaterialBuilder() {};
+
+            MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
+            MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
+
+            MaterialBuilder& WithPolygonMode(PolygonMode mode); 
+
+            private: 
+
+            struct {
+                PolygonMode mode = PolygonMode::FILL;
+            } shaderSettings;
+
+            ShaderBuilder* vertexShader {nullptr};
+            ShaderBuilder* fragmentShader {nullptr};
+
+            u64 bufferSize;
+            size_t vertexCount = 0;
+            size_t shaderCount = 0;
+        };
+
+        static constexpr size_t MAX_SHADER_COUNT = 5;
+        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
+        static constexpr uint32_t MAX_SETS_PER_BINDING = 5;
+
         Material();
 
         Material(const Material&) = delete;
@@ -42,6 +71,7 @@ namespace SnekVk
         void BuildMaterial();
 
         void AddShader(Shader shader);
+        void AddShader(ShaderBuilder shader);
         void AddShaders(std::initializer_list<Shader> shaders);
 
         static void DestroyDescriptorPool() 
