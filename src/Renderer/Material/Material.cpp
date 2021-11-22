@@ -195,11 +195,33 @@ namespace SnekVk
             OUT buffer.bufferMemory
         );
 
+        VertexDescription::Binding bindings[vertexCount];
+        PipelineConfig::ShaderConfig shaderConfigs[shaders.Count()];
+
         // TODO: Extract this into another function
         u64 offset = 0;
 
-        for (auto& shader : shaders)
+        for (size_t i = 0; i < shaders.Count(); i++)
         {
+            auto shader = shaders.Get(i);
+            auto vertices = shader.GetVertexBindings();
+
+            for (size_t j = 0; j < vertices.count; j++)
+            {
+                auto attributes = vertices.data[j];
+
+                if (attributes.attributeCount == 0) continue;
+
+                bindings[j] = VertexDescription::CreateBinding(
+                        j, 
+                        attributes.vertexStride, 
+                        VertexDescription::VERTEX, 
+                        attributes.attributes, 
+                        attributes.attributeCount);
+            }
+
+            shaderConfigs[i] = { shader.GetPath(), shader.GetStage() };
+
             auto uniforms = shader.GetUniformStructs();
 
             for(size_t j = 0; j < uniforms.count; j++)
@@ -236,31 +258,6 @@ namespace SnekVk
         CreateLayout(layouts, descriptorBindings.Count());
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
-
-        VertexDescription::Binding bindings[vertexCount];
-        PipelineConfig::ShaderConfig shaderConfigs[shaders.Count()];
-
-        for(size_t i = 0; i < shaders.Count(); i++)
-        {
-            auto shader = shaders[i];
-            auto vertices = shader.GetVertexBindings();
-            
-            for (u32 j = 0; j < vertices.count; j++)
-            {
-                auto attributes = vertices.data[j];
-
-                if (attributes.attributeCount == 0) continue;
-
-                bindings[j] = VertexDescription::CreateBinding(
-                        j, 
-                        attributes.vertexStride, 
-                        VertexDescription::VERTEX, 
-                        attributes.attributes, 
-                        attributes.attributeCount);
-            }
-
-            shaderConfigs[i] = { shader.GetPath(), shader.GetStage() };
-        }
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
