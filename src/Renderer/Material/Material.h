@@ -42,6 +42,14 @@ namespace SnekVk
 
             private: 
 
+            void AddShader(ShaderBuilder* shader);
+
+            // Each shader can have a maximum of 5 bindings. 
+            // Since we only allow for two shaders, we just multiply the max bindings by 
+            // the number of shaders (5 * 2) to allocate enough space for all of them.
+            Utils::StackArray<VertexDescription::Binding, 10> bindings;
+            Utils::StackArray<PipelineConfig::ShaderConfig, 2> shaderConfigs;
+
             struct {
                 PolygonMode mode = PolygonMode::FILL;
             } shaderSettings;

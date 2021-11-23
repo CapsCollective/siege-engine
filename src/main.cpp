@@ -205,7 +205,7 @@ int main()
     SnekVk::Shader diffuseShaderFrag("shaders/simpleShader.frag.spv", SnekVk::PipelineConfig::FRAGMENT);
 
     auto fragShader = SnekVk::ShaderBuilder::CreateShaderBuilder()
-        .FromShader("bin/shaders/simpleShader2D.vert.spv")
+        .FromShader("bin/shaders/simpleShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 
     // Set diffuse shader vertex properties

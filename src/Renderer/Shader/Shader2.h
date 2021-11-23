@@ -74,8 +74,13 @@ namespace SnekVk
         ShaderBuilder& WithVertexType(u32 size);
         ShaderBuilder& WithVertexAttribute(u32 offset, VertexDescription::AttributeType type);
 
-        Utils::StackArray<VertexBinding, MAX_UNIFORMS> GetVertexBindings() { return vertexBindings; }
-        Utils::StackArray<Uniform, MAX_UNIFORMS> GetUniforms() { return uniforms; }
+        const Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const { return vertexBindings; }
+        const Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const { return uniforms; }
+        Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() { return vertexBindings; }
+        Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() { return uniforms; }
+
+        const char* GetPath() { return filePath; }
+        PipelineConfig::PipelineStage GetStage() { return stage; } 
 
         u64 GetUniformSize() { return sizeOfUniforms; }
 

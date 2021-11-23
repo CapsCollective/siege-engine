@@ -64,11 +64,12 @@ namespace SnekVk
     {
         size_t index = vertexBindings.Count();
 
-        vertexBindings.Append({});
+        vertexBindings.Activate(index);
         auto& binding = vertexBindings.Get(index);
         binding.vertexStride = size;
 
         std::cout << "Added new vertex type of size " << size << std::endl;
+        std::cout << "There are now " << vertexBindings.Count() << " bindings" << std::endl;
 
         return *this;
     }
@@ -80,10 +81,12 @@ namespace SnekVk
         SNEK_ASSERT(index >= 0, "A vertex type must be added before creating attributes!");
 
         auto& binding = vertexBindings.Get(index);
+        auto& attributes = binding.attributes;
 
-        binding.attributes.Append({offset, type});
+        attributes.Append({offset, type});
 
         std::cout << "Added new vertex attribute for binding " << index << std::endl;
+        std::cout << "Binding now has " << binding.attributes.Count() << " attributes" << std::endl;
 
         return *this;
     }
