@@ -48,8 +48,8 @@ namespace SnekVk::Utils
             assert(count < S 
                     && std::string("Too many elements added to array. Max is ")
                     .append(std::to_string(S)).c_str());
-
-            Set(count, value);
+            Activate(count);
+            Set(count-1, value);
         }
 
         void Remove(size_t index)

@@ -278,11 +278,7 @@ namespace SnekVk
     {
         this->vertexShader = vertexShader;
 
-        bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
-
-        vertexCount += vertexShader->GetVertexBindings().Count();
-        
-        shaderCount++;
+        AddShader(vertexShader);
 
         return *this;
     }
@@ -291,13 +287,42 @@ namespace SnekVk
     {
         this->fragmentShader = fragmentShader;
 
-        bufferSize += Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize());
+        AddShader(fragmentShader);
 
-        vertexCount += fragmentShader->GetVertexBindings().Count();
+        return *this;
+    }
+
+    void Material::MaterialBuilder::AddShader(ShaderBuilder* shader)
+    {
+        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
+
+        auto& vertices = shader->GetVertexBindings();
+
+        vertexCount += vertices.Count();
         
         shaderCount++;
 
-        return *this;
+        for(size_t i = 0; i < vertices.Count(); i++)
+        {
+            auto& binding = vertices.Get(i);
+            auto& attributes = binding.attributes;
+
+            if (attributes.Count() == 0) continue;
+
+            bindings.Append(
+                VertexDescription::CreateBinding(
+                i, 
+                binding.vertexStride, 
+                VertexDescription::VERTEX, 
+                attributes.Data(), 
+                attributes.Count()
+            ));
+        }
+
+        shaderConfigs.Append({ shader->GetPath(), shader->GetStage() });
+
+        std::cout << "Added shader: " << shader->GetPath() << " with " << vertices.Count() << " vertex bindings" << std::endl;
+        std::cout << "Total bindings: " << bindings.Count() << std::endl;
     }
 
     Material::MaterialBuilder& Material::MaterialBuilder::WithPolygonMode(PolygonMode mode) 
