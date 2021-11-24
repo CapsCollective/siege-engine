@@ -77,7 +77,7 @@ namespace SnekVk
         BuildMaterial();
     }
 
-    // BUG: If a descriptor is set for multiple shaders this entire process falls apart.
+    // FIXME: If a descriptor is set for multiple shaders this entire process falls apart.
     // TODO: Find a way to resolve the bug above.
     // TODO: Find a way to sort bindings by number and shader stage
     void Material::SetDescriptors()
@@ -274,8 +274,12 @@ namespace SnekVk
         );
     }
 
-    Material::MaterialBuilder& Material::MaterialBuilder::WithVertexShader(ShaderBuilder* vertexShader)
+    MaterialBuilder::MaterialBuilder() {}
+
+    MaterialBuilder& MaterialBuilder::WithVertexShader(ShaderBuilder* vertexShader)
     {
+        if (this->vertexShader == nullptr) shaderCount++;
+
         this->vertexShader = vertexShader;
 
         AddShader(vertexShader);
@@ -283,8 +287,10 @@ namespace SnekVk
         return *this;
     }
 
-    Material::MaterialBuilder& Material::MaterialBuilder::WithFragmentShader(ShaderBuilder* fragmentShader)
+    MaterialBuilder& MaterialBuilder::WithFragmentShader(ShaderBuilder* fragmentShader)
     {
+        if (this->fragmentShader == nullptr) shaderCount++;
+
         this->fragmentShader = fragmentShader;
 
         AddShader(fragmentShader);
@@ -292,15 +298,13 @@ namespace SnekVk
         return *this;
     }
 
-    void Material::MaterialBuilder::AddShader(ShaderBuilder* shader)
+    void MaterialBuilder::AddShader(ShaderBuilder* shader)
     {
         bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
 
         auto& vertices = shader->GetVertexBindings();
 
         vertexCount += vertices.Count();
-        
-        shaderCount++;
 
         for(size_t i = 0; i < vertices.Count(); i++)
         {
@@ -325,10 +329,52 @@ namespace SnekVk
         std::cout << "Total bindings: " << bindings.Count() << std::endl;
     }
 
-    Material::MaterialBuilder& Material::MaterialBuilder::WithPolygonMode(PolygonMode mode) 
+    MaterialBuilder& MaterialBuilder::WithPolygonMode(PolygonMode mode) 
     {
         shaderSettings.mode = mode;
 
         return *this;
+    }
+
+    void MaterialBuilder::Build()
+    {
+        u64 propertyOffset = 0;
+
+        // TODO: Allocate our buffer
+
+        SetShaderProperties(vertexShader, OUT propertyOffset);
+        SetShaderProperties(fragmentShader, OUT propertyOffset);
+
+        // TODO: Set descriptors
+
+        // TODO: Set layouts
+
+        // TODO: Create Pipelines
+        
+    }
+
+    void MaterialBuilder::SetShaderProperties(ShaderBuilder* shader, u64& offset)
+    {
+        if (shader == nullptr) return;
+
+        auto uniforms = shader->GetUniforms();
+
+        for(auto& uniform : uniforms)
+        {
+            propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader->GetStage(), offset,  uniform.size, nullptr});
+
+            if (!descriptorBindings.Exists(uniform.binding))
+            {
+                std::cout << "Added new binding at position: " << uniform.binding << std::endl;
+                descriptorBindings.Activate(uniform.binding);
+                descriptorBindings.Get(uniform.binding).binding = uniform.binding;
+                descriptorBindings.Get(uniform.binding).type = (DescriptorType)uniform.type;
+            }
+
+            std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
+
+            std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
+            offset += uniform.size;
+        }
     }
 }

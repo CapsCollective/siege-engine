@@ -27,40 +27,6 @@ namespace SnekVk
         };
 
         // TODO: Finish this class
-        class MaterialBuilder
-        {
-            public: 
-
-            MaterialBuilder() = default;
-
-            ~MaterialBuilder() {};
-
-            MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
-            MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
-
-            MaterialBuilder& WithPolygonMode(PolygonMode mode); 
-
-            private: 
-
-            void AddShader(ShaderBuilder* shader);
-
-            // Each shader can have a maximum of 5 bindings. 
-            // Since we only allow for two shaders, we just multiply the max bindings by 
-            // the number of shaders (5 * 2) to allocate enough space for all of them.
-            Utils::StackArray<VertexDescription::Binding, 10> bindings;
-            Utils::StackArray<PipelineConfig::ShaderConfig, 2> shaderConfigs;
-
-            struct {
-                PolygonMode mode = PolygonMode::FILL;
-            } shaderSettings;
-
-            ShaderBuilder* vertexShader {nullptr};
-            ShaderBuilder* fragmentShader {nullptr};
-
-            u64 bufferSize;
-            size_t vertexCount = 0;
-            size_t shaderCount = 0;
-        };
 
         static constexpr size_t MAX_SHADER_COUNT = 5;
         static constexpr size_t MAX_PROPERTIES_COUNT = 10;
@@ -146,5 +112,82 @@ namespace SnekVk
         
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
+    };
+
+    class MaterialBuilder
+    {
+        public: 
+
+        enum PolygonMode
+        {
+            FILL = 0, 
+            LINE = 1, 
+            POINT = 2
+        };
+
+        static constexpr size_t MAX_SHADERS = 2;
+        static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
+        static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
+        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
+
+        using BindingsArray = Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS>;
+        using ShaderConfigs = Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS>;
+
+        MaterialBuilder();
+        ~MaterialBuilder() {};
+
+        MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
+        MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
+
+        MaterialBuilder& WithPolygonMode(PolygonMode mode); 
+
+        BindingsArray& GetBindings() { return bindings; }
+        ShaderConfigs& GetShaderConfigs() { return shaderConfigs; }
+
+        void Build();
+
+        private: 
+
+        struct DescriptorBinding {
+            uint32_t binding = 0;
+            VkDescriptorSetLayout layout {VK_NULL_HANDLE};
+            VkDescriptorSet descriptorSet;
+            DescriptorType type;
+        }; 
+
+        struct Property
+        {
+            Utils::StringId id;
+            VkShaderStageFlags stage;
+            u64 offset;
+            u64 size;
+            const void* data;
+        };
+
+        void AddShader(ShaderBuilder* shader);
+        void SetShaderProperties(ShaderBuilder* shader, u64& offset);
+        
+        // TODO: Create the Bind function
+
+        BindingsArray bindings;
+        ShaderConfigs shaderConfigs;
+
+        struct {
+            PolygonMode mode = PolygonMode::FILL;
+        } shaderSettings;
+
+        ShaderBuilder* vertexShader {nullptr};
+        ShaderBuilder* fragmentShader {nullptr};
+
+        u64 bufferSize;
+        size_t vertexCount = 0;
+        size_t shaderCount = 0;
+
+        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
+
+        Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
+        Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
+
+        Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT> descriptorBindings;
     };
 }
