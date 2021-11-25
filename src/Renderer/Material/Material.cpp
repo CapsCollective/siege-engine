@@ -7,7 +7,7 @@ namespace SnekVk
 {
     VkDescriptorPool Material::descriptorPool = {VK_NULL_HANDLE};
 
-    Material::Material()
+    Material::Material(class MaterialBuilder& builder)
     {
         auto device = VulkanDevice::GetDeviceInstance();
 
@@ -148,21 +148,26 @@ namespace SnekVk
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, descriptorBindings.Count());
     }
 
-    void Material::AddShader(Shader shader)
-    {
-        shaders.Append(shader);
+    // void Material::AddShader(Shader shader)
+    // {
+    //     shaders.Append(shader);
 
-        bufferSize += Buffer::PadUniformBufferSize(shader.GetUniformSize());
+    //     bufferSize += Buffer::PadUniformBufferSize(shader.GetUniformSize());
 
-        vertexCount += shader.GetVertexBindings().count;
+    //     vertexCount += shader.GetVertexBindings().count;
 
-        std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
-    }
+    //     std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
+    // }
 
-    void Material::AddShaders(std::initializer_list<Shader> shaders)
-    {
-        for (auto& shader : shaders) AddShader(shader);
-    }
+    // void Material::AddShader(ShaderBuilder shader)
+    // {
+
+    // }
+
+    // void Material::AddShaders(std::initializer_list<Shader> shaders)
+    // {
+    //     for (auto& shader : shaders) AddShader(shader);
+    // }
 
     void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     {
@@ -301,6 +306,7 @@ namespace SnekVk
     void MaterialBuilder::AddShader(ShaderBuilder* shader)
     {
         bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
+        u64 offset = 0;
 
         auto& vertices = shader->GetVertexBindings();
 
@@ -336,27 +342,8 @@ namespace SnekVk
         return *this;
     }
 
-    void MaterialBuilder::Build()
-    {
-        u64 propertyOffset = 0;
-
-        // TODO: Allocate our buffer
-
-        SetShaderProperties(vertexShader, OUT propertyOffset);
-        SetShaderProperties(fragmentShader, OUT propertyOffset);
-
-        // TODO: Set descriptors
-
-        // TODO: Set layouts
-
-        // TODO: Create Pipelines
-        
-    }
-
     void MaterialBuilder::SetShaderProperties(ShaderBuilder* shader, u64& offset)
     {
-        if (shader == nullptr) return;
-
         auto uniforms = shader->GetUniforms();
 
         for(auto& uniform : uniforms)
@@ -367,8 +354,11 @@ namespace SnekVk
             {
                 std::cout << "Added new binding at position: " << uniform.binding << std::endl;
                 descriptorBindings.Activate(uniform.binding);
-                descriptorBindings.Get(uniform.binding).binding = uniform.binding;
-                descriptorBindings.Get(uniform.binding).type = (DescriptorType)uniform.type;
+                
+                auto& binding = descriptorBindings.Get(uniform.binding);
+                
+                binding.binding = uniform.binding;
+                binding.type = (DescriptorType)uniform.type;
             }
 
             std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
