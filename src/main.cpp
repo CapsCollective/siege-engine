@@ -229,28 +229,26 @@ int main()
 
     // Material Declaration
 
-    SnekVk::Material diffuseMat; // 3D diffuse material
-    SnekVk::Material spriteMat;  // 2D sprite material 
-
     SnekVk::MaterialBuilder diffuseMatBuilder;
     SnekVk::MaterialBuilder spriteMatBuilder;
-    
-    std::cout << "BUILDERS" << std::endl;
-    diffuseMatBuilder
+
+    SnekVk::Material diffuseMat(
+        SnekVk::MaterialBuilder()
         .WithVertexShader(&diffuseShader)
         .WithFragmentShader(&fragShader)
-        .Build();
-    
-    spriteMatBuilder
+    ); // 3D diffuse material
+
+    SnekVk::Material spriteMat(
+        SnekVk::MaterialBuilder()
         .WithVertexShader(&spriteShader)
         .WithFragmentShader(&fragShader)
-        .Build();
+    );  // 2D sprite material 
 
     // TODO: Add an 'AddShaders' function that accepts ShaderBuilders
-    diffuseMat.AddShaders({diffuseShaderVert, diffuseShaderFrag});
-    spriteMat.AddShaders({spriteShaderVert, diffuseShaderFrag});
+    // diffuseMat.AddShaders({diffuseShaderVert, diffuseShaderFrag});
+    // spriteMat.AddShaders({spriteShaderVert, diffuseShaderFrag});
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
+    // SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     // Generate models
 

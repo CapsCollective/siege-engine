@@ -26,13 +26,11 @@ namespace SnekVk
             POINT = 2
         };
 
-        // TODO: Finish this class
-
         static constexpr size_t MAX_SHADER_COUNT = 5;
         static constexpr size_t MAX_PROPERTIES_COUNT = 10;
         static constexpr uint32_t MAX_SETS_PER_BINDING = 5;
 
-        Material();
+        Material(class MaterialBuilder& builder);
 
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;
@@ -44,9 +42,9 @@ namespace SnekVk
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
-        void AddShader(Shader shader);
-        void AddShader(ShaderBuilder shader);
-        void AddShaders(std::initializer_list<Shader> shaders);
+        // void AddShader(Shader shader);
+        // void AddShader(ShaderBuilder shader);
+        // void AddShaders(std::initializer_list<Shader> shaders);
 
         static void DestroyDescriptorPool() 
         { 
@@ -98,7 +96,8 @@ namespace SnekVk
 
         size_t vertexCount = 0;
 
-        Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
+        //Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
+
         // TODO: Split properties into their shader stages
         Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
 
@@ -118,36 +117,6 @@ namespace SnekVk
     {
         public: 
 
-        enum PolygonMode
-        {
-            FILL = 0, 
-            LINE = 1, 
-            POINT = 2
-        };
-
-        static constexpr size_t MAX_SHADERS = 2;
-        static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
-        static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
-        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
-
-        using BindingsArray = Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS>;
-        using ShaderConfigs = Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS>;
-
-        MaterialBuilder();
-        ~MaterialBuilder() {};
-
-        MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
-        MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
-
-        MaterialBuilder& WithPolygonMode(PolygonMode mode); 
-
-        BindingsArray& GetBindings() { return bindings; }
-        ShaderConfigs& GetShaderConfigs() { return shaderConfigs; }
-
-        void Build();
-
-        private: 
-
         struct DescriptorBinding {
             uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
@@ -164,10 +133,41 @@ namespace SnekVk
             const void* data;
         };
 
+        static constexpr size_t MAX_SHADERS = 2;
+        static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
+        static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
+        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
+
+        using BindingsArray = Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS>;
+        using ShaderConfigs = Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS>;
+        using PropertiesArray = Utils::StackArray<Property, MAX_PROPERTIES_COUNT>;
+        using DescriptorBindings = Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT>;
+
+        enum PolygonMode
+        {
+            FILL = 0, 
+            LINE = 1, 
+            POINT = 2
+        };
+
+        MaterialBuilder();
+        ~MaterialBuilder() {};
+
+        MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
+        MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
+
+        MaterialBuilder& WithPolygonMode(PolygonMode mode); 
+
+        BindingsArray& GetBindings() { return bindings; }
+        ShaderConfigs& GetShaderConfigs() { return shaderConfigs; }
+        PropertiesArray& GetProperties() { return propertiesArray; }
+        DescriptorBindings& GetDescrptorBindings() {return descriptorBindings; }
+
+        private: 
+
         void AddShader(ShaderBuilder* shader);
         void SetShaderProperties(ShaderBuilder* shader, u64& offset);
-        
-        // TODO: Create the Bind function
+        void CreateDescriptors();
 
         BindingsArray bindings;
         ShaderConfigs shaderConfigs;
@@ -180,14 +180,11 @@ namespace SnekVk
         ShaderBuilder* fragmentShader {nullptr};
 
         u64 bufferSize;
+
         size_t vertexCount = 0;
         size_t shaderCount = 0;
 
-        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
-
-        Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
-        Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
-
-        Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT> descriptorBindings;
+        PropertiesArray propertiesArray;
+        DescriptorBindings descriptorBindings;
     };
 }
