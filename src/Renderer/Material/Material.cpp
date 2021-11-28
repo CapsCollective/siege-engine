@@ -98,11 +98,10 @@ namespace SnekVk
 
     void Material::CreatePipeline()
     {
-        // TODO: Make this into a StackArray
-        PipelineConfig::ShaderConfig shaderConfigs[shaderCount];
+        Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS> shaderConfigs;
 
-        if (vertexShader) shaderConfigs[0] = { vertexShader->GetPath(), vertexShader->GetStage() };
-        if (fragmentShader) shaderConfigs[1] = { fragmentShader->GetPath(), fragmentShader->GetStage() };
+        if (vertexShader) shaderConfigs.Append({ vertexShader->GetPath(), vertexShader->GetStage() });
+        if (fragmentShader) shaderConfigs.Append({ fragmentShader->GetPath(), fragmentShader->GetStage() });
 
         size_t bindingCount = descriptorBindings.Count();
 
@@ -128,7 +127,7 @@ namespace SnekVk
         pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexCount, vertexBindings.Data());
 
         pipeline.RecreatePipeline(
-            shaderConfigs,
+            shaderConfigs.Data(),
             shaderCount,
             pipelineConfig
         );
@@ -275,7 +274,6 @@ namespace SnekVk
         for (auto material : materials) material->BuildMaterial();
     }
 
-    // TODO: Break this up into multiple smaller functions
     void Material::BuildMaterial()
     {
         // Allocate buffer which can store all the data we need
