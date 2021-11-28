@@ -9,9 +9,14 @@
 
 namespace SnekVk
 {
+
     class Material
     {
         public:
+
+        static constexpr size_t MAX_SHADERS = 2;
+        static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
+        static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
 
         enum DescriptorType
         {
@@ -26,25 +31,19 @@ namespace SnekVk
             POINT = 2
         };
 
-        static constexpr size_t MAX_SHADER_COUNT = 5;
-        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
-        static constexpr uint32_t MAX_SETS_PER_BINDING = 5;
-
-        Material(class MaterialBuilder& builder);
+        Material();
+        Material(ShaderBuilder* vertexShader);
+        Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader);
 
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;
 
         ~Material();
 
-        void SetDescriptors();
+        void CreateDescriptors();
 
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
-
-        // void AddShader(Shader shader);
-        // void AddShader(ShaderBuilder shader);
-        // void AddShaders(std::initializer_list<Shader> shaders);
 
         static void DestroyDescriptorPool() 
         { 
@@ -58,13 +57,13 @@ namespace SnekVk
         void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
 
         void Bind(VkCommandBuffer commandBuffer);
+        void CreatePipeline();
         void RecreatePipeline();
 
         static void BuildMaterials(std::initializer_list<Material*> materials);
 
         private:
 
-        // Add stage and dynamic offset to this
         struct DescriptorBinding {
             uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
@@ -80,6 +79,11 @@ namespace SnekVk
             u64 size;
             const void* data;
         };
+
+        Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader, u32 shaderCount);
+
+        void AddShader(ShaderBuilder* shader);
+        void SetShaderProperties(ShaderBuilder* shader, u64& offset);
 
         void CreateLayout(
             VkDescriptorSetLayout* layouts = nullptr, 
@@ -97,94 +101,24 @@ namespace SnekVk
         size_t vertexCount = 0;
 
         //Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
-
-        // TODO: Split properties into their shader stages
-        Utils::StackArray<Property, MAX_PROPERTIES_COUNT> propertiesArray;
-
-        Buffer::Buffer buffer;
-        u64 bufferSize = 0;
-
-        Utils::StackArray<VkDescriptorSet, MAX_PROPERTIES_COUNT> descriptorSets;
-        Utils::StackArray<u32, MAX_PROPERTIES_COUNT> descriptorOffsets;
-
-        Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT> descriptorBindings;
-        
-        Pipeline pipeline;
-        VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
-    };
-
-    class MaterialBuilder
-    {
-        public: 
-
-        struct DescriptorBinding {
-            uint32_t binding = 0;
-            VkDescriptorSetLayout layout {VK_NULL_HANDLE};
-            VkDescriptorSet descriptorSet;
-            DescriptorType type;
-        }; 
-
-        struct Property
-        {
-            Utils::StringId id;
-            VkShaderStageFlags stage;
-            u64 offset;
-            u64 size;
-            const void* data;
-        };
-
-        static constexpr size_t MAX_SHADERS = 2;
-        static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
-        static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
-        static constexpr size_t MAX_PROPERTIES_COUNT = 10;
-
-        using BindingsArray = Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS>;
-        using ShaderConfigs = Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS>;
-        using PropertiesArray = Utils::StackArray<Property, MAX_PROPERTIES_COUNT>;
-        using DescriptorBindings = Utils::StackArray<DescriptorBinding, MAX_PROPERTIES_COUNT>;
-
-        enum PolygonMode
-        {
-            FILL = 0, 
-            LINE = 1, 
-            POINT = 2
-        };
-
-        MaterialBuilder();
-        ~MaterialBuilder() {};
-
-        MaterialBuilder& WithVertexShader(ShaderBuilder* vertexShader);
-        MaterialBuilder& WithFragmentShader(ShaderBuilder* fragmentShader);
-
-        MaterialBuilder& WithPolygonMode(PolygonMode mode); 
-
-        BindingsArray& GetBindings() { return bindings; }
-        ShaderConfigs& GetShaderConfigs() { return shaderConfigs; }
-        PropertiesArray& GetProperties() { return propertiesArray; }
-        DescriptorBindings& GetDescrptorBindings() {return descriptorBindings; }
-
-        private: 
-
-        void AddShader(ShaderBuilder* shader);
-        void SetShaderProperties(ShaderBuilder* shader, u64& offset);
-        void CreateDescriptors();
-
-        BindingsArray bindings;
-        ShaderConfigs shaderConfigs;
-
-        struct {
-            PolygonMode mode = PolygonMode::FILL;
-        } shaderSettings;
+        u32 shaderCount = 0;
 
         ShaderBuilder* vertexShader {nullptr};
         ShaderBuilder* fragmentShader {nullptr};
 
-        u64 bufferSize;
+        // TODO: Split properties into their shader stages
+        Utils::StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
-        size_t vertexCount = 0;
-        size_t shaderCount = 0;
+        Buffer::Buffer buffer;
+        u64 bufferSize = 0;
 
-        PropertiesArray propertiesArray;
-        DescriptorBindings descriptorBindings;
+        Utils::StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
+        Utils::StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
+
+        Utils::StackArray<DescriptorBinding, MAX_MATERIAL_BINDINGS> descriptorBindings;
+        Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
+        
+        Pipeline pipeline;
+        VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
     };
 }

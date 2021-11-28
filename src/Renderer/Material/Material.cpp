@@ -7,10 +7,29 @@ namespace SnekVk
 {
     VkDescriptorPool Material::descriptorPool = {VK_NULL_HANDLE};
 
-    Material::Material(class MaterialBuilder& builder)
+    Material::Material()
+        : Material(nullptr, nullptr, 0) {}
+
+    Material::Material(ShaderBuilder* vertexShader) 
+        : Material(vertexShader, nullptr, 1) 
+    {
+        bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
+    }
+    
+    Material::Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader)
+        : Material(vertexShader, fragmentShader, 2) 
+    {
+        bufferSize +=
+            (Buffer::PadUniformBufferSize(vertexShader->GetUniformSize())
+            + Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize()));
+    }
+
+    Material::Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader, u32 shaderCount)
+        : vertexShader(vertexShader), fragmentShader(fragmentShader), shaderCount(shaderCount)
     {
         auto device = VulkanDevice::GetDeviceInstance();
 
+        // TODO Make this into a separate class 
         if (descriptorPool == VK_NULL_HANDLE) 
         {
             VkDescriptorPoolSize poolSizes[] = {
@@ -74,13 +93,51 @@ namespace SnekVk
         // Clear our graphics pipeline before swapchain re-creation
         pipeline.ClearPipeline();
 
-        BuildMaterial();
+        CreatePipeline();
+    }
+
+    void Material::CreatePipeline()
+    {
+        // TODO: Make this into a StackArray
+        PipelineConfig::ShaderConfig shaderConfigs[shaderCount];
+
+        if (vertexShader) shaderConfigs[0] = { vertexShader->GetPath(), vertexShader->GetStage() };
+        if (fragmentShader) shaderConfigs[1] = { fragmentShader->GetPath(), fragmentShader->GetStage() };
+
+        size_t bindingCount = descriptorBindings.Count();
+
+        VkDescriptorSetLayout layouts[bindingCount];
+
+        for(size_t i = 0; i < bindingCount; i++)
+        {
+            layouts[i] = descriptorBindings[i].layout;
+        }
+
+        CreateLayout(layouts, bindingCount);
+
+        SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
+        
+        // TODO: Maybe pipelineConfig should be a builder class?
+
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig();
+        pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
+        
+        pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+        
+        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexCount, vertexBindings.Data());
+
+        pipeline.RecreatePipeline(
+            shaderConfigs,
+            shaderCount,
+            pipelineConfig
+        );
     }
 
     // FIXME: If a descriptor is set for multiple shaders this entire process falls apart.
     // TODO: Find a way to resolve the bug above.
     // TODO: Find a way to sort bindings by number and shader stage
-    void Material::SetDescriptors()
+    void Material::CreateDescriptors()
     {
         auto device = VulkanDevice::GetDeviceInstance();
 
@@ -106,7 +163,7 @@ namespace SnekVk
                 i, 
                 1, 
                 descriptorBindings[i].type,
-                VK_SHADER_STAGE_VERTEX_BIT // TODO: Change this to respond to different stages
+                property.stage
             );
 
             std::cout << "Creating a layout binding for binding " << i << std::endl;
@@ -140,7 +197,7 @@ namespace SnekVk
                 i, 
                 descriptorSets[binding.binding], 
                 1, 
-                (SnekVk::Utils::Descriptor::Type)binding.type, // TODO: change this to respond to multiple types
+                (SnekVk::Utils::Descriptor::Type)binding.type,
                 bufferInfos[i]
             );
         }    
@@ -148,26 +205,57 @@ namespace SnekVk
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, descriptorBindings.Count());
     }
 
-    // void Material::AddShader(Shader shader)
-    // {
-    //     shaders.Append(shader);
+    void Material::AddShader(ShaderBuilder* shader)
+    {
+        auto& vertices = shader->GetVertexBindings();
 
-    //     bufferSize += Buffer::PadUniformBufferSize(shader.GetUniformSize());
+        vertexCount += vertices.Count();
 
-    //     vertexCount += shader.GetVertexBindings().count;
+        for(size_t i = 0; i < vertices.Count(); i++)
+        {
+            auto& binding = vertices.Get(i);
+            auto& attributes = binding.attributes;
 
-    //     std::cout << "Adding shader: " << shader.GetPath() << " with size: " << shader.GetUniformSize() << std::endl;
-    // }
+            if (attributes.Count() == 0) continue;
 
-    // void Material::AddShader(ShaderBuilder shader)
-    // {
+            vertexBindings.Append(
+                VertexDescription::CreateBinding(
+                i, 
+                binding.vertexStride, 
+                VertexDescription::VERTEX, 
+                attributes.Data(), 
+                attributes.Count()
+            ));
+        }
+    }
 
-    // }
+    void Material::SetShaderProperties(ShaderBuilder* shader, u64& offset)
+    {
+        if (shader == nullptr) return;
 
-    // void Material::AddShaders(std::initializer_list<Shader> shaders)
-    // {
-    //     for (auto& shader : shaders) AddShader(shader);
-    // }
+        auto uniforms = shader->GetUniforms();
+
+        for(auto& uniform : uniforms)
+        {
+            propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader->GetStage(), offset,  uniform.size, nullptr});
+
+            if (!descriptorBindings.Exists(uniform.binding))
+            {
+                std::cout << "Added new binding at position: " << uniform.binding << std::endl;
+                descriptorBindings.Activate(uniform.binding);
+                
+                auto& binding = descriptorBindings.Get(uniform.binding);
+                
+                binding.binding = uniform.binding;
+                binding.type = (DescriptorType)uniform.type;
+            }
+
+            std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
+
+            std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
+            offset += uniform.size;
+        }
+    }
 
     void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     {
@@ -176,7 +264,6 @@ namespace SnekVk
 
     void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data)
     {
-        // TODO: change this to use a dictionary
         for(auto& property : propertiesArray)
         {
             if (id == property.id) Buffer::CopyData(buffer, dataSize, data, property.offset);
@@ -200,171 +287,24 @@ namespace SnekVk
             OUT buffer.bufferMemory
         );
 
-        VertexDescription::Binding bindings[vertexCount];
-        PipelineConfig::ShaderConfig shaderConfigs[shaders.Count()];
-
-        // TODO: Extract this into another function
         u64 offset = 0;
 
-        for (size_t i = 0; i < shaders.Count(); i++)
+        if (vertexShader)
         {
-            auto shader = shaders.Get(i);
-            auto vertices = shader.GetVertexBindings();
-
-            for (size_t j = 0; j < vertices.count; j++)
-            {
-                auto attributes = vertices.data[j];
-
-                if (attributes.attributeCount == 0) continue;
-
-                bindings[j] = VertexDescription::CreateBinding(
-                        j, 
-                        attributes.vertexStride, 
-                        VertexDescription::VERTEX, 
-                        attributes.attributes, 
-                        attributes.attributeCount);
-            }
-
-            shaderConfigs[i] = { shader.GetPath(), shader.GetStage() };
-
-            auto uniforms = shader.GetUniformStructs();
-
-            for(size_t j = 0; j < uniforms.count; j++)
-            {
-                auto uniform = uniforms.data[j];
-
-                propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader.GetStage(), offset,  uniform.size, nullptr});
-
-                if (!descriptorBindings.Exists(uniform.binding))
-                {
-                    std::cout << "Added new binding at position: " << uniform.binding << std::endl;
-                    descriptorBindings.Activate(uniform.binding);
-                    descriptorBindings.Get(uniform.binding).binding = uniform.binding;
-                    descriptorBindings.Get(uniform.binding).type = (DescriptorType)uniform.type;
-                }
-
-                std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
-
-                std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
-                offset += uniform.size;
-            }
+            AddShader(vertexShader);
+            SetShaderProperties(vertexShader, OUT offset);
         }
 
+        if (fragmentShader)
+        {
+            AddShader(fragmentShader);
+            SetShaderProperties(fragmentShader, OUT offset);
+        }
+        
         std::cout << "Total bindings: " << descriptorBindings.Count() << std::endl;
 
-        SetDescriptors();
+        CreateDescriptors();
 
-        VkDescriptorSetLayout layouts[descriptorBindings.Count()];
-        for(size_t i = 0; i < descriptorBindings.Count(); i++)
-        {
-            layouts[i] = descriptorBindings[i].layout;
-        }
-
-        CreateLayout(layouts, descriptorBindings.Count());
-
-        SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
-
-        auto pipelineConfig = Pipeline::DefaultPipelineConfig();
-        pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
-        
-        pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
-        
-        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(vertexCount, bindings);
-
-        pipeline.RecreatePipeline(
-            shaderConfigs,
-            static_cast<u32>(shaders.Count()),
-            pipelineConfig
-        );
-    }
-
-    MaterialBuilder::MaterialBuilder() {}
-
-    MaterialBuilder& MaterialBuilder::WithVertexShader(ShaderBuilder* vertexShader)
-    {
-        if (this->vertexShader == nullptr) shaderCount++;
-
-        this->vertexShader = vertexShader;
-
-        AddShader(vertexShader);
-
-        return *this;
-    }
-
-    MaterialBuilder& MaterialBuilder::WithFragmentShader(ShaderBuilder* fragmentShader)
-    {
-        if (this->fragmentShader == nullptr) shaderCount++;
-
-        this->fragmentShader = fragmentShader;
-
-        AddShader(fragmentShader);
-
-        return *this;
-    }
-
-    void MaterialBuilder::AddShader(ShaderBuilder* shader)
-    {
-        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
-        u64 offset = 0;
-
-        auto& vertices = shader->GetVertexBindings();
-
-        vertexCount += vertices.Count();
-
-        for(size_t i = 0; i < vertices.Count(); i++)
-        {
-            auto& binding = vertices.Get(i);
-            auto& attributes = binding.attributes;
-
-            if (attributes.Count() == 0) continue;
-
-            bindings.Append(
-                VertexDescription::CreateBinding(
-                i, 
-                binding.vertexStride, 
-                VertexDescription::VERTEX, 
-                attributes.Data(), 
-                attributes.Count()
-            ));
-        }
-
-        shaderConfigs.Append({ shader->GetPath(), shader->GetStage() });
-
-        std::cout << "Added shader: " << shader->GetPath() << " with " << vertices.Count() << " vertex bindings" << std::endl;
-        std::cout << "Total bindings: " << bindings.Count() << std::endl;
-    }
-
-    MaterialBuilder& MaterialBuilder::WithPolygonMode(PolygonMode mode) 
-    {
-        shaderSettings.mode = mode;
-
-        return *this;
-    }
-
-    void MaterialBuilder::SetShaderProperties(ShaderBuilder* shader, u64& offset)
-    {
-        auto uniforms = shader->GetUniforms();
-
-        for(auto& uniform : uniforms)
-        {
-            propertiesArray.Append({uniform.id, (VkShaderStageFlags)shader->GetStage(), offset,  uniform.size, nullptr});
-
-            if (!descriptorBindings.Exists(uniform.binding))
-            {
-                std::cout << "Added new binding at position: " << uniform.binding << std::endl;
-                descriptorBindings.Activate(uniform.binding);
-                
-                auto& binding = descriptorBindings.Get(uniform.binding);
-                
-                binding.binding = uniform.binding;
-                binding.type = (DescriptorType)uniform.type;
-            }
-
-            std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
-
-            std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
-            offset += uniform.size;
-        }
+        CreatePipeline();
     }
 }
