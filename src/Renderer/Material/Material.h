@@ -65,19 +65,20 @@ namespace SnekVk
         private:
 
         struct DescriptorBinding {
-            uint32_t binding = 0;
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
-            VkDescriptorSet descriptorSet;
+            VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
             DescriptorType type;
         }; 
 
         struct Property
         {
+            uint32_t binding = 0;
             Utils::StringId id;
             VkShaderStageFlags stage;
             u64 offset;
             u64 size;
             const void* data;
+            DescriptorBinding descriptorBinding;
         };
 
         Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader, u32 shaderCount);
@@ -115,7 +116,6 @@ namespace SnekVk
         Utils::StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
         Utils::StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
-        Utils::StackArray<DescriptorBinding, MAX_MATERIAL_BINDINGS> descriptorBindings;
         Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
         
         Pipeline pipeline;
