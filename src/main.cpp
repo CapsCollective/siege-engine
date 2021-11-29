@@ -8,7 +8,6 @@
 #include "Utils/Math.h"
 #include "Renderer/Material/Material.h"
 #include "Renderer/Shader/Shader.h"
-#include "Renderer/Shader/Shader2.h"
 
 #include <vector>
 #include <chrono>
@@ -180,7 +179,7 @@ int main()
 
     // Vertex shaders
 
-    auto diffuseShader = SnekVk::ShaderBuilder::CreateShaderBuilder()
+    auto diffuseShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex))
@@ -188,20 +187,20 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
-        .WithDynamicStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000)
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000)
         .WithDynamicUniform(1, "lightDir", sizeof(glm::vec3));
     
-    auto spriteShader = SnekVk::ShaderBuilder::CreateShaderBuilder()
+    auto spriteShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader2D.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex2D))
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
-        .WithDynamicStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
 
     // Fragment shaders
 
-    auto fragShader = SnekVk::ShaderBuilder::CreateShaderBuilder()
+    auto fragShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 

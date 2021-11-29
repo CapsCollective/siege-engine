@@ -10,71 +10,73 @@ namespace SnekVk
 {
     class Shader
     {
-        public: 
+        public:
 
-        static constexpr size_t MAX_VERTEX_ATTRIBUTE_SIZE = 5;
-        static constexpr size_t MAX_UNIFORM_SIZE = 5;
+        static constexpr size_t MAX_UNIFORMS = 5;
 
-        Shader();
-        Shader(const char* filePath, PipelineConfig::PipelineStage stage);
-        ~Shader();
-
-        // TODO: Change this into a specialised class with internal logic
-        struct VertexBinding
+        enum DescriptorType
         {
-            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-            size_t attributeCount = 0;
-            u32 vertexStride = 0;
-            VertexDescription::Attribute attributes[MAX_VERTEX_ATTRIBUTES];
+            UNIFORM = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            UNIFORM_DYNAMIC = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+            STORAGE = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+            STORAGE_DYNAMIC = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
         };
 
-        template<typename T, size_t S>
-        struct Storage
+        enum ShaderStage
         {
-            static constexpr size_t MAX_COUNT = S;
-            size_t count = 0; 
-            T data[MAX_COUNT];
+            VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
+            FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT,
         };
 
-        template<typename T> 
         struct Uniform
         {
-            Utils::StringId id = 0;
-            u32 location = 0;
+            Utils::StringId id;
             u32 binding = 0; 
             u64 size;
             VkDescriptorType type;
         };
 
-        void AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type);
+        struct VertexBinding
+        {
+            static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
+            Utils::StackArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
+            u32 vertexStride = 0;
+        };
 
-        void SetVertexInputSize(u32 binding, u32 offset);
-        void SetShaderPath(const char* filePath);
+        Shader();
+        ~Shader();
 
-         void SetUniform(u32 location, u32 binding, const char* name, u64 size);
-         void SetUniform(u32 location, u32 binding, Utils::StringId strId, u64 size);
-         
-         void SetStorage(u32 location, u32 binding, const char* name, u64 size);
-         void SetStorage(u32 location, u32 binding, Utils::StringId strId, u64 size);
+        static Shader BuildShader();
 
-        u32 GetUniformStructIdx(const char* name);
-        u32 GetUniformStructIdx(Utils::StringId strId);
-        u64 GetUniformSize() { return uniformSize; }
-
-        Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> GetUniformStructs() { return uniformStructs; }
-        Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> GetVertexBindings() { return vertexStorage; }
-        PipelineConfig::PipelineStage GetStage() { return stage; }
-        const char* GetPath() { return filePath; }
-
-        private:
-
-        // Maybe change this into a specialised class?
-        Storage<Uniform<const void*>, MAX_UNIFORM_SIZE> uniformStructs;
-        u64 uniformSize = 0;
-
-        Storage<VertexBinding, MAX_VERTEX_ATTRIBUTE_SIZE> vertexStorage;
+        Shader& FromShader(const char* filePath);
+        Shader& WithStage(PipelineConfig::PipelineStage stage);
         
+        Shader& WithUniform(u32 binding, const char* name, u64 size);
+        Shader& WithDynamicUniform(u32 binding, const char* name, u64 size);
+        Shader& WithStorage(u32 binding, const char* name, u64 size);
+        Shader& WithDynamicStorage(u32 binding, const char* name, u64 size);
+
+        Shader& WithVertexType(u32 size);
+        Shader& WithVertexAttribute(u32 offset, VertexDescription::AttributeType type);
+
+        const Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const { return vertexBindings; }
+        const Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const { return uniforms; }
+        Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() { return vertexBindings; }
+        Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() { return uniforms; }
+
+        const char* GetPath() { return filePath; }
+        PipelineConfig::PipelineStage GetStage() { return stage; } 
+
+        u64 GetUniformSize() { return sizeOfUniforms; }
+
+        void SetUniformType(u32 binding, const char* name, u64 size, VkDescriptorType type);
+
         const char* filePath;
+        
+        Utils::StackArray<Uniform, MAX_UNIFORMS> uniforms;
+        Utils::StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
+
         PipelineConfig::PipelineStage stage;
+        u64 sizeOfUniforms = 0;
     };
 }

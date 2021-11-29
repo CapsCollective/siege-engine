@@ -10,7 +10,7 @@ namespace SnekVk
     Material::Material()
         : Material(nullptr, nullptr, 0) {}
 
-    Material::Material(ShaderBuilder* vertexShader) 
+    Material::Material(Shader* vertexShader) 
         : Material(vertexShader, nullptr, 1) 
     {
         SNEK_ASSERT(vertexShader != nullptr, 
@@ -19,7 +19,7 @@ namespace SnekVk
         bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
     }
     
-    Material::Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader)
+    Material::Material(Shader* vertexShader, Shader* fragmentShader)
         : Material(vertexShader, fragmentShader, 2) 
     {
         SNEK_ASSERT(vertexShader != nullptr && fragmentShader != nullptr, 
@@ -30,7 +30,7 @@ namespace SnekVk
             + Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize()));
     }
 
-    Material::Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader, u32 shaderCount)
+    Material::Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount)
         : vertexShader(vertexShader), fragmentShader(fragmentShader), shaderCount(shaderCount)
     {
         auto device = VulkanDevice::GetDeviceInstance();
@@ -184,7 +184,7 @@ namespace SnekVk
 
             bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, property.size);
 
-            if (binding.type == DescriptorType::STORAGE_DYNAMIC || binding.type == DescriptorType::UNIFORM_DYNAMIC)
+            if (binding.type == Shader::DescriptorType::STORAGE_DYNAMIC || binding.type == Shader::DescriptorType::UNIFORM_DYNAMIC)
                 descriptorOffsets.Append(Buffer::PadUniformBufferSize(property.offset));
 
             std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
@@ -208,7 +208,7 @@ namespace SnekVk
         Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
     }
 
-    void Material::AddShader(ShaderBuilder* shader)
+    void Material::AddShader(Shader* shader)
     {
         auto& vertices = shader->GetVertexBindings();
 
@@ -232,7 +232,7 @@ namespace SnekVk
         }
     }
 
-    void Material::SetShaderProperties(ShaderBuilder* shader, u64& offset)
+    void Material::SetShaderProperties(Shader* shader, u64& offset)
     {
         auto uniforms = shader->GetUniforms();
 
@@ -247,7 +247,7 @@ namespace SnekVk
                     nullptr
             };
 
-            property.descriptorBinding = { VK_NULL_HANDLE, VK_NULL_HANDLE, (DescriptorType)uniform.type };
+            property.descriptorBinding = { VK_NULL_HANDLE, VK_NULL_HANDLE, (Shader::DescriptorType)uniform.type };
             propertiesArray.Append(property);
 
             std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
