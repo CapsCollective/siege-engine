@@ -235,6 +235,7 @@ int main()
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),
+        Components::Shape(&cubeObjModel),
         Components::Shape(&vaseObjModel)
     };
 
@@ -244,13 +245,18 @@ int main()
         Components::Shape(&squareModel)
     };
 
-    shapes[0].SetPosition({0.f, 0.5f, 2.5f});
+    shapes[0].SetPosition({0.f, .5f, 2.5f});
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
-    shapes[1].SetPosition({0.f, 0.f, 2.5f});
-    shapes[1].SetScale({2.f, 2.f, 2.f});
+    shapes[1].SetPosition({0.f, 1.f, 2.5f});
+    shapes[1].SetScale({2.f, 2.f, 0.f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
+    shapes[1].SetRotationX(1.570796f);
+
+    shapes[2].SetPosition({0.f, 0.f, 2.5f});
+    shapes[2].SetScale({2.f, 2.f, 2.f});
+    shapes[2].SetColor({.5f, 0.f, 0.f});
 
     shapes2D[0].SetPosition({1.5f, 0.f, 2.5f});
 
