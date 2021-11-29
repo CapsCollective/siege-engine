@@ -13,12 +13,18 @@ namespace SnekVk
     Material::Material(ShaderBuilder* vertexShader) 
         : Material(vertexShader, nullptr, 1) 
     {
+        SNEK_ASSERT(vertexShader != nullptr, 
+            "Error: the vertex shader must not be null when using this constructor");
+
         bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
     }
     
     Material::Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader)
         : Material(vertexShader, fragmentShader, 2) 
     {
+        SNEK_ASSERT(vertexShader != nullptr && fragmentShader != nullptr, 
+            "Error: the vertex and fragment shaders must not be null when using this constructor");
+        
         bufferSize +=
             (Buffer::PadUniformBufferSize(vertexShader->GetUniformSize())
             + Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize()));
@@ -29,7 +35,7 @@ namespace SnekVk
     {
         auto device = VulkanDevice::GetDeviceInstance();
 
-        // TODO Make this into a separate class 
+        // TODO: Make this into a separate class 
         if (descriptorPool == VK_NULL_HANDLE) 
         {
             VkDescriptorPoolSize poolSizes[] = {
@@ -116,7 +122,7 @@ namespace SnekVk
 
         SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
         
-        // TODO: Maybe pipelineConfig should be a builder class?
+        // TODO(Aryeh): Maybe pipelineConfig should be a builder class?
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
@@ -133,9 +139,12 @@ namespace SnekVk
         );
     }
 
-    // FIXME: If a descriptor is set for multiple shaders this entire process falls apart.
-    // TODO: Find a way to resolve the bug above.
-    // TODO: Find a way to sort bindings by number and shader stage
+    // NOTE(Aryeh): At some point it might be useful to batch create
+    // bindings. To do this we'd need to sort all bindings by type, stage, and 
+    // binding. 
+    
+    // NOTE(Aryeh): This could potentially break if we have multiple 
+    // uniforms in the same dynamic uniform or storage buffer. 
     void Material::CreateDescriptors()
     {
         auto device = VulkanDevice::GetDeviceInstance();
@@ -174,7 +183,9 @@ namespace SnekVk
             "Failed to create descriptor set!");
 
             bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, property.size);
-            descriptorOffsets.Append(Buffer::PadUniformBufferSize(property.offset));
+
+            if (binding.type == DescriptorType::STORAGE_DYNAMIC || binding.type == DescriptorType::UNIFORM_DYNAMIC)
+                descriptorOffsets.Append(Buffer::PadUniformBufferSize(property.offset));
 
             std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
             Utils::Descriptor::AllocateSets(device->Device(), &binding.descriptorSet, descriptorPool, 1, &binding.layout);

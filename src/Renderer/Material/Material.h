@@ -17,13 +17,7 @@ namespace SnekVk
         static constexpr size_t MAX_SHADERS = 2;
         static constexpr size_t MAX_BINDINGS_PER_SHADER = 5;
         static constexpr size_t MAX_MATERIAL_BINDINGS = MAX_SHADERS * MAX_BINDINGS_PER_SHADER;
-
-        enum DescriptorType
-        {
-            UNIFORM = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 
-            STORAGE = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-        };
-
+        
         enum PolygonMode
         {
             FILL = 0, 
@@ -101,7 +95,6 @@ namespace SnekVk
 
         size_t vertexCount = 0;
 
-        //Utils::StackArray<Shader, MAX_SHADER_COUNT> shaders;
         u32 shaderCount = 0;
 
         ShaderBuilder* vertexShader {nullptr};
