@@ -2,133 +2,105 @@
 
 namespace SnekVk
 {
-    Shader::Shader()
-    {
+    Shader::Shader() {}
 
+    Shader::~Shader() {}
+
+    Shader Shader::BuildShader()
+    {
+        return Shader();
     }
 
-    Shader::Shader(const char* filePath, PipelineConfig::PipelineStage stage) 
-            : filePath{filePath}, stage{stage}
-    {
-        
-    }
-
-    Shader::~Shader()
-    {
-
-    }
-
-    void Shader::SetVertexInputSize(u32 binding, u32 stride)
-    {
-        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
-                "Cannot assign attributes to more than 5 bindings!");
-        
-        vertexStorage.data[binding].vertexStride = stride;
-    }
-
-    void Shader::SetShaderPath(const char* filePath)
+    Shader& Shader::FromShader(const char* filePath)
     {
         this->filePath = filePath;
+
+        return *this;
     }
 
-    void Shader::AddVertexAttribute(u32 binding, u32 offset, VertexDescription::AttributeType type)
+    Shader& Shader::WithStage(PipelineConfig::PipelineStage stage) 
     {
-        SNEK_ASSERT(vertexStorage.count < vertexStorage.MAX_COUNT, 
-                std::string("Too many vertex attributes assigned. Max is ")
-                .append(std::to_string(vertexStorage.MAX_COUNT))
-                .c_str()); 
-        
-        SNEK_ASSERT(binding < vertexStorage.MAX_COUNT, 
-                "Cannot assign attributes to more than 5 bindings!");
-        
-        u32 attributeCount = vertexStorage.data[binding].attributeCount;
-
-        if (attributeCount == 0) vertexStorage.count++;
-
-        vertexStorage.data[binding].attributes[attributeCount] = {offset, type};
-        vertexStorage.data[binding].attributeCount++;
+        this->stage = stage;
+        return *this;
     }
 
-    void Shader::SetUniform(u32 location, u32 binding, const char* name, u64 size)
+    Shader& Shader::WithUniform(u32 binding, const char* name, u64 size)
     {
-        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
-            "Cannot assign more than 5 uniform structs per shader!");
+        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+
+        std::cout << "Added uniform " << name << " for binding: " << binding << std::endl;
+
+        return *this;
+    }
+
+    Shader& Shader::WithDynamicUniform(u32 binding, const char* name, u64 size)
+    {
+        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC);
+
+        std::cout << "Added dynamic uniform " << name << " for binding: " << binding << std::endl;
+
+        return *this;
+    }
+
+    Shader& Shader::WithStorage(u32 binding, const char* name, u64 size)
+    {
+        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+
+        std::cout << "Added storage " << name << "for binding: " << binding << std::endl;
+
+        return *this;
+    }
+
+    Shader& Shader::WithDynamicStorage(u32 binding, const char* name, u64 size)
+    {
+        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC);
+
+        std::cout << "Added dynamic storage " << name << " for binding: " << binding << std::endl;
+
+        return *this;
+    }
+
+    Shader& Shader::WithVertexType(u32 size)
+    {
+        size_t index = vertexBindings.Count();
+
+        vertexBindings.Activate(index);
+        auto& binding = vertexBindings.Get(index);
+        binding.vertexStride = size;
+
+        std::cout << "Added new vertex type of size " << size << std::endl;
+        std::cout << "There are now " << vertexBindings.Count() << " bindings" << std::endl;
+
+        return *this;
+    }
+
+    Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType type)
+    {
+        size_t index = vertexBindings.Count() - 1;
+
+        SNEK_ASSERT(index >= 0, "A vertex type must be added before creating attributes!");
+
+        auto& binding = vertexBindings.Get(index);
+        auto& attributes = binding.attributes;
+
+        attributes.Append({offset, type});
+
+        std::cout << "Added new vertex attribute for binding " << index << std::endl;
+        std::cout << "Binding now has " << binding.attributes.Count() << " attributes" << std::endl;
+
+        return *this;
+    }
+
+    void Shader::SetUniformType(u32 binding, const char* name, u64 size, VkDescriptorType type)
+    {
+        SNEK_ASSERT(uniforms.Count() <= uniforms.Size(), 
+            std::string("ERROR: Maximum number of uniforms have been reached. Maximum is " 
+            + std::to_string(uniforms.Size())).c_str());
 
         Utils::StringId strId = INTERN_STR(name);
 
-        u32 uniformIdx = GetUniformStructIdx(strId);
+        uniforms.Append({strId, binding, size, type});
 
-        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
-
-        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC};
-
-        std::cout << "Added uniform: " << name << " at index: " << uniformIdx << std::endl;
-
-        uniformSize += size;
-    }
-
-    void Shader::SetUniform(u32 location, u32 binding, Utils::StringId strId, u64 size)
-    {
-        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
-            "Cannot assign more than 5 uniform structs per shader!");
-        
-        u32 uniformIdx = GetUniformStructIdx(strId);
-
-        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
-
-        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC};
-
-        std::cout << "Added uniform at index: " << uniformIdx << std::endl;
-
-        uniformSize += size;
-    }
-
-    void Shader::SetStorage(u32 location, u32 binding, const char* name, u64 size)
-    {
-        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
-            "Cannot assign more than 5 uniform structs per shader!");
-
-        Utils::StringId strId = INTERN_STR(name);
-
-        u32 uniformIdx = GetUniformStructIdx(strId);
-
-        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
-
-        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC};
-
-        std::cout << "Added storage buffer: " << name << " at index: " << uniformIdx << std::endl;
-
-        uniformSize += size;
-    }
-
-    void Shader::SetStorage(u32 location, u32 binding, Utils::StringId strId, u64 size)
-    {
-        SNEK_ASSERT(uniformStructs.count < uniformStructs.MAX_COUNT, 
-            "Cannot assign more than 5 uniform structs per shader!");
-        
-        u32 uniformIdx = GetUniformStructIdx(strId);
-
-        if (uniformIdx == -1) uniformIdx = uniformStructs.count++;
-
-        uniformStructs.data[uniformIdx] = {strId, location, binding, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC};
-
-        std::cout << "Added storage at index: " << uniformIdx << std::endl;
-
-        uniformSize += size;
-    }
-
-    u32 Shader::GetUniformStructIdx(const char* name)
-    {
-        return GetUniformStructIdx(INTERN_STR(name));
-    }
-
-    u32 Shader::GetUniformStructIdx(Utils::StringId strId)
-    {
-        for (size_t i = 0; i < uniformStructs.count; i++)
-        {
-            if (strId == uniformStructs.data[i].id) return i;
-        }
-
-        return -1;
+        sizeOfUniforms += size;
     }
 }

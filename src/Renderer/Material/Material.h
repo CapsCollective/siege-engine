@@ -4,12 +4,9 @@
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
 #include "../Shader/Shader.h"
-#include "../Shader/Shader2.h"
-#include "../Utils/Descriptor.h"
 
 namespace SnekVk
 {
-
     class Material
     {
         public:
@@ -26,8 +23,8 @@ namespace SnekVk
         };
 
         Material();
-        Material(ShaderBuilder* vertexShader);
-        Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader);
+        Material(Shader* vertexShader);
+        Material(Shader* vertexShader, Shader* fragmentShader);
 
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;
@@ -61,7 +58,7 @@ namespace SnekVk
         struct DescriptorBinding {
             VkDescriptorSetLayout layout {VK_NULL_HANDLE};
             VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
-            DescriptorType type;
+            Shader::DescriptorType type;
         }; 
 
         struct Property
@@ -75,10 +72,10 @@ namespace SnekVk
             DescriptorBinding descriptorBinding;
         };
 
-        Material(ShaderBuilder* vertexShader, ShaderBuilder* fragmentShader, u32 shaderCount);
+        Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
-        void AddShader(ShaderBuilder* shader);
-        void SetShaderProperties(ShaderBuilder* shader, u64& offset);
+        void AddShader(Shader* shader);
+        void SetShaderProperties(Shader* shader, u64& offset);
 
         void CreateLayout(
             VkDescriptorSetLayout* layouts = nullptr, 
@@ -97,10 +94,9 @@ namespace SnekVk
 
         u32 shaderCount = 0;
 
-        ShaderBuilder* vertexShader {nullptr};
-        ShaderBuilder* fragmentShader {nullptr};
+        Shader* vertexShader {nullptr};
+        Shader* fragmentShader {nullptr};
 
-        // TODO: Split properties into their shader stages
         Utils::StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
         Buffer::Buffer buffer;
