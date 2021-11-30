@@ -5,12 +5,13 @@
 #include "EditorController.h"
 #include "Profiler.h"
 #include <stdexcept>
+#include <input/Input.h>
 
 void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (IsKeyPressed(KEY_GRAVE))
+    if (Input::KeyPressed(Input::KEY_GRAVE))
     {
         // Toggle the console
         isActive = !isActive;
@@ -22,19 +23,19 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) GetCharPressed()) > 0)
+    while ((key = (char) Input::GetKeyChar()) > 0)
     {
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
-    if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) inputText.pop_back();
+    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.empty()) inputText.pop_back();
 
     // Get the last command you ran - only works once.
-    if (IsKeyPressed(KEY_UP) && !lastInput.empty()) inputText = lastInput;
+    if (Input::KeyPressed(Input::KEY_UP) && !lastInput.empty()) inputText = lastInput;
 
     // Process the command on enter
-    if (IsKeyPressed(KEY_ENTER))
+    if (Input::KeyPressed(Input::KEY_ENTER))
     {
         // Process the input into command and argument format
         std::string command;

@@ -1,21 +1,23 @@
 #include "FreeCam.h"
 #include <render/Camera.h>
+#include <input/Input.h>
 
 void FreeCam::OnUpdate()
 {
     if (!camera) return;
 
     // TODO fix bug where camera resets on rmb click sometimes
-    if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+    if (Input::MouseDown(Input::MOUSE_RIGHT_BUTTON))
     {
         // Begin the click, hide the cursor
-        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) DisableCursor();
+        if (Input::MousePressed(Input::MOUSE_RIGHT_BUTTON)) Input::DisableMouseCursor();
 
         // Calculate current mouse positional values
-        Vector2 mousePosition = GetMousePosition();
-        Vector2 mousePositionDelta = {
+        Vec3 mousePosition = Input::GetMousePos();
+        Vec3 mousePositionDelta = {
                 mousePosition.x - previousMousePosition.x,
                 mousePosition.y - previousMousePosition.y,
+                0
         };
 
         // Set previous mouse position
@@ -31,9 +33,9 @@ void FreeCam::OnUpdate()
 
         // Get movement as vector
         Vec3 move = {
-                (float) (-IsKeyDown(KEY_A) + IsKeyDown(KEY_D)),
-                (float) (-IsKeyDown(KEY_Q) + IsKeyDown(KEY_E)),
-                (float) (-IsKeyDown(KEY_W) + IsKeyDown(KEY_S)),
+                (float) (-Input::KeyDown(Input::KEY_A) + Input::KeyDown(Input::KEY_D)),
+                (float) (-Input::KeyDown(Input::KEY_Q) + Input::KeyDown(Input::KEY_E)),
+                (float) (-Input::KeyDown(Input::KEY_W) + Input::KeyDown(Input::KEY_S)),
         };
 
         // Set the new position and look rotation of the camera
@@ -43,7 +45,7 @@ void FreeCam::OnUpdate()
         camera->SetPosition(position);
         camera->SetTarget(target);
     }
-    else if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON)) EnableCursor(); // End the click, show the cursor
+    else if (Input::MouseReleased(Input::MOUSE_RIGHT_BUTTON)) Input::EnableMouseCursor();
 
     // TODO fix camera look issues beyond 90 degrees in either direction from origin
 //    std::cout << "rotation: " << rotation.x << " " << rotation.y << std::endl;
