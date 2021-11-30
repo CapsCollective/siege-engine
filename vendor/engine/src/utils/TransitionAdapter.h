@@ -6,52 +6,22 @@
 
 // Raylib conversions
 
-Vec3 ToVec3(raylib::Vector3 vector)
-{
-    return {vector.x, vector.y, vector.z};
-}
+Vec3 ToVec3(raylib::Vector3 vector);
 
-raylib::Vector3 FromVec3(Vec3 vector)
-{
-    return {vector.x, vector.y, vector.z};
-}
+raylib::Vector3 FromVec3(Vec3 vector);
 
-Vec3 ToVec3(Vector2 vector)
-{
-    return {vector.x, vector.y, 0.f};
-}
+Vec3 ToVec3(Vector2 vector);
 
-RayCast ToRayCast(Ray ray)
-{
-    return {ToVec3(ray.position), ToVec3(ray.direction)};
-}
+RayCast ToRayCast(Ray ray);
 
-Ray FromRayCast(RayCast ray)
-{
-    return {FromVec3(ray.position), FromVec3(ray.direction)};
-}
+Ray FromRayCast(RayCast ray);
 
-BoundedBox ToBoundedBox(BoundingBox bbox)
-{
-    return {ToVec3(bbox.min), ToVec3(bbox.max)};
-}
+BoundedBox ToBoundedBox(BoundingBox bbox);
 
-BoundingBox FromBoundedBox(BoundedBox bbox)
-{
-    return {FromVec3(bbox.min), FromVec3(bbox.max)};
-}
+BoundingBox FromBoundedBox(BoundedBox bbox);
 
-Colour ToColour(Color color)
-{
-    return {color.r, color.g, color.b, color.a};
-}
+Colour ToColour(Color color);
 
-Color FromColour(Colour color)
-{
-    return {(unsigned char) color.r,
-            (unsigned char) color.g,
-            (unsigned char) color.b,
-            (unsigned char) color.a};
-}
+Color FromColour(Colour color);
 
 #endif //A_DARK_DISCOMFORT_TRANSITIONADAPTER_H

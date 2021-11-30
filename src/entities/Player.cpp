@@ -2,6 +2,7 @@
 #include <collision/CollisionSystem.h>
 #include <scene/SceneSerialiser.h>
 #include <render/RenderSystem.h>
+#include <input/Input.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
@@ -18,9 +19,9 @@ void Player::OnUpdate()
 {
     // Get move axes as vector
     Vec3 move = {
-            (float)(-IsKeyDown(KEY_LEFT) + IsKeyDown(KEY_RIGHT)),
+            (float)(-Input::KeyDown(Input::KEY_LEFT) + Input::KeyDown(Input::KEY_RIGHT)),
             0.f,
-            (float)(-IsKeyDown(KEY_UP) + IsKeyDown(KEY_DOWN)),
+            (float)(-Input::KeyDown(Input::KEY_UP) + Input::KeyDown(Input::KEY_DOWN)),
     };
 
 
