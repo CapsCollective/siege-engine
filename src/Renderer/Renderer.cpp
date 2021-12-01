@@ -16,6 +16,7 @@ namespace SnekVk
 
         bufferId = INTERN_STR("objectBuffer");
         lightId = INTERN_STR("lightDir");
+        cameraDataId = INTERN_STR("cameraData");
 
         CreateCommandBuffers();
     }
@@ -44,7 +45,7 @@ namespace SnekVk
     {
         models[modelCount] = model;
         // might need to see if there's a way to avoid a copy here.
-        transforms[modelCount] = { mainCamera->GetProjView() * transform.transform, transform.normalMatrix };
+        transforms[modelCount] = { transform.transform, transform.normalMatrix };
         SNEK_ASSERT(modelCount++ <= MAX_OBJECT_TRANSFORMS, 
                 "LIMIT REACHED ON RENDERABLE MODELS");
     }
@@ -53,7 +54,7 @@ namespace SnekVk
     {
         models2D[model2DCount] = model;
         // might need to see if there's a way to avoid a copy here.
-        transforms2D[model2DCount] = { mainCamera->GetProjView() * transform.transform };
+        transforms2D[model2DCount] = { transform.transform };
         SNEK_ASSERT(model2DCount++ <= MAX_OBJECT_TRANSFORMS, 
                 "LIMIT REACHED ON RENDERABLE MODELS");
     }
@@ -64,9 +65,12 @@ namespace SnekVk
 
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        VkDeviceSize bufferSize = sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS;
-        VkDeviceSize dirToLightBufferSize = sizeof(glm::vec3);
-        glm::vec3 dirToLight(1.0f, -3.0f, -1.0f);
+        VkDeviceSize bufferSize = Buffer::PadUniformBufferSize(sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS);
+        VkDeviceSize dirToLightBufferSize = Buffer::PadUniformBufferSize(sizeof(glm::vec3));
+        VkDeviceSize cameraDataBufferSize = Buffer::PadUniformBufferSize(sizeof(glm::mat4));
+
+        glm::vec3 dirToLight(1.0f, -5.0f, -1.0f);
+        glm::mat4 cameraData = mainCamera->GetProjView();
 
         for (size_t i = 0; i < modelCount; i++)
         {
@@ -77,6 +81,7 @@ namespace SnekVk
                 currentMat = model->GetMaterial();
                 currentMat->SetUniformData(bufferId, bufferSize, transforms);
                 currentMat->SetUniformData(lightId, dirToLightBufferSize, &dirToLight);
+                currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
                 currentMat->Bind(commandBuffer);
             } 
 
@@ -99,6 +104,7 @@ namespace SnekVk
             {
                 currentMat = model->GetMaterial();
                 currentMat->SetUniformData(bufferId, bufferSize2D, transforms2D);
+                currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
                 currentMat->Bind(commandBuffer);
             } 
 

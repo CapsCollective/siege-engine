@@ -7,6 +7,8 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in vec2 uv;
 
 layout(location = 0) out vec3 fragColor;
+layout(location = 1) out vec3 fragPosWorld;
+layout(location = 2) out vec3 fragNormalWorld;
 
 struct ObjectData 
 {
@@ -22,16 +24,21 @@ layout (set = 1, binding = 1) uniform LightDir {
     vec3 dir;
 } lightDir;
 
+layout (set = 2, binding = 2) uniform ProjectionView {
+    mat4 projectionView;
+} projectionView;
+
 const float AMBIENT = 0.03;
 
 void main() {
 
-    vec3 dirToLight = normalize(lightDir.dir);
-
     ObjectData object = objectBuffer.objects[gl_BaseInstance];
-    mat4 transformMatrix = object.transform;
 
-    gl_Position = transformMatrix * vec4(position, 1.0);
+    vec4 positionWorld = object.transform * vec4(position, 1.0);
+
+    gl_Position = projectionView.projectionView * positionWorld;
+
+    vec3 dirToLight = normalize(lightDir.dir);
 
     vec3 normalWorldSpace = normalize(mat3(object.normalMatrix) * normal);
 

@@ -182,10 +182,13 @@ namespace SnekVk
             SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBindings[i], 1),
             "Failed to create descriptor set!");
 
+            // FIXME: 'offset' should refer to the offset of each element in a dynamic uniform/storage
+            // FIXME: 'size' is the overall size of the entire dynamic uniform.
             bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, 0, property.size);
 
-            if (binding.type == Shader::DescriptorType::STORAGE_DYNAMIC || binding.type == Shader::DescriptorType::UNIFORM_DYNAMIC)
-                descriptorOffsets.Append(Buffer::PadUniformBufferSize(property.offset));
+            auto bufferOffset = (binding.type == Shader::DescriptorType::STORAGE_DYNAMIC || binding.type == Shader::DescriptorType::UNIFORM_DYNAMIC) * property.offset;
+            if (bufferOffset > 0) descriptorOffsets.Append(Buffer::PadUniformBufferSize(bufferOffset));
+            
 
             std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
             Utils::Descriptor::AllocateSets(device->Device(), &binding.descriptorSet, descriptorPool, 1, &binding.layout);
@@ -267,8 +270,31 @@ namespace SnekVk
     {
         for(auto& property : propertiesArray)
         {
-            if (id == property.id) Buffer::CopyData(buffer, dataSize, data, property.offset);
+            if (id == property.id) {
+                Buffer::CopyData(buffer, dataSize, data, property.offset);
+                std::cout << "Found ID: " << id << "of size: " << dataSize << std::endl;
+                return;
+            }
         }
+
+        std::cout << "Could not find ID: " << id << std::endl;
+    }
+
+    void Material::SetUniformData(const char* name, VkDeviceSize dataSize, const void* data)
+    {
+        auto id = INTERN_STR(name);
+
+        for(auto& property : propertiesArray)
+        {
+            if (id == property.id) {
+                Buffer::CopyData(buffer, dataSize, data, property.offset);
+                std::cout << "Found property: " << name << " of size: " << dataSize << " and ID " << id << std::endl;
+                return;
+            }
+        }
+
+        std::cout << "Could not find name: " << name << std::endl;
+
     }
 
     void Material::BuildMaterials(std::initializer_list<Material*> materials)
