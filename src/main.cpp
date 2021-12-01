@@ -188,7 +188,9 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000)
-        .WithDynamicUniform(1, "lightDir", sizeof(glm::vec3));
+        .WithDynamicUniform(1, "lightDir", sizeof(glm::vec3))
+        .WithDynamicUniform(2, "cameraData", sizeof(glm::mat4));
+        
     
     auto spriteShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader2D.vert.spv")
@@ -196,7 +198,8 @@ int main()
         .WithVertexType(sizeof(SnekVk::Vertex2D))
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
-        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000);
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000)
+        .WithDynamicUniform(1, "cameraData", sizeof(glm::mat4));
 
     // Fragment shaders
 
@@ -204,9 +207,14 @@ int main()
         .FromShader("shaders/simpleShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 
+    auto diffuseFragShader = SnekVk::Shader::BuildShader()
+        .FromShader("bin/shaders/diffuseFragShader.frag.spv")
+        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
+        .WithDynamicUniform(0, "lightDir", sizeof(glm::vec3));
+
     // Material Declaration
                                 // vertex       // fragment  
-    SnekVk::Material diffuseMat(&diffuseShader, &fragShader); // 3D diffuse material
+    SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
 
     SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});

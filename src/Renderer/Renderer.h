@@ -98,6 +98,7 @@ namespace SnekVk
 
             Utils::StringId bufferId;
             Utils::StringId lightId;
+            Utils::StringId cameraDataId;
 
             Camera* mainCamera;
     };
