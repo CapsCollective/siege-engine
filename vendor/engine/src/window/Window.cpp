@@ -51,6 +51,11 @@ int Window::GetHeight()
     return windowHeight;
 }
 
+int Window::GetTextWidth(const std::string& text, int textSize)
+{
+    return MeasureText(text.c_str(), textSize);
+}
+
 long Window::GetCurrentTime()
 {
     auto now = std::chrono::system_clock::now();

@@ -45,6 +45,15 @@ namespace StringHelpers
      * @return the modified string
      */
     std::string Replace(std::string string, const std::string& toReplace, const std::string& replacement);
+
+    template <typename ...P>
+    std::string FormatText(const char* formatText, P&&... params)
+    {
+        int size = std::snprintf(nullptr, 0, formatText, std::forward<P>(params)...);
+        std::string output(size + 1, '\0');
+        std::sprintf(output.begin().base(), formatText, std::forward<P>(params)...);
+        return output;
+    }
 }
 
 

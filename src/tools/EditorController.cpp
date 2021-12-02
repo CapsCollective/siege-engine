@@ -6,13 +6,13 @@
 #include <scene/SceneManager.h>
 #include <render/Camera.h>
 #include <input/Input.h>
+#include <window/Window.h>
 
 // Static member initialisation
 static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
 static float ROTATE_LEVELS[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
 
 // Define colours
-static Colour NORMAL_PINK(255, 109, 194);
 static Colour BRIGHT_PINK(255, 5, 146);
 
 void EditorController::OnStart()
@@ -156,21 +156,21 @@ void EditorController::OnDraw2D()
     if (!selectedEntity) return;
 
     // Format display text on the selected entity
-    const char* nameLabel = FormatText("%s", selectedEntity->GetName().c_str());
-    const char* posLabel = FormatText("Position: <%.2f, %.2f, %.2f>",
+    std::string nameLabel = StringHelpers::FormatText("%s", selectedEntity->GetName().c_str());
+    std::string posLabel = StringHelpers::FormatText("Position: <%.2f, %.2f, %.2f>",
                                       selectedEntity->GetPosition().x,
                                       selectedEntity->GetPosition().y,
                                       selectedEntity->GetPosition().z);
-    const char* rotLabel = FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
+    std::string rotLabel = StringHelpers::FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
-    DrawText(nameLabel,(int) screenPosition.x - MeasureText(nameLabel, 20)/2,
-             (int) screenPosition.y, 20, PINK);
-    DrawText(posLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : NORMAL_PINK);
-    DrawText(rotLabel,(int) screenPosition.x - MeasureText(posLabel, 18)/2,
-             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : NORMAL_PINK);
+    RenderSystem::DrawText2D(nameLabel,(int) screenPosition.x - Window::GetTextWidth(nameLabel, 20)/2,
+             (int) screenPosition.y, 20, Colour::Pink);
+    RenderSystem::DrawText2D(posLabel,(int) screenPosition.x - Window::GetTextWidth(posLabel, 18)/2,
+             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : Colour::Pink);
+    RenderSystem::DrawText2D(rotLabel,(int) screenPosition.x - Window::GetTextWidth(posLabel, 18)/2,
+             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : Colour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)
@@ -210,7 +210,8 @@ void EditorController::AdjustPrecision(int adjustment)
             {
                 // Apply the new precision value
                 movePrecision = newPrecision;
-                messageDisplay->DisplayMessage(FormatText("Move precision set to %.2f", MOVE_LEVELS[movePrecision]));
+                messageDisplay->DisplayMessage(StringHelpers::FormatText(
+                        "Move precision set to %.2f", MOVE_LEVELS[movePrecision]));
             }
             break;
         }
@@ -221,7 +222,8 @@ void EditorController::AdjustPrecision(int adjustment)
             {
                 // Apply the new precision value
                 rotatePrecision = newPrecision;
-                messageDisplay->DisplayMessage(FormatText("Rotate precision set to %.2f°", ROTATE_LEVELS[rotatePrecision]));
+                messageDisplay->DisplayMessage(StringHelpers::FormatText(
+                        "Rotate precision set to %.2f°", ROTATE_LEVELS[rotatePrecision]));
             }
             break;
         }
