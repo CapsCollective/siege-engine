@@ -10,7 +10,6 @@
 #include "tools/EditorController.h"
 #include "tools/MessageDisplay.h"
 #include "tools/DevConsole.h"
-#include "tools/Profiler.h"
 #include "tools/FreeCam.h"
 #include "ServiceLocator.h"
 
@@ -30,17 +29,12 @@ int main(int argc, char* argv[])
     auto display = MessageDisplay();
     ServiceLocator::Provide(&display);
 
-    // Initialise the profiler
-    auto profiler = Profiler(isEditorMode);
-    ServiceLocator::Provide(&profiler);
-
     // Initialise the dev console
     auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
     EntityStorage::Add({
         &display,
-        &profiler,
         &devConsole
     }, true);
 

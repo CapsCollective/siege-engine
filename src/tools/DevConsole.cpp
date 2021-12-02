@@ -3,7 +3,6 @@
 #include <scene/SceneManager.h>
 #include <utils/StringHelpers.h>
 #include "EditorController.h"
-#include "Profiler.h"
 #include <stdexcept>
 #include <input/Input.h>
 #include <window/Window.h>
@@ -76,11 +75,6 @@ void DevConsole::OnUpdate()
             ServiceLocator::GetEditorController()->SelectEntity(nullptr);
             SceneManager::NewScene();
             messageDisplay->DisplayMessage("Created new scene");
-        }
-        else if (command == "stats")
-        {
-            // Toggle the profiler
-            profiler->ToggleActive();
         }
         else if (command == "add")
         {
