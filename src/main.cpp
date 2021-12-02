@@ -21,6 +21,8 @@ int main(int argc, char* argv[])
 
     // Create a window and main camera
     Window window("A Dark Discomfort", 800, 450);
+    ServiceLocator::Provide(&window);
+
     Cam camera;
     ServiceLocator::Provide(&camera);
 

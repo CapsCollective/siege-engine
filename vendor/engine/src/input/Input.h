@@ -1,6 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_INPUT_H
 #define A_DARK_DISCOMFORT_INPUT_H
 
+#include "../utils/Maths.h"
+
 class Input
 {
 public:
@@ -97,6 +99,7 @@ public:
         KEY_KB_MENU         = 348,
         KEY_LEFT_BRACKET    = 91,
         KEY_BACKSLASH       = 92,
+
         KEY_RIGHT_BRACKET   = 93,
         KEY_GRAVE           = 96,
     } KeyboardKey;

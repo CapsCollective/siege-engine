@@ -38,3 +38,13 @@ void Window::EndDraw()
 {
     GetWindow().EndDrawing();
 }
+
+int Window::GetWidth()
+{
+    return windowWidth;
+}
+
+int Window::GetHeight()
+{
+    return windowHeight;
+}

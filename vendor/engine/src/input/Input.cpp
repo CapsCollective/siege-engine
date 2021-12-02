@@ -1,5 +1,4 @@
 #include "Input.h"
-#include "../utils/Maths.h"
 #include <raylib/raylib-cpp.hpp>
 
 bool Input::KeyDown(KeyboardKey key)
