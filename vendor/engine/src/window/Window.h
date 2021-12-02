@@ -23,6 +23,7 @@ public:
 
     int GetHeight();
 
+    static int GetTextWidth(const std::string& text, int textSize);
 
     static long GetCurrentTime();
 

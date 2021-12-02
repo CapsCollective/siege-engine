@@ -44,7 +44,12 @@ void RenderSystem::Remove(Entity* entity)
     if (it != renderItems.end()) renderItems.erase(it);
 }
 
-void RenderSystem::DrawFrame2D()
+void RenderSystem::DrawText2D(const std::string& text, int posX, int posY, int fontSize, Colour color)
 {
-    // TODO implement me
+    DrawText(text.c_str(), posX, posY, fontSize, FromColour(color));
+}
+
+void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, Colour color)
+{
+    DrawRectangle(posX, posY, width, height, FromColour(color));
 }

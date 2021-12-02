@@ -1,3 +1,4 @@
+#include <render/RenderSystem.h>
 #include "MessageDisplay.h"
 
 void MessageDisplay::OnDraw2D()
@@ -5,7 +6,7 @@ void MessageDisplay::OnDraw2D()
     // Draw the display message to the screen while the display time is valid
     if (displayTime > 0.f)
     {
-        DrawText(displayMessage.c_str(), 10, 10, 20, PINK);
+        RenderSystem::DrawText2D(displayMessage, 10, 10, 20, Colour::Pink);
         displayTime -= 0.1f;
     }
 }

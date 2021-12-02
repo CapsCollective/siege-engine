@@ -226,6 +226,8 @@ struct Colour
 
     static const Colour Blue;
 
+    static const Colour Pink;
+
     // 'Structors
 
     Colour() :

@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "../utils/TransitionAdapter.h"
 #include <raylib/raylib-cpp.hpp>
 
 bool Input::KeyDown(KeyboardKey key)
@@ -43,5 +44,5 @@ void Input::DisableMouseCursor()
 
 Vec3 Input::GetMousePos()
 {
-    return GetMousePosition();
+    return ToVec3(GetMousePosition());
 }

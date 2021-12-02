@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <input/Input.h>
 #include <window/Window.h>
+#include <render/RenderSystem.h>
 
 void DevConsole::OnUpdate()
 {
@@ -158,10 +159,7 @@ void DevConsole::OnUpdate()
                 else messageDisplay->DisplayMessage("Error: Too few arguments supplied");
             }
         }
-        else
-        {
-            messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");
-        }
+        else messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");
 
         // Deactivate the console
         isActive = false;
@@ -177,8 +175,8 @@ void DevConsole::OnDraw2D()
     Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    DrawRectangle(0, 0, window->GetWidth(), 40, BLACK);
-    DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
+    RenderSystem::DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
+    RenderSystem::DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
 }
 
 bool DevConsole::CheckEditorMode()

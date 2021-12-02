@@ -86,7 +86,6 @@ int main(int argc, char* argv[])
         camera.End3D();
 
         // UI Draw entities
-        RenderSystem::DrawFrame2D();
         for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
 
         window.EndDraw();
