@@ -60,6 +60,9 @@ int main(int argc, char* argv[])
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
+        // Update timestep
+        Window::UpdateTime();
+
         // Update game entities
         if (!isEditorMode)
         {

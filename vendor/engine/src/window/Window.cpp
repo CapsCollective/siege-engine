@@ -6,6 +6,8 @@ static std::string windowTitle;
 static int windowWidth;
 static int windowHeight;
 
+double Window::deltaTime;
+
 static raylib::Window& GetWindow()
 {
     static raylib::Window window(windowWidth, windowHeight, windowTitle);
@@ -47,4 +49,24 @@ int Window::GetWidth()
 int Window::GetHeight()
 {
     return windowHeight;
+}
+
+long Window::GetCurrentTime()
+{
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+    return ms.time_since_epoch().count();
+}
+
+void Window::UpdateTime()
+{
+    static auto previousTime = (double) GetCurrentTime();
+    auto currentTime = (double) GetCurrentTime();
+    deltaTime = currentTime - previousTime;
+    previousTime = currentTime;
+}
+
+float Window::GetDeltaTime()
+{
+    return (float) deltaTime;
 }

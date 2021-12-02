@@ -1,6 +1,7 @@
 #include "FreeCam.h"
 #include <render/Camera.h>
 #include <input/Input.h>
+#include <window/Window.h>
 
 void FreeCam::OnUpdate()
 {
@@ -29,7 +30,8 @@ void FreeCam::OnUpdate()
                 -mousePositionDelta.y,
                 0.f
         };
-        rotation += (rotate * lookSpeed * GetFrameTime());
+        float deltaTime = Window::GetDeltaTime();
+        rotation += (rotate * lookSpeed * deltaTime);
 
         // Get movement as vector
         Vec3 move = {
@@ -40,7 +42,7 @@ void FreeCam::OnUpdate()
 
         // Set the new position and look rotation of the camera
         Vec3 position(camera->GetPosition());
-        position = position + move.Normalise() * moveSpeed * GetFrameTime();
+        position = position + move.Normalise() * moveSpeed * deltaTime;
         Vec3 target(position + rotation);
         camera->SetPosition(position);
         camera->SetTarget(target);
