@@ -13,7 +13,7 @@ public:
 
     REGISTER_SERVICE(MessageDisplay, class MessageDisplay)
 
-    REGISTER_SERVICE(Profiler, class Profiler)
+    REGISTER_SERVICE(Window, class Window)
 
 };
 

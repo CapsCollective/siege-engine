@@ -6,6 +6,7 @@
 #include "Profiler.h"
 #include <stdexcept>
 #include <input/Input.h>
+#include <window/Window.h>
 
 void DevConsole::OnUpdate()
 {
@@ -179,8 +180,10 @@ void DevConsole::OnDraw2D()
 {
     if (!isActive) return;
 
+    Window* window = ServiceLocator::GetWindow();
+
     // Draw the console to the screen
-    DrawRectangle(0, 0, GetScreenWidth(), 40, BLACK);
+    DrawRectangle(0, 0, window->GetWidth(), 40, BLACK);
     DrawText(("~ " + inputText).c_str(), 10.f, 10.f, 20.f, WHITE);
 }
 

@@ -19,6 +19,10 @@ public:
 
     void EndDraw();
 
+    int GetWidth();
+
+    int GetHeight();
+
 private:
 
     // Private fields
