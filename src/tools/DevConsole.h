@@ -14,8 +14,7 @@ public:
     explicit DevConsole(bool isEditorMode) :
         isEditorMode(isEditorMode),
         isActive(false),
-        messageDisplay(ServiceLocator::GetMessageDisplay()),
-        profiler(ServiceLocator::GetProfiler())
+        messageDisplay(ServiceLocator::GetMessageDisplay())
     {};
 
 protected:
@@ -46,7 +45,6 @@ private:
 
     EntityPtr<MessageDisplay> messageDisplay;
 
-    EntityPtr<Profiler> profiler;
 };
 
 #endif //A_DARK_DISCOMFORT_DEVCONSOLE_H
