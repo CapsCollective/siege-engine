@@ -3,6 +3,7 @@
 #include <scene/SceneSerialiser.h>
 #include <render/RenderSystem.h>
 #include <input/Input.h>
+#include <window/Window.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
@@ -26,7 +27,7 @@ void Player::OnUpdate()
 
 
     // Normalise and apply move to velocity
-    velocity += move.Normalise() * speed * GetFrameTime();
+    velocity += move.Normalise() * speed * Window::GetDeltaTime();
 
     // Apply force of gravity
     velocity += Vec3(0.f, -0.01f, 0.f);

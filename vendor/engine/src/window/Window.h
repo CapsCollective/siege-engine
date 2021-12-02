@@ -23,11 +23,20 @@ public:
 
     int GetHeight();
 
+
+    static long GetCurrentTime();
+
+    static void UpdateTime();
+
+    static float GetDeltaTime();
+
 private:
 
     // Private fields
 
     Colour backgroundColour;
+
+    static double deltaTime;
 
 };
 
