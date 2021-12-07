@@ -26,16 +26,21 @@ namespace SnekVk
 
     Shader& Shader::WithUniform(u32 binding, const char* name, u64 size)
     {
-        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+        SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size);
 
         std::cout << "Added uniform " << name << " for binding: " << binding << std::endl;
 
         return *this;
     }
 
-    Shader& Shader::WithDynamicUniform(u32 binding, const char* name, u64 size)
+    Shader& Shader::WithDynamicUniform(u32 binding, const char* name, u64 size, size_t count)
     {
-        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC);
+        SetUniformType(
+            binding, 
+            name, 
+            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 
+            size, 
+            count);
 
         std::cout << "Added dynamic uniform " << name << " for binding: " << binding << std::endl;
 
@@ -44,16 +49,21 @@ namespace SnekVk
 
     Shader& Shader::WithStorage(u32 binding, const char* name, u64 size)
     {
-        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+        SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size);
 
         std::cout << "Added storage " << name << "for binding: " << binding << std::endl;
 
         return *this;
     }
 
-    Shader& Shader::WithDynamicStorage(u32 binding, const char* name, u64 size)
+    Shader& Shader::WithDynamicStorage(u32 binding, const char* name, u64 size, size_t count)
     {
-        SetUniformType(binding, name, size, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC);
+        SetUniformType(
+            binding, 
+            name, 
+            VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 
+            size, 
+            count);
 
         std::cout << "Added dynamic storage " << name << " for binding: " << binding << std::endl;
 
@@ -91,7 +101,7 @@ namespace SnekVk
         return *this;
     }
 
-    void Shader::SetUniformType(u32 binding, const char* name, u64 size, VkDescriptorType type)
+    void Shader::SetUniformType(u32 binding, const char* name, VkDescriptorType type, u64 size, size_t count)
     {
         SNEK_ASSERT(uniforms.Count() <= uniforms.Size(), 
             std::string("ERROR: Maximum number of uniforms have been reached. Maximum is " 
@@ -99,8 +109,10 @@ namespace SnekVk
 
         Utils::StringId strId = INTERN_STR(name);
 
-        uniforms.Append({strId, binding, size, type});
+        auto paddedSize = Buffer::PadUniformBufferSize(size);
 
-        sizeOfUniforms += size;
+        uniforms.Append({strId, binding, paddedSize, count, type});
+
+        sizeOfUniforms += paddedSize * count;
     }
 }

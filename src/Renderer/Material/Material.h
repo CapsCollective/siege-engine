@@ -65,11 +65,12 @@ namespace SnekVk
         struct Property
         {
             uint32_t binding = 0;
-            Utils::StringId id;
+            Utils::StringId id = 0;
             VkShaderStageFlags stage;
-            u64 offset;
-            u64 size;
-            const void* data;
+            u64 offset = 0;
+            u64 size = 0;
+            size_t count = 0;
+            const void* data = nullptr;
             DescriptorBinding descriptorBinding;
         };
 

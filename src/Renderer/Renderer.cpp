@@ -65,9 +65,9 @@ namespace SnekVk
 
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        VkDeviceSize bufferSize = Buffer::PadUniformBufferSize(sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS);
-        VkDeviceSize dirToLightBufferSize = Buffer::PadUniformBufferSize(sizeof(glm::vec3));
-        VkDeviceSize cameraDataBufferSize = Buffer::PadUniformBufferSize(sizeof(glm::mat4));
+        VkDeviceSize bufferSize = sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS;
+        VkDeviceSize dirToLightBufferSize = sizeof(glm::vec3);
+        VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
 
         glm::vec3 dirToLight(1.0f, -5.0f, -1.0f);
         glm::mat4 cameraData = mainCamera->GetProjView();

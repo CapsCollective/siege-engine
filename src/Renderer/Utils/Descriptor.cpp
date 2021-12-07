@@ -85,7 +85,7 @@ namespace SnekVk::Utils
         uint32_t dstBinding,
         VkDescriptorSet& dstSet,
         uint32_t descriptorCount,
-        Type type, 
+        VkDescriptorType type, 
         VkDescriptorBufferInfo& bufferInfo,
         const VkDescriptorImageInfo* imageInfos,
         const VkBufferView* texelBufferView,
@@ -100,7 +100,7 @@ namespace SnekVk::Utils
             dstBinding,
             0,
             descriptorCount,
-            (VkDescriptorType)type,
+            type,
             imageInfos,
             &bufferInfo,
             texelBufferView
