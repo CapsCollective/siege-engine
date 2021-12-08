@@ -20,15 +20,9 @@ layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
     ObjectData objects[];
 } objectBuffer;
 
-layout (set = 1, binding = 1) uniform LightDir {
-    vec3 dir;
-} lightDir;
-
-layout (set = 2, binding = 2) uniform ProjectionView {
+layout (set = 1, binding = 1) uniform ProjectionView {
     mat4 projectionView;
 } projectionView;
-
-const float AMBIENT = 0.03;
 
 void main() {
 
@@ -37,12 +31,7 @@ void main() {
     vec4 positionWorld = object.transform * vec4(position, 1.0);
 
     gl_Position = projectionView.projectionView * positionWorld;
-
-    vec3 dirToLight = normalize(lightDir.dir);
-
-    vec3 normalWorldSpace = normalize(mat3(object.normalMatrix) * normal);
-
-    float lightIntensity = AMBIENT + max(dot(normalWorldSpace, dirToLight), 0);
-
-    fragColor = lightIntensity * color;
+    fragNormalWorld = normalize(mat3(object.normalMatrix) * normal);
+    fragPosWorld = positionWorld.xyz;
+    fragColor = color;
 }
