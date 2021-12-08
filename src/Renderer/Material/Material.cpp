@@ -157,9 +157,8 @@ namespace SnekVk
 
         size_t propertiesCount = propertiesArray.Count();
 
-        VkDescriptorSetLayoutBinding layoutBindings[propertiesCount];
-        VkDescriptorBufferInfo bufferInfos[propertiesCount];
         VkWriteDescriptorSet writeDescriptorSets[propertiesCount];
+        VkDescriptorBufferInfo bufferInfos[propertiesCount];
 
         std::cout << "Allocating descriptor set storage of " << propertiesCount << std::endl;
 
@@ -168,18 +167,23 @@ namespace SnekVk
             auto& property = propertiesArray.Get(i);
             auto& binding = property.descriptorBinding;
 
-            layoutBindings[i] = Utils::Descriptor::CreateLayoutBinding(
+            // TODO: bindings MUST be unique for all bound shaders. This means that
+            // TODO: new bindings on a new shader must follow a consecutive order.
+            auto layoutBinding = Utils::Descriptor::CreateLayoutBinding(
                 property.binding, 
                 1, 
                 binding.type,
                 property.stage
             );
 
-            std::cout << "Creating a layout binding for binding " << i << std::endl;
+            auto stage = property.stage == VK_SHADER_STAGE_VERTEX_BIT ? "vertex" : 
+                property.stage == VK_SHADER_STAGE_FRAGMENT_BIT ? "fragment" : "unknown";
+
+            std::cout << "Creating a layout binding for binding " << property.binding << " at stage: " << stage << std::endl;
 
             // Create all layouts
             
-            SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBindings[i], 1),
+            SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
             "Failed to create descriptor set!");
 
             size_t offset = property.offset;
@@ -244,12 +248,12 @@ namespace SnekVk
         {
             Property property = {
                 uniform.binding, 
-                    uniform.id, 
-                    (VkShaderStageFlags)shader->GetStage(), 
-                    offset,  
-                    uniform.size, 
-                    uniform.count,
-                    nullptr
+                uniform.id, 
+                (VkShaderStageFlags)shader->GetStage(), 
+                offset,  
+                uniform.size, 
+                uniform.count,
+                nullptr
             };
 
             property.descriptorBinding = { VK_NULL_HANDLE, VK_NULL_HANDLE, (Shader::DescriptorType)uniform.type };
