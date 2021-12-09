@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <raylib/Window.hpp>
+#include <chrono>
 #include "../utils/TransitionAdapter.h"
 
 static std::string windowTitle;
