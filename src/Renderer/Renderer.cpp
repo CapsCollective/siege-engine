@@ -69,7 +69,7 @@ namespace SnekVk
         VkDeviceSize dirToLightBufferSize = sizeof(glm::vec3);
         VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
 
-        glm::vec3 dirToLight(1.0f, -3.0f, -1.0f);
+        glm::vec3 dirToLight(0.0f, 0.0f, 1.5f);
         glm::mat4 cameraData = mainCamera->GetProjView();
 
         for (size_t i = 0; i < modelCount; i++)

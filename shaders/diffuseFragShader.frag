@@ -10,16 +10,14 @@ layout (set = 2, binding = 2) uniform LightPosition { // bindings are unique acc
     vec3 position;
 } lightPosition;
 
-const vec3 color = vec3(0.0, 0.0, 0.0);
+const vec3 color = vec3(1.0, 1.0, 1.0);
 
 void main() {
-
-    vec3 dirToLight = lightPosition.position - fragPosWorld;
-    float attenuation = 1.0 / dot(dirToLight, dirToLight);
+    vec3 directionToLight = lightPosition.position - fragPosWorld;
+    float attenuation = 1.0 / dot(directionToLight, directionToLight); // distance squared
 
     vec3 lightColor = color * 0.2 * attenuation;
-    vec3 ambientLight = vec3(0.0, 1.0, 0.0) * 0.1;
-    vec3 diffuseLight = lightColor * max(dot(normalize(fragNormalWorld), normalize(dirToLight)), 0);
-
+    vec3 ambientLight = vec3(1.0, 1.0, 1.0) * 0.02;
+    vec3 diffuseLight = lightColor * max(dot(normalize(fragNormalWorld), normalize(directionToLight)), 0);
     outColor = vec4((diffuseLight + ambientLight) * fragColor, 1.0);
 }
