@@ -42,5 +42,5 @@ bool BoundedBox::Intersects(const BoundedBox &other) const
 
 bool BoundedBox::Intersects(const RayCast &ray) const
 {
-    return CheckCollisionRayBox(FromRayCast(ray), FromBoundedBox(*this));
+    return GetRayCollisionBox(FromRayCast(ray), FromBoundedBox(*this)).hit;
 }

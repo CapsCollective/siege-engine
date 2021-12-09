@@ -1,7 +1,8 @@
 #include "catch.hpp"
-#include "../src/scene/SceneManager.h"
-#include "../src/entity/EntityStorage.h"
-#include "data/TestEntity.h"
+#include <scene/SceneManager.h>
+#include <entity/EntityStorage.h>
+#include <entity/Entity.h>
+#include <scene/SceneSerialiser.h>
 #include <fstream>
 #include <filesystem>
 #include <string>
@@ -26,6 +27,28 @@ std::string GetFileContent(const std::string& dir)
             (std::istreambuf_iterator<char>()));
     return content;
 }
+
+class TestEntity : public Entity
+{
+public:
+
+    static const std::string ENTITY_NAME;
+
+    TestEntity() = default;
+
+    explicit TestEntity(Xform transform) :
+        Entity(ENTITY_NAME, transform) {}
+};
+
+const std::string TestEntity::ENTITY_NAME("TestEntity");
+
+REGISTER_SERIALISATION_INTERFACE(TestEntity::ENTITY_NAME,
+        [](Entity* entity) -> std::string {
+            return "";
+        },
+        [](const EntityData& data, const std::vector<std::string>& args) -> Entity* {
+            return new TestEntity(Xform(data.position, data.rotation));
+        });
 
 
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
