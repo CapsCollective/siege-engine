@@ -257,7 +257,7 @@ int main()
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({2.f, 2.f, 0.f});
+    shapes[1].SetScale({3.f, 3.f, 0.01f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
