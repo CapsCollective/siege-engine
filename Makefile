@@ -1,41 +1,106 @@
-include vendor/engine/make/Functions.mk
+include make/Functions.mk
 
 # Set platform vars and overrides
-include vendor/engine/make/Platform.mk
+include make/Platform.mk
 ifeq ($(platform), Windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
+    libGenDir := src
 else ifeq ($(platform), Linux)
     linkFlags += -l GL -l m -l pthread -Wl,--no-as-needed -l dl -l rt -l X11
 else ifeq ($(platform), macOS)
     linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
+    libGenDir := src
 endif
 
-# Set build vars and overrides
-include vendor/engine/make/BuildVars.mk
-compileFlags += -I vendor/engine/include -I vendor/engine/src
-linkFlags += -L vendor/engine/lib -l engine -l raylib
+# Set build variables for common
+libDir = lib
+buildDir = bin
+compileFlags := -Wall -std=c++17 -I ./include
+linkFlags += -L $(libDir) -l engine -l raylib
+depends = $(patsubst %.o, %.d, $(call rwildcard,$(buildDir)/,*.o))
 
-.PHONY: all setup build engine run clean
+# Set build variables for engine
+engineSrcDir = src
+engineBuildDir = $(buildDir)/engine
+engineLib = $(libDir)/libengine.a
+engineSources = $(call rwildcard,$(engineSrcDir)/,*.cpp)
+engineObjects = $(call findobjs,$(engineSrcDir),$(engineBuildDir),$(engineSources))
 
-all: run clean
+# Set build variables for tests
+testSrcDir = tests
+testBuildDir = $(buildDir)/tests
+testExecutable = $(testBuildDir)/test
+testSources = $(call rwildcard,$(testSrcDir)/,*.cpp)
+testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
 
-# Sets up the project and deps
-setup:
-	cd vendor/engine $(THEN) "$(MAKE)" setup $(passFlags)
+# Set build variables for example
+exampleSrcDir = example/src
+exampleBuildDir = $(buildDir)/example
+exampleExecutable = $(exampleBuildDir)/example
+exampleSources = $(call rwildcard,$(exampleSrcDir)/,*.cpp)
+exampleObjects = $(call findobjs,$(exampleSrcDir),$(exampleBuildDir),$(exampleSources))
 
-# Set build rules and overrides
-include vendor/engine/make/BuildRules.mk
-$(target): engine $(objects)
-	$(CXX) $(objects) -o $(target) $(linkFlags)
+.PHONY: all setup submodules build test run clean
 
-build: $(target)
+all: build test run clean
 
-engine:
-	cd vendor/engine $(THEN) "$(MAKE)" lib/libengine.a $(passFlags)
+# Sets up the project for compiling, generates includes and libs
+setup: include $(libDir)
 
-run: $(target)
-	$(target) $(ARGS)
+# Pull and update the the build submodules
+submodules:
+	git submodule update --init --recursive
+
+# Copy the relevant header files into includes
+include: submodules
+	$(MKDIR) $(call platformpth, include/raylib)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,include/raylib,raylib.h)
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/src,include/raylib,raymath.h)
+	$(call COPY,vendor/raylib-cpp/include,include/raylib,*.hpp)
+
+# Build the raylib static library file and copy it into lib
+$(libDir): submodules
+	cd vendor/raylib-cpp/vendor/raylib/src $(THEN) "$(MAKE)" PLATFORM=PLATFORM_DESKTOP # move hte submodule
+	$(MKDIR) $(call platformpth, $(libDir))
+	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
+
+build: $(engineLib) $(testExecutable) $(exampleExecutable)
+
+# Build the static library for the engine
+$(engineLib): $(engineObjects)
+	ar -rc $(engineLib) $(engineObjects)
+
+# Link the object files and create an executable
+$(testExecutable): $(engineLib) $(testObjects)
+	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
+
+# Link the object files and create an executable
+$(exampleExecutable): $(engineLib) $(exampleObjects)
+	$(CXX) $(exampleObjects) -o $(exampleExecutable) $(linkFlags)
+
+# Add all rules from dependency files
+-include $(depends)
+
+$(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS)
+
+# Compile object files to the build directory
+$(testBuildDir)/%.o: $(testSrcDir)/%.cpp
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
+
+$(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
+
+# Build and run all tests
+test: $(testExecutable)
+	$(testExecutable) $(ARGS)
+
+run: $(exampleExecutable)
+	$(exampleExecutable) $(ARGS)
 
 clean:
 	$(RM) $(call platformpth, $(buildDir))
-	cd vendor/engine $(THEN) "$(MAKE)" clean
+	$(RM) $(call platformpth, $(engineLib))

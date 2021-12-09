@@ -29,7 +29,7 @@ bool Input::MouseReleased(MouseButton button)
 
 char Input::GetKeyChar()
 {
-    return GetCharPressed();
+    return (char) GetCharPressed();
 }
 
 void Input::EnableMouseCursor()

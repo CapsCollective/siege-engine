@@ -28,7 +28,7 @@ void RenderSystem::DrawFrame()
         const Texture& texture = ResourceManager::Get<Texture>(item.data.texturePath);
 
         // Set model texture
-        model.materials[0].maps[MAP_DIFFUSE].texture = texture;
+        SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);
 
         // Draw the model
         DrawModelEx(model, FromVec3(item.transform.GetPosition()), FromVec3(Vec3::Up),
