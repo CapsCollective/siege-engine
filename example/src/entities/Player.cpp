@@ -3,7 +3,7 @@
 #include <scene/SceneSerialiser.h>
 #include <render/RenderSystem.h>
 #include <input/Input.h>
-#include <window/Window.h>
+#include <render/Window.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");

@@ -6,7 +6,7 @@
 #include <scene/SceneManager.h>
 #include <render/Camera.h>
 #include <input/Input.h>
-#include <window/Window.h>
+#include <render/Window.h>
 
 // Static member initialisation
 static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};

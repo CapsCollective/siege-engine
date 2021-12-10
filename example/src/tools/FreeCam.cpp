@@ -1,7 +1,7 @@
 #include "FreeCam.h"
 #include <render/Camera.h>
 #include <input/Input.h>
-#include <window/Window.h>
+#include <render/Window.h>
 
 void FreeCam::OnUpdate()
 {
