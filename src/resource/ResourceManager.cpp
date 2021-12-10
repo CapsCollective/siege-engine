@@ -6,6 +6,7 @@ std::map<std::string, Model> ResourceManager::models;
 std::map<std::string, Texture> ResourceManager::textures;
 std::vector<Model*> ResourceManager::freedModels;
 std::vector<Texture*> ResourceManager::freedTextures;
+std::string ResourceManager::baseDir;
 
 void ResourceManager::FreeResources()
 {
@@ -31,4 +32,9 @@ void ResourceManager::ClearResources()
 {
     for (auto& model : models) freedModels.push_back(&model.second);
     for (auto& texture : textures) freedTextures.push_back(&texture.second);
+}
+
+void ResourceManager::SetBaseDirectory(const std::string& dir)
+{
+    baseDir = dir;
 }

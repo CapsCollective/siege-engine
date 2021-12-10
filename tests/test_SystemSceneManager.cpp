@@ -8,7 +8,7 @@
 #include <string>
 
 // Const declarations
-const std::string SCENE_DIR = "data/";
+const std::string SCENE_DIR = "tests/data/";
 const std::string FILE_NAME = "test.scene";
 const std::string FULL_TEST_PATH = SCENE_DIR + FILE_NAME;
 
@@ -23,11 +23,13 @@ bool FileExists(const std::string& dir)
 std::string GetFileContent(const std::string& dir)
 {
     std::ifstream ifs(dir);
-    std::string content((std::istreambuf_iterator<char>(ifs)),
+    std::string content(
+            (std::istreambuf_iterator<char>(ifs)),
             (std::istreambuf_iterator<char>()));
     return content;
 }
 
+// Test entity
 class TestEntity : public Entity
 {
 public:
@@ -53,11 +55,12 @@ REGISTER_SERIALISATION_INTERFACE(TestEntity::ENTITY_NAME,
 
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
+    SceneManager::SetBaseDirectory(SCENE_DIR);
     SceneManager::NewScene();
 
     SECTION("when an empty scene is saved it should create a file in the correct directory")
     {
-        SceneManager::SaveScene("test", SCENE_DIR);
+        SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(FULL_TEST_PATH));
         REQUIRE(GetFileContent(FULL_TEST_PATH).empty());
@@ -68,11 +71,11 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         EntityStorage::Add(new TestEntity());
         EntityStorage::RegisterEntities();
 
-        SceneManager::SaveScene("test", SCENE_DIR);
+        SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(FULL_TEST_PATH));
         std::string content = GetFileContent(FULL_TEST_PATH);
-        REQUIRE(!GetFileContent(FULL_TEST_PATH).empty());
+        REQUIRE(!content.empty());
         REQUIRE(content.find("TestEntity") != std::string::npos);
     }
 
@@ -80,40 +83,41 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     {
         EntityStorage::Reset();
 
-        SceneManager::SaveScene("test", SCENE_DIR);
+        SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(FULL_TEST_PATH));
         std::string content = GetFileContent(FULL_TEST_PATH);
-        REQUIRE(GetFileContent(FULL_TEST_PATH).empty());
+        REQUIRE(content.empty());
         REQUIRE(content.find("TestEntity") == std::string::npos);
     }
 
     SECTION("when a non-serialisable entity is added to the scene it should not be saved")
     {
         EntityStorage::Add(new Entity());
-        SceneManager::SaveScene("test", SCENE_DIR);
+        SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(FULL_TEST_PATH));
         std::string content = GetFileContent(FULL_TEST_PATH);
-        REQUIRE(GetFileContent(FULL_TEST_PATH).empty());
+        REQUIRE(content.empty());
     }
 
     SECTION("when an empty string is passed into SaveScene, it should create a file called 'untitled.scene'")
     {
-        SceneManager::SaveScene("", SCENE_DIR);
+        SceneManager::SaveScene("");
         REQUIRE(FileExists(SCENE_DIR + "untitled.scene"));
         remove(std::string(SCENE_DIR + "untitled.scene").c_str());
     }
 
-    SECTION("when an empty string is passed in for the directory it should create the file in the current directory")
-    {
-        SceneManager::SaveScene("test", "");
-        REQUIRE(FileExists("test.scene"));
-        remove("test.scene");
-    }
+    // TODO refactor this to test the default
+//    SECTION("when an empty string is passed in for the directory it should create the file in the current directory")
+//    {
+//        SceneManager::SaveScene("test", "");
+//        REQUIRE(FileExists(FILE_NAME));
+//        remove(FILE_NAME.c_str());
+//    }
 
     EntityStorage::Reset();
-    remove("data/test.scene");
+    remove(FULL_TEST_PATH.c_str());
 }
 
 TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
@@ -139,10 +143,11 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 
 TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 {
+    SceneManager::SetBaseDirectory(SCENE_DIR);
     SECTION("when a scene is loaded from a populated file it should populate the EntityStorage correctly")
     {
         SceneManager::QueueNextScene("scene1");
-        SceneManager::LoadNextScene("data/");
+        SceneManager::LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().size() == 3);
@@ -159,7 +164,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when a new scene is loaded in it should add all entities to the EntityStorage")
     {
-        SceneManager::LoadNextScene("data/");
+        SceneManager::LoadNextScene();
 
         EntityStorage::RegisterEntities();
         REQUIRE(EntityStorage::GetEntities().size() == 1);
@@ -172,7 +177,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
         SceneManager::QueueNextScene("nonexistent");
         EntityStorage::FreeEntities();
 
-        SceneManager::LoadNextScene("data/");
+        SceneManager::LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
@@ -181,7 +186,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     SECTION("when loading a scene from an empty string it should reset the scene")
     {
         SceneManager::QueueNextScene("");
-        SceneManager::LoadNextScene("");
+        SceneManager::LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
@@ -190,7 +195,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     SECTION("when loading a scene with garbage data it should reset the scene")
     {
         SceneManager::QueueNextScene("garbage.scene");
-        SceneManager::LoadNextScene("data/");
+        SceneManager::LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());

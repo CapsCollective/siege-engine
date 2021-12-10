@@ -23,7 +23,7 @@ public:
     {};
 
     explicit Geometry(const Xform& transform) :
-        Geometry(transform,"assets/models/cube/cube.obj","assets/models/cube/cube.png")
+        Geometry(transform,"models/cube/cube.obj","models/cube/cube.png")
     {};
 
     Geometry(const Xform& transform, std::string modelPath, std::string texturePath) :

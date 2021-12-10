@@ -11,8 +11,8 @@ const std::string Player::ENTITY_NAME("Player");
 void Player::OnStart()
 {
     // Register the entity with systems
-    std::string modelPath = "assets/models/cube/cube.obj";
-    std::string texturePath = "assets/models/cube/cube.png";
+    std::string modelPath = "models/cube/cube.obj";
+    std::string texturePath = "models/cube/cube.png";
     RenderSystem::Add(this, {modelPath, texturePath});
 }
 
