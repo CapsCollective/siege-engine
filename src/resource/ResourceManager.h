@@ -19,15 +19,16 @@ public:
     template<typename T>
     static void Register(const std::string& path)
     {
+        std::string fullPath = baseDir + path;
         if constexpr (std::is_same_v<T, Model>)
         {
-            if (models.find(path) != models.end()) return;
-            models[path] = LoadModel(path.c_str());
+            if (models.find(fullPath) != models.end()) return;
+            models[fullPath] = LoadModel(fullPath.c_str());
         }
         else if constexpr (std::is_same_v<T, Texture>)
         {
-            if (textures.find(path) != textures.end()) return;
-            textures[path] = LoadTexture(path.c_str());
+            if (textures.find(fullPath) != textures.end()) return;
+            textures[fullPath] = LoadTexture(fullPath.c_str());
         }
     }
 
@@ -40,8 +41,9 @@ public:
     template<typename T>
     static T& Get(const std::string& path)
     {
-        if constexpr (std::is_same_v<T, Model>) return models.at(path);
-        else if constexpr (std::is_same_v<T, Texture>) return textures.at(path);
+        std::string fullPath = baseDir + path;
+        if constexpr (std::is_same_v<T, Model>) return models.at(fullPath);
+        else if constexpr (std::is_same_v<T, Texture>) return textures.at(fullPath);
     }
 
     /**
@@ -53,6 +55,8 @@ public:
      * Immediately clears all stored resources.
      */
     static void ClearResources();
+
+    static void SetBaseDirectory(const std::string& dir);
 
 private:
 
@@ -77,6 +81,11 @@ private:
      * Texture resources queued for freeing.
      */
     static std::vector<Texture*> freedTextures;
+
+    /**
+     * The default base directory for finding resources.
+     */
+    static std::string baseDir;
 };
 
 #endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H

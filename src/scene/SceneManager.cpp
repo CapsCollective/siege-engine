@@ -10,6 +10,7 @@
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
 // Define static members
+std::string SceneManager::sceneDir;
 std::string SceneManager::currentScene;
 std::string SceneManager::nextScene;
 
@@ -27,12 +28,12 @@ void SceneManager::QueueNextScene(const std::string& sceneName)
     nextScene = sceneName;
 }
 
-void SceneManager::LoadNextScene(const std::string& baseDir)
+void SceneManager::LoadNextScene()
 {
     if (nextScene.empty()) return;
 
     // Try open the next scene file for streaming
-    std::ifstream file(MakeScenePath(nextScene, baseDir));
+    std::ifstream file(MakeScenePath(sceneDir + nextScene));
     // TODO move this into the scene serialiser
 
     std::string message;
@@ -67,13 +68,13 @@ void SceneManager::SaveScene()
     SaveScene(currentScene.empty() ? std::string() : currentScene);
 }
 
-void SceneManager::SaveScene(const std::string& sceneName, const std::string& baseDir)
+void SceneManager::SaveScene(const std::string& sceneName)
 {
     // Get and set the current scene name
     currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
 
     // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(MakeScenePath(currentScene, baseDir));
+    std::ofstream fileStream(MakeScenePath(sceneDir + currentScene));
     fileStream << SceneSerialiser::Serialise(EntityStorage::GetEntities());
     fileStream.close();
 }
@@ -85,5 +86,10 @@ void SceneManager::ClearScene()
 
     // Clear out all resources
     ResourceManager::ClearResources();
+}
+
+void SceneManager::SetBaseDirectory(const std::string& baseDir)
+{
+    sceneDir = baseDir;
 }
 
