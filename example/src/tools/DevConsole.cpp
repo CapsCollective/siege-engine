@@ -5,7 +5,7 @@
 #include "EditorController.h"
 #include <stdexcept>
 #include <input/Input.h>
-#include <window/Window.h>
+#include <render/Window.h>
 #include <render/RenderSystem.h>
 
 void DevConsole::OnUpdate()

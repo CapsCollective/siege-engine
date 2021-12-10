@@ -4,7 +4,7 @@
 
 #include <render/RenderSystem.h>
 #include <render/Camera.h>
-#include <window/Window.h>
+#include <render/Window.h>
 #include <resource/ResourceManagerFacade.h>
 
 #include "tools/EditorController.h"
