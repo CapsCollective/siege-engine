@@ -186,14 +186,11 @@ namespace SnekVk
             SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
             "Failed to create descriptor set!");
 
-            size_t offset = property.offset;
+            u64 offset = property.offset;
 
-            if (binding.type == Shader::DescriptorType::STORAGE_DYNAMIC || binding.type == Shader::DescriptorType::UNIFORM_DYNAMIC) 
-            {
-                descriptorOffsets.Append(offset);
-            }
+            std::cout << property.size + offset << std::endl;
 
-            bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
+            bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size);
 
             std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
             Utils::Descriptor::AllocateSets(device->Device(), &binding.descriptorSet, descriptorPool, 1, &binding.layout);
@@ -252,8 +249,7 @@ namespace SnekVk
                 (VkShaderStageFlags)shader->GetStage(), 
                 offset,  
                 uniform.size, 
-                uniform.count,
-                nullptr
+                uniform.dynamicCount
             };
 
             property.descriptorBinding = { VK_NULL_HANDLE, VK_NULL_HANDLE, (Shader::DescriptorType)uniform.type };
@@ -263,7 +259,7 @@ namespace SnekVk
 
             std::cout << "Added new property of size: " << uniform.size << " with buffer offset: " << offset << std::endl;
 
-            offset += uniform.size * uniform.count;
+            offset += (uniform.size * uniform.arraySize) * uniform.dynamicCount;
         }
     }
 
@@ -278,12 +274,9 @@ namespace SnekVk
         {
             if (id == property.id) {
                 Buffer::CopyData(buffer, dataSize, data, property.offset);
-                //std::cout << "Found ID: " << id << "of size: " << dataSize << std::endl;
                 return;
             }
         }
-
-        //std::cout << "Could not find ID: " << id << std::endl;
     }
 
     void Material::SetUniformData(const char* name, VkDeviceSize dataSize, const void* data)
@@ -294,13 +287,9 @@ namespace SnekVk
         {
             if (id == property.id) {
                 Buffer::CopyData(buffer, dataSize, data, property.offset);
-                //std::cout << "Found property: " << name << " of size: " << dataSize << " and ID " << id << std::endl;
                 return;
             }
         }
-
-        //std::cout << "Could not find name: " << name << std::endl;
-
     }
 
     void Material::BuildMaterials(std::initializer_list<Material*> materials)
@@ -338,5 +327,7 @@ namespace SnekVk
         CreateDescriptors();
 
         CreatePipeline();
+
+        std::cout << "Built material with size: " << bufferSize << std::endl;
     }
 }

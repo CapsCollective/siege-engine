@@ -26,14 +26,16 @@ namespace SnekVk
         {
             VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
             FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT,
+            ALL_GRAPHICS = VK_SHADER_STAGE_ALL_GRAPHICS,
         };
 
         struct Uniform
         {
             Utils::StringId id;
             u32 binding = 0; 
-            u64 size;
-            size_t count = 1;
+            u64 size = 0;
+            size_t arraySize = 0;
+            size_t dynamicCount = 1;
             VkDescriptorType type;
         };
 
@@ -52,10 +54,10 @@ namespace SnekVk
         Shader& FromShader(const char* filePath);
         Shader& WithStage(PipelineConfig::PipelineStage stage);
         
-        Shader& WithUniform(u32 binding, const char* name, u64 size);
-        Shader& WithDynamicUniform(u32 binding, const char* name, u64 size, size_t count);
-        Shader& WithStorage(u32 binding, const char* name, u64 size);
-        Shader& WithDynamicStorage(u32 binding, const char* name, u64 size, size_t count);
+        Shader& WithUniform(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+        Shader& WithDynamicUniform(u32 binding, const char* name, u64 size, size_t arraySize, size_t count);
+        Shader& WithStorage(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+        Shader& WithDynamicStorage(u32 binding, const char* name, u64 size, size_t arraySize, size_t count);
 
         Shader& WithVertexType(u32 size);
         Shader& WithVertexAttribute(u32 offset, VertexDescription::AttributeType type);
@@ -70,7 +72,7 @@ namespace SnekVk
 
         u64 GetUniformSize() { return sizeOfUniforms; }
 
-        void SetUniformType(u32 binding, const char* name, VkDescriptorType type, u64 size, size_t count = 1);
+        void SetUniformType(u32 binding, const char* name, VkDescriptorType type, u64 size, size_t arraySize, size_t count = 1);
 
         const char* filePath;
         

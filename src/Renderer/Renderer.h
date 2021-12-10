@@ -6,6 +6,7 @@
 #include "Model/Model.h"
 #include "Camera/Camera.h"
 #include "Material/Material.h"
+#include "Lights/PointLight.h"
 
 namespace SnekVk 
 {
@@ -30,6 +31,7 @@ namespace SnekVk
             float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
 
             void SetMainCamera(Camera* camera) { mainCamera = camera; }
+            void SetPointLight(PointLight* light) { this->light = light;}
             
             bool IsFrameStarted() { return isFrameStarted; }
 
@@ -52,7 +54,7 @@ namespace SnekVk
 
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
-            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
+            static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
             
             static VulkanDevice* deviceInstance;
             static Utils::Array<VkCommandBuffer> commandBuffers;
@@ -101,5 +103,6 @@ namespace SnekVk
             Utils::StringId cameraDataId;
 
             Camera* mainCamera;
+            PointLight* light;
     };
 }

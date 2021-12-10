@@ -8,9 +8,11 @@
 #include "Utils/Math.h"
 #include "Renderer/Material/Material.h"
 #include "Renderer/Shader/Shader.h"
+#include "Renderer/Lights/PointLight.h"
 
 #include <vector>
 #include <chrono>
+#include <cmath>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -187,8 +189,8 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
-        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform) * 10000)
-        .WithUniform(1, "cameraData", sizeof(glm::mat4));
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
+        .WithUniform(1, "cameraData", sizeof(glm::mat4), 1);
         
     
     auto spriteShader = SnekVk::Shader::BuildShader()
@@ -197,7 +199,7 @@ int main()
         .WithVertexType(sizeof(SnekVk::Vertex2D))
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
-        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D) * 10000)
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
         .WithUniform(1, "cameraData", sizeof(glm::mat4));
 
     // Fragment shaders
@@ -209,7 +211,7 @@ int main()
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
         .FromShader("bin/shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(2, "lightDir", sizeof(glm::vec3)); // TIL: bindings must be unique accross all available shaders 
+        .WithUniform(2, "lightData", sizeof(SnekVk::PointLight::Data)); // TIL: bindings must be unique accross all available shaders 
 
     // Material Declaration
                                 // vertex       // fragment  
@@ -269,6 +271,16 @@ int main()
 
     shapes2D[1].SetPosition({-1.5f, 0.f, 2.5f});
 
+    // Lights
+
+    SnekVk::PointLight light;
+    
+    light.SetPosition({0.0f, -1.0f, 1.5f});
+    light.SetColor({1.f, 0.f, 0.f, 1.0f});
+    light.SetAmbientColor({1.f, 1.f, 1.f, .02f});
+
+    renderer.SetPointLight(&light);
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
@@ -280,6 +292,11 @@ int main()
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
+
+        float lightColor = abs(sin(glfwGetTime()) * 0.5);
+        light.SetColor({1.f, 0.f, 0.f, lightColor});
+
+        std::cout << lightColor << std::endl;
 
         window.Update();
 

@@ -70,7 +70,6 @@ namespace SnekVk
             u64 offset = 0;
             u64 size = 0;
             size_t count = 0;
-            const void* data = nullptr;
             DescriptorBinding descriptorBinding;
         };
 
@@ -93,7 +92,6 @@ namespace SnekVk
         static VkDescriptorPool descriptorPool;
 
         size_t vertexCount = 0;
-
         u32 shaderCount = 0;
 
         Shader* vertexShader {nullptr};
