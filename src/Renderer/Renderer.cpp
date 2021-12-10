@@ -15,7 +15,7 @@ namespace SnekVk
         if (deviceInstance == nullptr) deviceInstance = &device;
 
         bufferId = INTERN_STR("objectBuffer");
-        lightId = INTERN_STR("lightDir");
+        lightId = INTERN_STR("lightData");
         cameraDataId = INTERN_STR("cameraData");
 
         CreateCommandBuffers();
@@ -66,10 +66,9 @@ namespace SnekVk
         auto commandBuffer = GetCurrentCommandBuffer();
 
         VkDeviceSize bufferSize = sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS;
-        VkDeviceSize dirToLightBufferSize = sizeof(glm::vec3);
+        VkDeviceSize dirToLightBufferSize = sizeof(PointLight::Data);
         VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
 
-        glm::vec3 dirToLight(0.0f, 0.0f, 1.5f);
         glm::mat4 cameraData = mainCamera->GetProjView();
 
         for (size_t i = 0; i < modelCount; i++)
@@ -80,7 +79,7 @@ namespace SnekVk
             {
                 currentMat = model->GetMaterial();
                 currentMat->SetUniformData(bufferId, bufferSize, transforms);
-                currentMat->SetUniformData(lightId, dirToLightBufferSize, &dirToLight);
+                currentMat->SetUniformData(lightId, dirToLightBufferSize, &light->GetLightData());
                 currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
                 currentMat->Bind(commandBuffer);
             } 
