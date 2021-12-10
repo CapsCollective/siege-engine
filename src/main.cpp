@@ -209,7 +209,7 @@ int main()
         .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
-        .FromShader("bin/shaders/diffuseFragShader.frag.spv")
+        .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(2, "lightData", sizeof(SnekVk::PointLight::Data)); // TIL: bindings must be unique accross all available shaders 
 
@@ -295,8 +295,6 @@ int main()
 
         float lightColor = abs(sin(glfwGetTime()) * 0.5);
         light.SetColor({1.f, 0.f, 0.f, lightColor});
-
-        std::cout << lightColor << std::endl;
 
         window.Update();
 
