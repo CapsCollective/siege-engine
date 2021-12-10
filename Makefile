@@ -18,6 +18,7 @@ buildDir = bin
 compileFlags := -Wall -std=c++17 -I ./include
 linkFlags += -L $(libDir) -l engine -l raylib
 depends = $(patsubst %.o, %.d, $(call rwildcard,$(buildDir)/,*.o))
+buildFlagsFile = .buildflags
 
 # Set build variables for engine
 engineSrcDir = src
@@ -40,7 +41,7 @@ exampleExecutable = $(exampleBuildDir)/example
 exampleSources = $(call rwildcard,$(exampleSrcDir)/,*.cpp)
 exampleObjects = $(call findobjs,$(exampleSrcDir),$(exampleBuildDir),$(exampleSources))
 
-.PHONY: all setup submodules build test run clean
+.PHONY: all setup submodules build buildFlags test run clean
 
 all: build test run clean
 
@@ -64,7 +65,24 @@ $(libDir): submodules
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
 
-build: $(engineLib) $(testExecutable) $(exampleExecutable)
+build: buildFlags $(engineLib) $(testExecutable) $(exampleExecutable)
+
+buildFlags:
+	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
+  		$(RM) $(call platformpth, $(buildDir)); \
+        $(RM) $(call platformpth, $(engineLib)); \
+    fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
+
+# Build and run all tests
+test: buildFlags $(testExecutable)
+	$(testExecutable) $(ARGS)
+
+run: buildFlags $(exampleExecutable)
+	$(exampleExecutable) $(ARGS)
+
+clean:
+	$(RM) $(call platformpth, $(buildDir))
+	$(RM) $(call platformpth, $(engineLib))
 
 # Build the static library for the engine
 $(engineLib): $(engineObjects)
@@ -93,14 +111,3 @@ $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
 $(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
-
-# Build and run all tests
-test: $(testExecutable)
-	$(testExecutable) $(ARGS)
-
-run: $(exampleExecutable)
-	$(exampleExecutable) $(ARGS)
-
-clean:
-	$(RM) $(call platformpth, $(buildDir))
-	$(RM) $(call platformpth, $(engineLib))
