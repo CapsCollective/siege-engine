@@ -1,11 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
-#include <entity/Entity.h>
-#include <collision/Collidable.h>
-#include <collision/CollisionSystem.h>
 #include <render/RenderSystem.h>
-
+#include <entity/Entity.h>
 #include <utility>
 
 class Geometry : public Entity
