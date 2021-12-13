@@ -1,6 +1,7 @@
 #include "Geometry.h"
 #include <utils/StringHelpers.h>
 #include <scene/SceneSerialiser.h>
+#include <physics/CollisionSystem.h>
 
 // Static member initialisation
 const std::string Geometry::ENTITY_NAME("Geometry");
