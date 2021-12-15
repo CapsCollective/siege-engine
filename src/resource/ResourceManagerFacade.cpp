@@ -10,3 +10,8 @@ void ResourceManagerFacade::SetBaseDirectory(const std::string& dir)
 {
     ResourceManager::SetBaseDirectory(dir);
 }
+
+const std::string &ResourceManagerFacade::GetBaseDirectory()
+{
+    return ResourceManager::GetBaseDirectory();
+}

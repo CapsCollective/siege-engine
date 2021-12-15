@@ -37,20 +37,7 @@ public:
      */
     static void LoadNextScene();
 
-    /**
-     * Sets the default base directory for finding scenes
-     * @param baseDir - the new default directory
-     */
-    static void SetBaseDirectory(const std::string& baseDir);
-
 private:
-
-    // Private methods
-
-    static inline std::string MakeScenePath(const std::string& sceneName)
-    {
-        return sceneName + ".scene";
-    }
 
     // Private methods
 
@@ -60,11 +47,6 @@ private:
     static void ClearScene();
 
     // Private fields
-
-    /**
-     * The default base directory for finding scenes
-     */
-    static std::string sceneDir;
 
     /**
      * The name of the currently loaded scene

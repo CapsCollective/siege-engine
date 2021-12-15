@@ -39,7 +39,6 @@ int main(int argc, char* argv[])
     }, true);
 
     // Set the default directories
-    SceneManager::SetBaseDirectory("example/assets/scenes/");
     ResourceManagerFacade::SetBaseDirectory("example/assets/");
 
     // Instantiate world objects as per mode options

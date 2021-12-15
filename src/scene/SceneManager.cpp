@@ -10,7 +10,6 @@
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
 // Define static members
-std::string SceneManager::sceneDir;
 std::string SceneManager::currentScene;
 std::string SceneManager::nextScene;
 
@@ -86,10 +85,5 @@ void SceneManager::ClearScene()
 
     // Clear out all resources
     ResourceManager::ClearResources();
-}
-
-void SceneManager::SetBaseDirectory(const std::string& baseDir)
-{
-    sceneDir = baseDir;
 }
 
