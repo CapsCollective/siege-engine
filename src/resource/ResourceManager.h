@@ -56,7 +56,17 @@ public:
      */
     static void ClearResources();
 
+    /**
+     * Sets the base directory used for resource path management.
+     * @param dir - the directory to set as base
+     */
     static void SetBaseDirectory(const std::string& dir);
+
+    /**
+     * Gets the base directory used for resource path management.
+     * @return the directory as a string
+     */
+    static const std::string& GetBaseDirectory();
 
 private:
 

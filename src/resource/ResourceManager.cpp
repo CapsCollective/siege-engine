@@ -38,3 +38,8 @@ void ResourceManager::SetBaseDirectory(const std::string& dir)
 {
     baseDir = dir;
 }
+
+const std::string& ResourceManager::GetBaseDirectory()
+{
+    return baseDir;
+}
