@@ -37,7 +37,7 @@ private:
 
     Colour backgroundColour;
 
-    static double deltaTime;
+    static float deltaTime;
 
 };
 
