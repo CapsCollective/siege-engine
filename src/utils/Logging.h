@@ -48,6 +48,7 @@ namespace Logging
         DEFINE_VARIANT_TYPE(const int& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const float& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const double& data, std::to_string(data));
+        DEFINE_VARIANT_TYPE(const long& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(const size_t& data, std::to_string(data));
         DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
         DEFINE_VARIANT_TYPE(const Entity& data,data.GetName());

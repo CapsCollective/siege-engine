@@ -7,7 +7,7 @@ static std::string windowTitle;
 static int windowWidth;
 static int windowHeight;
 
-double Window::deltaTime;
+float Window::deltaTime;
 
 static raylib::Window& GetWindow()
 {
@@ -60,19 +60,19 @@ int Window::GetTextWidth(const std::string& text, int textSize)
 long Window::GetCurrentTime()
 {
     auto now = std::chrono::system_clock::now();
-    auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-    return ms.time_since_epoch().count();
+    auto seconds = std::chrono::time_point_cast<std::chrono::microseconds>(now);
+    return seconds.time_since_epoch().count();
 }
 
 void Window::UpdateTime()
 {
-    static auto previousTime = (double) GetCurrentTime();
-    auto currentTime = (double) GetCurrentTime();
-    deltaTime = currentTime - previousTime;
+    static long previousTime = GetCurrentTime();
+    long currentTime = GetCurrentTime();
+    deltaTime = (float) (currentTime - previousTime) / 1000000.f;
     previousTime = currentTime;
 }
 
 float Window::GetDeltaTime()
 {
-    return (float) deltaTime;
+    return deltaTime;
 }
