@@ -2,7 +2,7 @@
 #include <scene/SceneManager.h>
 #include <entity/EntityStorage.h>
 #include <entity/Entity.h>
-#include <scene/SceneSerialiser.h>
+#include <scene/SceneFile.h>
 #include <fstream>
 #include <filesystem>
 #include <string>
@@ -55,7 +55,7 @@ REGISTER_SERIALISATION_INTERFACE(TestEntity::ENTITY_NAME,
 
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
-    SceneManager::SetBaseDirectory(SCENE_DIR);
+    ResourceManagerFacade::SetBaseDirectory(SCENE_DIR);
     SceneManager::NewScene();
 
     SECTION("when an empty scene is saved it should create a file in the correct directory")
@@ -143,7 +143,7 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 
 TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 {
-    SceneManager::SetBaseDirectory(SCENE_DIR);
+    ResourceManagerFacade::SetBaseDirectory(SCENE_DIR);
     SECTION("when a scene is loaded from a populated file it should populate the EntityStorage correctly")
     {
         SceneManager::QueueNextScene("scene1");

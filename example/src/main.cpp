@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-        // Start the game splash screen
-        SceneManager::QueueNextScene("main");
+        // Load the game entrypoint
+        SceneManager::QueueNextScene("scenes/main");
     }
 
     // Run main game loop until close button or ESC key
