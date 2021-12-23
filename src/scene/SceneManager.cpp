@@ -1,9 +1,7 @@
 #include "../resource/ResourceManager.h"
-#include "SceneSerialiser.h"
+#include "SceneFile.h"
 #include "SceneManager.h"
 #include "../utils/Logging.h"
-#include <iostream>
-#include <fstream>
 #include <vector>
 
 // Define constants
@@ -31,23 +29,11 @@ void SceneManager::LoadNextScene()
 {
     if (nextScene.empty()) return;
 
-    // Try open the next scene file for streaming
-    std::ifstream file(MakeScenePath(sceneDir + nextScene));
-    // TODO move this into the scene serialiser
-
-    std::string message;
-
-    // Exit if next scene is invalid
-    if (file.is_open())
+    // Deserialise and register all entities to current scene
+    std::vector<Entity*> entities;
+    SceneFile file(nextScene);
+    if (file.Deserialise(entities))
     {
-        // Get the scene file's lines
-        std::string line;
-        std::vector<std::string> sceneLines;
-        while (getline(file, line)) sceneLines.push_back(line);
-
-        // Deserialise and register all entities to current scene
-        std::vector<Entity*> entities;
-        SceneSerialiser::Deserialise(sceneLines, entities);
         for (auto& entity : entities) EntityStorage::Add(entity);
 
         // Set the current scene details
@@ -56,8 +42,7 @@ void SceneManager::LoadNextScene()
     }
     else CC_LOG_WARNING("Unable to load \"{}.scene\"", nextScene);
 
-    // Close the file stream and clear next scene
-    file.close();
+    // Clear next scene
     nextScene.clear();
 }
 
@@ -72,10 +57,10 @@ void SceneManager::SaveScene(const std::string& sceneName)
     // Get and set the current scene name
     currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
 
-    // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(MakeScenePath(sceneDir + currentScene));
-    fileStream << SceneSerialiser::Serialise(EntityStorage::GetEntities());
-    fileStream.close();
+    // Serialise the data to it and close it
+    SceneFile file(currentScene);
+    if (file.Serialise(EntityStorage::GetEntities())) return;
+    CC_LOG_WARNING("Unable to save \"{}.scene\"", sceneName);
 }
 
 void SceneManager::ClearScene()

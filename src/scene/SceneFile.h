@@ -1,10 +1,12 @@
-#ifndef A_DARK_DISCOMFORT_SCENESERIALISER_H
-#define A_DARK_DISCOMFORT_SCENESERIALISER_H
+#ifndef A_DARK_DISCOMFORT_SCENEFILE_H
+#define A_DARK_DISCOMFORT_SCENEFILE_H
 
 #include "../utils/Maths.h"
 #include "../utils/Macros.h"
+#include "../resource/ResourceManagerFacade.h"
 #include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -15,6 +17,7 @@
 // Define constants
 static constexpr const char SEP = '|';
 static constexpr const char NAME_SEP = ':';
+static constexpr const char* SCENE_FILE_EXT = ".scene";
 
 // Define types
 typedef const std::function<std::string(class Entity*)> Serialiser;
@@ -34,9 +37,24 @@ enum SerialisationFields {
     CUSTOM_FIELD_3 = 6,
 };
 
-class SceneSerialiser
+class SceneFile
 {
 public:
+
+    // 'Structors
+
+    /**
+     * Scene files must specify a filename
+     */
+    SceneFile() = delete;
+
+    /**
+     * Scene file constructor method
+     * @param sceneName - the name of the scene file
+     */
+    explicit SceneFile(std::string sceneName) :
+        sceneName(std::move(sceneName))
+    {}
 
     // Public methods
 
@@ -52,24 +70,57 @@ public:
             const Deserialiser& deserialise);
 
     /**
-     * Serialises a list of entities into system the scene
-     * file format
+     * Serialises a list of entities into the scene file format
      * @param entities - the list of entities to serialise
-     * @return the serialised scene as a string
+     * @return true if the operation was successful
      */
-    static std::string Serialise(const std::vector<class Entity*>& entities);
+    bool Serialise(const std::vector<class Entity*>& entities);
+
+    /**
+     * Serialises a list of entities into the scene file format as
+     * a string
+     * @param entities - the list of entities to serialise
+     * @return a string representation of the scene
+     */
+    static std::string SerialiseToString(const std::vector<Entity*>& entities);
 
     /**
      * Deserialises a scene file's content into a list of
      * entity pointers
-     * @param sceneLines - the lines of the scene file as
-     *                     a vector of strings
+     * @param entities - a reference to a vector of entity
+     *                   pointers to populate
+     * @return true if the operation was successful
+     */
+    bool Deserialise(OUT std::vector<Entity*>& entities);
+
+    /**
+     * Deserialises a scene file's content from a vector
+     * of strings
+     * @param lines - strings for each line of the scene file
      * @param entities - a reference to a vector of entity
      *                   pointers to populate
      */
-    static void Deserialise(const std::vector<std::string>& sceneLines, OUT std::vector<Entity*>& entities);
+    static void DeserialiseFromStrings(const std::vector<std::string>& lines, OUT std::vector<Entity*>& entities);
 
 private:
+
+    // Private methods
+
+    /**
+     * Deserialises a single line of a scene file to an entity
+     * @param line - a scene file line to deserialise
+     * @param entities - a reference to a vector of entity
+     *                   pointers to populate
+     */
+    static void DeserialiseLine(const std::string& line, OUT std::vector<Entity*>& entities);
+
+    /**
+     * Creates a filepath to the specified scene relative to
+     * the base resource directory
+     * @param sceneName - the name of the scene
+     * @return a filepath to a scene file
+     */
+    static std::string MakeScenePath(const std::string& sceneName);
 
     /**
      * Getter & storage for mapped serialisation interfaces
@@ -80,6 +131,14 @@ private:
         static std::map<std::string, SerialisationInterface> serialisables;
         return serialisables;
     }
+
+    // Private fields
+
+    /**
+     * The name of the scene file
+     */
+    std::string sceneName;
+
 };
 
 /**
@@ -128,7 +187,7 @@ struct SerialisationInterfaceRegisterer
             const Serialiser& serialise,
             const Deserialiser& deserialise)
     {
-        SceneSerialiser::RegisterSerialisable(name, serialise, deserialise);
+        SceneFile::RegisterSerialisable(name, serialise, deserialise);
     }
 };
 
@@ -141,9 +200,9 @@ struct SerialisationInterfaceRegisterer
  * @param content - the content of the property
  * @return the field content as a const string
  */
-inline const std::string DefineField(const std::string& name, const std::string& content)
+inline std::string DefineField(const std::string& name, const std::string& content)
 {
     return name + NAME_SEP + content + SEP;
 }
 
-#endif //A_DARK_DISCOMFORT_SCENESERIALISER_H
+#endif //A_DARK_DISCOMFORT_SCENEFILE_H
