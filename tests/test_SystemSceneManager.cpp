@@ -8,11 +8,17 @@
 #include <string>
 
 // Const declarations
-const std::string SCENE_DIR = "tests/data/";
-const std::string FILE_NAME = "test.scene";
-const std::string FULL_TEST_PATH = SCENE_DIR + FILE_NAME;
+static constexpr const char* SCENE_DIR = "tests/data/";
+static constexpr const char* TEST_FILE = "test.scene";
+static constexpr const char* UNTITLED_FILE = "untitled.scene";
 
 // Helper methods
+
+std::string Filepath(const char* filename)
+{
+    return std::string(SCENE_DIR) + filename;
+}
+
 bool FileExists(const std::string& dir)
 {
     namespace fs = std::filesystem;
@@ -36,7 +42,7 @@ public:
 
     static const std::string ENTITY_NAME;
 
-    TestEntity() = default;
+    TestEntity() : Entity(ENTITY_NAME) {}
 
     explicit TestEntity(Xform transform) :
         Entity(ENTITY_NAME, transform) {}
@@ -62,8 +68,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     {
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(FULL_TEST_PATH));
-        REQUIRE(GetFileContent(FULL_TEST_PATH).empty());
+        REQUIRE(FileExists(Filepath(TEST_FILE)));
+        REQUIRE(GetFileContent(Filepath(TEST_FILE)).empty());
     }
 
     SECTION("When an entity is added to the scene, it should be saved to the scene file.")
@@ -73,8 +79,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(FULL_TEST_PATH));
-        std::string content = GetFileContent(FULL_TEST_PATH);
+        REQUIRE(FileExists(Filepath(TEST_FILE)));
+        std::string content = GetFileContent(Filepath(TEST_FILE));
         REQUIRE(!content.empty());
         REQUIRE(content.find("TestEntity") != std::string::npos);
     }
@@ -85,8 +91,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(FULL_TEST_PATH));
-        std::string content = GetFileContent(FULL_TEST_PATH);
+        REQUIRE(FileExists(Filepath(TEST_FILE)));
+        std::string content = GetFileContent(Filepath(TEST_FILE));
         REQUIRE(content.empty());
         REQUIRE(content.find("TestEntity") == std::string::npos);
     }
@@ -96,28 +102,21 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         EntityStorage::Add(new Entity());
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(FULL_TEST_PATH));
-        std::string content = GetFileContent(FULL_TEST_PATH);
+        REQUIRE(FileExists(Filepath(TEST_FILE)));
+        std::string content = GetFileContent(Filepath(TEST_FILE));
         REQUIRE(content.empty());
     }
 
     SECTION("when an empty string is passed into SaveScene, it should create a file called 'untitled.scene'")
     {
         SceneManager::SaveScene("");
-        REQUIRE(FileExists(SCENE_DIR + "untitled.scene"));
-        remove(std::string(SCENE_DIR + "untitled.scene").c_str());
+        std::string filepath = Filepath(UNTITLED_FILE);
+        REQUIRE(FileExists(filepath));
+        remove(filepath.c_str());
     }
 
-    // TODO refactor this to test the default
-//    SECTION("when an empty string is passed in for the directory it should create the file in the current directory")
-//    {
-//        SceneManager::SaveScene("test", "");
-//        REQUIRE(FileExists(FILE_NAME));
-//        remove(FILE_NAME.c_str());
-//    }
-
     EntityStorage::Reset();
-    remove(FULL_TEST_PATH.c_str());
+    remove(Filepath(TEST_FILE).c_str());
 }
 
 TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
