@@ -20,6 +20,14 @@ linkFlags += -L $(libDir) -l engine -l raylib
 depends = $(patsubst %.o, %.d, $(call rwildcard,$(buildDir)/,*.o))
 buildFlagsFile = .buildflags
 
+# Set debugging build flags
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+	override CXXFLAGS += -g -DDEBUG
+else
+    override CXXFLAGS += -DNDEBUG
+endif
+
 # Set build variables for engine
 engineSrcDir = src
 engineBuildDir = $(buildDir)/engine
@@ -83,6 +91,7 @@ run: buildFlags $(exampleExecutable)
 clean:
 	$(RM) $(call platformpth, $(buildDir))
 	$(RM) $(call platformpth, $(engineLib))
+	$(RM) $(call platformpth, $(buildFlagsFile))
 
 # Build the static library for the engine
 $(engineLib): $(engineObjects)
