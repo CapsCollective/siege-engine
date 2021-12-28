@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_RENDERSYSTEM_H
 
 #include "../utils/Maths.h"
+#include "../utils/Colour.h"
 #include "../entity/EntityPtr.h"
 #include <variant>
 #include <utility>

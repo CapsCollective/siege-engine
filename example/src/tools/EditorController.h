@@ -42,8 +42,6 @@ public:
 
     bool TrySetRot(float rotation);
 
-    bool TrySetModelData(const std::string& model, const std::string& texture);
-
 protected:
 
     // Protected overrides
