@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_TRANSITIONADAPTER_H
 
 #include "Maths.h"
+#include "Colour.h"
 #include <raylib/Vector3.hpp>
 
 // Raylib conversions

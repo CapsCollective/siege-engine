@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+// TODO bundle this functionality into a custom string class
 namespace StringHelpers
 {
     /**
@@ -46,6 +47,13 @@ namespace StringHelpers
      */
     std::string Replace(std::string string, const std::string& toReplace, const std::string& replacement);
 
+    /**
+     * A helper function to wrap std::sprintf functionality
+     * @tparam P - variadic parameter type
+     * @param formatText - the string to format
+     * @param params - N number of format strings
+     * @return the formatted string
+     */
     template <typename ...P>
     std::string FormatText(const char* formatText, P&&... params)
     {

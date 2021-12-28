@@ -5,8 +5,9 @@
 #include <utils/StringHelpers.h>
 #include <scene/SceneManager.h>
 #include <render/Camera.h>
-#include <input/Input.h>
 #include <render/Window.h>
+#include <input/Input.h>
+#include <utils/Colour.h>
 
 // Static member initialisation
 static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
@@ -242,18 +243,4 @@ bool EditorController::TrySetRot(float rotation)
     if (!selectedEntity) return false;
     selectedEntity->SetRotation(rotation);
     return true;
-}
-
-bool EditorController::TrySetModelData(const std::string& model, const std::string& texture)
-{
-    if (!selectedEntity) return false;
-    // TODO modelable interface temporarily disabled
-//    auto modelableEntity = selectedEntity.Get<Modelable>();
-//    if (modelableEntity)
-//    {
-//        auto modelData = modelableEntity->GetModelData();
-//        modelableEntity->SetModelData(ModelData(model, texture));
-//        return true;
-//    }
-    return false;
 }
