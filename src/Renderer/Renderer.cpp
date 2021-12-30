@@ -114,6 +114,7 @@ namespace SnekVk
         // becomes available again.
         if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat)) 
         {
+            Renderer3D::RecreateMaterials();
             currentMat->RecreatePipeline();
         }
     }

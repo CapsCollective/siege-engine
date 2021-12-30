@@ -32,12 +32,6 @@ namespace SnekVk
         transforms.Append({transform, normal});
     }
 
-    void Renderer3D::DrawModel(Model* model, const Model::Transform& transform)
-    {
-        models.Append(model);
-        transforms.Append({transform.transform, transform.normalMatrix});
-    }
-
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale)
     {
         DrawModel(model, position, scale, glm::vec3{0.f});
@@ -57,6 +51,7 @@ namespace SnekVk
 
         auto projectionView = camera->GetProjView();
 
+        // TODO(Aryeh): Move this logic to a Renderer2D class.
         u32 modelCount = 0;
         for (auto& model : models)
         {
@@ -81,6 +76,11 @@ namespace SnekVk
 
         currentModel = nullptr;
         currentMaterial = nullptr;
+    }
+
+    void Renderer3D::RecreateMaterials()
+    {
+        if (currentMaterial) currentMaterial->RecreatePipeline(); 
     }
 
     void Renderer3D::Flush()
