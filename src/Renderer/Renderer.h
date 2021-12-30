@@ -7,6 +7,7 @@
 #include "Camera/Camera.h"
 #include "Material/Material.h"
 #include "Lights/PointLight.h"
+#include "Renderers/Renderer3D.h"
 
 namespace SnekVk 
 {
@@ -41,6 +42,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
+            void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
             void DrawModel(Model* model, const Model::Transform& transform);
             void DrawModel2D(Model* model, const Model::Transform2D& transform);
 

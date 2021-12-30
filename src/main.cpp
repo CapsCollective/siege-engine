@@ -273,11 +273,11 @@ int main()
 
     // Lights
 
-    SnekVk::PointLight light;
-    
-    light.SetPosition({0.0f, -1.0f, 1.5f});
-    light.SetColor({1.f, 0.f, 0.f, 1.0f});
-    light.SetAmbientColor({1.f, 1.f, 1.f, .02f});
+    SnekVk::PointLight light(
+        {0.0f, -1.0f, 1.5f}, 
+        {1.f, 0.f, 0.f, 1.0f}, 
+        {1.f, 1.f, 1.f, .02f}
+    );
 
     renderer.SetPointLight(&light);
 
@@ -293,8 +293,9 @@ int main()
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
 
-        float lightColor = abs(sin(glfwGetTime()) * 0.5);
-        light.SetColor({1.f, 0.f, 0.f, lightColor});
+        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.1f, 1.f);
+        
+        light.SetColor({1.f, 0.f, 0.f, alpha});
 
         window.Update();
 
@@ -318,7 +319,7 @@ int main()
         
         for (auto& shape : shapes)
         {
-            renderer.DrawModel(shape.GetModel(), shape.GetTransform());
+            SnekVk::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
         }
 
         for (auto& shape : shapes2D)

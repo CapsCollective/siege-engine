@@ -2,7 +2,7 @@
 
 namespace Components
 {
-    glm::mat4 CalculateTransform(Transform& transform)
+    glm::mat4 Shape::CalculateTransform(Transform& transform)
     {
         const float c3 = glm::cos(transform.rotation.z);
         const float s3 = glm::sin(transform.rotation.z);
@@ -33,7 +33,7 @@ namespace Components
         {transform.position.x, transform.position.y, transform.position.z, 1.0f}};
     }
 
-    glm::mat3 CalculateNormalMatrix(Transform& transform)
+    glm::mat3 Shape::CalculateNormalMatrix(Transform& transform)
     {
         const float c3 = glm::cos(transform.rotation.z);
         const float s3 = glm::sin(transform.rotation.z);
