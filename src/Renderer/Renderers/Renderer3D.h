@@ -16,9 +16,10 @@ namespace SnekVk
         static void Initialise();
 
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
-        static void DrawModel(Model* model, const Model::Transform& transform);
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
         static void DrawModel(Model* model, const glm::vec3& position);
+
+        static void RecreateMaterials();
 
         static void Render(VkCommandBuffer& commandBuffer, PointLight& light, Camera* camera);
         static void Flush();
