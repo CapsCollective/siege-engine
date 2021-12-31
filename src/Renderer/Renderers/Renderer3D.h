@@ -21,7 +21,7 @@ namespace SnekVk
 
         static void RecreateMaterials();
 
-        static void Render(VkCommandBuffer& commandBuffer, PointLight& light, Camera* camera);
+        static void Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize);
         static void Flush();
 
         private:
@@ -34,8 +34,7 @@ namespace SnekVk
         static u64 transformSize;
 
         static Utils::StringId transformId;
-        static Utils::StringId lightId;
-        static Utils::StringId cameraDataId;
+        static Utils::StringId globalDataId;
 
         static Material* currentMaterial; 
         static Model* currentModel;

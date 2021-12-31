@@ -61,7 +61,12 @@ namespace SnekVk
     {
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        Renderer3D::Render(commandBuffer, *light, mainCamera);
+        Global3DData globalData = {
+            { mainCamera->GetProjection(), mainCamera->GetView()},
+            light->GetLightData()
+        };
+
+        Renderer3D::Render(commandBuffer, &globalData, sizeof(globalData));
 
         VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
 

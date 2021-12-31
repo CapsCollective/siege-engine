@@ -5,8 +5,7 @@ namespace SnekVk
 {
     // static initialisation
     Utils::StringId Renderer3D::transformId;
-    Utils::StringId Renderer3D::lightId;
-    Utils::StringId Renderer3D::cameraDataId;
+    Utils::StringId Renderer3D::globalDataId;
 
     u64 Renderer3D::transformSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
 
@@ -19,8 +18,7 @@ namespace SnekVk
     void Renderer3D::Initialise()
     {
         transformId = INTERN_STR("objectBuffer");
-        lightId = INTERN_STR("lightData");
-        cameraDataId = INTERN_STR("cameraData");
+        globalDataId = INTERN_STR("globalData");
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation)
@@ -42,25 +40,19 @@ namespace SnekVk
         DrawModel(model, position, glm::vec3{0.f}, glm::vec3{0.f});
     }
 
-    void Renderer3D::Render(VkCommandBuffer& commandBuffer, PointLight& light, Camera* camera)
+    void Renderer3D::Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize)
     {
         if (models.Count() == 0) return;
 
-        VkDeviceSize dirToLightBufferSize = sizeof(PointLight::Data);
-        VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
-
-        auto projectionView = camera->GetProjView();
-
-        // TODO(Aryeh): Move this logic to a Renderer2D class.
-        u32 modelCount = 0;
-        for (auto& model : models)
+        for (size_t i = 0; i < models.Count(); i++)
         {
+            auto& model = models.Get(i);
+
             if (currentMaterial != model->GetMaterial())
             {
                 currentMaterial = model->GetMaterial();
                 currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
-                currentMaterial->SetUniformData(lightId, dirToLightBufferSize, &light.GetLightData());
-                currentMaterial->SetUniformData(cameraDataId, cameraDataBufferSize, &projectionView);
+                currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
                 currentMaterial->Bind(commandBuffer);
             } 
 
@@ -70,8 +62,7 @@ namespace SnekVk
                 currentModel->Bind(commandBuffer);
             }
 
-            model->Draw(commandBuffer, modelCount);
-            modelCount++;
+            model->Draw(commandBuffer, i);
         }
 
         currentModel = nullptr;
