@@ -47,6 +47,7 @@ namespace SnekVk
         void SetUniformData(VkDeviceSize dataSize, const void* data);
         void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
         void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
+        bool HasProperty(Utils::StringId id);
 
         void Bind(VkCommandBuffer commandBuffer);
         void CreatePipeline();
@@ -75,6 +76,7 @@ namespace SnekVk
 
         Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
+        Property& GetProperty(Utils::StringId id);
         void AddShader(Shader* shader);
         void SetShaderProperties(Shader* shader, u64& offset);
 
