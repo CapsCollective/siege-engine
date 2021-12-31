@@ -243,6 +243,14 @@ namespace SnekVk
 
         for(auto& uniform : uniforms)
         {
+            if (HasProperty(uniform.id))
+            {
+                std::cout << "Property already exists!" << std::endl;
+                auto& property = GetProperty(uniform.id);
+                property.stage = property.stage | (VkShaderStageFlags) shader->GetStage();
+                continue;
+            };
+
             Property property = {
                 uniform.binding, 
                 uniform.id, 
@@ -279,6 +287,17 @@ namespace SnekVk
         }
     }
 
+    bool Material::HasProperty(Utils::StringId id)
+    {
+        for(auto& property : propertiesArray)
+        {
+            if (id == property.id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void Material::SetUniformData(const char* name, VkDeviceSize dataSize, const void* data)
     {
         auto id = INTERN_STR(name);
@@ -295,6 +314,16 @@ namespace SnekVk
     void Material::BuildMaterials(std::initializer_list<Material*> materials)
     {
         for (auto material : materials) material->BuildMaterial();
+    }
+
+    Material::Property& Material::GetProperty(Utils::StringId id)
+    {
+        for(auto& property : propertiesArray)
+        {
+            if (id == property.id) return property;
+        }
+
+        SNEK_ASSERT(false, "No property with ID: " << id << " exists!");
     }
 
     void Material::BuildMaterial()
