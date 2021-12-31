@@ -190,8 +190,7 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
-        .WithUniform(1, "cameraData", sizeof(glm::mat4), 1);
-        
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global3DData), 1);
     
     auto spriteShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader2D.vert.spv")
@@ -211,7 +210,7 @@ int main()
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(2, "lightData", sizeof(SnekVk::PointLight::Data)); // TIL: bindings must be unique accross all available shaders 
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global3DData)); // TIL: bindings must be unique accross all available shaders 
 
     // Material Declaration
                                 // vertex       // fragment  
