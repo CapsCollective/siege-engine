@@ -37,7 +37,7 @@ namespace SnekVk
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position)
     {
-        DrawModel(model, position, glm::vec3{0.f}, glm::vec3{0.f});
+        DrawModel(model, position, glm::vec3{1.f}, glm::vec3{0.f});
     }
 
     void Renderer3D::Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize)

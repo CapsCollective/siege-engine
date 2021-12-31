@@ -199,7 +199,7 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
-        .WithUniform(1, "cameraData", sizeof(glm::mat4));
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global2DData));
 
     // Fragment shaders
 
@@ -247,6 +247,7 @@ int main()
         Components::Shape(&vaseObjModel)
     };
 
+    // TODO(Aryeh): create a separate object for representing 2D shapes
     std::vector<Components::Shape> shapes2D = 
     {
         Components::Shape(&triangleModel),
@@ -323,7 +324,7 @@ int main()
 
         for (auto& shape : shapes2D)
         {
-            renderer.DrawModel2D(shape.GetModel(), shape.GetTransform2D());
+            SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
         }
         
         renderer.EndFrame();
