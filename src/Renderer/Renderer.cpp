@@ -14,11 +14,8 @@ namespace SnekVk
 
         if (deviceInstance == nullptr) deviceInstance = &device;
 
-        bufferId = INTERN_STR("objectBuffer");
-        lightId = INTERN_STR("lightData");
-        cameraDataId = INTERN_STR("cameraData");
-
         Renderer3D::Initialise();
+        Renderer2D::Initialise();
 
         CreateCommandBuffers();
     }
@@ -43,60 +40,21 @@ namespace SnekVk
             "Failed to allocate command buffer");
     }
 
-    void Renderer::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation)
-    {
-        Renderer3D::DrawModel(model, position, scale, rotation);
-    }
-
-    void Renderer::DrawModel2D(Model* model, const Model::Transform2D& transform)
-    {
-        models2D[model2DCount] = model;
-        // might need to see if there's a way to avoid a copy here.
-        transforms2D[model2DCount] = { transform.transform };
-        SNEK_ASSERT(model2DCount++ <= MAX_OBJECT_TRANSFORMS, 
-                "LIMIT REACHED ON RENDERABLE MODELS");
-    }
-
     void Renderer::DrawFrame()
     {
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        Global3DData globalData = {
+        Global3DData global3DData = {
             { mainCamera->GetProjection(), mainCamera->GetView()},
             light->GetLightData()
         };
 
-        Renderer3D::Render(commandBuffer, &globalData, sizeof(globalData));
+        Global2DData global2DData = {
+            { mainCamera->GetProjection(), mainCamera->GetView()}
+        };
 
-        VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
-
-        glm::mat4 cameraData = mainCamera->GetProjView();
-
-        VkDeviceSize bufferSize2D = sizeof(transforms2D[0]) * MAX_OBJECT_TRANSFORMS;
-
-        for (size_t i = 0; i < model2DCount; i++)
-        {
-            auto model = models2D[i];
-
-            if (currentMat != model->GetMaterial())
-            {
-                currentMat = model->GetMaterial();
-                currentMat->SetUniformData(bufferId, bufferSize2D, transforms2D);
-                currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
-                currentMat->Bind(commandBuffer);
-            } 
-
-            if (currentModel != model)
-            {
-                currentModel = model;
-                currentModel->Bind(commandBuffer);
-            }
-
-            model->Draw(commandBuffer, i);
-        }
-
-        currentModel = nullptr;
-        currentMat = nullptr;
+        Renderer3D::Render(commandBuffer, &global3DData, sizeof(global3DData));
+        Renderer2D::Render(commandBuffer, &global2DData, sizeof(global2DData));
     }
 
     void Renderer::RecreateSwapChain()
@@ -120,7 +78,7 @@ namespace SnekVk
         if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat)) 
         {
             Renderer3D::RecreateMaterials();
-            currentMat->RecreatePipeline();
+            Renderer2D::RecreateMaterials();
         }
     }
 
@@ -191,12 +149,8 @@ namespace SnekVk
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT; 
 
-        // TODO: Duplicated logic, might be good to create standalone container
-        memset(transforms2D, 0, sizeof(transforms2D[0]) * model2DCount);
-        memset(models, 0, sizeof(models2D[0]) * model2DCount);
-        model2DCount = 0;
-
         Renderer3D::Flush();
+        Renderer2D::Flush();
     }
 
     void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
