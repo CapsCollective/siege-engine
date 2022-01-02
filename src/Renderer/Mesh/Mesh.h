@@ -23,8 +23,13 @@ namespace SnekVk
 
     struct Vertex2D
     {
-        glm::vec3 position;
+        glm::vec2 position;
         glm::vec3 color;
+    };
+
+    struct BillboardVertex
+    {
+        glm::vec2 position;
     };
 
     bool operator==(const Vertex& left, const Vertex& right);

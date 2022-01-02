@@ -2,7 +2,7 @@
 
 namespace SnekVk::Utils
 {
-    glm::mat4 Math::CalculateTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+    glm::mat4 Math::CalculateTransform3D(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
     {
         const float s3 = glm::sin(rotation.z);
         const float c3 = glm::cos(rotation.z);
@@ -61,5 +61,15 @@ namespace SnekVk::Utils
                 inverseScale.z * (c1 * c2),
             }
         };
+    }
+
+    static glm::mat2 CalculateTransform2D(const glm::vec2& position, const float& rotation, const glm::vec2& scale)
+    {
+        const float s = glm::sin(rotation);
+        const float c = glm::cos(rotation);
+        glm::mat2 rotMatrix{{c, s}, {-s, c}};
+
+        glm::mat2 scaleMat{{scale.x, .0f}, {.0f, scale.y}};
+        return rotMatrix * scaleMat;
     }
 }

@@ -102,4 +102,24 @@ namespace Components
     {
         transform.rotation.z = rotation;
     }
+
+    void Shape::SetZIndex(float zIndex)
+    {
+        transform.position.z = zIndex;
+    }
+
+    void Shape::SetRotation2D(float rotation)
+    {   
+        transform.rotation.z = rotation;
+    }
+
+    void Shape::SetPosition2D(glm::vec2 newPos)
+    {
+        transform.position = glm::vec3(newPos.x, newPos.y, transform.position.z);
+    }
+
+    void Shape::SetScale2D(glm::vec2 newScale)
+    {
+        transform.scale = glm::vec3(newScale, 0.f);
+    }
 }

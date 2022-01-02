@@ -30,9 +30,9 @@ static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
 SnekVk::Vertex2D triangleVerts[] = {
-    {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
-    {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
-    {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
+    {{0.f, -1.f}, {1.f, 0.f, 0.f}},
+    {{1.f, 1.f}, {0.f, 1.f, 0.f}}, 
+    {{-1.f, 1.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
@@ -44,10 +44,10 @@ SnekVk::Mesh::MeshData triangleMeshData {
 };
 
 SnekVk::Vertex2D squareVerts[] = {
-    {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
-    {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
-    {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
-    {{-0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top left
+    {{1.f, 1.f}, {1.f, 0.f, 0.f}}, // top right
+    {{1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom right
+    {{-1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom left
+    {{-1.f, 1.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
 u32 squareIndices[] = {
@@ -196,10 +196,17 @@ int main()
         .FromShader("shaders/simpleShader2D.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex2D))
-        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC2)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global2DData));
+
+    auto pointLightVertShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/pointLight.vert.spv")
+        .WithStage(SnekVk::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(glm::vec2))
+        .WithVertexAttribute(sizeof(glm::vec2), SnekVk::VertexDescription::VEC2)
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer::Global3DData));
 
     // Fragment shaders
 
@@ -211,13 +218,20 @@ int main()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global3DData)); // TIL: bindings must be unique accross all available shaders 
+    
+    auto pointLightFragShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/pointLight.frag.spv")
+        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer::Global3DData));
 
     // Material Declaration
                                 // vertex       // fragment  
     SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
+    SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat, &pointLightMat});
 
     // Generate models
 
@@ -225,6 +239,8 @@ int main()
 
     SnekVk::Model triangleModel(triangleMeshData);
     SnekVk::Model squareModel(squareMeshData);
+
+    SnekVk::Model pointLightModel(squareMeshData);
 
     // Generating models from .obj files
 
@@ -238,6 +254,8 @@ int main()
     // Set 3D diffuse material
     cubeObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&diffuseMat);
+
+    pointLightModel.SetMaterial(&pointLightMat);
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
@@ -259,7 +277,7 @@ int main()
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({3.f, 3.f, 0.01f});
+    shapes[1].SetScale({3.f, 3.f, 0.001f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
@@ -267,9 +285,14 @@ int main()
     shapes[2].SetScale({2.f, 2.f, 2.f});
     shapes[2].SetColor({.5f, 0.f, 0.f});
 
-    shapes2D[0].SetPosition({1.5f, 0.f, 2.5f});
+    shapes2D[0].SetPosition2D({1.5f, 0.f});
+    shapes2D[0].SetScale2D({.5f, 0.5f});
+    shapes2D[0].SetRotation2D(10.f);
+    shapes2D[0].SetZIndex(2.5f);
 
-    shapes2D[1].SetPosition({-1.5f, 0.f, 2.5f});
+    shapes2D[1].SetPosition2D({-1.5f, 0.f});
+    shapes2D[1].SetScale2D({.5f, 0.5f});
+    shapes2D[1].SetZIndex(2.5f);
 
     // Lights
 
@@ -324,7 +347,7 @@ int main()
 
         for (auto& shape : shapes2D)
         {
-            SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
+            SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
         }
         
         renderer.EndFrame();
