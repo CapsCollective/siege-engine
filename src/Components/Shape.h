@@ -32,13 +32,17 @@ namespace Components
 
         glm::vec2 GetPosition2D() { return glm::vec2(transform.position); }
         glm::vec2 GetScale2D() { return glm::vec2(transform.scale); } 
+        float GetRotation2D() { return transform.rotation.z; }
+        float GetZIndex() { return transform.position.z; }
 
         const glm::vec3& GetRotation() const { return transform.rotation; }
         const glm::vec3& GetPosition() const { return transform.position; }
         const glm::vec3& GetScale() const { return transform.scale; } 
+        const float GetZIndex() const { return transform.position.z; }
 
-        const glm::vec2 GetPosition2D() const { return glm::vec2(transform.position); }
-        const glm::vec2 GetScale2D() const { return glm::vec2(transform.scale); } 
+        const glm::vec2 GetPosition2D() const { return glm::vec2(transform.position.x, transform.position.y); }
+        const glm::vec2 GetScale2D() const { return glm::vec2(transform.scale.x, transform.scale.y); } 
+        const float GetRotation2D() const { return transform.rotation.z; }
 
         void SetColor(glm::vec3 newColor);
         void SetScale(glm::vec3 newScale);
@@ -47,6 +51,11 @@ namespace Components
         void SetRotationX(float rotation);
         void SetRotationY(float rotation);
         void SetRotationZ(float rotation);
+
+        void SetZIndex(float zIndex);
+        void SetPosition2D(glm::vec2 newPos);
+        void SetScale2D(glm::vec2 newPos);
+        void SetRotation2D(float rotation);
 
         private: 
 

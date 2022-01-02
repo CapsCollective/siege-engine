@@ -14,9 +14,9 @@ namespace SnekVk
 
         static void Initialise();
 
-        static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3 scale, const glm::vec3& rotation);
-        static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
-        static void DrawModel(Model* model, const glm::vec3& position);
+        static void DrawModel(Model* model, const glm::vec2& position, const glm::vec2& scale, const float& rotation, const float& zIndex);
+        static void DrawModel(Model* model, const glm::vec2& position, const glm::vec2& scale, const float& zIndex);
+        static void DrawModel(Model* model, const glm::vec2& position);
 
         static void RecreateMaterials();
 
