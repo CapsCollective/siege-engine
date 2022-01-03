@@ -9,6 +9,7 @@
 #include "Lights/PointLight.h"
 #include "Renderers/Renderer3D.h"
 #include "Renderers/Renderer2D.h"
+#include "DescriptorPool/DescriptorPool.h"
 
 namespace SnekVk 
 {

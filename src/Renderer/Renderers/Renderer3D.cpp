@@ -14,6 +14,7 @@ namespace SnekVk
 
     Material* Renderer3D::currentMaterial = nullptr;
     Model* Renderer3D::currentModel = nullptr;
+
     Model* Renderer3D::lightModel = nullptr;
 
     void Renderer3D::Initialise()
@@ -60,6 +61,11 @@ namespace SnekVk
 
         currentModel = nullptr;
         currentMaterial = nullptr;
+    }
+
+    void DrawLine(const glm::vec2& origin, const glm::vec2& destination)
+    {
+
     }
 
     void Renderer3D::RenderModels(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize)
