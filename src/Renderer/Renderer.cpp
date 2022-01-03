@@ -31,6 +31,7 @@ namespace SnekVk
     {
         std::cout << "Destroying renderer" << std::endl;
         DescriptorPool::DestroyPool();
+        Renderer3D::DestroyRenderer3D();
     }
 
     void Renderer::CreateCommandBuffers()

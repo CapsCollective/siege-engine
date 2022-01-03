@@ -103,6 +103,7 @@ namespace SnekVk
 
             // TODO: document this
             void ClearPipeline();
+            void DestroyPipeline();
 
         private:
 
@@ -138,5 +139,7 @@ namespace SnekVk
 
             VkShaderModule shaderModules[MAX_SHADER_MODULES];
             size_t shaderModuleCount = 0; 
+
+            bool isFreed = false;
     };
 }

@@ -50,6 +50,8 @@ namespace SnekVk
         void CreatePipeline();
         void RecreatePipeline();
 
+        void DestroyMaterial();
+
         static void BuildMaterials(std::initializer_list<Material*> materials);
 
         private:
@@ -106,5 +108,7 @@ namespace SnekVk
         
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
+
+        bool isFreed = false;
     };
 }
