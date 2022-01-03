@@ -333,7 +333,7 @@ int main()
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
 
-        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.1f, 1.f);
+        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
         
         light.SetColor({1.f, 0.f, 0.f, alpha});
 

@@ -194,12 +194,12 @@ namespace SnekVk
         // Configures that types of colors we handle. In our case we allow a 4-part vector containing
         // an R,G,B, and A value. 
         configInfo.colorBlendAttachment = PipelineConfig::InitColorBlendAttachment(
-            VK_FALSE,
-            VK_BLEND_FACTOR_ONE,
-            VK_BLEND_FACTOR_ZERO,
+            VK_TRUE,
+            VK_BLEND_FACTOR_SRC_ALPHA,
+            VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             VK_BLEND_OP_ADD,
-            VK_BLEND_FACTOR_ONE,
-            VK_BLEND_FACTOR_ZERO,
+            VK_BLEND_FACTOR_SRC_ALPHA,
+            VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             VK_BLEND_OP_ADD
         );
 

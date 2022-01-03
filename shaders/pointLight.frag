@@ -21,6 +21,8 @@ layout (set = 0, binding = 0) uniform GlobalData {
     LightData lightData;
 } globalData;
 
+vec4 lightColor = globalData.lightData.lightColor;
+
 void main() {
     float dis = sqrt(dot(fragOffset, fragOffset));
 
@@ -28,5 +30,5 @@ void main() {
         discard;
     }
     
-    outColor = vec4(globalData.lightData.lightColor.xyz, 1.0);
+    outColor = vec4(lightColor);
 }
