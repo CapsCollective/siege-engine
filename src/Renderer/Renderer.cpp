@@ -14,6 +14,13 @@ namespace SnekVk
 
         if (deviceInstance == nullptr) deviceInstance = &device;
 
+        DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10);
+        DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10);
+        DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10);
+        DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 10);
+
+        DescriptorPool::BuildPool();
+
         Renderer3D::Initialise();
         Renderer2D::Initialise();
 
@@ -23,7 +30,7 @@ namespace SnekVk
     Renderer::~Renderer() 
     {
         std::cout << "Destroying renderer" << std::endl;
-        Material::DestroyDescriptorPool();
+        DescriptorPool::DestroyPool();
     }
 
     void Renderer::CreateCommandBuffers()

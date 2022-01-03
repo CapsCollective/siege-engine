@@ -5,8 +5,6 @@
 
 namespace SnekVk
 {
-    VkDescriptorPool Material::descriptorPool = {VK_NULL_HANDLE};
-
     Material::Material()
         : Material(nullptr, nullptr, 0) {}
 
@@ -32,29 +30,18 @@ namespace SnekVk
 
     Material::Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount)
         : vertexShader(vertexShader), fragmentShader(fragmentShader), shaderCount(shaderCount)
+    {}
+
+    void Material::SetVertexShader(Shader* shader) 
     {
-        auto device = VulkanDevice::GetDeviceInstance();
+        vertexShader = shader; 
+        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
+    }
 
-        // TODO: Make this into a separate class 
-        if (descriptorPool == VK_NULL_HANDLE) 
-        {
-            VkDescriptorPoolSize poolSizes[] = {
-                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
-                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10},
-                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10},
-                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 10}
-            };
-
-            VkDescriptorPoolCreateInfo poolCreateInfo {};
-            poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolCreateInfo.flags = 0;
-            poolCreateInfo.maxSets = 10;
-            poolCreateInfo.poolSizeCount = 4;
-            poolCreateInfo.pPoolSizes = poolSizes;
-
-            SNEK_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
-                "Unable to create descriptor pool!");
-        }
+    void Material::SetFragmentShader(Shader* shader) 
+    {
+        fragmentShader = shader; 
+        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
     }
 
     Material::~Material() 
@@ -148,6 +135,8 @@ namespace SnekVk
     void Material::CreateDescriptors()
     {
         auto device = VulkanDevice::GetDeviceInstance();
+
+        auto descriptorPool = DescriptorPool::GetDescriptorPool();
 
         // Create a descriptor set for our object transforms.
 

@@ -4,6 +4,7 @@
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
 #include "../Shader/Shader.h"
+#include "../DescriptorPool/DescriptorPool.h"
 
 namespace SnekVk
 {
@@ -36,17 +37,13 @@ namespace SnekVk
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
         void BuildMaterial();
 
-        static void DestroyDescriptorPool() 
-        { 
-            if (descriptorPool != VK_NULL_HANDLE) 
-            {
-                vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(), descriptorPool, nullptr);
-            }
-        }
-
         void SetUniformData(VkDeviceSize dataSize, const void* data);
         void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
         void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
+
+        void SetVertexShader(Shader* shader);
+        void SetFragmentShader(Shader* shader);
+
         bool HasProperty(Utils::StringId id);
 
         void Bind(VkCommandBuffer commandBuffer);
@@ -90,8 +87,6 @@ namespace SnekVk
         struct {
             PolygonMode mode = PolygonMode::FILL;
         } shaderSettings;
-
-        static VkDescriptorPool descriptorPool;
 
         size_t vertexCount = 0;
         u32 shaderCount = 0;

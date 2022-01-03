@@ -20,6 +20,7 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position);
 
         static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
+        static void DrawLine(const glm::vec2& origin, const glm::vec2& destination);
 
         static void DrawLight(Model* model);
 
