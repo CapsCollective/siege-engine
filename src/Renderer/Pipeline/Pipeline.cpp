@@ -20,7 +20,11 @@ namespace SnekVk
 
     Pipeline::~Pipeline() 
     {
+        if (isFreed) return;
+
         ClearPipeline();
+
+        isFreed = true;
     }
 
     Utils::Array<char> Pipeline::ReadFile(const char* filePath)
@@ -142,6 +146,12 @@ namespace SnekVk
         }
         
         vkDestroyPipeline(device->Device(), graphicsPipeline, nullptr);
+    }
+
+    void Pipeline::DestroyPipeline()
+    {
+        ClearPipeline();
+        isFreed = true;
     }
 
     void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)

@@ -29,6 +29,8 @@ namespace SnekVk
         static void Render(VkCommandBuffer& commandBuffer, const void* globalData, const u64 globalDataSize);
         static void Flush();
 
+        static void DestroyRenderer3D();
+
         private:
 
         static void RenderModels(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize);
@@ -49,5 +51,6 @@ namespace SnekVk
 
         // FIXME(Aryeh): This needs to change.
         static Model* lightModel;
+        static Material lineMaterial;
     };
 }

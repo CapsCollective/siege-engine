@@ -17,6 +17,8 @@ namespace SnekVk
 
     Model* Renderer3D::lightModel = nullptr;
 
+    Material Renderer3D::lineMaterial;
+
     void Renderer3D::Initialise()
     {
         transformId = INTERN_STR("objectBuffer");
@@ -117,5 +119,10 @@ namespace SnekVk
     {
         transforms.Clear();
         models.Clear();
+    }
+
+    void Renderer3D::DestroyRenderer3D()
+    {
+        lineMaterial.DestroyMaterial();
     }
 }

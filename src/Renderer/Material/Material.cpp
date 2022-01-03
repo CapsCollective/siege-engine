@@ -46,15 +46,9 @@ namespace SnekVk
 
     Material::~Material() 
     {
-        auto device = VulkanDevice::GetDeviceInstance();
+        if (isFreed) return;
 
-        for (auto& property : propertiesArray)
-        {
-            vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
-        }
-        
-        vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
-        Buffer::DestroyBuffer(buffer);
+        DestroyMaterial();
     }
 
     void Material::CreateLayout(
@@ -258,6 +252,24 @@ namespace SnekVk
 
             offset += (uniform.size * uniform.arraySize) * uniform.dynamicCount;
         }
+    }
+    
+    void Material::DestroyMaterial()
+    {
+        auto device = VulkanDevice::GetDeviceInstance();
+
+        for (auto& property : propertiesArray)
+        {
+            vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
+        }
+
+        pipeline.DestroyPipeline();
+        
+        vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
+        
+        Buffer::DestroyBuffer(buffer);
+
+        isFreed = true;
     }
 
     void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
