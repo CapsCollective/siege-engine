@@ -29,12 +29,13 @@ mat4 projection = globalData.cameraData.projectionMatrix;
 
 void main() {
     fragOffset = position;
-    vec3 cameraRightWorld = {view[0][0], view[1][0], view[2][0]};
-    vec3 cameraUpWorld = {view[0][1], view[1][1], view[2][1]};
 
-    vec3 positionWorld = globalData.lightData.position.xyz
-        + LIGHT_RADIUS * fragOffset.x * cameraRightWorld
-        + LIGHT_RADIUS * fragOffset.y * cameraUpWorld;
+    // Find the light position in camera space
+    vec4 lightInCameraSpace = view * vec4(globalData.lightData.position, 1.0);
 
-    gl_Position = projection * view * vec4(positionWorld, 1.0);
+    // Find the vertex position in camera space.
+    vec4 positionInCameraSpace = lightInCameraSpace + LIGHT_RADIUS * vec4(fragOffset, 0.0, 0.0);
+
+    // Set the position to exist in camera space, not world space
+    gl_Position = projection * positionInCameraSpace;
 }

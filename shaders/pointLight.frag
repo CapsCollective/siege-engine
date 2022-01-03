@@ -23,8 +23,10 @@ layout (set = 0, binding = 0) uniform GlobalData {
 
 void main() {
     float dis = sqrt(dot(fragOffset, fragOffset));
+
     if (dis >= 1.0) {
         discard;
     }
+    
     outColor = vec4(globalData.lightData.lightColor.xyz, 1.0);
 }
