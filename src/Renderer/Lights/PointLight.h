@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Core.h"
+#include "../Model/Model.h"
 
 namespace SnekVk {
     
@@ -19,12 +20,16 @@ namespace SnekVk {
         ~PointLight();
 
         Data& GetLightData() { return lightData; }
+        Model* GetModel() { return model; }
         void SetPosition(glm::vec3 position) { lightData.position = position; }
         void SetColor(glm::vec4 color) { lightData.lightColor = color; }
         void SetAmbientColor(glm::vec4 ambientColor) { lightData.ambientLightColor = ambientColor; }
 
+        void SetModel(Model* model) { this->model = model; }
+
         private: 
         
         Data lightData;
+        Model* model;
     };
 }

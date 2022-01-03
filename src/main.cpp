@@ -62,6 +62,21 @@ SnekVk::Mesh::MeshData squareMeshData {
     6
 };
 
+glm::vec2 squareVertsRaw[] = {
+    {1.f, 1.f},
+    {1.f, -1.f},
+    {-1.f, -1.f},
+    {-1.f, 1.f}
+};
+
+SnekVk::Mesh::MeshData rawSquareMeshData {
+    sizeof(squareVertsRaw),
+    squareVertsRaw,
+    4,
+    squareIndices,
+    6
+};
+
 SnekVk::Vertex cubeVerts[] =  {
     {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
     {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
@@ -205,7 +220,7 @@ int main()
         .FromShader("shaders/pointLight.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(glm::vec2))
-        .WithVertexAttribute(sizeof(glm::vec2), SnekVk::VertexDescription::VEC2)
+        .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
         .WithUniform(0, "globalData", sizeof(SnekVk::Renderer::Global3DData));
 
     // Fragment shaders
@@ -240,7 +255,7 @@ int main()
     SnekVk::Model triangleModel(triangleMeshData);
     SnekVk::Model squareModel(squareMeshData);
 
-    SnekVk::Model pointLightModel(squareMeshData);
+    SnekVk::Model pointLightModel(rawSquareMeshData);
 
     // Generating models from .obj files
 
@@ -302,6 +317,8 @@ int main()
         {1.f, 1.f, 1.f, .02f}
     );
 
+    light.SetModel(&pointLightModel);
+
     renderer.SetPointLight(&light);
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -344,6 +361,9 @@ int main()
         {
             SnekVk::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
         }
+
+        // TODO(Aryeh): This will eventually need to take in multiple lights.
+        SnekVk::Renderer3D::DrawLight(&pointLightModel);
 
         for (auto& shape : shapes2D)
         {

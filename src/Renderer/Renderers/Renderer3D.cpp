@@ -14,6 +14,7 @@ namespace SnekVk
 
     Material* Renderer3D::currentMaterial = nullptr;
     Model* Renderer3D::currentModel = nullptr;
+    Model* Renderer3D::lightModel = nullptr;
 
     void Renderer3D::Initialise()
     {
@@ -40,10 +41,29 @@ namespace SnekVk
         DrawModel(model, position, glm::vec3{1.f}, glm::vec3{0.f});
     }
 
-    void Renderer3D::Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize)
+    void Renderer3D::DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation)
+    {
+
+    }
+
+    void Renderer3D::DrawLight(Model* model)
+    {
+        lightModel = model;
+    }
+
+    void Renderer3D::Render(VkCommandBuffer& commandBuffer, const void* globalData, const u64 globalDataSize)
     {
         if (models.Count() == 0) return;
 
+        RenderModels(commandBuffer, globalData, globalDataSize);
+        RenderLights(commandBuffer, globalData, globalDataSize);
+
+        currentModel = nullptr;
+        currentMaterial = nullptr;
+    }
+
+    void Renderer3D::RenderModels(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize)
+    {
         for (size_t i = 0; i < models.Count(); i++)
         {
             auto& model = models.Get(i);
@@ -64,9 +84,22 @@ namespace SnekVk
 
             model->Draw(commandBuffer, i);
         }
+    }
+    
+    // TODO(Aryeh): This is rendering a billboard. Might want to defer this to a billboard renderer
+    void Renderer3D::RenderLights(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize)
+    {
+        if (lightModel == nullptr) return; 
 
-        currentModel = nullptr;
-        currentMaterial = nullptr;
+        auto lightMaterial = lightModel->GetMaterial();
+
+        if (lightMaterial == nullptr) return;
+
+        lightMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
+        lightMaterial->Bind(commandBuffer);
+
+        lightModel->Bind(commandBuffer);
+        lightModel->Draw(commandBuffer, 0);
     }
 
     void Renderer3D::RecreateMaterials()

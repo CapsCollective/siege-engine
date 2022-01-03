@@ -19,12 +19,19 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
         static void DrawModel(Model* model, const glm::vec3& position);
 
+        static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
+
+        static void DrawLight(Model* model);
+
         static void RecreateMaterials();
 
-        static void Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize);
+        static void Render(VkCommandBuffer& commandBuffer, const void* globalData, const u64 globalDataSize);
         static void Flush();
 
         private:
+
+        static void RenderModels(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize);
+        static void RenderLights(VkCommandBuffer& commandBuffer, const void* globalData, const u64& globalDataSize);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
@@ -38,5 +45,8 @@ namespace SnekVk
 
         static Material* currentMaterial; 
         static Model* currentModel;
+
+        // FIXME(Aryeh): This needs to change.
+        static Model* lightModel;
     };
 }
