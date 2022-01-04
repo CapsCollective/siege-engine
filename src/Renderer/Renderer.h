@@ -17,23 +17,6 @@ namespace SnekVk
     {
         public:
 
-            struct CameraData
-            {
-                glm::mat4 projectionMatrix;
-                glm::mat4 viewMatrix;
-            };
-
-            struct Global3DData 
-            {
-                CameraData cameraData;
-                PointLight::Data lightData;
-            };
-
-            struct Global2DData
-            {
-                CameraData cameraData;
-            };
-
             Renderer(Window& window);
             ~Renderer();
 

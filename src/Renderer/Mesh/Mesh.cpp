@@ -22,10 +22,9 @@ namespace SnekVk
 
     Mesh::~Mesh()
     {
-        std::cout << "Destroying Model" << std::endl;
-        Buffer::DestroyBuffer(vertexBuffer);
-
-        if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
+        if (isFreed) return;
+        std::cout << "Destroying Mesh" << std::endl;
+        DestroyMesh();
     }
 
     void Mesh::LoadVertices(const Mesh::MeshData& meshData)
@@ -38,10 +37,17 @@ namespace SnekVk
         CreateIndexBuffer(meshData.indices);
     }
 
+    void Mesh::DestroyMesh()
+    {
+        Buffer::DestroyBuffer(vertexBuffer);
+
+        if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
+
+        isFreed = true;
+    }
+
     void Mesh::CreateVertexBuffers(const void* vertices)
     {
-        SNEK_ASSERT(vertexCount >= 3, "Vertex count must be at least 3!");
-
         VkDeviceSize bufferSize = vertexSize;
 
         Buffer::Buffer stagingBuffer;

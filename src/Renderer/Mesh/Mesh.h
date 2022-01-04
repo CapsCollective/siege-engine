@@ -56,7 +56,9 @@ namespace SnekVk
         void operator=(const Mesh& other) = delete;
 
         void LoadVertices(const Mesh::MeshData& meshData);
+        void UpdateVertices(const Mesh::MeshData& meshData);
         void Bind(VkCommandBuffer commandBuffer);
+        void DestroyMesh();
 
         bool HasIndexBuffer() { return hasIndexBuffer; }
 
@@ -81,5 +83,7 @@ namespace SnekVk
         u32 indexCount = 0;
 
         u64 vertexSize = 0;
+
+        bool isFreed = false;
     };
 }

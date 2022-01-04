@@ -12,6 +12,11 @@ namespace SnekVk
     {
         public:
 
+        struct GlobalData
+        {
+            CameraData cameraData;
+        };
+
         static void Initialise();
 
         static void DrawModel(Model* model, const glm::vec2& position, const glm::vec2& scale, const float& rotation, const float& zIndex);
@@ -20,7 +25,7 @@ namespace SnekVk
 
         static void RecreateMaterials();
 
-        static void Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize);
+        static void Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void Flush();
 
         private:
