@@ -29,9 +29,8 @@ namespace SnekVk
         auto vertexShader = Shader::BuildShader()
             .FromShader("bin/shaders/line.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(LineVertex))
-            .WithVertexAttribute(offsetof(LineVertex, position), VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(LineVertex, color), VertexDescription::VEC3)
+            .WithVertexType(sizeof(glm::vec3))
+            .WithVertexAttribute(0, SnekVk::VertexDescription::VEC3)
             .WithUniform(0, "globalData", sizeof(GlobalData), 1)
             .WithUniform(1, "lineData", sizeof(LineData), 1);
         
@@ -46,10 +45,10 @@ namespace SnekVk
 
         std::cout << "Line Material Built" << std::endl;
 
-        LineVertex vertices[] = 
+        glm::vec3 vertices[] = 
         {
-            {{0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}},
-            {{0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}}
+            {0.f, 0.f, 0.f},
+            {0.f, 0.f, 0.f}
         };
 
         lineModel.UpdateMesh({
