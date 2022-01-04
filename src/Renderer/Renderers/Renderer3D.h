@@ -19,12 +19,6 @@ namespace SnekVk
             PointLight::Data lightData;
         };
 
-        struct LineVertex
-        {
-            glm::vec3 position;
-            glm::vec3 color;
-        };
-
         struct LineData
         {
             glm::vec3 origin{0.f};
@@ -69,11 +63,16 @@ namespace SnekVk
         static Material* currentMaterial; 
         static Model* currentModel;
 
-        // FIXME(Aryeh): This needs to change.
+        // FIXME(Aryeh): Everything below this needs to change.
+
+        // Lights need to exist in their own collection.
         static Model* lightModel;
 
+        // Lines need to exist in their own collection as well.
         static Material lineMaterial;
         static Model lineModel;
+
+        // This should exist possibly in an array of other debug lines.
         static LineData lineData;
     };
 }
