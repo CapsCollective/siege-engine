@@ -42,7 +42,7 @@ namespace SnekVk
         if (currentMaterial) currentMaterial->RecreatePipeline(); 
     }
 
-    void Renderer2D::Render(VkCommandBuffer& commandBuffer, void* globalData, u64 globalDataSize)
+    void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
         if (models.Count() == 0) return;
 
@@ -54,7 +54,7 @@ namespace SnekVk
             {
                 currentMaterial = model->GetMaterial();
                 currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
-                currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
+                currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
                 currentMaterial->Bind(commandBuffer);
             } 
 

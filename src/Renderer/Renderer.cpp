@@ -52,17 +52,17 @@ namespace SnekVk
     {
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        Global3DData global3DData = {
+        Renderer3D::GlobalData global3DData = {
             { mainCamera->GetProjection(), mainCamera->GetView()},
             light->GetLightData()
         };
 
-        Global2DData global2DData = {
+        Renderer2D::GlobalData global2DData = {
             { mainCamera->GetProjection(), mainCamera->GetView()}
         };
 
-        Renderer3D::Render(commandBuffer, &global3DData, sizeof(global3DData));
-        Renderer2D::Render(commandBuffer, &global2DData, sizeof(global2DData));
+        Renderer3D::Render(commandBuffer, global3DData);
+        Renderer2D::Render(commandBuffer, global2DData);
     }
 
     void Renderer::RecreateSwapChain()

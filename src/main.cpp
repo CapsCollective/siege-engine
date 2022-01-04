@@ -205,7 +205,7 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global3DData), 1);
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData), 1);
     
     auto spriteShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader2D.vert.spv")
@@ -214,14 +214,14 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC2)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global2DData));
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer2D::GlobalData));
 
     auto pointLightVertShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/pointLight.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(glm::vec2))
         .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer::Global3DData));
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
     // Fragment shaders
 
@@ -232,12 +232,12 @@ int main()
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer::Global3DData)); // TIL: bindings must be unique accross all available shaders 
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
     
     auto pointLightFragShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/pointLight.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer::Global3DData));
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
     // Material Declaration
                                 // vertex       // fragment  
@@ -347,7 +347,7 @@ int main()
 
         float aspect = renderer.GetAspectRatio();
 
-        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
         if (inputEnabled)
         {
@@ -369,6 +369,8 @@ int main()
         {
             SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
         }
+
+        SnekVk::Renderer3D::DrawLine({0.f, .5f, 2.5f}, shapes2D[0].GetPosition(), {1.f, 1.f, 1.f});
         
         renderer.EndFrame();
     }

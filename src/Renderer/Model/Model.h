@@ -56,6 +56,7 @@ namespace SnekVk
         void Draw(VkCommandBuffer commandBuffer, u32 instance = 0);
 
         Material* GetMaterial() { return material; }
+        void UpdateMesh(const Mesh::MeshData& meshData);
         void SetMaterial(Material* newMaterial) { material = newMaterial; }
 
         bool IsIndexed() { return modelMesh.HasIndexBuffer(); }

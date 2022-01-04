@@ -23,6 +23,13 @@ namespace SnekVk
             POINT = 2
         };
 
+        enum Topology
+        {
+            LINE_LIST = 1,
+            LINE_STRING = 2,
+            TRIANGLE_LIST = 3
+        };
+
         Material();
         Material(Shader* vertexShader);
         Material(Shader* vertexShader, Shader* fragmentShader);
@@ -35,6 +42,7 @@ namespace SnekVk
         void CreateDescriptors();
 
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
+        void SetTopology(Topology topology) { shaderSettings.topology = topology; }
         void BuildMaterial();
 
         void SetUniformData(VkDeviceSize dataSize, const void* data);
@@ -88,6 +96,7 @@ namespace SnekVk
 
         struct {
             PolygonMode mode = PolygonMode::FILL;
+            Topology topology = Topology::TRIANGLE_LIST;
         } shaderSettings;
 
         size_t vertexCount = 0;

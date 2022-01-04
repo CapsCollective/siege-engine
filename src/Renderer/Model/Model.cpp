@@ -49,7 +49,9 @@ namespace SnekVk
     {}
 
     void Model::DestroyModel()
-    {}
+    {
+        modelMesh.DestroyMesh();
+    }
 
     void Model::LoadModelFromFile(const char* filePath)
     {
@@ -121,6 +123,11 @@ namespace SnekVk
                 static_cast<u32>(objIndices.size())
             }
         );
+    }
+
+    void Model::UpdateMesh(const Mesh::MeshData& meshData)
+    {
+        modelMesh.LoadVertices(meshData);
     }
 
     void Model::Bind(VkCommandBuffer commandBuffer)

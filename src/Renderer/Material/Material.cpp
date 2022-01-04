@@ -34,12 +34,15 @@ namespace SnekVk
 
     void Material::SetVertexShader(Shader* shader) 
     {
+        if (vertexShader == nullptr) shaderCount++;
         vertexShader = shader; 
         bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
+
     }
 
     void Material::SetFragmentShader(Shader* shader) 
     {
+        if (fragmentShader == nullptr) shaderCount++;
         fragmentShader = shader; 
         bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
     }
@@ -107,6 +110,7 @@ namespace SnekVk
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
+        pipelineConfig.inputAssemblyInfo.topology = (VkPrimitiveTopology)shaderSettings.topology;
         
         pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
