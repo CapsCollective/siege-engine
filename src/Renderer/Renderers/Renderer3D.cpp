@@ -21,13 +21,15 @@ namespace SnekVk
     Model Renderer3D::lineModel;
     Renderer3D::LineData Renderer3D::lineData;
 
+    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
+
     void Renderer3D::Initialise()
     {
         transformId = INTERN_STR("objectBuffer");
         globalDataId = INTERN_STR("globalData");
 
         auto vertexShader = Shader::BuildShader()
-            .FromShader("bin/shaders/line.vert.spv")
+            .FromShader("shaders/line.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(glm::vec3))
             .WithVertexAttribute(0, SnekVk::VertexDescription::VEC3)
@@ -35,15 +37,13 @@ namespace SnekVk
             .WithUniform(1, "lineData", sizeof(LineData), 1);
         
         auto fragmentShader = Shader::BuildShader()
-            .FromShader("bin/shaders/line.frag.spv")
+            .FromShader("shaders/line.frag.spv")
             .WithStage(PipelineConfig::FRAGMENT);
         
         lineMaterial.SetVertexShader(&vertexShader);
         lineMaterial.SetFragmentShader(&fragmentShader);
         lineMaterial.SetTopology(Material::Topology::LINE_LIST);
         lineMaterial.BuildMaterial();
-
-        std::cout << "Line Material Built" << std::endl;
 
         glm::vec3 vertices[] = 
         {
@@ -105,17 +105,8 @@ namespace SnekVk
 
     void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color)
     {
-        glm::vec3 vertices[] = {
-            origin, destination
-        };
-
-        lineModel.UpdateMesh({
-            sizeof(glm::vec3),
-            vertices,
-            2,
-            nullptr,
-            0
-        });
+        lines.Append(origin);
+        lines.Append(destination);
 
         lineData.color = color;
     }
@@ -166,6 +157,16 @@ namespace SnekVk
         lineMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
         lineMaterial.Bind(commandBuffer);
 
+        lineModel.UpdateMesh(
+            {
+                sizeof(glm::vec3),
+                lines.Data(),
+                static_cast<u32>(lines.Count()),
+                nullptr,
+                0
+            }
+        );
+
         lineModel.Bind(commandBuffer);
         lineModel.Draw(commandBuffer, 0);
     }
@@ -178,6 +179,7 @@ namespace SnekVk
     void Renderer3D::Flush()
     {
         transforms.Clear();
+        lines.Clear();
         models.Clear();
     }
 
