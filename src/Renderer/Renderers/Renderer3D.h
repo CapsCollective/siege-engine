@@ -31,7 +31,11 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position);
 
         static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
+
+        // Debug rendering
+        // TODO(Aryeh): Move this to it's own renderer module?
         static void DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color);
+        static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
 
         static void DrawLight(Model* model);
 
@@ -47,6 +51,7 @@ namespace SnekVk
         static void RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
@@ -73,6 +78,10 @@ namespace SnekVk
         // This should exist possibly in an array of other debug lines.
         static LineData lineData;
 
+        static Material rectMaterial;
+        static Model rectModel;
+
         static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> lines;
+        static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
     };
 }

@@ -21,7 +21,11 @@ namespace SnekVk
     Model Renderer3D::lineModel;
     Renderer3D::LineData Renderer3D::lineData;
 
+    Material Renderer3D::rectMaterial;
+    Model Renderer3D::rectModel;
+
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
+    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::rects;
 
     void Renderer3D::Initialise()
     {
@@ -45,6 +49,11 @@ namespace SnekVk
         lineMaterial.SetTopology(Material::Topology::LINE_LIST);
         lineMaterial.BuildMaterial();
 
+        rectMaterial.SetVertexShader(&vertexShader);
+        rectMaterial.SetFragmentShader(&fragmentShader);
+        rectMaterial.SetTopology(Material::Topology::LINE_STRIP);
+        rectMaterial.BuildMaterial();
+
         glm::vec3 vertices[] = 
         {
             {0.f, 0.f, 0.f},
@@ -53,13 +62,22 @@ namespace SnekVk
 
         lineModel.SetMesh({
             sizeof(glm::vec3),
-            vertices,
-            2,
+            nullptr,
+            0,
+            nullptr,
+            0
+        });
+
+        rectModel.SetMesh({
+            sizeof(glm::vec3),
+            nullptr,
+            0,
             nullptr,
             0
         });
 
         lineModel.SetMaterial(&lineMaterial);
+        rectModel.SetMaterial(&rectMaterial);
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation)
@@ -98,6 +116,7 @@ namespace SnekVk
         RenderModels(commandBuffer, globalData);
         RenderLights(commandBuffer, globalData);
         RenderLines(commandBuffer, globalData);
+        RenderRects(commandBuffer, globalData);
 
         currentModel = nullptr;
         currentMaterial = nullptr;
@@ -107,6 +126,17 @@ namespace SnekVk
     {
         lines.Append(origin);
         lines.Append(destination);
+
+        lineData.color = color;
+    }
+
+    void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
+    {
+        rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
+        rects.Append({position.x - (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
+        rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
+        rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
+        rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
 
         lineData.color = color;
     }
@@ -171,6 +201,26 @@ namespace SnekVk
         lineModel.Draw(commandBuffer, 0);
     }
 
+    void Renderer3D::RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    {
+        rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+        rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
+        rectMaterial.Bind(commandBuffer);
+
+        rectModel.UpdateMesh(
+            {
+                sizeof(glm::vec3),
+                rects.Data(),
+                static_cast<u32>(rects.Count()),
+                nullptr,
+                0
+            }
+        );
+
+        rectModel.Bind(commandBuffer);
+        rectModel.Draw(commandBuffer, 0);
+    }
+
     void Renderer3D::RecreateMaterials()
     {
         if (currentMaterial) currentMaterial->RecreatePipeline(); 
@@ -180,6 +230,7 @@ namespace SnekVk
     {
         transforms.Clear();
         lines.Clear();
+        rects.Clear();
         models.Clear();
     }
 
@@ -187,5 +238,7 @@ namespace SnekVk
     {
         lineModel.DestroyModel();
         lineMaterial.DestroyMaterial();
+        rectModel.DestroyModel();
+        rectMaterial.DestroyMaterial();
     }
 }
