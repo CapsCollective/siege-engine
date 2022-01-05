@@ -36,7 +36,7 @@ SnekVk::Vertex2D triangleVerts[] = {
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
-    sizeof(triangleVerts),
+    sizeof(SnekVk::Vertex2D),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
@@ -55,7 +55,7 @@ u32 squareIndices[] = {
 };
 
 SnekVk::Mesh::MeshData squareMeshData {
-    sizeof(squareVerts),
+    sizeof(SnekVk::Vertex2D),
     squareVerts,
     4,
     squareIndices,
@@ -70,7 +70,7 @@ glm::vec2 squareVertsRaw[] = {
 };
 
 SnekVk::Mesh::MeshData rawSquareMeshData {
-    sizeof(squareVertsRaw),
+    sizeof(glm::vec2),
     squareVertsRaw,
     4,
     squareIndices,
@@ -120,7 +120,7 @@ u32 cubeIndices[] = {
 };
 
 SnekVk::Mesh::MeshData cubeMeshData {
-    sizeof(cubeVerts),
+    sizeof(SnekVk::Vertex),
     cubeVerts,
     24,
     cubeIndices,
@@ -356,6 +356,8 @@ int main()
         }
 
         if (!renderer.StartFrame()) continue;
+
+        SnekVk::Renderer3D::DrawLine({0.f, 1.f, 2.5f}, {5.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
         
         for (auto& shape : shapes)
         {
@@ -369,8 +371,6 @@ int main()
         {
             SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
         }
-
-        SnekVk::Renderer3D::DrawLine({0.f, .5f, 2.5f}, shapes2D[0].GetPosition(), {1.f, 1.f, 1.f});
         
         renderer.EndFrame();
     }

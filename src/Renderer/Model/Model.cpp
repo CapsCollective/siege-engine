@@ -116,7 +116,7 @@ namespace SnekVk
 
         modelMesh.LoadVertices(
             {
-                sizeof(Vertex) * objVertices.size(),
+                sizeof(Vertex),
                 objVertices.data(), 
                 static_cast<u32>(objVertices.size()), 
                 objIndices.data(), 
@@ -126,6 +126,11 @@ namespace SnekVk
     }
 
     void Model::UpdateMesh(const Mesh::MeshData& meshData)
+    {
+        modelMesh.UpdateVertices(meshData);
+    }
+
+    void Model::SetMesh(const Mesh::MeshData& meshData)
     {
         modelMesh.LoadVertices(meshData);
     }
