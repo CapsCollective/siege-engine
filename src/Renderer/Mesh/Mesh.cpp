@@ -114,9 +114,13 @@ namespace SnekVk
 
     void Mesh::UpdateVertices(const Mesh::MeshData& meshData)
     {
+        vertexCount = meshData.vertexCount;
+        indexCount = meshData.indexCount;
+        vertexSize = meshData.vertexSize;
+
         // FIXME(Aryeh): I don't know if it's quicker to copy to a staging buffer or not.
         Buffer::CopyData(globalStagingBuffer, vertexSize * vertexCount, meshData.vertices);
 
-        Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, vertexSize * MAX_VERTICES);
+        Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, vertexSize * vertexCount);
     }
 }

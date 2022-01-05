@@ -72,5 +72,7 @@ namespace SnekVk
 
         // This should exist possibly in an array of other debug lines.
         static LineData lineData;
+
+        static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> lines;
     };
 }

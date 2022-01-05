@@ -357,7 +357,25 @@ int main()
 
         if (!renderer.StartFrame()) continue;
 
-        SnekVk::Renderer3D::DrawLine({0.f, 1.f, 2.5f}, {5.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({4.f, 1.f, -1.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({3.f, 1.f, -1.5f}, {3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({2.f, 1.f, -1.5f}, {2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({1.f, 1.f, -1.5f}, {1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({0.f, 1.f, -1.5f}, {0.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-1.f, 1.f, -1.5f}, {-1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-2.f, 1.f, -1.5f}, {-2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-3.f, 1.f, -1.5f}, {-3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {-4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 6.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 5.5f}, {4.f, 1.f, 5.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 4.5f}, {4.f, 1.f, 4.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 3.5f}, {4.f, 1.f, 3.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 2.5f}, {4.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 1.5f}, {4.f, 1.f, 1.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 0.5f}, {4.f, 1.f, 0.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
         
         for (auto& shape : shapes)
         {

@@ -39,6 +39,8 @@ namespace SnekVk
     {
         public:
 
+        static constexpr size_t MAX_VERTICES = 10000;
+
         struct MeshData
         {
             u64 vertexSize {0};
@@ -74,8 +76,6 @@ namespace SnekVk
 
         void CreateVertexBuffers(const void* vertices);
         void CreateIndexBuffer(const u32* indices);
-
-        static constexpr size_t MAX_VERTICES = 10000;
 
         Buffer::Buffer globalStagingBuffer;
 
