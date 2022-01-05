@@ -21,9 +21,7 @@ namespace SnekVk
 
         struct LineData
         {
-            glm::vec3 origin{0.f};
-            alignas(16) glm::vec3 destination{0.f};
-            alignas(16) glm::vec3 color{1.f, 1.f, 1.f};
+            glm::vec3 color{1.f, 1.f, 1.f};
         };
 
         static void Initialise();

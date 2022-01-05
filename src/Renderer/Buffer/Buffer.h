@@ -9,6 +9,7 @@ namespace SnekVk::Buffer
     {
         VkBuffer buffer {VK_NULL_HANDLE};
         VkDeviceMemory bufferMemory {VK_NULL_HANDLE};
+        u64 size = 0;
     };
 
     /**
@@ -47,6 +48,8 @@ namespace SnekVk::Buffer
      * @param bufferData - the data being copied into the buffer
      **/
     void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset = 0);
+
+    void AppendData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData);
 
     /**
      * Copies a buffer. This is generally used when copying the values within a buffer into

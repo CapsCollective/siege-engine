@@ -51,8 +51,8 @@ namespace SnekVk
             {0.f, 0.f, 0.f}
         };
 
-        lineModel.UpdateMesh({
-            sizeof(vertices),
+        lineModel.SetMesh({
+            sizeof(glm::vec3),
             vertices,
             2,
             nullptr,
@@ -105,8 +105,18 @@ namespace SnekVk
 
     void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color)
     {
-        lineData.origin = origin;
-        lineData.destination = destination;
+        glm::vec3 vertices[] = {
+            origin, destination
+        };
+
+        lineModel.UpdateMesh({
+            sizeof(glm::vec3),
+            vertices,
+            2,
+            nullptr,
+            0
+        });
+
         lineData.color = color;
     }
 

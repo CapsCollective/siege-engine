@@ -57,6 +57,7 @@ namespace SnekVk
 
         Material* GetMaterial() { return material; }
         void UpdateMesh(const Mesh::MeshData& meshData);
+        void SetMesh(const Mesh::MeshData& meshData);
         void SetMaterial(Material* newMaterial) { material = newMaterial; }
 
         bool IsIndexed() { return modelMesh.HasIndexBuffer(); }
