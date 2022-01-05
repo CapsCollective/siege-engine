@@ -292,7 +292,7 @@ int main()
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({3.f, 3.f, 0.001f});
+    shapes[1].SetScale({3.f, 3.f, 0.01f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
@@ -376,6 +376,8 @@ int main()
         SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 0.5f}, {4.f, 1.f, 0.5f}, {1.f, 1.f, 1.f});
         SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
         SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
+
+        SnekVk::Renderer3D::DrawRect({0.f, -2.f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f});
         
         for (auto& shape : shapes)
         {
