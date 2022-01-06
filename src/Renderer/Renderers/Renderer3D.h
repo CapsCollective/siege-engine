@@ -52,6 +52,7 @@ namespace SnekVk
         static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
