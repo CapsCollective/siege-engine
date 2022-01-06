@@ -54,11 +54,7 @@ namespace SnekVk
         rectMaterial.SetTopology(Material::Topology::LINE_STRIP);
         rectMaterial.BuildMaterial();
 
-        glm::vec3 vertices[] = 
-        {
-            {0.f, 0.f, 0.f},
-            {0.f, 0.f, 0.f}
-        };
+        std::cout << "BUILDING LINE MESH" << std::endl;
 
         lineModel.SetMesh({
             sizeof(glm::vec3),
@@ -68,6 +64,8 @@ namespace SnekVk
             0
         });
 
+        std::cout << "BUILT LINE MESH" << std::endl;
+
         rectModel.SetMesh({
             sizeof(glm::vec3),
             nullptr,
@@ -75,6 +73,8 @@ namespace SnekVk
             nullptr,
             0
         });
+
+        std::cout << "BUILT RECT MESH" << std::endl;
 
         lineModel.SetMaterial(&lineMaterial);
         rectModel.SetMaterial(&rectMaterial);
@@ -116,7 +116,8 @@ namespace SnekVk
         RenderModels(commandBuffer, globalData);
         RenderLights(commandBuffer, globalData);
         RenderLines(commandBuffer, globalData);
-        RenderRects(commandBuffer, globalData);
+        //RenderRects(commandBuffer, globalData);
+        RenderGrid(commandBuffer, globalData);
 
         currentModel = nullptr;
         currentMaterial = nullptr;
@@ -132,11 +133,10 @@ namespace SnekVk
 
     void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
     {
-        rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
         rects.Append({position.x - (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
-        rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
-        rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
         rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
+        rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
+        rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
 
         lineData.color = color;
     }
@@ -207,13 +207,115 @@ namespace SnekVk
         rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
         rectMaterial.Bind(commandBuffer);
 
+        u32 indices[] = {0, 1, 2, 3, 0};
+
         rectModel.UpdateMesh(
             {
                 sizeof(glm::vec3),
                 rects.Data(),
                 static_cast<u32>(rects.Count()),
-                nullptr,
-                0
+                indices,
+                5
+            }
+        );
+
+        rectModel.Bind(commandBuffer);
+        rectModel.Draw(commandBuffer, 0);
+    }
+
+    void Renderer3D::RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    {
+        rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+        rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
+        rectMaterial.Bind(commandBuffer);
+
+        const size_t numberOfRows = 5;
+        const size_t numberOfColumns = 3;
+
+        u32 indexCount = 0;
+        u32 vertexCount = 0;
+
+        u32 indices[Mesh::MAX_INDICES];  
+        glm::vec3 rectVertices[Mesh::MAX_VERTICES];
+
+        glm::vec3 position = {0.f, 0.f, 0.f};
+        glm::vec2 scale = {1.f, 1.f};
+
+        float rightOffset = (numberOfRows / 2.0) - (scale.x * 0.5f);
+
+        glm::vec3 firstQuad[] = 
+        {
+            {(position.x - (scale.x / 2.0) - rightOffset), position.y - (scale.y / 2.0), position.z},
+            {(position.x + (scale.x / 2.0) - rightOffset), position.y - (scale.y / 2.0), position.z},
+            {(position.x + (scale.x / 2.0) - rightOffset), position.y + (scale.y / 2.0), position.z},
+            {(position.x - (scale.x / 2.0) - rightOffset), position.y + (scale.y / 2.0), position.z},
+        };
+
+        vertexCount = 4;
+
+        u32 firstQuadIndices[] = 
+        {
+            0, 1, 2, 3, 0//, 1, 4, 5, 2, 4/*9*/, 6, 7, 5
+        };
+
+        indexCount = 5;
+
+        memcpy(rectVertices, firstQuad, sizeof(firstQuad[0]) * vertexCount);
+        memcpy(indices, firstQuadIndices, sizeof(u32) * indexCount);
+
+        u32 topRightIndex = indices[1];
+        u32 bottomRightIndex = indices[2];
+
+        glm::vec3 topRightVertexPosition = rectVertices[1];
+        glm::vec3 bottomRightVertexPosition = rectVertices[2];
+
+        u32 currentIndex = indexCount-1;
+
+        indices[indexCount] = topRightIndex;
+        indices[indexCount+1] = currentIndex;
+        indices[indexCount+2] = currentIndex+1;
+        indices[indexCount+3] = bottomRightIndex;
+
+        indexCount += 4;
+        currentIndex++;
+
+        topRightIndex = indices[6];
+        bottomRightIndex = indices[7];
+
+        topRightVertexPosition.x += scale.x;
+        bottomRightVertexPosition.x += scale.x;
+
+        rectVertices[vertexCount++] = topRightVertexPosition;
+        rectVertices[vertexCount++] = bottomRightVertexPosition;
+
+        for(size_t i = 2; i < numberOfRows; i++)
+        {
+            indices[indexCount] = i % 2 == 0 ? bottomRightIndex : topRightIndex;
+            indices[indexCount+1] = i % 2 == 0 ? currentIndex+2 : currentIndex+1;
+            indices[indexCount+2] = i % 2 == 0 ? currentIndex+1 : currentIndex+2;
+            indices[indexCount+3] = i % 2 == 0 ? topRightIndex : bottomRightIndex;
+
+            currentIndex += 2;
+
+            indexCount += 4;
+
+            topRightIndex = indices[i % 2 == 0 ? indexCount - 2 : 3];
+            bottomRightIndex = indices[i % 2 == 0 ? indexCount - 3 : 2];
+
+            topRightVertexPosition.x += scale.x;
+            bottomRightVertexPosition.x += scale.x;
+
+            rectVertices[vertexCount++] = topRightVertexPosition;
+            rectVertices[vertexCount++] = bottomRightVertexPosition;
+        }
+
+        rectModel.UpdateMesh(
+            {
+                sizeof(glm::vec3),
+                rectVertices,
+                vertexCount,
+                indices,
+                indexCount
             }
         );
 
