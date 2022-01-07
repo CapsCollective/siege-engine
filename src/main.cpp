@@ -377,7 +377,7 @@ int main()
         SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
         SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
 
-        SnekVk::Renderer3D::DrawRect({0.f, -2.f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawGrid(10, 1, {1.f, 1.f});
         
         for (auto& shape : shapes)
         {

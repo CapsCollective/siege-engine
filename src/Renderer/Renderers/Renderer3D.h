@@ -29,6 +29,7 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
         static void DrawModel(Model* model, const glm::vec3& position);
+        static void DrawGrid(size_t rowCount, size_t columnCount, glm::vec2 scale);
 
         static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
 
@@ -48,11 +49,37 @@ namespace SnekVk
 
         private:
 
+        static struct GridData{
+            glm::vec3 rotation{0.f, 0.f, 0.f};
+            glm::vec2 gridScale{1.f, 1.f};
+
+            glm::vec3 vertices[Mesh::MAX_VERTICES];
+            u32 indices[Mesh::MAX_INDICES];
+
+            u32 indexCount = 0;
+            u32 vertexCount = 0;
+
+            u32 latestIndex = 0; 
+
+            u32 nextTopRightIndex = 0;
+            u32 nextBottomRightIndex = 0;
+            u32 nextBottomLeftIndex = 0;
+
+            u32 rows = 0; 
+            u32 columns = 0;
+
+            bool enabled = false;
+        } gridData;
+
         static void RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        
+        static void DrawFirstGridQuad(const glm::vec3& offset); 
+        static void DrawWireQuad(const u32 baseIndex);
+        static void DrawFirstRow();
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
