@@ -30,6 +30,14 @@
 #define DEFINE_VARIANT_TYPE(type, tranform) \
     VariantContainer(type) : data(tranform) {} // NOLINT(google-explicit-constructor)
 
+// Don't compile logging if unused
+#ifdef CC_LOG_LEVEL
+#ifndef CC_ENABLE_LOGGING
+#define CC_ENABLE_LOGGING
+#endif
+#endif
+
+#ifdef CC_ENABLE_LOGGING
 namespace Logging
 {
 
@@ -107,6 +115,7 @@ namespace Logging
         }
     }
 }
+#endif
 
 // Determine log level
 #ifdef CC_LOG_LEVEL
