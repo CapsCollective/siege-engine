@@ -27,7 +27,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
         SECTION("the string can be cleared")
         {
             s.Clear();
-            REQUIRE(s);
+            REQUIRE(!s);
             REQUIRE(s == "");
             REQUIRE("" == s);
             REQUIRE(std::strcmp(s.AsChar(), "") == 0);
@@ -41,7 +41,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
 
         SECTION("the string should be initialised correctly")
         {
-            REQUIRE(!s2);
+            REQUIRE(s2);
             REQUIRE(s2 == "hello");
             REQUIRE("hello" == s2);
             REQUIRE(std::strcmp(s2.AsChar(), "hello") == 0);
@@ -50,7 +50,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
         SECTION("the string can be reassigned")
         {
             s2 = "goodbye";
-            REQUIRE(!s2);
+            REQUIRE(s2);
             REQUIRE(s2 == "goodbye");
             REQUIRE("goodbye" == s2);
             REQUIRE(std::strcmp(s2.AsChar(), "goodbye") == 0);
@@ -63,7 +63,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
 
         SECTION("the string should be initialised correctly")
         {
-            REQUIRE(!s);
+            REQUIRE(s);
             REQUIRE(s == "hello");
             REQUIRE("hello" == s);
             REQUIRE(std::strcmp(s.AsChar(), "hello") == 0);
@@ -72,7 +72,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
         SECTION("the string can be reassigned")
         {
             s = "goodbye";
-            REQUIRE(!s);
+            REQUIRE(s);
             REQUIRE(s == "goodbye");
             REQUIRE("goodbye" == s);
             REQUIRE(std::strcmp(s.AsChar(), "goodbye") == 0);
