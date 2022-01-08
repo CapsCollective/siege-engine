@@ -1,4 +1,8 @@
 #include "catch.hpp"
+
+// Require logging
+#define CC_ENABLE_LOGGING
+
 #include "../src/utils/Logging.h"
 
 TEST_CASE("messages can be formatted correctly", "[Logging]")
