@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 #include <string>
 
 #include "String.h"
@@ -76,13 +77,12 @@ String String::operator +(const char* rhs) const
 
 void String::Clear()
 {
-    free(str);
-    str = static_cast<char*>(malloc(0));
+    *this = "";
 }
 
 String::operator bool() const
 {
-    return IsEmpty();
+    return !IsEmpty();
 }
 
 String::operator const char*() const
