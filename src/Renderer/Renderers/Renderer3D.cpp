@@ -233,86 +233,38 @@ namespace SnekVk
         rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
         rectMaterial.Bind(commandBuffer);
 
-        glm::vec3 position = {0.f, 0.f, 0.f};
-        auto& scale = gridData.gridScale;
-
-        float rightOffset = (gridData.rows / 2.0) - (scale.x * 0.5f);
-        float upOffset = (gridData.columns / 2.0) - (scale.y * 0.5f);
-
-        DrawFirstGridQuad({rightOffset, upOffset, position.z});
-
-        auto& indexCount = gridData.indexCount;
-        auto& vertexCount = gridData.vertexCount;
-
-        auto& indices = gridData.indices;
-        auto& vertices = gridData.vertices;
-
-        u32& topRightIndex = gridData.nextTopRightIndex;
-        u32& bottomRightIndex = gridData.nextBottomRightIndex;
-
-        glm::vec3 topRightVertexPosition = vertices[topRightIndex];
-        glm::vec3 bottomRightVertexPosition = vertices[bottomRightIndex];
-
-        //DrawWireQuad(1);
-
-        u32 currentIndex = indexCount-1;
-
-        indices[indexCount] = topRightIndex + 3;
-        indices[indexCount+1] = bottomRightIndex + 3;
-        indices[indexCount+2] = bottomRightIndex;
-
-        indexCount += 3;
-        currentIndex++;
-
-        topRightIndex = topRightIndex + 3;
-        bottomRightIndex = bottomRightIndex + 3;
-
-        topRightVertexPosition.x += scale.x;
-        bottomRightVertexPosition.x += scale.x;
-
-        vertices[vertexCount++] = topRightVertexPosition;
-        vertices[vertexCount++] = bottomRightVertexPosition;
+        DrawFirstGridQuad(
+        {
+            (gridData.rows / 2.0) - (gridData.gridScale.x * 0.5f), 
+            (gridData.columns / 2.0) - (gridData.gridScale.y * 0.5f), 
+            0.f
+        });
+        
+        AddWireQuad(
+        {
+            gridData.nextTopRightIndex, 
+            gridData.nextBottomRightIndex,
+            gridData.nextBottomRightIndex,
+        }, 3);
 
         for(size_t i = 2; i < gridData.rows; i++)
         {
-            std::cout << "ROW " << i << std::endl;
             bool isEven = i % 2 == 0;
 
-            std::cout << topRightIndex << std::endl;
-            std::cout << bottomRightIndex << std::endl;
-
-            indices[indexCount] = isEven ? bottomRightIndex + 2 : topRightIndex + 2;
-            indices[indexCount+1] = isEven ? topRightIndex + 2 : bottomRightIndex + 2;
-            indices[indexCount+2] = isEven ? topRightIndex : bottomRightIndex;
-
-            std::cout << indices[indexCount] << std::endl;
-            std::cout << indices[indexCount+1] << std::endl;
-            std::cout << indices[indexCount+2] << std::endl;
-
-            indexCount += 3;
-
-            currentIndex += 2;
-
-            topRightIndex = topRightIndex + 2;
-            bottomRightIndex = bottomRightIndex + 2;
-
-            std::cout << "TOP RIGHT " << topRightIndex << std::endl;
-            std::cout << "BOTTOM RIGHT " << bottomRightIndex << std::endl;
-
-            topRightVertexPosition.x += scale.x;
-            bottomRightVertexPosition.x += scale.x;
-
-            vertices[vertexCount++] = topRightVertexPosition;
-            vertices[vertexCount++] = bottomRightVertexPosition;
+            AddWireQuad({
+                isEven ? gridData.nextBottomRightIndex : gridData.nextTopRightIndex,
+                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex,
+                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex
+            }, 2);
         }
 
         rectModel.UpdateMesh(
             {
                 sizeof(glm::vec3),
-                vertices,
-                vertexCount,
-                indices,
-                indexCount
+                gridData.vertices,
+                gridData.vertexCount,
+                gridData.indices,
+                gridData.indexCount
             }
         );
 
@@ -325,8 +277,6 @@ namespace SnekVk
         glm::vec3 position = {0.f, 0.f, 0.f};
 
         auto& scale = gridData.gridScale;
-
-        float rightOffset = (gridData.rows / 2.0) - (scale.x * 0.5f);
 
         gridData.vertices[0] = {(position.x - (scale.x / 2.0) - offset.x), position.y - (scale.y / 2.0) - offset.y, position.z};
         gridData.vertices[1] = {(position.x + (scale.x / 2.0) - offset.x), position.y - (scale.y / 2.0) - offset.y, position.z};
@@ -346,8 +296,6 @@ namespace SnekVk
 
         gridData.nextTopRightIndex = gridData.indices[1];
         gridData.nextBottomRightIndex = gridData.indices[2];
-
-        gridData.latestIndex = gridData.indexCount - 1;
     }
 
     void Renderer3D::DrawFirstRow()
@@ -355,29 +303,27 @@ namespace SnekVk
 
     }
 
-    void Renderer3D::DrawWireQuad(const u32 baseIndex)
+    void Renderer3D::AddWireQuad(std::initializer_list<u32> indices, const u32 indexModifier)
     {
-        u32& topRightIndex = gridData.nextTopRightIndex;
-        u32& bottomRightIndex = gridData.nextBottomRightIndex;
+        glm::vec3 topRightVertexPosition = gridData.vertices[gridData.nextTopRightIndex];
+        glm::vec3 bottomRightVertexPosition = gridData.vertices[gridData.nextBottomRightIndex];
 
-        glm::vec3 topRightVertexPosition = gridData.vertices[topRightIndex];
-        glm::vec3 bottomRightVertexPosition = gridData.vertices[bottomRightIndex];
+        for (auto& index: indices)
+        {
+            u32 modifiedIndex = index; 
 
-        gridData.indices[gridData.indexCount] = baseIndex;
-        gridData.indices[gridData.indexCount+1] = baseIndex+1;
-        gridData.indices[gridData.indexCount+2] = bottomRightIndex;
-
-        gridData.indexCount += 3;
-        gridData.latestIndex++;
-
-        gridData.nextTopRightIndex = gridData.indices[gridData.indexCount - 3];
-        gridData.nextBottomRightIndex = gridData.indices[gridData.indexCount - 2];
+            if (&index != (indices.begin()+indices.size()-1)) modifiedIndex += indexModifier;
+            gridData.indices[gridData.indexCount++] = modifiedIndex;
+        }
 
         topRightVertexPosition.x += gridData.gridScale.x;
         bottomRightVertexPosition.x += gridData.gridScale.x;
 
         gridData.vertices[gridData.vertexCount++] = topRightVertexPosition;
         gridData.vertices[gridData.vertexCount++] = bottomRightVertexPosition;
+
+        gridData.nextTopRightIndex += indexModifier;
+        gridData.nextBottomRightIndex += indexModifier;
     }
 
     void Renderer3D::RecreateMaterials()

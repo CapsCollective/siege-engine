@@ -78,7 +78,7 @@ namespace SnekVk
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static void DrawFirstGridQuad(const glm::vec3& offset); 
-        static void DrawWireQuad(const u32 baseIndex);
+        static void AddWireQuad(std::initializer_list<u32> indices, const u32 indexModifier);
         static void DrawFirstRow();
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
