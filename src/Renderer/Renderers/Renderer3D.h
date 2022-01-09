@@ -64,6 +64,7 @@ namespace SnekVk
             u32 nextTopRightIndex = 0;
             u32 nextBottomRightIndex = 0;
             u32 nextBottomLeftIndex = 0;
+            u32 nextTopLeftIndex = 0;
 
             u32 rows = 0; 
             u32 columns = 0;
@@ -80,6 +81,7 @@ namespace SnekVk
         static void DrawFirstGridQuad(const glm::vec3& offset); 
         static void AddWireQuad(std::initializer_list<u32> indices, const u32 indexModifier);
         static void DrawFirstRow();
+        static void DrawRow(size_t row);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
