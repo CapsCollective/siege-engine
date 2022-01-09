@@ -239,23 +239,12 @@ namespace SnekVk
             (gridData.columns / 2.0) - (gridData.gridScale.y * 0.5f), 
             0.f
         });
-        
-        AddWireQuad(
-        {
-            gridData.nextTopRightIndex, 
-            gridData.nextBottomRightIndex,
-            gridData.nextBottomRightIndex,
-        }, 3);
 
-        for(size_t i = 2; i < gridData.rows; i++)
-        {
-            bool isEven = i % 2 == 0;
+        DrawFirstRow();
 
-            AddWireQuad({
-                isEven ? gridData.nextBottomRightIndex : gridData.nextTopRightIndex,
-                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex,
-                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex
-            }, 2);
+        for (size_t i = 1; i < gridData.columns; i++)
+        {
+            DrawRow(i);
         }
 
         rectModel.UpdateMesh(
@@ -299,8 +288,75 @@ namespace SnekVk
     }
 
     void Renderer3D::DrawFirstRow()
-    {
+    {   
+        AddWireQuad(
+        {
+            gridData.nextTopRightIndex, 
+            gridData.nextBottomRightIndex,
+            gridData.nextBottomRightIndex,
+        }, 3);
 
+        for(size_t i = 2; i < gridData.rows; i++)
+        {
+            bool isEven = i % 2 == 0;
+
+            AddWireQuad({
+                isEven ? gridData.nextBottomRightIndex : gridData.nextTopRightIndex,
+                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex,
+                isEven ? gridData.nextTopRightIndex : gridData.nextBottomRightIndex
+            }, 2);
+        }
+
+        // Reset to first quad for this row.
+        gridData.nextTopRightIndex = 1;
+        gridData.nextBottomRightIndex = 2;
+        gridData.nextBottomLeftIndex = 3;
+        gridData.nextTopLeftIndex = 0;
+    }
+
+    // TODO(Aryeh): Automate this so that we can put in n number of quads
+    void Renderer3D::DrawRow(size_t row)
+    {
+        u32 start = 0;
+
+        start = gridData.rows % 2 == 0 ? gridData.nextBottomLeftIndex : gridData.nextTopLeftIndex;
+
+        gridData.indices[gridData.indexCount++] = start;
+        gridData.indices[gridData.indexCount++] = (gridData.rows * 2) + 2;
+        gridData.indices[gridData.indexCount++] = (gridData.rows * 2) + 3;
+        gridData.indices[gridData.indexCount++] = gridData.nextBottomRightIndex;
+
+        glm::vec3 bottomLeftVertexPosition = gridData.vertices[gridData.nextBottomLeftIndex];
+        glm::vec3 bottomRightVertexPosition = gridData.vertices[gridData.nextBottomRightIndex];
+
+        bottomLeftVertexPosition.y += gridData.gridScale.y;
+        bottomRightVertexPosition.y += gridData.gridScale.y;
+
+        gridData.vertices[gridData.vertexCount++] = bottomLeftVertexPosition;
+        gridData.vertices[gridData.vertexCount++] = bottomRightVertexPosition;
+
+        // Next Quad
+        gridData.nextTopRightIndex = gridData.nextBottomRightIndex + 3;
+        gridData.nextBottomRightIndex = (gridData.rows * 2) + 4;
+        gridData.nextBottomLeftIndex = (gridData.rows * 2) + 3;
+
+        gridData.indices[gridData.indexCount++] = gridData.nextTopRightIndex;
+        gridData.indices[gridData.indexCount++] = gridData.nextBottomRightIndex;
+        gridData.indices[gridData.indexCount++] = gridData.nextBottomLeftIndex;
+
+        bottomRightVertexPosition.x += gridData.gridScale.x;
+        gridData.vertices[gridData.vertexCount++] = bottomRightVertexPosition;
+
+        // Next Quad
+        gridData.nextTopRightIndex = gridData.nextTopRightIndex + 2;
+        gridData.nextBottomRightIndex += 1;
+        gridData.nextBottomLeftIndex += 1;
+
+        gridData.indices[gridData.indexCount++] = gridData.nextBottomRightIndex;
+        gridData.indices[gridData.indexCount++] = gridData.nextTopRightIndex;
+
+        bottomRightVertexPosition.x += gridData.gridScale.x;
+        gridData.vertices[gridData.vertexCount++] = bottomRightVertexPosition;
     }
 
     void Renderer3D::AddWireQuad(std::initializer_list<u32> indices, const u32 indexModifier)
