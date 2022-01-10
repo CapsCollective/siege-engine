@@ -24,6 +24,14 @@ namespace SnekVk
             glm::vec3 color{1.f, 1.f, 1.f};
         };
 
+        struct QuadIndexExtents
+        {
+            u32 topLeft;
+            u32 topRight;
+            u32 bottomRight;
+            u32 bottomLeft;
+        };
+
         static void Initialise();
 
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
@@ -79,7 +87,7 @@ namespace SnekVk
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static void DrawFirstGridQuad(const glm::vec3& offset); 
-        static void AddWireQuad(std::initializer_list<u32> indices, const u32 indexModifier);
+        static void AddWireQuad(std::initializer_list<u32> indices, std::initializer_list<glm::vec3> vertices, const QuadIndexExtents& extentIndices, const glm::vec3& scale);
         static void DrawFirstRow();
         static void DrawRow(size_t row);
         
