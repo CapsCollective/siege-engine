@@ -287,32 +287,33 @@ int main()
         Components::Shape(&squareModel)
     };
 
-    shapes[0].SetPosition({0.f, .5f, 2.5f});
+    shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
-    shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({3.f, 3.f, 0.01f});
+    shapes[1].SetPosition({0.f, 0.f, 0.f});
+    shapes[1].SetScale({3.f, 3.f, 0.0001f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
-    shapes[2].SetPosition({0.f, 0.f, 2.5f});
+    shapes[2].SetPosition({0.f, -1.f, 0.f});
     shapes[2].SetScale({2.f, 2.f, 2.f});
     shapes[2].SetColor({.5f, 0.f, 0.f});
 
-    shapes2D[0].SetPosition2D({1.5f, 0.f});
+    shapes2D[0].SetPosition2D({1.5f, -1.f});
     shapes2D[0].SetScale2D({.5f, 0.5f});
-    shapes2D[0].SetRotation2D(10.f);
-    shapes2D[0].SetZIndex(2.5f);
+    shapes2D[0].SetZIndex(0.f);
 
-    shapes2D[1].SetPosition2D({-1.5f, 0.f});
+    shapes2D[1].SetPosition2D({-1.5f, -1.f});
     shapes2D[1].SetScale2D({.5f, 0.5f});
-    shapes2D[1].SetZIndex(2.5f);
+    shapes2D[1].SetZIndex(0.f);
+
+    cameraObject.SetPosition({0.f, -1.f, -2.5f});
 
     // Lights
 
     SnekVk::PointLight light(
-        {0.0f, -1.0f, 1.5f}, 
+        {0.0f, -1.0f, -1.5f}, 
         {1.f, 0.f, 0.f, 1.0f}, 
         {1.f, 1.f, 1.f, .02f}
     );
@@ -357,27 +358,7 @@ int main()
 
         if (!renderer.StartFrame()) continue;
 
-        SnekVk::Renderer3D::DrawLine({4.f, 1.f, -1.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({3.f, 1.f, -1.5f}, {3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({2.f, 1.f, -1.5f}, {2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({1.f, 1.f, -1.5f}, {1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({0.f, 1.f, -1.5f}, {0.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-1.f, 1.f, -1.5f}, {-1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-2.f, 1.f, -1.5f}, {-2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-3.f, 1.f, -1.5f}, {-3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {-4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 6.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 5.5f}, {4.f, 1.f, 5.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 4.5f}, {4.f, 1.f, 4.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 3.5f}, {4.f, 1.f, 3.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 2.5f}, {4.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 1.5f}, {4.f, 1.f, 1.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 0.5f}, {4.f, 1.f, 0.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
-
-        SnekVk::Renderer3D::DrawGrid(3, 2, {1.f, 1.f});
+        SnekVk::Renderer3D::DrawGrid(30, 30, {1.f, 0.f, 1.f});
         
         for (auto& shape : shapes)
         {
