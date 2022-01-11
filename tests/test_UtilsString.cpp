@@ -192,7 +192,21 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
             REQUIRE(s1[6] == 'g');
             s1[1] = 'z';
             REQUIRE(s1.At(1) == 'z');
+        }
 
+        SECTION("the string should erase characters correctly")
+        {
+            s1 = "this is a string of a certain length";
+            s1.Erase();
+            REQUIRE(!s1);
+            s1 = "this is a string of a certain length";
+            s1.Erase(7);
+            REQUIRE(s1 == "this is");
+            s1.Erase(3, 3);
+            REQUIRE(s1 == "this");
+            s1 = "this is another string";
+            s1.Erase(4, 11);
+            REQUIRE(s1 == "this string");
         }
 
         SECTION("the string should cast correctly to c-strings")
@@ -336,5 +350,34 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         REQUIRE(sub == ".");
         sub = s.SubString(0, 200);
         REQUIRE(!sub);
+    }
+
+    SECTION("the string can get its next line")
+    {
+        String s4("hi\nmy\nname\nis");
+        String line;
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "hi");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "my");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "name");
+        REQUIRE(!s4.GetLine(line));
+        REQUIRE(line == "is");
+        REQUIRE(!s4.GetLine(line));
+        REQUIRE(line == "");
+        s4 = "hi\nmy\nname\nis\n\nhello";
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "hi");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "my");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "name");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "is");
+        REQUIRE(s4.GetLine(line));
+        REQUIRE(line == "");
+        REQUIRE(!s4.GetLine(line));
+        REQUIRE(line == "hello");
     }
 }

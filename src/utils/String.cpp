@@ -268,6 +268,43 @@ String String::SubString(size_t startPos, size_t length) const
     subString[length] = '\0'; // Manually add the null-termination char
     return subString;
 }
+
+bool String::GetLine(String& line)
+{
+    char* pos = strchr(str, '\n');
+    if (pos)
+    {
+        size_t newLine = pos - str;
+        line = SubString(0, newLine);
+        Erase(0, newLine + 1);
+        return true;
+    }
+    else
+    {
+        line = str;
+        Clear();
+        return false;
+    }
+}
+
+void String::Erase(size_t startPos, size_t length)
+{
+    // Perform boundary checking and set defaults
+    size_t strLen = Size();
+    if (length == -1) length = strLen - startPos;
+    if (startPos >= strLen || (startPos + length) > strLen)
+    {
+        Assign(nullptr);
+        return;
+    }
+
+    // Copy over the non-erased portions and assign it
+    char newStr[strLen - length];
+    strncpy(newStr, str, startPos);
+    strcpy(newStr + startPos, str + startPos + length);
+    Assign(newStr);
+}
+
 bool operator ==(const char* lhs, const String& rhs)
 {
     return rhs == lhs;
