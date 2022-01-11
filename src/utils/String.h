@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <string>
+#include "Macros.h"
 
 class String
 {
@@ -84,6 +85,10 @@ public:
     void Prepend(const char* string);
 
     bool Replace(const char* toReplace, const char* replacement);
+
+    void Erase(size_t startPos = 0, size_t length = -1);
+
+    bool GetLine(OUT String& line);
 
     void ToUpper();
 
