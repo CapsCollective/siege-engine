@@ -1,5 +1,4 @@
 #include "catch.hpp"
-#include "utils/Logging.h"
 #include <utils/String.h>
 
 TEST_CASE("strings can perform basic storage operations", "[String]")
@@ -207,6 +206,21 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
             s1 = "this is another string";
             s1.Erase(4, 11);
             REQUIRE(s1 == "this string");
+        }
+
+        SECTION("the string should handle insertions correctly")
+        {
+            s1 = " is a  of a  length";
+            s1.Insert(5, "");
+            REQUIRE(s1 == " is a  of a  length");
+            s1.Insert(0, "this");
+            REQUIRE(s1 == "this is a  of a  length");
+            s1.Insert(10, "short");
+            REQUIRE(s1 == "this is a short of a  length");
+            s1.Insert(21, "reasonable");
+            REQUIRE(s1 == "this is a short of a reasonable length");
+            s1.Insert(38, ", really");
+            REQUIRE(s1 == "this is a short of a reasonable length, really");
         }
 
         SECTION("the string should cast correctly to c-strings")
