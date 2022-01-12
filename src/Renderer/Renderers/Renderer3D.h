@@ -82,6 +82,7 @@ namespace SnekVk
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        static void RenderGridGPU(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static void DrawFirstGridQuad(const glm::vec3& offset); 
         static void AddWireQuad(std::initializer_list<u32> indices, std::initializer_list<glm::vec3> vertices, const QuadIndexExtents& extentIndices, const glm::vec3& scale);
@@ -115,6 +116,9 @@ namespace SnekVk
 
         static Material rectMaterial;
         static Model rectModel;
+
+        static Material gridMaterial;
+        static Model gridModel;
 
         static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> lines;
         static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;

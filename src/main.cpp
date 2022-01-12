@@ -239,6 +239,7 @@ int main()
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
+
     // Material Declaration
                                 // vertex       // fragment  
     SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
@@ -292,7 +293,7 @@ int main()
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 0.f, 0.f});
-    shapes[1].SetScale({3.f, 3.f, 0.0001f});
+    shapes[1].SetScale({3.f, 3.f, 0.01f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
@@ -358,7 +359,7 @@ int main()
 
         if (!renderer.StartFrame()) continue;
 
-        SnekVk::Renderer3D::DrawGrid(30, 30, {1.f, 0.f, 1.f});
+        //SnekVk::Renderer3D::DrawGrid(60, 60, {1.f, 0.f, 1.f});
         
         for (auto& shape : shapes)
         {
