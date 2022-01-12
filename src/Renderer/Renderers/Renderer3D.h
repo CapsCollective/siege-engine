@@ -6,6 +6,7 @@
 #include "../Utils/Math.h"
 #include "../Lights/PointLight.h"
 #include "../Camera/Camera.h"
+#include "Renderer3D/DebugRenderer3D.h"
 
 namespace SnekVk
 {
@@ -19,11 +20,6 @@ namespace SnekVk
             PointLight::Data lightData;
         };
 
-        struct LineData
-        {
-            glm::vec3 color{1.f, 1.f, 1.f};
-        };
-
         static void Initialise();
 
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
@@ -34,7 +30,7 @@ namespace SnekVk
 
         // Debug rendering
         // TODO(Aryeh): Move this to it's own renderer module?
-        static void DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color);
+        static void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
         static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
 
         static void DrawLight(Model* model);
@@ -53,7 +49,7 @@ namespace SnekVk
         static void RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        //static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
@@ -71,24 +67,13 @@ namespace SnekVk
 
         // FIXME(Aryeh): Everything below this needs to change.
 
+        static DebugRenderer3D debugRenderer;
+
         // Lights need to exist in their own collection.
         static Model* lightModel;
-
-        // Lines need to exist in their own collection as well.
-        static Material lineMaterial;
-        static Model lineModel;
-
-        // This should exist possibly in an array of other debug lines.
-        static LineData lineData;
-
-        static Material rectMaterial;
-        static Model rectModel;
 
         static Material gridMaterial;
 
         static bool gridEnabled;
-
-        static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> lines;
-        static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
     };
 }
