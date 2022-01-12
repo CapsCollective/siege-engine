@@ -24,14 +24,6 @@ namespace SnekVk
             glm::vec3 color{1.f, 1.f, 1.f};
         };
 
-        struct QuadIndexExtents
-        {
-            u32 topLeft;
-            u32 topRight;
-            u32 bottomRight;
-            u32 bottomLeft;
-        };
-
         static void Initialise();
 
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
