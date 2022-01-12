@@ -24,6 +24,9 @@ namespace SnekVk
     Material Renderer3D::rectMaterial;
     Model Renderer3D::rectModel;
 
+    Material Renderer3D::gridMaterial;
+    Model Renderer3D::gridModel;
+
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::rects;
 
@@ -42,9 +45,18 @@ namespace SnekVk
             .WithUniform(0, "globalData", sizeof(GlobalData), 1)
             .WithUniform(1, "lineData", sizeof(LineData), 1);
         
+        auto gridShader = SnekVk::Shader::BuildShader()
+            .FromShader("bin/shaders/grid.vert.spv")
+            .WithStage(SnekVk::PipelineConfig::VERTEX)
+            .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
+        
         auto fragmentShader = Shader::BuildShader()
             .FromShader("shaders/line.frag.spv")
             .WithStage(PipelineConfig::FRAGMENT);
+        
+        auto gridFragShader = SnekVk::Shader::BuildShader()
+            .FromShader("bin/shaders/grid.frag.spv")
+            .WithStage(SnekVk::PipelineConfig::FRAGMENT);
         
         lineMaterial.SetVertexShader(&vertexShader);
         lineMaterial.SetFragmentShader(&fragmentShader);
@@ -55,6 +67,10 @@ namespace SnekVk
         rectMaterial.SetFragmentShader(&fragmentShader);
         rectMaterial.SetTopology(Material::Topology::LINE_STRIP);
         rectMaterial.BuildMaterial();
+
+        gridMaterial.SetVertexShader(&gridShader);
+        gridMaterial.SetFragmentShader(&gridFragShader);
+        gridMaterial.BuildMaterial();
 
         lineModel.SetMesh({
             sizeof(glm::vec3),
@@ -111,8 +127,9 @@ namespace SnekVk
 
         RenderModels(commandBuffer, globalData);
         RenderLights(commandBuffer, globalData);
-        RenderLines(commandBuffer, globalData);
-        if (gridData.enabled) RenderGrid(commandBuffer, globalData);
+        //RenderLines(commandBuffer, globalData);
+        //if (gridData.enabled) RenderGrid(commandBuffer, globalData);
+        RenderGridGPU(commandBuffer, globalData);
 
         currentModel = nullptr;
         currentMaterial = nullptr;
@@ -260,6 +277,14 @@ namespace SnekVk
 
         rectModel.Bind(commandBuffer);
         rectModel.Draw(commandBuffer, 0);
+    }
+
+    void Renderer3D::RenderGridGPU(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    {
+        gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+        gridMaterial.Bind(commandBuffer);
+
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
     }
 
     void Renderer3D::DrawFirstGridQuad(const glm::vec3& offset)
@@ -502,5 +527,6 @@ namespace SnekVk
         lineMaterial.DestroyMaterial();
         rectModel.DestroyModel();
         rectMaterial.DestroyMaterial();
+        gridMaterial.DestroyMaterial();
     }
 }
