@@ -110,11 +110,6 @@ namespace SnekVk
         DrawModel(model, position, glm::vec3{1.f}, glm::vec3{0.f});
     }
 
-    void Renderer3D::DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation)
-    {
-        
-    }
-
     void Renderer3D::DrawLight(Model* model)
     {
         lightModel = model;
