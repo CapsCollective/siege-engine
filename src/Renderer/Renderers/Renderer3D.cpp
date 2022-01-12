@@ -17,78 +17,31 @@ namespace SnekVk
 
     Model* Renderer3D::lightModel = nullptr;
 
-    Material Renderer3D::lineMaterial;
-    Model Renderer3D::lineModel;
-    Renderer3D::LineData Renderer3D::lineData;
-
-    Material Renderer3D::rectMaterial;
-    Model Renderer3D::rectModel;
-
     Material Renderer3D::gridMaterial;
 
     bool Renderer3D::gridEnabled = false;
 
-    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
-    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::rects;
+    DebugRenderer3D Renderer3D::debugRenderer;
 
     void Renderer3D::Initialise()
     {
         transformId = INTERN_STR("objectBuffer");
         globalDataId = INTERN_STR("globalData");
 
-        auto vertexShader = Shader::BuildShader()
-            .FromShader("shaders/line.vert.spv")
-            .WithStage(PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(glm::vec3))
-            .WithVertexAttribute(0, SnekVk::VertexDescription::VEC3)
-            .WithUniform(0, "globalData", sizeof(GlobalData), 1)
-            .WithUniform(1, "lineData", sizeof(LineData), 1);
+        debugRenderer.Initialise("globalData", sizeof(GlobalData));
         
         auto gridShader = SnekVk::Shader::BuildShader()
             .FromShader("shaders/grid.vert.spv")
             .WithStage(SnekVk::PipelineConfig::VERTEX)
             .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
         
-        auto fragmentShader = Shader::BuildShader()
-            .FromShader("shaders/line.frag.spv")
-            .WithStage(PipelineConfig::FRAGMENT);
-        
         auto gridFragShader = SnekVk::Shader::BuildShader()
             .FromShader("shaders/grid.frag.spv")
             .WithStage(SnekVk::PipelineConfig::FRAGMENT);
-        
-        lineMaterial.SetVertexShader(&vertexShader);
-        lineMaterial.SetFragmentShader(&fragmentShader);
-        lineMaterial.SetTopology(Material::Topology::LINE_LIST);
-        lineMaterial.BuildMaterial();
-
-        rectMaterial.SetVertexShader(&vertexShader);
-        rectMaterial.SetFragmentShader(&fragmentShader);
-        rectMaterial.SetTopology(Material::Topology::LINE_STRIP);
-        rectMaterial.BuildMaterial();
 
         gridMaterial.SetVertexShader(&gridShader);
         gridMaterial.SetFragmentShader(&gridFragShader);
         gridMaterial.BuildMaterial();
-
-        lineModel.SetMesh({
-            sizeof(glm::vec3),
-            nullptr,
-            0,
-            nullptr,
-            0
-        });
-
-        rectModel.SetMesh({
-            sizeof(glm::vec3),
-            nullptr,
-            0,
-            nullptr,
-            0
-        });
-
-        lineModel.SetMaterial(&lineMaterial);
-        rectModel.SetMaterial(&rectMaterial);
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation)
@@ -119,32 +72,33 @@ namespace SnekVk
     {
         if (models.Count() == 0) return;
 
+        u64 globalDataSize = sizeof(GlobalData);
+
         RenderModels(commandBuffer, globalData);
         RenderLights(commandBuffer, globalData);
-        RenderLines(commandBuffer, globalData);
+
+        debugRenderer.Render(commandBuffer, globalDataSize, &globalData);
+        
         if (gridEnabled) RenderGrid(commandBuffer, globalData);
 
         currentModel = nullptr;
         currentMaterial = nullptr;
     }
 
-    void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color)
+    void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour)
     {
-        lines.Append(origin);
-        lines.Append(destination);
-
-        lineData.color = color;
+        debugRenderer.DrawLine(origin, destination, colour);
     }
 
-    void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
-    {
-        rects.Append({position.x - (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
-        rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
-        rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
-        rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
+    // void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
+    // {
+    //     rects.Append({position.x - (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
+    //     rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
+    //     rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
+    //     rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
 
-        lineData.color = color;
-    }
+    //     lineData = color;
+    // }
 
     void Renderer3D::RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
@@ -199,49 +153,27 @@ namespace SnekVk
         gridEnabled = true;
     }
 
-    void Renderer3D::RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        if (lines.Count() == 0) return;
+    // void Renderer3D::RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    // {
+    //     rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+    //     rectMaterial.SetUniformData("lineData", sizeof(glm::vec3), &lineData);
+    //     rectMaterial.Bind(commandBuffer);
 
-        lineMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        lineMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
-        lineMaterial.Bind(commandBuffer);
+    //     u32 indices[] = {0, 1, 2, 3, 0};
 
-        lineModel.UpdateMesh(
-            {
-                sizeof(glm::vec3),
-                lines.Data(),
-                static_cast<u32>(lines.Count()),
-                nullptr,
-                0
-            }
-        );
+    //     rectModel.UpdateMesh(
+    //         {
+    //             sizeof(glm::vec3),
+    //             rects.Data(),
+    //             static_cast<u32>(rects.Count()),
+    //             indices,
+    //             5
+    //         }
+    //     );
 
-        lineModel.Bind(commandBuffer);
-        lineModel.Draw(commandBuffer, 0);
-    }
-
-    void Renderer3D::RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
-        rectMaterial.Bind(commandBuffer);
-
-        u32 indices[] = {0, 1, 2, 3, 0};
-
-        rectModel.UpdateMesh(
-            {
-                sizeof(glm::vec3),
-                rects.Data(),
-                static_cast<u32>(rects.Count()),
-                indices,
-                5
-            }
-        );
-
-        rectModel.Bind(commandBuffer);
-        rectModel.Draw(commandBuffer, 0);
-    }
+    //     rectModel.Bind(commandBuffer);
+    //     rectModel.Draw(commandBuffer, 0);
+    // }
 
     void Renderer3D::RecreateMaterials()
     {
@@ -250,18 +182,14 @@ namespace SnekVk
 
     void Renderer3D::Flush()
     {
+        debugRenderer.Flush();
         transforms.Clear();
-        lines.Clear();
-        rects.Clear();
         models.Clear();
     }
 
     void Renderer3D::DestroyRenderer3D()
     {
-        lineModel.DestroyModel();
-        lineMaterial.DestroyMaterial();
-        rectModel.DestroyModel();
-        rectMaterial.DestroyMaterial();
+        debugRenderer.Destroy();
         gridMaterial.DestroyMaterial();
     }
 }
