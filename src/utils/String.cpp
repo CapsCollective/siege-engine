@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <cstring>
-#include <vector>
 
 #include "String.h"
 
@@ -302,6 +301,21 @@ void String::Erase(size_t startPos, size_t length)
     char newStr[strLen - length];
     strncpy(newStr, str, startPos);
     strcpy(newStr + startPos, str + startPos + length);
+    Assign(newStr);
+}
+
+void String::Insert(size_t pos, const char* string)
+{
+    // Perform boundary and input checking
+    size_t strLen = Size();
+    if (!string || pos > strLen) return;
+    size_t insLength = strlen(string);
+
+    // Copy over the non-erased portions and assign it
+    char newStr[strLen + insLength];
+    strncpy(newStr, str, pos);
+    strncpy(newStr + pos, string, insLength);
+    strcpy(newStr + pos + insLength, str + pos);
     Assign(newStr);
 }
 

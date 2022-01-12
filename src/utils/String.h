@@ -3,11 +3,16 @@
 
 #include <utility>
 #include <string>
+#include <vector>
 #include "Macros.h"
 
 class String
 {
 public:
+
+    // TODO add functionality for:
+    // - copy and swap
+    // - capacity and reservations (optimise mallocs)
 
     // 'Structors
 
@@ -53,13 +58,6 @@ public:
 
     // Public methods
 
-    // TODO add functionality for:
-    // - copy and swap
-    // - capacity and reservations (optimise mallocs)
-
-    // TODO copy over methods from StringHelpers
-    // - vector conversion
-
     bool IsEmpty() const;
 
     size_t Size() const;
@@ -83,6 +81,8 @@ public:
     void Prepend(const String& string);
 
     void Prepend(const char* string);
+
+    void Insert(size_t pos, const char* string);
 
     bool Replace(const char* toReplace, const char* replacement);
 
