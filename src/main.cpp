@@ -329,6 +329,8 @@ int main()
 
     renderer.SetMainCamera(&camera);
 
+    SnekVk::Renderer3D::EnableGrid();
+
     while(!window.WindowShouldClose()) {
         
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -358,8 +360,6 @@ int main()
         }
 
         if (!renderer.StartFrame()) continue;
-
-        //SnekVk::Renderer3D::DrawGrid(60, 60, {1.f, 0.f, 1.f});
         
         for (auto& shape : shapes)
         {

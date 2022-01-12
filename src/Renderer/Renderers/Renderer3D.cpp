@@ -25,12 +25,11 @@ namespace SnekVk
     Model Renderer3D::rectModel;
 
     Material Renderer3D::gridMaterial;
-    Model Renderer3D::gridModel;
+
+    bool Renderer3D::gridEnabled = false;
 
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::rects;
-
-    Renderer3D::GridData Renderer3D::gridData;
 
     void Renderer3D::Initialise()
     {
@@ -46,7 +45,7 @@ namespace SnekVk
             .WithUniform(1, "lineData", sizeof(LineData), 1);
         
         auto gridShader = SnekVk::Shader::BuildShader()
-            .FromShader("bin/shaders/grid.vert.spv")
+            .FromShader("shaders/grid.vert.spv")
             .WithStage(SnekVk::PipelineConfig::VERTEX)
             .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
         
@@ -55,7 +54,7 @@ namespace SnekVk
             .WithStage(PipelineConfig::FRAGMENT);
         
         auto gridFragShader = SnekVk::Shader::BuildShader()
-            .FromShader("bin/shaders/grid.frag.spv")
+            .FromShader("shaders/grid.frag.spv")
             .WithStage(SnekVk::PipelineConfig::FRAGMENT);
         
         lineMaterial.SetVertexShader(&vertexShader);
@@ -127,9 +126,8 @@ namespace SnekVk
 
         RenderModels(commandBuffer, globalData);
         RenderLights(commandBuffer, globalData);
-        //RenderLines(commandBuffer, globalData);
-        //if (gridData.enabled) RenderGrid(commandBuffer, globalData);
-        RenderGridGPU(commandBuffer, globalData);
+        RenderLines(commandBuffer, globalData);
+        if (gridEnabled) RenderGrid(commandBuffer, globalData);
 
         currentModel = nullptr;
         currentMaterial = nullptr;
@@ -141,14 +139,6 @@ namespace SnekVk
         lines.Append(destination);
 
         lineData.color = color;
-    }
-
-    void Renderer3D::DrawGrid(size_t rowCount, size_t columnCount, glm::vec3 scale)
-    {
-        gridData.rows = rowCount; 
-        gridData.columns = columnCount;
-        gridData.gridScale = scale;
-        gridData.enabled = true;
     }
 
     void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
@@ -201,6 +191,19 @@ namespace SnekVk
         lightModel->Draw(commandBuffer, 0);
     }
 
+    void Renderer3D::RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    {
+        gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+        gridMaterial.Bind(commandBuffer);
+
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    }
+
+    void Renderer3D::EnableGrid()
+    {
+        gridEnabled = true;
+    }
+
     void Renderer3D::RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
         if (lines.Count() == 0) return;
@@ -245,267 +248,6 @@ namespace SnekVk
         rectModel.Draw(commandBuffer, 0);
     }
 
-    void Renderer3D::RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        rectMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
-        rectMaterial.Bind(commandBuffer);
-
-        DrawFirstGridQuad(
-        {
-            (gridData.rows / 2.0) - (gridData.gridScale.x * 0.5f), 
-            0.f, 
-            (gridData.columns / 2.0) - (gridData.gridScale.z * 0.5f)
-        });
-
-        DrawFirstRow();
-
-        for (size_t i = 1; i < gridData.columns; i++)
-        {
-            DrawRow(i);
-        }
-
-        rectModel.UpdateMesh(
-            {
-                sizeof(glm::vec3),
-                gridData.vertices,
-                gridData.vertexCount,
-                gridData.indices,
-                gridData.indexCount
-            }
-        );
-
-        rectModel.Bind(commandBuffer);
-        rectModel.Draw(commandBuffer, 0);
-    }
-
-    void Renderer3D::RenderGridGPU(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        gridMaterial.Bind(commandBuffer);
-
-        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-    }
-
-    void Renderer3D::DrawFirstGridQuad(const glm::vec3& offset)
-    {
-        glm::vec3 position = {0.f, 0.f, 0.f};
-
-        auto& scale = gridData.gridScale;
-
-        gridData.vertices[0] = 
-        {
-            (position.x - (scale.x / 2.0) - offset.x), 
-            0.f , 
-            (position.z - (scale.z / 2.0) - offset.z)
-        };
-        gridData.vertices[1] = 
-        {
-            (position.x + (scale.x / 2.0) - offset.x), 
-            0.f, 
-            (position.z - (scale.z / 2.0) - offset.z)
-        };
-        gridData.vertices[2] = 
-        {
-            (position.x + (scale.x / 2.0) - offset.x), 
-            0.f,
-            position.z + (scale.z / 2.0 - offset.z)
-        };
-        gridData.vertices[3] = 
-        {
-            (position.x - (scale.x / 2.0) - offset.x), 
-            0.f, 
-            position.z + (scale.z / 2.0) - offset.z};
-
-        gridData.vertexCount = 4;
-
-        u32 firstQuadIndices[] = 
-        {
-            0, 1, 2, 3, 0
-        };
-
-        gridData.indexCount = 5;
-
-        memcpy(gridData.indices, firstQuadIndices, sizeof(firstQuadIndices));
-
-        gridData.nextTopRightIndex = gridData.indices[1];
-        gridData.nextBottomRightIndex = gridData.indices[2];
-    }
-
-    void Renderer3D::DrawFirstRow()
-    {   
-        AddWireQuad(
-        {
-            gridData.nextTopRightIndex + 3, 
-            gridData.nextBottomRightIndex + 3,
-            gridData.nextBottomRightIndex,
-        }, 
-        {
-            gridData.vertices[gridData.nextTopRightIndex],
-            gridData.vertices[gridData.nextBottomRightIndex]
-        }, 
-        {
-            gridData.nextTopLeftIndex,
-            gridData.nextTopRightIndex + 3,
-            gridData.nextBottomRightIndex + 3,
-            gridData.nextBottomLeftIndex
-        }, 
-        {
-            gridData.gridScale.x,
-            0.f, 
-            0.f
-        });
-
-        for(size_t i = 2; i < gridData.rows; i++)
-        {
-            bool isEven = i % 2 == 0;
-
-            AddWireQuad({
-                (isEven * gridData.nextBottomRightIndex) + (!isEven * gridData.nextTopRightIndex) + 2,
-                (isEven * gridData.nextTopRightIndex) + (!isEven * gridData.nextBottomRightIndex) + 2,
-                (isEven * gridData.nextTopRightIndex) + (!isEven * gridData.nextBottomRightIndex)
-            }, 
-            {
-                gridData.vertices[gridData.nextTopRightIndex],
-                gridData.vertices[gridData.nextBottomRightIndex]
-            }, 
-            {
-                gridData.nextTopLeftIndex,
-                gridData.nextTopRightIndex + 2,
-                gridData.nextBottomRightIndex + 2,
-                gridData.nextBottomLeftIndex
-            }, 
-            {
-                gridData.gridScale.x,
-                0.f, 
-                0.f,
-            });
-        }
-
-        // Reset to first quad for this row.
-        gridData.nextTopRightIndex = 1;
-        gridData.nextBottomRightIndex = 2;
-        gridData.nextBottomLeftIndex = 3;
-        gridData.nextTopLeftIndex = 0;
-    }
-
-    // TODO(Aryeh): Automate this so that we can put in n number of quads
-    void Renderer3D::DrawRow(u32 row)
-    {
-        u32 start = 0;
-
-        bool isEven = gridData.rows % 2 == 0;
-        
-        // First Quad
-        start = (isEven * gridData.nextBottomLeftIndex) + (!isEven * gridData.nextTopLeftIndex);
-
-        glm::vec3 bottomRightPosition = gridData.vertices[gridData.nextBottomRightIndex];
-
-        u32 bottomLeftInitialIndices = gridData.nextBottomLeftIndex;
-
-        u32 firstRowIndex = (gridData.rows * (row + 1)) + (row + 1);
-
-        AddWireQuad(
-        {
-            start, 
-            firstRowIndex,
-            firstRowIndex + 1,
-            gridData.nextBottomRightIndex
-        }, 
-        {
-            gridData.vertices[gridData.nextBottomLeftIndex],
-            gridData.vertices[gridData.nextBottomRightIndex],
-        }, 
-        {
-            gridData.nextTopRightIndex + 1,
-            ((row == 1) * (gridData.nextBottomRightIndex + 3)) + ((row > 1) * (gridData.nextTopRightIndex + 1)),
-            firstRowIndex + 2,
-            firstRowIndex + 1
-        },
-        {
-            0.f, 
-            0.f,
-            gridData.gridScale.z
-        });
-
-        bottomRightPosition.z += gridData.gridScale.z;
-
-        for (size_t i = 1; i < gridData.rows; i++)
-        {
-            if (i % 2 == 0)
-            {
-                AddWireQuad(
-                {
-                    gridData.nextBottomRightIndex,
-                    gridData.nextTopRightIndex,
-                }, 
-                {
-                    bottomRightPosition
-                }, 
-                {
-                    gridData.nextTopLeftIndex,
-                    ((row == 1) * (gridData.nextTopRightIndex + 2)) + ((row > 1) * (gridData.nextTopRightIndex + 1)),
-                    gridData.nextBottomRightIndex + 1,
-                    static_cast<u32>(firstRowIndex + i),
-                },
-                {
-                    gridData.gridScale.x, 
-                    0.f,
-                    0.f
-                });
-            } 
-            else
-            {
-                AddWireQuad(
-                {
-                    gridData.nextTopRightIndex,
-                    gridData.nextBottomRightIndex,
-                    gridData.nextBottomLeftIndex, 
-                }, 
-                {
-                    bottomRightPosition
-                }, 
-                {
-                    gridData.nextTopLeftIndex,
-                    ((row == 1) * (gridData.nextTopRightIndex + 2)) + ((row > 1) * (gridData.nextTopRightIndex + 1)),
-                    gridData.nextBottomRightIndex + 1,
-                    static_cast<u32>(firstRowIndex + i),
-                },
-                {
-                    gridData.gridScale.x, 
-                    0.f,
-                    0.f
-                });
-            } 
-
-            bottomRightPosition.x += gridData.gridScale.x;
-        }
-
-        // Reset to first quad for this row.
-        gridData.nextTopRightIndex = firstRowIndex + 1;
-        gridData.nextBottomRightIndex = (gridData.rows * (row + 1)) + (row + 2);
-        gridData.nextBottomLeftIndex = (gridData.rows * (row + 1)) + (row + 1);
-        gridData.nextTopLeftIndex = bottomLeftInitialIndices;
-    }
-
-    void Renderer3D::AddWireQuad(std::initializer_list<u32> indices, std::initializer_list<glm::vec3> vertices, const QuadIndexExtents& extentIndices, const glm::vec3& scale)
-    {
-        for (auto& index: indices)
-        {
-            gridData.indices[gridData.indexCount++] = index;
-        }
-
-        for (auto& vertex : vertices)
-        {
-            gridData.vertices[gridData.vertexCount++] = vertex + scale; 
-        }
-
-        gridData.nextTopLeftIndex = extentIndices.topLeft;
-        gridData.nextTopRightIndex = extentIndices.topRight;
-        gridData.nextBottomRightIndex = extentIndices.bottomRight;
-        gridData.nextBottomLeftIndex = extentIndices.bottomLeft;
-    }
-
     void Renderer3D::RecreateMaterials()
     {
         if (currentMaterial) currentMaterial->RecreatePipeline(); 
@@ -517,8 +259,6 @@ namespace SnekVk
         lines.Clear();
         rects.Clear();
         models.Clear();
-        gridData.vertexCount = 0;
-        gridData.indexCount = 0;
     }
 
     void Renderer3D::DestroyRenderer3D()

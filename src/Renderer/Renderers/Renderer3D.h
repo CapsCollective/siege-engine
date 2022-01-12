@@ -37,7 +37,6 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation);
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
         static void DrawModel(Model* model, const glm::vec3& position);
-        static void DrawGrid(size_t rowCount, size_t columnCount, glm::vec3 scale);
 
         static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
 
@@ -48,6 +47,8 @@ namespace SnekVk
 
         static void DrawLight(Model* model);
 
+        static void EnableGrid();
+
         static void RecreateMaterials();
 
         static void Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
@@ -57,37 +58,11 @@ namespace SnekVk
 
         private:
 
-        static struct GridData{
-            glm::vec3 gridScale{1.f, 1.f, 1.f};
-
-            glm::vec3 vertices[Mesh::MAX_VERTICES];
-            u32 indices[Mesh::MAX_INDICES];
-
-            u32 indexCount = 0;
-            u32 vertexCount = 0;
-
-            u32 nextTopRightIndex = 0;
-            u32 nextBottomRightIndex = 0;
-            u32 nextBottomLeftIndex = 0;
-            u32 nextTopLeftIndex = 0;
-
-            u32 rows = 0; 
-            u32 columns = 0;
-
-            bool enabled = false;
-        } gridData;
-
         static void RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        static void RenderGridGPU(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        
-        static void DrawFirstGridQuad(const glm::vec3& offset); 
-        static void AddWireQuad(std::initializer_list<u32> indices, std::initializer_list<glm::vec3> vertices, const QuadIndexExtents& extentIndices, const glm::vec3& scale);
-        static void DrawFirstRow();
-        static void DrawRow(u32 row);
         
         static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
@@ -118,7 +93,8 @@ namespace SnekVk
         static Model rectModel;
 
         static Material gridMaterial;
-        static Model gridModel;
+
+        static bool gridEnabled;
 
         static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> lines;
         static Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
