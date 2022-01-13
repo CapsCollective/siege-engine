@@ -18,7 +18,7 @@ namespace SnekVk
 
         // Wire primitives
         void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
-        void DrawCube();
+        void DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 
         void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
 

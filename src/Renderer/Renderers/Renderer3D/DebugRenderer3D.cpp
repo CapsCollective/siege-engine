@@ -56,7 +56,7 @@ namespace SnekVk
         lines.Append({destination, colour});
     }
 
-    void DebugRenderer3D::DrawCube()
+    void DebugRenderer3D::DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
     {
 
     }
