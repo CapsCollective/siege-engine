@@ -319,6 +319,13 @@ void String::Insert(size_t pos, const char* string)
     Assign(newStr);
 }
 
+void String::Swap(String& string)
+{
+    char* tmp = str;
+    str = string.str;
+    string.str = tmp;
+}
+
 bool operator ==(const char* lhs, const String& rhs)
 {
     return rhs == lhs;
