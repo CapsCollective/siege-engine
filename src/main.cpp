@@ -369,8 +369,6 @@ int main()
         // TODO(Aryeh): This will eventually need to take in multiple lights.
         SnekVk::Renderer3D::DrawLight(&pointLightModel);
 
-        SnekVk::Renderer3D::DrawLine({0.f, 0.f, 0.f}, {10.f, -1.f, 0.f}, {1.f, 0.f, 0.f});
-
         for (auto& shape : shapes2D)
         {
             SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
