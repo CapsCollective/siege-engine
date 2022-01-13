@@ -88,6 +88,8 @@ public:
 
     void Erase(size_t startPos = 0, size_t length = -1);
 
+    void Swap(String& string);
+
     bool GetLine(OUT String& line);
 
     void ToUpper();

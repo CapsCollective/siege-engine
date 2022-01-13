@@ -223,6 +223,21 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
             REQUIRE(s1 == "this is a short of a reasonable length, really");
         }
 
+        SECTION("the string should handle swaps correctly")
+        {
+            s1 = "stringA";
+            String s2 = "stringB";
+            s1.Swap(s2);
+            REQUIRE(s1 == "stringB");
+            REQUIRE(s2 == "stringA");
+            s1.Swap(s2);
+            REQUIRE(s1 == "stringA");
+            REQUIRE(s2 == "stringB");
+            s2.Swap(s1);
+            REQUIRE(s1 == "stringB");
+            REQUIRE(s2 == "stringA");
+        }
+
         SECTION("the string should cast correctly to c-strings")
         {
             s1 = "hellogoodbye";
