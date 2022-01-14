@@ -24,8 +24,8 @@ vec4 grid(vec3 fragPos3D, float scale) {
 
     vec4 color = vec4(0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
 
-    color.z += (float(((fragPos3D.x > -1 * minimumX) && (fragPos3D.x < 1 * minimumX))) * 0.8);
-    color.x += (float(((fragPos3D.z > -1 * minimumZ) && (fragPos3D.z < 1 * minimumZ))) * 0.8);
+    color.z += (float(((fragPos3D.x > -1.0 * minimumX) && (fragPos3D.x < 1.0 * minimumX))) * 0.8);
+    color.x += (float(((fragPos3D.z > -1.0 * minimumZ) && (fragPos3D.z < 1.0 * minimumZ))) * 0.8);
 
     return color;
 }

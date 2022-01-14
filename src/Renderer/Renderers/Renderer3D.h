@@ -7,6 +7,7 @@
 #include "../Lights/PointLight.h"
 #include "../Camera/Camera.h"
 #include "Renderer3D/DebugRenderer3D.h"
+#include "Renderer3D/BillboardRenderer.h"
 
 namespace SnekVk
 {
@@ -26,7 +27,7 @@ namespace SnekVk
         static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
         static void DrawModel(Model* model, const glm::vec3& position);
 
-        static void DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation);
+        static void DrawBillboard(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& colour);
 
         // Debug rendering
         // TODO(Aryeh): Move this to it's own renderer module?
@@ -68,6 +69,7 @@ namespace SnekVk
         // FIXME(Aryeh): Everything below this needs to change.
 
         static DebugRenderer3D debugRenderer;
+        static BillboardRenderer billboardRenderer;
 
         // Lights need to exist in their own collection.
         static Model* lightModel;
