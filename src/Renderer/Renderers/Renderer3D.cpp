@@ -22,6 +22,7 @@ namespace SnekVk
     bool Renderer3D::gridEnabled = false;
 
     DebugRenderer3D Renderer3D::debugRenderer;
+    BillboardRenderer Renderer3D::billboardRenderer;
 
     void Renderer3D::Initialise()
     {
@@ -29,6 +30,7 @@ namespace SnekVk
         globalDataId = INTERN_STR("globalData");
 
         debugRenderer.Initialise("globalData", sizeof(GlobalData));
+        billboardRenderer.Initialise("globalData", sizeof(GlobalData));
         
         auto gridShader = SnekVk::Shader::BuildShader()
             .FromShader("shaders/grid.vert.spv")
@@ -51,6 +53,11 @@ namespace SnekVk
         auto transform = Utils::Math::CalculateTransform3D(position, rotation, scale);
         auto normal = Utils::Math::CalculateNormalMatrix(rotation, scale);
         transforms.Append({transform, normal});
+    }
+
+    void Renderer3D::DrawBillboard(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& colour)
+    {
+        billboardRenderer.DrawBillboard(position, scale, colour);
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale)
@@ -78,6 +85,7 @@ namespace SnekVk
         RenderLights(commandBuffer, globalData);
 
         debugRenderer.Render(commandBuffer, globalDataSize, &globalData);
+        billboardRenderer.Render(commandBuffer, globalDataSize, &globalData);
         
         if (gridEnabled) RenderGrid(commandBuffer, globalData);
 
@@ -183,6 +191,7 @@ namespace SnekVk
     void Renderer3D::Flush()
     {
         debugRenderer.Flush();
+        billboardRenderer.Flush();
         transforms.Clear();
         models.Clear();
     }
@@ -190,6 +199,7 @@ namespace SnekVk
     void Renderer3D::DestroyRenderer3D()
     {
         debugRenderer.Destroy();
+        billboardRenderer.Destroy();
         gridMaterial.DestroyMaterial();
     }
 }

@@ -314,7 +314,7 @@ int main()
     // Lights
 
     SnekVk::PointLight light(
-        {0.0f, -1.0f, -1.5f}, 
+        {0.0f, -1.f, -1.5f}, 
         {1.f, 0.f, 0.f, 1.0f}, 
         {1.f, 1.f, 1.f, .02f}
     );
@@ -368,6 +368,9 @@ int main()
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
         SnekVk::Renderer3D::DrawLight(&pointLightModel);
+        
+        SnekVk::Renderer3D::DrawBillboard({0.f, -2.f, -0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
+        SnekVk::Renderer3D::DrawBillboard({0.0f, -1.5f, -0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
 
         for (auto& shape : shapes2D)
         {
