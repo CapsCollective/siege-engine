@@ -216,13 +216,6 @@ int main()
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer2D::GlobalData));
 
-    auto pointLightVertShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/pointLight.vert.spv")
-        .WithStage(SnekVk::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(glm::vec2))
-        .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
-
     // Fragment shaders
 
     auto fragShader = SnekVk::Shader::BuildShader()
@@ -233,21 +226,15 @@ int main()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
-    
-    auto pointLightFragShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/pointLight.frag.spv")
-        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
-
 
     // Material Declaration
                                 // vertex       // fragment  
     SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
 
-    SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+    //SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat, &pointLightMat});
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     // Generate models
 
@@ -255,8 +242,6 @@ int main()
 
     SnekVk::Model triangleModel(triangleMeshData);
     SnekVk::Model squareModel(squareMeshData);
-
-    SnekVk::Model pointLightModel(rawSquareMeshData);
 
     // Generating models from .obj files
 
@@ -270,8 +255,6 @@ int main()
     // Set 3D diffuse material
     cubeObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&diffuseMat);
-
-    pointLightModel.SetMaterial(&pointLightMat);
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
@@ -319,8 +302,6 @@ int main()
         {1.f, 1.f, 1.f, .02f}
     );
 
-    light.SetModel(&pointLightModel);
-
     renderer.SetPointLight(&light);
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -365,7 +346,7 @@ int main()
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
-        SnekVk::Renderer3D::DrawLight(&pointLightModel);
+        SnekVk::Renderer3D::DrawLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
         
         SnekVk::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
         SnekVk::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});

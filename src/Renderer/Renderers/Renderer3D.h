@@ -8,6 +8,7 @@
 #include "../Camera/Camera.h"
 #include "Renderer3D/DebugRenderer3D.h"
 #include "Renderer3D/BillboardRenderer.h"
+#include "Renderer3D/LightRenderer.h"
 
 namespace SnekVk
 {
@@ -34,11 +35,11 @@ namespace SnekVk
         static void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
         static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
 
-        static void DrawLight(Model* model);
+        static void DrawLight(const glm::vec3& position, const float& radius, const glm::vec4& colour, const glm::vec4& ambientColor);
 
         static void RecreateMaterials();
 
-        static void Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        static void Render(VkCommandBuffer& commandBuffer, const CameraData& globalData);
         static void Flush();
 
         static void DestroyRenderer3D();
@@ -68,10 +69,13 @@ namespace SnekVk
 
         static DebugRenderer3D debugRenderer;
         static BillboardRenderer billboardRenderer;
+        static LightRenderer lightRenderer;
 
         // Lights need to exist in their own collection.
         static Model* lightModel;
 
         static Material gridMaterial;
+
+        static GlobalData global3DData;
     };
 }
