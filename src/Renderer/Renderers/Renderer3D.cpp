@@ -150,31 +150,12 @@ namespace SnekVk
         gridEnabled = true;
     }
 
-    // void Renderer3D::RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    // {
-    //     rectMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-    //     rectMaterial.SetUniformData("lineData", sizeof(glm::vec3), &lineData);
-    //     rectMaterial.Bind(commandBuffer);
-
-    //     u32 indices[] = {0, 1, 2, 3, 0};
-
-    //     rectModel.UpdateMesh(
-    //         {
-    //             sizeof(glm::vec3),
-    //             rects.Data(),
-    //             static_cast<u32>(rects.Count()),
-    //             indices,
-    //             5
-    //         }
-    //     );
-
-    //     rectModel.Bind(commandBuffer);
-    //     rectModel.Draw(commandBuffer, 0);
-    // }
-
     void Renderer3D::RecreateMaterials()
     {
         if (currentMaterial) currentMaterial->RecreatePipeline(); 
+        debugRenderer.RecreateMaterials();
+        billboardRenderer.RecreateMaterials();
+        gridMaterial.RecreatePipeline();
     }
 
     void Renderer3D::Flush()
