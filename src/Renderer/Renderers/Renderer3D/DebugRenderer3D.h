@@ -24,6 +24,8 @@ namespace SnekVk
 
         void Flush();
 
+        void RecreateMaterials();
+
         private: 
 
         struct LineVertex

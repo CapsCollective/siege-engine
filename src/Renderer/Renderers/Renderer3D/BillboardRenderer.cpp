@@ -38,6 +38,11 @@ namespace SnekVk
         billboardModel.SetMaterial(&billboardMaterial);
     }
 
+    void BillboardRenderer::RecreateMaterials()
+    {
+        billboardMaterial.RecreatePipeline();
+    };
+
     void BillboardRenderer::Destroy()
     {
         billboardMaterial.DestroyMaterial();

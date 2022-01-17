@@ -22,12 +22,14 @@ namespace SnekVk
 
         void Flush();
 
+        void RecreateMaterials();
+
         private:
 
         struct BillboardVertex 
         {
             glm::vec3 position;
-            alignas(16) glm::vec4 colour;
+            glm::vec4 colour;
         };
 
         struct BillboardUBO
