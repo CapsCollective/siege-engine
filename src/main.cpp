@@ -329,8 +329,6 @@ int main()
 
     renderer.SetMainCamera(&camera);
 
-    SnekVk::Renderer3D::EnableGrid();
-
     while(!window.WindowShouldClose()) {
         
         auto newTime = std::chrono::high_resolution_clock::now();

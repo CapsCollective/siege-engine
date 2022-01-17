@@ -36,8 +36,6 @@ namespace SnekVk
 
         static void DrawLight(Model* model);
 
-        static void EnableGrid();
-
         static void RecreateMaterials();
 
         static void Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
@@ -75,7 +73,5 @@ namespace SnekVk
         static Model* lightModel;
 
         static Material gridMaterial;
-
-        static bool gridEnabled;
     };
 }

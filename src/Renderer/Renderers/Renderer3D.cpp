@@ -19,8 +19,6 @@ namespace SnekVk
 
     Material Renderer3D::gridMaterial;
 
-    bool Renderer3D::gridEnabled = false;
-
     DebugRenderer3D Renderer3D::debugRenderer;
     BillboardRenderer Renderer3D::billboardRenderer;
 
@@ -145,11 +143,6 @@ namespace SnekVk
         gridMaterial.Bind(commandBuffer);
 
         vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-    }
-
-    void Renderer3D::EnableGrid()
-    {
-        gridEnabled = true;
     }
 
     void Renderer3D::RecreateMaterials()
