@@ -45,6 +45,7 @@ namespace SnekVk
             OUT globalStagingBuffer.buffer,
             OUT globalStagingBuffer.bufferMemory);
 
+        // TODO(Aryeh): Only create this if there actually are indices
         Buffer::CreateBuffer(
             sizeof(u32) * MAX_INDICES,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -68,9 +69,13 @@ namespace SnekVk
     {
         Buffer::DestroyBuffer(vertexBuffer);
         Buffer::DestroyBuffer(globalStagingBuffer);
+        Buffer::DestroyBuffer(globalIndexStagingBuffer);
 
-        if (hasIndexBuffer) Buffer::DestroyBuffer(indexBuffer);
-
+        if (hasIndexBuffer) 
+        {
+            Buffer::DestroyBuffer(indexBuffer);
+        }
+        
         isFreed = true;
     }
 

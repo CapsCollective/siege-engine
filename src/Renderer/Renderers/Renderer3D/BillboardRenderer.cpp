@@ -11,7 +11,7 @@ namespace SnekVk
         positionsId = INTERN_STR("positions");
 
         auto vertexShader = Shader::BuildShader()
-            .FromShader("bin/shaders/billboard.vert.spv")
+            .FromShader("shaders/billboard.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(BillboardVertex))
             .WithVertexAttribute(offsetof(BillboardVertex, position), SnekVk::VertexDescription::VEC3)
@@ -20,7 +20,7 @@ namespace SnekVk
             .WithStorage(1, "positions", sizeof(glm::vec3), 1000);
         
         auto fragmentShader = Shader::BuildShader()
-            .FromShader("bin/shaders/billboard.frag.spv")
+            .FromShader("shaders/billboard.frag.spv")
             .WithStage(PipelineConfig::FRAGMENT);
         
         billboardMaterial.SetVertexShader(&vertexShader);
