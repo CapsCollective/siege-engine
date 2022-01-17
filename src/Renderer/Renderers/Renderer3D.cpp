@@ -87,7 +87,9 @@ namespace SnekVk
         debugRenderer.Render(commandBuffer, globalDataSize, &globalData);
         billboardRenderer.Render(commandBuffer, globalDataSize, &globalData);
         
-        if (gridEnabled) RenderGrid(commandBuffer, globalData);
+        #ifdef ENABLE_GRID
+        RenderGrid(commandBuffer, globalData);
+        #endif
 
         currentModel = nullptr;
         currentMaterial = nullptr;
