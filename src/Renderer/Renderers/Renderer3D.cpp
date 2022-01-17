@@ -98,16 +98,6 @@ namespace SnekVk
         debugRenderer.DrawLine(origin, destination, colour);
     }
 
-    // void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color)
-    // {
-    //     rects.Append({position.x - (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
-    //     rects.Append({position.x + (scale.x / 2.0), position.y + (scale.y / 2.0), position.z});
-    //     rects.Append({position.x + (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
-    //     rects.Append({position.x - (scale.x / 2.0), position.y - (scale.y / 2.0), position.z});
-
-    //     lineData = color;
-    // }
-
     void Renderer3D::RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
         for (size_t i = 0; i < models.Count(); i++)
@@ -132,7 +122,6 @@ namespace SnekVk
         }
     }
     
-    // TODO(Aryeh): This is rendering a billboard. Might want to defer this to a billboard renderer
     void Renderer3D::RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
         if (lightModel == nullptr) return; 

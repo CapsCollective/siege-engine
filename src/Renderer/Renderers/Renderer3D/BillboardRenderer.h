@@ -30,6 +30,12 @@ namespace SnekVk
             alignas(16) glm::vec4 colour;
         };
 
+        struct BillboardUBO
+        {
+            alignas(16) glm::vec3 position;
+            alignas(16) glm::vec3 scale;
+        };
+
         u32 billboardCount;
 
         Material billboardMaterial;
@@ -40,6 +46,6 @@ namespace SnekVk
 
         Utils::StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
         Utils::StackArray<u32, Mesh::MAX_INDICES> indices;
-        Utils::StackArray<glm::vec3, 1000> positions;
+        Utils::StackArray<BillboardUBO, 1000> positions;
     };
 }
