@@ -21,6 +21,9 @@ namespace SnekVk
 
     DebugRenderer3D Renderer3D::debugRenderer;
     BillboardRenderer Renderer3D::billboardRenderer;
+    LightRenderer Renderer3D::lightRenderer;
+
+    Renderer3D::GlobalData Renderer3D::global3DData;
 
     void Renderer3D::Initialise()
     {
@@ -29,6 +32,7 @@ namespace SnekVk
 
         debugRenderer.Initialise("globalData", sizeof(GlobalData));
         billboardRenderer.Initialise("globalData", sizeof(GlobalData));
+        lightRenderer.Initialise("globalData", sizeof(GlobalData));
         
         auto gridShader = SnekVk::Shader::BuildShader()
             .FromShader("shaders/grid.vert.spv")
@@ -68,25 +72,29 @@ namespace SnekVk
         DrawModel(model, position, glm::vec3{1.f}, glm::vec3{0.f});
     }
 
-    void Renderer3D::DrawLight(Model* model)
-    {
-        lightModel = model;
+    void Renderer3D::DrawLight(const glm::vec3& position, const float& radius, const glm::vec4& colour, const glm::vec4& ambientColor)
+    {   
+        global3DData.lightData = {colour, ambientColor, position};
+
+        lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
     }
 
-    void Renderer3D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& cameraData)
     {
         if (models.Count() == 0) return;
 
-        u64 globalDataSize = sizeof(GlobalData);
+        global3DData.cameraData = cameraData;
 
-        RenderModels(commandBuffer, globalData);
-        RenderLights(commandBuffer, globalData);
+        u64 globalDataSize = sizeof(global3DData);
 
-        debugRenderer.Render(commandBuffer, globalDataSize, &globalData);
-        billboardRenderer.Render(commandBuffer, globalDataSize, &globalData);
+        RenderModels(commandBuffer, global3DData);
+
+        lightRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+        debugRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+        billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData);
         
         #ifdef ENABLE_GRID
-        RenderGrid(commandBuffer, globalData);
+        RenderGrid(commandBuffer, global3DData);
         #endif
 
         currentModel = nullptr;
@@ -148,8 +156,11 @@ namespace SnekVk
     void Renderer3D::RecreateMaterials()
     {
         if (currentMaterial) currentMaterial->RecreatePipeline(); 
+
         debugRenderer.RecreateMaterials();
         billboardRenderer.RecreateMaterials();
+        lightRenderer.RecreateMaterials();
+
         gridMaterial.RecreatePipeline();
     }
 
@@ -157,6 +168,8 @@ namespace SnekVk
     {
         debugRenderer.Flush();
         billboardRenderer.Flush();
+        lightRenderer.Flush();
+
         transforms.Clear();
         models.Clear();
     }
@@ -165,6 +178,8 @@ namespace SnekVk
     {
         debugRenderer.Destroy();
         billboardRenderer.Destroy();
+        lightRenderer.Destroy();
+
         gridMaterial.DestroyMaterial();
     }
 }
