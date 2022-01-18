@@ -36,29 +36,20 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             REQUIRE("hello" == s);
             REQUIRE(std::strcmp(s.AsChar(), "hello") == 0);
         }
-
-        SECTION("the string can be cleared")
-        {
-            s.Clear();
-            REQUIRE(!s);
-            REQUIRE(s.Size() == 0);
-            REQUIRE(s == "");
-            REQUIRE("" == s);
-            REQUIRE(std::strcmp(s.AsChar(), "") == 0);
-        }
     }
 
     SECTION("when copy constructing")
     {
         String s1("hello");
         String s2(s1);
+        String s3;
+        String s4(s3);
 
         SECTION("the string should be initialised correctly")
         {
             REQUIRE(s2);
             REQUIRE(s2 == "hello");
-            REQUIRE("hello" == s2);
-            REQUIRE(std::strcmp(s2.AsChar(), "hello") == 0);
+            REQUIRE(!s4);
         }
 
         SECTION("the string can be reassigned")
@@ -66,8 +57,8 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             s2 = "goodbye";
             REQUIRE(s2);
             REQUIRE(s2 == "goodbye");
-            REQUIRE("goodbye" == s2);
-            REQUIRE(std::strcmp(s2.AsChar(), "goodbye") == 0);
+            s3 = s4;
+            REQUIRE(!s3);
         }
     }
 
@@ -79,8 +70,6 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
         {
             REQUIRE(s);
             REQUIRE(s == "hello");
-            REQUIRE("hello" == s);
-            REQUIRE(std::strcmp(s.AsChar(), "hello") == 0);
         }
 
         SECTION("the string can be reassigned")
@@ -88,169 +77,199 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             s = "goodbye";
             REQUIRE(s);
             REQUIRE(s == "goodbye");
-            REQUIRE("goodbye" == s);
-            REQUIRE(std::strcmp(s.AsChar(), "goodbye") == 0);
+        }
+    }
+
+    SECTION("when move constructing")
+    {
+        String s1(String("hello"));
+        String s2((String()));
+
+        SECTION("the string should be initialised correctly")
+        {
+            REQUIRE(s1);
+            REQUIRE(s1 == "hello");
+            REQUIRE(!s2);
+        }
+
+        SECTION("the string can be move assigned")
+        {
+            s1 = String("goodbye");
+            REQUIRE(s1);
+            REQUIRE(s1 == "goodbye");
+            s1 = String();
+            REQUIRE(!s1);
         }
     }
 }
 
 TEST_CASE("strings can perform basic manipulation operations", "[String]")
 {
-    SECTION("when default constructing")
+    SECTION("the string can be cleared")
+    {
+        String s1("hello");
+        REQUIRE(s1);
+        REQUIRE(s1.Size() == 5);
+        s1.Clear();
+        REQUIRE(!s1);
+        REQUIRE(s1.Size() == 0);
+    }
+
+    SECTION("the string should correctly add c-strings")
     {
         String s1;
+        String s2(s1 + "hello");
+        REQUIRE(s2 == "hello");
+        s2 = s2 + "goodbye";
+        REQUIRE(s2 == "hellogoodbye");
+        s2 = "goodbye" + s2;
+        REQUIRE(s2 == "goodbyehellogoodbye");
+        REQUIRE(s2.Size() == 19);
+    }
 
-        SECTION("the string should correctly add c-strings")
-        {
-            String s2 = s1 + "hello";
-            REQUIRE(s2 == "hello");
-            s2 = s2 + "goodbye";
-            REQUIRE(s2 == "hellogoodbye");
-            s2 = "goodbye" + s2;
-            REQUIRE(s2 == "goodbyehellogoodbye");
-            REQUIRE(s2.Size() == 19);
-        }
+    SECTION("the string should correctly add its own type")
+    {
+        String h("hello");
+        String g("goodbye");
+        String s2 = String() + h;
+        REQUIRE(s2 == "hello");
+        s2 = s2 + g;
+        REQUIRE(s2 == "hellogoodbye");
+        s2 = g + s2;
+        REQUIRE(s2 == "goodbyehellogoodbye");
+        REQUIRE(s2.Size() == 19);
+    }
 
-        SECTION("the string should correctly add its own type")
-        {
-            String h("hello");
-            String g("goodbye");
-            String s2 = s1 + h;
-            REQUIRE(s2 == "hello");
-            s2 = s2 + g;
-            REQUIRE(s2 == "hellogoodbye");
-            s2 = g + s2;
-            REQUIRE(s2 == "goodbyehellogoodbye");
-            REQUIRE(s2.Size() == 19);
-        }
+    SECTION("the string should correctly append c-strings")
+    {
+        String s1;
+        s1 += "hello";
+        REQUIRE(s1 == "hello");
+        String s2 = "goodbye" + s1;
+        REQUIRE(s2 == "goodbyehello");
+        s2.Append("goodbye");
+        REQUIRE(s2 == "goodbyehellogoodbye");
+        REQUIRE(s2.Size() == 19);
+    }
 
-        SECTION("the string should correctly append c-strings")
-        {
-            s1 += "hello";
-            REQUIRE(s1 == "hello");
-            String s2 = "goodbye" + s1;
-            REQUIRE(s2 == "goodbyehello");
-            s2.Append("goodbye");
-            REQUIRE(s2 == "goodbyehellogoodbye");
-            REQUIRE(s2.Size() == 19);
-        }
+    SECTION("the string should correctly append its own type")
+    {
+        String h("hello");
+        String g("goodbye");
+        String s1;
+        s1 += h;
+        REQUIRE(s1 == h);
+        String s2 = g;
+        s2.Append(s1);
+        REQUIRE(s2 == "goodbyehello");
+        s2.Append("goodbye");
+        REQUIRE(s2 == "goodbyehellogoodbye");
+        REQUIRE(s1 == "hello");
+        REQUIRE(s1 != "goodbyehello");
+        REQUIRE(s2.Size() == 19);
+    }
 
-        SECTION("the string should correctly append its own type")
-        {
-            String h("hello");
-            String g("goodbye");
-            s1 += h;
-            REQUIRE(s1 == h);
-            String s2 = g;
-            s2.Append(s1);
-            REQUIRE(s2 == "goodbyehello");
-            s2.Append("goodbye");
-            REQUIRE(s2 == "goodbyehellogoodbye");
-            REQUIRE(s1 == "hello");
-            REQUIRE(s1 != "goodbyehello");
-            REQUIRE(s2.Size() == 19);
-        }
+    SECTION("the string should correctly prepend c-strings")
+    {
+        String s1;
+        s1.Prepend("hello");
+        REQUIRE(s1 == "hello");
+        s1.Prepend("goodbye");
+        REQUIRE(s1 == "goodbyehello");
+        s1.Prepend("goodbye");
+        REQUIRE(s1 == "goodbyegoodbyehello");
+        REQUIRE(s1.Size() == 19);
+    }
 
-        SECTION("the string should correctly prepend c-strings")
-        {
-            s1.Prepend("hello");
-            REQUIRE(s1 == "hello");
-            s1.Prepend("goodbye");
-            REQUIRE(s1 == "goodbyehello");
-            s1.Prepend("goodbye");
-            REQUIRE(s1 == "goodbyegoodbyehello");
-            REQUIRE(s1.Size() == 19);
-        }
+    SECTION("the string should correctly prepend its own type")
+    {
+        String s1;
+        String h("hello");
+        String g("goodbye");
+        s1.Prepend(h);
+        REQUIRE(s1 == h);
+        String s2 = g;
+        s2.Prepend(s1);
+        REQUIRE(s2 == "hellogoodbye");
+        s2.Prepend("goodbye");
+        REQUIRE(s2 == "goodbyehellogoodbye");
+        REQUIRE(s1 == "hello");
+        REQUIRE(s1 != "goodbyehello");
+        REQUIRE(s2.Size() == 19);
+    }
 
-        SECTION("the string should correctly prepend its own type")
-        {
-            String h("hello");
-            String g("goodbye");
-            s1.Prepend(h);
-            REQUIRE(s1 == h);
-            String s2 = g;
-            s2.Prepend(s1);
-            REQUIRE(s2 == "hellogoodbye");
-            s2.Prepend("goodbye");
-            REQUIRE(s2 == "goodbyehellogoodbye");
-            REQUIRE(s1 == "hello");
-            REQUIRE(s1 != "goodbyehello");
-            REQUIRE(s2.Size() == 19);
-        }
+    SECTION("the string should index its characters correctly")
+    {
+        String s1("abcdefg");
+        REQUIRE(s1.At(-1) == '\0');
+        REQUIRE(s1.At(0) == 'a');
+        REQUIRE(s1.At(2) == 'c');
+        REQUIRE(s1.At(6) == 'g');
+        REQUIRE(s1.At(7) == '\0');
+        REQUIRE(s1[0] == 'a');
+        REQUIRE(s1[3] == 'd');
+        REQUIRE(s1[6] == 'g');
+        s1[1] = 'z';
+        REQUIRE(s1.At(1) == 'z');
+    }
 
-        SECTION("the string should index its characters correctly")
-        {
-            s1 = "abcdefg";
-            REQUIRE(s1.At(-1) == '\0');
-            REQUIRE(s1.At(0) == 'a');
-            REQUIRE(s1.At(2) == 'c');
-            REQUIRE(s1.At(6) == 'g');
-            REQUIRE(s1.At(7) == '\0');
-            REQUIRE(s1[0] == 'a');
-            REQUIRE(s1[3] == 'd');
-            REQUIRE(s1[6] == 'g');
-            s1[1] = 'z';
-            REQUIRE(s1.At(1) == 'z');
-        }
+    SECTION("the string should erase characters correctly")
+    {
+        String s1("this is a string of a certain length");
+        s1.Erase();
+        REQUIRE(!s1);
+        s1 = "this is a string of a certain length";
+        s1.Erase(7);
+        REQUIRE(s1 == "this is");
+        s1.Erase(3, 3);
+        REQUIRE(s1 == "this");
+        s1 = "this is another string";
+        s1.Erase(4, 11);
+        REQUIRE(s1 == "this string");
+    }
 
-        SECTION("the string should erase characters correctly")
-        {
-            s1 = "this is a string of a certain length";
-            s1.Erase();
-            REQUIRE(!s1);
-            s1 = "this is a string of a certain length";
-            s1.Erase(7);
-            REQUIRE(s1 == "this is");
-            s1.Erase(3, 3);
-            REQUIRE(s1 == "this");
-            s1 = "this is another string";
-            s1.Erase(4, 11);
-            REQUIRE(s1 == "this string");
-        }
+    SECTION("the string should handle insertions correctly")
+    {
+        String s1(" is a  of a  length");
+        s1.Insert(5, "");
+        REQUIRE(s1 == " is a  of a  length");
+        s1.Insert(0, "this");
+        REQUIRE(s1 == "this is a  of a  length");
+        s1.Insert(10, "short");
+        REQUIRE(s1 == "this is a short of a  length");
+        s1.Insert(21, "reasonable");
+        REQUIRE(s1 == "this is a short of a reasonable length");
+        s1.Insert(38, ", really");
+        REQUIRE(s1 == "this is a short of a reasonable length, really");
+    }
 
-        SECTION("the string should handle insertions correctly")
-        {
-            s1 = " is a  of a  length";
-            s1.Insert(5, "");
-            REQUIRE(s1 == " is a  of a  length");
-            s1.Insert(0, "this");
-            REQUIRE(s1 == "this is a  of a  length");
-            s1.Insert(10, "short");
-            REQUIRE(s1 == "this is a short of a  length");
-            s1.Insert(21, "reasonable");
-            REQUIRE(s1 == "this is a short of a reasonable length");
-            s1.Insert(38, ", really");
-            REQUIRE(s1 == "this is a short of a reasonable length, really");
-        }
+    SECTION("the string should handle swaps correctly")
+    {
+        String s1("stringA");
+        String s2 = "stringB";
+        s1.Swap(s2);
+        REQUIRE(s1 == "stringB");
+        REQUIRE(s2 == "stringA");
+        s1.Swap(s2);
+        REQUIRE(s1 == "stringA");
+        REQUIRE(s2 == "stringB");
+        s2.Swap(s1);
+        REQUIRE(s1 == "stringB");
+        REQUIRE(s2 == "stringA");
+    }
 
-        SECTION("the string should handle swaps correctly")
-        {
-            s1 = "stringA";
-            String s2 = "stringB";
-            s1.Swap(s2);
-            REQUIRE(s1 == "stringB");
-            REQUIRE(s2 == "stringA");
-            s1.Swap(s2);
-            REQUIRE(s1 == "stringA");
-            REQUIRE(s2 == "stringB");
-            s2.Swap(s1);
-            REQUIRE(s1 == "stringB");
-            REQUIRE(s2 == "stringA");
-        }
+    SECTION("the string should cast correctly to c-strings")
+    {
+        String s1("hellogoodbye");
+        const char* cstr = s1;
+        REQUIRE(std::strcmp(cstr, "hellogoodbye") == 0);
+    }
 
-        SECTION("the string should cast correctly to c-strings")
-        {
-            s1 = "hellogoodbye";
-            const char* cstr = s1;
-            REQUIRE(std::strcmp(cstr, "hellogoodbye") == 0);
-        }
-
-        SECTION("the string should cast correctly to standard strings")
-        {
-            s1 = "hellogoodbye";
-            std::string str = s1;
-            REQUIRE(str == "hellogoodbye");
-        }
+    SECTION("the string should cast correctly to standard strings")
+    {
+        String s1("hellogoodbye");
+        std::string str = s1;
+        REQUIRE(str == "hellogoodbye");
     }
 }
 

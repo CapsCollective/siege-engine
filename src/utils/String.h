@@ -10,15 +10,13 @@ class String
 {
 public:
 
-    // TODO add functionality for:
-    // - copy and swap
-    // - capacity and reservations (optimise mallocs)
-
     // 'Structors
 
     String();
 
     String(const String& string);
+
+    String(String&& string) noexcept;
 
     String(const char* string);
 
@@ -39,6 +37,8 @@ public:
     String operator +(const char* rhs) const;
 
     String& operator =(const String& rhs);
+
+    String& operator =(String&& rhs) noexcept;
 
     String& operator =(const char* rhs);
 
@@ -61,6 +61,8 @@ public:
     bool IsEmpty() const;
 
     size_t Size() const;
+
+    const char* AsChar() const;
 
     char At(size_t index) const;
 
@@ -97,8 +99,6 @@ public:
     void ToLower();
 
     void Clear();
-
-    const char* AsChar() const;
 
     template <typename ...P>
     void Format(P&&... params)

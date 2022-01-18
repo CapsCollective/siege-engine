@@ -14,13 +14,30 @@ static char* Allocate(const char* string)
     return newStr;
 }
 
+void String::Assign(const char* string)
+{
+    // Check for self-assignment
+    if (str == string) return;
+
+    // TODO add functionality for capacity and reservations (optimise alloc)
+    // Free current internal string and assign the new one
+    free(str);
+    str = Allocate(string);
+}
+
 String::String() :
     String("")
 {}
 
 String::String(const String& string) :
-    String(string.AsChar())
+    String(string.str)
 {}
+
+String::String(String&& string) noexcept :
+    str(string.str)
+{
+    string.str = nullptr;
+}
 
 String::String(const char* string) :
     str(Allocate(string))
@@ -28,19 +45,7 @@ String::String(const char* string) :
 
 String::~String()
 {
-    // TODO can this be removed with assertions?
-    if (IsEmpty()) free(str);
-}
-
-void String::Assign(const char* string)
-{
-    // Check for self-assignment
-    if (str == string) return;
-
-    // TODO optimise string malloc and free
-    // Free current internal string and assign the new one
     free(str);
-    str = Allocate(string);
 }
 
 bool String::operator ==(const String& rhs) const
@@ -53,43 +58,14 @@ bool String::operator ==(const char* rhs) const
     return strcmp(str, rhs) == 0;
 }
 
-bool String::operator!=(const String& rhs) const
+bool String::operator !=(const String& rhs) const
 {
     return *this != rhs.str;
 }
 
-bool String::operator!=(const char* rhs) const
+bool String::operator !=(const char* rhs) const
 {
     return !(*this == rhs);
-}
-
-const char* String::AsChar() const
-{
-    return str;
-}
-
-String& String::operator =(const String& rhs)
-{
-    if (this != &rhs) Assign(rhs);
-    return *this;
-}
-
-String& String::operator =(const char* rhs)
-{
-    Assign(rhs);
-    return *this;
-}
-
-String& String::operator +=(const String& rhs)
-{
-    Append(rhs);
-    return *this;
-}
-
-String& String::operator +=(const char* rhs)
-{
-    Append(rhs);
-    return *this;
 }
 
 String String::operator +(const String& rhs) const
@@ -109,9 +85,35 @@ String String::operator +(const char* rhs) const
     return cstr;
 }
 
-void String::Clear()
+String& String::operator =(const String& rhs)
 {
-    Assign("");
+    if (this != &rhs) Assign(rhs);
+    return *this;
+}
+
+String& String::operator =(String&& rhs) noexcept
+{
+    str = rhs.str;
+    rhs.str = nullptr;
+    return *this;
+}
+
+String& String::operator =(const char* rhs)
+{
+    Assign(rhs);
+    return *this;
+}
+
+String& String::operator +=(const String& rhs)
+{
+    Append(rhs);
+    return *this;
+}
+
+String& String::operator +=(const char* rhs)
+{
+    Append(rhs);
+    return *this;
 }
 
 String::operator bool() const
@@ -137,6 +139,11 @@ bool String::IsEmpty() const
 size_t String::Size() const
 {
     return strlen(str);
+}
+
+const char* String::AsChar() const
+{
+    return str;
 }
 
 void String::Append(const String& string)
@@ -324,6 +331,11 @@ void String::Swap(String& string)
     char* tmp = str;
     str = string.str;
     string.str = tmp;
+}
+
+void String::Clear()
+{
+    Assign("");
 }
 
 bool operator ==(const char* lhs, const String& rhs)
