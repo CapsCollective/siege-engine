@@ -294,16 +294,6 @@ int main()
 
     cameraObject.SetPosition({0.f, -1.f, -2.5f});
 
-    // Lights
-
-    SnekVk::PointLight light(
-        {0.0f, -1.f, -1.5f}, 
-        {1.f, 0.f, 0.f, 1.0f}, 
-        {1.f, 1.f, 1.f, .02f}
-    );
-
-    renderer.SetPointLight(&light);
-
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
@@ -317,8 +307,6 @@ int main()
         currentTime = newTime;
 
         auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
-        
-        light.SetColor({1.f, 0.f, 0.f, alpha});
 
         window.Update();
 
@@ -346,10 +334,12 @@ int main()
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
-        SnekVk::Renderer3D::DrawLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
+        SnekVk::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
         
         SnekVk::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
         SnekVk::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
+
+        SnekVk::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
 
         for (auto& shape : shapes2D)
         {

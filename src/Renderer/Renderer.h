@@ -35,7 +35,6 @@ namespace SnekVk
             float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
 
             void SetMainCamera(Camera* camera) { mainCamera = camera; }
-            void SetPointLight(PointLight* light) { this->light = light;}
             
             bool IsFrameStarted() { return isFrameStarted; }
 
@@ -70,8 +69,6 @@ namespace SnekVk
 
             void DrawFrame();
 
-            PipelineConfigInfo CreateDefaultPipelineConfig();
-
             SnekVk::Window& window;
             
             VulkanDevice device;
@@ -82,6 +79,5 @@ namespace SnekVk
             int currentFrameIndex{0};
 
             Camera* mainCamera;
-            PointLight* light;
     };
 }

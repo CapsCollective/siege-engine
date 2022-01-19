@@ -11,14 +11,14 @@ namespace SnekVk
         lightDataId = INTERN_STR("lightUBO");
 
         auto pointLightVertShader = SnekVk::Shader::BuildShader()
-            .FromShader("bin/shaders/pointLight.vert.spv")
+            .FromShader("shaders/pointLight.vert.spv")
             .WithStage(SnekVk::PipelineConfig::VERTEX)
             .WithVertexType(sizeof(glm::vec2))
             .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
             .WithUniform(0, globalDataAttributeName, globalDataSize);
 
         auto pointLightFragShader = SnekVk::Shader::BuildShader()
-            .FromShader("bin/shaders/pointLight.frag.spv")
+            .FromShader("shaders/pointLight.frag.spv")
             .WithStage(SnekVk::PipelineConfig::FRAGMENT)
             .WithUniform(0, globalDataAttributeName, globalDataSize);
         

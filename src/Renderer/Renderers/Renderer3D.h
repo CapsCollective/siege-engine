@@ -9,6 +9,7 @@
 #include "Renderer3D/DebugRenderer3D.h"
 #include "Renderer3D/BillboardRenderer.h"
 #include "Renderer3D/LightRenderer.h"
+#include "Renderer3D/ModelRenderer.h"
 
 namespace SnekVk
 {
@@ -34,8 +35,7 @@ namespace SnekVk
         // TODO(Aryeh): Move this to it's own renderer module?
         static void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
         static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
-
-        static void DrawLight(const glm::vec3& position, const float& radius, const glm::vec4& colour, const glm::vec4& ambientColor);
+        static void DrawPointLight(const glm::vec3& position, const float& radius, const glm::vec4& colour, const glm::vec4& ambientColor);
 
         static void RecreateMaterials();
 
@@ -45,34 +45,18 @@ namespace SnekVk
         static void DestroyRenderer3D();
 
         private:
-
-        static void RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        static void RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        static void RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+        
         //static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
         static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-        
-        static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-        static Utils::StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-        static Utils::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
-
-        static u64 transformSize;
-
-        static Utils::StringId transformId;
         static Utils::StringId globalDataId;
-
-        static Material* currentMaterial; 
-        static Model* currentModel;
 
         // FIXME(Aryeh): Everything below this needs to change.
 
+        static ModelRenderer modelRenderer;
         static DebugRenderer3D debugRenderer;
         static BillboardRenderer billboardRenderer;
         static LightRenderer lightRenderer;
-
-        // Lights need to exist in their own collection.
-        static Model* lightModel;
 
         static Material gridMaterial;
 

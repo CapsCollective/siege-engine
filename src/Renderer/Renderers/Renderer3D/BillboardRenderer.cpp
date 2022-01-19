@@ -73,7 +73,7 @@ namespace SnekVk
         if (vertices.Count() == 0) return;
 
         billboardMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
-        billboardMaterial.SetUniformData(positionsId, sizeof(positions[0]) * positions.Size(), positions.Data());
+        billboardMaterial.SetUniformData(positionsId, sizeof(positions[0]) * positions.Count(), positions.Data());
         billboardMaterial.Bind(commandBuffer);
 
         billboardModel.UpdateMesh({
