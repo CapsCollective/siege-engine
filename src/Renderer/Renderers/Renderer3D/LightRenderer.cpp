@@ -64,7 +64,7 @@ namespace SnekVk
     {
         if (pointLightVertices.Count() == 0) return;
 
-        lightMaterial.SetUniformData(globalDataId, sizeof(globalData), globalData);
+        lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
         lightMaterial.Bind(commandBuffer);
 
         lightModel.UpdateMesh({
