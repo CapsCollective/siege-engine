@@ -286,6 +286,7 @@ namespace SnekVk
         for(auto& property : propertiesArray)
         {
             if (id == property.id) {
+
                 Buffer::CopyData(buffer, dataSize, data, property.offset);
                 return;
             }
