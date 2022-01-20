@@ -120,3 +120,9 @@ $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
 $(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
+
+format-check:
+	./format.sh "$(engineSrcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*" --check
+
+format:
+	./format.sh "$(engineSrcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*"
