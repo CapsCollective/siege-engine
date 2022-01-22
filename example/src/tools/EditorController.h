@@ -2,13 +2,16 @@
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
 #include <entity/Entity.h>
-#include <entity/EntityStorage.h>
 #include <entity/EntityPtr.h>
-#include "../ServiceLocator.h"
-#include <vector>
-#include <cstdint>
+#include <entity/EntityStorage.h>
 
-enum EditorMode {
+#include <cstdint>
+#include <vector>
+
+#include "../ServiceLocator.h"
+
+enum EditorMode
+{
     POSITION,
     ROTATION,
 };
@@ -27,8 +30,7 @@ public:
         selectedIdx(0),
         camera(ServiceLocator::GetCamera()),
         selectedEntity(nullptr),
-        messageDisplay(ServiceLocator::GetMessageDisplay())
-    {};
+        messageDisplay(ServiceLocator::GetMessageDisplay()) {};
 
     // Class methods
 
@@ -77,5 +79,4 @@ private:
     EntityPtr<MessageDisplay> messageDisplay;
 };
 
-
-#endif //A_DARK_DISCOMFORT_EDITORCONTROLLER_H
+#endif // A_DARK_DISCOMFORT_EDITORCONTROLLER_H

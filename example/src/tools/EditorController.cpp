@@ -1,13 +1,15 @@
 #include "EditorController.h"
-#include "MessageDisplay.h"
-#include "../entities/Geometry.h"
-#include "../entities/Player.h"
-#include <utils/StringHelpers.h>
-#include <scene/SceneManager.h>
+
+#include <input/Input.h>
 #include <render/Camera.h>
 #include <render/Window.h>
-#include <input/Input.h>
+#include <scene/SceneManager.h>
 #include <utils/Colour.h>
+#include <utils/StringHelpers.h>
+
+#include "../entities/Geometry.h"
+#include "../entities/Player.h"
+#include "MessageDisplay.h"
 
 // Static member initialisation
 static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
@@ -19,13 +21,13 @@ static Colour BRIGHT_PINK(255, 5, 146);
 void EditorController::OnStart()
 {
     // TODO temporarily disabled transform gizmo and grid
-//    Vec3 extents(3.f, 3.f, 3.f);
-//    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Colour::Red}, gizmoPos);
-//    gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(), Colour::Green}, gizmoPos);
-//    gizmoRenderItem = RenderSystem::Add(this, {extents.ZComp(), Colour::Blue}, gizmoPos);
+    //    Vec3 extents(3.f, 3.f, 3.f);
+    //    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Colour::Red}, gizmoPos);
+    //    gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(), Colour::Green}, gizmoPos);
+    //    gizmoRenderItem = RenderSystem::Add(this, {extents.ZComp(), Colour::Blue}, gizmoPos);
 
-//if (isGridActive) DrawGrid(100, 1.0f);
-//gizmoRenderItem->isEnabled = selectedEntity;
+    // if (isGridActive) DrawGrid(100, 1.0f);
+    // gizmoRenderItem->isEnabled = selectedEntity;
 }
 
 void EditorController::OnUpdate()
@@ -36,7 +38,8 @@ void EditorController::OnUpdate()
     if (Input::KeyPressed(Input::KEY_ESCAPE)) SelectEntity(nullptr);
 
     // Check for command key presses
-    if (Input::KeyDown(Input::KEY_LEFT_SUPER)){
+    if (Input::KeyDown(Input::KEY_LEFT_SUPER))
+    {
         if (Input::KeyPressed(Input::KEY_G))
         {
             // Toggle grid display
@@ -107,7 +110,8 @@ void EditorController::OnUpdate()
         if (totalEntities > 0)
         {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
-            do {
+            do
+            {
                 // Try select the entity
                 SelectEntity(EntityStorage::GetEntities()[selectedIdx]);
 
@@ -127,13 +131,14 @@ void EditorController::OnUpdate()
                 // Calculate move from input
                 Vec3 move = Vec3::Zero;
                 float precision = MOVE_LEVELS[movePrecision];
-                move.x = precision * (float) (
-                        -Input::KeyPressed(Input::KEY_LEFT) + Input::KeyPressed(Input::KEY_RIGHT));
+                move.x = precision * (float) (-Input::KeyPressed(Input::KEY_LEFT) +
+                                              Input::KeyPressed(Input::KEY_RIGHT));
 
                 // Switch vertical move input between z and y axis based on shift key down
-                float verticalMove = precision * (float) (
-                        -Input::KeyPressed(Input::KEY_UP) + Input::KeyPressed(Input::KEY_DOWN));
-                Input::KeyDown(Input::KEY_LEFT_SHIFT) ? move.y = -verticalMove : move.z = verticalMove;
+                float verticalMove = precision * (float) (-Input::KeyPressed(Input::KEY_UP) +
+                                                          Input::KeyPressed(Input::KEY_DOWN));
+                Input::KeyDown(Input::KEY_LEFT_SHIFT) ? move.y = -verticalMove :
+                                                        move.z = verticalMove;
 
                 // Apply the move to the position of the entity
                 Vec3 entityPosition = selectedEntity->GetPosition();
@@ -143,8 +148,8 @@ void EditorController::OnUpdate()
             case ROTATION: {
                 // Calculate rotation from input and apply it to the rotation of the entity
                 float precision = ROTATE_LEVELS[rotatePrecision];
-                float rotation = precision * (float) (
-                        -Input::KeyPressed(Input::KEY_LEFT) +Input::KeyPressed(Input::KEY_RIGHT));
+                float rotation = precision * (float) (-Input::KeyPressed(Input::KEY_LEFT) +
+                                                      Input::KeyPressed(Input::KEY_RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
@@ -159,19 +164,29 @@ void EditorController::OnDraw2D()
     // Format display text on the selected entity
     std::string nameLabel = StringHelpers::FormatText("%s", selectedEntity->GetName().c_str());
     std::string posLabel = StringHelpers::FormatText("Position: <%.2f, %.2f, %.2f>",
-                                      selectedEntity->GetPosition().x,
-                                      selectedEntity->GetPosition().y,
-                                      selectedEntity->GetPosition().z);
-    std::string rotLabel = StringHelpers::FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
+                                                     selectedEntity->GetPosition().x,
+                                                     selectedEntity->GetPosition().y,
+                                                     selectedEntity->GetPosition().z);
+    std::string rotLabel =
+        StringHelpers::FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
-    RenderSystem::DrawText2D(nameLabel,(int) screenPosition.x - Window::GetTextWidth(nameLabel, 20)/2,
-             (int) screenPosition.y, 20, Colour::Pink);
-    RenderSystem::DrawText2D(posLabel,(int) screenPosition.x - Window::GetTextWidth(posLabel, 18)/2,
-             (int) screenPosition.y + 20, 18, currentMode == POSITION ? BRIGHT_PINK : Colour::Pink);
-    RenderSystem::DrawText2D(rotLabel,(int) screenPosition.x - Window::GetTextWidth(posLabel, 18)/2,
-             (int) screenPosition.y + 40, 18, currentMode == ROTATION ? BRIGHT_PINK : Colour::Pink);
+    RenderSystem::DrawText2D(nameLabel,
+                             (int) screenPosition.x - Window::GetTextWidth(nameLabel, 20) / 2,
+                             (int) screenPosition.y,
+                             20,
+                             Colour::Pink);
+    RenderSystem::DrawText2D(posLabel,
+                             (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
+                             (int) screenPosition.y + 20,
+                             18,
+                             currentMode == POSITION ? BRIGHT_PINK : Colour::Pink);
+    RenderSystem::DrawText2D(rotLabel,
+                             (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
+                             (int) screenPosition.y + 40,
+                             18,
+                             currentMode == ROTATION ? BRIGHT_PINK : Colour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)
@@ -207,24 +222,26 @@ void EditorController::AdjustPrecision(int adjustment)
         case POSITION: {
             // Check boundaries on move precision
             int newPrecision = movePrecision + adjustment;
-            if (newPrecision >= 0 && newPrecision < sizeof(MOVE_LEVELS)/sizeof(int))
+            if (newPrecision >= 0 && newPrecision < sizeof(MOVE_LEVELS) / sizeof(int))
             {
                 // Apply the new precision value
                 movePrecision = newPrecision;
-                messageDisplay->DisplayMessage(StringHelpers::FormatText(
-                        "Move precision set to %.2f", MOVE_LEVELS[movePrecision]));
+                messageDisplay->DisplayMessage(
+                    StringHelpers::FormatText("Move precision set to %.2f",
+                                              MOVE_LEVELS[movePrecision]));
             }
             break;
         }
         case ROTATION: {
             // Check boundaries on rotate precision
             int newPrecision = rotatePrecision + adjustment;
-            if (newPrecision >= 0 && newPrecision < sizeof(ROTATE_LEVELS)/sizeof(int))
+            if (newPrecision >= 0 && newPrecision < sizeof(ROTATE_LEVELS) / sizeof(int))
             {
                 // Apply the new precision value
                 rotatePrecision = newPrecision;
-                messageDisplay->DisplayMessage(StringHelpers::FormatText(
-                        "Rotate precision set to %.2f°", ROTATE_LEVELS[rotatePrecision]));
+                messageDisplay->DisplayMessage(
+                    StringHelpers::FormatText("Rotate precision set to %.2f°",
+                                              ROTATE_LEVELS[rotatePrecision]));
             }
             break;
         }

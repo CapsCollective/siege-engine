@@ -14,7 +14,6 @@ public:
     REGISTER_SERVICE(MessageDisplay, class MessageDisplay)
 
     REGISTER_SERVICE(Window, class Window)
-
 };
 
-#endif //A_DARK_DISCOMFORT_SERVICELOCATOR_H
+#endif // A_DARK_DISCOMFORT_SERVICELOCATOR_H

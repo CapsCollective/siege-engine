@@ -1,17 +1,16 @@
-#include <physics/CollisionSystem.h>
 #include <entity/EntityStorage.h>
-#include <scene/SceneManager.h>
-
-#include <render/RenderSystem.h>
+#include <physics/CollisionSystem.h>
 #include <render/Camera.h>
+#include <render/RenderSystem.h>
 #include <render/Window.h>
 #include <resource/ResourceManagerFacade.h>
+#include <scene/SceneManager.h>
 
-#include "tools/EditorController.h"
-#include "tools/MessageDisplay.h"
-#include "tools/DevConsole.h"
-#include "tools/FreeCam.h"
 #include "ServiceLocator.h"
+#include "tools/DevConsole.h"
+#include "tools/EditorController.h"
+#include "tools/FreeCam.h"
+#include "tools/MessageDisplay.h"
 
 int main(int argc, char* argv[])
 {
@@ -33,10 +32,7 @@ int main(int argc, char* argv[])
     auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
-    EntityStorage::Add({
-        &display,
-        &devConsole
-    }, true);
+    EntityStorage::Add({&display, &devConsole}, true);
 
     // Set the default directories
     ResourceManagerFacade::SetBaseDirectory("example/assets/");
@@ -49,10 +45,7 @@ int main(int argc, char* argv[])
         ServiceLocator::Provide(editor);
 
         // Batch register the editor and freeCam
-        EntityStorage::Add({
-            editor,
-            new FreeCam()
-        }, true);
+        EntityStorage::Add({editor, new FreeCam()}, true);
     }
     else
     {

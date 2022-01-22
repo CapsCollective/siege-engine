@@ -9,9 +9,7 @@ public:
 
     // 'Structors
 
-    MessageDisplay() :
-        displayTime(0.f)
-    {};
+    MessageDisplay() : displayTime(0.f) {};
 
     // Public methods
 
@@ -32,5 +30,4 @@ private:
     std::string displayMessage;
 };
 
-
-#endif //A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
+#endif // A_DARK_DISCOMFORT_MESSAGEDISPLAY_H

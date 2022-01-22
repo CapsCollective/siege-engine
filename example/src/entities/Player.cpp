@@ -1,9 +1,10 @@
 #include "Player.h"
-#include <physics/CollisionSystem.h>
-#include <scene/SceneFile.h>
-#include <render/RenderSystem.h>
+
 #include <input/Input.h>
+#include <physics/CollisionSystem.h>
+#include <render/RenderSystem.h>
 #include <render/Window.h>
+#include <scene/SceneFile.h>
 
 // Static member initialisation
 const std::string Player::ENTITY_NAME("Player");
@@ -20,11 +21,10 @@ void Player::OnUpdate()
 {
     // Get move axes as vector
     Vec3 move = {
-            (float)(-Input::KeyDown(Input::KEY_LEFT) + Input::KeyDown(Input::KEY_RIGHT)),
-            0.f,
-            (float)(-Input::KeyDown(Input::KEY_UP) + Input::KeyDown(Input::KEY_DOWN)),
+        (float) (-Input::KeyDown(Input::KEY_LEFT) + Input::KeyDown(Input::KEY_RIGHT)),
+        0.f,
+        (float) (-Input::KeyDown(Input::KEY_UP) + Input::KeyDown(Input::KEY_DOWN)),
     };
-
 
     // Normalise and apply move to velocity
     velocity += move.Normalise() * speed * Window::GetDeltaTime();
