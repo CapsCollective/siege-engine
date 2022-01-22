@@ -1,5 +1,6 @@
-#include "catch.hpp"
 #include <utils/String.h>
+
+#include "catch.hpp"
 
 TEST_CASE("strings can perform basic storage operations", "[String]")
 {

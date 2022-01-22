@@ -1,11 +1,13 @@
-#include "catch.hpp"
-#include <scene/SceneManager.h>
-#include <entity/EntityStorage.h>
 #include <entity/Entity.h>
+#include <entity/EntityStorage.h>
 #include <scene/SceneFile.h>
-#include <fstream>
+#include <scene/SceneManager.h>
+
 #include <filesystem>
+#include <fstream>
 #include <string>
+
+#include "catch.hpp"
 
 // Const declarations
 static constexpr const char* SCENE_DIR = "tests/data/";
@@ -22,16 +24,17 @@ std::string Filepath(const char* filename)
 bool FileExists(const std::string& dir)
 {
     namespace fs = std::filesystem;
-    fs::path f{ dir };
+    fs::path f {dir};
     return fs::exists(f);
 }
 
 std::string GetFileContent(const std::string& dir)
 {
     std::ifstream ifs(dir);
-    std::string content(
-            (std::istreambuf_iterator<char>(ifs)),
-            (std::istreambuf_iterator<char>()));
+    std::string content({
+        std::istreambuf_iterator<char>(ifs),
+        std::istreambuf_iterator<char>(),
+    });
     return content;
 }
 
@@ -44,20 +47,17 @@ public:
 
     TestEntity() : Entity(ENTITY_NAME) {}
 
-    explicit TestEntity(Xform transform) :
-        Entity(ENTITY_NAME, transform) {}
+    explicit TestEntity(Xform transform) : Entity(ENTITY_NAME, transform) {}
 };
 
 const std::string TestEntity::ENTITY_NAME("TestEntity");
 
-REGISTER_SERIALISATION_INTERFACE(TestEntity::ENTITY_NAME,
-        [](Entity* entity) -> std::string {
-            return "";
-        },
-        [](const EntityData& data, const std::vector<std::string>& args) -> Entity* {
-            return new TestEntity(Xform(data.position, data.rotation));
-        });
-
+REGISTER_SERIALISATION_INTERFACE(
+    TestEntity::ENTITY_NAME,
+    [](Entity* entity) -> std::string { return ""; },
+    [](const EntityData& data, const std::vector<std::string>& args) -> Entity* {
+        return new TestEntity(Xform(data.position, data.rotation));
+    });
 
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
@@ -107,7 +107,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         REQUIRE(content.empty());
     }
 
-    SECTION("when an empty string is passed into SaveScene, it should create a file called 'untitled.scene'")
+    SECTION("when an empty string is passed into SaveScene, it should create 'untitled.scene'")
     {
         SceneManager::SaveScene("");
         std::string filepath = Filepath(UNTITLED_FILE);
@@ -128,8 +128,7 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 
         SceneManager::NewScene();
 
-        SECTION("when a new scene is declared it should not immediately remove all entities but rather "
-                "wait until the end of frame to remove them")
+        SECTION("and wait until the end of frame to remove all others")
         {
             REQUIRE(EntityStorage::GetEntities().size() == 1);
             EntityStorage::FreeEntities();
@@ -143,7 +142,7 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 {
     ResourceManagerFacade::SetBaseDirectory(SCENE_DIR);
-    SECTION("when a scene is loaded from a populated file it should populate the EntityStorage correctly")
+    SECTION("when populated, it should populate the EntityStorage correctly")
     {
         SceneManager::QueueNextScene("scene1");
         SceneManager::LoadNextScene();
@@ -152,7 +151,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
         REQUIRE(EntityStorage::GetEntities().size() == 3);
     }
 
-    SECTION("when a new scene is queued it should not delete all entities until the end of the frame")
+    SECTION("when a new scene is queued it should not delete entities until the end of the frame")
     {
         SceneManager::QueueNextScene("scene2");
         REQUIRE(EntityStorage::GetEntities().size() == 3);
