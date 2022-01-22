@@ -1,36 +1,28 @@
 #ifndef A_DARK_DISCOMFORT_MATHS_H
 #define A_DARK_DISCOMFORT_MATHS_H
 
-#include "Macros.h"
-#include <string>
 #include <cmath>
+#include <string>
+
+#include "Macros.h"
 
 // Define macros
 
 #define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType& operator op(const rhsType& rhs) \
-    { \
-        body(op, SEMICOLON) \
-        return *this; \
+    lhsType& operator op(const rhsType& rhs)        \
+    {                                               \
+        body(op, SEMICOLON) return *this;           \
     }
 
 #define DEFINE_CONST_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType operator op(const rhsType& rhs) const \
-    { \
-        return { \
-            body(op, COMMA) \
-        }; \
+    lhsType operator op(const rhsType& rhs) const         \
+    {                                                     \
+        return {body(op, COMMA)};                         \
     }
 
-#define VEC_OPERATOR_BODY_VEC(op, sep) \
-    x op rhs.x sep \
-    y op rhs.y sep \
-    z op rhs.z sep
+#define VEC_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep
 
-#define VEC_OPERATOR_BODY_FLOAT(op, sep) \
-    x op rhs sep \
-    y op rhs sep \
-    z op rhs sep
+#define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
 
 struct Vec3
 {
@@ -44,15 +36,9 @@ struct Vec3
 
     // 'Structors
 
-    Vec3() :
-        Vec3(0.f, 0.f, 0.f)
-    {}
+    Vec3() : Vec3(0.f, 0.f, 0.f) {}
 
-    Vec3(float x, float y, float z) :
-        x(x),
-        y(y),
-        z(z)
-    {}
+    Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
     // Operator overloads
 
@@ -84,22 +70,22 @@ struct Vec3
 
     float Length() const
     {
-        return sqrtf(x*x + y*y + z*z);
+        return sqrtf(x * x + y * y + z * z);
     }
 
     Vec3 XComp() const
     {
-        return {x,0.f,0.f};
+        return {x, 0.f, 0.f};
     }
 
     Vec3 YComp() const
     {
-        return {0.f, y,0.f};
+        return {0.f, y, 0.f};
     }
 
     Vec3 ZComp() const
     {
-        return {0.f,0.f,z};
+        return {0.f, 0.f, z};
     }
 
     // Public members
@@ -113,17 +99,11 @@ struct Xform
 {
 public:
 
-    Xform() :
-        Xform(Vec3::Zero)
-    {}
+    Xform() : Xform(Vec3::Zero) {}
 
-    explicit Xform(Vec3 position) :
-        Xform(position, 0.f)
-    {}
+    explicit Xform(Vec3 position) : Xform(position, 0.f) {}
 
-    Xform(Vec3 position, float rotation) :
-        Xform(position, rotation, Vec3::One)
-    {}
+    Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One) {}
 
     Xform(Vec3 position, float rotation, Vec3 scale) :
         position(position),
@@ -172,14 +152,9 @@ struct BoundedBox
 {
     // 'Structors
 
-    BoundedBox() :
-        BoundedBox(Vec3(), Vec3())
-    {}
+    BoundedBox() : BoundedBox(Vec3(), Vec3()) {}
 
-    BoundedBox(Vec3 min, Vec3 max) :
-        min(min),
-        max(max)
-    {}
+    BoundedBox(Vec3 min, Vec3 max) : min(min), max(max) {}
 
     // Public methods
 
@@ -197,14 +172,9 @@ struct RayCast
 {
     // 'Structors
 
-    RayCast() :
-        RayCast(Vec3(), Vec3())
-    {}
+    RayCast() : RayCast(Vec3(), Vec3()) {}
 
-    RayCast(Vec3 position, Vec3 direction) :
-        position(position),
-        direction(direction)
-    {}
+    RayCast(Vec3 position, Vec3 direction) : position(position), direction(direction) {}
 
     // Public members
 
@@ -212,4 +182,4 @@ struct RayCast
     Vec3 direction;
 };
 
-#endif //A_DARK_DISCOMFORT_MATHS_H
+#endif // A_DARK_DISCOMFORT_MATHS_H

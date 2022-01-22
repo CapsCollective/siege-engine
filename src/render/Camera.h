@@ -24,8 +24,6 @@ public:
     void SetTarget(const Vec3& target);
 
 private:
-
 };
 
-
-#endif //A_DARK_DISCOMFORT_CAMERA_H
+#endif // A_DARK_DISCOMFORT_CAMERA_H

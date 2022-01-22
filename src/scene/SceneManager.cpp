@@ -1,8 +1,10 @@
-#include "../resource/ResourceManager.h"
-#include "SceneFile.h"
 #include "SceneManager.h"
-#include "../utils/Logging.h"
+
 #include <vector>
+
+#include "../resource/ResourceManager.h"
+#include "../utils/Logging.h"
+#include "SceneFile.h"
 
 // Define constants
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
@@ -71,4 +73,3 @@ void SceneManager::ClearScene()
     // Clear out all resources
     ResourceManager::ClearResources();
 }
-

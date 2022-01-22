@@ -16,4 +16,4 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#endif //A_DARK_DISCOMFORT_MACROS_H
+#endif // A_DARK_DISCOMFORT_MACROS_H

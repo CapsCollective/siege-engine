@@ -6,6 +6,7 @@
 class ResourceManagerFacade
 {
 public:
+
     static void FreeResources();
 
     static void SetBaseDirectory(const std::string& dir);
@@ -13,4 +14,4 @@ public:
     static const std::string& GetBaseDirectory();
 };
 
-#endif //A_DARK_DISCOMFORT_RESOURCEMANAGERFACADE_H
+#endif // A_DARK_DISCOMFORT_RESOURCEMANAGERFACADE_H

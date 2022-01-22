@@ -1,4 +1,5 @@
 #include "RenderSystem.h"
+
 #include "../resource/ResourceManager.h"
 #include "../utils/TransitionAdapter.h"
 
@@ -31,10 +32,18 @@ void RenderSystem::DrawFrame()
         SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);
 
         // Draw the model
-        DrawModelEx(model, FromVec3(item.transform.GetPosition()), FromVec3(Vec3::Up),
-                    item.transform.GetRotation(), FromVec3(item.transform.GetScale()), WHITE);
-        DrawModelWiresEx(model, FromVec3(item.transform.GetPosition()), FromVec3(Vec3::Up),
-                         item.transform.GetRotation(), FromVec3(item.transform.GetScale()), PINK);
+        DrawModelEx(model,
+                    FromVec3(item.transform.GetPosition()),
+                    FromVec3(Vec3::Up),
+                    item.transform.GetRotation(),
+                    FromVec3(item.transform.GetScale()),
+                    WHITE);
+        DrawModelWiresEx(model,
+                         FromVec3(item.transform.GetPosition()),
+                         FromVec3(Vec3::Up),
+                         item.transform.GetRotation(),
+                         FromVec3(item.transform.GetScale()),
+                         PINK);
     }
 }
 
@@ -44,7 +53,11 @@ void RenderSystem::Remove(Entity* entity)
     if (it != renderItems.end()) renderItems.erase(it);
 }
 
-void RenderSystem::DrawText2D(const std::string& text, int posX, int posY, int fontSize, Colour color)
+void RenderSystem::DrawText2D(const std::string& text,
+                              int posX,
+                              int posY,
+                              int fontSize,
+                              Colour color)
 {
     DrawText(text.c_str(), posX, posY, fontSize, FromColour(color));
 }

@@ -2,6 +2,7 @@
 #define A_DARK_DISCOMFORT_WINDOW_H
 
 #include <string>
+
 #include "../utils/Colour.h"
 
 class Window
@@ -39,8 +40,6 @@ private:
     Colour backgroundColour;
 
     static float deltaTime;
-
 };
 
-
-#endif //A_DARK_DISCOMFORT_WINDOW_H
+#endif // A_DARK_DISCOMFORT_WINDOW_H

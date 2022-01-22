@@ -1,9 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_TRANSITIONADAPTER_H
 #define A_DARK_DISCOMFORT_TRANSITIONADAPTER_H
 
-#include "Maths.h"
-#include "Colour.h"
 #include <raylib/Vector3.hpp>
+
+#include "Colour.h"
+#include "Maths.h"
 
 // Raylib conversions
 
@@ -25,4 +26,4 @@ Colour ToColour(Color color);
 
 Color FromColour(Colour color);
 
-#endif //A_DARK_DISCOMFORT_TRANSITIONADAPTER_H
+#endif // A_DARK_DISCOMFORT_TRANSITIONADAPTER_H

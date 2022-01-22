@@ -1,8 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
 #define A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
 
-#include "../entity/Entity.h"
 #include <vector>
+
+#include "../entity/Entity.h"
 
 class CollisionSystem
 {
@@ -64,5 +65,4 @@ private:
     static std::vector<Entity*> removedEntities;
 };
 
-
-#endif //A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
+#endif // A_DARK_DISCOMFORT_COLLISIONSYSTEM_H

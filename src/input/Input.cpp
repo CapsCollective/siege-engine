@@ -1,6 +1,8 @@
 #include "Input.h"
-#include "../utils/TransitionAdapter.h"
+
 #include <raylib/raylib-cpp.hpp>
+
+#include "../utils/TransitionAdapter.h"
 
 bool Input::KeyDown(KeyboardKey key)
 {
