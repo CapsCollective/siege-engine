@@ -1,10 +1,11 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYSTORAGE_H
 #define A_DARK_DISCOMFORT_ENTITYSTORAGE_H
 
-#include "IndexAllocator.h"
 #include <vector>
 
-class EntityStorage 
+#include "IndexAllocator.h"
+
+class EntityStorage
 {
 public:
 
@@ -28,13 +29,19 @@ public:
      * Returns packed game entities (for iteration purposes)
      * @return a reference to the vector of packed game entities
      */
-    static const std::vector<Entity*>& GetEntities() { return packedEntities; }
+    static const std::vector<Entity*>& GetEntities()
+    {
+        return packedEntities;
+    }
 
     /**
      * Returns packed tool entities (for iteration purposes)
      * @return a reference to the vector of packed tool entities
      */
-    static const std::vector<Entity*>& GetTools() { return packedTools; }
+    static const std::vector<Entity*>& GetTools()
+    {
+        return packedTools;
+    }
 
     /**
      * Queues an entity for freeing at the end of the frame
@@ -157,4 +164,4 @@ private:
     static std::vector<std::pair<Entity*, bool>> registeredEntities;
 };
 
-#endif //A_DARK_DISCOMFORT_ENTITYSTORAGE_H
+#endif // A_DARK_DISCOMFORT_ENTITYSTORAGE_H

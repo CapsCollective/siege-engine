@@ -1,8 +1,10 @@
+#include "Entity.h"
+
+#include <cmath>
+#include <utility>
+
 #include "../utils/Logging.h"
 #include "EntityStorage.h"
-#include "Entity.h"
-#include <utility>
-#include <cmath>
 
 // Static member initialisation
 const std::string Entity::ENTITY_NAME("Entity");
@@ -15,7 +17,6 @@ Entity::Entity(const std::string& name, const Xform& transform, int zIndex) :
 {
     CC_LOG_INFO("Registered {} at ({})", GetName(), GetIndex());
 }
-
 
 BoundedBox Entity::GetBoundingBox() const
 {

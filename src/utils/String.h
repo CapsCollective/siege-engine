@@ -1,9 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_STRING_H
 #define A_DARK_DISCOMFORT_STRING_H
 
-#include <utility>
 #include <string>
+#include <utility>
 #include <vector>
+
 #include "Macros.h"
 
 class String
@@ -24,29 +25,29 @@ public:
 
     // Operator overloads
 
-    bool operator ==(const String& rhs) const;
+    bool operator==(const String& rhs) const;
 
-    bool operator ==(const char* rhs) const;
+    bool operator==(const char* rhs) const;
 
-    bool operator !=(const String& rhs) const;
+    bool operator!=(const String& rhs) const;
 
-    bool operator !=(const char* rhs) const;
+    bool operator!=(const char* rhs) const;
 
-    String operator +(const String& rhs) const;
+    String operator+(const String& rhs) const;
 
-    String operator +(const char* rhs) const;
+    String operator+(const char* rhs) const;
 
-    String& operator =(const String& rhs);
+    String& operator=(const String& rhs);
 
-    String& operator =(String&& rhs) noexcept;
+    String& operator=(String&& rhs) noexcept;
 
-    String& operator =(const char* rhs);
+    String& operator=(const char* rhs);
 
-    String& operator +=(const String& rhs);
+    String& operator+=(const String& rhs);
 
-    String& operator +=(const char* rhs);
+    String& operator+=(const char* rhs);
 
-    char& operator [](int index);
+    char& operator[](int index);
 
     // Conversion overloads
 
@@ -100,7 +101,7 @@ public:
 
     void Clear();
 
-    template <typename ...P>
+    template<typename... P>
     void Format(P&&... params)
     {
         size_t formatLen = std::snprintf(nullptr, 0, str, std::forward<P>(params)...);
@@ -122,9 +123,8 @@ private:
 
 // Reversed operator overloads
 
-bool operator ==(const char* lhs, const String& rhs);
+bool operator==(const char* lhs, const String& rhs);
 
-String operator +(const char* lhs, const String& rhs);
+String operator+(const char* lhs, const String& rhs);
 
-
-#endif //A_DARK_DISCOMFORT_STRING_H
+#endif // A_DARK_DISCOMFORT_STRING_H

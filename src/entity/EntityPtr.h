@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYPTR_H
 #define A_DARK_DISCOMFORT_ENTITYPTR_H
 
-#include "EntityStorage.h"
 #include "Entity.h"
+#include "EntityStorage.h"
 
 template<class E>
 class EntityPtr
@@ -16,8 +16,7 @@ public:
      * the entity pointer object
      * @param pointer - a pointer to an entity object
      */
-    explicit EntityPtr(E* pointer) :
-        pointer(pointer)
+    explicit EntityPtr(E* pointer) : pointer(pointer)
     {
         static_assert(std::is_base_of_v<Entity, E>);
         if (pointer) index = pointer->GetIndex();
@@ -25,13 +24,13 @@ public:
 
     // Operator overloads
 
-    EntityPtr& operator =(EntityPtr* rhs)
+    EntityPtr& operator=(EntityPtr* rhs)
     {
         if (&rhs != this) Reset(rhs->Get());
         return *this;
     }
 
-    EntityPtr& operator =(E* rhs)
+    EntityPtr& operator=(E* rhs)
     {
         if (rhs != pointer) Reset(rhs);
         return *this;
@@ -42,17 +41,17 @@ public:
         return pointer && EntityStorage::IsLive(index);
     }
 
-    E* operator ->() const
+    E* operator->() const
     {
         return pointer;
     }
 
-    bool operator ==(Entity* rhs) const
+    bool operator==(Entity* rhs) const
     {
         return rhs == pointer;
     }
 
-    bool operator <(EntityPtr<Entity> rhs) const
+    bool operator<(EntityPtr<Entity> rhs) const
     {
         return pointer < rhs.pointer;
     }
@@ -106,4 +105,4 @@ private:
     GenerationalIndex index;
 };
 
-#endif //A_DARK_DISCOMFORT_ENTITYPTR_H
+#endif // A_DARK_DISCOMFORT_ENTITYPTR_H

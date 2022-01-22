@@ -1,4 +1,5 @@
 #include "Colour.h"
+
 #include "Maths.h"
 
 // Define static members

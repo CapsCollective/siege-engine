@@ -1,6 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_SCENEMANAGER_H
 #define A_DARK_DISCOMFORT_SCENEMANAGER_H
 
+#include <string>
+
 class SceneManager
 {
 public:
@@ -59,4 +61,4 @@ private:
     static std::string nextScene;
 };
 
-#endif //A_DARK_DISCOMFORT_SCENEMANAGER_H
+#endif // A_DARK_DISCOMFORT_SCENEMANAGER_H

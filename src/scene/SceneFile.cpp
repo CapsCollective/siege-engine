@@ -1,15 +1,16 @@
 #include "SceneFile.h"
-#include "../utils/StringHelpers.h"
-#include "../entity/Entity.h"
-#include "../utils/Logging.h"
-#include <iostream>
+
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 
-void SceneFile::RegisterSerialisable(
-        const std::string& name,
-        const Serialiser& serialise,
-        const Deserialiser& deserialise)
+#include "../entity/Entity.h"
+#include "../utils/Logging.h"
+#include "../utils/StringHelpers.h"
+
+void SceneFile::RegisterSerialisable(const std::string& name,
+                                     const Serialiser& serialise,
+                                     const Deserialiser& deserialise)
 {
     GetSerialisables().emplace(name, std::make_pair(serialise, deserialise));
 }
@@ -67,7 +68,8 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     return true;
 }
 
-void SceneFile::DeserialiseFromStrings(const std::vector<std::string>& lines, std::vector<Entity*>& entities)
+void SceneFile::DeserialiseFromStrings(const std::vector<std::string>& lines,
+                                       std::vector<Entity*>& entities)
 {
     for (const std::string& line : lines) DeserialiseLine(line, entities);
 }
@@ -80,9 +82,9 @@ void SceneFile::DeserialiseLine(const std::string& line, std::vector<Entity*>& e
 
     // Get standard entity fields
     EntityData data = {
-            StringHelpers::StringToVector(args[ENTITY_POS]),
-            std::stof(args[ENTITY_ROT]),
-            std::stoi(args[ENTITY_Z_IDX])
+        StringHelpers::StringToVector(args[ENTITY_POS]),
+        std::stof(args[ENTITY_ROT]),
+        std::stoi(args[ENTITY_Z_IDX]),
     };
 
     // Check if the entity has a relevant serialisable interface registered

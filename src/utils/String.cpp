@@ -1,7 +1,7 @@
+#include "String.h"
+
 #include <cstdlib>
 #include <cstring>
-
-#include "String.h"
 
 static char* Allocate(const char* string)
 {
@@ -25,55 +25,48 @@ void String::Assign(const char* string)
     str = Allocate(string);
 }
 
-String::String() :
-    String("")
-{}
+String::String() : String("") {}
 
-String::String(const String& string) :
-    String(string.str)
-{}
+String::String(const String& string) : String(string.str) {}
 
-String::String(String&& string) noexcept :
-    str(string.str)
+String::String(String&& string) noexcept : str(string.str)
 {
     string.str = nullptr;
 }
 
-String::String(const char* string) :
-    str(Allocate(string))
-{}
+String::String(const char* string) : str(Allocate(string)) {}
 
 String::~String()
 {
     free(str);
 }
 
-bool String::operator ==(const String& rhs) const
+bool String::operator==(const String& rhs) const
 {
     return *this == rhs.str;
 }
 
-bool String::operator ==(const char* rhs) const
+bool String::operator==(const char* rhs) const
 {
     return strcmp(str, rhs) == 0;
 }
 
-bool String::operator !=(const String& rhs) const
+bool String::operator!=(const String& rhs) const
 {
     return *this != rhs.str;
 }
 
-bool String::operator !=(const char* rhs) const
+bool String::operator!=(const char* rhs) const
 {
     return !(*this == rhs);
 }
 
-String String::operator +(const String& rhs) const
+String String::operator+(const String& rhs) const
 {
     return *this + (const char*) rhs.str;
 }
 
-String String::operator +(const char* rhs) const
+String String::operator+(const char* rhs) const
 {
     size_t lhsLength = strlen(str);
     size_t rhsLength = strlen(rhs);
@@ -85,32 +78,32 @@ String String::operator +(const char* rhs) const
     return cstr;
 }
 
-String& String::operator =(const String& rhs)
+String& String::operator=(const String& rhs)
 {
     if (this != &rhs) Assign(rhs);
     return *this;
 }
 
-String& String::operator =(String&& rhs) noexcept
+String& String::operator=(String&& rhs) noexcept
 {
     str = rhs.str;
     rhs.str = nullptr;
     return *this;
 }
 
-String& String::operator =(const char* rhs)
+String& String::operator=(const char* rhs)
 {
     Assign(rhs);
     return *this;
 }
 
-String& String::operator +=(const String& rhs)
+String& String::operator+=(const String& rhs)
 {
     Append(rhs);
     return *this;
 }
 
-String& String::operator +=(const char* rhs)
+String& String::operator+=(const char* rhs)
 {
     Append(rhs);
     return *this;
@@ -245,7 +238,8 @@ std::vector<String> String::Split(const char* delimiters) const
     // Iterate over the string while there is still a delimiter
     std::vector<String> strings;
     char* substr = strtok(string, delimiters);
-    do {
+    do
+    {
         strings.emplace_back(substr);
     } while ((substr = strtok(nullptr, delimiters)) != nullptr);
     return strings;
@@ -338,12 +332,12 @@ void String::Clear()
     Assign("");
 }
 
-bool operator ==(const char* lhs, const String& rhs)
+bool operator==(const char* lhs, const String& rhs)
 {
     return rhs == lhs;
 }
 
-String operator +(const char* lhs, const String& rhs)
+String operator+(const char* lhs, const String& rhs)
 {
     size_t lhsLength = strlen(lhs);
     size_t rhsLength = strlen(rhs.AsChar());
@@ -355,7 +349,7 @@ String operator +(const char* lhs, const String& rhs)
     return {cstr};
 }
 
-String operator +=(const char* lhs, const String& rhs)
+String operator+=(const char* lhs, const String& rhs)
 {
     return lhs + rhs;
 }

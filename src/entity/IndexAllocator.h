@@ -1,21 +1,21 @@
 #ifndef A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 #define A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 
-#include <vector>
 #include <cstdint>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <vector>
 
 // Utility Structs
 // TODO document this class
 
-struct IndexEntry 
+struct IndexEntry
 {
     bool live = false;
     uint32_t generation = 0;
 };
 
-struct GenerationalIndex 
+struct GenerationalIndex
 {
     size_t index = 0;
     uint32_t generation = 0;
@@ -30,7 +30,7 @@ struct GenerationalIndex
 
 bool operator==(GenerationalIndex&, GenerationalIndex&);
 
-class IndexAllocator 
+class IndexAllocator
 {
 public:
 
@@ -48,7 +48,7 @@ public:
 
     void Deallocate(GenerationalIndex);
 
-    IndexEntry& operator[] (GenerationalIndex);
+    IndexEntry& operator[](GenerationalIndex);
 
 private:
 
@@ -61,5 +61,4 @@ private:
     uint32_t currentEntities = 0;
 };
 
-
-#endif //A_DARK_DISCOMFORT_INDEXALLOCATOR_H
+#endif // A_DARK_DISCOMFORT_INDEXALLOCATOR_H

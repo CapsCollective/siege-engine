@@ -1,5 +1,6 @@
-#include <algorithm>
 #include "CollisionSystem.h"
+
+#include <algorithm>
 
 // Define static members
 // TODO make storage use an octree for improved performance

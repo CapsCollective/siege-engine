@@ -1,6 +1,8 @@
 #include "Window.h"
-#include <raylib/Window.hpp>
+
 #include <chrono>
+#include <raylib/Window.hpp>
+
 #include "../utils/TransitionAdapter.h"
 
 static std::string windowTitle;
@@ -15,8 +17,7 @@ static raylib::Window& GetWindow()
     return window;
 }
 
-Window::Window(const std::string& title, int width, int height) :
-        backgroundColour(245, 245, 245)
+Window::Window(const std::string& title, int width, int height) : backgroundColour(245, 245, 245)
 {
     // TODO fix this ugly workaround
     windowTitle = title;

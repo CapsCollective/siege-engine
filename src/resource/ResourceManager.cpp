@@ -1,5 +1,6 @@
-#include <vector>
 #include "ResourceManager.h"
+
+#include <vector>
 
 // Static member initialisation
 std::map<std::string, Model> ResourceManager::models;

@@ -1,12 +1,13 @@
 #ifndef A_DARK_DISCOMFORT_RENDERSYSTEM_H
 #define A_DARK_DISCOMFORT_RENDERSYSTEM_H
 
-#include "../utils/Maths.h"
-#include "../utils/Colour.h"
-#include "../entity/EntityPtr.h"
-#include <variant>
-#include <utility>
 #include <map>
+#include <utility>
+#include <variant>
+
+#include "../entity/EntityPtr.h"
+#include "../utils/Colour.h"
+#include "../utils/Maths.h"
 
 struct ModelData
 {
@@ -27,7 +28,6 @@ struct RenderItem
     const Xform& transform;
 };
 
-
 class RenderSystem
 {
 public:
@@ -44,8 +44,6 @@ public:
 
     static void DrawRectangle2D(int posX, int posY, int width, int height, Colour color);
 
-
-
 private:
 
     static std::map<EntityPtr<Entity>, RenderItem> renderItems;
@@ -53,5 +51,4 @@ private:
     static std::map<EntityPtr<Entity>, class RenderItem2D> renderItems2D;
 };
 
-
-#endif //A_DARK_DISCOMFORT_RENDERSYSTEM_H
+#endif // A_DARK_DISCOMFORT_RENDERSYSTEM_H

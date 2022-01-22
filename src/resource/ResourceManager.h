@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_RESOURCEMANAGER_H
 #define A_DARK_DISCOMFORT_RESOURCEMANAGER_H
 
-#include <raylib/raylib-cpp.hpp>
 #include <map>
+#include <raylib/raylib-cpp.hpp>
 #include <vector>
 
 class ResourceManager
@@ -98,4 +98,4 @@ private:
     static std::string baseDir;
 };
 
-#endif //A_DARK_DISCOMFORT_RESOURCEMANAGER_H
+#endif // A_DARK_DISCOMFORT_RESOURCEMANAGER_H

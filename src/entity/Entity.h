@@ -1,10 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
+#include "../utils/Maths.h"
+#include "EntityPtr.h"
 #include "IndexAllocator.h"
 #include "string"
-#include "EntityPtr.h"
-#include "../utils/Maths.h"
 
 /**
  * The base entity class for game objects and tool
@@ -23,9 +23,7 @@ public:
      * Zero-param constructor for Entity, initialises both
      * position and rotation to zero, and name to "Entity"
      */
-    Entity() :
-        Entity(ENTITY_NAME)
-    {};
+    Entity() : Entity(ENTITY_NAME) {};
 
     /**
      * Single-param constructor for Entity that simply defines
@@ -33,9 +31,7 @@ public:
      * @param name - a const reference to the name of the
      *               entity as a string
      */
-    Entity(const std::string& name) :
-        Entity(name, {Vec3::Zero, 0.f})
-    {};
+    Entity(const std::string& name) : Entity(name, {Vec3::Zero, 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
@@ -218,4 +214,4 @@ private:
     int zIndex;
 };
 
-#endif //A_DARK_DISCOMFORT_ENTITY_H
+#endif // A_DARK_DISCOMFORT_ENTITY_H
