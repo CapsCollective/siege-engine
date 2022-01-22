@@ -1,5 +1,6 @@
-#include <render/RenderSystem.h>
 #include "MessageDisplay.h"
+
+#include <render/RenderSystem.h>
 
 void MessageDisplay::OnDraw2D()
 {
@@ -11,7 +12,7 @@ void MessageDisplay::OnDraw2D()
     }
 }
 
-void MessageDisplay::DisplayMessage(const std::string &message, float time)
+void MessageDisplay::DisplayMessage(const std::string& message, float time)
 {
     displayMessage = message;
     displayTime = time;

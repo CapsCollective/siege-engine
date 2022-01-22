@@ -1,8 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_GEOMETRY_H
 #define A_DARK_DISCOMFORT_GEOMETRY_H
 
-#include <render/RenderSystem.h>
 #include <entity/Entity.h>
+#include <render/RenderSystem.h>
+
 #include <utility>
 
 class Geometry : public Entity
@@ -15,19 +16,15 @@ public:
 
     // 'Structors
 
-    Geometry() :
-        Geometry({Vec3::Zero, 0.f})
-    {};
+    Geometry() : Geometry({Vec3::Zero, 0.f}) {};
 
     explicit Geometry(const Xform& transform) :
-        Geometry(transform,"models/cube/cube.obj","models/cube/cube.png")
-    {};
+        Geometry(transform, "models/cube/cube.obj", "models/cube/cube.png") {};
 
     Geometry(const Xform& transform, std::string modelPath, std::string texturePath) :
         Entity(ENTITY_NAME, transform),
         modelPath(std::move(modelPath)),
-        texturePath(std::move(texturePath))
-    {};
+        texturePath(std::move(texturePath)) {};
 
     // Public overrides
 
@@ -54,7 +51,6 @@ private:
     // Private fields
 
     std::string modelPath, texturePath;
-
 };
 
-#endif //A_DARK_DISCOMFORT_GEOMETRY_H
+#endif // A_DARK_DISCOMFORT_GEOMETRY_H

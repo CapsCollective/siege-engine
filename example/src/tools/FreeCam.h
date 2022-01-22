@@ -1,8 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
-#include "../ServiceLocator.h"
 #include <entity/Entity.h>
+
+#include "../ServiceLocator.h"
 
 class FreeCam : public Entity
 {
@@ -39,5 +40,4 @@ private:
     Vec3 previousMousePosition;
 };
 
-
-#endif //A_DARK_DISCOMFORT_FREECAM_H
+#endif // A_DARK_DISCOMFORT_FREECAM_H

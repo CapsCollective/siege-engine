@@ -3,6 +3,7 @@
 
 #include <entity/Entity.h>
 #include <entity/EntityPtr.h>
+
 #include "../ServiceLocator.h"
 
 class DevConsole : public Entity
@@ -14,8 +15,7 @@ public:
     explicit DevConsole(bool isEditorMode) :
         isEditorMode(isEditorMode),
         isActive(false),
-        messageDisplay(ServiceLocator::GetMessageDisplay())
-    {};
+        messageDisplay(ServiceLocator::GetMessageDisplay()) {};
 
 protected:
 
@@ -44,7 +44,6 @@ private:
     std::string lastInput;
 
     EntityPtr<MessageDisplay> messageDisplay;
-
 };
 
-#endif //A_DARK_DISCOMFORT_DEVCONSOLE_H
+#endif // A_DARK_DISCOMFORT_DEVCONSOLE_H

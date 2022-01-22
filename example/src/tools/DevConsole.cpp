@@ -1,12 +1,15 @@
 #include "DevConsole.h"
-#include "MessageDisplay.h"
+
+#include <input/Input.h>
+#include <render/RenderSystem.h>
+#include <render/Window.h>
 #include <scene/SceneManager.h>
 #include <utils/StringHelpers.h>
-#include "EditorController.h"
+
 #include <stdexcept>
-#include <input/Input.h>
-#include <render/Window.h>
-#include <render/RenderSystem.h>
+
+#include "EditorController.h"
+#include "MessageDisplay.h"
 
 void DevConsole::OnUpdate()
 {
@@ -86,7 +89,10 @@ void DevConsole::OnUpdate()
                 {
                     messageDisplay->DisplayMessage("Added entity to scene");
                 }
-                else messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
+                else
+                {
+                    messageDisplay->DisplayMessage("Error: Cannot add entity \"" + argument + "\"");
+                }
             }
         }
         else if (command == "setpos")
@@ -105,11 +111,13 @@ void DevConsole::OnUpdate()
                 }
                 catch (const std::invalid_argument& err)
                 {
-                    messageDisplay->DisplayMessage("Error: Invalid type of Vector3 components, should be float");
+                    messageDisplay->DisplayMessage(
+                        "Error: Invalid type of Vector3 components, should be float");
                 }
                 catch (const std::length_error& err)
                 {
-                    messageDisplay->DisplayMessage("Error: Invalid number of Vector3 components, should be 3");
+                    messageDisplay->DisplayMessage(
+                        "Error: Invalid number of Vector3 components, should be 3");
                 }
             }
         }
@@ -132,7 +140,7 @@ void DevConsole::OnUpdate()
                 }
             }
         }
-        else messageDisplay->DisplayMessage("Error: unknown command \"" + command +  "\"");
+        else messageDisplay->DisplayMessage("Error: unknown command \"" + command + "\"");
 
         // Deactivate the console
         isActive = false;
@@ -160,6 +168,9 @@ bool DevConsole::CheckEditorMode()
 
 bool DevConsole::CheckArgs(const std::string& command, const std::string& args)
 {
-    if (args.empty()) messageDisplay->DisplayMessage("Error: missing argument for " + command +  " command");
+    if (args.empty())
+    {
+        messageDisplay->DisplayMessage("Error: missing argument for " + command + " command");
+    }
     return !args.empty();
 }

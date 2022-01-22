@@ -14,15 +14,12 @@ public:
 
     // 'Structors
 
-    Player() :
-        Player({Vec3::Zero, 0.f})
-    {};
+    Player() : Player({Vec3::Zero, 0.f}) {};
 
     explicit Player(const Xform& transform) :
         Entity(ENTITY_NAME, transform),
         speed(1.5f),
-        velocity(Vec3::Zero)
-    {};
+        velocity(Vec3::Zero) {};
 
     // Public overrides
 
@@ -47,7 +44,6 @@ private:
     float speed;
 
     Vec3 velocity;
-
 };
 
-#endif //A_DARK_DISCOMFORT_PLAYER_H
+#endif // A_DARK_DISCOMFORT_PLAYER_H
