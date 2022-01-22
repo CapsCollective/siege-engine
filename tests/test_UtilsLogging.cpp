@@ -7,19 +7,19 @@
 
 TEST_CASE("messages can be formatted correctly", "[Logging]")
 {
-    SECTION("when given the correct number of replacement points and values it should format correctly")
+    SECTION("when given the correct number of points and values it should format correctly")
     {
         Logging::VariantContainer vc[] {1, "$$", 17.3, 1.2f, Vec3::Zero};
-        std::string fmt = "This {} is {} very {} well {} formatted {}!";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
-        REQUIRE(fmt == "This 1 is $$ very 17.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
+        std::string fmt = "{} is {} very {} well {} formatted {}!";
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
+        REQUIRE(fmt == "1 is $$ very 17.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
     }
 
     SECTION("when given too few replacement points for values it should only use those it can fit")
     {
         Logging::VariantContainer vc[] {"hello", 17.3, "$$"};
         std::string fmt = "This {} is {} too short!";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt == "This hello is 17.300000 too short!");
     }
 
@@ -27,7 +27,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
     {
         Logging::VariantContainer vc[] {1, "__!", 17.3, 1.2f};
         std::string fmt = "{}This {}{} too short!{}";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt == "1This __!17.300000 too short!1.200000");
     }
 
@@ -35,15 +35,15 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
     {
         Logging::VariantContainer vc[] {"{}"};
         std::string fmt = "Simple {} format!";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt == "Simple {} format!");
     }
 
-    SECTION("when given too many replacement points for values it should leave the rest of the message alone")
+    SECTION("when given too many points for values it should leave the rest of the message alone")
     {
         Logging::VariantContainer vc[] {"foo"};
         std::string fmt = "This {} is {} too many!";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt == "This foo is {} too many!");
     }
 
@@ -51,7 +51,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
     {
         Logging::VariantContainer vc[] {"foo", 23};
         std::string fmt;
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt.empty());
     }
 
@@ -59,7 +59,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
     {
         Logging::VariantContainer vc[] {"", "..."};
         std::string fmt = "Almost t{}oo quiet{}";
-        Logging::VariantFormat(fmt, vc, sizeof(vc)/sizeof(Logging::VariantContainer));
+        Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
         REQUIRE(fmt == "Almost too quiet...");
     }
 }

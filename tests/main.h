@@ -4,4 +4,4 @@
 // Tell Catch to provide a main method
 #define CATCH_CONFIG_MAIN
 
-#endif //A_DARK_DISCOMFORT_MAIN_H
+#endif // A_DARK_DISCOMFORT_MAIN_H

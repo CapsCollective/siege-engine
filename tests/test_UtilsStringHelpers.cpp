@@ -1,5 +1,5 @@
-#include "catch.hpp"
 #include "../src/utils/StringHelpers.h"
+#include "catch.hpp"
 
 TEST_CASE("strings can be converted into vectors", "[StringHelpers]")
 {
@@ -39,7 +39,7 @@ TEST_CASE("strings can be converted into vectors", "[StringHelpers]")
         }
     }
 
-    SECTION("when a string with non numeric characters is passed in it should throw an invalid_argument exception")
+    SECTION("when non numeric characters are passed in it should throw invalid_argument exception")
     {
         REQUIRE_THROWS_AS(StringHelpers::StringToVector("blah,3.27,BREAK"), std::invalid_argument);
     }
@@ -87,20 +87,20 @@ TEST_CASE("strings can be split by a delimiter", "[StringHelpers]")
 
         SECTION("it should append an empty string to the end if a delimiter is at the end")
         {
-            std::vector<std::string> results = StringHelpers::SplitString( str + '+', '+');
+            std::vector<std::string> results = StringHelpers::SplitString(str + '+', '+');
             REQUIRE(results.size() == 4);
             REQUIRE(results[3].empty());
         }
 
         SECTION("it should return an empty vector if an empty string is passed in")
         {
-            std::vector<std::string> results = StringHelpers::SplitString( "", '+');
+            std::vector<std::string> results = StringHelpers::SplitString("", '+');
             REQUIRE(results.empty());
         }
 
         SECTION("it should return the original string if an empty delimiter is passed in")
         {
-            std::vector<std::string> results = StringHelpers::SplitString( "blah&bleh", '\0');
+            std::vector<std::string> results = StringHelpers::SplitString("blah&bleh", '\0');
             REQUIRE(results.size() == 1);
             REQUIRE(results[0] == "blah&bleh");
         }
@@ -109,7 +109,7 @@ TEST_CASE("strings can be split by a delimiter", "[StringHelpers]")
 
 TEST_CASE("strings can be converted to lowercase", "[StringHelpers]")
 {
-    SECTION("when a string with uppercase characters is passed in it should return the same string in lower case")
+    SECTION("when uppercase characters are passed in it should return the same string as lower")
     {
         std::string lowercase = StringHelpers::LowercaseString("THIS IS AN UPPERCASE STRING");
         REQUIRE(lowercase == "this is an uppercase string");
