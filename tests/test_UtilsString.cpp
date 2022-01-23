@@ -14,7 +14,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             REQUIRE(s.Size() == 0);
             REQUIRE(s == "");
             REQUIRE("" == s);
-            REQUIRE(std::strcmp(s.AsChar(), "") == 0);
+            REQUIRE(std::strcmp(s.Str(), "") == 0);
         }
 
         SECTION("assigning via assignment operator should apply")
@@ -25,7 +25,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             REQUIRE(s.Size() == 5);
             REQUIRE(s == h);
             REQUIRE(h == s);
-            REQUIRE(std::strcmp(s.AsChar(), h.AsChar()) == 0);
+            REQUIRE(std::strcmp(s.Str(), h.Str()) == 0);
         }
 
         SECTION("assigning a c-string via assignment operator should apply")
@@ -35,7 +35,7 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
             REQUIRE(s.Size() == 5);
             REQUIRE(s == "hello");
             REQUIRE("hello" == s);
-            REQUIRE(std::strcmp(s.AsChar(), "hello") == 0);
+            REQUIRE(std::strcmp(s.Str(), "hello") == 0);
         }
     }
 
@@ -195,21 +195,28 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         s2.Prepend("goodbye");
         REQUIRE(s2 == "goodbyehellogoodbye");
         REQUIRE(s1 == "hello");
-        REQUIRE(s1 != "goodbyehello");
+        REQUIRE("goodbyehello" != s1);
         REQUIRE(s2.Size() == 19);
     }
 
     SECTION("the string should index its characters correctly")
     {
         String s1("abcdefg");
-        REQUIRE(s1.At(-1) == '\0');
+        REQUIRE(s1.At(-1) == 'g');
         REQUIRE(s1.At(0) == 'a');
+        REQUIRE(s1.At(1) == 'b');
         REQUIRE(s1.At(2) == 'c');
         REQUIRE(s1.At(6) == 'g');
         REQUIRE(s1.At(7) == '\0');
+        REQUIRE(s1.At(20) == '\0');
+        REQUIRE(s1.At(-4) == 'd');
+        REQUIRE(s1.At(-15) == '\0');
         REQUIRE(s1[0] == 'a');
         REQUIRE(s1[3] == 'd');
         REQUIRE(s1[6] == 'g');
+        REQUIRE(s1[-1] == 'g');
+        REQUIRE(s1[-3] == 'e');
+        REQUIRE(s1[-7] == 'a');
         s1[1] = 'z';
         REQUIRE(s1.At(1) == 'z');
     }
@@ -227,6 +234,18 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         s1 = "this is another string";
         s1.Erase(4, 11);
         REQUIRE(s1 == "this string");
+        s1.Erase(4, 11);
+        REQUIRE(!s1);
+        s1 = "four more strings! four more strings!";
+        s1.Erase(-19);
+        REQUIRE(s1 == "four more strings!");
+        s1.Erase(-13, 5);
+        REQUIRE(s1 == "four strings!");
+        s1.Erase(-14);
+        REQUIRE(!s1);
+        s1 = "last one";
+        s1.Erase(-1, 2);
+        REQUIRE(!s1);
     }
 
     SECTION("the string should handle insertions correctly")
@@ -242,6 +261,14 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         REQUIRE(s1 == "this is a short of a reasonable length");
         s1.Insert(38, ", really");
         REQUIRE(s1 == "this is a short of a reasonable length, really");
+        s1.Insert(-1, "!");
+        REQUIRE(s1 == "this is a short of a reasonable length, really!");
+        s1.Insert(-44, " string");
+        REQUIRE(s1 == "this string is a short of a reasonable length, really!");
+        s1.Insert(-55, "... ");
+        REQUIRE(s1 == "... this string is a short of a reasonable length, really!");
+        s1.Insert(-60, "this should not be inserted");
+        REQUIRE(s1 == "... this string is a short of a reasonable length, really!");
     }
 
     SECTION("the string should handle swaps correctly")
@@ -387,7 +414,11 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         REQUIRE(sub == "Is a MuCH SafEr lANgUagE...");
         sub = s.SubString(21, 8);
         REQUIRE(sub == "lANgUagE");
-        sub = s.SubString(-1);
+        sub = s.SubString(-3, 3);
+        REQUIRE(sub == "...");
+        sub = s.SubString(-32, 4);
+        REQUIRE(sub == "ruSt");
+        sub = s.SubString(-33, 5);
         REQUIRE(!sub);
         sub = s.SubString(0, -2);
         REQUIRE(!sub);

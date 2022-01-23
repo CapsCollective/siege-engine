@@ -41,6 +41,25 @@ String::~String()
     free(str);
 }
 
+String& String::operator=(const String& rhs)
+{
+    if (this != &rhs) Assign(rhs);
+    return *this;
+}
+
+String& String::operator=(String&& rhs) noexcept
+{
+    str = rhs.str;
+    rhs.str = nullptr;
+    return *this;
+}
+
+String& String::operator=(const char* rhs)
+{
+    Assign(rhs);
+    return *this;
+}
+
 bool String::operator==(const String& rhs) const
 {
     return *this == rhs.str;
@@ -78,25 +97,6 @@ String String::operator+(const char* rhs) const
     return cstr;
 }
 
-String& String::operator=(const String& rhs)
-{
-    if (this != &rhs) Assign(rhs);
-    return *this;
-}
-
-String& String::operator=(String&& rhs) noexcept
-{
-    str = rhs.str;
-    rhs.str = nullptr;
-    return *this;
-}
-
-String& String::operator=(const char* rhs)
-{
-    Assign(rhs);
-    return *this;
-}
-
 String& String::operator+=(const String& rhs)
 {
     Append(rhs);
@@ -107,6 +107,11 @@ String& String::operator+=(const char* rhs)
 {
     Append(rhs);
     return *this;
+}
+
+char& String::operator[](int index)
+{
+    return str[index < 0 ? strlen(str) + index : index];
 }
 
 String::operator bool() const
@@ -134,9 +139,71 @@ size_t String::Size() const
     return strlen(str);
 }
 
-const char* String::AsChar() const
+const char* String::Str() const
 {
     return str;
+}
+
+char String::At(int index) const
+{
+    index = index < 0 ? (int) Size() + index : index;
+    if (index < 0 || index >= Size()) return '\0';
+    return str[index];
+}
+
+size_t String::Find(const String& substring) const
+{
+    return Find(substring.str);
+}
+
+size_t String::Find(const char* substring) const
+{
+    char* pos = strstr(str, substring);
+    return pos != nullptr ? pos - str : -1;
+}
+
+size_t String::Find(const char& character) const
+{
+    char* pos = strchr(str, character);
+    return pos != nullptr ? pos - str : -1;
+}
+
+std::vector<String> String::Split(const char* delimiters) const
+{
+    if (IsEmpty()) return {};
+
+    // Copy over the internal string
+    char string[strlen(str)];
+    strcpy(string, str);
+
+    // Iterate over the string while there is still a delimiter
+    std::vector<String> strings;
+    char* substr = strtok(string, delimiters);
+    do
+    {
+        strings.emplace_back(substr);
+    } while ((substr = strtok(nullptr, delimiters)) != nullptr);
+    return strings;
+}
+
+String String::SubString(int startPos, size_t length) const
+{
+    // Perform boundary checking and set defaults
+    size_t strLen = Size();
+    startPos = startPos < 0 ? (int) strLen + startPos : startPos;
+    length = length == -1 ? strLen - startPos : length;
+    if (startPos >= strLen || (startPos + length) > strLen) return nullptr;
+
+    // Copy over the substring and return it
+    char subString[length];
+    strncpy(subString, str + startPos, length);
+    subString[length] = '\0'; // Manually add the null-termination char
+    return subString;
+}
+
+void String::Clear()
+{
+    Assign("");
 }
 
 void String::Append(const String& string)
@@ -175,32 +242,46 @@ void String::Prepend(const char* string)
     Assign(cstr);
 }
 
-char String::At(size_t index) const
+void String::Erase(int startPos, size_t length)
 {
-    if (index < 0 || index >= Size()) return '\0';
-    return str[index];
+    // Perform boundary checking and set defaults
+    size_t strLen = Size();
+    startPos = startPos < 0 ? (int) strLen + startPos : startPos;
+    length = length == -1 ? strLen - startPos : length;
+    if (startPos < 0 || (startPos + length) > strLen)
+    {
+        Assign(nullptr);
+        return;
+    }
+
+    // Copy over the non-erased portions and assign it
+    char newStr[strLen - length];
+    strncpy(newStr, str, startPos);
+    strcpy(newStr + startPos, str + startPos + length);
+    Assign(newStr);
 }
 
-char& String::operator[](int index)
+void String::Swap(String& string)
 {
-    return str[index];
+    char* tmp = str;
+    str = string.str;
+    string.str = tmp;
 }
 
-size_t String::Find(const String& string) const
+void String::Insert(int pos, const char* string)
 {
-    return Find(string.str);
-}
+    // Perform boundary and input checking
+    size_t strLen = Size();
+    pos = pos < 0 ? (int) strLen + pos + 1 : pos;
+    if (!string || pos > strLen || pos < 0) return;
+    size_t insLength = strlen(string);
 
-size_t String::Find(const char* string) const
-{
-    char* pos = strstr(str, string);
-    return pos != nullptr ? pos - str : -1;
-}
-
-size_t String::Find(const char& character) const
-{
-    char* pos = strchr(str, character);
-    return pos != nullptr ? pos - str : -1;
+    // Copy over the non-erased portions and assign it
+    char newStr[strLen + insLength];
+    strncpy(newStr, str, pos);
+    strncpy(newStr + pos, string, insLength);
+    strcpy(newStr + pos + insLength, str + pos);
+    Assign(newStr);
 }
 
 bool String::Replace(const char* toReplace, const char* replacement)
@@ -227,24 +308,6 @@ bool String::Replace(const char* toReplace, const char* replacement)
     return true;
 }
 
-std::vector<String> String::Split(const char* delimiters) const
-{
-    if (IsEmpty()) return {};
-
-    // Copy over the internal string
-    char string[strlen(str)];
-    strcpy(string, str);
-
-    // Iterate over the string while there is still a delimiter
-    std::vector<String> strings;
-    char* substr = strtok(string, delimiters);
-    do
-    {
-        strings.emplace_back(substr);
-    } while ((substr = strtok(nullptr, delimiters)) != nullptr);
-    return strings;
-}
-
 void String::ToUpper()
 {
     for (int i = 0; str[i]; ++i) str[i] = (char) toupper(str[i]);
@@ -253,20 +316,6 @@ void String::ToUpper()
 void String::ToLower()
 {
     for (int i = 0; str[i]; ++i) str[i] = (char) tolower(str[i]);
-}
-
-String String::SubString(size_t startPos, size_t length) const
-{
-    // Perform boundary checking and set defaults
-    size_t strLen = Size();
-    if (length == -1) length = strLen - startPos;
-    if (startPos >= strLen || (startPos + length) > strLen) return nullptr;
-
-    // Copy over the substring and return it
-    char subString[length];
-    strncpy(subString, str + startPos, length);
-    subString[length] = '\0'; // Manually add the null-termination char
-    return subString;
 }
 
 bool String::GetLine(String& line)
@@ -287,69 +336,24 @@ bool String::GetLine(String& line)
     }
 }
 
-void String::Erase(size_t startPos, size_t length)
-{
-    // Perform boundary checking and set defaults
-    size_t strLen = Size();
-    if (length == -1) length = strLen - startPos;
-    if (startPos >= strLen || (startPos + length) > strLen)
-    {
-        Assign(nullptr);
-        return;
-    }
-
-    // Copy over the non-erased portions and assign it
-    char newStr[strLen - length];
-    strncpy(newStr, str, startPos);
-    strcpy(newStr + startPos, str + startPos + length);
-    Assign(newStr);
-}
-
-void String::Insert(size_t pos, const char* string)
-{
-    // Perform boundary and input checking
-    size_t strLen = Size();
-    if (!string || pos > strLen) return;
-    size_t insLength = strlen(string);
-
-    // Copy over the non-erased portions and assign it
-    char newStr[strLen + insLength];
-    strncpy(newStr, str, pos);
-    strncpy(newStr + pos, string, insLength);
-    strcpy(newStr + pos + insLength, str + pos);
-    Assign(newStr);
-}
-
-void String::Swap(String& string)
-{
-    char* tmp = str;
-    str = string.str;
-    string.str = tmp;
-}
-
-void String::Clear()
-{
-    Assign("");
-}
-
 bool operator==(const char* lhs, const String& rhs)
 {
     return rhs == lhs;
 }
 
+bool operator!=(const char* lhs, const String& rhs)
+{
+    return rhs != lhs;
+}
+
 String operator+(const char* lhs, const String& rhs)
 {
     size_t lhsLength = strlen(lhs);
-    size_t rhsLength = strlen(rhs.AsChar());
+    size_t rhsLength = strlen(rhs.Str());
 
     char cstr[lhsLength + rhsLength];
     strcpy(cstr, lhs);
-    strcpy(cstr + lhsLength, rhs.AsChar());
+    strcpy(cstr + lhsLength, rhs.Str());
 
     return {cstr};
-}
-
-String operator+=(const char* lhs, const String& rhs)
-{
-    return lhs + rhs;
 }
