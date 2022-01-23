@@ -44,6 +44,9 @@ public:
      */
     Entity(const std::string& name, const Xform& transform, int zIndex = 0);
 
+    /**
+     * Default virtual destructor for Entity
+     */
     virtual ~Entity() = default;
 
     // Virtual methods

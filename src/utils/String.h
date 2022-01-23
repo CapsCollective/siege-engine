@@ -25,6 +25,9 @@ public:
 
     // Operator overloads
 
+    String& operator=(const String& rhs);
+    String& operator=(String&& rhs) noexcept;
+    String& operator=(const char* rhs);
     bool operator==(const String& rhs) const;
 
     bool operator==(const char* rhs) const;
@@ -37,11 +40,6 @@ public:
 
     String operator+(const char* rhs) const;
 
-    String& operator=(const String& rhs);
-
-    String& operator=(String&& rhs) noexcept;
-
-    String& operator=(const char* rhs);
 
     String& operator+=(const String& rhs);
 
@@ -57,26 +55,28 @@ public:
 
     operator std::string() const;
 
-    // Public methods
+    // State methods
 
     bool IsEmpty() const;
 
     size_t Size() const;
 
-    const char* AsChar() const;
 
-    char At(size_t index) const;
+    const char* Str() const;
 
-    size_t Find(const String& string) const;
+    // Access & search methods
 
-    size_t Find(const char* string) const;
-
+    char At(int index) const;
+    size_t Find(const String& substring) const;
+    size_t Find(const char* substring) const;
     size_t Find(const char& character) const;
 
     std::vector<String> Split(const char* delimiters) const;
 
-    String SubString(size_t startPos = 0, size_t length = -1) const;
+    String SubString(int startPos = 0, size_t length = -1) const;
 
+    // Modifier methods
+    void Clear();
     void Append(const String& string);
 
     void Append(const char* string);
@@ -85,22 +85,19 @@ public:
 
     void Prepend(const char* string);
 
-    void Insert(size_t pos, const char* string);
 
-    bool Replace(const char* toReplace, const char* replacement);
+    void Erase(int startPos = 0, size_t length = -1);
 
-    void Erase(size_t startPos = 0, size_t length = -1);
 
     void Swap(String& string);
-
-    bool GetLine(OUT String& line);
-
+    void Insert(int pos, const char* string);
+    bool Replace(const char* toReplace, const char* replacement);
     void ToUpper();
 
     void ToLower();
 
-    void Clear();
 
+    bool GetLine(OUT String& line);
     template<typename... P>
     void Format(P&&... params)
     {
@@ -125,6 +122,7 @@ private:
 
 bool operator==(const char* lhs, const String& rhs);
 
+bool operator!=(const char* lhs, const String& rhs);
 String operator+(const char* lhs, const String& rhs);
 
 #endif // A_DARK_DISCOMFORT_STRING_H
