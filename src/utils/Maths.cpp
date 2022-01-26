@@ -23,24 +23,15 @@ String Vec3::ToString() const
     ss << std::fixed << std::setprecision(2) << x << "," << y << "," << z;
     return ss.str().c_str();
 }
-Vec3::Vec3(const String& string)
+bool Vec3::FromString(Vec3& vec, const String& string)
 {
     // Split the string at comma values and check the number of components
     const std::vector<String>& components = string.Split(',');
-    if (components.size() != 3) throw std::length_error("Incorrect number of vector components");
+    if (components.size() != 3) return false;
 
-    // Try convert the components to float values and return them as a Vector3
-    try
-    {
-        x = std::stof(components[0]);
-        y = std::stof(components[1]);
-        z = std::stof(components[2]);
-    }
-    catch (const std::invalid_argument& err)
-    {
-        // TODO remove exceptions from string helpers, replace with nullptr return
-        throw std::invalid_argument("Received non-float vector components");
-    }
+    // Try to convert the components to float values and return them as a Vector3
+    return (components[0].GetFloat(vec.x) && components[1].GetFloat(vec.y) &&
+            components[2].GetFloat(vec.z));
 }
 
 bool BoundedBox::Intersects(const BoundedBox& other) const

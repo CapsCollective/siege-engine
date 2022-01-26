@@ -98,26 +98,17 @@ void DevConsole::OnUpdate()
         {
             if (CheckEditorMode() && CheckArgs("setpos", argument))
             {
-                // Try convert the argument to a Vector3, and set the entity's position
-                try
+                // Try to convert the argument to a Vector3, and set the entity's position
+                Vec3 position;
+                if (Vec3::FromString(position, argument.c_str()))
                 {
-                    Vec3 position = Vec3(argument.c_str());
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
                         messageDisplay->DisplayMessage("Entity position set to " + argument);
                     }
                     else messageDisplay->DisplayMessage("Error: No entity selected");
                 }
-                catch (const std::invalid_argument& err)
-                {
-                    messageDisplay->DisplayMessage(
-                        "Error: Invalid type of Vector3 components, should be float");
-                }
-                catch (const std::length_error& err)
-                {
-                    messageDisplay->DisplayMessage(
-                        "Error: Invalid number of Vector3 components, should be 3");
-                }
+                else messageDisplay->DisplayMessage("Error: Invalid Vector3 input");
             }
         }
         else if (command == "setrot")
@@ -127,6 +118,7 @@ void DevConsole::OnUpdate()
                 // Try convert the argument to float, and set the entity's rotation
                 try
                 {
+                    // TODO remove stof
                     if (ServiceLocator::GetEditorController()->TrySetRot(std::stof(argument)))
                     {
                         messageDisplay->DisplayMessage("Entity rotation set to " + argument + "°");

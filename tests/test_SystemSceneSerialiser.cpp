@@ -170,12 +170,11 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
             REQUIRE(entities.empty());
         }
 
-        SECTION("with bad data it should throw an exception")
+        SECTION("with bad data it should not instantiate any entities")
         {
             sceneLines = {"TesPOSITIOTA:this is some custom data|\n"
                           "T some custom data|\n"};
-            REQUIRE_THROWS_AS(SceneFile::DeserialiseFromStrings(sceneLines, entities),
-                              std::length_error);
+            SceneFile::DeserialiseFromStrings(sceneLines, entities);
             REQUIRE(entities.empty());
         }
 

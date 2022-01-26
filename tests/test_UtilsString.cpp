@@ -486,4 +486,50 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         REQUIRE(!s4.GetLine(line));
         REQUIRE(line == "hello");
     }
+
+    SECTION("the string can be converted to int")
+    {
+        int value;
+        String s4("2");
+        REQUIRE(s4.GetInt(value));
+        REQUIRE(value == 2);
+        s4 = "3.3";
+        REQUIRE(s4.GetInt(value));
+        REQUIRE(value == 3);
+        s4 = "5.6";
+        REQUIRE(s4.GetInt(value));
+        REQUIRE(value == 5);
+        s4 = "-10";
+        REQUIRE(s4.GetInt(value));
+        REQUIRE(value == -10);
+        s4 = "";
+        REQUIRE(!s4.GetInt(value));
+        s4 = "hello";
+        REQUIRE(!s4.GetInt(value));
+        s4 = "a";
+        REQUIRE(!s4.GetInt(value));
+    }
+
+    SECTION("the string can be converted to float")
+    {
+        float value;
+        String s4("2");
+        REQUIRE(s4.GetFloat(value));
+        REQUIRE(value == 2.f);
+        s4 = "3.3";
+        REQUIRE(s4.GetFloat(value));
+        REQUIRE(value == 3.3f);
+        s4 = "5.6";
+        REQUIRE(s4.GetFloat(value));
+        REQUIRE(value == 5.6f);
+        s4 = "-10";
+        REQUIRE(s4.GetFloat(value));
+        REQUIRE(value == -10.f);
+        s4 = "";
+        REQUIRE(!s4.GetFloat(value));
+        s4 = "hello";
+        REQUIRE(!s4.GetFloat(value));
+        s4 = "a";
+        REQUIRE(!s4.GetFloat(value));
+    }
 }
