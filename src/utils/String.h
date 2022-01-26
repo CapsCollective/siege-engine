@@ -167,6 +167,22 @@ public:
      */
     operator std::string() const;
 
+    // Conversion methods
+
+    /**
+     * Attempts to retrieve the String's value as an integer
+     * @param value - the integer to populate
+     * @return true if the conversion was successful, false otherwise
+     */
+    bool GetInt(OUT int& value) const;
+
+    /**
+     * Attempts to retrieve the String's value as a float
+     * @param value - the float to populate
+     * @return true if the conversion was successful, false otherwise
+     */
+    bool GetFloat(OUT float& value) const;
+
     // State methods
 
     /**

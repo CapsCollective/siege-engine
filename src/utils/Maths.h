@@ -40,8 +40,6 @@ struct Vec3
 
     Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-    explicit Vec3(const String& string);
-
     // Operator overloads
 
     DEFINE_OPERATOR(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
@@ -63,6 +61,10 @@ struct Vec3
     DEFINE_CONST_OPERATOR(-, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
     DEFINE_CONST_OPERATOR(*, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
     DEFINE_CONST_OPERATOR(/, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+
+    // Static methods
+
+    static bool FromString(OUT Vec3& vec, const String& string);
 
     // Public methods
 

@@ -3,6 +3,8 @@
 #include <physics/CollisionSystem.h>
 #include <scene/SceneFile.h>
 
+#include "utils/Logging.h"
+
 // Static member initialisation
 const std::string Geometry::ENTITY_NAME("Geometry");
 
@@ -57,7 +59,11 @@ static String Serialise(Entity* entity)
 
 static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
 {
-    Vec3 dimensions = Vec3(args[CUSTOM_FIELD_1]);
+    Vec3 dimensions;
+    if (!Vec3::FromString(dimensions, args[CUSTOM_FIELD_1]))
+    {
+        CC_LOG_WARNING("Failed to deserialise dimensions with value {}", args[CUSTOM_FIELD_1]);
+    }
     std::string modelPath = args[CUSTOM_FIELD_2];
     std::string texturePath = args[CUSTOM_FIELD_3];
 

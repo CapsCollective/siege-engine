@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
 
 static char* Allocate(const char* string)
 {
@@ -145,6 +146,34 @@ String::operator const char*() const
 String::operator std::string() const
 {
     return {str};
+}
+
+bool String::GetInt(int& value) const
+{
+    try
+    {
+        value = std::stoi(str);
+        return true;
+    }
+    catch (const std::invalid_argument& err)
+    {}
+    catch (const std::out_of_range& err)
+    {}
+    return false;
+}
+
+bool String::GetFloat(float& value) const
+{
+    try
+    {
+        value = std::stof(str);
+        return true;
+    }
+    catch (const std::invalid_argument& err)
+    {}
+    catch (const std::out_of_range& err)
+    {}
+    return false;
 }
 
 bool String::IsEmpty() const

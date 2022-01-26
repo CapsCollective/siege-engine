@@ -79,12 +79,14 @@ void SceneFile::DeserialiseLine(const std::string& line, std::vector<Entity*>& e
     std::vector<String> args = String(line.c_str()).Split(SEP);
     for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
 
-    // Get standard entity fields
-    EntityData data = {
-        Vec3(args[ENTITY_POS]),
-        std::stof(args[ENTITY_ROT]),
-        std::stoi(args[ENTITY_Z_IDX]),
-    };
+    // Get the standard entity fields
+    EntityData data;
+    if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
+          args[ENTITY_Z_IDX].GetInt(data.zIndex) &&
+          Vec3::FromString(data.position, args[ENTITY_POS])))
+    {
+        CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
+    }
 
     // Check if the entity has a relevant serialisable interface registered
     auto& serialisables = GetSerialisables();
