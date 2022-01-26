@@ -7,13 +7,13 @@
 #include <scene/SceneFile.h>
 
 // Static member initialisation
-const std::string Player::ENTITY_NAME("Player");
+const String Player::ENTITY_NAME("Player");
 
 void Player::OnStart()
 {
     // Register the entity with systems
-    std::string modelPath = "models/cube/cube.obj";
-    std::string texturePath = "models/cube/cube.png";
+    String modelPath = "models/cube/cube.obj";
+    String texturePath = "models/cube/cube.png";
     RenderSystem::Add(this, {modelPath, texturePath});
 }
 

@@ -31,7 +31,7 @@ private:
 
     bool CheckEditorMode();
 
-    bool CheckArgs(const std::string& command, const std::string& args);
+    bool CheckArgs(const String& command, const String& args);
 
     // Private fields
 
@@ -39,9 +39,9 @@ private:
 
     bool isActive;
 
-    std::string inputText;
+    String inputText;
 
-    std::string lastInput;
+    String lastInput;
 
     EntityPtr<MessageDisplay> messageDisplay;
 };

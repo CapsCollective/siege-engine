@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
     // Check for editor flag
-    bool isEditorMode = argc > 1 && std::string(argv[1]) == "--editor";
+    bool isEditorMode = argc > 1 && String(argv[1]) == "--editor";
 
     // Create a window and main camera
     Window window("A Dark Discomfort", 800, 450);

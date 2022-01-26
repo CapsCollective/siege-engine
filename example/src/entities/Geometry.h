@@ -12,7 +12,7 @@ public:
 
     // Public constants
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     // 'Structors
 
@@ -21,7 +21,7 @@ public:
     explicit Geometry(const Xform& transform) :
         Geometry(transform, "models/cube/cube.obj", "models/cube/cube.png") {};
 
-    Geometry(const Xform& transform, std::string modelPath, std::string texturePath) :
+    Geometry(const Xform& transform, String modelPath, String texturePath) :
         Entity(ENTITY_NAME, transform),
         modelPath(std::move(modelPath)),
         texturePath(std::move(texturePath)) {};
@@ -50,7 +50,7 @@ private:
 
     // Private fields
 
-    std::string modelPath, texturePath;
+    String modelPath, texturePath;
 };
 
 #endif // A_DARK_DISCOMFORT_GEOMETRY_H

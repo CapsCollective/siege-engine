@@ -12,7 +12,7 @@ void MessageDisplay::OnDraw2D()
     }
 }
 
-void MessageDisplay::DisplayMessage(const std::string& message, float time)
+void MessageDisplay::DisplayMessage(const String& message, float time)
 {
     displayMessage = message;
     displayTime = time;

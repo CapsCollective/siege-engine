@@ -32,24 +32,22 @@ void DevConsole::OnUpdate()
     }
 
     // Remove characters on backspace
-    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.empty()) inputText.pop_back();
+    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.IsEmpty())
+    {
+        // TODO add pop back function
+        inputText[(int) inputText.Size()] = '\0';
+    }
 
     // Get the last command you ran - only works once.
-    if (Input::KeyPressed(Input::KEY_UP) && !lastInput.empty()) inputText = lastInput;
+    if (Input::KeyPressed(Input::KEY_UP) && !lastInput.IsEmpty()) inputText = lastInput;
 
     // Process the command on enter
     if (Input::KeyPressed(Input::KEY_ENTER))
     {
         // Process the input into command and argument format
-        std::string command;
-        std::string argument;
-        size_t separatorPos = inputText.find(' ');
-        if (separatorPos != -1)
-        {
-            command = inputText.substr(0, separatorPos);
-            argument = inputText.substr(command.size() + 1, inputText.size());
-        }
-        else command = inputText;
+        auto args = inputText.Split(' ');
+        String command(!args.empty() ? args[0] : nullptr);
+        String argument(args.size() > 1 ? args[1] : nullptr);
 
         // Run the appropriate instructions for specified command
         if (command == "load")
@@ -84,7 +82,7 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("add", argument))
             {
                 // Try add the entity to the scene
-                if (EditorController::TryAddEntity(argument.c_str()))
+                if (EditorController::TryAddEntity(argument))
                 {
                     messageDisplay->DisplayMessage("Added entity to scene");
                 }
@@ -100,7 +98,7 @@ void DevConsole::OnUpdate()
             {
                 // Try to convert the argument to a Vector3, and set the entity's position
                 Vec3 position;
-                if (Vec3::FromString(position, argument.c_str()))
+                if (Vec3::FromString(position, argument))
                 {
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
@@ -118,8 +116,9 @@ void DevConsole::OnUpdate()
                 // Try convert the argument to float, and set the entity's rotation
                 try
                 {
-                    // TODO remove stof
-                    if (ServiceLocator::GetEditorController()->TrySetRot(std::stof(argument)))
+                    float rotation;
+                    if (argument.GetFloat(rotation) &&
+                        ServiceLocator::GetEditorController()->TrySetRot(rotation))
                     {
                         messageDisplay->DisplayMessage("Entity rotation set to " + argument + "°");
                     }
@@ -157,11 +156,11 @@ bool DevConsole::CheckEditorMode()
     return isEditorMode;
 }
 
-bool DevConsole::CheckArgs(const std::string& command, const std::string& args)
+bool DevConsole::CheckArgs(const String& command, const String& args)
 {
-    if (args.empty())
+    if (args.IsEmpty())
     {
         messageDisplay->DisplayMessage("Error: missing argument for " + command + " command");
     }
-    return !args.empty();
+    return !args.IsEmpty();
 }

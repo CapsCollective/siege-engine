@@ -13,7 +13,7 @@ public:
 
     // Public methods
 
-    void DisplayMessage(const std::string& message, float time = 10.f);
+    void DisplayMessage(const String& message, float time = 10.f);
 
 protected:
 
@@ -27,7 +27,7 @@ private:
 
     float displayTime;
 
-    std::string displayMessage;
+    String displayMessage;
 };
 
 #endif // A_DARK_DISCOMFORT_MESSAGEDISPLAY_H

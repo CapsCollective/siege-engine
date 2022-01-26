@@ -6,7 +6,7 @@
 #include "utils/Logging.h"
 
 // Static member initialisation
-const std::string Geometry::ENTITY_NAME("Geometry");
+const String Geometry::ENTITY_NAME("Geometry");
 
 void Geometry::OnStart()
 {
@@ -52,8 +52,8 @@ static String Serialise(Entity* entity)
     fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
 
     auto modelData = geometry->GetModelData();
-    fileData += DefineField("MODEL_PATH", modelData.modelPath.c_str());
-    fileData += DefineField("TEXTURE_PATH", modelData.texturePath.c_str());
+    fileData += DefineField("MODEL_PATH", modelData.modelPath);
+    fileData += DefineField("TEXTURE_PATH", modelData.texturePath);
     return fileData;
 }
 
@@ -64,8 +64,8 @@ static Entity* Deserialise(const EntityData& data, const std::vector<String>& ar
     {
         CC_LOG_WARNING("Failed to deserialise dimensions with value {}", args[CUSTOM_FIELD_1]);
     }
-    std::string modelPath = args[CUSTOM_FIELD_2];
-    std::string texturePath = args[CUSTOM_FIELD_3];
+    String modelPath = args[CUSTOM_FIELD_2];
+    String texturePath = args[CUSTOM_FIELD_3];
 
     return new Geometry({data.position, data.rotation, dimensions}, modelPath, texturePath);
 }
