@@ -2,9 +2,9 @@
 #define A_DARK_DISCOMFORT_MATHS_H
 
 #include <cmath>
-#include <string>
 
 #include "Macros.h"
+#include "String.h"
 
 // Define macros
 
@@ -40,6 +40,8 @@ struct Vec3
 
     Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
+    explicit Vec3(const String& string);
+
     // Operator overloads
 
     DEFINE_OPERATOR(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
@@ -64,7 +66,7 @@ struct Vec3
 
     // Public methods
 
-    std::string ToString() const;
+    String ToString() const;
 
     Vec3 Normalise() const;
 

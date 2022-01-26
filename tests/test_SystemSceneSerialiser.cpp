@@ -44,19 +44,17 @@ const std::string TestEntity3::ENTITY_NAME("TestEntity3");
 
 TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialiser]")
 {
-    auto serialise1 = [](Entity* entity) -> std::string {
+    auto serialise1 = [](Entity* entity) -> String {
         return DefineField("CUSTOM_DATA", "this is some custom data");
     };
-    auto deserialise1 = [](const EntityData& data,
-                           const std::vector<std::string>& args) -> Entity* {
+    auto deserialise1 = [](const EntityData& data, const std::vector<String>& args) -> Entity* {
         return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
     };
 
-    auto serialise2 = [](Entity* entity) -> std::string {
+    auto serialise2 = [](Entity* entity) -> String {
         return DefineField("CUSTOM_DATA", "this is some other custom data");
     };
-    auto deserialise2 = [](const EntityData& data,
-                           const std::vector<std::string>& args) -> Entity* {
+    auto deserialise2 = [](const EntityData& data, const std::vector<String>& args) -> Entity* {
         return new TestEntity2(args[CUSTOM_FIELD_1]);
     };
 

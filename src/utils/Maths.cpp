@@ -17,11 +17,30 @@ Vec3 Vec3::Normalise() const
     return *this * 1.f / length;
 }
 
-std::string Vec3::ToString() const
+String Vec3::ToString() const
 {
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << x << "," << y << "," << z;
-    return ss.str();
+    return ss.str().c_str();
+}
+Vec3::Vec3(const String& string)
+{
+    // Split the string at comma values and check the number of components
+    const std::vector<String>& components = string.Split(',');
+    if (components.size() != 3) throw std::length_error("Incorrect number of vector components");
+
+    // Try convert the components to float values and return them as a Vector3
+    try
+    {
+        x = std::stof(components[0]);
+        y = std::stof(components[1]);
+        z = std::stof(components[2]);
+    }
+    catch (const std::invalid_argument& err)
+    {
+        // TODO remove exceptions from string helpers, replace with nullptr return
+        throw std::invalid_argument("Received non-float vector components");
+    }
 }
 
 bool BoundedBox::Intersects(const BoundedBox& other) const

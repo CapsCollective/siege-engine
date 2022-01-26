@@ -5,7 +5,6 @@
 #include <render/Window.h>
 #include <scene/SceneManager.h>
 #include <utils/Colour.h>
-#include <utils/StringHelpers.h>
 
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
@@ -162,13 +161,12 @@ void EditorController::OnDraw2D()
     if (!selectedEntity) return;
 
     // Format display text on the selected entity
-    std::string nameLabel = StringHelpers::FormatText("%s", selectedEntity->GetName().c_str());
-    std::string posLabel = StringHelpers::FormatText("Position: <%.2f, %.2f, %.2f>",
-                                                     selectedEntity->GetPosition().x,
-                                                     selectedEntity->GetPosition().y,
-                                                     selectedEntity->GetPosition().z);
-    std::string rotLabel =
-        StringHelpers::FormatText("Rotation: %.2f°", selectedEntity->GetRotation());
+    std::string nameLabel = String("%s").Formatted(selectedEntity->GetName().c_str());
+    std::string posLabel = String("Position: <%.2f, %.2f, %.2f>")
+                               .Formatted(selectedEntity->GetPosition().x,
+                                          selectedEntity->GetPosition().y,
+                                          selectedEntity->GetPosition().z);
+    std::string rotLabel = String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
@@ -195,10 +193,10 @@ void EditorController::SelectEntity(Entity* entity)
     selectedEntity = entity;
 }
 
-bool EditorController::TryAddEntity(std::string& entityName)
+bool EditorController::TryAddEntity(String entityName)
 {
     // Lowercase the supplied entity name
-    entityName = StringHelpers::LowercaseString(entityName);
+    entityName.ToLower();
 
     // Check for matching cases to run
     if (entityName == "geometry")
@@ -227,8 +225,7 @@ void EditorController::AdjustPrecision(int adjustment)
                 // Apply the new precision value
                 movePrecision = newPrecision;
                 messageDisplay->DisplayMessage(
-                    StringHelpers::FormatText("Move precision set to %.2f",
-                                              MOVE_LEVELS[movePrecision]));
+                    String("Move precision set to %.2f").Formatted(MOVE_LEVELS[movePrecision]));
             }
             break;
         }
@@ -239,9 +236,8 @@ void EditorController::AdjustPrecision(int adjustment)
             {
                 // Apply the new precision value
                 rotatePrecision = newPrecision;
-                messageDisplay->DisplayMessage(
-                    StringHelpers::FormatText("Rotate precision set to %.2f°",
-                                              ROTATE_LEVELS[rotatePrecision]));
+                messageDisplay->DisplayMessage(String("Rotate precision set to %.2f°")
+                                                   .Formatted(ROTATE_LEVELS[rotatePrecision]));
             }
             break;
         }

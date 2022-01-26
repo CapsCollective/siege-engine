@@ -6,7 +6,6 @@
 
 #include "../entity/Entity.h"
 #include "../utils/Logging.h"
-#include "../utils/StringHelpers.h"
 
 void SceneFile::RegisterSerialisable(const std::string& name,
                                      const Serialiser& serialise,
@@ -27,7 +26,7 @@ bool SceneFile::Serialise(const std::vector<Entity*>& entities)
 std::string SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
 {
     // Iterate over each entity in the scene
-    std::string fileData;
+    String fileData;
     auto& serialisables = GetSerialisables();
     for (auto& entity : entities)
     {
@@ -36,10 +35,10 @@ std::string SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
         if (it == serialisables.end()) continue;
 
         // Serialise the general entity information
-        fileData += entity->GetName() + SEP;
+        fileData += (entity->GetName() + SEP).c_str();
         fileData += DefineField("POSITION", entity->GetPosition().ToString());
-        fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()));
-        fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()));
+        fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()).c_str());
+        fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()).c_str());
 
         // Apply its serialiser if it
         Serialiser serialiser = it->second.first;
@@ -77,12 +76,12 @@ void SceneFile::DeserialiseFromStrings(const std::vector<std::string>& lines,
 void SceneFile::DeserialiseLine(const std::string& line, std::vector<Entity*>& entities)
 {
     // Split the line into arguments and strip the labels from each item
-    std::vector<std::string> args = StringHelpers::SplitString(line, SEP);
-    for (std::string& arg : args) arg = arg.substr(arg.find(NAME_SEP) + 1, arg.size());
+    std::vector<String> args = String(line.c_str()).Split(SEP);
+    for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
 
     // Get standard entity fields
     EntityData data = {
-        StringHelpers::StringToVector(args[ENTITY_POS]),
+        Vec3(args[ENTITY_POS]),
         std::stof(args[ENTITY_ROT]),
         std::stoi(args[ENTITY_Z_IDX]),
     };

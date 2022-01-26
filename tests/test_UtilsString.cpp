@@ -128,6 +128,18 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         REQUIRE(s2.Size() == 19);
     }
 
+    SECTION("the string should correctly add characters")
+    {
+        String s1;
+        String s2(s1 + 'h');
+        REQUIRE(s2 == "h");
+        s2 = s2 + 'i';
+        REQUIRE(s2 == "hi");
+        s2 = 't' + s2 + 's';
+        REQUIRE(s2 == "this");
+        REQUIRE(s2.Size() == 4);
+    }
+
     SECTION("the string should correctly add its own type")
     {
         String h("hello");
@@ -151,6 +163,20 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         s2.Append("goodbye");
         REQUIRE(s2 == "goodbyehellogoodbye");
         REQUIRE(s2.Size() == 19);
+    }
+
+    SECTION("the string should correctly append characters")
+    {
+        String s1;
+        s1 += 'h';
+        REQUIRE(s1 == "h");
+        s1 += 'i';
+        REQUIRE(s1 == "hi");
+        s1.Append('n');
+        REQUIRE(s1 == "hin");
+        s1.Append('t');
+        REQUIRE(s1 == "hint");
+        REQUIRE(s1.Size() == 4);
     }
 
     SECTION("the string should correctly append its own type")

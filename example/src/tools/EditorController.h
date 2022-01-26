@@ -34,7 +34,7 @@ public:
 
     // Class methods
 
-    static bool TryAddEntity(std::string& entityName);
+    static bool TryAddEntity(String entityName);
 
     // Public methods
 

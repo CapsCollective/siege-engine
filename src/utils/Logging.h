@@ -8,7 +8,6 @@
 
 #include "../entity/Entity.h"
 #include "Macros.h"
-#include "StringHelpers.h"
 
 // Define terminal colour wrapping macros
 #define _CC_LOG_COLOUR_RED "31"
@@ -54,6 +53,7 @@ public:
     // 'Structors
 
     DEFINE_VARIANT_TYPE(const std::string& data, data);
+    DEFINE_VARIANT_TYPE(const String& data, data);
     DEFINE_VARIANT_TYPE(const char* data, data);
     DEFINE_VARIANT_TYPE(const char data, std::to_string(data));
     DEFINE_VARIANT_TYPE(const int& data, std::to_string(data));

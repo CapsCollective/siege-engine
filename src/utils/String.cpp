@@ -97,6 +97,18 @@ String String::operator+(const char* rhs) const
     return cstr;
 }
 
+String String::operator+(const char& rhs) const
+{
+    size_t lhsLength = Size();
+
+    char cstr[lhsLength + 1];
+    strcpy(cstr, str);
+    cstr[lhsLength] = rhs;
+    cstr[lhsLength + 1] = '\0';
+
+    return cstr;
+}
+
 String& String::operator+=(const String& rhs)
 {
     Append(rhs);
@@ -104,6 +116,12 @@ String& String::operator+=(const String& rhs)
 }
 
 String& String::operator+=(const char* rhs)
+{
+    Append(rhs);
+    return *this;
+}
+
+String& String::operator+=(const char& rhs)
 {
     Append(rhs);
     return *this;
@@ -173,17 +191,24 @@ std::vector<String> String::Split(const char* delimiters) const
     if (IsEmpty()) return {};
 
     // Copy over the internal string
-    char string[strlen(str)];
+    char string[Size()];
     strcpy(string, str);
 
     // Iterate over the string while there is still a delimiter
     std::vector<String> strings;
     char* substr = strtok(string, delimiters);
-    do
-    {
-        strings.emplace_back(substr);
-    } while ((substr = strtok(nullptr, delimiters)) != nullptr);
+
+    do strings.emplace_back(substr);
+    while ((substr = strtok(nullptr, delimiters)) != nullptr);
+
     return strings;
+}
+
+std::vector<String> String::Split(const char& delimiter) const
+{
+    // Provide the method with c-string
+    char delimiters[2] = {delimiter, '\0'};
+    return Split(delimiters);
 }
 
 String String::SubString(int startPos, size_t length) const
@@ -220,6 +245,18 @@ void String::Append(const char* string)
     char cstr[fullLength];
     strcpy(cstr, str);
     strcpy(cstr + lhsLength, string);
+
+    Assign(cstr);
+}
+
+void String::Append(const char& character)
+{
+    size_t lhsLength = Size();
+
+    char cstr[lhsLength + 1];
+    strcpy(cstr, str);
+    cstr[lhsLength] = character;
+    cstr[lhsLength + 1] = '\0';
 
     Assign(cstr);
 }
@@ -354,6 +391,17 @@ String operator+(const char* lhs, const String& rhs)
     char cstr[lhsLength + rhsLength];
     strcpy(cstr, lhs);
     strcpy(cstr + lhsLength, rhs.Str());
+
+    return {cstr};
+}
+
+String operator+(const char& lhs, const String& rhs)
+{
+    size_t rhsLength = strlen(rhs.Str());
+
+    char cstr[1 + rhsLength];
+    cstr[0] = lhs;
+    strcpy(cstr + 1, rhs.Str());
 
     return {cstr};
 }
