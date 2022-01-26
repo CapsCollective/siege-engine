@@ -37,6 +37,12 @@ String::String(String&& string) noexcept : str(string.str)
 
 String::String(const char* string) : str(Allocate(string)) {}
 
+String::String(const char& character) : str(nullptr)
+{
+    char cstr[2] = {character, '\0'};
+    Assign(cstr);
+}
+
 String::~String()
 {
     free(str);
@@ -79,6 +85,11 @@ bool String::operator!=(const String& rhs) const
 bool String::operator!=(const char* rhs) const
 {
     return !(*this == rhs);
+}
+
+bool String::operator<(const String& rhs) const
+{
+    return strcmp(str, rhs.str) > 0;
 }
 
 String String::operator+(const String& rhs) const
@@ -198,21 +209,25 @@ char String::At(int index) const
     return str[index];
 }
 
-size_t String::Find(const String& substring) const
+size_t String::Find(const String& substring, int startIdx) const
 {
-    return Find(substring.str);
+    return Find(substring.str, startIdx);
 }
 
-size_t String::Find(const char* substring) const
+size_t String::Find(const char* substring, int startIdx) const
 {
-    char* pos = strstr(str, substring);
-    return pos != nullptr ? pos - str : -1;
+    startIdx = startIdx < 0 ? (int) Size() + startIdx : startIdx;
+    char* sstr = str + startIdx;
+    char* pos = strstr(sstr, substring);
+    return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
-size_t String::Find(const char& character) const
+size_t String::Find(const char& character, int startIdx) const
 {
-    char* pos = strchr(str, character);
-    return pos != nullptr ? pos - str : -1;
+    startIdx = startIdx < 0 ? (int) Size() + startIdx : startIdx;
+    char* sstr = str + startIdx;
+    char* pos = strchr(sstr, character);
+    return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
 std::vector<String> String::Split(const char* delimiters) const

@@ -81,6 +81,24 @@ TEST_CASE("strings can perform basic storage operations", "[String]")
         }
     }
 
+    SECTION("when copy constructing from a character")
+    {
+        String s('h');
+
+        SECTION("the string should be initialised correctly")
+        {
+            REQUIRE(s);
+            REQUIRE(s == "h");
+        }
+
+        SECTION("the string can be reassigned")
+        {
+            s = 'i';
+            REQUIRE(s);
+            REQUIRE(s == "i");
+        }
+    }
+
     SECTION("when move constructing")
     {
         String s1(String("hello"));
@@ -342,6 +360,10 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         REQUIRE(s.Find(s1) == 21);
         REQUIRE(s.Find(s2) == 29);
         REQUIRE(s.Find(s3) == -1);
+        REQUIRE(s.Find('a') == 8);
+        REQUIRE(s.Find("a", 8) == 8);
+        REQUIRE(s.Find('a', 9) == 16);
+        REQUIRE(s.Find("a", -11) == 26);
     }
 
     SECTION("the string can replace by substring")

@@ -41,6 +41,12 @@ public:
     String(const char* string);
 
     /**
+     * Character constructor for initialising by copy
+     * @param string - the c-string to copy
+     */
+    String(const char& character);
+
+    /**
      * Destructor for cleaning up String data
      */
     ~String();
@@ -95,6 +101,14 @@ public:
      * @return true if the strings are not equal, false otherwise
      */
     bool operator!=(const char* rhs) const;
+
+    /**
+     * Less-than comparison operator overload for String identity comparison
+     * @note this is used by standard template types requiring a key comparator
+     * @param rhs - the String to compare to
+     * @return true if the String's comparison index is lower, false otherwise
+     */
+    bool operator<(const String& rhs) const;
 
     /**
      * Addition operator overload for appending other Strings
@@ -215,24 +229,30 @@ public:
 
     /**
      * Gets the index of the first found substring instance of the supplied String
+     * @note this method supports negative indexing for reversed lookup
      * @param substring - the substring to search for
+     * @param startIdx - the starting index for the search, defaults to 0
      * @return the index of the beginning of the substring if found, else -1
      */
-    size_t Find(const String& substring) const;
+    size_t Find(const String& substring, int startIdx = 0) const;
 
     /**
      * Gets the index of the first found substring instance of the supplied c-string
+     * @note this method supports negative indexing for reversed lookup
      * @param substring - the substring to search for
+     * @param startIdx - the starting index for the search, defaults to 0
      * @return the index of the beginning of the substring if found, else -1
      */
-    size_t Find(const char* substring) const;
+    size_t Find(const char* substring, int startIdx = 0) const;
 
     /**
      * Gets the index of the first found instance of the supplied character
+     * @note this method supports negative indexing for reversed lookup
      * @param substring - the character to search for
+     * @param startIdx - the starting index for the search, defaults to 0
      * @return the index of the character if found, else -1
      */
-    size_t Find(const char& character) const;
+    size_t Find(const char& character, int startIdx = 0) const;
 
     /**
      * Splits the String by a provided list of delimiter characters
