@@ -13,7 +13,7 @@ float Window::deltaTime;
 
 static raylib::Window& GetWindow()
 {
-    static raylib::Window window(windowWidth, windowHeight, windowTitle);
+    static raylib::Window window(windowWidth, windowHeight, windowTitle.Str());
     return window;
 }
 

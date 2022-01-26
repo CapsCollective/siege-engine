@@ -154,11 +154,6 @@ String::operator const char*() const
     return str;
 }
 
-String::operator std::string() const
-{
-    return {str};
-}
-
 bool String::GetInt(int& value) const
 {
     try

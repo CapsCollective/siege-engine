@@ -23,9 +23,8 @@ String Filepath(const char* filename)
 
 bool FileExists(const String& dir)
 {
-    namespace fs = std::filesystem;
-    fs::path f {dir};
-    return fs::exists(f);
+    std::filesystem::path f(dir.Str());
+    return std::filesystem::exists(f);
 }
 
 String GetFileContent(const String& dir)

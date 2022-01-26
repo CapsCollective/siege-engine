@@ -8,8 +8,8 @@
 #include "Macros.h"
 
 /**
- * The String class provides a simple alternative to std::string, that simply wraps a c-string and
- * bundles in greater manipulation functionality.
+ * The String class provides a simple alternative to standard strings, that simply wraps a c-string
+ * and bundles in greater manipulation functionality.
  */
 class String
 {
@@ -174,12 +174,6 @@ public:
      * @return the String's c-string data
      */
     operator const char*() const;
-
-    /**
-     * std::string conversion operator overload for getting the String as a std::string
-     * @return an std::string copied from the String
-     */
-    operator std::string() const;
 
     // Conversion methods
 

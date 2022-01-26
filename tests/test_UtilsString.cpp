@@ -336,13 +336,6 @@ TEST_CASE("strings can perform basic manipulation operations", "[String]")
         const char* cstr = s1;
         REQUIRE(std::strcmp(cstr, "hellogoodbye") == 0);
     }
-
-    SECTION("the string should cast correctly to standard strings")
-    {
-        String s1("hellogoodbye");
-        std::string str = s1;
-        REQUIRE(str == "hellogoodbye");
-    }
 }
 
 TEST_CASE("strings can perform search and replace operations", "[String]")
