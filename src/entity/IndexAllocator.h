@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../utils/String.h"
+
 // Utility Structs
 // TODO document this class
 
@@ -20,11 +22,11 @@ struct GenerationalIndex
     size_t index = 0;
     uint32_t generation = 0;
 
-    std::string ToString() const
+    String ToString() const
     {
         std::stringstream ss;
         ss << generation << ":" << index;
-        return ss.str();
+        return ss.str().c_str();
     }
 };
 

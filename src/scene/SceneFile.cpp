@@ -7,7 +7,7 @@
 #include "../entity/Entity.h"
 #include "../utils/Logging.h"
 
-void SceneFile::RegisterSerialisable(const std::string& name,
+void SceneFile::RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
 {
@@ -17,13 +17,13 @@ void SceneFile::RegisterSerialisable(const std::string& name,
 bool SceneFile::Serialise(const std::vector<Entity*>& entities)
 {
     // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(MakeScenePath(sceneName));
-    fileStream << SerialiseToString(entities);
+    std::ofstream fileStream(MakeScenePath(sceneName).Str());
+    fileStream << SerialiseToString(entities).Str();
     fileStream.close();
     return true;
 }
 
-std::string SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
+String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
 {
     // Iterate over each entity in the scene
     String fileData;
@@ -35,8 +35,9 @@ std::string SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
         if (it == serialisables.end()) continue;
 
         // Serialise the general entity information
-        fileData += (entity->GetName() + SEP).c_str();
+        fileData += (entity->GetName() + SEP);
         fileData += DefineField("POSITION", entity->GetPosition().ToString());
+        // TODO add from int function
         fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()).c_str());
         fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()).c_str());
 
@@ -53,54 +54,62 @@ std::string SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
 bool SceneFile::Deserialise(std::vector<Entity*>& entities)
 {
     // Try open the scene file for streaming
-    std::ifstream file(MakeScenePath(sceneName));
+    // TODO move file access to its own class
+    FILE* file = fopen(MakeScenePath(sceneName), "r");
 
     // Exit if scene is invalid
-    if (!file.is_open()) return false;
+    if (!file) return false;
 
-    // Iterate over each line of the file
-    std::string line;
-    while (std::getline(file, line)) DeserialiseLine(line, entities);
+    // Determine file size
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    rewind(file);
+
+    // Copy the content
+    char content[size];
+    fread(content, sizeof(char), size, file);
+    content[size] = '\0';
+    String lines(content);
 
     // Close the file stream
-    file.close();
+    fclose(file);
+
+    // Iterate over each line of the file
+    DeserialiseLines(lines.Split('\n'), entities);
     return true;
 }
 
-void SceneFile::DeserialiseFromStrings(const std::vector<std::string>& lines,
-                                       std::vector<Entity*>& entities)
+void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<Entity*>& entities)
 {
-    for (const std::string& line : lines) DeserialiseLine(line, entities);
+    for (const String& line : lines)
+    {
+        // Split the line into arguments and strip the labels from each item
+        std::vector<String> args = line.Split(SEP);
+        for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
+
+        // Get the standard entity fields
+        EntityData data;
+        if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
+              args[ENTITY_Z_IDX].GetInt(data.zIndex) &&
+              Vec3::FromString(data.position, args[ENTITY_POS])))
+        {
+            CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
+        }
+
+        // Check if the entity has a relevant serialisable interface registered
+        auto& serialisables = GetSerialisables();
+        auto it = serialisables.find(args[ENTITY_NAME]);
+        if (it != serialisables.end())
+        {
+            // Apply its deserialiser
+            Deserialiser deserialiser = it->second.second;
+            if (deserialiser) entities.push_back(deserialiser(data, args));
+        }
+        else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", args[ENTITY_NAME]);
+    }
 }
 
-void SceneFile::DeserialiseLine(const std::string& line, std::vector<Entity*>& entities)
-{
-    // Split the line into arguments and strip the labels from each item
-    std::vector<String> args = String(line.c_str()).Split(SEP);
-    for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
-
-    // Get the standard entity fields
-    EntityData data;
-    if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
-          args[ENTITY_Z_IDX].GetInt(data.zIndex) &&
-          Vec3::FromString(data.position, args[ENTITY_POS])))
-    {
-        CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
-    }
-
-    // Check if the entity has a relevant serialisable interface registered
-    auto& serialisables = GetSerialisables();
-    auto it = serialisables.find(args[ENTITY_NAME]);
-    if (it != serialisables.end())
-    {
-        // Apply its deserialiser
-        Deserialiser deserialiser = it->second.second;
-        if (deserialiser) entities.push_back(deserialiser(data, args));
-    }
-    else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", args[ENTITY_NAME]);
-}
-
-std::string SceneFile::MakeScenePath(const std::string& sceneName)
+String SceneFile::MakeScenePath(const String& sceneName)
 {
     return ResourceManagerFacade::GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
 }

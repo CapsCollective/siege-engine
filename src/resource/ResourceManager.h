@@ -5,6 +5,8 @@
 #include <raylib/raylib-cpp.hpp>
 #include <vector>
 
+#include "../utils/String.h"
+
 class ResourceManager
 {
 public:
@@ -17,18 +19,18 @@ public:
      * @param path - the path the resource will be loaded from
      */
     template<typename T>
-    static void Register(const std::string& path)
+    static void Register(const String& path)
     {
-        std::string fullPath = baseDir + path;
+        String fullPath = baseDir + path;
         if constexpr (std::is_same_v<T, Model>)
         {
             if (models.find(fullPath) != models.end()) return;
-            models[fullPath] = LoadModel(fullPath.c_str());
+            models[fullPath] = LoadModel(fullPath);
         }
         else if constexpr (std::is_same_v<T, Texture>)
         {
             if (textures.find(fullPath) != textures.end()) return;
-            textures[fullPath] = LoadTexture(fullPath.c_str());
+            textures[fullPath] = LoadTexture(fullPath);
         }
     }
 
@@ -39,9 +41,9 @@ public:
      * @return a reference to the resource
      */
     template<typename T>
-    static T& Get(const std::string& path)
+    static T& Get(const String& path)
     {
-        std::string fullPath = baseDir + path;
+        String fullPath = baseDir + path;
         if constexpr (std::is_same_v<T, Model>) return models.at(fullPath);
         else if constexpr (std::is_same_v<T, Texture>) return textures.at(fullPath);
     }
@@ -60,13 +62,13 @@ public:
      * Sets the base directory used for resource path management.
      * @param dir - the directory to set as base
      */
-    static void SetBaseDirectory(const std::string& dir);
+    static void SetBaseDirectory(const String& dir);
 
     /**
      * Gets the base directory used for resource path management.
      * @return the directory as a string
      */
-    static const std::string& GetBaseDirectory();
+    static const String& GetBaseDirectory();
 
 private:
 
@@ -75,12 +77,12 @@ private:
     /**
      * Loaded model resources.
      */
-    static std::map<std::string, Model> models;
+    static std::map<String, Model> models;
 
     /**
      * Loaded texture resources.
      */
-    static std::map<std::string, Texture> textures;
+    static std::map<String, Texture> textures;
 
     /**
      * Model resources queued for freeing.
@@ -95,7 +97,7 @@ private:
     /**
      * The default base directory for finding resources.
      */
-    static std::string baseDir;
+    static String baseDir;
 };
 
 #endif // A_DARK_DISCOMFORT_RESOURCEMANAGER_H

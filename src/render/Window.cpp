@@ -5,7 +5,7 @@
 
 #include "../utils/TransitionAdapter.h"
 
-static std::string windowTitle;
+static String windowTitle;
 static int windowWidth;
 static int windowHeight;
 
@@ -17,7 +17,7 @@ static raylib::Window& GetWindow()
     return window;
 }
 
-Window::Window(const std::string& title, int width, int height) : backgroundColour(245, 245, 245)
+Window::Window(const String& title, int width, int height) : backgroundColour(245, 245, 245)
 {
     // TODO fix this ugly workaround
     windowTitle = title;
@@ -53,9 +53,9 @@ int Window::GetHeight()
     return windowHeight;
 }
 
-int Window::GetTextWidth(const std::string& text, int textSize)
+int Window::GetTextWidth(const String& text, int textSize)
 {
-    return MeasureText(text.c_str(), textSize);
+    return MeasureText(text, textSize);
 }
 
 long Window::GetCurrentTime()

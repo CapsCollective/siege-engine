@@ -7,12 +7,12 @@ void ResourceManagerFacade::FreeResources()
     ResourceManager::FreeResources();
 }
 
-void ResourceManagerFacade::SetBaseDirectory(const std::string& dir)
+void ResourceManagerFacade::SetBaseDirectory(const String& dir)
 {
     ResourceManager::SetBaseDirectory(dir);
 }
 
-const std::string& ResourceManagerFacade::GetBaseDirectory()
+const String& ResourceManagerFacade::GetBaseDirectory()
 {
     return ResourceManager::GetBaseDirectory();
 }

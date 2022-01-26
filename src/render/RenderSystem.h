@@ -11,8 +11,8 @@
 
 struct ModelData
 {
-    std::string modelPath;
-    std::string texturePath;
+    String modelPath;
+    String texturePath;
 };
 
 struct RenderItem
@@ -40,7 +40,7 @@ public:
 
     static void DrawFrame();
 
-    static void DrawText2D(const std::string& text, int posX, int posY, int fontSize, Colour color);
+    static void DrawText2D(const String& text, int posX, int posY, int fontSize, Colour color);
 
     static void DrawRectangle2D(int posX, int posY, int width, int height, Colour color);
 
