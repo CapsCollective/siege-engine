@@ -161,12 +161,12 @@ void EditorController::OnDraw2D()
     if (!selectedEntity) return;
 
     // Format display text on the selected entity
-    std::string nameLabel = String("%s").Formatted(selectedEntity->GetName().c_str());
-    std::string posLabel = String("Position: <%.2f, %.2f, %.2f>")
-                               .Formatted(selectedEntity->GetPosition().x,
-                                          selectedEntity->GetPosition().y,
-                                          selectedEntity->GetPosition().z);
-    std::string rotLabel = String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
+    String nameLabel = String("%s").Formatted(selectedEntity->GetName().Str());
+    String posLabel = String("Position: <%.2f, %.2f, %.2f>")
+                          .Formatted(selectedEntity->GetPosition().x,
+                                     selectedEntity->GetPosition().y,
+                                     selectedEntity->GetPosition().z);
+    String rotLabel = String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());

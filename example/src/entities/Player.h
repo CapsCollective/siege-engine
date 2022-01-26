@@ -10,7 +10,7 @@ public:
 
     // Public constants
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     // 'Structors
 
