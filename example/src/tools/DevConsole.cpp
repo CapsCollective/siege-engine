@@ -4,7 +4,6 @@
 #include <render/RenderSystem.h>
 #include <render/Window.h>
 #include <scene/SceneManager.h>
-#include <utils/StringHelpers.h>
 
 #include <stdexcept>
 
@@ -85,7 +84,7 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("add", argument))
             {
                 // Try add the entity to the scene
-                if (EditorController::TryAddEntity(argument))
+                if (EditorController::TryAddEntity(argument.c_str()))
                 {
                     messageDisplay->DisplayMessage("Added entity to scene");
                 }
@@ -102,7 +101,7 @@ void DevConsole::OnUpdate()
                 // Try convert the argument to a Vector3, and set the entity's position
                 try
                 {
-                    Vec3 position = StringHelpers::StringToVector(argument);
+                    Vec3 position = Vec3(argument.c_str());
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
                         messageDisplay->DisplayMessage("Entity position set to " + argument);

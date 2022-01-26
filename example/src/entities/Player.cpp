@@ -60,7 +60,7 @@ Entity* Player::Clone() const
     return new Player(transform);
 }
 
-static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
+static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
 {
     return new Player({data.position, data.rotation});
 }

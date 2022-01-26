@@ -111,6 +111,13 @@ public:
     String operator+(const char* rhs) const;
 
     /**
+     * Character addition operator overload for appending characters
+     * @param rhs - the character to append
+     * @return a new String object with the appended value
+     */
+    String operator+(const char& rhs) const;
+
+    /**
      * Addition compound assignment operator overload for appending other Strings
      * @param rhs - the String to append
      * @return a reference to the original String object
@@ -118,11 +125,18 @@ public:
     String& operator+=(const String& rhs);
 
     /**
-     * C-string addition compound assignment operator overload for appending other c-strings
+     * C-string addition compound assignment operator overload for appending c-strings
      * @param rhs - the c-string to append
      * @return a reference to the original String object
      */
     String& operator+=(const char* rhs);
+
+    /**
+     * Character addition compound assignment operator overload for prepending characters
+     * @param rhs - the c-string to append
+     * @return a reference to the original String object
+     */
+    String& operator+=(const char& rhs);
 
     /**
      * Indexing operator overload for obtaining reference to characters within the String
@@ -212,6 +226,13 @@ public:
     std::vector<String> Split(const char* delimiters) const;
 
     /**
+     * Splits the String by a delimiter character
+     * @param delimiter - a character to use as the delimiter
+     * @return a vector of Strings resulting from the split
+     */
+    std::vector<String> Split(const char& delimiter) const;
+
+    /**
      * Gets a substring of the String based on position and length
      * @note this method supports negative indexing for reversed lookup
      * @warning if either parameter is found to be invalid (falling out of bounds), the returned
@@ -240,6 +261,12 @@ public:
      * @param string - the c-string to append
      */
     void Append(const char* string);
+
+    /**
+     * Appends the value of a character to the String
+     * @param character - the character to append
+     */
+    void Append(const char& character);
 
     /**
      * Prepends the value of another String
@@ -318,6 +345,20 @@ public:
         Assign(newStr);
     }
 
+    /**
+     * Creates a formatted version of the String using standard printf formatting rules
+     * @tparam P - the variadic type of the method's arguments
+     * @param params - a variable number of arguments accepted by printf for formatting
+     * @return a newly formatted String object
+     */
+    template<typename... P>
+    String Formatted(P&&... params) const
+    {
+        String string(str);
+        string.Format(std::forward<P>(params)...);
+        return string;
+    }
+
 private:
 
     // Private methods
@@ -355,11 +396,19 @@ bool operator==(const char* lhs, const String& rhs);
 bool operator!=(const char* lhs, const String& rhs);
 
 /**
- * Reversed c-string addition operator overload for appending strings
+ * Reversed c-string addition operator overload for prepending strings
  * @param lhs - the string to append to
  * @param rhs - the string to append
  * @return a new string object with the appended value
  */
 String operator+(const char* lhs, const String& rhs);
+
+/**
+ * Reversed character addition operator overload for prepending characters
+ * @param lhs - the character to append to
+ * @param rhs - the string to append
+ * @return a new string object with the appended value
+ */
+String operator+(const char& lhs, const String& rhs);
 
 #endif // A_DARK_DISCOMFORT_STRING_H

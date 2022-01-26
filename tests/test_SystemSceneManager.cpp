@@ -54,8 +54,8 @@ const std::string TestEntity::ENTITY_NAME("TestEntity");
 
 REGISTER_SERIALISATION_INTERFACE(
     TestEntity::ENTITY_NAME,
-    [](Entity* entity) -> std::string { return ""; },
-    [](const EntityData& data, const std::vector<std::string>& args) -> Entity* {
+    [](Entity* entity) -> String { return ""; },
+    [](const EntityData& data, const std::vector<String>& args) -> Entity* {
         return new TestEntity(Xform(data.position, data.rotation));
     });
 

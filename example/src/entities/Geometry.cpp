@@ -2,7 +2,6 @@
 
 #include <physics/CollisionSystem.h>
 #include <scene/SceneFile.h>
-#include <utils/StringHelpers.h>
 
 // Static member initialisation
 const std::string Geometry::ENTITY_NAME("Geometry");
@@ -44,21 +43,21 @@ ModelData Geometry::GetModelData()
     return {modelPath, texturePath};
 }
 
-static std::string Serialise(Entity* entity)
+static String Serialise(Entity* entity)
 {
-    std::string fileData;
+    String fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
     fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
 
     auto modelData = geometry->GetModelData();
-    fileData += DefineField("MODEL_PATH", modelData.modelPath);
-    fileData += DefineField("TEXTURE_PATH", modelData.texturePath);
+    fileData += DefineField("MODEL_PATH", modelData.modelPath.c_str());
+    fileData += DefineField("TEXTURE_PATH", modelData.texturePath.c_str());
     return fileData;
 }
 
-static Entity* Deserialise(const EntityData& data, const std::vector<std::string>& args)
+static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
 {
-    Vec3 dimensions = StringHelpers::StringToVector(args[CUSTOM_FIELD_1]);
+    Vec3 dimensions = Vec3(args[CUSTOM_FIELD_1]);
     std::string modelPath = args[CUSTOM_FIELD_2];
     std::string texturePath = args[CUSTOM_FIELD_3];
 

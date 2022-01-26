@@ -3,13 +3,13 @@
 
 #include <functional>
 #include <map>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "../resource/ResourceManagerFacade.h"
 #include "../utils/Macros.h"
 #include "../utils/Maths.h"
+#include "../utils/String.h"
 
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                  \
@@ -23,9 +23,8 @@ static constexpr const char NAME_SEP = ':';
 static constexpr const char* SCENE_FILE_EXT = ".scene";
 
 // Define types
-typedef std::string String;
 typedef struct EntityData EntityData;
-typedef const std::function<std::string(class Entity*)> Serialiser;
+typedef const std::function<String(class Entity*)> Serialiser;
 typedef const std::function<Entity*(const EntityData&, const std::vector<String>&)> Deserialiser;
 typedef std::pair<Serialiser, Deserialiser> SerialisationInterface;
 
@@ -201,7 +200,7 @@ struct SerialisationInterfaceRegisterer
  * @param content - the content of the property
  * @return the field content as a const string
  */
-inline std::string DefineField(const std::string& name, const std::string& content)
+inline String DefineField(const String& name, const String& content)
 {
     return name + NAME_SEP + content + SEP;
 }
