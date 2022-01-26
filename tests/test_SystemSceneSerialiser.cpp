@@ -8,39 +8,39 @@ class TestEntity1 : public Entity
 {
 public:
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     TestEntity1() : Entity(ENTITY_NAME) {};
 
     TestEntity1(Xform transform, int zIndex) : Entity(ENTITY_NAME, transform, zIndex) {};
 };
-const std::string TestEntity1::ENTITY_NAME("TestEntity1");
+const String TestEntity1::ENTITY_NAME("TestEntity1");
 
 class TestEntity2 : public Entity
 {
 public:
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     TestEntity2() : Entity(ENTITY_NAME) {};
 
-    explicit TestEntity2(std::string customData) :
+    explicit TestEntity2(String customData) :
         Entity(ENTITY_NAME),
         customData(std::move(customData)) {};
 
-    std::string customData;
+    String customData;
 };
-const std::string TestEntity2::ENTITY_NAME("TestEntity2");
+const String TestEntity2::ENTITY_NAME("TestEntity2");
 
 class TestEntity3 : public Entity
 {
 public:
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     TestEntity3() : Entity(ENTITY_NAME) {};
 };
-const std::string TestEntity3::ENTITY_NAME("TestEntity3");
+const String TestEntity3::ENTITY_NAME("TestEntity3");
 
 TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialiser]")
 {
@@ -70,7 +70,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
 
         SECTION("with a single entity it should serialise correctly")
         {
-            std::string sceneData = SceneFile::SerialiseToString({e1});
+            String sceneData = SceneFile::SerialiseToString({e1});
             REQUIRE(sceneData == "TestEntity1|"
                                  "POSITION:0.00,0.00,0.00|"
                                  "ROTATION:0.000000|"
@@ -94,7 +94,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
 
         SECTION("with multiple entities, it should serialise in order of position")
         {
-            std::string sceneData = SceneFile::SerialiseToString({e2, e1});
+            String sceneData = SceneFile::SerialiseToString({e2, e1});
             REQUIRE(sceneData == "TestEntity2|"
                                  "POSITION:0.00,0.00,0.00|"
                                  "ROTATION:0.000000|"
@@ -121,7 +121,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
 
         SECTION("entities that do not define a serialiser, it should have only basic serialisation")
         {
-            std::string sceneData = SceneFile::SerialiseToString({e2, e3, e1});
+            String sceneData = SceneFile::SerialiseToString({e2, e3, e1});
             REQUIRE(sceneData == "TestEntity2|"
                                  "POSITION:0.00,0.00,0.00|"
                                  "ROTATION:0.000000|"
@@ -141,7 +141,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
         SECTION("entities that do not define a serialisation interface, it should not serialise")
         {
             auto e4 = new Entity();
-            std::string sceneData = SceneFile::SerialiseToString({e2, e4, e1});
+            String sceneData = SceneFile::SerialiseToString({e2, e4, e1});
             REQUIRE(sceneData == "TestEntity2|"
                                  "POSITION:0.00,0.00,0.00|"
                                  "ROTATION:0.000000|"
@@ -162,11 +162,11 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
     SECTION("when deserialising")
     {
         std::vector<Entity*> entities;
-        std::vector<std::string> sceneLines;
+        std::vector<String> sceneLines;
 
         SECTION("with no entities it should deserialise correctly")
         {
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.empty());
         }
 
@@ -174,7 +174,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
         {
             sceneLines = {"TesPOSITIOTA:this is some custom data|\n"
                           "T some custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.empty());
         }
 
@@ -185,7 +185,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                           "ROTATION:25.000000|"
                           "Z-INDEX:-3|"
                           "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.size() == 1);
             REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
 
@@ -209,7 +209,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                     "Z-INDEX:0|"
                     "CUSTOM_DATA:this is some other custom data|\n",
                 };
-                SceneFile::DeserialiseFromStrings(sceneLines, entities);
+                SceneFile::DeserialiseLines(sceneLines, entities);
                 REQUIRE(entities.size() == 2);
                 auto e2 = dynamic_cast<TestEntity2*>(entities[1]);
                 REQUIRE(e2);
@@ -229,7 +229,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                           "ROTATION:0.000000|"
                           "Z-INDEX:0|"
                           "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.size() == 2);
             REQUIRE(dynamic_cast<TestEntity2*>(entities[0]));
             REQUIRE(dynamic_cast<TestEntity1*>(entities[1]));
@@ -244,7 +244,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                           "ROTATION:0.000000|"
                           "Z-INDEX:0|"
                           "CUSTOM_DATA:this is some other custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.size() == 4);
             REQUIRE(dynamic_cast<TestEntity1*>(entities[2]));
             REQUIRE(dynamic_cast<TestEntity2*>(entities[3]));
@@ -262,7 +262,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                           "ROTATION:0.000000|"
                           "Z-INDEX:0|"
                           "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.size() == 1);
             REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
         }
@@ -284,7 +284,7 @@ TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialise
                           "ROTATION:0.000000|"
                           "Z-INDEX:0|"
                           "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseFromStrings(sceneLines, entities);
+            SceneFile::DeserialiseLines(sceneLines, entities);
             REQUIRE(entities.size() == 2);
             REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
             REQUIRE(dynamic_cast<TestEntity2*>(entities[1]));
