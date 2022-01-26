@@ -2,9 +2,9 @@
 #include <entity/EntityStorage.h>
 #include <scene/SceneFile.h>
 #include <scene/SceneManager.h>
+#include <utils/String.h>
 
 #include <filesystem>
-#include <fstream>
 #include <string>
 
 #include "catch.hpp"
@@ -16,25 +16,30 @@ static constexpr const char* UNTITLED_FILE = "untitled.scene";
 
 // Helper methods
 
-std::string Filepath(const char* filename)
+String Filepath(const char* filename)
 {
-    return std::string(SCENE_DIR) + filename;
+    return String(SCENE_DIR) + filename;
 }
 
-bool FileExists(const std::string& dir)
+bool FileExists(const String& dir)
 {
     namespace fs = std::filesystem;
     fs::path f {dir};
     return fs::exists(f);
 }
 
-std::string GetFileContent(const std::string& dir)
+String GetFileContent(const String& dir)
 {
-    std::ifstream ifs(dir);
-    std::string content({
-        std::istreambuf_iterator<char>(ifs),
-        std::istreambuf_iterator<char>(),
-    });
+    FILE* file = fopen(dir, "r");
+
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    rewind(file);
+
+    char content[size];
+    fread(content, sizeof(char), size, file);
+    content[size] = '\0';
+    fclose(file);
     return content;
 }
 
@@ -43,14 +48,14 @@ class TestEntity : public Entity
 {
 public:
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     TestEntity() : Entity(ENTITY_NAME) {}
 
     explicit TestEntity(Xform transform) : Entity(ENTITY_NAME, transform) {}
 };
 
-const std::string TestEntity::ENTITY_NAME("TestEntity");
+const String TestEntity::ENTITY_NAME("TestEntity");
 
 REGISTER_SERIALISATION_INTERFACE(
     TestEntity::ENTITY_NAME,
@@ -69,7 +74,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(Filepath(TEST_FILE)));
-        REQUIRE(GetFileContent(Filepath(TEST_FILE)).empty());
+        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(!content);
     }
 
     SECTION("When an entity is added to the scene, it should be saved to the scene file.")
@@ -80,9 +86,9 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(Filepath(TEST_FILE)));
-        std::string content = GetFileContent(Filepath(TEST_FILE));
-        REQUIRE(!content.empty());
-        REQUIRE(content.find("TestEntity") != std::string::npos);
+        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(!content.IsEmpty());
+        REQUIRE(content.Find("TestEntity") != -1);
     }
 
     SECTION("When an entity is removed from the scene, it should remove it from the file as well.")
@@ -92,9 +98,9 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(Filepath(TEST_FILE)));
-        std::string content = GetFileContent(Filepath(TEST_FILE));
-        REQUIRE(content.empty());
-        REQUIRE(content.find("TestEntity") == std::string::npos);
+        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(content.IsEmpty());
+        REQUIRE(content.Find("TestEntity") == -1);
     }
 
     SECTION("when a non-serialisable entity is added to the scene it should not be saved")
@@ -103,20 +109,20 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         SceneManager::SaveScene("test");
 
         REQUIRE(FileExists(Filepath(TEST_FILE)));
-        std::string content = GetFileContent(Filepath(TEST_FILE));
-        REQUIRE(content.empty());
+        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(content.IsEmpty());
     }
 
     SECTION("when an empty string is passed into SaveScene, it should create 'untitled.scene'")
     {
         SceneManager::SaveScene("");
-        std::string filepath = Filepath(UNTITLED_FILE);
+        String filepath = Filepath(UNTITLED_FILE);
         REQUIRE(FileExists(filepath));
-        remove(filepath.c_str());
+        remove(filepath);
     }
 
     EntityStorage::Reset();
-    remove(Filepath(TEST_FILE).c_str());
+    remove(Filepath(TEST_FILE));
 }
 
 TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
