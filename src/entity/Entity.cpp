@@ -7,9 +7,9 @@
 #include "EntityStorage.h"
 
 // Static member initialisation
-const std::string Entity::ENTITY_NAME("Entity");
+const String Entity::ENTITY_NAME("Entity");
 
-Entity::Entity(const std::string& name, const Xform& transform, int zIndex) :
+Entity::Entity(const String& name, const Xform& transform, int zIndex) :
     transform(transform),
     name(name),
     index(GenerationalIndex()),
@@ -35,7 +35,7 @@ void Entity::QueueFree()
     EntityStorage::QueueFree(this);
 }
 
-const std::string& Entity::GetName() const
+const String& Entity::GetName() const
 {
     return name;
 }

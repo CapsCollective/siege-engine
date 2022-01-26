@@ -10,8 +10,8 @@
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
 // Define static members
-std::string SceneManager::currentScene;
-std::string SceneManager::nextScene;
+String SceneManager::currentScene;
+String SceneManager::nextScene;
 
 void SceneManager::NewScene()
 {
@@ -20,7 +20,7 @@ void SceneManager::NewScene()
     currentScene = UNKNOWN_FILENAME;
 }
 
-void SceneManager::QueueNextScene(const std::string& sceneName)
+void SceneManager::QueueNextScene(const String& sceneName)
 {
     // Free all current items from storage
     ClearScene();
@@ -29,7 +29,7 @@ void SceneManager::QueueNextScene(const std::string& sceneName)
 
 void SceneManager::LoadNextScene()
 {
-    if (nextScene.empty()) return;
+    if (nextScene.IsEmpty()) return;
 
     // Deserialise and register all entities to current scene
     std::vector<Entity*> entities;
@@ -45,19 +45,19 @@ void SceneManager::LoadNextScene()
     else CC_LOG_WARNING("Unable to load \"{}.scene\"", nextScene);
 
     // Clear next scene
-    nextScene.clear();
+    nextScene.Clear();
 }
 
 void SceneManager::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    SaveScene(currentScene.empty() ? std::string() : currentScene);
+    SaveScene(currentScene.IsEmpty() ? String() : currentScene);
 }
 
-void SceneManager::SaveScene(const std::string& sceneName)
+void SceneManager::SaveScene(const String& sceneName)
 {
     // Get and set the current scene name
-    currentScene = sceneName.empty() ? UNKNOWN_FILENAME : sceneName;
+    currentScene = sceneName.IsEmpty() ? UNKNOWN_FILENAME : sceneName;
 
     // Serialise the data to it and close it
     SceneFile file(currentScene);

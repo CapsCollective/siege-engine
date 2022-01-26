@@ -1,9 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_WINDOW_H
 #define A_DARK_DISCOMFORT_WINDOW_H
 
-#include <string>
-
 #include "../utils/Colour.h"
+#include "../utils/String.h"
 
 class Window
 {
@@ -11,7 +10,7 @@ public:
 
     // 'Structors
 
-    Window(const std::string& title, int width, int height);
+    Window(const String& title, int width, int height);
 
     // Public methods
 
@@ -25,7 +24,7 @@ public:
 
     int GetHeight();
 
-    static int GetTextWidth(const std::string& text, int textSize);
+    static int GetTextWidth(const String& text, int textSize);
 
     static long GetCurrentTime();
 

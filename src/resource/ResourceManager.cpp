@@ -3,11 +3,11 @@
 #include <vector>
 
 // Static member initialisation
-std::map<std::string, Model> ResourceManager::models;
-std::map<std::string, Texture> ResourceManager::textures;
+std::map<String, Model> ResourceManager::models;
+std::map<String, Texture> ResourceManager::textures;
 std::vector<Model*> ResourceManager::freedModels;
 std::vector<Texture*> ResourceManager::freedTextures;
-std::string ResourceManager::baseDir;
+String ResourceManager::baseDir;
 
 void ResourceManager::FreeResources()
 {
@@ -35,12 +35,12 @@ void ResourceManager::ClearResources()
     for (auto& texture : textures) freedTextures.push_back(&texture.second);
 }
 
-void ResourceManager::SetBaseDirectory(const std::string& dir)
+void ResourceManager::SetBaseDirectory(const String& dir)
 {
     baseDir = dir;
 }
 
-const std::string& ResourceManager::GetBaseDirectory()
+const String& ResourceManager::GetBaseDirectory()
 {
     return baseDir;
 }

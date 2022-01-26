@@ -57,7 +57,7 @@ public:
      * Scene file constructor method
      * @param sceneName - the name of the scene file
      */
-    explicit SceneFile(std::string sceneName) : sceneName(std::move(sceneName)) {}
+    explicit SceneFile(String sceneName) : sceneName(std::move(sceneName)) {}
 
     // Public methods
 
@@ -67,7 +67,7 @@ public:
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    static void RegisterSerialisable(const std::string& name,
+    static void RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise);
 
@@ -84,7 +84,7 @@ public:
      * @param entities - the list of entities to serialise
      * @return a string representation of the scene
      */
-    static std::string SerialiseToString(const std::vector<Entity*>& entities);
+    static String SerialiseToString(const std::vector<Entity*>& entities);
 
     /**
      * Deserialises a scene file's content into a list of
@@ -102,20 +102,12 @@ public:
      * @param entities - a reference to a vector of entity
      *                   pointers to populate
      */
-    static void DeserialiseFromStrings(const std::vector<std::string>& lines,
-                                       OUT std::vector<Entity*>& entities);
+    static void DeserialiseLines(const std::vector<String>& lines,
+                                 OUT std::vector<Entity*>& entities);
 
 private:
 
     // Private methods
-
-    /**
-     * Deserialises a single line of a scene file to an entity
-     * @param line - a scene file line to deserialise
-     * @param entities - a reference to a vector of entity
-     *                   pointers to populate
-     */
-    static void DeserialiseLine(const std::string& line, OUT std::vector<Entity*>& entities);
 
     /**
      * Creates a filepath to the specified scene relative to
@@ -123,15 +115,15 @@ private:
      * @param sceneName - the name of the scene
      * @return a filepath to a scene file
      */
-    static std::string MakeScenePath(const std::string& sceneName);
+    static String MakeScenePath(const String& sceneName);
 
     /**
      * Getter & storage for mapped serialisation interfaces
      * @return a map of string to serialisation interfaces
      */
-    static std::map<std::string, SerialisationInterface>& GetSerialisables()
+    static std::map<String, SerialisationInterface>& GetSerialisables()
     {
-        static std::map<std::string, SerialisationInterface> serialisables;
+        static std::map<String, SerialisationInterface> serialisables;
         return serialisables;
     }
 
@@ -140,7 +132,7 @@ private:
     /**
      * The name of the scene file
      */
-    std::string sceneName;
+    String sceneName;
 };
 
 /**
@@ -183,7 +175,7 @@ struct SerialisationInterfaceRegisterer
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    SerialisationInterfaceRegisterer(const std::string& name,
+    SerialisationInterfaceRegisterer(const String& name,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
     {

@@ -2,9 +2,9 @@
 #define A_DARK_DISCOMFORT_ENTITY_H
 
 #include "../utils/Maths.h"
+#include "../utils/String.h"
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
-#include "string"
 
 /**
  * The base entity class for game objects and tool
@@ -15,7 +15,7 @@ public:
 
     // Public constants
 
-    static const std::string ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     // 'Structors
 
@@ -31,7 +31,7 @@ public:
      * @param name - a const reference to the name of the
      *               entity as a string
      */
-    Entity(const std::string& name) : Entity(name, {Vec3::Zero, 0.f}) {};
+    Entity(const String& name) : Entity(name, {Vec3::Zero, 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
@@ -42,7 +42,7 @@ public:
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const std::string& name, const Xform& transform, int zIndex = 0);
+    Entity(const String& name, const Xform& transform, int zIndex = 0);
 
     /**
      * Default virtual destructor for Entity
@@ -106,7 +106,7 @@ public:
      * @return a constant reference to the entity's name
      *         as a string
      */
-    const std::string& GetName() const;
+    const String& GetName() const;
 
     /**
      * Getter method for the entity's generational index
@@ -204,7 +204,7 @@ private:
     /**
      * The name of the entity type
      */
-    const std::string& name;
+    const String& name;
 
     /**
      * The generational index of the entity
