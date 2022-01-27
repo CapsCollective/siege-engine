@@ -6,7 +6,7 @@ ifeq ($(platform), Windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
     libGenDir := src
 else ifeq ($(platform), Linux)
-    linkFlags += -l GL -l m -l pthread -Wl,--no-as-needed -l dl -l rt -l X11
+    linkFlags += -l GL -l m -Wl,--no-as-needed -l dl -l rt -l X11 -l pthread
 else ifeq ($(platform), macOS)
     linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
     libGenDir := src
