@@ -51,7 +51,4 @@ void FreeCam::OnUpdate()
     else if (Input::MouseReleased(Input::MOUSE_RIGHT_BUTTON)) Input::EnableMouseCursor();
 
     // TODO fix camera look issues beyond 90 degrees in either direction from origin
-    //    std::cout << "rotation: " << rotation.x << " " << rotation.y << std::endl;
-    //    std::cout << "target: " << camera->GetTarget().x << " " << camera->GetTarget().y <<
-    //    std::endl;
 }

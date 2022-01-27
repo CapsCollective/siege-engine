@@ -32,11 +32,7 @@ void DevConsole::OnUpdate()
     }
 
     // Remove characters on backspace
-    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.IsEmpty())
-    {
-        // TODO add pop back function
-        inputText[(int) inputText.Size()] = '\0';
-    }
+    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
 
     // Get the last command you ran - only works once.
     if (Input::KeyPressed(Input::KEY_UP) && !lastInput.IsEmpty()) inputText = lastInput;

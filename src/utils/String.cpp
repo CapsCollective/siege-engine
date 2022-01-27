@@ -318,6 +318,14 @@ void String::Prepend(const char* string)
     Assign(cstr);
 }
 
+char String::PopBack()
+{
+    size_t len = Size();
+    char character = str[len - 1];
+    str[len - 1] = '\0';
+    return character;
+}
+
 void String::Erase(int startPos, size_t length)
 {
     // Perform boundary checking and set defaults

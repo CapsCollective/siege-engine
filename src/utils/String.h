@@ -311,6 +311,12 @@ public:
     void Prepend(const char* string);
 
     /**
+     * Removes the character at
+     * @return
+     */
+    char PopBack();
+
+    /**
      * Erases portions of the String based on position and length
      * @note this method supports negative indexing for reversed lookup
      * @warning if either parameter is found to be invalid (falling out of bounds), the String

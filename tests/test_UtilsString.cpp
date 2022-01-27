@@ -473,6 +473,18 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         REQUIRE(!sub);
     }
 
+    SECTION("the string can pop back")
+    {
+        REQUIRE(s.PopBack() == '.');
+        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE..");
+        REQUIRE(s.PopBack() == '.');
+        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE.");
+        REQUIRE(s.PopBack() == '.');
+        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE");
+        REQUIRE(s.PopBack() == 'E');
+        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUag");
+    }
+
     SECTION("the string can get its next line")
     {
         String s4("hi\nmy\nname\nis");
