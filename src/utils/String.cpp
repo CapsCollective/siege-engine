@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <ostream>
 #include <stdexcept>
 
 static char* Allocate(const char* string)
@@ -451,4 +452,9 @@ String operator+(const char& lhs, const String& rhs)
     strcpy(cstr + 1, rhs.Str());
 
     return {cstr};
+}
+
+std::ostream& operator<<(std::ostream& os, const String& string)
+{
+    return os.write(string.Str(), (long) string.Size());
 }

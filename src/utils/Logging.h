@@ -28,7 +28,7 @@
         static size_t _CC_LOG_VRNT_ARR_SZE(sizeof(_CC_LOG_VRNT_ARR) / Logging::VARIANT_SIZE); \
         String _CC_LOG_FMT_STR(_CC_LOG_MSG_FMT(log_level, colour, message));                  \
         Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE);      \
-        std::cout << _CC_LOG_FMT_STR.Str() << std::endl;                                      \
+        std::cout << _CC_LOG_FMT_STR << std::endl;                                            \
     }
 #define DEFINE_VARIANT_TYPE(type, transform) \
     VariantContainer(type) : data(transform) {}
@@ -53,6 +53,7 @@ public:
 
     // 'Structors
 
+    // TODO add to strings
     DEFINE_VARIANT_TYPE(const String& data, data);
     DEFINE_VARIANT_TYPE(const char* data, data);
     DEFINE_VARIANT_TYPE(const char data, data);

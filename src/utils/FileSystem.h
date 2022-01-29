@@ -12,6 +12,6 @@ bool Exists(const String& filename);
 
 bool Save(const String& filename, const String& content);
 
-}
+} // namespace FileSystem
 
 #endif // A_DARK_DISCOMFORT_FILESYSTEM_H

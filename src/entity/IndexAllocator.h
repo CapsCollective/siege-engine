@@ -2,8 +2,6 @@
 #define A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 
 #include <cstdint>
-#include <iomanip>
-#include <sstream>
 #include <vector>
 
 #include "../utils/String.h"
@@ -24,9 +22,7 @@ struct GenerationalIndex
 
     String ToString() const
     {
-        std::stringstream ss;
-        ss << generation << ":" << index;
-        return ss.str().c_str();
+        return String("%d:%d").Formatted(generation, index);
     }
 };
 
