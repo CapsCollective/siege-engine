@@ -7,6 +7,7 @@ class Input
 {
 public:
 
+    // TODO update to use C++ enums
     typedef enum
     {
         KEY_NULL = 0,

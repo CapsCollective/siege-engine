@@ -1,7 +1,6 @@
 #ifndef A_DARK_DISCOMFORT_STRING_H
 #define A_DARK_DISCOMFORT_STRING_H
 
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -375,9 +374,9 @@ public:
     template<typename... P>
     void Format(P&&... params)
     {
-        size_t formatLen = std::snprintf(nullptr, 0, str, std::forward<P>(params)...);
+        size_t formatLen = snprintf(nullptr, 0, str, std::forward<P>(params)...);
         char newStr[formatLen];
-        std::sprintf(newStr, str, std::forward<P>(params)...);
+        sprintf(newStr, str, std::forward<P>(params)...);
         Assign(newStr);
     }
 
@@ -413,7 +412,7 @@ private:
     char* str;
 };
 
-// Reversed operator overloads
+// External operator overloads
 
 /**
  * Reversed c-string equality operator overload for checking equality
@@ -446,5 +445,13 @@ String operator+(const char* lhs, const String& rhs);
  * @return a new string object with the appended value
  */
 String operator+(const char& lhs, const String& rhs);
+
+/**
+ * std::ostream insertion operator overload for appending Strings
+ * @param os - the std::ostream instance to write to
+ * @param string - the String to write to the std::ostream
+ * @return the formatted std::ostream instance
+ */
+std::ostream& operator<<(std::ostream& os, const String& string);
 
 #endif // A_DARK_DISCOMFORT_STRING_H

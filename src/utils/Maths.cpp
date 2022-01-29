@@ -1,8 +1,5 @@
 #include "Maths.h"
 
-#include <iomanip>
-#include <sstream>
-
 #include "TransitionAdapter.h"
 
 // Define static members
@@ -19,10 +16,9 @@ Vec3 Vec3::Normalise() const
 
 String Vec3::ToString() const
 {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2) << x << "," << y << "," << z;
-    return ss.str().c_str();
+    return String("%.2f,%.2f,%.2f").Formatted(x, y, z);
 }
+
 bool Vec3::FromString(Vec3& vec, const String& string)
 {
     // Split the string at comma values and check the number of components
