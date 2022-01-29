@@ -1,11 +1,10 @@
 #include "SceneFile.h"
 
 #include <algorithm>
-#include <fstream>
-#include <iostream>
 
 #include "../entity/Entity.h"
 #include "../utils/Logging.h"
+#include "../utils/FileSystem.h"
 
 void SceneFile::RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
@@ -16,11 +15,7 @@ void SceneFile::RegisterSerialisable(const String& name,
 
 bool SceneFile::Serialise(const std::vector<Entity*>& entities)
 {
-    // Open a new file stream, serialise the data to it and close it
-    std::ofstream fileStream(MakeScenePath(sceneName).Str());
-    fileStream << SerialiseToString(entities).Str();
-    fileStream.close();
-    return true;
+    return FileSystem::Save(MakeScenePath(sceneName), SerialiseToString(entities));
 }
 
 String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
@@ -53,28 +48,9 @@ String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
 
 bool SceneFile::Deserialise(std::vector<Entity*>& entities)
 {
-    // Try open the scene file for streaming
-    // TODO move file access to its own class
-    FILE* file = fopen(MakeScenePath(sceneName), "r");
-
-    // Exit if scene is invalid
-    if (!file) return false;
-
-    // Determine file size
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-
-    // Copy the content
-    char content[size];
-    fread(content, sizeof(char), size, file);
-    content[size] = '\0';
-    String lines(content);
-
-    // Close the file stream
-    fclose(file);
-
     // Iterate over each line of the file
+    String lines = FileSystem::Read(MakeScenePath(sceneName));
+    if (!lines) return false;
     DeserialiseLines(lines.Split('\n'), entities);
     return true;
 }

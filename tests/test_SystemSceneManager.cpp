@@ -4,10 +4,8 @@
 #include <scene/SceneManager.h>
 #include <utils/String.h>
 
-#include <filesystem>
-#include <string>
-
 #include "catch.hpp"
+#include "utils/FileSystem.h"
 
 // Const declarations
 static constexpr const char* SCENE_DIR = "tests/data/";
@@ -19,27 +17,6 @@ static constexpr const char* UNTITLED_FILE = "untitled.scene";
 String Filepath(const char* filename)
 {
     return String(SCENE_DIR) + filename;
-}
-
-bool FileExists(const String& dir)
-{
-    std::filesystem::path f(dir.Str());
-    return std::filesystem::exists(f);
-}
-
-String GetFileContent(const String& dir)
-{
-    FILE* file = fopen(dir, "r");
-
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-
-    char content[size];
-    fread(content, sizeof(char), size, file);
-    content[size] = '\0';
-    fclose(file);
-    return content;
 }
 
 // Test entity
@@ -72,8 +49,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     {
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(Filepath(TEST_FILE)));
-        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
+        String content = FileSystem::Read(Filepath(TEST_FILE));
         REQUIRE(!content);
     }
 
@@ -84,8 +61,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(Filepath(TEST_FILE)));
-        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
+        String content = FileSystem::Read(Filepath(TEST_FILE));
         REQUIRE(!content.IsEmpty());
         REQUIRE(content.Find("TestEntity") != -1);
     }
@@ -96,8 +73,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(Filepath(TEST_FILE)));
-        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
+        String content = FileSystem::Read(Filepath(TEST_FILE));
         REQUIRE(content.IsEmpty());
         REQUIRE(content.Find("TestEntity") == -1);
     }
@@ -107,8 +84,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         EntityStorage::Add(new Entity());
         SceneManager::SaveScene("test");
 
-        REQUIRE(FileExists(Filepath(TEST_FILE)));
-        String content = GetFileContent(Filepath(TEST_FILE));
+        REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
+        String content = FileSystem::Read(Filepath(TEST_FILE));
         REQUIRE(content.IsEmpty());
     }
 
@@ -116,7 +93,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     {
         SceneManager::SaveScene("");
         String filepath = Filepath(UNTITLED_FILE);
-        REQUIRE(FileExists(filepath));
+        REQUIRE(FileSystem::Exists(filepath));
         remove(filepath);
     }
 
