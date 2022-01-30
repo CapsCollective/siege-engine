@@ -1,6 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_STRING_H
 #define A_DARK_DISCOMFORT_STRING_H
 
+#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,7 @@ public:
 
     /**
      * Character constructor for initialising by copy
-     * @param string - the c-string to copy
+     * @param string - the character to copy
      */
     String(const char& character);
 
@@ -189,6 +190,30 @@ public:
      * @return true if the conversion was successful, false otherwise
      */
     bool GetFloat(OUT float& value) const;
+
+    /**
+     * Conversion method for integer values
+     * @param value - the integer value to convert
+     */
+    static String FromInt(const int& value);
+
+    /**
+     * Conversion method for float values
+     * @param value - the float value to convert
+     */
+    static String FromFloat(const float& value);
+
+    /**
+     * Conversion method for double values
+     * @param value - the double value to convert
+     */
+    static String FromDouble(const double& value);
+
+    /**
+     * Conversion method for long values
+     * @param value - the long value to convert
+     */
+    static String FromLong(const long& value);
 
     // State methods
 

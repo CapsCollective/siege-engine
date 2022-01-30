@@ -1,7 +1,6 @@
 #include "FileSystem.h"
 
-#include <libc.h>
-
+#include <cstdio>
 #include <fstream>
 
 String FileSystem::Read(const String& filename)
@@ -27,7 +26,8 @@ String FileSystem::Read(const String& filename)
 
 bool FileSystem::Exists(const String& filename)
 {
-    return access(filename, W_OK) == 0;
+    std::ifstream file(filename);
+    return (bool) file;
 }
 
 bool FileSystem::Save(const String& filename, const String& content)

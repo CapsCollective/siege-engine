@@ -559,4 +559,28 @@ TEST_CASE("strings can perform search and replace operations", "[String]")
         s4 = "a";
         REQUIRE(!s4.GetFloat(value));
     }
+
+    SECTION("the string can be converted from int")
+    {
+        REQUIRE(String::FromInt(2) == "2");
+        REQUIRE(String::FromInt(90000000) == "90000000");
+    }
+
+    SECTION("the string can be converted from float")
+    {
+        REQUIRE(String::FromFloat(2.f) == "2.000000");
+        REQUIRE(String::FromFloat(9.00143f) == "9.001430");
+    }
+
+    SECTION("the string can be converted from double")
+    {
+        REQUIRE(String::FromDouble(0.14159265358979323L) == "0.14159265358979323");
+        REQUIRE(String::FromDouble(0.04159245358979343L) == "0.04159245358979343");
+    }
+
+    SECTION("the string can be converted from long")
+    {
+        REQUIRE(String::FromLong(2l) == "2");
+        REQUIRE(String::FromLong(90000000000000l) == "90000000000000");
+    }
 }

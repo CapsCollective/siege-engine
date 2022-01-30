@@ -32,9 +32,8 @@ String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
         // Serialise the general entity information
         fileData += (entity->GetName() + SEP);
         fileData += DefineField("POSITION", entity->GetPosition().ToString());
-        // TODO add from int function
-        fileData += DefineField("ROTATION", std::to_string(entity->GetRotation()).c_str());
-        fileData += DefineField("Z-INDEX", std::to_string(entity->GetZIndex()).c_str());
+        fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation()));
+        fileData += DefineField("Z-INDEX", String::FromInt(entity->GetZIndex()));
 
         // Apply its serialiser if it
         Serialiser serialiser = it->second.first;

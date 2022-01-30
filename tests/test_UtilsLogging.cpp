@@ -9,10 +9,10 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
 {
     SECTION("when given the correct number of points and values it should format correctly")
     {
-        Logging::VariantContainer vc[] {1, "$$", 17.3, 1.2f, Vec3::Zero};
+        Logging::VariantContainer vc[] {1, "$$", 12.300000f, 1.2f, Vec3::Zero};
         String fmt = "{} is {} very {} well {} formatted {}!";
         Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-        REQUIRE(fmt == "1 is $$ very 17.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
+        REQUIRE(fmt == "1 is $$ very 12.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
     }
 
     SECTION("when given too few replacement points for values it should only use those it can fit")
@@ -20,7 +20,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
         Logging::VariantContainer vc[] {"hello", 17.3, "$$"};
         String fmt = "This {} is {} too short!";
         Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-        REQUIRE(fmt == "This hello is 17.300000 too short!");
+        REQUIRE(fmt == "This hello is 17.30000000000000071 too short!");
     }
 
     SECTION("when close together replacement points and values it should format correctly")
@@ -28,7 +28,7 @@ TEST_CASE("messages can be formatted correctly", "[Logging]")
         Logging::VariantContainer vc[] {1, "__!", 17.3, 1.2f};
         String fmt = "{}This {}{} too short!{}";
         Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-        REQUIRE(fmt == "1This __!17.300000 too short!1.200000");
+        REQUIRE(fmt == "1This __!17.30000000000000071 too short!1.200000");
     }
 
     SECTION("when values contain replacement points it should still format correctly")
