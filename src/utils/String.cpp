@@ -5,15 +5,23 @@
 #include <ostream>
 #include <stdexcept>
 
+static char* Allocate(size_t length)
+{
+    // Allocate string for provided character length
+    char* str = static_cast<char*>(malloc(length + 1));
+    str[length] = '\0';
+    return str;
+}
+
 static char* Allocate(const char* string)
 {
     // Check for null pointers
     if (!string) string = "";
 
     // Allocate string for length and copy it over
-    char* newStr = static_cast<char*>(malloc(strlen(string) + 1));
-    strcpy(newStr, string);
-    return newStr;
+    char* str = Allocate(strlen(string) + 1);
+    strcpy(str, string);
+    return str;
 }
 
 void String::Assign(const char* string)
@@ -25,6 +33,14 @@ void String::Assign(const char* string)
     // Free current internal string and assign the new one
     free(str);
     str = Allocate(string);
+}
+
+template<typename T>
+static char* GetFromFormat(const char* format, T value)
+{
+    char* str = Allocate(snprintf(nullptr, 0, format, value));
+    sprintf(str, format, value);
+    return str;
 }
 
 String::String() : String("") {}
@@ -181,6 +197,26 @@ bool String::GetFloat(float& value) const
     catch (const std::out_of_range& err)
     {}
     return false;
+}
+
+String String::FromInt(const int& value)
+{
+    return GetFromFormat("%d", value);
+}
+
+String String::FromFloat(const float& value)
+{
+    return GetFromFormat("%f", value);
+}
+
+String String::FromDouble(const double& value)
+{
+    return GetFromFormat("%0.17f", value);
+}
+
+String String::FromLong(const long& value)
+{
+    return GetFromFormat("%ld", value);
 }
 
 bool String::IsEmpty() const
