@@ -11,13 +11,13 @@
 #define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
     lhsType& operator op(const rhsType& rhs)        \
     {                                               \
-        body(op, SEMICOLON) return *this;           \
+        body(op, _SEMICOLON) return *this;          \
     }
 
 #define DEFINE_CONST_OPERATOR(op, lhsType, rhsType, body) \
     lhsType operator op(const rhsType& rhs) const         \
     {                                                     \
-        return {body(op, COMMA)};                         \
+        return {body(op, _COMMA)};                        \
     }
 
 #define VEC_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep

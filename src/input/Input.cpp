@@ -4,27 +4,27 @@
 
 #include "../utils/TransitionAdapter.h"
 
-bool Input::KeyDown(KeyboardKey key)
+bool Input::KeyDown(Key::Keyboard key)
 {
     return IsKeyDown(key);
 }
 
-bool Input::KeyPressed(KeyboardKey key)
+bool Input::KeyPressed(Key::Keyboard key)
 {
     return IsKeyPressed(key);
 }
 
-bool Input::MouseDown(MouseButton button)
+bool Input::MouseDown(Mouse::Button button)
 {
     return IsMouseButtonDown(button);
 }
 
-bool Input::MousePressed(MouseButton button)
+bool Input::MousePressed(Mouse::Button button)
 {
     return IsMouseButtonPressed(button);
 }
 
-bool Input::MouseReleased(MouseButton button)
+bool Input::MouseReleased(Mouse::Button button)
 {
     return IsMouseButtonReleased(button);
 }

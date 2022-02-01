@@ -9,12 +9,13 @@
 
 #include "EditorController.h"
 #include "MessageDisplay.h"
+#include "utils/Statics.h"
 
 void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Input::KeyPressed(Input::KEY_GRAVE))
+    if (Statics::Input.KeyPressed(Key::GRAVE))
     {
         // Toggle the console
         isActive = !isActive;
@@ -26,19 +27,19 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) Input::GetKeyChar()) > 0)
+    while ((key = (char) Statics::Input.GetKeyChar()) > 0)
     {
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
-    if (Input::KeyPressed(Input::KEY_BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
+    if (Statics::Input.KeyPressed(Key::BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Input::KeyPressed(Input::KEY_UP) && !lastInput.IsEmpty()) inputText = lastInput;
+    if (Statics::Input.KeyPressed(Key::UP) && !lastInput.IsEmpty()) inputText = lastInput;
 
     // Process the command on enter
-    if (Input::KeyPressed(Input::KEY_ENTER))
+    if (Statics::Input.KeyPressed(Key::ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
