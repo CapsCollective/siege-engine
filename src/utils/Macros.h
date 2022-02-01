@@ -2,8 +2,8 @@
 #define A_DARK_DISCOMFORT_MACROS_H
 
 // Reserved character macros
-#define COMMA ,
-#define SEMICOLON ;
+#define _COMMA ,
+#define _SEMICOLON ;
 
 // OUT parameter macro
 #define OUT

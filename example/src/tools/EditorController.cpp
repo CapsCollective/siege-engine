@@ -9,6 +9,7 @@
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
 #include "MessageDisplay.h"
+#include "utils/Statics.h"
 
 // Static member initialisation
 static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
@@ -34,24 +35,24 @@ void EditorController::OnUpdate()
     if (!camera || !messageDisplay) return;
 
     // Check for deselection and activation keys
-    if (Input::KeyPressed(Input::KEY_ESCAPE)) SelectEntity(nullptr);
+    if (Statics::Input.KeyPressed(Key::ESCAPE)) SelectEntity(nullptr);
 
     // Check for command key presses
-    if (Input::KeyDown(Input::KEY_LEFT_SUPER))
+    if (Statics::Input.KeyDown(Key::LEFT_SUPER))
     {
-        if (Input::KeyPressed(Input::KEY_G))
+        if (Statics::Input.KeyPressed(Key::G))
         {
             // Toggle grid display
             isGridActive = !isGridActive;
             messageDisplay->DisplayMessage("Grid display toggled");
         }
-        else if (Input::KeyPressed(Input::KEY_R))
+        else if (Statics::Input.KeyPressed(Key::R))
         {
             // Toggle rotation mode
             currentMode = currentMode == ROTATION ? POSITION : ROTATION;
             messageDisplay->DisplayMessage("Rotation mode toggled");
         }
-        else if (Input::KeyPressed(Input::KEY_S))
+        else if (Statics::Input.KeyPressed(Key::S))
         {
             // Save the scene
             SceneManager::SaveScene();
@@ -59,7 +60,7 @@ void EditorController::OnUpdate()
         }
         else if (selectedEntity)
         {
-            if (Input::KeyPressed(Input::KEY_D))
+            if (Statics::Input.KeyPressed(Key::D))
             {
                 // Try duplicate the entity
                 auto newEntity = selectedEntity->Clone();
@@ -70,7 +71,7 @@ void EditorController::OnUpdate()
                 }
                 else messageDisplay->DisplayMessage("Entity not duplicatable");
             }
-            else if (Input::KeyPressed(Input::KEY_BACKSPACE))
+            else if (Statics::Input.KeyPressed(Key::BACKSPACE))
             {
                 // Free the entity
                 selectedEntity->QueueFree();
@@ -78,13 +79,13 @@ void EditorController::OnUpdate()
                 messageDisplay->DisplayMessage("Entity deleted");
             }
             // Adjust the transformation precision level
-            else if (Input::KeyPressed(Input::KEY_EQUAL)) AdjustPrecision(1);
-            else if (Input::KeyPressed(Input::KEY_MINUS)) AdjustPrecision(-1);
+            else if (Statics::Input.KeyPressed(Key::EQUAL)) AdjustPrecision(1);
+            else if (Statics::Input.KeyPressed(Key::MINUS)) AdjustPrecision(-1);
         }
     }
 
     // Check for mouse clicks
-    if (Input::MousePressed(Input::MOUSE_LEFT_BUTTON))
+    if (Statics::Input.MousePressed(Mouse::LEFT_BUTTON))
     {
         // Get the ray cast by the mouse position
         RayCast ray = camera->GetMouseRay();
@@ -102,7 +103,7 @@ void EditorController::OnUpdate()
     }
 
     // Cycle through all entities
-    if (Input::KeyPressed(Input::KEY_TAB))
+    if (Statics::Input.KeyPressed(Key::TAB))
     {
         // Select the first packed entity by index
         size_t totalEntities = EntityStorage::GetEntities().size();
@@ -130,14 +131,14 @@ void EditorController::OnUpdate()
                 // Calculate move from input
                 Vec3 move = Vec3::Zero;
                 float precision = MOVE_LEVELS[movePrecision];
-                move.x = precision * (float) (-Input::KeyPressed(Input::KEY_LEFT) +
-                                              Input::KeyPressed(Input::KEY_RIGHT));
+                move.x = precision * (float) (-Statics::Input.KeyPressed(Key::LEFT) +
+                                              Statics::Input.KeyPressed(Key::RIGHT));
 
                 // Switch vertical move input between z and y axis based on shift key down
-                float verticalMove = precision * (float) (-Input::KeyPressed(Input::KEY_UP) +
-                                                          Input::KeyPressed(Input::KEY_DOWN));
-                Input::KeyDown(Input::KEY_LEFT_SHIFT) ? move.y = -verticalMove :
-                                                        move.z = verticalMove;
+                float verticalMove = precision * (float) (-Statics::Input.KeyPressed(Key::UP) +
+                                                          Statics::Input.KeyPressed(Key::DOWN));
+                Statics::Input.KeyDown(Key::LEFT_SHIFT) ? move.y = -verticalMove :
+                                                          move.z = verticalMove;
 
                 // Apply the move to the position of the entity
                 Vec3 entityPosition = selectedEntity->GetPosition();
@@ -147,8 +148,8 @@ void EditorController::OnUpdate()
             case ROTATION: {
                 // Calculate rotation from input and apply it to the rotation of the entity
                 float precision = ROTATE_LEVELS[rotatePrecision];
-                float rotation = precision * (float) (-Input::KeyPressed(Input::KEY_LEFT) +
-                                                      Input::KeyPressed(Input::KEY_RIGHT));
+                float rotation = precision * (float) (-Statics::Input.KeyPressed(Key::LEFT) +
+                                                      Statics::Input.KeyPressed(Key::RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }

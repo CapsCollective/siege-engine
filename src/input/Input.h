@@ -3,133 +3,138 @@
 
 #include "../utils/Maths.h"
 
+namespace Key
+{
+typedef enum
+{
+    KEY_NULL = 0,
+
+    // Alphanumeric keys
+    APOSTROPHE = 39,
+    COMMA = 44,
+    MINUS = 45,
+    PERIOD = 46,
+    SLASH = 47,
+    ZERO = 48,
+    ONE = 49,
+    TWO = 50,
+    THREE = 51,
+    FOUR = 52,
+    FIVE = 53,
+    SIX = 54,
+    SEVEN = 55,
+    EIGHT = 56,
+    NINE = 57,
+    SEMICOLON = 59,
+    EQUAL = 61,
+    A = 65,
+    B = 66,
+    C = 67,
+    D = 68,
+    E = 69,
+    F = 70,
+    G = 71,
+    H = 72,
+    I = 73,
+    J = 74,
+    K = 75,
+    L = 76,
+    M = 77,
+    N = 78,
+    O = 79,
+    P = 80,
+    Q = 81,
+    R = 82,
+    S = 83,
+    T = 84,
+    U = 85,
+    V = 86,
+    W = 87,
+    X = 88,
+    Y = 89,
+    Z = 90,
+
+    // Function keys
+    SPACE = 32,
+    ESCAPE = 256,
+    ENTER = 257,
+    TAB = 258,
+    BACKSPACE = 259,
+    INSERT = 260,
+    DELETE = 261,
+    RIGHT = 262,
+    LEFT = 263,
+    DOWN = 264,
+    UP = 265,
+    PAGE_UP = 266,
+    PAGE_DOWN = 267,
+    HOME = 268,
+    END = 269,
+    CAPS_LOCK = 280,
+    SCROLL_LOCK = 281,
+    NUM_LOCK = 282,
+    PRINT_SCREEN = 283,
+    PAUSE = 284,
+    F1 = 290,
+    F2 = 291,
+    F3 = 292,
+    F4 = 293,
+    F5 = 294,
+    F6 = 295,
+    F7 = 296,
+    F8 = 297,
+    F9 = 298,
+    F10 = 299,
+    F11 = 300,
+    F12 = 301,
+    LEFT_SHIFT = 340,
+    LEFT_CONTROL = 341,
+    LEFT_ALT = 342,
+    LEFT_SUPER = 343,
+    RIGHT_SHIFT = 344,
+    RIGHT_CONTROL = 345,
+    RIGHT_ALT = 346,
+    RIGHT_SUPER = 347,
+    KB_MENU = 348,
+    LEFT_BRACKET = 91,
+    BACKSLASH = 92,
+
+    RIGHT_BRACKET = 93,
+    GRAVE = 96,
+} Keyboard;
+} // namespace Key
+
+namespace Mouse
+{
+typedef enum
+{
+    LEFT_BUTTON = 0,
+    RIGHT_BUTTON = 1,
+    MIDDLE_BUTTON = 2
+} Button;
+} // namespace Mouse
+
 class Input
 {
 public:
 
-    typedef enum
-    {
-        KEY_NULL = 0,
+    bool KeyDown(Key::Keyboard key);
 
-        // Alphanumeric keys
-        KEY_APOSTROPHE = 39,
-        KEY_COMMA = 44,
-        KEY_MINUS = 45,
-        KEY_PERIOD = 46,
-        KEY_SLASH = 47,
-        KEY_ZERO = 48,
-        KEY_ONE = 49,
-        KEY_TWO = 50,
-        KEY_THREE = 51,
-        KEY_FOUR = 52,
-        KEY_FIVE = 53,
-        KEY_SIX = 54,
-        KEY_SEVEN = 55,
-        KEY_EIGHT = 56,
-        KEY_NINE = 57,
-        KEY_SEMICOLON = 59,
-        KEY_EQUAL = 61,
-        KEY_A = 65,
-        KEY_B = 66,
-        KEY_C = 67,
-        KEY_D = 68,
-        KEY_E = 69,
-        KEY_F = 70,
-        KEY_G = 71,
-        KEY_H = 72,
-        KEY_I = 73,
-        KEY_J = 74,
-        KEY_K = 75,
-        KEY_L = 76,
-        KEY_M = 77,
-        KEY_N = 78,
-        KEY_O = 79,
-        KEY_P = 80,
-        KEY_Q = 81,
-        KEY_R = 82,
-        KEY_S = 83,
-        KEY_T = 84,
-        KEY_U = 85,
-        KEY_V = 86,
-        KEY_W = 87,
-        KEY_X = 88,
-        KEY_Y = 89,
-        KEY_Z = 90,
+    bool KeyPressed(Key::Keyboard key);
 
-        // Function keys
-        KEY_SPACE = 32,
-        KEY_ESCAPE = 256,
-        KEY_ENTER = 257,
-        KEY_TAB = 258,
-        KEY_BACKSPACE = 259,
-        KEY_INSERT = 260,
-        KEY_DELETE = 261,
-        KEY_RIGHT = 262,
-        KEY_LEFT = 263,
-        KEY_DOWN = 264,
-        KEY_UP = 265,
-        KEY_PAGE_UP = 266,
-        KEY_PAGE_DOWN = 267,
-        KEY_HOME = 268,
-        KEY_END = 269,
-        KEY_CAPS_LOCK = 280,
-        KEY_SCROLL_LOCK = 281,
-        KEY_NUM_LOCK = 282,
-        KEY_PRINT_SCREEN = 283,
-        KEY_PAUSE = 284,
-        KEY_F1 = 290,
-        KEY_F2 = 291,
-        KEY_F3 = 292,
-        KEY_F4 = 293,
-        KEY_F5 = 294,
-        KEY_F6 = 295,
-        KEY_F7 = 296,
-        KEY_F8 = 297,
-        KEY_F9 = 298,
-        KEY_F10 = 299,
-        KEY_F11 = 300,
-        KEY_F12 = 301,
-        KEY_LEFT_SHIFT = 340,
-        KEY_LEFT_CONTROL = 341,
-        KEY_LEFT_ALT = 342,
-        KEY_LEFT_SUPER = 343,
-        KEY_RIGHT_SHIFT = 344,
-        KEY_RIGHT_CONTROL = 345,
-        KEY_RIGHT_ALT = 346,
-        KEY_RIGHT_SUPER = 347,
-        KEY_KB_MENU = 348,
-        KEY_LEFT_BRACKET = 91,
-        KEY_BACKSLASH = 92,
+    bool MouseDown(Mouse::Button button);
 
-        KEY_RIGHT_BRACKET = 93,
-        KEY_GRAVE = 96,
-    } KeyboardKey;
+    bool MousePressed(Mouse::Button button);
 
-    // Mouse buttons
-    typedef enum
-    {
-        MOUSE_LEFT_BUTTON = 0,
-        MOUSE_RIGHT_BUTTON = 1,
-        MOUSE_MIDDLE_BUTTON = 2
-    } MouseButton;
+    bool MouseReleased(Mouse::Button button);
 
-    static bool KeyDown(KeyboardKey key);
+    char GetKeyChar();
 
-    static bool KeyPressed(KeyboardKey key);
+    void EnableMouseCursor();
 
-    static bool MouseDown(MouseButton button);
+    void DisableMouseCursor();
 
-    static bool MousePressed(MouseButton button);
-
-    static bool MouseReleased(MouseButton button);
-
-    static char GetKeyChar();
-
-    static void EnableMouseCursor();
-
-    static void DisableMouseCursor();
-
-    static Vec3 GetMousePos();
+    Vec3 GetMousePos();
 };
 
 #endif // A_DARK_DISCOMFORT_INPUT_H

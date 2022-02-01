@@ -1,11 +1,12 @@
 #include "Player.h"
-#include "utils/Statics.h"
 
 #include <input/Input.h>
 #include <physics/CollisionSystem.h>
 #include <render/RenderSystem.h>
 #include <render/Window.h>
 #include <scene/SceneFile.h>
+
+#include "utils/Statics.h"
 
 // Static member initialisation
 const String Player::ENTITY_NAME("Player");
@@ -22,9 +23,9 @@ void Player::OnUpdate()
 {
     // Get move axes as vector
     Vec3 move = {
-        (float) (-Input::KeyDown(Input::KEY_LEFT) + Input::KeyDown(Input::KEY_RIGHT)),
+        (float) (-Statics::Input.KeyDown(Key::LEFT) + Statics::Input.KeyDown(Key::RIGHT)),
         0.f,
-        (float) (-Input::KeyDown(Input::KEY_UP) + Input::KeyDown(Input::KEY_DOWN)),
+        (float) (-Statics::Input.KeyDown(Key::UP) + Statics::Input.KeyDown(Key::DOWN)),
     };
 
     // Normalise and apply move to velocity
