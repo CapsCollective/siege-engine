@@ -2,12 +2,6 @@
 
 #include <algorithm>
 
-// Define static members
-// TODO make storage use an octree for improved performance
-std::vector<Entity*> CollisionSystem::collidableEntities;
-std::vector<Entity*> CollisionSystem::addedEntities;
-std::vector<Entity*> CollisionSystem::removedEntities;
-
 void CollisionSystem::Add(Entity* entity)
 {
     // Set the entity for registration
@@ -68,6 +62,7 @@ Vec3 CollisionSystem::MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity)
 
 bool CollisionSystem::CheckCollision(const BoundedBox& boundingBox)
 {
+    // TODO make storage use an octree for improved performance
     // Check collision for each registered entity against the bounding box
     for (auto& entity : collidableEntities)
     {

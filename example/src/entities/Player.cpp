@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "utils/Statics.h"
 
 #include <input/Input.h>
 #include <physics/CollisionSystem.h>
@@ -33,7 +34,7 @@ void Player::OnUpdate()
     velocity += Vec3(0.f, -0.01f, 0.f);
 
     // Set the resulting attempted move's velocity to the object's position
-    velocity = CollisionSystem::MoveAndSlide(GetBoundingBox(), velocity);
+    velocity = Statics::CollisionSystem.MoveAndSlide(GetBoundingBox(), velocity);
     transform.SetPosition(transform.GetPosition() + velocity);
 
     // Dampen velocity
