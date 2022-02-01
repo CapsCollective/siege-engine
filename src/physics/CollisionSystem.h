@@ -15,25 +15,25 @@ public:
      * Registers a given entity for collision detection
      * @param entity - the entity to register
      */
-    static void Add(Entity* entity);
+    void Add(Entity* entity);
 
     /**
      * De-registers a given entity for collision detection
      * @param entity - the entity to deregister
      */
-    static void Remove(Entity* entity);
+    void Remove(Entity* entity);
 
     /**
      * Registers all added entities, should be called before
      * the update loop
      */
-    static void RegisterEntities();
+    void RegisterEntities();
 
     /**
      * Frees all removed entities, should be called after
      * the update loop
      */
-    static void FreeEntities();
+    void FreeEntities();
 
     /**
      * Checks the collision of the object while moving
@@ -44,7 +44,7 @@ public:
      * @return the resulting linear velocity after
      *         applying any collision events
      */
-    static Vec3 MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity);
+    Vec3 MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity);
 
     /**
      * Checks a given bounding box for collisions against
@@ -52,17 +52,17 @@ public:
      * @param boundingBox - the bounding box to check
      * @return whether there were any collisions
      */
-    static bool CheckCollision(const BoundedBox& boundingBox);
+    bool CheckCollision(const BoundedBox& boundingBox);
 
 private:
 
     // Private fields
 
-    static std::vector<Entity*> collidableEntities;
+    std::vector<Entity*> collidableEntities;
 
-    static std::vector<Entity*> addedEntities;
+    std::vector<Entity*> addedEntities;
 
-    static std::vector<Entity*> removedEntities;
+    std::vector<Entity*> removedEntities;
 };
 
 #endif // A_DARK_DISCOMFORT_COLLISIONSYSTEM_H

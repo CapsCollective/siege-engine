@@ -4,6 +4,7 @@
 #include <scene/SceneFile.h>
 
 #include "utils/Logging.h"
+#include "utils/Statics.h"
 
 // Static member initialisation
 const String Geometry::ENTITY_NAME("Geometry");
@@ -11,7 +12,7 @@ const String Geometry::ENTITY_NAME("Geometry");
 void Geometry::OnStart()
 {
     // Register the entity with systems
-    CollisionSystem::Add(this);
+    Statics::CollisionSystem.Add(this);
     RenderSystem::Add(this, {modelPath, texturePath});
 }
 
@@ -19,7 +20,7 @@ void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
     RenderSystem::Remove(this);
-    CollisionSystem::Remove(this);
+    Statics::CollisionSystem.Remove(this);
 }
 
 BoundedBox Geometry::GetBoundingBox() const

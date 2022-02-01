@@ -11,6 +11,7 @@
 #include "tools/EditorController.h"
 #include "tools/FreeCam.h"
 #include "tools/MessageDisplay.h"
+#include "utils/Statics.h"
 
 int main(int argc, char* argv[])
 {
@@ -70,7 +71,7 @@ int main(int argc, char* argv[])
 
         // Entity creation is deferred until after the update loop
         EntityStorage::RegisterEntities();
-        CollisionSystem::RegisterEntities();
+        Statics::CollisionSystem.RegisterEntities();
 
         // Begin drawing to screen
         window.BeginDraw();
@@ -88,7 +89,7 @@ int main(int argc, char* argv[])
 
         // Remove all entities at the end of the frame
         ResourceManagerFacade::FreeResources();
-        CollisionSystem::FreeEntities();
+        Statics::CollisionSystem.FreeEntities();
         EntityStorage::FreeEntities();
         SceneManager::LoadNextScene();
     }
