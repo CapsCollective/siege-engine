@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
         camera.Begin3D();
 
         // Draw entities
-        RenderSystem::DrawFrame();
+        Statics::RenderSystem.DrawFrame();
 
         camera.End3D();
 

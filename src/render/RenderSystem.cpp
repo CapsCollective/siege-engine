@@ -4,19 +4,16 @@
 #include "../utils/TransitionAdapter.h"
 #include "ResourceManager.h"
 
-std::map<EntityPtr<Entity>, RenderItem> RenderSystem::renderItems;
-
-RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData)
+void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {
-    return Add(entity, modelData, entity->GetTransform());
+    Add(entity, modelData, entity->GetTransform());
 }
 
-RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData, const Xform& transform)
+void RenderSystem::Add(Entity* entity, const ModelData& modelData, const Xform& transform)
 {
     Statics::ResourceManager.Register<Model>(modelData.modelPath);
     Statics::ResourceManager.Register<Texture>(modelData.texturePath);
     renderItems.emplace(entity, RenderItem(modelData, transform));
-    return nullptr;
 }
 
 void RenderSystem::DrawFrame()

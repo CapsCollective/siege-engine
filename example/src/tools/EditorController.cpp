@@ -171,21 +171,24 @@ void EditorController::OnDraw2D()
 
     // Draw display text just above the entity in world-space
     Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
-    RenderSystem::DrawText2D(nameLabel,
-                             (int) screenPosition.x - Window::GetTextWidth(nameLabel, 20) / 2,
-                             (int) screenPosition.y,
-                             20,
-                             Colour::Pink);
-    RenderSystem::DrawText2D(posLabel,
-                             (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
-                             (int) screenPosition.y + 20,
-                             18,
-                             currentMode == POSITION ? BRIGHT_PINK : Colour::Pink);
-    RenderSystem::DrawText2D(rotLabel,
-                             (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
-                             (int) screenPosition.y + 40,
-                             18,
-                             currentMode == ROTATION ? BRIGHT_PINK : Colour::Pink);
+    Statics::RenderSystem.DrawText2D(
+        nameLabel,
+        (int) screenPosition.x - Window::GetTextWidth(nameLabel, 20) / 2,
+        (int) screenPosition.y,
+        20,
+        Colour::Pink);
+    Statics::RenderSystem.DrawText2D(
+        posLabel,
+        (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
+        (int) screenPosition.y + 20,
+        18,
+        currentMode == POSITION ? BRIGHT_PINK : Colour::Pink);
+    Statics::RenderSystem.DrawText2D(
+        rotLabel,
+        (int) screenPosition.x - Window::GetTextWidth(posLabel, 18) / 2,
+        (int) screenPosition.y + 40,
+        18,
+        currentMode == ROTATION ? BRIGHT_PINK : Colour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)

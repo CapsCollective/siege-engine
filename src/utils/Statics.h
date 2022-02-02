@@ -11,6 +11,8 @@ public:
     static class Input Input;
 
     static class ResourceManager ResourceManager;
+
+    static class RenderSystem RenderSystem;
 #endif
 };
 
