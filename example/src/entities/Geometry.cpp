@@ -13,13 +13,13 @@ void Geometry::OnStart()
 {
     // Register the entity with systems
     Statics::CollisionSystem.Add(this);
-    RenderSystem::Add(this, {modelPath, texturePath});
+    Statics::RenderSystem.Add(this, {modelPath, texturePath});
 }
 
 void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    RenderSystem::Remove(this);
+    Statics::RenderSystem.Remove(this);
     Statics::CollisionSystem.Remove(this);
 }
 

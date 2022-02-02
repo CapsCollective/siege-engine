@@ -16,7 +16,7 @@ void Player::OnStart()
     // Register the entity with systems
     String modelPath = "models/cube/cube.obj";
     String texturePath = "models/cube/cube.png";
-    RenderSystem::Add(this, {modelPath, texturePath});
+    Statics::RenderSystem.Add(this, {modelPath, texturePath});
 }
 
 void Player::OnUpdate()
@@ -45,7 +45,7 @@ void Player::OnUpdate()
 void Player::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    RenderSystem::Remove(this);
+    Statics::RenderSystem.Remove(this);
 }
 
 BoundedBox Player::GetBoundingBox() const

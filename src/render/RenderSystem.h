@@ -32,23 +32,21 @@ class RenderSystem
 {
 public:
 
-    static RenderItem* Add(Entity* entity, const ModelData& modelData);
+    void Add(Entity* entity, const ModelData& modelData);
 
-    static RenderItem* Add(Entity* entity, const ModelData& modelData, const Xform& transform);
+    void Add(Entity* entity, const ModelData& modelData, const Xform& transform);
 
-    static void Remove(Entity* entity);
+    void Remove(Entity* entity);
 
-    static void DrawFrame();
+    void DrawFrame();
 
-    static void DrawText2D(const String& text, int posX, int posY, int fontSize, Colour color);
+    void DrawText2D(const String& text, int posX, int posY, int fontSize, Colour color);
 
-    static void DrawRectangle2D(int posX, int posY, int width, int height, Colour color);
+    void DrawRectangle2D(int posX, int posY, int width, int height, Colour color);
 
 private:
 
-    static std::map<EntityPtr<Entity>, RenderItem> renderItems;
-
-    static std::map<EntityPtr<Entity>, class RenderItem2D> renderItems2D;
+    std::map<EntityPtr<Entity>, RenderItem> renderItems;
 };
 
 #endif // A_DARK_DISCOMFORT_RENDERSYSTEM_H

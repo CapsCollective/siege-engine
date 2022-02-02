@@ -143,8 +143,8 @@ void DevConsole::OnDraw2D()
     Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    RenderSystem::DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
-    RenderSystem::DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
+    Statics::RenderSystem.DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
+    Statics::RenderSystem.DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
 }
 
 bool DevConsole::CheckEditorMode()
