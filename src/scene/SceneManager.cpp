@@ -68,5 +68,5 @@ void SceneManager::ClearScene()
     for (auto& entity : EntityStorage::GetEntities()) entity->QueueFree();
 
     // Clear out all resources
-    Statics::ResourceManager.ClearResources();
+    Statics::Resource().ClearResources();
 }

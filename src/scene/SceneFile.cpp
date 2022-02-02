@@ -88,5 +88,5 @@ void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<E
 
 String SceneFile::MakeScenePath(const String& sceneName)
 {
-    return Statics::ResourceManager.GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
+    return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
 }

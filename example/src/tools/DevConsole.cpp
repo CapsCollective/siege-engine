@@ -1,21 +1,21 @@
 #include "DevConsole.h"
 
-#include <input/Input.h>
+#include <input/InputSystem.h>
 #include <render/RenderSystem.h>
 #include <render/Window.h>
 #include <scene/SceneManager.h>
+#include <utils/Statics.h>
 
 #include <stdexcept>
 
 #include "EditorController.h"
 #include "MessageDisplay.h"
-#include "utils/Statics.h"
 
 void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Statics::Input.KeyPressed(Key::GRAVE))
+    if (Statics::Input().KeyPressed(Key::GRAVE))
     {
         // Toggle the console
         isActive = !isActive;
@@ -27,19 +27,19 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) Statics::Input.GetKeyChar()) > 0)
+    while ((key = (char) Statics::Input().GetKeyChar()) > 0)
     {
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
-    if (Statics::Input.KeyPressed(Key::BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
+    if (Statics::Input().KeyPressed(Key::BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Statics::Input.KeyPressed(Key::UP) && !lastInput.IsEmpty()) inputText = lastInput;
+    if (Statics::Input().KeyPressed(Key::UP) && !lastInput.IsEmpty()) inputText = lastInput;
 
     // Process the command on enter
-    if (Statics::Input.KeyPressed(Key::ENTER))
+    if (Statics::Input().KeyPressed(Key::ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
@@ -55,7 +55,7 @@ void DevConsole::OnUpdate()
                 if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
 
                 // Try load the scene specified
-                Statics::SceneManager.QueueNextScene(argument);
+                Statics::Scene().QueueNextScene(argument);
             }
         }
         else if (command == "save")
@@ -63,7 +63,7 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode())
             {
                 // Save the scene as the current scene name (or untitled if argument blank)
-                Statics::SceneManager.SaveScene(argument);
+                Statics::Scene().SaveScene(argument);
                 messageDisplay->DisplayMessage("Scene saved");
             }
         }
@@ -71,7 +71,7 @@ void DevConsole::OnUpdate()
         {
             // Deselect all entities and open a new, untitled scene
             ServiceLocator::GetEditorController()->SelectEntity(nullptr);
-            Statics::SceneManager.NewScene();
+            Statics::Scene().NewScene();
             messageDisplay->DisplayMessage("Created new scene");
         }
         else if (command == "add")
@@ -143,8 +143,8 @@ void DevConsole::OnDraw2D()
     Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    Statics::RenderSystem.DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
-    Statics::RenderSystem.DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
+    Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
+    Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
 }
 
 bool DevConsole::CheckEditorMode()
