@@ -5,17 +5,15 @@ class Statics
 {
 public:
 
-#ifndef CC_IGNORE_STATICS
-    static class CollisionSystem CollisionSystem;
+    static class CollisionSystem& Collision();
 
-    static class Input Input;
+    static class InputSystem& Input();
 
-    static class ResourceManager ResourceManager;
+    static class ResourceManager& Resource();
 
-    static class RenderSystem RenderSystem;
+    static class RenderSystem& Render();
 
-    static class SceneManager SceneManager;
-#endif
+    static class SceneManager& Scene();
 };
 
 #endif // A_DARK_DISCOMFORT_STATICS_H

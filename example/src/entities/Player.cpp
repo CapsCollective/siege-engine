@@ -1,12 +1,11 @@
 #include "Player.h"
 
-#include <input/Input.h>
+#include <input/InputSystem.h>
 #include <physics/CollisionSystem.h>
 #include <render/RenderSystem.h>
 #include <render/Window.h>
 #include <scene/SceneFile.h>
-
-#include "utils/Statics.h"
+#include <utils/Statics.h>
 
 // Static member initialisation
 const String Player::ENTITY_NAME("Player");
@@ -16,16 +15,16 @@ void Player::OnStart()
     // Register the entity with systems
     String modelPath = "models/cube/cube.obj";
     String texturePath = "models/cube/cube.png";
-    Statics::RenderSystem.Add(this, {modelPath, texturePath});
+    Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Player::OnUpdate()
 {
     // Get move axes as vector
     Vec3 move = {
-        (float) (-Statics::Input.KeyDown(Key::LEFT) + Statics::Input.KeyDown(Key::RIGHT)),
+        (float) (-Statics::Input().KeyDown(Key::LEFT) + Statics::Input().KeyDown(Key::RIGHT)),
         0.f,
-        (float) (-Statics::Input.KeyDown(Key::UP) + Statics::Input.KeyDown(Key::DOWN)),
+        (float) (-Statics::Input().KeyDown(Key::UP) + Statics::Input().KeyDown(Key::DOWN)),
     };
 
     // Normalise and apply move to velocity
@@ -35,7 +34,7 @@ void Player::OnUpdate()
     velocity += Vec3(0.f, -0.01f, 0.f);
 
     // Set the resulting attempted move's velocity to the object's position
-    velocity = Statics::CollisionSystem.MoveAndSlide(GetBoundingBox(), velocity);
+    velocity = Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);
     transform.SetPosition(transform.GetPosition() + velocity);
 
     // Dampen velocity
@@ -45,7 +44,7 @@ void Player::OnUpdate()
 void Player::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Statics::RenderSystem.Remove(this);
+    Statics::Render().Remove(this);
 }
 
 BoundedBox Player::GetBoundingBox() const

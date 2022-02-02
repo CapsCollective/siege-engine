@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_INPUT_H
-#define A_DARK_DISCOMFORT_INPUT_H
+#ifndef A_DARK_DISCOMFORT_INPUTSYSTEM_H
+#define A_DARK_DISCOMFORT_INPUTSYSTEM_H
 
 #include "../utils/Maths.h"
 
@@ -108,13 +108,13 @@ namespace Mouse
 {
 typedef enum
 {
-    LEFT_BUTTON = 0,
-    RIGHT_BUTTON = 1,
-    MIDDLE_BUTTON = 2
+    LEFT = 0,
+    RIGHT = 1,
+    MIDDLE = 2
 } Button;
 } // namespace Mouse
 
-class Input
+class InputSystem
 {
 public:
 
@@ -137,4 +137,4 @@ public:
     Vec3 GetMousePos();
 };
 
-#endif // A_DARK_DISCOMFORT_INPUT_H
+#endif // A_DARK_DISCOMFORT_INPUTSYSTEM_H

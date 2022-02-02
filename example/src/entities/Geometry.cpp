@@ -12,15 +12,15 @@ const String Geometry::ENTITY_NAME("Geometry");
 void Geometry::OnStart()
 {
     // Register the entity with systems
-    Statics::CollisionSystem.Add(this);
-    Statics::RenderSystem.Add(this, {modelPath, texturePath});
+    Statics::Collision().Add(this);
+    Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Statics::RenderSystem.Remove(this);
-    Statics::CollisionSystem.Remove(this);
+    Statics::Render().Remove(this);
+    Statics::Collision().Remove(this);
 }
 
 BoundedBox Geometry::GetBoundingBox() const

@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     EntityStorage::Add({&display, &devConsole}, true);
 
     // Set the default directories
-    Statics::ResourceManager.SetBaseDirectory("example/assets/");
+    Statics::Resource().SetBaseDirectory("example/assets/");
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     else
     {
         // Load the game entrypoint
-        Statics::SceneManager.QueueNextScene("scenes/main");
+        Statics::Scene().QueueNextScene("scenes/main");
     }
 
     // Run main game loop until close button or ESC key
@@ -71,14 +71,14 @@ int main(int argc, char* argv[])
 
         // Entity creation is deferred until after the update loop
         EntityStorage::RegisterEntities();
-        Statics::CollisionSystem.RegisterEntities();
+        Statics::Collision().RegisterEntities();
 
         // Begin drawing to screen
         window.BeginDraw();
         camera.Begin3D();
 
         // Draw entities
-        Statics::RenderSystem.DrawFrame();
+        Statics::Render().DrawFrame();
 
         camera.End3D();
 
@@ -88,10 +88,10 @@ int main(int argc, char* argv[])
         window.EndDraw();
 
         // Remove all entities at the end of the frame
-        Statics::ResourceManager.FreeResources();
-        Statics::CollisionSystem.FreeEntities();
+        Statics::Resource().FreeResources();
+        Statics::Collision().FreeEntities();
         EntityStorage::FreeEntities();
-        Statics::SceneManager.LoadNextScene();
+        Statics::Scene().LoadNextScene();
     }
 
     return 0;

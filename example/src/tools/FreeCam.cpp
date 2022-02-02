@@ -1,23 +1,22 @@
 #include "FreeCam.h"
 
-#include <input/Input.h>
+#include <input/InputSystem.h>
 #include <render/Camera.h>
 #include <render/Window.h>
-
-#include "utils/Statics.h"
+#include <utils/Statics.h>
 
 void FreeCam::OnUpdate()
 {
     if (!camera) return;
 
     // TODO fix bug where camera resets on rmb click sometimes
-    if (Statics::Input.MouseDown(Mouse::RIGHT_BUTTON))
+    if (Statics::Input().MouseDown(Mouse::RIGHT))
     {
         // Begin the click, hide the cursor
-        if (Statics::Input.MousePressed(Mouse::RIGHT_BUTTON)) Statics::Input.DisableMouseCursor();
+        if (Statics::Input().MousePressed(Mouse::RIGHT)) Statics::Input().DisableMouseCursor();
 
         // Calculate current mouse positional values
-        Vec3 mousePosition = Statics::Input.GetMousePos();
+        Vec3 mousePosition = Statics::Input().GetMousePos();
         Vec3 mousePositionDelta = {
             mousePosition.x - previousMousePosition.x,
             mousePosition.y - previousMousePosition.y,
@@ -38,9 +37,9 @@ void FreeCam::OnUpdate()
 
         // Get movement as vector
         Vec3 move = {
-            (float) (-Statics::Input.KeyDown(Key::A) + Statics::Input.KeyDown(Key::D)),
-            (float) (-Statics::Input.KeyDown(Key::Q) + Statics::Input.KeyDown(Key::E)),
-            (float) (-Statics::Input.KeyDown(Key::W) + Statics::Input.KeyDown(Key::S)),
+            (float) (-Statics::Input().KeyDown(Key::A) + Statics::Input().KeyDown(Key::D)),
+            (float) (-Statics::Input().KeyDown(Key::Q) + Statics::Input().KeyDown(Key::E)),
+            (float) (-Statics::Input().KeyDown(Key::W) + Statics::Input().KeyDown(Key::S)),
         };
 
         // Set the new position and look rotation of the camera
@@ -50,7 +49,7 @@ void FreeCam::OnUpdate()
         camera->SetPosition(position);
         camera->SetTarget(target);
     }
-    else if (Statics::Input.MouseReleased(Mouse::RIGHT_BUTTON)) Statics::Input.EnableMouseCursor();
+    else if (Statics::Input().MouseReleased(Mouse::RIGHT)) Statics::Input().EnableMouseCursor();
 
     // TODO fix camera look issues beyond 90 degrees in either direction from origin
 }
