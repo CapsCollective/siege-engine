@@ -3,8 +3,10 @@
 #include <algorithm>
 
 #include "../entity/Entity.h"
+#include "../render/ResourceManager.h"
 #include "../utils/FileSystem.h"
 #include "../utils/Logging.h"
+#include "../utils/Statics.h"
 
 void SceneFile::RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
@@ -86,5 +88,5 @@ void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<E
 
 String SceneFile::MakeScenePath(const String& sceneName)
 {
-    return ResourceManagerFacade::GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
+    return Statics::ResourceManager.GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
 }

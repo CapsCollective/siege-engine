@@ -2,16 +2,16 @@
 #include <physics/CollisionSystem.h>
 #include <render/Camera.h>
 #include <render/RenderSystem.h>
+#include <render/ResourceManager.h>
 #include <render/Window.h>
-#include <resource/ResourceManagerFacade.h>
 #include <scene/SceneManager.h>
+#include <utils/Statics.h>
 
 #include "ServiceLocator.h"
 #include "tools/DevConsole.h"
 #include "tools/EditorController.h"
 #include "tools/FreeCam.h"
 #include "tools/MessageDisplay.h"
-#include "utils/Statics.h"
 
 int main(int argc, char* argv[])
 {
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     EntityStorage::Add({&display, &devConsole}, true);
 
     // Set the default directories
-    ResourceManagerFacade::SetBaseDirectory("example/assets/");
+    Statics::ResourceManager.SetBaseDirectory("example/assets/");
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         window.EndDraw();
 
         // Remove all entities at the end of the frame
-        ResourceManagerFacade::FreeResources();
+        Statics::ResourceManager.FreeResources();
         Statics::CollisionSystem.FreeEntities();
         EntityStorage::FreeEntities();
         SceneManager::LoadNextScene();
