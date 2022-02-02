@@ -51,13 +51,13 @@ int main(int argc, char* argv[])
     else
     {
         // Load the game entrypoint
-        SceneManager::QueueNextScene("scenes/main");
+        Statics::SceneManager.QueueNextScene("scenes/main");
     }
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
-        // Update timestep
+        // Update time-step
         Window::UpdateTime();
 
         // Update game entities
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
         Statics::ResourceManager.FreeResources();
         Statics::CollisionSystem.FreeEntities();
         EntityStorage::FreeEntities();
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.LoadNextScene();
     }
 
     return 0;

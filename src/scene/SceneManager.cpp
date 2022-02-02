@@ -10,10 +10,6 @@
 // Define constants
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
-// Define static members
-String SceneManager::currentScene;
-String SceneManager::nextScene;
-
 void SceneManager::NewScene()
 {
     // Clear the current scene and reset current scene

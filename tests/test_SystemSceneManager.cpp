@@ -45,11 +45,11 @@ REGISTER_SERIALISATION_INTERFACE(
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
     Statics::ResourceManager.SetBaseDirectory(SCENE_DIR);
-    SceneManager::NewScene();
+    Statics::SceneManager.NewScene();
 
     SECTION("when an empty scene is saved it should create a file in the correct directory")
     {
-        SceneManager::SaveScene("test");
+        Statics::SceneManager.SaveScene("test");
 
         REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
         String content = FileSystem::Read(Filepath(TEST_FILE));
@@ -61,7 +61,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         EntityStorage::Add(new TestEntity());
         EntityStorage::RegisterEntities();
 
-        SceneManager::SaveScene("test");
+        Statics::SceneManager.SaveScene("test");
 
         REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
         String content = FileSystem::Read(Filepath(TEST_FILE));
@@ -73,7 +73,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     {
         EntityStorage::Reset();
 
-        SceneManager::SaveScene("test");
+        Statics::SceneManager.SaveScene("test");
 
         REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
         String content = FileSystem::Read(Filepath(TEST_FILE));
@@ -84,7 +84,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     SECTION("when a non-serialisable entity is added to the scene it should not be saved")
     {
         EntityStorage::Add(new Entity());
-        SceneManager::SaveScene("test");
+        Statics::SceneManager.SaveScene("test");
 
         REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
         String content = FileSystem::Read(Filepath(TEST_FILE));
@@ -93,7 +93,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
     SECTION("when an empty string is passed into SaveScene, it should create 'untitled.scene'")
     {
-        SceneManager::SaveScene("");
+        Statics::SceneManager.SaveScene("");
         String filepath = Filepath(UNTITLED_FILE);
         REQUIRE(FileSystem::Exists(filepath));
         remove(filepath);
@@ -110,7 +110,7 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
         EntityStorage::Add(new TestEntity());
         EntityStorage::RegisterEntities();
 
-        SceneManager::NewScene();
+        Statics::SceneManager.NewScene();
 
         SECTION("and wait until the end of frame to remove all others")
         {
@@ -128,8 +128,8 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     Statics::ResourceManager.SetBaseDirectory(SCENE_DIR);
     SECTION("when populated, it should populate the EntityStorage correctly")
     {
-        SceneManager::QueueNextScene("scene1");
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.QueueNextScene("scene1");
+        Statics::SceneManager.LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().size() == 3);
@@ -137,7 +137,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when a new scene is queued it should not delete entities until the end of the frame")
     {
-        SceneManager::QueueNextScene("scene2");
+        Statics::SceneManager.QueueNextScene("scene2");
         REQUIRE(EntityStorage::GetEntities().size() == 3);
 
         EntityStorage::FreeEntities();
@@ -146,7 +146,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when a new scene is loaded in it should add all entities to the EntityStorage")
     {
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.LoadNextScene();
 
         EntityStorage::RegisterEntities();
         REQUIRE(EntityStorage::GetEntities().size() == 1);
@@ -156,10 +156,10 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     {
         REQUIRE(EntityStorage::GetEntities().size() == 1);
 
-        SceneManager::QueueNextScene("nonexistent");
+        Statics::SceneManager.QueueNextScene("nonexistent");
         EntityStorage::FreeEntities();
 
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
@@ -167,8 +167,8 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when loading a scene from an empty string it should reset the scene")
     {
-        SceneManager::QueueNextScene("");
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.QueueNextScene("");
+        Statics::SceneManager.LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());
@@ -176,8 +176,8 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 
     SECTION("when loading a scene with garbage data it should reset the scene")
     {
-        SceneManager::QueueNextScene("garbage.scene");
-        SceneManager::LoadNextScene();
+        Statics::SceneManager.QueueNextScene("garbage.scene");
+        Statics::SceneManager.LoadNextScene();
         EntityStorage::RegisterEntities();
 
         REQUIRE(EntityStorage::GetEntities().empty());

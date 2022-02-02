@@ -55,7 +55,7 @@ void EditorController::OnUpdate()
         else if (Statics::Input.KeyPressed(Key::S))
         {
             // Save the scene
-            SceneManager::SaveScene();
+            Statics::SceneManager.SaveScene();
             messageDisplay->DisplayMessage("Scene saved");
         }
         else if (selectedEntity)

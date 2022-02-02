@@ -13,6 +13,8 @@ public:
     static class ResourceManager ResourceManager;
 
     static class RenderSystem RenderSystem;
+
+    static class SceneManager SceneManager;
 #endif
 };
 
