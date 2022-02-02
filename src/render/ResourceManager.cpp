@@ -2,13 +2,6 @@
 
 #include <vector>
 
-// Static member initialisation
-std::map<String, Model> ResourceManager::models;
-std::map<String, Texture> ResourceManager::textures;
-std::vector<Model*> ResourceManager::freedModels;
-std::vector<Texture*> ResourceManager::freedTextures;
-String ResourceManager::baseDir;
-
 void ResourceManager::FreeResources()
 {
     if (freedModels.empty() && freedTextures.empty()) return;

@@ -1,11 +1,13 @@
 #include <entity/Entity.h>
 #include <entity/EntityStorage.h>
+#include <render/ResourceManager.h>
 #include <scene/SceneFile.h>
 #include <scene/SceneManager.h>
+#include <utils/FileSystem.h>
+#include <utils/Statics.h>
 #include <utils/String.h>
 
 #include "catch.hpp"
-#include "utils/FileSystem.h"
 
 // Const declarations
 static constexpr const char* SCENE_DIR = "tests/data/";
@@ -42,7 +44,7 @@ REGISTER_SERIALISATION_INTERFACE(
 
 TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 {
-    ResourceManagerFacade::SetBaseDirectory(SCENE_DIR);
+    Statics::ResourceManager.SetBaseDirectory(SCENE_DIR);
     SceneManager::NewScene();
 
     SECTION("when an empty scene is saved it should create a file in the correct directory")
@@ -123,7 +125,7 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 
 TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
 {
-    ResourceManagerFacade::SetBaseDirectory(SCENE_DIR);
+    Statics::ResourceManager.SetBaseDirectory(SCENE_DIR);
     SECTION("when populated, it should populate the EntityStorage correctly")
     {
         SceneManager::QueueNextScene("scene1");

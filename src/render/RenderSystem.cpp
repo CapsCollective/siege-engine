@@ -1,7 +1,8 @@
 #include "RenderSystem.h"
 
-#include "../resource/ResourceManager.h"
+#include "../utils/Statics.h"
 #include "../utils/TransitionAdapter.h"
+#include "ResourceManager.h"
 
 std::map<EntityPtr<Entity>, RenderItem> RenderSystem::renderItems;
 
@@ -12,8 +13,8 @@ RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData)
 
 RenderItem* RenderSystem::Add(Entity* entity, const ModelData& modelData, const Xform& transform)
 {
-    ResourceManager::Register<Model>(modelData.modelPath);
-    ResourceManager::Register<Texture>(modelData.texturePath);
+    Statics::ResourceManager.Register<Model>(modelData.modelPath);
+    Statics::ResourceManager.Register<Texture>(modelData.texturePath);
     renderItems.emplace(entity, RenderItem(modelData, transform));
     return nullptr;
 }
@@ -25,8 +26,8 @@ void RenderSystem::DrawFrame()
         const auto& item = pair.second;
         if (!item.isEnabled) continue;
 
-        const Model& model = ResourceManager::Get<Model>(item.data.modelPath);
-        const Texture& texture = ResourceManager::Get<Texture>(item.data.texturePath);
+        const Model& model = Statics::ResourceManager.Get<Model>(item.data.modelPath);
+        const Texture& texture = Statics::ResourceManager.Get<Texture>(item.data.texturePath);
 
         // Set model texture
         SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);

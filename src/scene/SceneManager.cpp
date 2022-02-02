@@ -2,8 +2,9 @@
 
 #include <vector>
 
-#include "../resource/ResourceManager.h"
+#include "../render/ResourceManager.h"
 #include "../utils/Logging.h"
+#include "../utils/Statics.h"
 #include "SceneFile.h"
 
 // Define constants
@@ -71,5 +72,5 @@ void SceneManager::ClearScene()
     for (auto& entity : EntityStorage::GetEntities()) entity->QueueFree();
 
     // Clear out all resources
-    ResourceManager::ClearResources();
+    Statics::ResourceManager.ClearResources();
 }

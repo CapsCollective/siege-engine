@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "../resource/ResourceManagerFacade.h"
 #include "../utils/Macros.h"
 #include "../utils/Maths.h"
 #include "../utils/String.h"
