@@ -66,7 +66,7 @@ void EditorController::OnUpdate()
                 auto newEntity = selectedEntity->Clone();
                 if (newEntity)
                 {
-                    EntityStorage::Add(newEntity);
+                    Statics::Entity().Add(newEntity);
                     messageDisplay->DisplayMessage("Entity duplicated");
                 }
                 else messageDisplay->DisplayMessage("Entity not duplicatable");
@@ -92,7 +92,7 @@ void EditorController::OnUpdate()
 
         // Check if any entities fall within the ray and set them as selected
         SelectEntity(nullptr);
-        for (auto& entity : EntityStorage::GetEntities())
+        for (auto& entity : Statics::Entity().GetEntities())
         {
             if (entity->GetBoundingBox().Intersects(ray))
             {
@@ -106,14 +106,14 @@ void EditorController::OnUpdate()
     if (Statics::Input().KeyPressed(Key::TAB))
     {
         // Select the first packed entity by index
-        size_t totalEntities = EntityStorage::GetEntities().size();
+        size_t totalEntities = Statics::Entity().GetEntities().size();
         if (totalEntities > 0)
         {
             size_t startIdx = selectedIdx = !selectedEntity ? 0 : ++selectedIdx % totalEntities;
             do
             {
                 // Try select the entity
-                SelectEntity(EntityStorage::GetEntities()[selectedIdx]);
+                SelectEntity(Statics::Entity().GetEntities()[selectedIdx]);
 
                 // If valid, break the loop, or select the next entity
                 if (selectedEntity) break;
@@ -202,12 +202,12 @@ bool EditorController::TryAddEntity(String entityName)
     // Check for matching cases to run
     if (entityName == "geometry")
     {
-        EntityStorage::Add(new Geometry());
+        Statics::Entity().Add(new Geometry());
         return true;
     }
     else if (entityName == "player")
     {
-        EntityStorage::Add(new Player());
+        Statics::Entity().Add(new Player());
         return true;
     }
     return false;

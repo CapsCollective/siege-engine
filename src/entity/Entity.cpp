@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "../utils/Logging.h"
+#include "../utils/Statics.h"
 #include "EntityStorage.h"
 
 // Static member initialisation
@@ -32,7 +33,7 @@ void Entity::QueueFree()
 {
     OnDestroy();
     CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex());
-    EntityStorage::QueueFree(this);
+    Statics::Entity().QueueFree(this);
 }
 
 const String& Entity::GetName() const
@@ -100,5 +101,5 @@ void Entity::SetZIndex(int idx)
     zIndex = idx;
 
     // Inform the entity system of the change
-    EntityStorage::SortPartial(this, oldZIndex);
+    Statics::Entity().SortPartial(this, oldZIndex);
 }

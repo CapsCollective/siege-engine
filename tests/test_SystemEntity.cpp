@@ -4,46 +4,46 @@
 
 TEST_CASE("entities can be added to storage", "[EntityStorage]")
 {
-    REQUIRE(EntityStorage::GetEntities().empty());
-    REQUIRE(EntityStorage::GetTools().empty());
+    REQUIRE(Statics::Entity().GetEntities().empty());
+    REQUIRE(Statics::Entity().GetTools().empty());
 
     SECTION("when adding one entity to storage")
     {
         auto e1 = new Entity();
-        EntityStorage::Add(e1);
+        Statics::Entity().Add(e1);
 
         SECTION("storage should not be increased before registration")
         {
-            REQUIRE(EntityStorage::GetEntities().empty());
-            REQUIRE(EntityStorage::GetTools().empty());
+            REQUIRE(Statics::Entity().GetEntities().empty());
+            REQUIRE(Statics::Entity().GetTools().empty());
         }
 
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
         SECTION("storage should be increased by one after registration")
         {
-            REQUIRE(EntityStorage::GetEntities().size() == 1);
-            REQUIRE(EntityStorage::GetTools().empty());
+            REQUIRE(Statics::Entity().GetEntities().size() == 1);
+            REQUIRE(Statics::Entity().GetTools().empty());
         }
 
         SECTION("and adding two more entities to storage")
         {
             auto e2 = new Entity();
             auto e3 = new Entity();
-            EntityStorage::Add({e2, e3});
+            Statics::Entity().Add({e2, e3});
 
             SECTION("storage should not be increased before registration")
             {
-                REQUIRE(EntityStorage::GetEntities().size() == 1);
-                REQUIRE(EntityStorage::GetTools().empty());
+                REQUIRE(Statics::Entity().GetEntities().size() == 1);
+                REQUIRE(Statics::Entity().GetTools().empty());
             }
 
-            EntityStorage::RegisterEntities();
+            Statics::Entity().RegisterEntities();
 
             SECTION("storage should be increased by two after registration")
             {
-                REQUIRE(EntityStorage::GetEntities().size() == 3);
-                REQUIRE(EntityStorage::GetTools().empty());
+                REQUIRE(Statics::Entity().GetEntities().size() == 3);
+                REQUIRE(Statics::Entity().GetTools().empty());
             }
         }
     }
@@ -51,60 +51,60 @@ TEST_CASE("entities can be added to storage", "[EntityStorage]")
     SECTION("when adding one tool entity to storage")
     {
         auto e1 = new Entity();
-        EntityStorage::Add(e1, true);
+        Statics::Entity().Add(e1, true);
 
         SECTION("storage should not be increased before registration")
         {
-            REQUIRE(EntityStorage::GetEntities().empty());
-            REQUIRE(EntityStorage::GetTools().empty());
+            REQUIRE(Statics::Entity().GetEntities().empty());
+            REQUIRE(Statics::Entity().GetTools().empty());
         }
 
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
         SECTION("storage should be increased by one after registration")
         {
-            REQUIRE(EntityStorage::GetEntities().empty());
-            REQUIRE(EntityStorage::GetTools().size() == 1);
+            REQUIRE(Statics::Entity().GetEntities().empty());
+            REQUIRE(Statics::Entity().GetTools().size() == 1);
         }
 
         SECTION("and adding two more tool entities to storage")
         {
             auto e2 = new Entity();
             auto e3 = new Entity();
-            EntityStorage::Add({e2, e3}, true);
+            Statics::Entity().Add({e2, e3}, true);
 
             SECTION("storage should not be increased before registration")
             {
-                REQUIRE(EntityStorage::GetEntities().empty());
-                REQUIRE(EntityStorage::GetTools().size() == 1);
+                REQUIRE(Statics::Entity().GetEntities().empty());
+                REQUIRE(Statics::Entity().GetTools().size() == 1);
             }
 
-            EntityStorage::RegisterEntities();
+            Statics::Entity().RegisterEntities();
 
             SECTION("storage should be increased by two after registration")
             {
-                REQUIRE(EntityStorage::GetEntities().empty());
-                REQUIRE(EntityStorage::GetTools().size() == 3);
+                REQUIRE(Statics::Entity().GetEntities().empty());
+                REQUIRE(Statics::Entity().GetTools().size() == 3);
             }
         }
     }
 
-    EntityStorage::Reset();
+    Statics::Entity().Reset();
 }
 
 TEST_CASE("entities can be freed from storage", "[EntityStorage]")
 {
-    REQUIRE(EntityStorage::GetEntities().empty());
-    REQUIRE(EntityStorage::GetTools().empty());
+    REQUIRE(Statics::Entity().GetEntities().empty());
+    REQUIRE(Statics::Entity().GetTools().empty());
 
     auto e1 = new Entity();
     auto e2 = new Entity();
     auto e3 = new Entity();
-    EntityStorage::Add({e1, e2, e3});
-    EntityStorage::RegisterEntities();
+    Statics::Entity().Add({e1, e2, e3});
+    Statics::Entity().RegisterEntities();
 
-    REQUIRE(EntityStorage::GetEntities().size() == 3);
-    REQUIRE(EntityStorage::GetTools().empty());
+    REQUIRE(Statics::Entity().GetEntities().size() == 3);
+    REQUIRE(Statics::Entity().GetTools().empty());
 
     SECTION("when queuing one entity to be freed")
     {
@@ -112,15 +112,15 @@ TEST_CASE("entities can be freed from storage", "[EntityStorage]")
 
         SECTION("storage should have the same amount of entities before freeing")
         {
-            REQUIRE(EntityStorage::GetEntities().size() == 3);
-            REQUIRE(EntityStorage::GetTools().empty());
+            REQUIRE(Statics::Entity().GetEntities().size() == 3);
+            REQUIRE(Statics::Entity().GetTools().empty());
         }
 
         SECTION("storage should have one less entity after freeing")
         {
-            EntityStorage::FreeEntities();
-            REQUIRE(EntityStorage::GetEntities().size() == 2);
-            REQUIRE(EntityStorage::GetTools().empty());
+            Statics::Entity().FreeEntities();
+            REQUIRE(Statics::Entity().GetEntities().size() == 2);
+            REQUIRE(Statics::Entity().GetTools().empty());
         }
 
         SECTION("and queuing another two entities to be freed")
@@ -130,27 +130,27 @@ TEST_CASE("entities can be freed from storage", "[EntityStorage]")
 
             SECTION("storage should have the same amount of entities before freeing")
             {
-                REQUIRE(EntityStorage::GetEntities().size() == 3);
-                REQUIRE(EntityStorage::GetTools().empty());
+                REQUIRE(Statics::Entity().GetEntities().size() == 3);
+                REQUIRE(Statics::Entity().GetTools().empty());
             }
 
-            EntityStorage::FreeEntities();
+            Statics::Entity().FreeEntities();
 
             SECTION("storage should have no entities after freeing")
             {
-                REQUIRE(EntityStorage::GetEntities().empty());
-                REQUIRE(EntityStorage::GetTools().empty());
+                REQUIRE(Statics::Entity().GetEntities().empty());
+                REQUIRE(Statics::Entity().GetTools().empty());
             }
         }
     }
 
-    EntityStorage::Reset();
+    Statics::Entity().Reset();
 }
 
 TEST_CASE("entities stay sorted by z-index", "[EntityStorage]")
 {
-    REQUIRE(EntityStorage::GetEntities().empty());
-    REQUIRE(EntityStorage::GetTools().empty());
+    REQUIRE(Statics::Entity().GetEntities().empty());
+    REQUIRE(Statics::Entity().GetTools().empty());
 
     SECTION("when three adding entities with specific z-indices")
     {
@@ -158,15 +158,15 @@ TEST_CASE("entities stay sorted by z-index", "[EntityStorage]")
         auto* e2 = new Entity("e2", Xform(), 5);
         auto* e3 = new Entity("e3", Xform(), 1);
         auto* e4 = new Entity("e4", Xform(), 3);
-        EntityStorage::Add({e1, e2, e3, e4});
-        EntityStorage::RegisterEntities();
+        Statics::Entity().Add({e1, e2, e3, e4});
+        Statics::Entity().RegisterEntities();
 
-        REQUIRE(EntityStorage::GetEntities().size() == 4);
-        REQUIRE(EntityStorage::GetTools().empty());
+        REQUIRE(Statics::Entity().GetEntities().size() == 4);
+        REQUIRE(Statics::Entity().GetTools().empty());
 
         SECTION("entities should be sorted from lowest to highest index")
         {
-            const std::vector<Entity*>& entities = EntityStorage::GetEntities();
+            const std::vector<Entity*>& entities = Statics::Entity().GetEntities();
             REQUIRE(entities[0] == e3);
             REQUIRE(entities[1] == e1);
             REQUIRE(entities[2] == e4);
@@ -200,5 +200,5 @@ TEST_CASE("entities stay sorted by z-index", "[EntityStorage]")
         }
     }
 
-    EntityStorage::Reset();
+    Statics::Entity().Reset();
 }

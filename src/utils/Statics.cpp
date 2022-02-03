@@ -35,3 +35,9 @@ SceneManager& Statics::Scene()
     static SceneManager system;
     return system;
 }
+
+class EntityStorage& Statics::Entity()
+{
+    static EntityStorage system;
+    return system;
+}
