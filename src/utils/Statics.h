@@ -14,6 +14,8 @@ public:
     static class RenderSystem& Render();
 
     static class SceneManager& Scene();
+
+    static class EntityStorage& Entity();
 };
 
 #endif // A_DARK_DISCOMFORT_STATICS_H

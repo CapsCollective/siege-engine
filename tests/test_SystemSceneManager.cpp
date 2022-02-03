@@ -58,8 +58,8 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
     SECTION("When an entity is added to the scene, it should be saved to the scene file.")
     {
-        EntityStorage::Add(new TestEntity());
-        EntityStorage::RegisterEntities();
+        Statics::Entity().Add(new TestEntity());
+        Statics::Entity().RegisterEntities();
 
         Statics::Scene().SaveScene("test");
 
@@ -71,7 +71,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
     SECTION("When an entity is removed from the scene, it should remove it from the file as well.")
     {
-        EntityStorage::Reset();
+        Statics::Entity().Reset();
 
         Statics::Scene().SaveScene("test");
 
@@ -83,7 +83,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
 
     SECTION("when a non-serialisable entity is added to the scene it should not be saved")
     {
-        EntityStorage::Add(new Entity());
+        Statics::Entity().Add(new Entity());
         Statics::Scene().SaveScene("test");
 
         REQUIRE(FileSystem::Exists(Filepath(TEST_FILE)));
@@ -99,7 +99,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
         remove(filepath);
     }
 
-    EntityStorage::Reset();
+    Statics::Entity().Reset();
     remove(Filepath(TEST_FILE));
 }
 
@@ -107,19 +107,19 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
 {
     SECTION("when NewScene is called it should remove all existing non-tool entities")
     {
-        EntityStorage::Add(new TestEntity());
-        EntityStorage::RegisterEntities();
+        Statics::Entity().Add(new TestEntity());
+        Statics::Entity().RegisterEntities();
 
         Statics::Scene().NewScene();
 
         SECTION("and wait until the end of frame to remove all others")
         {
-            REQUIRE(EntityStorage::GetEntities().size() == 1);
-            EntityStorage::FreeEntities();
+            REQUIRE(Statics::Entity().GetEntities().size() == 1);
+            Statics::Entity().FreeEntities();
         }
 
-        REQUIRE(EntityStorage::GetEntities().empty());
-        REQUIRE(EntityStorage::GetTools().empty());
+        REQUIRE(Statics::Entity().GetEntities().empty());
+        REQUIRE(Statics::Entity().GetTools().empty());
     }
 }
 
@@ -130,56 +130,56 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
     {
         Statics::Scene().QueueNextScene("scene1");
         Statics::Scene().LoadNextScene();
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
-        REQUIRE(EntityStorage::GetEntities().size() == 3);
+        REQUIRE(Statics::Entity().GetEntities().size() == 3);
     }
 
     SECTION("when a new scene is queued it should not delete entities until the end of the frame")
     {
         Statics::Scene().QueueNextScene("scene2");
-        REQUIRE(EntityStorage::GetEntities().size() == 3);
+        REQUIRE(Statics::Entity().GetEntities().size() == 3);
 
-        EntityStorage::FreeEntities();
-        REQUIRE(EntityStorage::GetEntities().empty());
+        Statics::Entity().FreeEntities();
+        REQUIRE(Statics::Entity().GetEntities().empty());
     }
 
     SECTION("when a new scene is loaded in it should add all entities to the EntityStorage")
     {
         Statics::Scene().LoadNextScene();
 
-        EntityStorage::RegisterEntities();
-        REQUIRE(EntityStorage::GetEntities().size() == 1);
+        Statics::Entity().RegisterEntities();
+        REQUIRE(Statics::Entity().GetEntities().size() == 1);
     }
 
     SECTION("when loading a scene from a non-existent file it should reset the scene")
     {
-        REQUIRE(EntityStorage::GetEntities().size() == 1);
+        REQUIRE(Statics::Entity().GetEntities().size() == 1);
 
         Statics::Scene().QueueNextScene("nonexistent");
-        EntityStorage::FreeEntities();
+        Statics::Entity().FreeEntities();
 
         Statics::Scene().LoadNextScene();
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
-        REQUIRE(EntityStorage::GetEntities().empty());
+        REQUIRE(Statics::Entity().GetEntities().empty());
     }
 
     SECTION("when loading a scene from an empty string it should reset the scene")
     {
         Statics::Scene().QueueNextScene("");
         Statics::Scene().LoadNextScene();
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
-        REQUIRE(EntityStorage::GetEntities().empty());
+        REQUIRE(Statics::Entity().GetEntities().empty());
     }
 
     SECTION("when loading a scene with garbage data it should reset the scene")
     {
         Statics::Scene().QueueNextScene("garbage.scene");
         Statics::Scene().LoadNextScene();
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
 
-        REQUIRE(EntityStorage::GetEntities().empty());
+        REQUIRE(Statics::Entity().GetEntities().empty());
     }
 }

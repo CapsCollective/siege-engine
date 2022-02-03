@@ -5,18 +5,6 @@
 
 #include "./Entity.h"
 
-// Static member initialisations of basic fields
-IndexAllocator EntityStorage::allocator;
-std::vector<Entity*> EntityStorage::entities;
-
-// Static member initialisations of vectors for holding filtered entities
-std::vector<Entity*> EntityStorage::packedEntities;
-std::vector<Entity*> EntityStorage::packedTools;
-
-// Static member initialisations of vectors for transformations
-std::vector<Entity*> EntityStorage::freedEntities;
-std::vector<std::pair<Entity*, bool>> EntityStorage::registeredEntities;
-
 void EntityStorage::Add(Entity* entity, bool isTool)
 {
     // If the pointer is null, stop the function

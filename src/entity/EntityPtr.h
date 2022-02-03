@@ -1,6 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYPTR_H
 #define A_DARK_DISCOMFORT_ENTITYPTR_H
 
+#include "../utils/Statics.h"
 #include "Entity.h"
 #include "EntityStorage.h"
 
@@ -38,7 +39,7 @@ public:
 
     operator bool() const
     {
-        return pointer && EntityStorage::IsLive(index);
+        return pointer && Statics::Entity().IsLive(index);
     }
 
     E* operator->() const

@@ -33,7 +33,7 @@ void SceneManager::LoadNextScene()
     SceneFile file(nextScene);
     if (file.Deserialise(entities))
     {
-        for (auto& entity : entities) EntityStorage::Add(entity);
+        for (auto& entity : entities) Statics::Entity().Add(entity);
 
         // Set the current scene details
         currentScene = nextScene;
@@ -58,14 +58,14 @@ void SceneManager::SaveScene(const String& sceneName)
 
     // Serialise the data to it and close it
     SceneFile file(currentScene);
-    if (file.Serialise(EntityStorage::GetEntities())) return;
+    if (file.Serialise(Statics::Entity().GetEntities())) return;
     CC_LOG_WARNING("Unable to save \"{}.scene\"", sceneName);
 }
 
 void SceneManager::ClearScene()
 {
     // Free all current entities from storage
-    for (auto& entity : EntityStorage::GetEntities()) entity->QueueFree();
+    for (auto& entity : Statics::Entity().GetEntities()) entity->QueueFree();
 
     // Clear out all resources
     Statics::Resource().ClearResources();

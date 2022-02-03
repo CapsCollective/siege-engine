@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
-    EntityStorage::Add({&display, &devConsole}, true);
+    Statics::Entity().Add({&display, &devConsole}, true);
 
     // Set the default directories
     Statics::Resource().SetBaseDirectory("example/assets/");
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
         ServiceLocator::Provide(editor);
 
         // Batch register the editor and freeCam
-        EntityStorage::Add({editor, new FreeCam()}, true);
+        Statics::Entity().Add({editor, new FreeCam()}, true);
     }
     else
     {
@@ -63,14 +63,14 @@ int main(int argc, char* argv[])
         // Update game entities
         if (!isEditorMode)
         {
-            for (auto& entity : EntityStorage::GetEntities()) entity->OnUpdate();
+            for (auto& entity : Statics::Entity().GetEntities()) entity->OnUpdate();
         }
 
         // Update tool entities
-        for (auto& entity : EntityStorage::GetTools()) entity->OnUpdate();
+        for (auto& entity : Statics::Entity().GetTools()) entity->OnUpdate();
 
         // Entity creation is deferred until after the update loop
-        EntityStorage::RegisterEntities();
+        Statics::Entity().RegisterEntities();
         Statics::Collision().RegisterEntities();
 
         // Begin drawing to screen
@@ -83,14 +83,14 @@ int main(int argc, char* argv[])
         camera.End3D();
 
         // UI Draw entities
-        for (auto& entity : EntityStorage::GetTools()) entity->OnDraw2D();
+        for (auto& entity : Statics::Entity().GetTools()) entity->OnDraw2D();
 
         window.EndDraw();
 
         // Remove all entities at the end of the frame
         Statics::Resource().FreeResources();
         Statics::Collision().FreeEntities();
-        EntityStorage::FreeEntities();
+        Statics::Entity().FreeEntities();
         Statics::Scene().LoadNextScene();
     }
 
