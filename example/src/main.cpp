@@ -1,10 +1,10 @@
-#include <entity/EntityStorage.h>
+#include <entity/EntitySystem.h>
 #include <physics/CollisionSystem.h>
 #include <render/Camera.h>
 #include <render/RenderSystem.h>
-#include <render/ResourceManager.h>
+#include <render/ResourceSystem.h>
 #include <render/Window.h>
-#include <scene/SceneManager.h>
+#include <scene/SceneSystem.h>
 #include <utils/Statics.h>
 
 #include "ServiceLocator.h"

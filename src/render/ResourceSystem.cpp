@@ -1,8 +1,8 @@
-#include "ResourceManager.h"
+#include "ResourceSystem.h"
 
 #include <vector>
 
-void ResourceManager::FreeResources()
+void ResourceSystem::FreeResources()
 {
     if (freedModels.empty() && freedTextures.empty()) return;
 
@@ -22,18 +22,18 @@ void ResourceManager::FreeResources()
     textures.clear();
 }
 
-void ResourceManager::ClearResources()
+void ResourceSystem::ClearResources()
 {
     for (auto& model : models) freedModels.push_back(&model.second);
     for (auto& texture : textures) freedTextures.push_back(&texture.second);
 }
 
-void ResourceManager::SetBaseDirectory(const String& dir)
+void ResourceSystem::SetBaseDirectory(const String& dir)
 {
     baseDir = dir;
 }
 
-const String& ResourceManager::GetBaseDirectory()
+const String& ResourceSystem::GetBaseDirectory()
 {
     return baseDir;
 }

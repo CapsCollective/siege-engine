@@ -3,7 +3,7 @@
 #include <input/InputSystem.h>
 #include <render/Camera.h>
 #include <render/Window.h>
-#include <scene/SceneManager.h>
+#include <scene/SceneSystem.h>
 #include <utils/Colour.h>
 #include <utils/Statics.h>
 

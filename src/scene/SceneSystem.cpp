@@ -1,8 +1,8 @@
-#include "SceneManager.h"
+#include "SceneSystem.h"
 
 #include <vector>
 
-#include "../render/ResourceManager.h"
+#include "../render/ResourceSystem.h"
 #include "../utils/Logging.h"
 #include "../utils/Statics.h"
 #include "SceneFile.h"
@@ -10,21 +10,21 @@
 // Define constants
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
-void SceneManager::NewScene()
+void SceneSystem::NewScene()
 {
     // Clear the current scene and reset current scene
     ClearScene();
     currentScene = UNKNOWN_FILENAME;
 }
 
-void SceneManager::QueueNextScene(const String& sceneName)
+void SceneSystem::QueueNextScene(const String& sceneName)
 {
     // Free all current items from storage
     ClearScene();
     nextScene = sceneName;
 }
 
-void SceneManager::LoadNextScene()
+void SceneSystem::LoadNextScene()
 {
     if (nextScene.IsEmpty()) return;
 
@@ -45,13 +45,13 @@ void SceneManager::LoadNextScene()
     nextScene.Clear();
 }
 
-void SceneManager::SaveScene()
+void SceneSystem::SaveScene()
 {
     // Save the scene as the current scene or untitled
     SaveScene(currentScene.IsEmpty() ? String() : currentScene);
 }
 
-void SceneManager::SaveScene(const String& sceneName)
+void SceneSystem::SaveScene(const String& sceneName)
 {
     // Get and set the current scene name
     currentScene = sceneName.IsEmpty() ? UNKNOWN_FILENAME : sceneName;
@@ -62,7 +62,7 @@ void SceneManager::SaveScene(const String& sceneName)
     CC_LOG_WARNING("Unable to save \"{}.scene\"", sceneName);
 }
 
-void SceneManager::ClearScene()
+void SceneSystem::ClearScene()
 {
     // Free all current entities from storage
     for (auto& entity : Statics::Entity().GetEntities()) entity->QueueFree();

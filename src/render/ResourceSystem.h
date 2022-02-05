@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_RESOURCEMANAGER_H
-#define A_DARK_DISCOMFORT_RESOURCEMANAGER_H
+#ifndef A_DARK_DISCOMFORT_RESOURCESYSTEM_H
+#define A_DARK_DISCOMFORT_RESOURCESYSTEM_H
 
 #include <map>
 #include <vector>
@@ -7,7 +7,7 @@
 #include "../utils/String.h"
 #include "raylib/raylib-cpp.hpp"
 
-class ResourceManager
+class ResourceSystem
 {
 public:
 
@@ -100,4 +100,4 @@ private:
     String baseDir;
 };
 
-#endif // A_DARK_DISCOMFORT_RESOURCEMANAGER_H
+#endif // A_DARK_DISCOMFORT_RESOURCESYSTEM_H

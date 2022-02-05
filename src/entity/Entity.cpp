@@ -5,7 +5,7 @@
 
 #include "../utils/Logging.h"
 #include "../utils/Statics.h"
-#include "EntityStorage.h"
+#include "EntitySystem.h"
 
 // Static member initialisation
 const String Entity::ENTITY_NAME("Entity");

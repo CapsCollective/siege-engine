@@ -3,8 +3,8 @@
 #include "../input/InputSystem.h"
 #include "../physics/CollisionSystem.h"
 #include "../render/RenderSystem.h"
-#include "../render/ResourceManager.h"
-#include "../scene/SceneManager.h"
+#include "../render/ResourceSystem.h"
+#include "../scene/SceneSystem.h"
 
 CollisionSystem& Statics::Collision()
 {
@@ -18,9 +18,9 @@ InputSystem& Statics::Input()
     return system;
 }
 
-ResourceManager& Statics::Resource()
+ResourceSystem& Statics::Resource()
 {
-    static ResourceManager system;
+    static ResourceSystem system;
     return system;
 }
 
@@ -30,14 +30,14 @@ RenderSystem& Statics::Render()
     return system;
 }
 
-SceneManager& Statics::Scene()
+SceneSystem& Statics::Scene()
 {
-    static SceneManager system;
+    static SceneSystem system;
     return system;
 }
 
-class EntityStorage& Statics::Entity()
+class EntitySystem& Statics::Entity()
 {
-    static EntityStorage system;
+    static EntitySystem system;
     return system;
 }

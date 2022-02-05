@@ -154,7 +154,7 @@ public:
      * @param idx - a GenerationalIndex to set as the
      *              entity's generational index
      * @warning This method should really only be used by
-     *          the EntityStorage
+     *          the EntitySystem
      */
     void SetIndex(GenerationalIndex idx);
 

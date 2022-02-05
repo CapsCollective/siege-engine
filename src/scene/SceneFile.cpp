@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "../entity/Entity.h"
-#include "../render/ResourceManager.h"
+#include "../render/ResourceSystem.h"
 #include "../utils/FileSystem.h"
 #include "../utils/Logging.h"
 #include "../utils/Statics.h"

@@ -1,11 +1,11 @@
-#ifndef A_DARK_DISCOMFORT_ENTITYSTORAGE_H
-#define A_DARK_DISCOMFORT_ENTITYSTORAGE_H
+#ifndef A_DARK_DISCOMFORT_ENTITYSYSTEM_H
+#define A_DARK_DISCOMFORT_ENTITYSYSTEM_H
 
 #include <vector>
 
 #include "IndexAllocator.h"
 
-class EntityStorage
+class EntitySystem
 {
 public:
 
@@ -164,4 +164,4 @@ private:
     std::vector<std::pair<Entity*, bool>> registeredEntities;
 };
 
-#endif // A_DARK_DISCOMFORT_ENTITYSTORAGE_H
+#endif // A_DARK_DISCOMFORT_ENTITYSYSTEM_H
