@@ -1,9 +1,9 @@
-#ifndef A_DARK_DISCOMFORT_SCENEMANAGER_H
-#define A_DARK_DISCOMFORT_SCENEMANAGER_H
+#ifndef A_DARK_DISCOMFORT_SCENESYSTEM_H
+#define A_DARK_DISCOMFORT_SCENESYSTEM_H
 
 #include "../utils/String.h"
 
-class SceneManager
+class SceneSystem
 {
 public:
 
@@ -61,4 +61,4 @@ private:
     String nextScene;
 };
 
-#endif // A_DARK_DISCOMFORT_SCENEMANAGER_H
+#endif // A_DARK_DISCOMFORT_SCENESYSTEM_H

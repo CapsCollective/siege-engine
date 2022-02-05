@@ -3,7 +3,7 @@
 #include <input/InputSystem.h>
 #include <render/RenderSystem.h>
 #include <render/Window.h>
-#include <scene/SceneManager.h>
+#include <scene/SceneSystem.h>
 #include <utils/Statics.h>
 
 #include <stdexcept>

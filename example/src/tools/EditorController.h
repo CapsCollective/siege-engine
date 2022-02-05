@@ -3,7 +3,7 @@
 
 #include <entity/Entity.h>
 #include <entity/EntityPtr.h>
-#include <entity/EntityStorage.h>
+#include <entity/EntitySystem.h>
 
 #include <cstdint>
 #include <vector>

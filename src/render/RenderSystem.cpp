@@ -2,7 +2,7 @@
 
 #include "../utils/Statics.h"
 #include "../utils/TransitionAdapter.h"
-#include "ResourceManager.h"
+#include "ResourceSystem.h"
 
 void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {

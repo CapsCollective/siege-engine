@@ -9,13 +9,13 @@ public:
 
     static class InputSystem& Input();
 
-    static class ResourceManager& Resource();
+    static class ResourceSystem& Resource();
 
     static class RenderSystem& Render();
 
-    static class SceneManager& Scene();
+    static class SceneSystem& Scene();
 
-    static class EntityStorage& Entity();
+    static class EntitySystem& Entity();
 };
 
 #endif // A_DARK_DISCOMFORT_STATICS_H

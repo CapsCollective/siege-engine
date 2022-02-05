@@ -1,11 +1,11 @@
-#include "EntityStorage.h"
+#include "EntitySystem.h"
 
 #include <algorithm>
 #include <cstdint>
 
 #include "./Entity.h"
 
-void EntityStorage::Add(Entity* entity, bool isTool)
+void EntitySystem::Add(Entity* entity, bool isTool)
 {
     // If the pointer is null, stop the function
     if (!entity) return;
@@ -17,7 +17,7 @@ void EntityStorage::Add(Entity* entity, bool isTool)
     registeredEntities.emplace_back(std::make_pair(entity, isTool));
 }
 
-void EntityStorage::Add(const std::vector<Entity*>& newEntities, bool isTool)
+void EntitySystem::Add(const std::vector<Entity*>& newEntities, bool isTool)
 {
     if (newEntities.empty()) return;
 
@@ -36,7 +36,7 @@ void EntityStorage::Add(const std::vector<Entity*>& newEntities, bool isTool)
     }
 }
 
-void EntityStorage::RegisterEntities()
+void EntitySystem::RegisterEntities()
 {
     if (registeredEntities.empty()) return;
 
@@ -71,7 +71,7 @@ void EntityStorage::RegisterEntities()
     registeredEntities.clear();
 }
 
-void EntityStorage::Sort(std::vector<Entity*>& storage)
+void EntitySystem::Sort(std::vector<Entity*>& storage)
 {
     // Sort packedEntities by Z index - lowest to highest
     std::sort(storage.begin(), storage.end(), [](Entity* a, Entity* b) {
@@ -79,7 +79,7 @@ void EntityStorage::Sort(std::vector<Entity*>& storage)
     });
 }
 
-void EntityStorage::SortPartial(Entity* entity, int oldZIdx)
+void EntitySystem::SortPartial(Entity* entity, int oldZIdx)
 {
     // Get the index of the entity in packed storage
     int32_t index = GetEntityIndex(entity, packedEntities);
@@ -101,14 +101,14 @@ void EntityStorage::SortPartial(Entity* entity, int oldZIdx)
         auto begin = isGreater ? storage.begin() + index : storage.begin();
         auto end = isGreater ? storage.end() : storage.begin() + index;
 
-        // Sort EntityStorage from either beginning -> entity index, or entity index -> end
+        // Sort EntitySystem from either beginning -> entity index, or entity index -> end
         std::partial_sort(begin, end, storage.end(), [](Entity* a, Entity* b) {
             return a->GetZIndex() < b->GetZIndex();
         });
     }
 }
 
-void EntityStorage::Remove(Entity* entity, std::vector<Entity*>& storage)
+void EntitySystem::Remove(Entity* entity, std::vector<Entity*>& storage)
 {
     // Check if the entity's index is in bounds
     if (entity->GetIndex().index >= entities.size()) return;
@@ -127,7 +127,7 @@ void EntityStorage::Remove(Entity* entity, std::vector<Entity*>& storage)
     delete entities[entityIndex];
 }
 
-void EntityStorage::QueueFree(Entity* entity)
+void EntitySystem::QueueFree(Entity* entity)
 {
     // Ensure that we have no duplicates in the freedEntities vector
     int32_t index = GetEntityIndex(entity, freedEntities);
@@ -138,7 +138,7 @@ void EntityStorage::QueueFree(Entity* entity)
     }
 }
 
-void EntityStorage::Reset()
+void EntitySystem::Reset()
 {
     // Delete all entities that were queued for registration
     for (auto& registrationData : registeredEntities) delete registrationData.first;
@@ -152,7 +152,7 @@ void EntityStorage::Reset()
     ClearStorage(packedTools);
 }
 
-void EntityStorage::ClearStorage(std::vector<Entity*>& storage)
+void EntitySystem::ClearStorage(std::vector<Entity*>& storage)
 {
     // append storage to the end of freedEntities
     freedEntities.insert(freedEntities.begin(), storage.begin(), storage.end());
@@ -167,7 +167,7 @@ void EntityStorage::ClearStorage(std::vector<Entity*>& storage)
     freedEntities.clear();
 }
 
-void EntityStorage::FreeEntities()
+void EntitySystem::FreeEntities()
 {
     // Iterate over all entities that need to be freed
     for (auto& entity : freedEntities)
@@ -179,7 +179,7 @@ void EntityStorage::FreeEntities()
     freedEntities.clear();
 }
 
-int32_t EntityStorage::GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
+int32_t EntitySystem::GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
 {
     if (storage.empty()) return -1;
 
@@ -211,10 +211,10 @@ int32_t EntityStorage::GetEntityIndex(Entity* entity, const std::vector<Entity*>
     return foundIndex;
 }
 
-size_t EntityStorage::SearchBranch(Entity* targetEntity,
-                                   const std::vector<Entity*>& storage,
-                                   const int& targetZIndex,
-                                   const size_t& branchIndex)
+size_t EntitySystem::SearchBranch(Entity* targetEntity,
+                                  const std::vector<Entity*>& storage,
+                                  const int& targetZIndex,
+                                  const size_t& branchIndex)
 {
     // Check if the index is in bounds, otherwise return 0
     size_t index = (branchIndex < storage.size()) * branchIndex;
@@ -222,7 +222,7 @@ size_t EntityStorage::SearchBranch(Entity* targetEntity,
     return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == targetEntity);
 }
 
-bool EntityStorage::IsLive(const GenerationalIndex& index)
+bool EntitySystem::IsLive(const GenerationalIndex& index)
 {
     return allocator.IsLive(index);
 }

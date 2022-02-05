@@ -3,7 +3,7 @@
 
 #include "../utils/Statics.h"
 #include "Entity.h"
-#include "EntityStorage.h"
+#include "EntitySystem.h"
 
 template<class E>
 class EntityPtr

@@ -1,8 +1,8 @@
 #include <entity/Entity.h>
-#include <entity/EntityStorage.h>
-#include <render/ResourceManager.h>
+#include <entity/EntitySystem.h>
+#include <render/ResourceSystem.h>
 #include <scene/SceneFile.h>
-#include <scene/SceneManager.h>
+#include <scene/SceneSystem.h>
 #include <utils/FileSystem.h>
 #include <utils/Statics.h>
 #include <utils/String.h>
@@ -42,7 +42,7 @@ REGISTER_SERIALISATION_INTERFACE(
         return new TestEntity(Xform(data.position, data.rotation));
     });
 
-TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
+TEST_CASE("Scenes can be saved to a file", "[SceneSystem]")
 {
     Statics::Resource().SetBaseDirectory(SCENE_DIR);
     Statics::Scene().NewScene();
@@ -103,7 +103,7 @@ TEST_CASE("Scenes can be saved to a file", "[SceneManager]")
     remove(Filepath(TEST_FILE));
 }
 
-TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
+TEST_CASE("scenes are erased when a new scene is created", "[SceneSystem]")
 {
     SECTION("when NewScene is called it should remove all existing non-tool entities")
     {
@@ -123,10 +123,10 @@ TEST_CASE("scenes are erased when a new scene is created", "[SceneManager]")
     }
 }
 
-TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
+TEST_CASE("scenes can be loaded from a file", "[SceneSystem]")
 {
     Statics::Resource().SetBaseDirectory(SCENE_DIR);
-    SECTION("when populated, it should populate the EntityStorage correctly")
+    SECTION("when populated, it should populate the EntitySystem correctly")
     {
         Statics::Scene().QueueNextScene("scene1");
         Statics::Scene().LoadNextScene();
@@ -144,7 +144,7 @@ TEST_CASE("scenes can be loaded from a file", "[SceneManager]")
         REQUIRE(Statics::Entity().GetEntities().empty());
     }
 
-    SECTION("when a new scene is loaded in it should add all entities to the EntityStorage")
+    SECTION("when a new scene is loaded in it should add all entities to the EntitySystem")
     {
         Statics::Scene().LoadNextScene();
 

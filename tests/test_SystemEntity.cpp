@@ -1,8 +1,8 @@
 #include "../src/entity/Entity.h"
-#include "../src/entity/EntityStorage.h"
+#include "../src/entity/EntitySystem.h"
 #include "catch.hpp"
 
-TEST_CASE("entities can be added to storage", "[EntityStorage]")
+TEST_CASE("entities can be added to storage", "[EntitySystem]")
 {
     REQUIRE(Statics::Entity().GetEntities().empty());
     REQUIRE(Statics::Entity().GetTools().empty());
@@ -92,7 +92,7 @@ TEST_CASE("entities can be added to storage", "[EntityStorage]")
     Statics::Entity().Reset();
 }
 
-TEST_CASE("entities can be freed from storage", "[EntityStorage]")
+TEST_CASE("entities can be freed from storage", "[EntitySystem]")
 {
     REQUIRE(Statics::Entity().GetEntities().empty());
     REQUIRE(Statics::Entity().GetTools().empty());
@@ -147,7 +147,7 @@ TEST_CASE("entities can be freed from storage", "[EntityStorage]")
     Statics::Entity().Reset();
 }
 
-TEST_CASE("entities stay sorted by z-index", "[EntityStorage]")
+TEST_CASE("entities stay sorted by z-index", "[EntitySystem]")
 {
     REQUIRE(Statics::Entity().GetEntities().empty());
     REQUIRE(Statics::Entity().GetTools().empty());
