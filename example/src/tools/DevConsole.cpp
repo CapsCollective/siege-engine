@@ -1,10 +1,10 @@
 #include "DevConsole.h"
 
-#include <input/InputSystem.h>
-#include <render/RenderSystem.h>
-#include <render/Window.h>
-#include <scene/SceneSystem.h>
-#include <utils/Statics.h>
+#include <engine/input/InputSystem.h>
+#include <engine/render/RenderSystem.h>
+#include <engine/render/Window.h>
+#include <engine/scene/SceneSystem.h>
+#include <engine/utils/Statics.h>
 
 #include <stdexcept>
 

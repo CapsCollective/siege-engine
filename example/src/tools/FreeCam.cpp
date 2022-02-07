@@ -1,9 +1,9 @@
 #include "FreeCam.h"
 
-#include <input/InputSystem.h>
-#include <render/Camera.h>
-#include <render/Window.h>
-#include <utils/Statics.h>
+#include <engine/input/InputSystem.h>
+#include <engine/render/Camera.h>
+#include <engine/render/Window.h>
+#include <engine/utils/Statics.h>
 
 void FreeCam::OnUpdate()
 {

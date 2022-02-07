@@ -1,7 +1,8 @@
+#include <engine/entity/Entity.h>
+#include <engine/scene/SceneFile.h>
+
 #include <utility>
 
-#include "../src/entity/Entity.h"
-#include "../src/scene/SceneFile.h"
 #include "catch.hpp"
 
 class TestEntity1 : public Entity

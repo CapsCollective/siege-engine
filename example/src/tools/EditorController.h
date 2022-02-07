@@ -1,9 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 #define A_DARK_DISCOMFORT_EDITORCONTROLLER_H
 
-#include <entity/Entity.h>
-#include <entity/EntityPtr.h>
-#include <entity/EntitySystem.h>
+#include <engine/entity/Entity.h>
+#include <engine/entity/EntityPtr.h>
+#include <engine/entity/EntitySystem.h>
 
 #include <cstdint>
 #include <vector>

@@ -1,11 +1,11 @@
-#include <entity/Entity.h>
-#include <entity/EntitySystem.h>
-#include <render/ResourceSystem.h>
-#include <scene/SceneFile.h>
-#include <scene/SceneSystem.h>
-#include <utils/FileSystem.h>
-#include <utils/Statics.h>
-#include <utils/String.h>
+#include <engine/entity/Entity.h>
+#include <engine/entity/EntitySystem.h>
+#include <engine/render/ResourceSystem.h>
+#include <engine/scene/SceneFile.h>
+#include <engine/scene/SceneSystem.h>
+#include <engine/utils/FileSystem.h>
+#include <engine/utils/Statics.h>
+#include <engine/utils/String.h>
 
 #include "catch.hpp"
 

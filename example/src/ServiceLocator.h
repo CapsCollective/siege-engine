@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_SERVICELOCATOR_H
 #define A_DARK_DISCOMFORT_SERVICELOCATOR_H
 
-#include <utils/ServiceLocatorUtils.h>
+#include <engine/utils/ServiceLocatorUtils.h>
 
 class ServiceLocator
 {
