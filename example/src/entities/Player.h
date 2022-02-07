@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_PLAYER_H
 #define A_DARK_DISCOMFORT_PLAYER_H
 
-#include <entity/Entity.h>
-#include <render/RenderSystem.h>
+#include <engine/entity/Entity.h>
+#include <engine/render/RenderSystem.h>
 
 class Player : public Entity
 {

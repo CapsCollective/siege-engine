@@ -1,11 +1,11 @@
 #include "EditorController.h"
 
-#include <input/InputSystem.h>
-#include <render/Camera.h>
-#include <render/Window.h>
-#include <scene/SceneSystem.h>
-#include <utils/Colour.h>
-#include <utils/Statics.h>
+#include <engine/input/InputSystem.h>
+#include <engine/render/Camera.h>
+#include <engine/render/Window.h>
+#include <engine/scene/SceneSystem.h>
+#include <engine/utils/Colour.h>
+#include <engine/utils/Statics.h>
 
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"

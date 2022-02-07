@@ -13,6 +13,7 @@ else ifeq ($(platform), macOS)
 endif
 
 # Set build variables for common
+srcDir = src
 libDir = lib
 buildDir = bin
 compileFlags := -Wall -std=c++17 -I ./include
@@ -29,7 +30,7 @@ else
 endif
 
 # Set build variables for engine
-engineSrcDir = src
+engineSrcDir = $(srcDir)/engine
 engineBuildDir = $(buildDir)/engine
 engineLib = $(libDir)/libengine.a
 engineSources = $(call rwildcard,$(engineSrcDir)/,*.cpp)
@@ -115,11 +116,11 @@ $(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
 # Compile object files to the build directory
 $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
 
 $(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineSrcDir) $< -o $@ $(CXXFLAGS)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
 
 format-check:
 	./format.sh "$(engineSrcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*" --check
