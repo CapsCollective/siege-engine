@@ -1,13 +1,14 @@
 #ifndef A_DARK_DISCOMFORT_RENDERSYSTEM_H
 #define A_DARK_DISCOMFORT_RENDERSYSTEM_H
 
+#include <utils/Colour.h>
+#include <utils/Maths.h>
+
 #include <map>
 #include <utility>
 #include <variant>
 
 #include "../entity/EntityPtr.h"
-#include "../utils/Colour.h"
-#include "../utils/Maths.h"
 
 struct ModelData
 {

@@ -1,14 +1,14 @@
 #ifndef A_DARK_DISCOMFORT_SCENEFILE_H
 #define A_DARK_DISCOMFORT_SCENEFILE_H
 
+#include <utils/Macros.h>
+#include <utils/Maths.h>
+#include <utils/String.h>
+
 #include <functional>
 #include <map>
 #include <utility>
 #include <vector>
-
-#include "../utils/Macros.h"
-#include "../utils/Maths.h"
-#include "../utils/String.h"
 
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                  \

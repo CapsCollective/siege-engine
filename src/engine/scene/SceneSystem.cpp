@@ -1,10 +1,12 @@
 #include "SceneSystem.h"
 
+#include <utils/Logging.h>
+
 #include <vector>
 
+#include "../Statics.h"
+#include "../entity/Entity.h"
 #include "../render/ResourceSystem.h"
-#include "../utils/Logging.h"
-#include "../utils/Statics.h"
 #include "SceneFile.h"
 
 // Define constants

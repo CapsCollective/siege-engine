@@ -1,8 +1,9 @@
 #ifndef A_DARK_DISCOMFORT_ENTITY_H
 #define A_DARK_DISCOMFORT_ENTITY_H
 
-#include "../utils/Maths.h"
-#include "../utils/String.h"
+#include <utils/Maths.h>
+#include <utils/String.h>
+
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
 

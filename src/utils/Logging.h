@@ -6,8 +6,8 @@
 #include <variant>
 #include <vector>
 
-#include "../entity/Entity.h"
 #include "Macros.h"
+#include "Maths.h"
 #include "String.h"
 
 // Define terminal colour wrapping macros
@@ -61,8 +61,6 @@ public:
     DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
     DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(const Entity& data, data.GetName());
-    DEFINE_VARIANT_TYPE(const GenerationalIndex& data, data.ToString());
     DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
 
     /**

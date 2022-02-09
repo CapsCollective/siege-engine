@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_SCENESYSTEM_H
 #define A_DARK_DISCOMFORT_SCENESYSTEM_H
 
-#include "../utils/String.h"
+#include <utils/String.h>
 
 class SceneSystem
 {

@@ -17,7 +17,7 @@ srcDir = src
 libDir = lib
 buildDir = bin
 compileFlags := -Wall -std=c++17 -I ./include
-linkFlags += -L $(libDir) -l engine -l raylib
+linkFlags += -L $(libDir) -l utils -l engine -l raylib
 depends = $(patsubst %.o, %.d, $(call rwildcard,$(buildDir)/,*.o))
 buildFlagsFile = .buildflags
 
@@ -28,6 +28,13 @@ ifeq ($(DEBUG), 1)
 else
     override CXXFLAGS += -DNDEBUG
 endif
+
+# Set build variables for utils
+utilsSrcDir = $(srcDir)/utils
+utilsBuildDir = $(buildDir)/utils
+utilsLib = $(libDir)/libutils.a
+utilsSources = $(call rwildcard,$(utilsSrcDir)/,*.cpp)
+utilsObjects = $(call findobjs,$(utilsSrcDir),$(utilsBuildDir),$(utilsSources))
 
 # Set build variables for engine
 engineSrcDir = $(srcDir)/engine
@@ -79,6 +86,7 @@ build: buildFlags $(engineLib) $(testExecutable) $(exampleExecutable)
 buildFlags:
 	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
   		$(RM) $(call platformpth, $(buildDir)); \
+        $(RM) $(call platformpth, $(utilsLib)); \
         $(RM) $(call platformpth, $(engineLib)); \
     fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
 
@@ -91,27 +99,36 @@ run: buildFlags $(exampleExecutable)
 
 clean:
 	$(RM) $(call platformpth, $(buildDir))
+	$(RM) $(call platformpth, $(utilsLib))
 	$(RM) $(call platformpth, $(engineLib))
 	$(RM) $(call platformpth, $(buildFlagsFile))
+
+# Build the static library for utils
+$(utilsLib): $(utilsObjects)
+	ar -rc $(utilsLib) $(utilsObjects)
 
 # Build the static library for the engine
 $(engineLib): $(engineObjects)
 	ar -rc $(engineLib) $(engineObjects)
 
 # Link the object files and create an executable
-$(testExecutable): $(engineLib) $(testObjects)
+$(testExecutable): $(utilsLib) $(engineLib) $(testObjects)
 	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
 
 # Link the object files and create an executable
-$(exampleExecutable): $(engineLib) $(exampleObjects)
+$(exampleExecutable): $(utilsLib) $(engineLib) $(exampleObjects)
 	$(CXX) $(exampleObjects) -o $(exampleExecutable) $(linkFlags)
 
 # Add all rules from dependency files
 -include $(depends)
 
-$(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
+$(utilsBuildDir)/%.o: $(utilsSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS)
+
+$(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
 
 # Compile object files to the build directory
 $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
@@ -123,7 +140,7 @@ $(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
 
 format-check:
-	./format.sh "$(engineSrcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*" --check
+	./format.sh "$(srcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*" --check
 
 format:
-	./format.sh "$(engineSrcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*"
+	./format.sh "$(srcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*"

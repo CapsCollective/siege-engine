@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_INPUTSYSTEM_H
 #define A_DARK_DISCOMFORT_INPUTSYSTEM_H
 
-#include "../utils/Maths.h"
+#include <utils/Maths.h>
 
 namespace Key
 {

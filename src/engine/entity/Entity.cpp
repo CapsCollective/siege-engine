@@ -1,10 +1,10 @@
 #include "Entity.h"
 
+#include <utils/Logging.h>
+
 #include <cmath>
 #include <utility>
 
-#include "../utils/Logging.h"
-#include "../utils/Statics.h"
 #include "EntitySystem.h"
 
 // Static member initialisation
@@ -16,7 +16,7 @@ Entity::Entity(const String& name, const Xform& transform, int zIndex) :
     index(GenerationalIndex()),
     zIndex(zIndex)
 {
-    CC_LOG_INFO("Registered {} at ({})", GetName(), GetIndex());
+    CC_LOG_INFO("Registered {} at ({})", GetName(), GetIndex().ToString());
 }
 
 BoundedBox Entity::GetBoundingBox() const
@@ -32,7 +32,7 @@ Entity* Entity::Clone() const
 void Entity::QueueFree()
 {
     OnDestroy();
-    CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex());
+    CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex().ToString());
     Statics::Entity().QueueFree(this);
 }
 

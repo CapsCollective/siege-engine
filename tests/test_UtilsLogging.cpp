@@ -3,7 +3,7 @@
 // Require logging
 #define CC_ENABLE_LOGGING
 
-#include <engine/utils/Logging.h>
+#include <utils/Logging.h>
 
 TEST_CASE("messages can be formatted correctly", "[Logging]")
 {
