@@ -1,10 +1,10 @@
 #include "Statics.h"
 
-#include "../input/InputSystem.h"
-#include "../physics/CollisionSystem.h"
-#include "../render/RenderSystem.h"
-#include "../render/ResourceSystem.h"
-#include "../scene/SceneSystem.h"
+#include "input/InputSystem.h"
+#include "physics/CollisionSystem.h"
+#include "render/RenderSystem.h"
+#include "render/ResourceSystem.h"
+#include "scene/SceneSystem.h"
 
 CollisionSystem& Statics::Collision()
 {

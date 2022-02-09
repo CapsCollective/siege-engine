@@ -1,11 +1,11 @@
 #ifndef A_DARK_DISCOMFORT_RESOURCESYSTEM_H
 #define A_DARK_DISCOMFORT_RESOURCESYSTEM_H
 
-#include <map>
-#include <vector>
+#include <utils/String.h>
 
-#include "../utils/String.h"
-#include "raylib/raylib-cpp.hpp"
+#include <map>
+#include <raylib/raylib-cpp.hpp>
+#include <vector>
 
 class ResourceSystem
 {

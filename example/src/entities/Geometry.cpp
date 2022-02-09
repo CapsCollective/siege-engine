@@ -1,9 +1,9 @@
 #include "Geometry.h"
 
+#include <engine/Statics.h>
 #include <engine/physics/CollisionSystem.h>
 #include <engine/scene/SceneFile.h>
-#include <engine/utils/Logging.h>
-#include <engine/utils/Statics.h>
+#include <utils/Logging.h>
 
 // Static member initialisation
 const String Geometry::ENTITY_NAME("Geometry");

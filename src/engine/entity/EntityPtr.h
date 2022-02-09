@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYPTR_H
 #define A_DARK_DISCOMFORT_ENTITYPTR_H
 
-#include "../utils/Statics.h"
+#include "../Statics.h"
 #include "Entity.h"
 #include "EntitySystem.h"
 

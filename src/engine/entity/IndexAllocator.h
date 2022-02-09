@@ -1,10 +1,10 @@
 #ifndef A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 #define A_DARK_DISCOMFORT_INDEXALLOCATOR_H
 
+#include <utils/String.h>
+
 #include <cstdint>
 #include <vector>
-
-#include "../utils/String.h"
 
 // Utility Structs
 // TODO document this class

@@ -1,9 +1,9 @@
 #include "Window.h"
 
+#include <utils/TransitionAdapter.h>
+
 #include <chrono>
 #include <raylib/Window.hpp>
-
-#include "../utils/TransitionAdapter.h"
 
 static String windowTitle;
 static int windowWidth;

@@ -1,3 +1,4 @@
+#include <engine/Statics.h>
 #include <engine/entity/EntitySystem.h>
 #include <engine/physics/CollisionSystem.h>
 #include <engine/render/Camera.h>
@@ -5,7 +6,6 @@
 #include <engine/render/ResourceSystem.h>
 #include <engine/render/Window.h>
 #include <engine/scene/SceneSystem.h>
-#include <engine/utils/Statics.h>
 
 #include "ServiceLocator.h"
 #include "tools/DevConsole.h"

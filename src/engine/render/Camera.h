@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_CAMERA_H
 #define A_DARK_DISCOMFORT_CAMERA_H
 
-#include "../utils/Maths.h"
+#include <utils/Maths.h>
 
 class Cam
 {

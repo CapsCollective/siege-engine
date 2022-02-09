@@ -1,8 +1,8 @@
 #ifndef A_DARK_DISCOMFORT_WINDOW_H
 #define A_DARK_DISCOMFORT_WINDOW_H
 
-#include "../utils/Colour.h"
-#include "../utils/String.h"
+#include <utils/Colour.h>
+#include <utils/String.h>
 
 class Window
 {
