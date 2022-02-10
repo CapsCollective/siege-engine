@@ -1,7 +1,7 @@
 include make/Functions.mk
+include make/Platform.mk
 
 # Set platform vars and overrides
-include make/Platform.mk
 ifeq ($(platform), Windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
     libGenDir := src
@@ -13,13 +13,19 @@ else ifeq ($(platform), macOS)
 endif
 
 # Set build variables for common
-srcDir = src
-libDir = lib
-buildDir = bin
-compileFlags := -Wall -std=c++17 -I ./include
-linkFlags += -L $(libDir) -l utils -l engine -l raylib
-depends = $(patsubst %.o, %.d, $(call rwildcard,$(buildDir)/,*.o))
-buildFlagsFile = .buildflags
+export srcDir = $(abspath src)
+export libDir = $(abspath lib)
+export buildDir = $(abspath bin)
+export makeDir = $(abspath make)
+export compileFlags := -Wall -std=c++17 -I $(abspath ./include)
+export linkFlags += -L $(libDir) -l utils -l engine -l raylib
+export buildFlagsFile = .buildflags
+
+# Define top level target variables
+export utilsLib = $(libDir)/libutils.a
+export engineLib = $(libDir)/libengine.a
+export testExecutable = $(buildDir)/testapp
+export exampleExecutable = $(buildDir)/exampleapp
 
 # Set debugging build flags
 DEBUG ?= 1
@@ -29,35 +35,7 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
-# Set build variables for utils
-utilsSrcDir = $(srcDir)/utils
-utilsBuildDir = $(buildDir)/utils
-utilsLib = $(libDir)/libutils.a
-utilsSources = $(call rwildcard,$(utilsSrcDir)/,*.cpp)
-utilsObjects = $(call findobjs,$(utilsSrcDir),$(utilsBuildDir),$(utilsSources))
-
-# Set build variables for engine
-engineSrcDir = $(srcDir)/engine
-engineBuildDir = $(buildDir)/engine
-engineLib = $(libDir)/libengine.a
-engineSources = $(call rwildcard,$(engineSrcDir)/,*.cpp)
-engineObjects = $(call findobjs,$(engineSrcDir),$(engineBuildDir),$(engineSources))
-
-# Set build variables for tests
-testSrcDir = tests
-testBuildDir = $(buildDir)/tests
-testExecutable = $(testBuildDir)/test
-testSources = $(call rwildcard,$(testSrcDir)/,*.cpp)
-testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
-
-# Set build variables for example
-exampleSrcDir = example/src
-exampleBuildDir = $(buildDir)/example
-exampleExecutable = $(exampleBuildDir)/example
-exampleSources = $(call rwildcard,$(exampleSrcDir)/,*.cpp)
-exampleObjects = $(call findobjs,$(exampleSrcDir),$(exampleBuildDir),$(exampleSources))
-
-.PHONY: all setup submodules build buildFlags test run clean
+.PHONY: all setup submodules build buildFlags test run clean utils engine tests example
 
 all: build test run clean
 
@@ -81,7 +59,7 @@ $(libDir): submodules
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(call COPY,vendor/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
 
-build: buildFlags $(engineLib) $(testExecutable) $(exampleExecutable)
+build: buildFlags tests example
 
 buildFlags:
 	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
@@ -91,10 +69,10 @@ buildFlags:
     fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
 
 # Build and run all tests
-test: buildFlags $(testExecutable)
+test: buildFlags tests
 	$(testExecutable) $(ARGS)
 
-run: buildFlags $(exampleExecutable)
+run: buildFlags example
 	$(exampleExecutable) $(ARGS)
 
 clean:
@@ -103,44 +81,20 @@ clean:
 	$(RM) $(call platformpth, $(engineLib))
 	$(RM) $(call platformpth, $(buildFlagsFile))
 
-# Build the static library for utils
-$(utilsLib): $(utilsObjects)
-	ar -rc $(utilsLib) $(utilsObjects)
+utils:
+	$(MAKE) -C $(srcDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-# Build the static library for the engine
-$(engineLib): $(engineObjects)
-	ar -rc $(engineLib) $(engineObjects)
+engine: utils
+	$(MAKE) -C $(srcDir)/engine CXXFLAGS="$(CXXFLAGS)"
 
-# Link the object files and create an executable
-$(testExecutable): $(utilsLib) $(engineLib) $(testObjects)
-	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
+tests: utils engine
+	$(MAKE) -C tests CXXFLAGS="$(CXXFLAGS)"
 
-# Link the object files and create an executable
-$(exampleExecutable): $(utilsLib) $(engineLib) $(exampleObjects)
-	$(CXX) $(exampleObjects) -o $(exampleExecutable) $(linkFlags)
-
-# Add all rules from dependency files
--include $(depends)
-
-$(utilsBuildDir)/%.o: $(utilsSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS)
-
-$(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
-
-# Compile object files to the build directory
-$(testBuildDir)/%.o: $(testSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
-
-$(exampleBuildDir)/%.o: $(exampleSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
+example: utils engine
+	$(MAKE) -C example CXXFLAGS="$(CXXFLAGS)"
 
 format-check:
-	./format.sh "$(srcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*" --check
+	./format.sh "$(srcDir) example/src tests" "*catch*" --check
 
 format:
-	./format.sh "$(srcDir) $(exampleSrcDir) $(testSrcDir)" "*catch*"
+	./format.sh "$(srcDir) example/src tests" "*catch*"

@@ -1,7 +1,5 @@
 #include "Colour.h"
 
-#include "Maths.h"
-
 // Define static members
 const Colour Colour::Black = {0, 0, 0, 255};
 const Colour Colour::White = {255, 255, 255, 255};
