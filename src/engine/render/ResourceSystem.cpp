@@ -2,6 +2,38 @@
 
 #include <vector>
 
+#include <raylib/raylib-cpp.hpp>
+
+static std::map<String, Model> models;
+
+static std::map<String, Texture> textures;
+
+void ResourceSystem::RegisterModel(const String& path)
+{
+    String fullPath = baseDir + path;
+    if (models.find(fullPath) != models.end()) return;
+    models[fullPath] = LoadModel(fullPath);
+}
+
+void ResourceSystem::RegisterTexture(const String& path)
+{
+    String fullPath = baseDir + path;
+    if (textures.find(fullPath) != textures.end()) return;
+    textures[fullPath] = LoadTexture(fullPath);
+}
+
+void* ResourceSystem::GetModel(const String& path)
+{
+    String fullPath = baseDir + path;
+    return &models.at(fullPath);
+}
+
+void* ResourceSystem::GetTexture(const String& path)
+{
+    String fullPath = baseDir + path;
+    return &textures.at(fullPath);
+}
+
 void ResourceSystem::FreeResources()
 {
     if (freedModels.empty() && freedTextures.empty()) return;

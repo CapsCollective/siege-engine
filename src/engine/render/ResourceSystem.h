@@ -4,7 +4,6 @@
 #include <utils/String.h>
 
 #include <map>
-#include <raylib/raylib-cpp.hpp>
 #include <vector>
 
 class ResourceSystem
@@ -14,39 +13,30 @@ public:
     // Public methods
 
     /**
-     * Loads a resource from a path.
-     * @tparam T - the type of resource being added
+     * Loads a model resource from a path.
      * @param path - the path the resource will be loaded from
      */
-    template<typename T>
-    void Register(const String& path)
-    {
-        String fullPath = baseDir + path;
-        if constexpr (std::is_same_v<T, Model>)
-        {
-            if (models.find(fullPath) != models.end()) return;
-            models[fullPath] = LoadModel(fullPath);
-        }
-        else if constexpr (std::is_same_v<T, Texture>)
-        {
-            if (textures.find(fullPath) != textures.end()) return;
-            textures[fullPath] = LoadTexture(fullPath);
-        }
-    }
+    void RegisterModel(const String& path);
 
     /**
-     * Gets a reference to a resource by path.
-     * @tparam T - the type of resource which needs to be returned
+     * Loads a texture resource from a path.
+     * @param path - the path the resource will be loaded from
+     */
+    void RegisterTexture(const String& path);
+
+    /**
+     * Gets a reference to a model resource by path.
      * @param path - the path of the resource in the file system
      * @return a reference to the resource
      */
-    template<typename T>
-    T& Get(const String& path)
-    {
-        String fullPath = baseDir + path;
-        if constexpr (std::is_same_v<T, Model>) return models.at(fullPath);
-        else if constexpr (std::is_same_v<T, Texture>) return textures.at(fullPath);
-    }
+    void* GetModel(const String& path);
+
+    /**
+     * Gets a reference to a texture resource by path.
+     * @param path - the path of the resource in the file system
+     * @return a reference to the resource
+     */
+    void* GetTexture(const String& path);
 
     /**
      * Queues all stored resources for removal.
@@ -75,24 +65,14 @@ private:
     // Private fields
 
     /**
-     * Loaded model resources.
-     */
-    std::map<String, Model> models;
-
-    /**
-     * Loaded texture resources.
-     */
-    std::map<String, Texture> textures;
-
-    /**
      * Model resources queued for freeing.
      */
-    std::vector<Model*> freedModels;
+    std::vector<struct Model*> freedModels;
 
     /**
      * Texture resources queued for freeing.
      */
-    std::vector<Texture*> freedTextures;
+    std::vector<struct Texture*> freedTextures;
 
     /**
      * The default base directory for finding resources.

@@ -1,7 +1,7 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build variables for example
+# Set build vars for example
 exampleSrcDir = .
 exampleBuildDir = $(buildDir)/example
 exampleSources = $(call rwildcard,$(exampleSrcDir)/,*.cpp)
