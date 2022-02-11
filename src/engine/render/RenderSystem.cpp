@@ -1,8 +1,10 @@
 #include "RenderSystem.h"
 
-#include <utils/TransitionAdapter.h>
+#include "engine/TransitionAdapter.h"
 
 #include "ResourceSystem.h"
+
+#include <raylib/raylib-cpp.hpp>
 
 void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {
@@ -11,8 +13,8 @@ void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 
 void RenderSystem::Add(Entity* entity, const ModelData& modelData, const Xform& transform)
 {
-    Statics::Resource().Register<Model>(modelData.modelPath);
-    Statics::Resource().Register<Texture>(modelData.texturePath);
+    Statics::Resource().RegisterModel(modelData.modelPath);
+    Statics::Resource().RegisterTexture(modelData.texturePath);
     renderItems.emplace(entity, RenderItem(modelData, transform));
 }
 
@@ -23,8 +25,8 @@ void RenderSystem::DrawFrame()
         const auto& item = pair.second;
         if (!item.isEnabled) continue;
 
-        const Model& model = Statics::Resource().Get<Model>(item.data.modelPath);
-        const Texture& texture = Statics::Resource().Get<Texture>(item.data.texturePath);
+        Model model = *((Model*) Statics::Resource().GetModel(item.data.modelPath));
+        Texture texture = *((Texture*) Statics::Resource().GetTexture(item.data.texturePath));
 
         // Set model texture
         SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture);

@@ -1,7 +1,7 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build variables for tests
+# Set build vars for tests
 testSrcDir = .
 testBuildDir = $(buildDir)/tests
 testSources = $(call rwildcard,$(testSrcDir)/,*.cpp)

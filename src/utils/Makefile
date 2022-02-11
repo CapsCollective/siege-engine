@@ -1,7 +1,7 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build variables for utils
+# Set build vars for utils
 utilsSrcDir = .
 utilsBuildDir = $(buildDir)/utils
 utilsSources = $(call rwildcard,$(utilsSrcDir)/,*.cpp)
@@ -10,6 +10,7 @@ utilsDepends = $(patsubst %.o, %.d, $(call rwildcard,$(utilsBuildDir)/,*.o))
 
 # Build the static library for utils
 $(utilsLib): $(utilsObjects)
+	$(MKDIR) $(call platformpth, $(libDir))
 	ar -rc $(utilsLib) $(utilsObjects)
 
 # Add all rules from dependency files

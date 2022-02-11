@@ -1,6 +1,6 @@
 #include "InputSystem.h"
 
-#include <utils/TransitionAdapter.h>
+#include "engine/TransitionAdapter.h"
 
 #include <raylib/raylib-cpp.hpp>
 

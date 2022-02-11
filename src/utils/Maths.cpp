@@ -1,7 +1,5 @@
 #include "Maths.h"
 
-#include "TransitionAdapter.h"
-
 // Define static members
 const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
@@ -43,5 +41,6 @@ bool BoundedBox::Intersects(const BoundedBox& other) const
 
 bool BoundedBox::Intersects(const RayCast& ray) const
 {
-    return GetRayCollisionBox(FromRayCast(ray), FromBoundedBox(*this)).hit;
+    return true;
+//  TODO remimplement!      GetRayCollisionBox(FromRayCast(ray), FromBoundedBox(*this)).hit;
 }

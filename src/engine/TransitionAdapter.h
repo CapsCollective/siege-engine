@@ -3,8 +3,8 @@
 
 #include <raylib/Vector3.hpp>
 
-#include "Colour.h"
-#include "Maths.h"
+#include "../utils/Colour.h"
+#include "../utils/Maths.h"
 
 // Raylib conversions
 
