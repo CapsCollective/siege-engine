@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "engine/TransitionAdapter.h"
+#include "../TransitionAdapter.h"
 
 #include <raylib/Camera3D.hpp>
 

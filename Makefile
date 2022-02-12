@@ -11,20 +11,20 @@ else ifeq ($(platform), macOS)
 endif
 
 # Set directories
-export srcDir = $(abspath src)
 export libDir = $(abspath lib)
 export makeDir = $(abspath make)
 export buildDir = $(abspath bin)
 export vendorDir = $(abspath vendor)
+export engineDir = $(abspath engine)
 
 # Set build vars
 export compileFlags := -Wall -std=c++17 -I $(abspath ./include)
-export linkFlags += -L $(libDir) -l utils -l engine
+export linkFlags += -L $(libDir) -l utils -l core
 buildFlagsFile := .buildflags
 
 # Set top level targets
 export utilsLib = $(libDir)/libutils.a
-export engineLib = $(libDir)/libengine.a
+export coreLib = $(libDir)/libcore.a
 export testExecutable = $(buildDir)/testapp
 export exampleExecutable = $(buildDir)/exampleapp
 
@@ -36,7 +36,7 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
-.PHONY: all test run utils engine tests example buildFlags clean format-check format
+.PHONY: all test run utils core tests example buildFlags clean format-check format
 
 all: tests example test run clean
 
@@ -49,15 +49,15 @@ test: buildFlags tests
 	$(testExecutable) $(ARGS)
 
 utils: buildFlags
-	@$(MAKE) -C $(srcDir)/utils CXXFLAGS="$(CXXFLAGS)"
+	@$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-engine: buildFlags utils
-	@$(MAKE) -C $(srcDir)/engine CXXFLAGS="$(CXXFLAGS)"
+core: buildFlags utils
+	@$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-tests: buildFlags utils engine
+tests: buildFlags utils core
 	@$(MAKE) -C tests CXXFLAGS="$(CXXFLAGS)"
 
-example: buildFlags utils engine
+example: buildFlags utils core
 	@$(MAKE) -C example CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed
@@ -75,8 +75,8 @@ clean:
 
 # Check file formatting across all source files
 format-check:
-	./format.sh "$(srcDir) example/src tests" "*catch*" --check
+	./format.sh "$(engineDir) example/src tests" "*catch*" --check
 
 # Run file formatting across all source files
 format:
-	./format.sh "$(srcDir) example/src tests" "*catch*"
+	./format.sh "$(engineDir) example/src tests" "*catch*"

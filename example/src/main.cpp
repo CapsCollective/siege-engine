@@ -1,11 +1,11 @@
-#include <engine/Statics.h>
-#include <engine/entity/EntitySystem.h>
-#include <engine/physics/CollisionSystem.h>
-#include <engine/render/Camera.h>
-#include <engine/render/RenderSystem.h>
-#include <engine/render/ResourceSystem.h>
-#include <engine/render/Window.h>
-#include <engine/scene/SceneSystem.h>
+#include <core/Statics.h>
+#include <core/entity/EntitySystem.h>
+#include <core/physics/CollisionSystem.h>
+#include <core/render/Camera.h>
+#include <core/render/RenderSystem.h>
+#include <core/render/ResourceSystem.h>
+#include <core/render/Window.h>
+#include <core/scene/SceneSystem.h>
 
 #include "ServiceLocator.h"
 #include "tools/DevConsole.h"

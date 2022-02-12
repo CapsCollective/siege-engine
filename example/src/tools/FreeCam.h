@@ -1,7 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_FREECAM_H
 #define A_DARK_DISCOMFORT_FREECAM_H
 
-#include <engine/entity/Entity.h>
+#include <core/entity/Entity.h>
 
 #include "../ServiceLocator.h"
 

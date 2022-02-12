@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "engine/TransitionAdapter.h"
+#include "../TransitionAdapter.h"
 
 #include <chrono>
 #include <raylib/Window.hpp>

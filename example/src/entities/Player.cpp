@@ -1,10 +1,10 @@
 #include "Player.h"
 
-#include <engine/Statics.h>
-#include <engine/input/InputSystem.h>
-#include <engine/physics/CollisionSystem.h>
-#include <engine/render/Window.h>
-#include <engine/scene/SceneFile.h>
+#include <core/Statics.h>
+#include <core/input/InputSystem.h>
+#include <core/physics/CollisionSystem.h>
+#include <core/render/Window.h>
+#include <core/scene/SceneFile.h>
 
 // Static member initialisation
 const String Player::ENTITY_NAME("Player");

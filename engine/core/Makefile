@@ -9,26 +9,26 @@ else ifeq ($(platform), macOS)
 endif
 raylibLib = $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
-# Set build vars for engine
-engineSrcDir = .
-engineBuildDir = $(buildDir)/engine
-engineSources = $(call rwildcard,$(engineSrcDir)/,*.cpp)
-engineObjects = $(call findobjs,$(engineSrcDir),$(engineBuildDir),$(engineSources))
-engineDepends = $(patsubst %.o, %.d, $(call rwildcard,$(engineBuildDir)/,*.o))
+# Set build vars for core
+coreSrcDir = .
+coreBuildDir = $(buildDir)/core
+coreSources = $(call rwildcard,$(coreSrcDir)/,*.cpp)
+coreObjects = $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
+coreDepends = $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
 
-# Build the static library for the engine
-$(engineLib): $(raylibLib) include $(utilsLib) $(engineObjects)
+# Build the static library for the engine core
+$(coreLib): $(raylibLib) include $(utilsLib) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
-	ar -rc $(engineLib) $(engineObjects)
-	libtool -static -o $(engineLib) $(engineLib) $(raylibLib)
+	ar -rc $(coreLib) $(coreObjects)
+	libtool -static -o $(coreLib) $(coreLib) $(raylibLib)
 
 # Add all rules from dependency files
--include $(engineDepends)
+-include $(coreDepends)
 
 # Compile object files to the build directory
-$(engineBuildDir)/%.o: $(engineSrcDir)/%.cpp
+$(coreBuildDir)/%.o: $(coreSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I./include -I $(srcDir) $< -o $@ $(CXXFLAGS)
+	$(CXX) -MMD -MP -c $(compileFlags) -I./include -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
 # Copy the relevant header files into includes
 include:
