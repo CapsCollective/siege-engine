@@ -1,8 +1,8 @@
 #include "Geometry.h"
 
-#include <engine/Statics.h>
-#include <engine/physics/CollisionSystem.h>
-#include <engine/scene/SceneFile.h>
+#include <core/Statics.h>
+#include <core/physics/CollisionSystem.h>
+#include <core/scene/SceneFile.h>
 #include <utils/Logging.h>
 
 // Static member initialisation

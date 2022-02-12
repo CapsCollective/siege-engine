@@ -9,7 +9,7 @@ testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
 testDepends = $(patsubst %.o, %.d, $(call rwildcard,$(testBuildDir)/,*.o))
 
 # Link the object files and create an executable
-$(testExecutable): $(utilsLib) $(engineLib) $(testObjects)
+$(testExecutable): $(utilsLib) $(coreLib) $(testObjects)
 	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
 
 # Add all rules from dependency files
@@ -18,4 +18,4 @@ $(testExecutable): $(utilsLib) $(engineLib) $(testObjects)
 # Compile object files to the build directory
 $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(srcDir) $< -o $@ $(CXXFLAGS)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)

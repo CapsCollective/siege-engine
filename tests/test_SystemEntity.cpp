@@ -1,5 +1,5 @@
-#include <engine/entity/Entity.h>
-#include <engine/entity/EntitySystem.h>
+#include <core/entity/Entity.h>
+#include <core/entity/EntitySystem.h>
 
 #include "catch.hpp"
 

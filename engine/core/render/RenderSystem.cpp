@@ -1,6 +1,6 @@
 #include "RenderSystem.h"
 
-#include "engine/TransitionAdapter.h"
+#include "../TransitionAdapter.h"
 
 #include "ResourceSystem.h"
 

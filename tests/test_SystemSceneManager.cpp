@@ -1,8 +1,8 @@
-#include <engine/Statics.h>
-#include <engine/entity/Entity.h>
-#include <engine/render/ResourceSystem.h>
-#include <engine/scene/SceneFile.h>
-#include <engine/scene/SceneSystem.h>
+#include <core/Statics.h>
+#include <core/entity/Entity.h>
+#include <core/render/ResourceSystem.h>
+#include <core/scene/SceneFile.h>
+#include <core/scene/SceneSystem.h>
 #include <utils/FileSystem.h>
 #include <utils/String.h>
 

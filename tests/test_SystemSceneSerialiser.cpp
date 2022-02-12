@@ -1,5 +1,5 @@
-#include <engine/entity/Entity.h>
-#include <engine/scene/SceneFile.h>
+#include <core/entity/Entity.h>
+#include <core/scene/SceneFile.h>
 
 #include <utility>
 

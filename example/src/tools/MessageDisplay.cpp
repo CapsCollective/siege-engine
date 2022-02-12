@@ -1,7 +1,7 @@
 #include "MessageDisplay.h"
 
-#include <engine/Statics.h>
-#include <engine/render/RenderSystem.h>
+#include <core/Statics.h>
+#include <core/render/RenderSystem.h>
 
 void MessageDisplay::OnDraw2D()
 {
