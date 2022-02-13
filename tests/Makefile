@@ -3,6 +3,7 @@ include $(makeDir)/Platform.mk
 
 # Set build vars for tests
 testSrcDir = .
+testExecutable = $(buildDir)/testapp
 testBuildDir = $(buildDir)/tests
 testSources = $(call rwildcard,$(testSrcDir)/,*.cpp)
 testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
