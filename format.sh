@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Check supplied arguments
-if [ $# -lt 2 ]; then
-  echo "Program requires at least two argument (e.g. format <dirs> <excludes> [--check])"
+# Check and assign supplied arguments
+if [[ $# -lt 1 ]]; then
+  echo "Program requires at least one argument (e.g. format <dirs> [<excludess>] [--check])"
   exit 1
+elif [[ $# -eq 2 && "$2" -eq "--check" ]]; then
+  check="$2"
+elif [[ $# -eq 3 ]]; then
+  excludes="-not -iname $2"
+  check="$3"
 fi;
+dirs=$1
 
 # Find all required files
-dirs=$1
-excludes=$2
-check="$3"
 for dir in $dirs; do
-  files+="$(find $dir -iname *.h -o -iname *.cpp -not -iname $excludes) "
+  files+="$(find $dir -iname *.h -o -iname *.cpp $excludes) "
 done
 count=$(wc -w <<< $files)
 

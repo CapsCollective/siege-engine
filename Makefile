@@ -67,10 +67,6 @@ clean:
 	$(RM) $(call platformpth, $(buildDir))
 	$(RM) $(call platformpth, $(buildFlagsFile))
 
-# Check file formatting across all source files
-format-check:
-	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" "*catch*" --check
-
-# Run file formatting across all source files
+# Run file formatting program across all source files
 format:
-	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" "*catch*"
+	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" $(ARGS)
