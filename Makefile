@@ -16,17 +16,17 @@ export makeDir = $(abspath make)
 export buildDir = $(abspath bin)
 export vendorDir = $(abspath vendor)
 export engineDir = $(abspath engine)
+export testsDir = $(abspath tests)
+export examplesDir = $(abspath examples)
 
 # Set build vars
-export compileFlags := -Wall -std=c++17 -I $(abspath ./include)
+export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir) -l utils -l core
 buildFlagsFile := .buildflags
 
 # Set top level targets
 export utilsLib = $(libDir)/libutils.a
 export coreLib = $(libDir)/libcore.a
-export testExecutable = $(buildDir)/testapp
-export exampleExecutable = $(buildDir)/exampleapp
 
 # Set debugging build flags
 DEBUG ?= 1
@@ -36,29 +36,23 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
-.PHONY: all test run utils core tests example buildFlags clean format-check format
+.PHONY: all utils core tests examples buildFlags clean format-check format
 
-all: tests example test run clean
-
-# Build and run the application
-run: buildFlags example
-	$(exampleExecutable) $(ARGS)
-
-# Build and run all tests
-test: buildFlags tests
-	$(testExecutable) $(ARGS)
+all: tests examples
 
 utils: buildFlags
-	@$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
+	$(call passmake, $(engineDir)/utils)
 
 core: buildFlags utils
-	@$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
+	$(call passmake, $(engineDir)/core)
 
 tests: buildFlags utils core
-	@$(MAKE) -C tests CXXFLAGS="$(CXXFLAGS)"
+	$(call passmake, $(testsDir))
 
-example: buildFlags utils core
-	@$(MAKE) -C example CXXFLAGS="$(CXXFLAGS)"
+examples: buildFlags utils core $(examplesDir)/game
+
+$(examplesDir)/%: buildFlags utils core
+	$(call passmake, $@)
 
 # Check to invalidate the build if flags have changed
 buildFlags:
@@ -75,8 +69,8 @@ clean:
 
 # Check file formatting across all source files
 format-check:
-	./format.sh "$(engineDir) example/src tests" "*catch*" --check
+	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" "*catch*" --check
 
 # Run file formatting across all source files
 format:
-	./format.sh "$(engineDir) example/src tests" "*catch*"
+	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" "*catch*"
