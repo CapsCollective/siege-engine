@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "catch.hpp"
+#include "../catch.hpp"
 
 class TestEntity1 : public Entity
 {
@@ -43,7 +43,7 @@ public:
 };
 const String TestEntity3::ENTITY_NAME("TestEntity3");
 
-TEST_CASE("serialisation and deserialisation can be performed", "[SceneSerialiser]")
+TEST_CASE("serialisation and deserialisation can be performed", "[SceneSystem]")
 {
     auto serialise1 = [](Entity* entity) -> String {
         return DefineField("CUSTOM_DATA", "this is some custom data");

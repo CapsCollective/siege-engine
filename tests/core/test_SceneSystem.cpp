@@ -6,7 +6,7 @@
 #include <utils/FileSystem.h>
 #include <utils/String.h>
 
-#include "catch.hpp"
+#include "../catch.hpp"
 
 // Const declarations
 static constexpr const char* SCENE_DIR = "tests/data/";

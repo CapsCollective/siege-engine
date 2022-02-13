@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "../catch.hpp"
 
 // Require logging
 #define CC_ENABLE_LOGGING
