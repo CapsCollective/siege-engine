@@ -18,6 +18,7 @@ export vendorDir = $(abspath vendor)
 export engineDir = $(abspath engine)
 export testsDir = $(abspath tests)
 export examplesDir = $(abspath examples)
+export vendorIncludeDir = $(vendorDir)/include
 
 # Set build vars
 export compileFlags := -Wall -std=c++17
