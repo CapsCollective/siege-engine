@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     Statics::Entity().Add({&display, &devConsole}, true);
 
     // Set the default directories
-    Statics::Resource().SetBaseDirectory("example/assets/");
+    Statics::Resource().SetBaseDirectory("examples/game/assets/");
 
     // Instantiate world objects as per mode options
     if (isEditorMode)

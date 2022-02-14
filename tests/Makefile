@@ -10,7 +10,7 @@ testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
 testDepends = $(patsubst %.o, %.d, $(call rwildcard,$(testBuildDir)/,*.o))
 
 # Link the object files and create an executable
-$(testExecutable): $(utilsLib) $(coreLib) $(testObjects)
+$(testExecutable): $(testObjects)
 	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
 
 # Add all rules from dependency files

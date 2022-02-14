@@ -36,23 +36,25 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
-.PHONY: all utils core tests examples buildFlags clean format-check format
+.PHONY: all utils core tests examples examples/game buildExample/% buildFlags clean format
 
 all: tests examples
 
 utils: buildFlags
-	$(call passmake, $(engineDir)/utils)
+	$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-core: buildFlags utils
-	$(call passmake, $(engineDir)/core)
+core: buildFlags
+	$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
 tests: buildFlags utils core
-	$(call passmake, $(testsDir))
+	$(MAKE) -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
-examples: buildFlags utils core $(examplesDir)/game
+examples: examples/game
 
-$(examplesDir)/%: buildFlags utils core
-	$(call passmake, $@)
+examples/game: buildFlags utils core buildExample/game
+
+buildExample/%:
+	$(MAKE) -C $(examplesDir)/$* CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed
 buildFlags:

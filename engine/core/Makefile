@@ -17,7 +17,7 @@ coreObjects = $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
 coreDepends = $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
 
 # Build the static library for the engine core
-$(coreLib): $(raylibLib) include $(utilsLib) $(coreObjects)
+$(coreLib): $(raylibLib) include $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	ar -rc $(coreLib) $(coreObjects)
 	libtool -static -o $(coreLib) $(coreLib) $(raylibLib)
