@@ -10,7 +10,7 @@ exampleGameObjects = $(call findobjs,$(exampleGameSrcDir),$(exampleGameBuildDir)
 exampleGameDepends = $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBuildDir)/,*.o))
 
 # Link the object files and create an executable
-$(exampleGameExecutable): $(utilsLib) $(coreLib) $(exampleGameObjects)
+$(exampleGameExecutable): $(exampleGameObjects)
 	$(CXX) $(exampleGameObjects) -o $(exampleGameExecutable) $(linkFlags)
 
 # Add all rules from dependency files
