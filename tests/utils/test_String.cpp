@@ -1,586 +1,570 @@
+#include <utest.h>
+
 #include <utils/String.h>
 
-#include "../catch.hpp"
-
-TEST_CASE("strings can perform basic storage operations", "[String]")
+UTEST(String, DefaultConstruct)
 {
-    SECTION("when default constructing")
-    {
-        String s;
+    // The string should default construct correctly
+    String s;
+    ASSERT_FALSE(s);
+    ASSERT_TRUE(s.IsEmpty());
+    ASSERT_EQ(s.Size(), 0);
+    ASSERT_TRUE(s == "");
+    ASSERT_TRUE("" == s);
+    ASSERT_EQ(std::strcmp(s.Str(), ""), 0);
 
-        SECTION("the string should be initialised correctly")
-        {
-            REQUIRE(s.IsEmpty());
-            REQUIRE(s.Size() == 0);
-            REQUIRE(s == "");
-            REQUIRE("" == s);
-            REQUIRE(std::strcmp(s.Str(), "") == 0);
-        }
+    // Assignment via assignment operator should apply
+    String h("hello");
+    s = h;
+    ASSERT_FALSE(s.IsEmpty());
+    ASSERT_EQ(s.Size(), 5);
+    ASSERT_STREQ(s.Str(), h.Str());
+    ASSERT_STREQ(h.Str(), s.Str());
+    ASSERT_EQ(std::strcmp(s.Str(), h.Str()), 0);
 
-        SECTION("assigning via assignment operator should apply")
-        {
-            String h("hello");
-            s = h;
-            REQUIRE(!s.IsEmpty());
-            REQUIRE(s.Size() == 5);
-            REQUIRE(s == h);
-            REQUIRE(h == s);
-            REQUIRE(std::strcmp(s.Str(), h.Str()) == 0);
-        }
-
-        SECTION("assigning a c-string via assignment operator should apply")
-        {
-            s = "hello";
-            REQUIRE(!s.IsEmpty());
-            REQUIRE(s.Size() == 5);
-            REQUIRE(s == "hello");
-            REQUIRE("hello" == s);
-            REQUIRE(std::strcmp(s.Str(), "hello") == 0);
-        }
-    }
-
-    SECTION("when copy constructing")
-    {
-        String s1("hello");
-        String s2(s1);
-        String s3;
-        String s4(s3);
-
-        SECTION("the string should be initialised correctly")
-        {
-            REQUIRE(s2);
-            REQUIRE(s2 == "hello");
-            REQUIRE(!s4);
-        }
-
-        SECTION("the string can be reassigned")
-        {
-            s2 = "goodbye";
-            REQUIRE(s2);
-            REQUIRE(s2 == "goodbye");
-            s3 = s4;
-            REQUIRE(!s3);
-        }
-    }
-
-    SECTION("when copy constructing from a c-string")
-    {
-        String s("hello");
-
-        SECTION("the string should be initialised correctly")
-        {
-            REQUIRE(s);
-            REQUIRE(s == "hello");
-        }
-
-        SECTION("the string can be reassigned")
-        {
-            s = "goodbye";
-            REQUIRE(s);
-            REQUIRE(s == "goodbye");
-        }
-    }
-
-    SECTION("when copy constructing from a character")
-    {
-        String s('h');
-
-        SECTION("the string should be initialised correctly")
-        {
-            REQUIRE(s);
-            REQUIRE(s == "h");
-        }
-
-        SECTION("the string can be reassigned")
-        {
-            s = 'i';
-            REQUIRE(s);
-            REQUIRE(s == "i");
-        }
-    }
-
-    SECTION("when move constructing")
-    {
-        String s1(String("hello"));
-        String s2((String()));
-
-        SECTION("the string should be initialised correctly")
-        {
-            REQUIRE(s1);
-            REQUIRE(s1 == "hello");
-            REQUIRE(!s2);
-        }
-
-        SECTION("the string can be move assigned")
-        {
-            s1 = String("goodbye");
-            REQUIRE(s1);
-            REQUIRE(s1 == "goodbye");
-            s1 = String();
-            REQUIRE(!s1);
-        }
-    }
+    // Assignment of c-strings via assignment operator should apply
+    s = "hello";
+    ASSERT_FALSE(s.IsEmpty());
+    ASSERT_EQ(s.Size(), 5);
+    ASSERT_STREQ(s.Str(), "hello");
+    ASSERT_STREQ("hello", s.Str());
+    ASSERT_EQ(std::strcmp(s.Str(), "hello"), 0);
 }
 
-TEST_CASE("strings can perform basic manipulation operations", "[String]")
+UTEST(String, CopyConstruct)
 {
-    SECTION("the string can be cleared")
-    {
-        String s1("hello");
-        REQUIRE(s1);
-        REQUIRE(s1.Size() == 5);
-        s1.Clear();
-        REQUIRE(!s1);
-        REQUIRE(s1.Size() == 0);
-    }
+    // The string should copy construct correctly
+    String s1("hello");
+    String s2(s1);
+    String s3;
+    String s4(s3);
+    ASSERT_TRUE(s2);
+    ASSERT_STREQ(s2.Str(), "hello");
+    ASSERT_FALSE(s4);
 
-    SECTION("the string should correctly add c-strings")
-    {
-        String s1;
-        String s2(s1 + "hello");
-        REQUIRE(s2 == "hello");
-        s2 = s2 + "goodbye";
-        REQUIRE(s2 == "hellogoodbye");
-        s2 = "goodbye" + s2;
-        REQUIRE(s2 == "goodbyehellogoodbye");
-        REQUIRE(s2.Size() == 19);
-    }
+    // Assignment via assignment operator should apply
+    s2 = "goodbye";
+    ASSERT_TRUE(s2);
+    ASSERT_STREQ(s2.Str(), "goodbye");
+    s3 = s4;
+    ASSERT_FALSE(s3);
 
-    SECTION("the string should correctly add characters")
-    {
-        String s1;
-        String s2(s1 + 'h');
-        REQUIRE(s2 == "h");
-        s2 = s2 + 'i';
-        REQUIRE(s2 == "hi");
-        s2 = 't' + s2 + 's';
-        REQUIRE(s2 == "this");
-        REQUIRE(s2.Size() == 4);
-    }
+    // Copy construction from c-strings should apply
+    String s("hello");
+    ASSERT_TRUE(s);
+    ASSERT_STREQ(s.Str(), "hello");
+    s = "goodbye";
+    ASSERT_TRUE(s);
+    ASSERT_STREQ(s.Str(), "goodbye");
 
-    SECTION("the string should correctly add its own type")
-    {
-        String h("hello");
-        String g("goodbye");
-        String s2 = String() + h;
-        REQUIRE(s2 == "hello");
-        s2 = s2 + g;
-        REQUIRE(s2 == "hellogoodbye");
-        s2 = g + s2;
-        REQUIRE(s2 == "goodbyehellogoodbye");
-        REQUIRE(s2.Size() == 19);
-    }
-
-    SECTION("the string should correctly append c-strings")
-    {
-        String s1;
-        s1 += "hello";
-        REQUIRE(s1 == "hello");
-        String s2 = "goodbye" + s1;
-        REQUIRE(s2 == "goodbyehello");
-        s2.Append("goodbye");
-        REQUIRE(s2 == "goodbyehellogoodbye");
-        REQUIRE(s2.Size() == 19);
-    }
-
-    SECTION("the string should correctly append characters")
-    {
-        String s1;
-        s1 += 'h';
-        REQUIRE(s1 == "h");
-        s1 += 'i';
-        REQUIRE(s1 == "hi");
-        s1.Append('n');
-        REQUIRE(s1 == "hin");
-        s1.Append('t');
-        REQUIRE(s1 == "hint");
-        REQUIRE(s1.Size() == 4);
-    }
-
-    SECTION("the string should correctly append its own type")
-    {
-        String h("hello");
-        String g("goodbye");
-        String s1;
-        s1 += h;
-        REQUIRE(s1 == h);
-        String s2 = g;
-        s2.Append(s1);
-        REQUIRE(s2 == "goodbyehello");
-        s2.Append("goodbye");
-        REQUIRE(s2 == "goodbyehellogoodbye");
-        REQUIRE(s1 == "hello");
-        REQUIRE(s1 != "goodbyehello");
-        REQUIRE(s2.Size() == 19);
-    }
-
-    SECTION("the string should correctly prepend c-strings")
-    {
-        String s1;
-        s1.Prepend("hello");
-        REQUIRE(s1 == "hello");
-        s1.Prepend("goodbye");
-        REQUIRE(s1 == "goodbyehello");
-        s1.Prepend("goodbye");
-        REQUIRE(s1 == "goodbyegoodbyehello");
-        REQUIRE(s1.Size() == 19);
-    }
-
-    SECTION("the string should correctly prepend its own type")
-    {
-        String s1;
-        String h("hello");
-        String g("goodbye");
-        s1.Prepend(h);
-        REQUIRE(s1 == h);
-        String s2 = g;
-        s2.Prepend(s1);
-        REQUIRE(s2 == "hellogoodbye");
-        s2.Prepend("goodbye");
-        REQUIRE(s2 == "goodbyehellogoodbye");
-        REQUIRE(s1 == "hello");
-        REQUIRE("goodbyehello" != s1);
-        REQUIRE(s2.Size() == 19);
-    }
-
-    SECTION("the string should index its characters correctly")
-    {
-        String s1("abcdefg");
-        REQUIRE(s1.At(-1) == 'g');
-        REQUIRE(s1.At(0) == 'a');
-        REQUIRE(s1.At(1) == 'b');
-        REQUIRE(s1.At(2) == 'c');
-        REQUIRE(s1.At(6) == 'g');
-        REQUIRE(s1.At(7) == '\0');
-        REQUIRE(s1.At(20) == '\0');
-        REQUIRE(s1.At(-4) == 'd');
-        REQUIRE(s1.At(-15) == '\0');
-        REQUIRE(s1[0] == 'a');
-        REQUIRE(s1[3] == 'd');
-        REQUIRE(s1[6] == 'g');
-        REQUIRE(s1[-1] == 'g');
-        REQUIRE(s1[-3] == 'e');
-        REQUIRE(s1[-7] == 'a');
-        s1[1] = 'z';
-        REQUIRE(s1.At(1) == 'z');
-    }
-
-    SECTION("the string should erase characters correctly")
-    {
-        String s1("this is a string of a certain length");
-        s1.Erase();
-        REQUIRE(!s1);
-        s1 = "this is a string of a certain length";
-        s1.Erase(7);
-        REQUIRE(s1 == "this is");
-        s1.Erase(3, 3);
-        REQUIRE(s1 == "this");
-        s1 = "this is another string";
-        s1.Erase(4, 11);
-        REQUIRE(s1 == "this string");
-        s1.Erase(4, 11);
-        REQUIRE(!s1);
-        s1 = "four more strings! four more strings!";
-        s1.Erase(-19);
-        REQUIRE(s1 == "four more strings!");
-        s1.Erase(-13, 5);
-        REQUIRE(s1 == "four strings!");
-        s1.Erase(-14);
-        REQUIRE(!s1);
-        s1 = "last one";
-        s1.Erase(-1, 2);
-        REQUIRE(!s1);
-    }
-
-    SECTION("the string should handle insertions correctly")
-    {
-        String s1(" is a  of a  length");
-        s1.Insert(5, "");
-        REQUIRE(s1 == " is a  of a  length");
-        s1.Insert(0, "this");
-        REQUIRE(s1 == "this is a  of a  length");
-        s1.Insert(10, "short");
-        REQUIRE(s1 == "this is a short of a  length");
-        s1.Insert(21, "reasonable");
-        REQUIRE(s1 == "this is a short of a reasonable length");
-        s1.Insert(38, ", really");
-        REQUIRE(s1 == "this is a short of a reasonable length, really");
-        s1.Insert(-1, "!");
-        REQUIRE(s1 == "this is a short of a reasonable length, really!");
-        s1.Insert(-44, " string");
-        REQUIRE(s1 == "this string is a short of a reasonable length, really!");
-        s1.Insert(-55, "... ");
-        REQUIRE(s1 == "... this string is a short of a reasonable length, really!");
-        s1.Insert(-60, "this should not be inserted");
-        REQUIRE(s1 == "... this string is a short of a reasonable length, really!");
-    }
-
-    SECTION("the string should handle swaps correctly")
-    {
-        String s1("stringA");
-        String s2 = "stringB";
-        s1.Swap(s2);
-        REQUIRE(s1 == "stringB");
-        REQUIRE(s2 == "stringA");
-        s1.Swap(s2);
-        REQUIRE(s1 == "stringA");
-        REQUIRE(s2 == "stringB");
-        s2.Swap(s1);
-        REQUIRE(s1 == "stringB");
-        REQUIRE(s2 == "stringA");
-    }
-
-    SECTION("the string should cast correctly to c-strings")
-    {
-        String s1("hellogoodbye");
-        const char* cstr = s1;
-        REQUIRE(std::strcmp(cstr, "hellogoodbye") == 0);
-    }
+    // Copy construction from characters should apply
+    String s5('h');
+    ASSERT_TRUE(s5);
+    ASSERT_STREQ(s5.Str(), "h");
+    s5 = 'i';
+    ASSERT_TRUE(s5);
+    ASSERT_STREQ(s5.Str(), "i");
 }
 
-TEST_CASE("strings can perform search and replace operations", "[String]")
+UTEST(String, MoveConstruct)
 {
+    // The string should move construct correctly
+    String s1(String("hello"));
+    String s2((String()));
+    ASSERT_TRUE(s1);
+    ASSERT_STREQ(s1.Str(), "hello");
+    ASSERT_FALSE(s2);
+
+    // Assignment via move assignment should apply
+    s1 = String("goodbye");
+    ASSERT_TRUE(s1);
+    ASSERT_STREQ(s1.Str(), "goodbye");
+    s1 = String();
+    ASSERT_FALSE(s1);
+}
+
+UTEST(String, Clear)
+{
+    // The string can be cleared
+    String s1("hello");
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(s1.Size(), 5);
+    s1.Clear();
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(s1.Size(), 0);
+}
+
+UTEST(String, Add)
+{
+    // The addition operator creates prepended strings with c-strings
+    String s1;
+    String s2(s1 + "hello");
+    ASSERT_STREQ(s2.Str(), "hello");
+    s2 = s2 + "goodbye";
+    ASSERT_STREQ(s2.Str(), "hellogoodbye");
+    s2 = "goodbye" + s2;
+    ASSERT_STREQ(s2.Str(), "goodbyehellogoodbye");
+    ASSERT_EQ(s2.Size(), 19);
+
+    // The addition operator creates prepended strings with characters
+    String s3;
+    String s4(s3 + 'h');
+    ASSERT_STREQ(s4.Str(), "h");
+    s4 = s4 + 'i';
+    ASSERT_STREQ(s4.Str(), "hi");
+    s4 = 't' + s4 + 's';
+    ASSERT_STREQ(s4.Str(), "this");
+    ASSERT_EQ(s4.Size(), 4);
+
+    // The addition operator creates prepended strings with other strings
+    String h("hello");
+    String g("goodbye");
+    String s5 = String() + h;
+    ASSERT_STREQ(s5.Str(), "hello");
+    s5 = s5 + g;
+    ASSERT_STREQ(s5.Str(), "hellogoodbye");
+    s5 = g + s5;
+    ASSERT_STREQ(s5.Str(), "goodbyehellogoodbye");
+    ASSERT_EQ(s5.Size(), 19);
+}
+
+UTEST(String, Append)
+{
+    // The string should correctly append c-strings
+    String s1;
+    s1 += "hello";
+    ASSERT_STREQ(s1.Str(), "hello");
+    String s2 = "goodbye" + s1;
+    ASSERT_STREQ(s2.Str(), "goodbyehello");
+    s2.Append("goodbye");
+    ASSERT_STREQ(s2.Str(), "goodbyehellogoodbye");
+    ASSERT_EQ(s2.Size(), 19);
+
+    // The string should correctly append characters
+    String s5;
+    s5 += 'h';
+    ASSERT_STREQ(s5.Str(), "h");
+    s5 += 'i';
+    ASSERT_STREQ(s5.Str(), "hi");
+    s5.Append('n');
+    ASSERT_STREQ(s5.Str(), "hin");
+    s5.Append('t');
+    ASSERT_STREQ(s5.Str(), "hint");
+    ASSERT_EQ(s5.Size(), 4);
+
+    // The string should correctly append others strings
+    String h("hello");
+    String g("goodbye");
+    String s3;
+    s3 += h;
+    ASSERT_STREQ(s3.Str(), h.Str());
+    String s4 = g;
+    s4.Append(s3);
+    ASSERT_STREQ(s4.Str(), "goodbyehello");
+    s4.Append("goodbye");
+    ASSERT_STREQ(s4.Str(), "goodbyehellogoodbye");
+    ASSERT_STREQ(s3.Str(), "hello");
+    ASSERT_STRNE(s3.Str(), "goodbyehello");
+    ASSERT_EQ(s4.Size(), 19);
+}
+
+UTEST(String, Prepend)
+{
+    // The string should correctly prepend c-strings
+    String s1;
+    s1.Prepend("hello");
+    ASSERT_STREQ(s1.Str(), "hello");
+    s1.Prepend("goodbye");
+    ASSERT_STREQ(s1.Str(), "goodbyehello");
+    s1.Prepend("goodbye");
+    ASSERT_STREQ(s1.Str(), "goodbyegoodbyehello");
+    ASSERT_EQ(s1.Size(), 19);
+
+    // The string should correctly prepend characters
+    String s5('t');
+    ASSERT_STREQ(s5.Str(), "t");
+    s5.Prepend('n');
+    ASSERT_STREQ(s5.Str(), "nt");
+    s5.Prepend('i');
+    ASSERT_STREQ(s5.Str(), "int");
+    ASSERT_EQ(s5.Size(), 3);
+
+    // The string should correctly prepend other strings
+    String s2;
+    String h("hello");
+    String g("goodbye");
+    s2.Prepend(h);
+    ASSERT_STREQ(s2.Str(), h.Str());
+    String s3 = g;
+    s3.Prepend(s2);
+    ASSERT_STREQ(s3.Str(), "hellogoodbye");
+    s3.Prepend("goodbye");
+    ASSERT_STREQ(s3.Str(), "goodbyehellogoodbye");
+    ASSERT_STREQ(s2.Str(), "hello");
+    ASSERT_STRNE(s2.Str(), "goodbyehello");
+    ASSERT_EQ(s3.Size(), 19);
+}
+
+UTEST(String, Index)
+{
+    // The string can be indexed
+    String s1("abcdefg");
+    ASSERT_EQ(s1.At(-1), 'g');
+    ASSERT_EQ(s1.At(0), 'a');
+    ASSERT_EQ(s1.At(1), 'b');
+    ASSERT_EQ(s1.At(2), 'c');
+    ASSERT_EQ(s1.At(6), 'g');
+    ASSERT_EQ(s1.At(7), '\0');
+    ASSERT_EQ(s1.At(20), '\0');
+    ASSERT_EQ(s1.At(-4), 'd');
+    ASSERT_EQ(s1.At(-15), '\0');
+    ASSERT_EQ(s1[0], 'a');
+    ASSERT_EQ(s1[3], 'd');
+    ASSERT_EQ(s1[6], 'g');
+    ASSERT_EQ(s1[-1], 'g');
+    ASSERT_EQ(s1[-3], 'e');
+    ASSERT_EQ(s1[-7], 'a');
+    s1[1] = 'z';
+    ASSERT_EQ(s1.At(1), 'z');
+}
+
+UTEST(String, Erase)
+{
+    // The string can be erased
+    String s1("this is a string of a certain length");
+    s1.Erase();
+    ASSERT_FALSE(s1);
+    s1 = "this is a string of a certain length";
+    s1.Erase(7);
+    ASSERT_STREQ(s1.Str(), "this is");
+    s1.Erase(3, 3);
+    ASSERT_STREQ(s1.Str(), "this");
+    s1 = "this is another string";
+    s1.Erase(4, 11);
+    ASSERT_STREQ(s1.Str(), "this string");
+    s1.Erase(4, 11);
+    ASSERT_FALSE(s1);
+    s1 = "four more strings! four more strings!";
+    s1.Erase(-19);
+    ASSERT_STREQ(s1.Str(), "four more strings!");
+    s1.Erase(-13, 5);
+    ASSERT_STREQ(s1.Str(), "four strings!");
+    s1.Erase(-14);
+    ASSERT_FALSE(s1);
+    s1 = "last one";
+    s1.Erase(-1, 2);
+    ASSERT_FALSE(s1);
+}
+
+UTEST(String, Insert)
+{
+    // The string can handle insertion
+    String s1(" is a  of a  length");
+    s1.Insert(5, "");
+    ASSERT_STREQ(s1.Str(), " is a  of a  length");
+    s1.Insert(0, "this");
+    ASSERT_STREQ(s1.Str(), "this is a  of a  length");
+    s1.Insert(10, "short");
+    ASSERT_STREQ(s1.Str(), "this is a short of a  length");
+    s1.Insert(21, "reasonable");
+    ASSERT_STREQ(s1.Str(), "this is a short of a reasonable length");
+    s1.Insert(38, ", really");
+    ASSERT_STREQ(s1.Str(), "this is a short of a reasonable length, really");
+    s1.Insert(-1, "!");
+    ASSERT_STREQ(s1.Str(), "this is a short of a reasonable length, really!");
+    s1.Insert(-44, " string");
+    ASSERT_STREQ(s1.Str(), "this string is a short of a reasonable length, really!");
+    s1.Insert(-55, "... ");
+    ASSERT_STREQ(s1.Str(), "... this string is a short of a reasonable length, really!");
+    s1.Insert(-60, "this should not be inserted");
+    ASSERT_STREQ(s1.Str(), "... this string is a short of a reasonable length, really!");
+}
+
+UTEST(String, Swap)
+{
+    // The string can be swapped
+    String s1("stringA");
+    String s2 = "stringB";
+    s1.Swap(s2);
+    ASSERT_STREQ(s1.Str(), "stringB");
+    ASSERT_STREQ(s2.Str(), "stringA");
+    s1.Swap(s2);
+    ASSERT_STREQ(s1.Str(), "stringA");
+    ASSERT_STREQ(s2.Str(), "stringB");
+    s2.Swap(s1);
+    ASSERT_STREQ(s1.Str(), "stringB");
+    ASSERT_STREQ(s2.Str(), "stringA");
+}
+
+UTEST(String, Cast)
+{
+    // The string implicitly casts to c-string
+    String s1("hellogoodbye");
+    const char* cstr = s1;
+    ASSERT_EQ(std::strcmp(cstr, "hellogoodbye"), 0);
+}
+
+UTEST(String, Find)
+{
+    // The string can be searched for substrings
     String s("ruSt Is a MuCH SafEr lANgUagE...");
-    REQUIRE(s.Size() == 32);
     String s1("lANgUagE");
     String s2("...");
     String s3("rUBy");
+    ASSERT_EQ(s.Find("ruSt"), 0);
+    ASSERT_EQ(s.Find("a MuCH SafEr"), 8);
+    ASSERT_EQ(s.Find(s1), 21);
+    ASSERT_EQ(s.Find(s2), 29);
+    ASSERT_EQ(s.Find(s3), -1);
+    ASSERT_EQ(s.Find('a'), 8);
+    ASSERT_EQ(s.Find("a", 8), 8);
+    ASSERT_EQ(s.Find('a', 9), 16);
+    ASSERT_EQ(s.Find("a", -11), 26);
+}
 
-    SECTION("the string can be searched for substrings")
-    {
-        REQUIRE(s.Find("ruSt") == 0);
-        REQUIRE(s.Find("a MuCH SafEr") == 8);
-        REQUIRE(s.Find(s1) == 21);
-        REQUIRE(s.Find(s2) == 29);
-        REQUIRE(s.Find(s3) == -1);
-        REQUIRE(s.Find('a') == 8);
-        REQUIRE(s.Find("a", 8) == 8);
-        REQUIRE(s.Find('a', 9) == 16);
-        REQUIRE(s.Find("a", -11) == 26);
-    }
+UTEST(String, Replace)
+{
+    // The string can replace by substring
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    String s3("rUBy");
+    ASSERT_TRUE(s.Replace("ruSt", s3));
+    ASSERT_STREQ(s.Str(), "rUBy Is a MuCH SafEr lANgUagE...");
+    ASSERT_EQ(s.Find(s3), 0);
+    ASSERT_FALSE(s.Replace("ruSt", "NiCEr"));
+    ASSERT_TRUE(s.Replace("SafEr", "NiCEr"));
+    ASSERT_STREQ(s.Str(), "rUBy Is a MuCH NiCEr lANgUagE...");
+    ASSERT_EQ(s.Find("NiCEr"), 15);
+    ASSERT_TRUE(s.Replace(" a MuCH NiCEr lANgUagE", ""));
+    ASSERT_STREQ(s.Str(), "rUBy Is...");
+    ASSERT_TRUE(s.Replace("...", " pyThoN wItH exTra sTepS"));
+    ASSERT_STREQ(s.Str(), "rUBy Is pyThoN wItH exTra sTepS");
+    s.Clear();
+    ASSERT_FALSE(s.Replace("ruSt", s3));
+    ASSERT_STREQ(s.Str(), "");
+}
 
-    SECTION("the string can replace by substring")
-    {
-        REQUIRE(s.Replace("ruSt", s3));
-        REQUIRE(s == "rUBy Is a MuCH SafEr lANgUagE...");
-        REQUIRE(s.Find(s3) == 0);
-        REQUIRE(!s.Replace("ruSt", "NiCEr"));
-        REQUIRE(s.Replace("SafEr", "NiCEr"));
-        REQUIRE(s == "rUBy Is a MuCH NiCEr lANgUagE...");
-        REQUIRE(s.Find("NiCEr") == 15);
-        REQUIRE(s.Replace(" a MuCH NiCEr lANgUagE", ""));
-        REQUIRE(s == "rUBy Is...");
-        REQUIRE(s.Replace("...", " pyThoN wItH exTra sTepS"));
-        REQUIRE(s == "rUBy Is pyThoN wItH exTra sTepS");
-        s.Clear();
-        REQUIRE(!s.Replace("ruSt", s3));
-        REQUIRE(s == "");
-    }
+UTEST(String, Split)
+{
+    // The string can be split into substrings by delimiter
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    std::vector<String> vec1 = s.Split(" ");
+    ASSERT_EQ(vec1.size(), 6);
+    ASSERT_STREQ(vec1[0].Str(), "ruSt");
+    ASSERT_STREQ(vec1[1].Str(), "Is");
+    ASSERT_STREQ(vec1[2].Str(), "a");
+    ASSERT_STREQ(vec1[3].Str(), "MuCH");
+    ASSERT_STREQ(vec1[4].Str(), "SafEr");
+    ASSERT_STREQ(vec1[5].Str(), "lANgUagE...");
 
-    SECTION("the string can be split into substrings by delimiter")
-    {
-        std::vector<String> vec1 = s.Split(" ");
-        REQUIRE(vec1.size() == 6);
-        REQUIRE(vec1[0] == "ruSt");
-        REQUIRE(vec1[1] == "Is");
-        REQUIRE(vec1[2] == "a");
-        REQUIRE(vec1[3] == "MuCH");
-        REQUIRE(vec1[4] == "SafEr");
-        REQUIRE(vec1[5] == "lANgUagE...");
+    String s4("hi:my,name,is");
+    std::vector<String> vec2 = s4.Split(",");
+    ASSERT_EQ(vec2.size(), 3);
+    ASSERT_STREQ(vec2[0].Str(), "hi:my");
+    ASSERT_STREQ(vec2[1].Str(), "name");
+    ASSERT_STREQ(vec2[2].Str(), "is");
 
-        String s4("hi:my,name,is");
-        std::vector<String> vec2 = s4.Split(",");
-        REQUIRE(vec2.size() == 3);
-        REQUIRE(vec2[0] == "hi:my");
-        REQUIRE(vec2[1] == "name");
-        REQUIRE(vec2[2] == "is");
+    std::vector<String> vec3 = s4.Split(":,");
+    ASSERT_EQ(vec3.size(), 4);
+    ASSERT_STREQ(vec3[0].Str(), "hi");
+    ASSERT_STREQ(vec3[1].Str(), "my");
+    ASSERT_STREQ(vec3[2].Str(), "name");
+    ASSERT_STREQ(vec3[3].Str(), "is");
 
-        std::vector<String> vec3 = s4.Split(":,");
-        REQUIRE(vec3.size() == 4);
-        REQUIRE(vec3[0] == "hi");
-        REQUIRE(vec3[1] == "my");
-        REQUIRE(vec3[2] == "name");
-        REQUIRE(vec3[3] == "is");
+    String str("hello+goodbye+blah");
+    std::vector<String> vec4 = String("+" + str).Split("+");
+    ASSERT_EQ(vec4.size(), 3);
 
-        String str("hello+goodbye+blah");
-        std::vector<String> vec4 = String("+" + str).Split("+");
-        REQUIRE(vec4.size() == 3);
+    std::vector<String> vec5 = String(str + "+").Split("+");
+    ASSERT_EQ(vec5.size(), 3);
 
-        std::vector<String> vec5 = String(str + "+").Split("+");
-        REQUIRE(vec5.size() == 3);
+    std::vector<String> vec6 = String("").Split("+");
+    ASSERT_TRUE(vec6.empty());
 
-        std::vector<String> vec6 = String("").Split("+");
-        REQUIRE(vec6.empty());
+    std::vector<String> vec7 = String("blah&bleh").Split("\0");
+    ASSERT_EQ(vec7.size(), 1);
+    ASSERT_STREQ(vec7[0].Str(), "blah&bleh");
+}
 
-        std::vector<String> vec7 = String("blah&bleh").Split("\0");
-        REQUIRE(vec7.size() == 1);
-        REQUIRE(vec7[0] == "blah&bleh");
-    }
+UTEST(String, ToUpper)
+{
+    // The string can be upper-cased
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    s.ToUpper();
+    ASSERT_STREQ(s.Str(), "RUST IS A MUCH SAFER LANGUAGE...");
+}
 
-    SECTION("the string can be upper or lower-cased")
-    {
-        s.ToUpper();
-        REQUIRE(s == "RUST IS A MUCH SAFER LANGUAGE...");
-        s.ToLower();
-        REQUIRE(s == "rust is a much safer language...");
+UTEST(String, ToLower)
+{
+    // The string can be lower-cased
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    s.ToLower();
+    ASSERT_STREQ(s.Str(), "rust is a much safer language...");
+    s = "34143523322421@#@#!@##%";
+    s.ToLower();
+    ASSERT_STREQ(s.Str(), "34143523322421@#@#!@##%");
+}
 
-        s.Clear();
-        s.ToLower();
-        REQUIRE(s.IsEmpty());
-        s = "34143523322421@#@#!@##%";
-        REQUIRE(s == "34143523322421@#@#!@##%");
-    }
+UTEST(String, Format)
+{
+    // The string can be formatted
+    String fs("This is a %s: ");
+    String fss(fs + "%s");
+    fss.Format("string", "hi");
+    ASSERT_STREQ(fss.Str(), "This is a string: hi");
+    String fsd(fs + "%d");
+    fsd.Format("decimal", 5);
+    ASSERT_STREQ(fsd.Str(), "This is a decimal: 5");
+    fsd.Format(200);
+    ASSERT_STREQ(fsd.Str(), "This is a decimal: 5");
+    fsd.Clear();
+    fsd.Format("200");
+    ASSERT_TRUE(fsd.IsEmpty());
+}
 
-    SECTION("the string can be formatted")
-    {
-        String fs("This is a %s: ");
-        String fss(fs + "%s");
-        fss.Format("string", "hi");
-        REQUIRE(fss == "This is a string: hi");
-        String fsd(fs + "%d");
-        fsd.Format("decimal", 5);
-        REQUIRE(fsd == "This is a decimal: 5");
-        fsd.Format(200);
-        REQUIRE(fsd == "This is a decimal: 5");
-        fsd.Clear();
-        fsd.Format("200");
-        REQUIRE(fsd.IsEmpty());
-    }
+UTEST(String, SubString)
+{
+    // The string can generate substrings
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    String sub = s.SubString();
+    ASSERT_STREQ(sub.Str(), "ruSt Is a MuCH SafEr lANgUagE...");
+    sub = s.SubString(5);
+    ASSERT_STREQ(sub.Str(), "Is a MuCH SafEr lANgUagE...");
+    sub = s.SubString(21, 8);
+    ASSERT_STREQ(sub.Str(), "lANgUagE");
+    sub = s.SubString(-3, 3);
+    ASSERT_STREQ(sub.Str(), "...");
+    sub = s.SubString(-32, 4);
+    ASSERT_STREQ(sub.Str(), "ruSt");
+    sub = s.SubString(-33, 5);
+    ASSERT_FALSE(sub);
+    sub = s.SubString(0, -2);
+    ASSERT_FALSE(sub);
+    sub = s.SubString(0, -1);
+    ASSERT_STREQ(sub.Str(), "ruSt Is a MuCH SafEr lANgUagE...");
+    sub = s.SubString(32, 4);
+    ASSERT_FALSE(sub);
+    sub = s.SubString(31);
+    ASSERT_STREQ(sub.Str(), ".");
+    sub = s.SubString(0, 200);
+    ASSERT_FALSE(sub);
+}
 
-    SECTION("the string can generate substrings")
-    {
-        String sub = s.SubString();
-        REQUIRE(sub == "ruSt Is a MuCH SafEr lANgUagE...");
-        sub = s.SubString(5);
-        REQUIRE(sub == "Is a MuCH SafEr lANgUagE...");
-        sub = s.SubString(21, 8);
-        REQUIRE(sub == "lANgUagE");
-        sub = s.SubString(-3, 3);
-        REQUIRE(sub == "...");
-        sub = s.SubString(-32, 4);
-        REQUIRE(sub == "ruSt");
-        sub = s.SubString(-33, 5);
-        REQUIRE(!sub);
-        sub = s.SubString(0, -2);
-        REQUIRE(!sub);
-        sub = s.SubString(0, -1);
-        REQUIRE(sub == "ruSt Is a MuCH SafEr lANgUagE...");
-        sub = s.SubString(32, 4);
-        REQUIRE(!sub);
-        sub = s.SubString(31);
-        REQUIRE(sub == ".");
-        sub = s.SubString(0, 200);
-        REQUIRE(!sub);
-    }
+UTEST(String, PopBack)
+{
+    // The string can pop back
+    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    ASSERT_EQ(s.PopBack(), '.');
+    ASSERT_STREQ(s.Str(), "ruSt Is a MuCH SafEr lANgUagE..");
+    ASSERT_EQ(s.PopBack(), '.');
+    ASSERT_STREQ(s.Str(), "ruSt Is a MuCH SafEr lANgUagE.");
+    ASSERT_EQ(s.PopBack(), '.');
+    ASSERT_STREQ(s.Str(), "ruSt Is a MuCH SafEr lANgUagE");
+    ASSERT_EQ(s.PopBack(), 'E');
+    ASSERT_STREQ(s.Str(), "ruSt Is a MuCH SafEr lANgUag");
+}
 
-    SECTION("the string can pop back")
-    {
-        REQUIRE(s.PopBack() == '.');
-        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE..");
-        REQUIRE(s.PopBack() == '.');
-        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE.");
-        REQUIRE(s.PopBack() == '.');
-        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUagE");
-        REQUIRE(s.PopBack() == 'E');
-        REQUIRE(s == "ruSt Is a MuCH SafEr lANgUag");
-    }
+UTEST(String, GetLine)
+{
+    // The string can get its next line
+    String s4("hi\nmy\nname\nis");
+    String line;
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "hi");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "my");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "name");
+    ASSERT_FALSE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "is");
+    ASSERT_FALSE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "");
+    s4 = "hi\nmy\nname\nis\n\nhello";
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "hi");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "my");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "name");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "is");
+    ASSERT_TRUE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "");
+    ASSERT_FALSE(s4.GetLine(line));
+    ASSERT_STREQ(line.Str(), "hello");
+}
 
-    SECTION("the string can get its next line")
-    {
-        String s4("hi\nmy\nname\nis");
-        String line;
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "hi");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "my");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "name");
-        REQUIRE(!s4.GetLine(line));
-        REQUIRE(line == "is");
-        REQUIRE(!s4.GetLine(line));
-        REQUIRE(line == "");
-        s4 = "hi\nmy\nname\nis\n\nhello";
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "hi");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "my");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "name");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "is");
-        REQUIRE(s4.GetLine(line));
-        REQUIRE(line == "");
-        REQUIRE(!s4.GetLine(line));
-        REQUIRE(line == "hello");
-    }
+UTEST(String, GetInt)
+{
+    // The string can be converted to int
+    int value;
+    String s4("2");
+    ASSERT_TRUE(s4.GetInt(value));
+    ASSERT_EQ(value, 2);
+    s4 = "3.3";
+    ASSERT_TRUE(s4.GetInt(value));
+    ASSERT_EQ(value, 3);
+    s4 = "5.6";
+    ASSERT_TRUE(s4.GetInt(value));
+    ASSERT_EQ(value, 5);
+    s4 = "-10";
+    ASSERT_TRUE(s4.GetInt(value));
+    ASSERT_EQ(value, -10);
+    s4 = "";
+    ASSERT_FALSE(s4.GetInt(value));
+    s4 = "hello";
+    ASSERT_FALSE(s4.GetInt(value));
+    s4 = "a";
+    ASSERT_FALSE(s4.GetInt(value));
+}
 
-    SECTION("the string can be converted to int")
-    {
-        int value;
-        String s4("2");
-        REQUIRE(s4.GetInt(value));
-        REQUIRE(value == 2);
-        s4 = "3.3";
-        REQUIRE(s4.GetInt(value));
-        REQUIRE(value == 3);
-        s4 = "5.6";
-        REQUIRE(s4.GetInt(value));
-        REQUIRE(value == 5);
-        s4 = "-10";
-        REQUIRE(s4.GetInt(value));
-        REQUIRE(value == -10);
-        s4 = "";
-        REQUIRE(!s4.GetInt(value));
-        s4 = "hello";
-        REQUIRE(!s4.GetInt(value));
-        s4 = "a";
-        REQUIRE(!s4.GetInt(value));
-    }
+UTEST(String, GetFloat)
+{
+    // The string can be converted to float
+    float value;
+    String s4("2");
+    ASSERT_TRUE(s4.GetFloat(value));
+    ASSERT_EQ(value, 2.f);
+    s4 = "3.3";
+    ASSERT_TRUE(s4.GetFloat(value));
+    ASSERT_EQ(value, 3.3f);
+    s4 = "5.6";
+    ASSERT_TRUE(s4.GetFloat(value));
+    ASSERT_EQ(value, 5.6f);
+    s4 = "-10";
+    ASSERT_TRUE(s4.GetFloat(value));
+    ASSERT_EQ(value, -10.f);
+    s4 = "";
+    ASSERT_FALSE(s4.GetFloat(value));
+    s4 = "hello";
+    ASSERT_FALSE(s4.GetFloat(value));
+    s4 = "a";
+    ASSERT_FALSE(s4.GetFloat(value));
+}
 
-    SECTION("the string can be converted to float")
-    {
-        float value;
-        String s4("2");
-        REQUIRE(s4.GetFloat(value));
-        REQUIRE(value == 2.f);
-        s4 = "3.3";
-        REQUIRE(s4.GetFloat(value));
-        REQUIRE(value == 3.3f);
-        s4 = "5.6";
-        REQUIRE(s4.GetFloat(value));
-        REQUIRE(value == 5.6f);
-        s4 = "-10";
-        REQUIRE(s4.GetFloat(value));
-        REQUIRE(value == -10.f);
-        s4 = "";
-        REQUIRE(!s4.GetFloat(value));
-        s4 = "hello";
-        REQUIRE(!s4.GetFloat(value));
-        s4 = "a";
-        REQUIRE(!s4.GetFloat(value));
-    }
+UTEST(String, FromInt)
+{
+    // The string can be converted from int
+    ASSERT_STREQ(String::FromInt(2).Str(), "2");
+    ASSERT_STREQ(String::FromInt(90000000).Str(), "90000000");
+}
 
-    SECTION("the string can be converted from int")
-    {
-        REQUIRE(String::FromInt(2) == "2");
-        REQUIRE(String::FromInt(90000000) == "90000000");
-    }
+UTEST(String, FromFloat)
+{
+    // The string can be converted from float
+    ASSERT_STREQ(String::FromFloat(2.f).Str(), "2.000000");
+    ASSERT_STREQ(String::FromFloat(9.00143f).Str(), "9.001430");
+}
 
-    SECTION("the string can be converted from float")
-    {
-        REQUIRE(String::FromFloat(2.f) == "2.000000");
-        REQUIRE(String::FromFloat(9.00143f) == "9.001430");
-    }
+UTEST(String, FromDouble)
+{
+    // The string can be converted from double
+    ASSERT_STREQ(String::FromDouble(0.14159265358979323L).Str(), "0.14159265358979323");
+    ASSERT_STREQ(String::FromDouble(0.04159245358979343L).Str(), "0.04159245358979343");
+}
 
-    SECTION("the string can be converted from double")
-    {
-        REQUIRE(String::FromDouble(0.14159265358979323L) == "0.14159265358979323");
-        REQUIRE(String::FromDouble(0.04159245358979343L) == "0.04159245358979343");
-    }
-
-    SECTION("the string can be converted from long")
-    {
-        REQUIRE(String::FromLong(2l) == "2");
-        REQUIRE(String::FromLong(90000000000000l) == "90000000000000");
-    }
+UTEST(String, FromLong)
+{
+    // The string can be converted from long
+    ASSERT_STREQ(String::FromLong(2l).Str(), "2");
+    ASSERT_STREQ(String::FromLong(90000000000000l).Str(), "90000000000000");
 }
