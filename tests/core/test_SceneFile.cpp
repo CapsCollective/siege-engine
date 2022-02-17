@@ -1,9 +1,9 @@
+#include <utest.h>
+
 #include <core/entity/Entity.h>
 #include <core/scene/SceneFile.h>
 
 #include <utility>
-
-#include "../catch.hpp"
 
 class TestEntity1 : public Entity
 {
@@ -43,254 +43,280 @@ public:
 };
 const String TestEntity3::ENTITY_NAME("TestEntity3");
 
-TEST_CASE("serialisation and deserialisation can be performed", "[SceneSystem]")
+// Define test fixture
+struct test_SceneFile
 {
-    auto serialise1 = [](Entity* entity) -> String {
-        return DefineField("CUSTOM_DATA", "this is some custom data");
-    };
-    auto deserialise1 = [](const EntityData& data, const std::vector<String>& args) -> Entity* {
-        return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
-    };
-
-    auto serialise2 = [](Entity* entity) -> String {
-        return DefineField("CUSTOM_DATA", "this is some other custom data");
-    };
-    auto deserialise2 = [](const EntityData& data, const std::vector<String>& args) -> Entity* {
-        return new TestEntity2(args[CUSTOM_FIELD_1]);
-    };
-
-    SceneFile::RegisterSerialisable(TestEntity1::ENTITY_NAME, serialise1, deserialise1);
-    SceneFile::RegisterSerialisable(TestEntity2::ENTITY_NAME, serialise2, deserialise2);
-    SceneFile::RegisterSerialisable(TestEntity3::ENTITY_NAME, nullptr, nullptr);
-
-    SECTION("when serialising")
+    test_SceneFile()
     {
-        auto e1 = new TestEntity1();
-        auto e2 = new TestEntity2();
-        auto e3 = new TestEntity3();
-
-        SECTION("with a single entity it should serialise correctly")
-        {
-            String sceneData = SceneFile::SerialiseToString({e1});
-            REQUIRE(sceneData == "TestEntity1|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some custom data|\n");
-
-            SECTION("and modifying its fields should result in the same transforms being applied")
-            {
-                e1->SetPosition({1, 2, 3});
-                e1->SetRotation(25.f);
-                e1->SetZIndex(-3);
-
-                sceneData = SceneFile::SerialiseToString({e1});
-                REQUIRE(sceneData == "TestEntity1|"
-                                     "POSITION:1.00,2.00,3.00|"
-                                     "ROTATION:25.000000|"
-                                     "Z-INDEX:-3|"
-                                     "CUSTOM_DATA:this is some custom data|\n");
-            }
-        }
-
-        SECTION("with multiple entities, it should serialise in order of position")
-        {
-            String sceneData = SceneFile::SerialiseToString({e2, e1});
-            REQUIRE(sceneData == "TestEntity2|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some other custom data|\n"
-                                 "TestEntity1|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some custom data|\n");
-
-            sceneData = SceneFile::SerialiseToString({e1, e2});
-            REQUIRE(sceneData == "TestEntity1|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some custom data|\n"
-                                 "TestEntity2|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some other custom data|\n");
-        }
-
-        SECTION("entities that do not define a serialiser, it should have only basic serialisation")
-        {
-            String sceneData = SceneFile::SerialiseToString({e2, e3, e1});
-            REQUIRE(sceneData == "TestEntity2|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some other custom data|\n"
-                                 "TestEntity3|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|\n"
-                                 "TestEntity1|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some custom data|\n");
-        }
-
-        SECTION("entities that do not define a serialisation interface, it should not serialise")
-        {
-            auto e4 = new Entity();
-            String sceneData = SceneFile::SerialiseToString({e2, e4, e1});
-            REQUIRE(sceneData == "TestEntity2|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some other custom data|\n"
-                                 "TestEntity1|"
-                                 "POSITION:0.00,0.00,0.00|"
-                                 "ROTATION:0.000000|"
-                                 "Z-INDEX:0|"
-                                 "CUSTOM_DATA:this is some custom data|\n");
-        }
-
-        delete e1;
-        delete e2;
-        delete e3;
+        // Register all serialisables for the fixture
+        SceneFile::RegisterSerialisable(
+            TestEntity1::ENTITY_NAME,
+            [](Entity* entity) -> String {
+                return DefineField("CUSTOM_DATA", "this is some custom data");
+            },
+            [](const EntityData& data, const std::vector<String>& args) -> Entity* {
+                return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
+            });
+        SceneFile::RegisterSerialisable(
+            TestEntity2::ENTITY_NAME,
+            [](Entity* entity) -> String {
+                return DefineField("CUSTOM_DATA", "this is some other custom data");
+            },
+            [](const EntityData& data, const std::vector<String>& args) -> Entity* {
+                return new TestEntity2(args[CUSTOM_FIELD_1]);
+            });
+        SceneFile::RegisterSerialisable(TestEntity3::ENTITY_NAME, nullptr, nullptr);
     }
 
-    SECTION("when deserialising")
+    // Entity storage with cleanup
+    static std::vector<Entity*>& Entities()
     {
-        std::vector<Entity*> entities;
-        std::vector<String> sceneLines;
-
-        SECTION("with no entities it should deserialise correctly")
-        {
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.empty());
-        }
-
-        SECTION("with bad data it should not instantiate any entities")
-        {
-            sceneLines = {"TesPOSITIOTA:this is some custom data|\n"
-                          "T some custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.empty());
-        }
-
-        SECTION("with a single entity it should deserialise correctly")
-        {
-            sceneLines = {"TestEntity1|"
-                          "POSITION:1.00,2.00,3.00|"
-                          "ROTATION:25.000000|"
-                          "Z-INDEX:-3|"
-                          "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.size() == 1);
-            REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
-
-            SECTION("and retain its standard field values")
-            {
-                REQUIRE(entities[0]->GetName() == "TestEntity1");
-                Vec3 pos(entities[0]->GetPosition());
-                REQUIRE(pos.x == 1.f);
-                REQUIRE(pos.y == 2.f);
-                REQUIRE(pos.z == 3.f);
-                REQUIRE(entities[0]->GetRotation() == 25.f);
-                REQUIRE(entities[0]->GetZIndex() == -3);
-            }
-
-            SECTION("and retain its custom data")
-            {
-                sceneLines = {
-                    "TestEntity2|"
-                    "POSITION:0.00,0.00,0.00|"
-                    "ROTATION:0.000000|"
-                    "Z-INDEX:0|"
-                    "CUSTOM_DATA:this is some other custom data|\n",
-                };
-                SceneFile::DeserialiseLines(sceneLines, entities);
-                REQUIRE(entities.size() == 2);
-                auto e2 = dynamic_cast<TestEntity2*>(entities[1]);
-                REQUIRE(e2);
-                REQUIRE(e2->customData == "this is some other custom data");
-            }
-        }
-
-        SECTION("with multiple entities, it should deserialise in order of position")
-        {
-            sceneLines = {"TestEntity2|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some other custom data|\n",
-                          "TestEntity1|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.size() == 2);
-            REQUIRE(dynamic_cast<TestEntity2*>(entities[0]));
-            REQUIRE(dynamic_cast<TestEntity1*>(entities[1]));
-
-            sceneLines = {"TestEntity1|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some custom data|\n",
-                          "TestEntity2|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some other custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.size() == 4);
-            REQUIRE(dynamic_cast<TestEntity1*>(entities[2]));
-            REQUIRE(dynamic_cast<TestEntity2*>(entities[3]));
-        }
-
-        SECTION("with entities that do not define a deserialiser, it should not deserialise")
-        {
-            sceneLines = {"TestEntity3|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some other custom data|\n",
-                          "TestEntity1|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.size() == 1);
-            REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
-        }
-
-        SECTION("entities that do not define a serialisation interface, it should not deserialise")
-        {
-            sceneLines = {"TestEntity1|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some custom data|\n",
-                          "Entity|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some other custom data|\n",
-                          "TestEntity2|"
-                          "POSITION:0.00,0.00,0.00|"
-                          "ROTATION:0.000000|"
-                          "Z-INDEX:0|"
-                          "CUSTOM_DATA:this is some custom data|\n"};
-            SceneFile::DeserialiseLines(sceneLines, entities);
-            REQUIRE(entities.size() == 2);
-            REQUIRE(dynamic_cast<TestEntity1*>(entities[0]));
-            REQUIRE(dynamic_cast<TestEntity2*>(entities[1]));
-        }
-
-        for (auto& entity : entities) delete entity;
+        static std::vector<Entity*> entities;
+        return entities;
     }
+};
+
+UTEST_F_SETUP(test_SceneFile)
+{
+    ASSERT_TRUE(test_SceneFile::Entities().empty());
+}
+
+UTEST_F_TEARDOWN(test_SceneFile)
+{
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    for (auto& entity : entities) delete entity;
+    entities.clear();
+}
+
+UTEST_F(test_SceneFile, SerialiseSingleEntity)
+{
+    // When serialising an entity, it should serialise correctly
+    TestEntity1 e1;
+    String sceneData = SceneFile::SerialiseToString({&e1});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity1|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some custom data|\n");
+
+    // Modifying its fields should result in the same transforms being applied
+    e1.SetPosition({1, 2, 3});
+    e1.SetRotation(25.f);
+    e1.SetZIndex(-3);
+    sceneData = SceneFile::SerialiseToString({&e1});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity1|"
+                         "POSITION:1.00,2.00,3.00|"
+                         "ROTATION:25.000000|"
+                         "Z-INDEX:-3|"
+                         "CUSTOM_DATA:this is some custom data|\n");
+}
+
+UTEST_F(test_SceneFile, SerialiseMultipleEntities)
+{
+    // When serialising multiple entities, it should serialise in order of position
+    TestEntity1 e1;
+    TestEntity2 e2;
+    String sceneData = SceneFile::SerialiseToString({&e2, &e1});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity2|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some other custom data|\n"
+                         "TestEntity1|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some custom data|\n");
+    sceneData = SceneFile::SerialiseToString({&e1, &e2});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity1|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some custom data|\n"
+                         "TestEntity2|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some other custom data|\n");
+}
+
+UTEST_F(test_SceneFile, SerialiseEntityWithoutSerialiser)
+{
+    // Entities that do not define a serialiser should have only basic serialisation
+    TestEntity1 e1;
+    TestEntity2 e2;
+    TestEntity3 e3;
+    String sceneData = SceneFile::SerialiseToString({&e2, &e3, &e1});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity2|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some other custom data|\n"
+                         "TestEntity3|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|\n"
+                         "TestEntity1|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some custom data|\n");
+}
+
+UTEST_F(test_SceneFile, SerialiseEntityWithoutInterface)
+{
+    // Entities that do not define a serialiser should have only basic serialisation
+    TestEntity1 e1;
+    TestEntity2 e2;
+    Entity e4;
+    String sceneData = SceneFile::SerialiseToString({&e2, &e4, &e1});
+    ASSERT_STREQ(sceneData.Str(), "TestEntity2|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some other custom data|\n"
+                         "TestEntity1|"
+                         "POSITION:0.00,0.00,0.00|"
+                         "ROTATION:0.000000|"
+                         "Z-INDEX:0|"
+                         "CUSTOM_DATA:this is some custom data|\n");
+}
+
+UTEST_F(test_SceneFile, DeserialiseNoEntitites)
+{
+    // When deserialising a scene with no entities it should not instantiate any entities
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    std::vector<String> sceneLines;
+
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_TRUE(entities.empty());
+}
+
+UTEST_F(test_SceneFile, DeserialiseGarbageData)
+{
+    // When deserialising a scene with bad data it should not instantiate any entities
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+
+    std::vector<String> sceneLines = {"TesPOSITIOTA:this is some custom data|\n"
+                  "T some custom data|\n"};
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_TRUE(entities.empty());
+}
+
+UTEST_F(test_SceneFile, DeserialiseSingleEntity)
+{
+    // When deserialising a scene with a single entity it should deserialise correctly
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    std::vector<String> sceneLines = {
+        "TestEntity1|"
+        "POSITION:1.00,2.00,3.00|"
+        "ROTATION:25.000000|"
+        "Z-INDEX:-3|"
+        "CUSTOM_DATA:this is some custom data|\n",
+        "TestEntity2|"
+        "POSITION:0.00,0.00,0.00|"
+        "ROTATION:0.000000|"
+        "Z-INDEX:0|"
+        "CUSTOM_DATA:this is some other custom data|\n",
+    };
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_EQ(entities.size(), 2);
+    ASSERT_TRUE(dynamic_cast<TestEntity1*>(entities[0]));
+
+    // It should retain its standard field values
+    ASSERT_STREQ(entities[0]->GetName().Str(), "TestEntity1");
+    Vec3 pos(entities[0]->GetPosition());
+    ASSERT_EQ(pos.x, 1.f);
+    ASSERT_EQ(pos.y, 2.f);
+    ASSERT_EQ(pos.z, 3.f);
+    ASSERT_EQ(entities[0]->GetRotation(), 25.f);
+    ASSERT_EQ(entities[0]->GetZIndex(), -3);
+
+    // It should retain its custom data
+    ASSERT_EQ(entities.size(), 2);
+    auto e2 = dynamic_cast<TestEntity2*>(entities[1]);
+    ASSERT_TRUE(e2);
+    ASSERT_STREQ(e2->GetName().Str(), "TestEntity2");
+    ASSERT_STREQ(e2->customData.Str(), "this is some other custom data");
+}
+
+UTEST_F(test_SceneFile, DeserialiseMultipleEntities)
+{
+    // When deserialising a scene with multiple entities, it should be in order of position
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    std::vector<String> sceneLines;
+
+    sceneLines = {"TestEntity2|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some other custom data|\n",
+                  "TestEntity1|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some custom data|\n"};
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_EQ(entities.size(), 2);
+    ASSERT_TRUE(dynamic_cast<TestEntity2*>(entities[0]));
+    ASSERT_TRUE(dynamic_cast<TestEntity1*>(entities[1]));
+
+    sceneLines = {"TestEntity1|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some custom data|\n",
+                  "TestEntity2|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some other custom data|\n"};
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_EQ(entities.size(), 4);
+    ASSERT_TRUE(dynamic_cast<TestEntity1*>(entities[2]));
+    ASSERT_TRUE(dynamic_cast<TestEntity2*>(entities[3]));
+}
+
+UTEST_F(test_SceneFile, DeserialiseEntityWithoutDeserialiser)
+{
+    // When deserialising entities that do not define a deserialiser, it should do nothing
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    std::vector<String> sceneLines = {"TestEntity3|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some other custom data|\n",
+                  "TestEntity1|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some custom data|\n"};
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_EQ(entities.size(), 1);
+    ASSERT_TRUE(dynamic_cast<TestEntity1*>(entities[0]));
+}
+
+UTEST_F(test_SceneFile, DeserialiseEntityWithoutInterface)
+{
+    // Entities that do not define a serialisation interface should not deserialise
+    std::vector<Entity*>& entities = test_SceneFile::Entities();
+    std::vector<String> sceneLines = {"TestEntity1|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some custom data|\n",
+                  "Entity|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some other custom data|\n",
+                  "TestEntity2|"
+                  "POSITION:0.00,0.00,0.00|"
+                  "ROTATION:0.000000|"
+                  "Z-INDEX:0|"
+                  "CUSTOM_DATA:this is some custom data|\n"};
+    SceneFile::DeserialiseLines(sceneLines, entities);
+    ASSERT_EQ(entities.size(), 2);
+    ASSERT_TRUE(dynamic_cast<TestEntity1*>(entities[0]));
+    ASSERT_TRUE(dynamic_cast<TestEntity2*>(entities[1]));
 }
