@@ -11,14 +11,14 @@ else ifeq ($(platform), macOS)
 endif
 
 # Set directories
-export libDir = $(abspath lib)
-export makeDir = $(abspath make)
-export buildDir = $(abspath bin)
-export vendorDir = $(abspath vendor)
-export engineDir = $(abspath engine)
-export testsDir = $(abspath tests)
-export examplesDir = $(abspath examples)
-export vendorIncludeDir = $(vendorDir)/include
+export libDir := $(abspath lib)
+export makeDir := $(abspath make)
+export buildDir := $(abspath bin)
+export vendorDir := $(abspath vendor)
+export engineDir := $(abspath engine)
+export testsDir := $(abspath tests)
+export examplesDir := $(abspath examples)
+export vendorIncludeDir := $(vendorDir)/include
 
 # Set build vars
 export compileFlags := -Wall -std=c++17
@@ -26,8 +26,8 @@ export linkFlags += -L $(libDir) -l utils -l core
 buildFlagsFile := .buildflags
 
 # Set top level targets
-export utilsLib = $(libDir)/libutils.a
-export coreLib = $(libDir)/libcore.a
+export utilsLib := $(libDir)/libutils.a
+export coreLib := $(libDir)/libcore.a
 
 # Set debugging build flags
 DEBUG ?= 1

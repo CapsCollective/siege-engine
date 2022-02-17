@@ -2,13 +2,13 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set build vars for tests
-testSrcDir = .
-testExecutable = $(buildDir)/testapp
-testBuildDir = $(buildDir)/tests
-testSources = $(call rwildcard,$(testSrcDir)/,*.cpp)
-testObjects = $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
-testDepends = $(patsubst %.o, %.d, $(call rwildcard,$(testBuildDir)/,*.o))
-utestIncludeDir = $(vendorIncludeDir)/utest
+testSrcDir := .
+testExecutable := $(buildDir)/testapp
+testBuildDir := $(buildDir)/tests
+testSources := $(call rwildcard,$(testSrcDir)/,*.cpp)
+testObjects := $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
+testDepends := $(patsubst %.o, %.d, $(call rwildcard,$(testBuildDir)/,*.o))
+utestIncludeDir := $(vendorIncludeDir)/utest
 
 # Link the object files and create an executable
 $(testExecutable): $(utestIncludeDir) $(testObjects)

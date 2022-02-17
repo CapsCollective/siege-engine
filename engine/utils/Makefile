@@ -2,11 +2,11 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set build vars for utils
-utilsSrcDir = .
-utilsBuildDir = $(buildDir)/utils
-utilsSources = $(call rwildcard,$(utilsSrcDir)/,*.cpp)
-utilsObjects = $(call findobjs,$(utilsSrcDir),$(utilsBuildDir),$(utilsSources))
-utilsDepends = $(patsubst %.o, %.d, $(call rwildcard,$(utilsBuildDir)/,*.o))
+utilsSrcDir := .
+utilsBuildDir := $(buildDir)/utils
+utilsSources := $(call rwildcard,$(utilsSrcDir)/,*.cpp)
+utilsObjects := $(call findobjs,$(utilsSrcDir),$(utilsBuildDir),$(utilsSources))
+utilsDepends := $(patsubst %.o, %.d, $(call rwildcard,$(utilsBuildDir)/,*.o))
 
 # Build the static library for utils
 $(utilsLib): $(utilsObjects)
