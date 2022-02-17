@@ -5,7 +5,7 @@
 
 #include <utils/Logging.h>
 
-UTEST(Logging, CorrectReplacementPoints)
+UTEST(test_Logging, CorrectReplacementPoints)
 {
     // When given the correct number of points and values it should format correctly
     Logging::VariantContainer vc[] {1, "$$", 12.300000f, 1.2f, Vec3::Zero};
@@ -14,7 +14,7 @@ UTEST(Logging, CorrectReplacementPoints)
     ASSERT_STREQ(fmt.Str(), "1 is $$ very 12.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
 }
 
-UTEST(Logging, TooFewReplacementPoints)
+UTEST(test_Logging, TooFewReplacementPoints)
 {
     // When given too few replacement points for values it should only use those it can fit
     Logging::VariantContainer vc[] {"hello", 17.3, "$$"};
@@ -23,7 +23,7 @@ UTEST(Logging, TooFewReplacementPoints)
     ASSERT_STREQ(fmt.Str(), "This hello is 17.30000000000000071 too short!");
 }
 
-UTEST(Logging, CloseTogetherReplacementPoints)
+UTEST(test_Logging, CloseTogetherReplacementPoints)
 {
     // When close together replacement points and values it should format correctly
     Logging::VariantContainer vc[] {1, "__!", 17.3, 1.2f};
@@ -32,7 +32,7 @@ UTEST(Logging, CloseTogetherReplacementPoints)
     ASSERT_STREQ(fmt.Str(), "1This __!17.30000000000000071 too short!1.200000");
 }
 
-UTEST(Logging, ReplacementPointsInValues)
+UTEST(test_Logging, ReplacementPointsInValues)
 {
     // When values contain replacement points it should still format correctly
     Logging::VariantContainer vc[] {"{}"};
@@ -41,7 +41,7 @@ UTEST(Logging, ReplacementPointsInValues)
     ASSERT_STREQ(fmt.Str(), "Simple {} format!");
 }
 
-UTEST(Logging, TooManyReplacementPoints)
+UTEST(test_Logging, TooManyReplacementPoints)
 {
     // When given too many points for values it should leave the rest of the message alone
     Logging::VariantContainer vc[] {"foo"};
@@ -50,7 +50,7 @@ UTEST(Logging, TooManyReplacementPoints)
     ASSERT_STREQ(fmt.Str(), "This foo is {} too many!");
 }
 
-UTEST(Logging, EmptyFormatString)
+UTEST(test_Logging, EmptyFormatString)
 {
     // When given an empty string to format it should do nothing
     Logging::VariantContainer vc[] {"foo", 23};
@@ -59,7 +59,7 @@ UTEST(Logging, EmptyFormatString)
     ASSERT_TRUE(fmt.IsEmpty());
 }
 
-UTEST(Logging, EmptyReplacementValue)
+UTEST(test_Logging, EmptyReplacementValue)
 {
     // When given an empty replacement value string to format it should format correctly
     Logging::VariantContainer vc[] {"", "..."};

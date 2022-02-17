@@ -2,7 +2,7 @@
 
 #include <utils/String.h>
 
-UTEST(String, DefaultConstruct)
+UTEST(test_String, DefaultConstruct)
 {
     // The string should default construct correctly
     String s;
@@ -31,7 +31,7 @@ UTEST(String, DefaultConstruct)
     ASSERT_EQ(std::strcmp(s.Str(), "hello"), 0);
 }
 
-UTEST(String, CopyConstruct)
+UTEST(test_String, CopyConstruct)
 {
     // The string should copy construct correctly
     String s1("hello");
@@ -66,7 +66,7 @@ UTEST(String, CopyConstruct)
     ASSERT_STREQ(s5.Str(), "i");
 }
 
-UTEST(String, MoveConstruct)
+UTEST(test_String, MoveConstruct)
 {
     // The string should move construct correctly
     String s1(String("hello"));
@@ -83,7 +83,7 @@ UTEST(String, MoveConstruct)
     ASSERT_FALSE(s1);
 }
 
-UTEST(String, Clear)
+UTEST(test_String, Clear)
 {
     // The string can be cleared
     String s1("hello");
@@ -94,7 +94,7 @@ UTEST(String, Clear)
     ASSERT_EQ(s1.Size(), 0);
 }
 
-UTEST(String, Add)
+UTEST(test_String, Add)
 {
     // The addition operator creates prepended strings with c-strings
     String s1;
@@ -128,7 +128,7 @@ UTEST(String, Add)
     ASSERT_EQ(s5.Size(), 19);
 }
 
-UTEST(String, Append)
+UTEST(test_String, Append)
 {
     // The string should correctly append c-strings
     String s1;
@@ -168,7 +168,7 @@ UTEST(String, Append)
     ASSERT_EQ(s4.Size(), 19);
 }
 
-UTEST(String, Prepend)
+UTEST(test_String, Prepend)
 {
     // The string should correctly prepend c-strings
     String s1;
@@ -205,7 +205,7 @@ UTEST(String, Prepend)
     ASSERT_EQ(s3.Size(), 19);
 }
 
-UTEST(String, Index)
+UTEST(test_String, Index)
 {
     // The string can be indexed
     String s1("abcdefg");
@@ -228,7 +228,7 @@ UTEST(String, Index)
     ASSERT_EQ(s1.At(1), 'z');
 }
 
-UTEST(String, Erase)
+UTEST(test_String, Erase)
 {
     // The string can be erased
     String s1("this is a string of a certain length");
@@ -256,7 +256,7 @@ UTEST(String, Erase)
     ASSERT_FALSE(s1);
 }
 
-UTEST(String, Insert)
+UTEST(test_String, Insert)
 {
     // The string can handle insertion
     String s1(" is a  of a  length");
@@ -280,7 +280,7 @@ UTEST(String, Insert)
     ASSERT_STREQ(s1.Str(), "... this string is a short of a reasonable length, really!");
 }
 
-UTEST(String, Swap)
+UTEST(test_String, Swap)
 {
     // The string can be swapped
     String s1("stringA");
@@ -296,7 +296,7 @@ UTEST(String, Swap)
     ASSERT_STREQ(s2.Str(), "stringA");
 }
 
-UTEST(String, Cast)
+UTEST(test_String, Cast)
 {
     // The string implicitly casts to c-string
     String s1("hellogoodbye");
@@ -304,7 +304,7 @@ UTEST(String, Cast)
     ASSERT_EQ(std::strcmp(cstr, "hellogoodbye"), 0);
 }
 
-UTEST(String, Find)
+UTEST(test_String, Find)
 {
     // The string can be searched for substrings
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -322,7 +322,7 @@ UTEST(String, Find)
     ASSERT_EQ(s.Find("a", -11), 26);
 }
 
-UTEST(String, Replace)
+UTEST(test_String, Replace)
 {
     // The string can replace by substring
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -343,7 +343,7 @@ UTEST(String, Replace)
     ASSERT_STREQ(s.Str(), "");
 }
 
-UTEST(String, Split)
+UTEST(test_String, Split)
 {
     // The string can be split into substrings by delimiter
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -385,7 +385,7 @@ UTEST(String, Split)
     ASSERT_STREQ(vec7[0].Str(), "blah&bleh");
 }
 
-UTEST(String, ToUpper)
+UTEST(test_String, ToUpper)
 {
     // The string can be upper-cased
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -393,7 +393,7 @@ UTEST(String, ToUpper)
     ASSERT_STREQ(s.Str(), "RUST IS A MUCH SAFER LANGUAGE...");
 }
 
-UTEST(String, ToLower)
+UTEST(test_String, ToLower)
 {
     // The string can be lower-cased
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -404,7 +404,7 @@ UTEST(String, ToLower)
     ASSERT_STREQ(s.Str(), "34143523322421@#@#!@##%");
 }
 
-UTEST(String, Format)
+UTEST(test_String, Format)
 {
     // The string can be formatted
     String fs("This is a %s: ");
@@ -421,7 +421,7 @@ UTEST(String, Format)
     ASSERT_TRUE(fsd.IsEmpty());
 }
 
-UTEST(String, SubString)
+UTEST(test_String, SubString)
 {
     // The string can generate substrings
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -449,7 +449,7 @@ UTEST(String, SubString)
     ASSERT_FALSE(sub);
 }
 
-UTEST(String, PopBack)
+UTEST(test_String, PopBack)
 {
     // The string can pop back
     String s("ruSt Is a MuCH SafEr lANgUagE...");
@@ -463,7 +463,7 @@ UTEST(String, PopBack)
     ASSERT_STREQ(s.Str(), "ruSt Is a MuCH SafEr lANgUag");
 }
 
-UTEST(String, GetLine)
+UTEST(test_String, GetLine)
 {
     // The string can get its next line
     String s4("hi\nmy\nname\nis");
@@ -493,7 +493,7 @@ UTEST(String, GetLine)
     ASSERT_STREQ(line.Str(), "hello");
 }
 
-UTEST(String, GetInt)
+UTEST(test_String, GetInt)
 {
     // The string can be converted to int
     int value;
@@ -517,7 +517,7 @@ UTEST(String, GetInt)
     ASSERT_FALSE(s4.GetInt(value));
 }
 
-UTEST(String, GetFloat)
+UTEST(test_String, GetFloat)
 {
     // The string can be converted to float
     float value;
@@ -541,28 +541,28 @@ UTEST(String, GetFloat)
     ASSERT_FALSE(s4.GetFloat(value));
 }
 
-UTEST(String, FromInt)
+UTEST(test_String, FromInt)
 {
     // The string can be converted from int
     ASSERT_STREQ(String::FromInt(2).Str(), "2");
     ASSERT_STREQ(String::FromInt(90000000).Str(), "90000000");
 }
 
-UTEST(String, FromFloat)
+UTEST(test_String, FromFloat)
 {
     // The string can be converted from float
     ASSERT_STREQ(String::FromFloat(2.f).Str(), "2.000000");
     ASSERT_STREQ(String::FromFloat(9.00143f).Str(), "9.001430");
 }
 
-UTEST(String, FromDouble)
+UTEST(test_String, FromDouble)
 {
     // The string can be converted from double
     ASSERT_STREQ(String::FromDouble(0.14159265358979323L).Str(), "0.14159265358979323");
     ASSERT_STREQ(String::FromDouble(0.04159245358979343L).Str(), "0.04159245358979343");
 }
 
-UTEST(String, FromLong)
+UTEST(test_String, FromLong)
 {
     // The string can be converted from long
     ASSERT_STREQ(String::FromLong(2l).Str(), "2");
