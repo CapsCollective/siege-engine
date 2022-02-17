@@ -2,12 +2,12 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set build vars for exampleGame
-exampleGameSrcDir = .
-exampleGameExecutable = $(buildDir)/examplegameapp
-exampleGameBuildDir = $(buildDir)/examples/game
-exampleGameSources = $(call rwildcard,$(exampleGameSrcDir)/,*.cpp)
-exampleGameObjects = $(call findobjs,$(exampleGameSrcDir),$(exampleGameBuildDir),$(exampleGameSources))
-exampleGameDepends = $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBuildDir)/,*.o))
+exampleGameSrcDir := .
+exampleGameExecutable := $(buildDir)/examplegameapp
+exampleGameBuildDir := $(buildDir)/examples/game
+exampleGameSources := $(call rwildcard,$(exampleGameSrcDir)/,*.cpp)
+exampleGameObjects := $(call findobjs,$(exampleGameSrcDir),$(exampleGameBuildDir),$(exampleGameSources))
+exampleGameDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBuildDir)/,*.o))
 
 # Link the object files and create an executable
 $(exampleGameExecutable): $(exampleGameObjects)

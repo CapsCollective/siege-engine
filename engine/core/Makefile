@@ -7,15 +7,15 @@ ifeq ($(platform), Windows)
 else ifeq ($(platform), macOS)
     libGenDir := src
 endif
-raylibLib = $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
+raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
 # Set build vars for core
-coreSrcDir = .
-coreBuildDir = $(buildDir)/core
-coreSources = $(call rwildcard,$(coreSrcDir)/,*.cpp)
-coreObjects = $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
-coreDepends = $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
-raylibIncludeDir = $(vendorIncludeDir)/raylib
+coreSrcDir := .
+coreBuildDir := $(buildDir)/core
+coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
+coreObjects := $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
+coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
+raylibIncludeDir := $(vendorIncludeDir)/raylib
 
 # Build the static library for the engine core
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
