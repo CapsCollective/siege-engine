@@ -37,9 +37,11 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
-.PHONY: all utils core tests examples examples/game buildExample/% buildFlags clean format
+.PHONY: all engine utils core tests examples examples/game buildExample/% buildFlags clean format
 
 all: tests examples
+
+engine: buildFlags utils core
 
 utils: buildFlags
 	$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
@@ -47,12 +49,12 @@ utils: buildFlags
 core: buildFlags
 	$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-tests: buildFlags utils core
+tests: buildFlags engine
 	$(MAKE) -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
 examples: examples/game
 
-examples/game: buildFlags utils core buildExample/game
+examples/game: buildFlags engine buildExample/game
 
 buildExample/%:
 	$(MAKE) -C $(examplesDir)/$* CXXFLAGS="$(CXXFLAGS)"
