@@ -1,10 +1,10 @@
-#include <utest.h>
-
 #include <core/entity/Entity.h>
 #include <core/entity/EntitySystem.h>
+#include <utest.h>
 
 // Define test fixture
-struct test_EntitySystem {};
+struct test_EntitySystem
+{};
 
 UTEST_F_SETUP(test_EntitySystem)
 {

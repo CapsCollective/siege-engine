@@ -1,10 +1,9 @@
-#include <utest.h>
-
 #include <core/Statics.h>
 #include <core/entity/Entity.h>
 #include <core/render/ResourceSystem.h>
 #include <core/scene/SceneFile.h>
 #include <core/scene/SceneSystem.h>
+#include <utest.h>
 #include <utils/FileSystem.h>
 #include <utils/String.h>
 
@@ -42,7 +41,8 @@ REGISTER_SERIALISATION_INTERFACE(
     });
 
 // Define test fixture
-struct test_SceneSystem {};
+struct test_SceneSystem
+{};
 
 UTEST_F_SETUP(test_SceneSystem)
 {
