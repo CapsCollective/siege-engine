@@ -1,10 +1,9 @@
 #include "RenderSystem.h"
 
-#include "../TransitionAdapter.h"
-
-#include "ResourceSystem.h"
-
 #include <raylib/raylib-cpp.hpp>
+
+#include "../TransitionAdapter.h"
+#include "ResourceSystem.h"
 
 void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {

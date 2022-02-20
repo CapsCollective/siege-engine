@@ -1,8 +1,7 @@
 #include "ResourceSystem.h"
 
-#include <vector>
-
 #include <raylib/raylib-cpp.hpp>
+#include <vector>
 
 static std::map<String, Model> models;
 

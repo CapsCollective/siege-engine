@@ -11,7 +11,8 @@ UTEST(test_Logging, CorrectReplacementPoints)
     Logging::VariantContainer vc[] {1, "$$", 12.300000f, 1.2f, Vec3::Zero};
     String fmt = "{} is {} very {} well {} formatted {}!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "1 is $$ very 12.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
+    ASSERT_STREQ(fmt.Str(),
+                 "1 is $$ very 12.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
 }
 
 UTEST(test_Logging, TooFewReplacementPoints)

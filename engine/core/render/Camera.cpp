@@ -1,8 +1,8 @@
 #include "Camera.h"
 
-#include "../TransitionAdapter.h"
-
 #include <raylib/Camera3D.hpp>
+
+#include "../TransitionAdapter.h"
 
 static Vec3 pos(0.f, 10.f, 10.f);
 

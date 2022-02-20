@@ -1,5 +1,4 @@
 #include <utest.h>
-
 #include <utils/String.h>
 
 UTEST(test_String, DefaultConstruct)
