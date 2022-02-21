@@ -161,7 +161,7 @@ SpacesInLineCommentPrefix:
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
-BitFieldColonSpacing: Both
+BitFieldColonSpacing: None
 Standard:        Auto
 StatementAttributeLikeMacros:
   - Q_EMIT
