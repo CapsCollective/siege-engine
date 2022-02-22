@@ -15,6 +15,12 @@ class String
 {
 public:
 
+    // Public static members
+
+    static constexpr unsigned int MEMORY_SIZE = 16u;
+    static constexpr unsigned int MAX_STACK_CAPACITY = 15u;
+    static constexpr unsigned int MAX_SIZE = 0b0111111111111111;
+
     // 'Structors
 
     /**
@@ -218,6 +224,18 @@ public:
     // State methods
 
     /**
+     * Returns whether the String is allocated on the heap or not
+     * @return true if the String's content is being stored on the heap, false otherwise
+     */
+    bool OnHeap() const;
+
+    /**
+     * Gets the capacity of the String based on its allocated size
+     * @return the capacity reserved for the string
+     */
+    size_t Capacity() const;
+
+    /**
      * Returns whether the String is empty or not
      * @return true if the String is empty, false otherwise
      */
@@ -399,9 +417,10 @@ public:
     template<typename... P>
     void Format(P&&... params)
     {
-        size_t formatLen = snprintf(nullptr, 0, str, std::forward<P>(params)...);
+        const char* data = Data();
+        size_t formatLen = snprintf(nullptr, 0, data, std::forward<P>(params)...);
         char newStr[formatLen];
-        sprintf(newStr, str, std::forward<P>(params)...);
+        sprintf(newStr, data, std::forward<P>(params)...);
         Assign(newStr);
     }
 
@@ -414,7 +433,7 @@ public:
     template<typename... P>
     String Formatted(P&&... params) const
     {
-        String string(str);
+        String string(Data());
         string.Format(std::forward<P>(params)...);
         return string;
     }
@@ -424,17 +443,85 @@ private:
     // Private methods
 
     /**
-     * Private helper method wrapping basic assignment operations
+     * Private helper method wrapping assignment operations; handles the bulk of small
+     * string optimisation logic
+     * @note that most internal modification logic should be routed through this method
+     *       to avoid unexpected behaviour
      * @param string - the c-string to assign
      */
     void Assign(const char* string);
 
+    /**
+     * Private helper method to access the String's data pointer
+     * @return a pointer to the String's data
+     */
+    char* Data();
+
+    /**
+     * Private helper method to access the String's const data pointer
+     * @return a const pointer to the String's data
+     */
+    const char* Data() const;
+
     // Private fields
 
     /**
-     * Internal c-string representation
+     * Internal representation union for the Strings
      */
-    char* str;
+    union
+    {
+        /**
+         * Heap representation members
+         */
+        struct
+        {
+            /**
+             * Internal c-string pointer and access point for
+             * both stack and heap representation
+             */
+            char* str;
+
+            /**
+             * Storage capacity value
+             */
+            unsigned int capacity;
+
+            /**
+             * Fifteen-bit size value with one-bit padding for
+             * heap storage flag bit
+             *
+             * @note this limits the longest safely representable
+             *       String to 32,767 characters in length
+             */
+            unsigned int size:15, :1;
+        };
+
+        /**
+         * Stack representation members
+         */
+        struct
+        {
+            /**
+             * Character data buffer for stack representation
+             */
+            char buffer[MAX_STACK_CAPACITY];
+
+            /**
+             * Dual purpose stack storage space available value
+             * and heap storage flag bit
+             *
+             * @note when the available stack space reaches zero,
+             *       the field implicitly functions as the
+             *       c-string's null termination character
+             */
+            unsigned char space:7, onHeap:1;
+        };
+
+        /**
+         * Total memory representation for the union
+         */
+        char memory[MEMORY_SIZE] {};
+    };
 };
 
 // External operator overloads

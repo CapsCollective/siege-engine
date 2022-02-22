@@ -5,56 +5,96 @@
 #include <ostream>
 #include <stdexcept>
 
-static char* Allocate(size_t length)
+static inline char* Allocate(size_t len)
 {
-    // Allocate string for provided character length
-    char* str = static_cast<char*>(malloc(length + 1));
-    str[length] = '\0';
-    return str;
-}
-
-static char* Allocate(const char* string)
-{
-    // Check for null pointers
-    if (!string) string = "";
-
-    // Allocate string for length and copy it over
-    char* str = Allocate(strlen(string) + 1);
-    strcpy(str, string);
-    return str;
+    return static_cast<char*>(malloc(len + 1));
 }
 
 void String::Assign(const char* string)
 {
-    // Check for self-assignment
-    if (str == string) return;
+    // Check for self-assignment and null pointers
+    const char* data = Data();
+    if (string == data) return;
+    if (!string) string = "";
 
-    // TODO add functionality for capacity and reservations (optimise alloc)
-    // Free current internal string and assign the new one
-    free(str);
-    str = Allocate(string);
+    // Get the incoming string length,
+    // bail if it's longer than max length
+    size_t len = strlen(string);
+    if (len > MAX_SIZE) return;
+
+    // Check whether the string is already on the heap
+    if (onHeap)
+    {
+        // Free previous heap allocation and reallocate
+        if (len > Capacity())
+        {
+            free(str);
+            str = Allocate(len);
+            capacity = len;
+        }
+
+        // Allocate the new data on the heap
+        strcpy(str, string);
+        size = len;
+        onHeap = true;
+    }
+    else
+    {
+        if (len <= MAX_STACK_CAPACITY)
+        {
+            // Copy the new data to the stack buffer
+            strcpy(buffer, string);
+            buffer[len] = '\0';
+            space = MAX_STACK_CAPACITY - len;
+            onHeap = false;
+        }
+        else
+        {
+            // Allocate the new data on the heap
+            str = Allocate(len);
+            strcpy(str, string);
+            capacity = len;
+            size = len;
+            onHeap = true;
+        }
+    }
+}
+
+char* String::Data()
+{
+    return onHeap ? str : buffer;
+}
+
+const char* String::Data() const
+{
+    return onHeap ? str : buffer;
 }
 
 template<typename T>
 static char* GetFromFormat(const char* format, T value)
 {
-    char* str = Allocate(snprintf(nullptr, 0, format, value));
-    sprintf(str, format, value);
-    return str;
+    size_t len = snprintf(nullptr, 0, format, value);
+    char* cstr = Allocate(len);
+    sprintf(cstr, format, value);
+    cstr[len] = '\0';
+    return cstr;
 }
 
 String::String() : String("") {}
 
-String::String(const String& string) : String(string.str) {}
+String::String(const String& string) : String(string.Data()) {}
 
-String::String(String&& string) noexcept : str(string.str)
+String::String(String&& string) noexcept : memory()
 {
-    string.str = nullptr;
+    Swap(string);
 }
 
-String::String(const char* string) : str(Allocate(string)) {}
+String::String(const char* string) : memory()
+{
+    Assign(string);
+}
 
-String::String(const char& character) : str(nullptr)
+String::String(const char& character) : memory()
 {
     char cstr[2] = {character, '\0'};
     Assign(cstr);
@@ -62,7 +102,7 @@ String::String(const char& character) : str(nullptr)
 
 String::~String()
 {
-    free(str);
+    if (OnHeap()) free(str);
 }
 
 String& String::operator=(const String& rhs)
@@ -73,8 +113,7 @@ String& String::operator=(const String& rhs)
 
 String& String::operator=(String&& rhs) noexcept
 {
-    str = rhs.str;
-    rhs.str = nullptr;
+    Swap(rhs);
     return *this;
 }
 
@@ -86,17 +125,17 @@ String& String::operator=(const char* rhs)
 
 bool String::operator==(const String& rhs) const
 {
-    return *this == rhs.str;
+    return *this == rhs.Data();
 }
 
 bool String::operator==(const char* rhs) const
 {
-    return strcmp(str, rhs) == 0;
+    return strcmp(Data(), rhs) == 0;
 }
 
 bool String::operator!=(const String& rhs) const
 {
-    return *this != rhs.str;
+    return *this != rhs.Data();
 }
 
 bool String::operator!=(const char* rhs) const
@@ -106,21 +145,22 @@ bool String::operator!=(const char* rhs) const
 
 bool String::operator<(const String& rhs) const
 {
-    return strcmp(str, rhs.str) > 0;
+    return strcmp(Data(), rhs.Data()) > 0;
 }
 
 String String::operator+(const String& rhs) const
 {
-    return *this + (const char*) rhs.str;
+    return *this + (const char*) rhs.Data();
 }
 
 String String::operator+(const char* rhs) const
 {
-    size_t lhsLength = strlen(str);
+    const char* data = Data();
+    size_t lhsLength = Size();
     size_t rhsLength = strlen(rhs);
 
     char cstr[lhsLength + rhsLength];
-    strcpy(cstr, str);
+    strcpy(cstr, data);
     strcpy(cstr + lhsLength, rhs);
 
     return cstr;
@@ -128,10 +168,11 @@ String String::operator+(const char* rhs) const
 
 String String::operator+(const char& rhs) const
 {
+    const char* data = Data();
     size_t lhsLength = Size();
 
     char cstr[lhsLength + 1];
-    strcpy(cstr, str);
+    strcpy(cstr, data);
     cstr[lhsLength] = rhs;
     cstr[lhsLength + 1] = '\0';
 
@@ -158,7 +199,8 @@ String& String::operator+=(const char& rhs)
 
 char& String::operator[](int index)
 {
-    return str[index < 0 ? strlen(str) + index : index];
+    char* data = Data();
+    return data[index < 0 ? Size() + index : index];
 }
 
 String::operator bool() const
@@ -168,14 +210,14 @@ String::operator bool() const
 
 String::operator const char*() const
 {
-    return str;
+    return Data();
 }
 
 bool String::GetInt(int& value) const
 {
     try
     {
-        value = std::stoi(str);
+        value = std::stoi(Data());
         return true;
     }
     catch (const std::invalid_argument& err)
@@ -189,7 +231,7 @@ bool String::GetFloat(float& value) const
 {
     try
     {
-        value = std::stof(str);
+        value = std::stof(Data());
         return true;
     }
     catch (const std::invalid_argument& err)
@@ -219,56 +261,74 @@ String String::FromLong(const long& value)
     return GetFromFormat("%ld", value);
 }
 
+bool String::OnHeap() const
+{
+    return onHeap;
+}
+
+size_t String::Capacity() const
+{
+    return onHeap ? capacity : MAX_STACK_CAPACITY;
+}
+
 bool String::IsEmpty() const
 {
-    return str[0] == '\0';
+    return Size() == 0;
 }
 
 size_t String::Size() const
 {
-    return strlen(str);
+    return onHeap ? size : MAX_STACK_CAPACITY - space;
 }
 
 const char* String::Str() const
 {
-    return str;
+    return Data();
 }
 
 char String::At(int index) const
 {
-    index = index < 0 ? (int) Size() + index : index;
-    if (index < 0 || index >= Size()) return '\0';
-    return str[index];
+    const char* data = Data();
+    size_t len = Size();
+    index = index < 0 ? (int) len + index : index;
+    if (index < 0 || index >= len) return '\0';
+    return data[index];
 }
 
 size_t String::Find(const String& substring, int startIdx) const
 {
-    return Find(substring.str, startIdx);
+    return Find(substring.Data(), startIdx);
 }
 
 size_t String::Find(const char* substring, int startIdx) const
 {
-    startIdx = startIdx < 0 ? (int) Size() + startIdx : startIdx;
-    char* sstr = str + startIdx;
-    char* pos = strstr(sstr, substring);
+    const char* data = Data();
+    int len = (int) Size();
+    startIdx = startIdx < 0 ? len + startIdx : startIdx;
+    const char* sstr = data + startIdx;
+    const char* pos = strstr(sstr, substring);
     return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
 size_t String::Find(const char& character, int startIdx) const
 {
-    startIdx = startIdx < 0 ? (int) Size() + startIdx : startIdx;
-    char* sstr = str + startIdx;
-    char* pos = strchr(sstr, character);
+    const char* data = Data();
+    int len = (int) Size();
+    startIdx = startIdx < 0 ? len + startIdx : startIdx;
+    const char* sstr = data + startIdx;
+    const char* pos = strchr(sstr, character);
     return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
 std::vector<String> String::Split(const char* delimiters) const
 {
-    if (IsEmpty()) return {};
+    const char* data = Data();
+    size_t len = Size();
+    if (len == 0) return {};
 
     // Copy over the internal string
-    char string[Size()];
-    strcpy(string, str);
+    char string[len + 1];
+    strcpy(string, data);
 
     // Iterate over the string while there is still a delimiter
     std::vector<String> strings;
@@ -290,14 +350,15 @@ std::vector<String> String::Split(const char& delimiter) const
 String String::SubString(int startPos, size_t length) const
 {
     // Perform boundary checking and set defaults
-    size_t strLen = Size();
-    startPos = startPos < 0 ? (int) strLen + startPos : startPos;
-    length = length == -1 ? strLen - startPos : length;
-    if (startPos >= strLen || (startPos + length) > strLen) return nullptr;
+    const char* data = Data();
+    size_t len = Size();
+    startPos = startPos < 0 ? (int) len + startPos : startPos;
+    length = length == -1 ? len - startPos : length;
+    if (startPos >= len || (startPos + length) > len) return nullptr;
 
     // Copy over the substring and return it
     char subString[length];
-    strncpy(subString, str + startPos, length);
+    strncpy(subString, data + startPos, length);
     subString[length] = '\0'; // Manually add the null-termination char
     return subString;
 }
@@ -309,17 +370,18 @@ void String::Clear()
 
 void String::Append(const String& string)
 {
-    Append(string.str);
+    Append(string.Data());
 }
 
 void String::Append(const char* string)
 {
-    size_t lhsLength = strlen(str);
+    const char* data = Data();
+    size_t lhsLength = Size();
     size_t rhsLength = strlen(string);
     size_t fullLength = lhsLength + rhsLength;
 
     char cstr[fullLength];
-    strcpy(cstr, str);
+    strcpy(cstr, data);
     strcpy(cstr + lhsLength, string);
 
     Assign(cstr);
@@ -327,10 +389,11 @@ void String::Append(const char* string)
 
 void String::Append(const char& character)
 {
+    const char* data = Data();
     size_t lhsLength = Size();
 
     char cstr[lhsLength + 1];
-    strcpy(cstr, str);
+    strcpy(cstr, data);
     cstr[lhsLength] = character;
     cstr[lhsLength + 1] = '\0';
 
@@ -339,69 +402,85 @@ void String::Append(const char& character)
 
 void String::Prepend(const String& string)
 {
-    Prepend(string.str);
+    // Mirrors c-string implementation
+    const char* data = Data();
+    size_t lhsLength = string.Size();
+    size_t rhsLength = Size();
+    size_t fullLength = lhsLength + rhsLength;
+
+    char cstr[fullLength];
+    strcpy(cstr, string.Data());
+    strcpy(cstr + lhsLength, data);
+
+    Assign(cstr);
 }
 
 void String::Prepend(const char* string)
 {
+    const char* data = Data();
     size_t lhsLength = strlen(string);
-    size_t rhsLength = strlen(str);
+    size_t rhsLength = Size();
     size_t fullLength = lhsLength + rhsLength;
 
     char cstr[fullLength];
     strcpy(cstr, string);
-    strcpy(cstr + lhsLength, str);
+    strcpy(cstr + lhsLength, data);
 
     Assign(cstr);
 }
 
 char String::PopBack()
 {
+    char* data = Data();
     size_t len = Size();
-    char character = str[len - 1];
-    str[len - 1] = '\0';
+    char character = data[len - 1];
+    data[len - 1] = '\0';
+    if (onHeap) size -= 1;
     return character;
 }
 
 void String::Erase(int startPos, size_t length)
 {
     // Perform boundary checking and set defaults
-    size_t strLen = Size();
-    startPos = startPos < 0 ? (int) strLen + startPos : startPos;
-    length = length == -1 ? strLen - startPos : length;
-    if (startPos < 0 || (startPos + length) > strLen)
+    const char* data = Data();
+    size_t len = Size();
+    startPos = startPos < 0 ? (int) len + startPos : startPos;
+    length = length == -1 ? len - startPos : length;
+    if (startPos < 0 || (startPos + length) > len)
     {
         Assign(nullptr);
         return;
     }
 
     // Copy over the non-erased portions and assign it
-    char newStr[strLen - length];
-    strncpy(newStr, str, startPos);
-    strcpy(newStr + startPos, str + startPos + length);
+    char newStr[len - length];
+    strncpy(newStr, data, startPos);
+    strcpy(newStr + startPos, data + startPos + length);
     Assign(newStr);
 }
 
 void String::Swap(String& string)
 {
-    char* tmp = str;
-    str = string.str;
-    string.str = tmp;
+    char tmp[MEMORY_SIZE];
+    memcpy(tmp, memory, MEMORY_SIZE);
+    memcpy(memory, string.memory, MEMORY_SIZE);
+    memcpy(string.memory, tmp, MEMORY_SIZE);
 }
 
 void String::Insert(int pos, const char* string)
 {
     // Perform boundary and input checking
-    size_t strLen = Size();
-    pos = pos < 0 ? (int) strLen + pos + 1 : pos;
-    if (!string || pos > strLen || pos < 0) return;
+    const char* data = Data();
+    size_t len = Size();
+    pos = pos < 0 ? (int) len + pos + 1 : pos;
+    if (!string || pos > len || pos < 0) return;
     size_t insLength = strlen(string);
 
     // Copy over the non-erased portions and assign it
-    char newStr[strLen + insLength];
-    strncpy(newStr, str, pos);
+    char newStr[len + insLength];
+    strncpy(newStr, data, pos);
     strncpy(newStr + pos, string, insLength);
-    strcpy(newStr + pos + insLength, str + pos);
+    strcpy(newStr + pos + insLength, data + pos);
     Assign(newStr);
 }
 
@@ -410,6 +489,7 @@ bool String::Replace(const char* toReplace, const char* replacement)
     if (!toReplace || *toReplace == '\0') return false;
 
     // Try to find the position of the supplied substring
+    const char* data = Data();
     size_t pos = Find(toReplace);
     if (pos == -1) return false;
 
@@ -420,9 +500,9 @@ bool String::Replace(const char* toReplace, const char* replacement)
     size_t finalLen = (currentLen - toReplaceLen) + replaceLen;
 
     char newStr[finalLen];
-    strncpy(newStr, str, pos);
+    strncpy(newStr, data, pos);
     strncpy(newStr + pos, replacement, replaceLen);
-    strcpy(newStr + pos + replaceLen, str + pos + toReplaceLen);
+    strcpy(newStr + pos + replaceLen, data + pos + toReplaceLen);
 
     // Assign the new string
     Assign(newStr);
@@ -431,27 +511,30 @@ bool String::Replace(const char* toReplace, const char* replacement)
 
 void String::ToUpper()
 {
-    for (int i = 0; str[i]; ++i) str[i] = (char) toupper(str[i]);
+    char* data = Data();
+    for (int i = 0; data[i]; ++i) data[i] = (char) toupper(data[i]);
 }
 
 void String::ToLower()
 {
-    for (int i = 0; str[i]; ++i) str[i] = (char) tolower(str[i]);
+    char* data = Data();
+    for (int i = 0; data[i]; ++i) data[i] = (char) tolower(data[i]);
 }
 
 bool String::GetLine(String& line)
 {
-    char* pos = strchr(str, '\n');
+    char* data = Data();
+    char* pos = strchr(data, '\n');
     if (pos)
     {
-        size_t newLine = pos - str;
+        size_t newLine = pos - data;
         line = SubString(0, newLine);
         Erase(0, newLine + 1);
         return true;
     }
     else
     {
-        line = str;
+        line = data;
         Clear();
         return false;
     }
@@ -470,7 +553,7 @@ bool operator!=(const char* lhs, const String& rhs)
 String operator+(const char* lhs, const String& rhs)
 {
     size_t lhsLength = strlen(lhs);
-    size_t rhsLength = strlen(rhs.Str());
+    size_t rhsLength = rhs.Size();
 
     char cstr[lhsLength + rhsLength];
     strcpy(cstr, lhs);
@@ -481,7 +564,7 @@ String operator+(const char* lhs, const String& rhs)
 
 String operator+(const char& lhs, const String& rhs)
 {
-    size_t rhsLength = strlen(rhs.Str());
+    size_t rhsLength = rhs.Size();
 
     char cstr[1 + rhsLength];
     cstr[0] = lhs;

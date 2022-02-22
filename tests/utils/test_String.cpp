@@ -567,3 +567,63 @@ UTEST(test_String, FromLong)
     ASSERT_STREQ(String::FromLong(2l).Str(), "2");
     ASSERT_STREQ(String::FromLong(90000000000000l).Str(), "90000000000000");
 }
+
+UTEST(test_String, OnHeap)
+{
+    // The string should make use of small string allocation
+    ASSERT_LE(sizeof(String), 16);
+    String s1;
+    ASSERT_FALSE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 0);
+    ASSERT_EQ(s1.Capacity(), 15);
+
+    s1 += "hello";
+    ASSERT_FALSE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 5);
+    ASSERT_EQ(s1.Capacity(), 15);
+
+    String s2("world");
+    ASSERT_FALSE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 5);
+    ASSERT_EQ(s1.Capacity(), 15);
+
+    // It should continue to hold up to 15 characters on the stack
+    ((s1 += " ") += s2) += "!!!!";
+    ASSERT_FALSE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 15);
+    ASSERT_EQ(s1.Capacity(), 15);
+
+    // Hitting 16 characters should trigger a reallocation to the heap
+    s1 += "!";
+    ASSERT_TRUE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 16);
+    ASSERT_EQ(s1.Capacity(), 16);
+
+    s1 += " I am here!";
+    ASSERT_TRUE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 27);
+    ASSERT_EQ(s1.Capacity(), 27);
+
+    // Reassigning to a smaller string should not reduce capacity, or revert to the stack
+    s1 = "No longer!";
+    ASSERT_TRUE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), 10);
+    ASSERT_EQ(s1.Capacity(), 27);
+
+    // It can handle values of the length of its specified max size
+    char bigStr[String::MAX_SIZE + 2];
+    memset(bigStr, '1', String::MAX_SIZE);
+    bigStr[String::MAX_SIZE] = '\0';
+    s1 = bigStr;
+    ASSERT_TRUE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), String::MAX_SIZE);
+    ASSERT_EQ(s1.Capacity(), String::MAX_SIZE);
+
+    // It will fail to assign values of lengths above its specified max size
+    bigStr[String::MAX_SIZE] = '1';
+    bigStr[String::MAX_SIZE + 1] = '\0';
+    s1 = bigStr;
+    ASSERT_TRUE(s1.OnHeap());
+    ASSERT_EQ(s1.Size(), String::MAX_SIZE);
+    ASSERT_EQ(s1.Capacity(), String::MAX_SIZE);
+}
