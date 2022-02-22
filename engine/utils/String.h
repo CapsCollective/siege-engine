@@ -8,8 +8,21 @@
 #include "Macros.h"
 
 /**
- * The String class provides a simple alternative to standard strings, that simply wraps a c-string
- * and bundles in greater manipulation functionality.
+ * The String class provides an alternative to standard strings, bundling in greater manipulation
+ * functionality and providing a relatively compact implementation of small String optimisation.
+ *
+ * Strings should take up to 16 bytes of stack memory, 15 bytes of which can be used to store small
+ * Strings in a buffer NOT including the null termination character, meaning that it can effectively
+ * store up to 15 characters on the stack before allocating memory.
+ *                                                                                 inverse capacity
+ *               string buffer (15B)                                               & heap flag (1B)
+ * Small String [--------------------------------------------------------------------------|----]
+ *
+ *               string pointer (8B)                capacity (4B)       size (15b)   heap flag (1b)
+ * Large String [---------------------------------------|-------------------|-----------------|-]
+ *
+ * @note due to its compact form factor, the longest safely representable String is 32,767
+ *       characters in length (i.e. a 15-bit unsigned int)
  */
 class String
 {
@@ -541,7 +554,7 @@ private:
         /**
          * Total memory representation for the union
          */
-        char memory[MEMORY_SIZE] {};
+        char memory[MEMORY_SIZE];
     };
 };
 
