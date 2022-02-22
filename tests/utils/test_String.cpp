@@ -625,3 +625,45 @@ UTEST(test_String, OnHeap)
     ASSERT_EQ(String::MAX_SIZE, s1.Size());
     ASSERT_EQ(String::MAX_SIZE, s1.Capacity());
 }
+
+UTEST(test_String, Reset)
+{
+    // The string should allow for resetting to default values
+    String s1;
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    s1.Reset();
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Small string should respect reset calls
+    s1 = "stack string!!!";
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(15, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    s1.Reset();
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Large strings should respect reset calls
+    s1 = "minimum heap str";
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(16, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    s1.Reset();
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+}

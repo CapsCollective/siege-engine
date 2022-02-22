@@ -363,6 +363,13 @@ String String::SubString(int startPos, size_t length) const
     return subString;
 }
 
+void String::Reset()
+{
+    if (OnHeap()) free(str);
+    memset(memory, '\0', MEMORY_SIZE);
+    space = MAX_STACK_CAPACITY;
+}
+
 void String::Clear()
 {
     Assign("");
