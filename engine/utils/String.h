@@ -318,6 +318,14 @@ public:
     // Modifier methods
 
     /**
+     * Reserves String capacity greater than its current allocation
+     * @note this method has no effect on small Strings
+     * @param capacity - the capacity to reserve for
+     * @return true if reservation was successful, false otherwise
+     */
+    bool Reserve(size_t capacity);
+
+    /**
      * Resets the String content to empty, freeing any allocated memory it holds
      * @return true if the capacity was able to shrink, false otherwise
      */
