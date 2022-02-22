@@ -326,6 +326,13 @@ public:
     bool Reserve(size_t capacity);
 
     /**
+     * Shrinks the String capacity down to fit its current size, deallocating
+     * large Strings if it can fit a small String on the stack
+     * @return true if the capacity was able to shrink, false otherwise
+     */
+    bool Shrink();
+
+    /**
      * Resets the String content to empty, freeing any allocated memory it holds
      * @return true if the capacity was able to shrink, false otherwise
      */

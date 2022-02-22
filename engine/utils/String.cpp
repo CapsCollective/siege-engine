@@ -383,6 +383,35 @@ bool String::Reserve(size_t cap)
     return true;
 }
 
+bool String::Shrink()
+{
+    size_t cap = Capacity();
+    size_t len = Size();
+    if (cap == len || !onHeap) return false;
+
+    char* data = Data();
+    if (len <= MAX_STACK_CAPACITY)
+    {
+        char newStr[len + 1];
+        strcpy(newStr, data);
+        free(str);
+        strcpy(buffer, newStr);
+        space = MAX_STACK_CAPACITY - len;
+        onHeap = false;
+    }
+    else
+    {
+        char* newStr = Allocate(cap);
+        strcpy(newStr, data);
+        free(str);
+        str = newStr;
+        capacity = len;
+        size = len;
+        onHeap = true;
+    }
+    return true;
+}
+
 void String::Reset()
 {
     if (OnHeap()) free(str);
