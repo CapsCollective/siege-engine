@@ -29,7 +29,7 @@ UTEST_F(test_EntitySystem, AddBasicEntities)
 
     // The storage should contain the new entity after registration
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // It should then support adding further entities
@@ -38,12 +38,12 @@ UTEST_F(test_EntitySystem, AddBasicEntities)
     Statics::Entity().Add({e2, e3});
 
     // The storage should not contain the new entities before registration
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // The storage should contain the new entities after registration
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 }
 
@@ -59,7 +59,7 @@ UTEST_F(test_EntitySystem, AddToolEntities)
 
     // The storage should contain the new entity after registration
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // It should then support adding further tool entities
@@ -68,12 +68,12 @@ UTEST_F(test_EntitySystem, AddToolEntities)
     Statics::Entity().Add({e2, e3});
 
     // The storage should not contain the new entities before registration
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // The storage should contain the new entities after registration
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 }
 
@@ -85,17 +85,17 @@ UTEST_F(test_EntitySystem, FreeBasicEntities)
     auto e3 = new Entity();
     Statics::Entity().Add({e1, e2, e3});
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
     e1->QueueFree();
 
     // The storage should still contain the entity before deregistration
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // The storage should not contain the entity after deregistration
     Statics::Entity().FreeEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 2);
+    ASSERT_EQ(2, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // It should then support the freeing of further entities
@@ -103,7 +103,7 @@ UTEST_F(test_EntitySystem, FreeBasicEntities)
     e3->QueueFree();
 
     // The storage should still contain the entities before deregistration
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 2);
+    ASSERT_EQ(2, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // The storage should not contain the entities after deregistration
@@ -121,17 +121,17 @@ UTEST_F(test_EntitySystem, FreeToolEntities)
     Statics::Entity().Add({e1, e2, e3}, true);
     Statics::Entity().RegisterEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_EQ(Statics::Entity().GetTools().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetTools().size());
     e1->QueueFree();
 
     // The storage should still contain the entity before deregistration
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_EQ(Statics::Entity().GetTools().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
     // The storage should not contain the entity after deregistration
 //    Statics::Entity().FreeEntities(); // TODO segfault from not handling tools
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_EQ(Statics::Entity().GetTools().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
     // It should then support the freeing of further entities
     e2->QueueFree();
@@ -139,12 +139,12 @@ UTEST_F(test_EntitySystem, FreeToolEntities)
 
     // The storage should still contain the entities before deregistration
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_EQ(Statics::Entity().GetTools().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
     // The storage should not contain the entities after deregistration
 //    Statics::Entity().FreeEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_EQ(Statics::Entity().GetTools().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetTools().size());
 }
 
 UTEST_F(test_EntitySystem, SortEntitiesByZIndex)
@@ -156,27 +156,27 @@ UTEST_F(test_EntitySystem, SortEntitiesByZIndex)
     auto* e4 = new Entity("e4", Xform(), 3);
     Statics::Entity().Add({e1, e2, e3, e4});
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 4);
+    ASSERT_EQ(4, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
     // Entities should be sorted from lowest to highest index
     const std::vector<Entity*>& entities = Statics::Entity().GetEntities();
-    ASSERT_EQ(entities[0], e3);
-    ASSERT_EQ(entities[1], e1);
-    ASSERT_EQ(entities[2], e4);
-    ASSERT_EQ(entities[3], e2);
+    ASSERT_EQ(e3, entities[0]);
+    ASSERT_EQ(e1, entities[1]);
+    ASSERT_EQ(e4, entities[2]);
+    ASSERT_EQ(e2, entities[3]);
 
     // Lowering the z-index of one entity should re-sort the rest
     e1->SetZIndex(0);
-    ASSERT_EQ(entities[0], e1);
-    ASSERT_EQ(entities[1], e3);
-    ASSERT_EQ(entities[2], e4);
-    ASSERT_EQ(entities[3], e2);
+    ASSERT_EQ(e1, entities[0]);
+    ASSERT_EQ(e3, entities[1]);
+    ASSERT_EQ(e4, entities[2]);
+    ASSERT_EQ(e2, entities[3]);
 
     // Raising the z-index of one entity should re-sort the rest
     e1->SetZIndex(20);
-    ASSERT_EQ(entities[0], e3);
-    ASSERT_EQ(entities[1], e4);
-    ASSERT_EQ(entities[2], e2);
-    ASSERT_EQ(entities[3], e1);
+    ASSERT_EQ(e3, entities[0]);
+    ASSERT_EQ(e4, entities[1]);
+    ASSERT_EQ(e2, entities[2]);
+    ASSERT_EQ(e1, entities[3]);
 }

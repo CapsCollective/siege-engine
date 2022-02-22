@@ -8,11 +8,10 @@
 UTEST(test_Logging, CorrectReplacementPoints)
 {
     // When given the correct number of points and values it should format correctly
-    Logging::VariantContainer vc[] {1, "$$", 12.300000f, 1.2f, Vec3::Zero};
-    String fmt = "{} is {} very {} well {} formatted {}!";
+    Logging::VariantContainer vc[] {1, "$$", 1.2f, Vec3::Zero};
+    String fmt = "{} is {} very well {} formatted {}!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(),
-                 "1 is $$ very 12.300000 well 1.200000 formatted Vector3(0.00,0.00,0.00)!");
+    ASSERT_STREQ("1 is $$ very well 1.200000 formatted Vector3(0.00,0.00,0.00)!", fmt.Str());
 }
 
 UTEST(test_Logging, TooFewReplacementPoints)
@@ -21,7 +20,7 @@ UTEST(test_Logging, TooFewReplacementPoints)
     Logging::VariantContainer vc[] {"hello", 17.3, "$$"};
     String fmt = "This {} is {} too short!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "This hello is 17.30000000000000071 too short!");
+    ASSERT_STREQ("This hello is 17.30000000000000071 too short!", fmt.Str());
 }
 
 UTEST(test_Logging, CloseTogetherReplacementPoints)
@@ -30,7 +29,7 @@ UTEST(test_Logging, CloseTogetherReplacementPoints)
     Logging::VariantContainer vc[] {1, "__!", 17.3, 1.2f};
     String fmt = "{}This {}{} too short!{}";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "1This __!17.30000000000000071 too short!1.200000");
+    ASSERT_STREQ("1This __!17.30000000000000071 too short!1.200000", fmt.Str());
 }
 
 UTEST(test_Logging, ReplacementPointsInValues)
@@ -39,7 +38,7 @@ UTEST(test_Logging, ReplacementPointsInValues)
     Logging::VariantContainer vc[] {"{}"};
     String fmt = "Simple {} format!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "Simple {} format!");
+    ASSERT_STREQ("Simple {} format!", fmt.Str());
 }
 
 UTEST(test_Logging, TooManyReplacementPoints)
@@ -48,7 +47,7 @@ UTEST(test_Logging, TooManyReplacementPoints)
     Logging::VariantContainer vc[] {"foo"};
     String fmt = "This {} is {} too many!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "This foo is {} too many!");
+    ASSERT_STREQ("This foo is {} too many!", fmt.Str());
 }
 
 UTEST(test_Logging, EmptyFormatString)
@@ -66,5 +65,5 @@ UTEST(test_Logging, EmptyReplacementValue)
     Logging::VariantContainer vc[] {"", "..."};
     String fmt = "Almost t{}oo quiet{}";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
-    ASSERT_STREQ(fmt.Str(), "Almost too quiet...");
+    ASSERT_STREQ("Almost too quiet...", fmt.Str());
 }
