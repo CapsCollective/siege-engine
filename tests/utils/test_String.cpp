@@ -667,3 +667,52 @@ UTEST(test_String, Reset)
     ASSERT_EQ(15, s1.Capacity());
     ASSERT_FALSE(s1.OnHeap());
 }
+
+UTEST(test_String, Reserve)
+{
+    // The string should allow for pre-reserving capacity
+    String s1;
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Reservations below max stack size should fail
+    ASSERT_FALSE(s1.Reserve(12));
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    ASSERT_FALSE(s1.Reserve(15));
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Reservations above max stack size should success
+    ASSERT_TRUE(s1.Reserve(16));
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    s1 = "hello";
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(5, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    ASSERT_TRUE(s1.Reserve(30));
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(5, s1.Size());
+    ASSERT_EQ(30, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    // Reservations below current capacity should fail
+    ASSERT_FALSE(s1.Reserve(1));
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(5, s1.Size());
+    ASSERT_EQ(30, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+}

@@ -363,6 +363,26 @@ String String::SubString(int startPos, size_t length) const
     return subString;
 }
 
+bool String::Reserve(size_t cap)
+{
+    // Ignore reservations below max stack capacity or less than current
+    if (cap < Capacity() || cap > MAX_SIZE || cap <= MAX_STACK_CAPACITY) return false;
+
+    // Store previous values
+    char* data = Data();
+    char* newStr = Allocate(cap);
+    strcpy(newStr, data);
+    size_t len = Size();
+
+    // Apply previous values
+    if (onHeap) free(str);
+    str = newStr;
+    capacity = cap;
+    size = len;
+    onHeap = true;
+    return true;
+}
+
 void String::Reset()
 {
     if (OnHeap()) free(str);
