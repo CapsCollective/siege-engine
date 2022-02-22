@@ -76,7 +76,7 @@ UTEST_F(test_SceneSystem, SaveNonEmptyScene)
     ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
     String content = FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_FALSE(content.IsEmpty());
-    ASSERT_NE(content.Find("TestEntity"), -1);
+    ASSERT_NE(-1, content.Find("TestEntity"));
 }
 
 UTEST_F(test_SceneSystem, SaveClearedScene)
@@ -90,7 +90,7 @@ UTEST_F(test_SceneSystem, SaveClearedScene)
     ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
     String content = FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_TRUE(content.IsEmpty());
-    ASSERT_EQ(content.Find("TestEntity"), -1);
+    ASSERT_EQ(-1, content.Find("TestEntity"));
 }
 
 UTEST_F(test_SceneSystem, SaveNonSerialisableEntity)
@@ -121,7 +121,7 @@ UTEST_F(test_SceneSystem, EraseOnNewScene)
     Statics::Entity().RegisterEntities();
     Statics::Scene().NewScene();
 
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
     Statics::Entity().FreeEntities();
 
     // It should remove them at the end of the frame
@@ -136,18 +136,18 @@ UTEST_F(test_SceneSystem, LoadNonEmptyScene)
     Statics::Scene().LoadNextScene();
     Statics::Entity().RegisterEntities();
 
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
 
     // However, it should not delete entities until the end of the frame
     Statics::Scene().QueueNextScene("scene2");
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 3);
+    ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     Statics::Entity().FreeEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
 
     // It should then add all entities when a new scene is loaded
     Statics::Scene().LoadNextScene();
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
 }
 
 UTEST_F(test_SceneSystem, LoadNonExistentScene)
@@ -155,7 +155,7 @@ UTEST_F(test_SceneSystem, LoadNonExistentScene)
     // When loading a scene from a non-existent file it should reset the scene
     Statics::Entity().Add(new TestEntity());
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
 
     Statics::Scene().QueueNextScene("nonexistent");
     Statics::Entity().FreeEntities();
@@ -169,7 +169,7 @@ UTEST_F(test_SceneSystem, LoadUnnamedScene)
     // When loading a scene from an empty string it should reset the scene
     Statics::Entity().Add(new TestEntity());
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
 
     Statics::Scene().QueueNextScene("");
     Statics::Entity().FreeEntities();
@@ -183,7 +183,7 @@ UTEST_F(test_SceneSystem, LoadGarbageScene)
     // When loading a scene with garbage data it should reset the scene
     Statics::Entity().Add(new TestEntity());
     Statics::Entity().RegisterEntities();
-    ASSERT_EQ(Statics::Entity().GetEntities().size(), 1);
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
 
     Statics::Scene().QueueNextScene("garbage.scene");
     Statics::Entity().FreeEntities();
