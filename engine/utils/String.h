@@ -318,6 +318,12 @@ public:
     // Modifier methods
 
     /**
+     * Resets the String content to empty, freeing any allocated memory it holds
+     * @return true if the capacity was able to shrink, false otherwise
+     */
+    void Reset();
+
+    /**
      * Clears the content of the String leaving it empty
      */
     void Clear();
