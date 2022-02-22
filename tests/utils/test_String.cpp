@@ -716,3 +716,77 @@ UTEST(test_String, Reserve)
     ASSERT_EQ(30, s1.Capacity());
     ASSERT_TRUE(s1.OnHeap());
 }
+
+UTEST(test_String, Shrink)
+{
+    // The string should allow for shrinking capacity
+    String s1;
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Shrinking below max stack size should fail
+    ASSERT_FALSE(s1.Shrink());
+
+    ASSERT_FALSE(s1);
+    ASSERT_EQ(0, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    s1 = "stack string!!!";
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(15, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    ASSERT_FALSE(s1.Shrink());
+
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(15, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+
+    // Shrinking at-capacity strings should fail
+    s1 = "minimum heap str";
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(16, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    ASSERT_FALSE(s1.Shrink());
+
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(16, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    // Shrinking below capacity strings should succeed
+    s1.Reserve(30);
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(16, s1.Size());
+    ASSERT_EQ(30, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    ASSERT_TRUE(s1.Shrink());
+
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(16, s1.Size());
+    ASSERT_EQ(16, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    // Shrinking strings that are below max stack size should return to stack
+    s1 = "hi";
+    s1.Reserve(45);
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(2, s1.Size());
+    ASSERT_EQ(45, s1.Capacity());
+    ASSERT_TRUE(s1.OnHeap());
+
+    ASSERT_TRUE(s1.Shrink());
+
+    ASSERT_TRUE(s1);
+    ASSERT_EQ(2, s1.Size());
+    ASSERT_EQ(15, s1.Capacity());
+    ASSERT_FALSE(s1.OnHeap());
+}
