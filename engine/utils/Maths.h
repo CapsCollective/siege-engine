@@ -40,6 +40,8 @@ struct Vec3
 
     Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
+    Vec3& operator =(const Vec3& rhs) = default;
+
     // Operator overloads
 
     DEFINE_OPERATOR(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
