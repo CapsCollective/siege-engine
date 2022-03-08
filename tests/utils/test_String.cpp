@@ -600,13 +600,13 @@ UTEST(test_String, OnHeap)
     s1 += " I am here!";
     ASSERT_TRUE(s1.OnHeap());
     ASSERT_EQ(27, s1.Size());
-    ASSERT_EQ(27, s1.Capacity());
+    ASSERT_EQ(28, s1.Capacity());
 
     // Reassigning to a smaller string should not reduce capacity, or revert to the stack
     s1 = "No longer!";
     ASSERT_TRUE(s1.OnHeap());
     ASSERT_EQ(10, s1.Size());
-    ASSERT_EQ(27, s1.Capacity());
+    ASSERT_EQ(28, s1.Capacity());
 
     // It can handle values of the length of its specified max size
     char bigStr[String::MAX_SIZE + 2];
@@ -780,7 +780,7 @@ UTEST(test_String, Shrink)
     s1.Reserve(45);
     ASSERT_TRUE(s1);
     ASSERT_EQ(2, s1.Size());
-    ASSERT_EQ(45, s1.Capacity());
+    ASSERT_EQ(46, s1.Capacity());
     ASSERT_TRUE(s1.OnHeap());
 
     ASSERT_TRUE(s1.Shrink());

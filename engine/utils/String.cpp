@@ -10,6 +10,13 @@ static inline char* Allocate(size_t len)
     return static_cast<char*>(malloc(len + 1));
 }
 
+static inline unsigned int GetCapacity(size_t len)
+{
+    // Add the least significant bit to round up to the nearest even number,
+    // remember to reapply the on-heap flag bit after setting to the field
+    return len + (len & 1);
+}
+
 void String::Assign(const char* string)
 {
     // Check for self-assignment and null pointers
@@ -29,8 +36,8 @@ void String::Assign(const char* string)
         if (len > Capacity())
         {
             free(str);
-            str = Allocate(len);
-            capacity = len;
+            capacity = GetCapacity(len);
+            str = Allocate(capacity);
         }
 
         // Allocate the new data on the heap
@@ -51,9 +58,9 @@ void String::Assign(const char* string)
         else
         {
             // Allocate the new data on the heap
-            str = Allocate(len);
+            capacity = GetCapacity(len);
+            str = Allocate(capacity);
             strcpy(str, string);
-            capacity = len;
             size = len;
             onHeap = true;
         }
@@ -86,7 +93,8 @@ String::String(const String& string) : String(string.Data()) {}
 
 String::String(String&& string) noexcept : memory()
 {
-    Swap(string);
+    memcpy(memory, string.memory, MEMORY_SIZE);
+    memset(string.memory, '\0', MEMORY_SIZE);
 }
 
 String::String(const char* string) : memory()
@@ -113,7 +121,8 @@ String& String::operator=(const String& rhs)
 
 String& String::operator=(String&& rhs) noexcept
 {
-    Swap(rhs);
+    memcpy(memory, rhs.memory, MEMORY_SIZE);
+    memset(rhs.memory, '\0', MEMORY_SIZE);
     return *this;
 }
 
@@ -268,7 +277,7 @@ bool String::OnHeap() const
 
 size_t String::Capacity() const
 {
-    return onHeap ? capacity : MAX_STACK_CAPACITY;
+    return onHeap ? capacity & 0b1111111111111110 : MAX_STACK_CAPACITY;
 }
 
 bool String::IsEmpty() const
@@ -367,6 +376,7 @@ bool String::Reserve(size_t cap)
 {
     // Ignore reservations below max stack capacity or less than current
     if (cap < Capacity() || cap > MAX_SIZE || cap <= MAX_STACK_CAPACITY) return false;
+    cap = GetCapacity(cap);
 
     // Store previous values
     char* data = Data();
@@ -401,11 +411,12 @@ bool String::Shrink()
     }
     else
     {
+        cap = GetCapacity(len);
         char* newStr = Allocate(cap);
         strcpy(newStr, data);
         free(str);
         str = newStr;
-        capacity = len;
+        capacity = cap;
         size = len;
         onHeap = true;
     }

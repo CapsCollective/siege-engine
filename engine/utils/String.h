@@ -14,15 +14,16 @@
  * Strings should take up to 16 bytes of stack memory, 15 bytes of which can be used to store small
  * Strings in a buffer NOT including the null termination character, meaning that it can effectively
  * store up to 15 characters on the stack before allocating memory.
- *                                                                                 inverse capacity
- *               string buffer (15B)                                               & heap flag (1B)
+ *                                                                                  inverse capacity
+ *               string buffer (15B)                                                & heap flag (1B)
  * Small String [--------------------------------------------------------------------------|----]
  *
- *               string pointer (8B)                capacity (4B)       size (15b)   heap flag (1b)
+ *               string pointer (8B)                size (4B)       capacity (15b)    heap flag (1b)
  * Large String [---------------------------------------|-------------------|-----------------|-]
  *
- * @note due to its compact form factor, the longest safely representable String is 32,767
- *       characters in length (i.e. a 15-bit unsigned int)
+ * @note due to its compact form factor, the longest safely representable String is 65,534
+ *       characters in length, and will always be an even number as the capacity value does not make
+ *       use of its least significant bit
  */
 class String
 {
@@ -32,7 +33,7 @@ public:
 
     static constexpr unsigned int MEMORY_SIZE = 16u;
     static constexpr unsigned int MAX_STACK_CAPACITY = 15u;
-    static constexpr unsigned int MAX_SIZE = 0b0111111111111111;
+    static constexpr unsigned int MAX_SIZE = 0b1111111111111110;
 
     // 'Structors
 
@@ -516,18 +517,20 @@ private:
             char* str;
 
             /**
-             * Storage capacity value
+             * String size value
              */
-            unsigned int capacity;
+            unsigned int size;
 
             /**
-             * Fifteen-bit size value with one-bit padding for
-             * heap storage flag bit
+             * Storage capacity value where least significant bit
+             * is ignored in capacity calculations as it is used
+             * as the on-heap flag, meaning that the capacity will
+             * always be an even number.
              *
              * @note this limits the longest safely representable
-             *       String to 32,767 characters in length
+             *       String to 65,534 characters in length
              */
-            unsigned int size:15, :1;
+            unsigned int capacity;
         };
 
         /**
