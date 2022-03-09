@@ -10,6 +10,12 @@ static inline char* Allocate(size_t len)
     return static_cast<char*>(malloc(len + 1));
 }
 
+static inline char* Reallocate(char* str, size_t len)
+{
+    void* ptr = realloc(str, len + 1);
+    return static_cast<char*>(ptr ? ptr : str);
+}
+
 static inline unsigned int GetCapacity(size_t len)
 {
     // Add the least significant bit to round up to the nearest even number,
@@ -35,9 +41,8 @@ void String::Assign(const char* string)
         // Free previous heap allocation and reallocate
         if (len > Capacity())
         {
-            free(str);
             capacity = GetCapacity(len);
-            str = Allocate(capacity);
+            str = Reallocate(str, capacity);
         }
 
         // Allocate the new data on the heap
@@ -380,12 +385,17 @@ bool String::Reserve(size_t cap)
 
     // Store previous values
     char* data = Data();
-    char* newStr = Allocate(cap);
-    strcpy(newStr, data);
     size_t len = Size();
+    char* newStr;
+    if (onHeap) newStr = Reallocate(str, cap);
+    else
+    {
+        // Move the data to the heap
+        newStr = Allocate(cap);
+        strcpy(newStr, data);
+    }
 
     // Apply previous values
-    if (onHeap) free(str);
     str = newStr;
     capacity = cap;
     size = len;
@@ -412,10 +422,7 @@ bool String::Shrink()
     else
     {
         cap = GetCapacity(len);
-        char* newStr = Allocate(cap);
-        strcpy(newStr, data);
-        free(str);
-        str = newStr;
+        str = Reallocate(str, cap);
         capacity = cap;
         size = len;
         onHeap = true;
