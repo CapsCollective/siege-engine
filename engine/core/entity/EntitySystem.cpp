@@ -172,6 +172,10 @@ void EntitySystem::FreeEntities()
     // Iterate over all entities that need to be freed
     for (auto& entity : freedEntities)
     {
+        // TODO workaround to avoid segfault from freeing tools from entity storage
+        auto it = std::find(packedTools.begin(), packedTools.end(), entity);
+        if (it != packedTools.end()) continue;
+
         // Remove them and free their memory
         Remove(entity, packedEntities);
     }
