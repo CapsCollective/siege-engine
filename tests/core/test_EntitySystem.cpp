@@ -129,7 +129,7 @@ UTEST_F(test_EntitySystem, FreeToolEntities)
     ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
     // The storage should not contain the entity after deregistration
-//    Statics::Entity().FreeEntities(); // TODO segfault from not handling tools
+    Statics::Entity().FreeEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
     ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
@@ -142,7 +142,7 @@ UTEST_F(test_EntitySystem, FreeToolEntities)
     ASSERT_EQ(3, Statics::Entity().GetTools().size());
 
     // The storage should not contain the entities after deregistration
-//    Statics::Entity().FreeEntities();
+    Statics::Entity().FreeEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
     ASSERT_EQ(3, Statics::Entity().GetTools().size());
 }
