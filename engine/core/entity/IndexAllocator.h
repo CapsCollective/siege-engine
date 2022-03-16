@@ -46,6 +46,8 @@ public:
 
     void Deallocate(GenerationalIndex);
 
+    void Reset();
+
     IndexEntry& operator[](GenerationalIndex);
 
 private:

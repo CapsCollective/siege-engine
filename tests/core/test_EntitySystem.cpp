@@ -85,6 +85,16 @@ UTEST_F(test_EntitySystem, FreeBasicEntities)
     auto e3 = new Entity();
     Statics::Entity().Add({e1, e2, e3});
     Statics::Entity().RegisterEntities();
+
+    GenerationalIndex idx1 = e1->GetIndex();
+    GenerationalIndex idx2 = e2->GetIndex();
+    GenerationalIndex idx3 = e3->GetIndex();
+
+    // The entities should all be live
+    ASSERT_TRUE(Statics::Entity().IsLive(idx1));
+    ASSERT_TRUE(Statics::Entity().IsLive(idx2));
+    ASSERT_TRUE(Statics::Entity().IsLive(idx3));
+
     ASSERT_EQ(3, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
     e1->QueueFree();
@@ -98,6 +108,11 @@ UTEST_F(test_EntitySystem, FreeBasicEntities)
     ASSERT_EQ(2, Statics::Entity().GetEntities().size());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
 
+    // The entity should no longer be live after freeing
+    ASSERT_FALSE(Statics::Entity().IsLive(idx1));
+    ASSERT_TRUE(Statics::Entity().IsLive(idx2));
+    ASSERT_TRUE(Statics::Entity().IsLive(idx3));
+
     // It should then support the freeing of further entities
     e2->QueueFree();
     e3->QueueFree();
@@ -110,6 +125,21 @@ UTEST_F(test_EntitySystem, FreeBasicEntities)
     Statics::Entity().FreeEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
     ASSERT_TRUE(Statics::Entity().GetTools().empty());
+
+    // The entities should no longer be live after freeing
+    ASSERT_FALSE(Statics::Entity().IsLive(idx1));
+    ASSERT_FALSE(Statics::Entity().IsLive(idx2));
+    ASSERT_FALSE(Statics::Entity().IsLive(idx3));
+
+    auto e4 = new Entity();
+    Statics::Entity().Add(e4);
+    GenerationalIndex idx4 = e4->GetIndex();
+
+    // Only the added entity should be live
+    ASSERT_FALSE(Statics::Entity().IsLive(idx1));
+    ASSERT_FALSE(Statics::Entity().IsLive(idx2));
+    ASSERT_FALSE(Statics::Entity().IsLive(idx3));
+    ASSERT_TRUE(Statics::Entity().IsLive(idx4));
 }
 
 UTEST_F(test_EntitySystem, FreeToolEntities)
