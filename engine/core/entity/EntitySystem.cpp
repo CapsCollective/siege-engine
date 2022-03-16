@@ -147,9 +147,10 @@ void EntitySystem::Reset()
     registeredEntities.clear();
     freedEntities.clear();
 
-    // Clear both packedEntities and packedTools
+    // Clear packedEntities, packedTools, and the allocator
     ClearStorage(packedEntities);
     ClearStorage(packedTools);
+    allocator.Reset();
 }
 
 void EntitySystem::ClearStorage(std::vector<Entity*>& storage)

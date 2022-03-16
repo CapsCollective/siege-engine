@@ -22,7 +22,7 @@ GenerationalIndex IndexAllocator::AllocateIndex()
         index = freeEntries[0];
         generation = entries[index].generation;
         freeEntries.erase(freeEntries.begin());
-        entries[index] = {true, generation++};
+        entries[index] = {true, ++generation};
     }
     currentEntities++;
 
@@ -31,8 +31,8 @@ GenerationalIndex IndexAllocator::AllocateIndex()
 
 bool IndexAllocator::IsLive(GenerationalIndex index)
 {
-    // TODO add generation checking
-    return entries[index.index].live;
+    IndexEntry entry = entries[index.index];
+    return entry.live && entry.generation == index.generation;
 }
 
 void IndexAllocator::Deallocate(GenerationalIndex index)
@@ -45,4 +45,11 @@ void IndexAllocator::Deallocate(GenerationalIndex index)
 IndexEntry& IndexAllocator::operator[](GenerationalIndex index)
 {
     return entries[index.index];
+}
+
+void IndexAllocator::Reset()
+{
+    entries.clear();
+    freeEntries.clear();
+    currentEntities = 0;
 }
