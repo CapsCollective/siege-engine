@@ -20,6 +20,7 @@ raylibIncludeDir := $(vendorIncludeDir)/raylib
 # Build the static library for the engine core
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
+	$(RM) $(call platformpth, $(coreLib))
 	ar -rc $(coreLib) $(coreObjects)
 	libtool -static -o $(coreLib) $(coreLib) $(raylibLib)
 

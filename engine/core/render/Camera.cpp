@@ -18,7 +18,6 @@ static raylib::Camera3D& GetCamera()
 
 Cam::Cam()
 {
-    // TODO fix this ugly workaround
     GetCamera().SetMode(CAMERA_CUSTOM);
 }
 

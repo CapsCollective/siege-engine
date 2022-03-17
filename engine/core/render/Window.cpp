@@ -19,7 +19,6 @@ static raylib::Window& GetWindow()
 
 Window::Window(const String& title, int width, int height) : backgroundColour(245, 245, 245)
 {
-    // TODO fix this ugly workaround
     windowTitle = title;
     windowWidth = width;
     windowHeight = height;
