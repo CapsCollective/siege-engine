@@ -21,8 +21,8 @@ raylibIncludeDir := $(vendorIncludeDir)/raylib
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(coreLib))
-	ar -rc $(coreLib) $(coreObjects)
-	libtool -static -o $(coreLib) $(coreLib) $(raylibLib)
+	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir)/libcore.a,libraylib.a)
+	ar -rs $(coreLib) $(coreObjects)
 
 # Add all rules from dependency files
 -include $(coreDepends)
