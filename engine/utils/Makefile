@@ -11,7 +11,7 @@ utilsDepends := $(patsubst %.o, %.d, $(call rwildcard,$(utilsBuildDir)/,*.o))
 # Build the static library for utils
 $(utilsLib): $(utilsObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
-	ar -rc $(utilsLib) $(utilsObjects)
+	ar -crs $(utilsLib) $(utilsObjects)
 
 # Add all rules from dependency files
 -include $(utilsDepends)
