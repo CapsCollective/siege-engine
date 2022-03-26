@@ -22,7 +22,7 @@ export vendorIncludeDir := $(vendorDir)/include
 
 # Set build vars
 export compileFlags := -Wall -std=c++17
-export linkFlags += -L $(libDir) -l utils -l core
+export linkFlags += -L $(libDir) -l core -l utils
 buildFlagsFile := .buildflags
 
 # Set top level targets
