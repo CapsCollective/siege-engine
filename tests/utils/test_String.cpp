@@ -1,6 +1,8 @@
 #include <utest.h>
 #include <utils/String.h>
 
+#include <cstring>
+
 UTEST(test_String, DefaultConstruct)
 {
     // The string should default construct correctly
