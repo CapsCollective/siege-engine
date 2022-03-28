@@ -1,8 +1,18 @@
 #include "IndexAllocator.h"
 
-bool operator==(GenerationalIndex& indexA, GenerationalIndex& indexB)
+bool GenerationalIndex::operator==(GenerationalIndex& rhs) const
 {
-    return indexA.index == indexB.index && indexA.generation == indexB.generation;
+    return this->index == rhs.index && this->generation == rhs.generation;
+}
+
+String GenerationalIndex::ToString() const
+{
+    return String("%d:%d").Formatted(generation, index);
+}
+
+IndexEntry& IndexAllocator::operator[](GenerationalIndex index)
+{
+    return entries[index.index];
 }
 
 GenerationalIndex IndexAllocator::AllocateIndex()
@@ -24,7 +34,6 @@ GenerationalIndex IndexAllocator::AllocateIndex()
         freeEntries.erase(freeEntries.begin());
         entries[index] = {true, ++generation};
     }
-    currentEntities++;
 
     return {index, generation};
 }
@@ -42,14 +51,8 @@ void IndexAllocator::Deallocate(GenerationalIndex index)
     entries[index.index].live = false;
 }
 
-IndexEntry& IndexAllocator::operator[](GenerationalIndex index)
-{
-    return entries[index.index];
-}
-
 void IndexAllocator::Reset()
 {
     entries.clear();
     freeEntries.clear();
-    currentEntities = 0;
 }
