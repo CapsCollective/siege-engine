@@ -14,16 +14,14 @@ public:
     /**
      * Queues an entity to be added to the scene at the end of the frame.
      * @param entity - the entity to add to the storage queue storage
-     * @param isTool - A flag to specify whether an entity is a tool (meaning it can't be removed)
      */
-    void Add(class Entity* entity, bool isTool = false);
+    void Add(class Entity* entity);
 
     /**
      * Queues a batch of entities to be added in the scene at the end of the frame.
      * @param newEntities - A vector of entities to be added to storage
-     * @param isTool - A flag to specif whether an entity is a tool (meaning it can't be removed)
      */
-    void Add(const std::vector<Entity*>& newEntities, bool isTool = false);
+    void Add(const std::vector<Entity*>& newEntities);
 
     /**
      * Returns packed game entities (for iteration purposes)
@@ -32,15 +30,6 @@ public:
     const std::vector<Entity*>& GetEntities()
     {
         return packedEntities;
-    }
-
-    /**
-     * Returns packed tool entities (for iteration purposes)
-     * @return a reference to the vector of packed tool entities
-     */
-    const std::vector<Entity*>& GetTools()
-    {
-        return packedTools;
     }
 
     /**
@@ -61,7 +50,7 @@ public:
     void RegisterEntities();
 
     /**
-     * Resets the entity storage and removes all tool, non-tool, and queued entities.
+     * Resets the entity storage and removes all queued and non-queued entities.
      * @warning THIS IS VERY UNSAFE AND SHOULD NOT BE USED IN THE MAIN LOOP.
      */
     void Reset();
@@ -73,15 +62,16 @@ public:
      */
     bool IsLive(const GenerationalIndex& index);
 
+    void SetAllowDeregistration(bool canDeregister);
+
 private:
 
     // Private Functions
 
     /**
      * Sorts the entity packed storage by Z index.
-     * @param storage - the entity vector that needs to be sorted.
      */
-    void Sort(std::vector<Entity*>& storage);
+    void SortStorage();
 
     /**
      * Re-sorts the entity packed index by Z-index.
@@ -114,20 +104,9 @@ private:
      */
     int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage);
 
-    /**
-     * Searches a node of a packed index for an entity
-     * @param targetEntity - the entity pointer you want to find
-     * @param storage - the entity vector that you want to search over
-     * @param targetZIndex - the z index of the entity
-     * @param branchIndex - the index of the branch being searched
-     * @return a 0 when no entity is found, or the index of the branch if the entity was found
-     */
-    size_t SearchBranch(Entity* targetEntity,
-                        const std::vector<Entity*>& storage,
-                        const int& targetZIndex,
-                        const size_t& branchIndex);
-
     // Private fields
+
+    bool allowDeregistration = true;
 
     /**
      * The allocator used to provide a generation index to a new entity
@@ -142,16 +121,11 @@ private:
     std::vector<Entity*> entities;
 
     /**
-     * A full vector containing all non-tool entities
+     * A full vector containing all entities
      * @note This storage is packed, so entities are placed in no
      *       particular order
      */
     std::vector<Entity*> packedEntities;
-
-    /**
-     * A packed vector of all tools containing all tool entities
-     */
-    std::vector<Entity*> packedTools;
 
     /**
      * Vector for storing all entities which were queued for freeing
@@ -161,7 +135,7 @@ private:
     /**
      * Vector containing all entities that were queued for adding
      */
-    std::vector<std::pair<Entity*, bool>> registeredEntities;
+    std::vector<Entity*> registeredEntities;
 };
 
 #endif // A_DARK_DISCOMFORT_ENTITYSYSTEM_H

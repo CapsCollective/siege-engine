@@ -5,7 +5,7 @@
 
 #include "./Entity.h"
 
-void EntitySystem::Add(Entity* entity, bool isTool)
+void EntitySystem::Add(Entity* entity)
 {
     // If the pointer is null, stop the function
     if (!entity) return;
@@ -14,25 +14,23 @@ void EntitySystem::Add(Entity* entity, bool isTool)
     entity->SetIndex(allocator.AllocateIndex());
 
     // Queue the entity for initialisation
-    registeredEntities.emplace_back(std::make_pair(entity, isTool));
+    registeredEntities.emplace_back(entity);
 }
 
-void EntitySystem::Add(const std::vector<Entity*>& newEntities, bool isTool)
+void EntitySystem::Add(const std::vector<Entity*>& newEntities)
 {
     if (newEntities.empty()) return;
 
     size_t newEntityCount = newEntities.size();
 
-    std::vector<Entity*>& storage = isTool ? packedTools : packedEntities;
-
     // Reserve vector space to avoid unnecessary resizing
     entities.reserve(entities.size() + newEntityCount);
-    storage.reserve(storage.size() + newEntityCount);
+    packedEntities.reserve(packedEntities.size() + newEntityCount);
 
     for (auto& entity : newEntities)
     {
         entity->SetIndex(allocator.AllocateIndex());
-        registeredEntities.emplace_back(std::make_pair(entity, isTool));
+        registeredEntities.emplace_back(entity);
     }
 }
 
@@ -40,41 +38,28 @@ void EntitySystem::RegisterEntities()
 {
     if (registeredEntities.empty()) return;
 
-    // Flags to determine the types of entities that were added
-    bool isToolAdded = false;
-    bool isEntityAdded = false;
-
     // Iterate over queued entities and initialise them
-    for (auto& registrationData : registeredEntities)
+    for (auto& entity : registeredEntities)
     {
-        auto& entity = registrationData.first;
-        bool isTool = registrationData.second;
-
         // If the entity's given index already exists then override the existing entry
         if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
         else entities.push_back(entity);
 
-        auto& storage = isTool ? packedTools : packedEntities;
-
-        isToolAdded = isTool || isToolAdded;
-        isEntityAdded = !isTool || isEntityAdded;
-
-        storage.push_back(entity);
+        packedEntities.push_back(entity);
         entity->OnStart();
     }
 
     // Once all entities are added, sort the packed storage
-    if (isEntityAdded) Sort(packedEntities);
-    if (isToolAdded) Sort(packedTools);
+    SortStorage();
 
     // Remove all entities from the queue
     registeredEntities.clear();
 }
 
-void EntitySystem::Sort(std::vector<Entity*>& storage)
+void EntitySystem::SortStorage()
 {
     // Sort packedEntities by Z index - lowest to highest
-    std::sort(storage.begin(), storage.end(), [](Entity* a, Entity* b) {
+    std::sort(packedEntities.begin(), packedEntities.end(), [](Entity* a, Entity* b) {
         return a->GetZIndex() < b->GetZIndex();
     });
 }
@@ -84,25 +69,16 @@ void EntitySystem::SortPartial(Entity* entity, int oldZIdx)
     // Get the index of the entity in packed storage
     int32_t index = GetEntityIndex(entity, packedEntities);
 
-    auto& storage = packedEntities;
-
-    // If the entity doesn't exist in our packed entities, then search our tools
-    if (index == -1)
-    {
-        index = GetEntityIndex(entity, packedTools);
-        storage = packedTools;
-    }
-
     if (index != -1)
     {
         // Check if the new z index is greater than the old z index. If it is, start sorting
         // from the entity's index.
         bool isGreater = entity->GetZIndex() > oldZIdx;
-        auto begin = isGreater ? storage.begin() + index : storage.begin();
-        auto end = isGreater ? storage.end() : storage.begin() + index;
+        auto begin = isGreater ? packedEntities.begin() + index : packedEntities.begin();
+        auto end = isGreater ? packedEntities.end() : packedEntities.begin() + index;
 
         // Sort EntitySystem from either beginning -> entity index, or entity index -> end
-        std::partial_sort(begin, end, storage.end(), [](Entity* a, Entity* b) {
+        std::partial_sort(begin, end, packedEntities.end(), [](Entity* a, Entity* b) {
             return a->GetZIndex() < b->GetZIndex();
         });
     }
@@ -110,6 +86,8 @@ void EntitySystem::SortPartial(Entity* entity, int oldZIdx)
 
 void EntitySystem::Remove(Entity* entity, std::vector<Entity*>& storage)
 {
+    if (!allowDeregistration) return;
+
     // Check if the entity's index is in bounds
     if (entity->GetIndex().index >= entities.size()) return;
 
@@ -129,6 +107,8 @@ void EntitySystem::Remove(Entity* entity, std::vector<Entity*>& storage)
 
 void EntitySystem::QueueFree(Entity* entity)
 {
+    if (!allowDeregistration) return;
+
     // Ensure that we have no duplicates in the freedEntities vector
     int32_t index = GetEntityIndex(entity, freedEntities);
     if (index == -1)
@@ -141,7 +121,7 @@ void EntitySystem::QueueFree(Entity* entity)
 void EntitySystem::Reset()
 {
     // Delete all entities that were queued for registration
-    for (auto& registrationData : registeredEntities) delete registrationData.first;
+    for (auto& entity : registeredEntities) delete entity;
 
     // Clear queuing storages
     registeredEntities.clear();
@@ -149,12 +129,13 @@ void EntitySystem::Reset()
 
     // Clear packedEntities, packedTools, and the allocator
     ClearStorage(packedEntities);
-    ClearStorage(packedTools);
     allocator.Reset();
 }
 
 void EntitySystem::ClearStorage(std::vector<Entity*>& storage)
 {
+    if (!allowDeregistration) return;
+
     // append storage to the end of freedEntities
     freedEntities.insert(freedEntities.begin(), storage.begin(), storage.end());
 
@@ -170,16 +151,10 @@ void EntitySystem::ClearStorage(std::vector<Entity*>& storage)
 
 void EntitySystem::FreeEntities()
 {
-    // Iterate over all entities that need to be freed
-    for (auto& entity : freedEntities)
-    {
-        // TODO workaround to avoid segfault from freeing tools from entity storage
-        auto it = std::find(packedTools.begin(), packedTools.end(), entity);
-        if (it != packedTools.end()) continue;
+    if (!allowDeregistration) return;
 
-        // Remove them and free their memory
-        Remove(entity, packedEntities);
-    }
+    // Iterate over all entities that need to be freed
+    for (auto& entity : freedEntities) Remove(entity, packedEntities);
     // Clear the storage.
     freedEntities.clear();
 }
@@ -199,9 +174,16 @@ int32_t EntitySystem::GetEntityIndex(Entity* entity, const std::vector<Entity*>&
         size_t left = (index * 2) + 1;
         size_t right = (index * 2) + 2;
 
+        auto searchBranch = [&entity, &storage, targetZIndex](size_t branchIndex) -> size_t {
+            // Check if the index is in bounds, otherwise return 0
+            size_t index = (branchIndex < storage.size()) * branchIndex;
+            // return the entity's index if it exists, otherwise return 0.
+            return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == entity);
+        };
+
         // Search each branch for the entity. If no entity is found, return 0.
-        size_t isOnLeft = SearchBranch(entity, storage, targetZIndex, left);
-        size_t isOnRight = SearchBranch(entity, storage, targetZIndex, right);
+        size_t isOnLeft = searchBranch(left);
+        size_t isOnRight = searchBranch(right);
 
         // Check if either branch found the entity
         size_t branchResults = (isOnLeft * left) + (isOnRight * right);
@@ -216,18 +198,12 @@ int32_t EntitySystem::GetEntityIndex(Entity* entity, const std::vector<Entity*>&
     return foundIndex;
 }
 
-size_t EntitySystem::SearchBranch(Entity* targetEntity,
-                                  const std::vector<Entity*>& storage,
-                                  const int& targetZIndex,
-                                  const size_t& branchIndex)
-{
-    // Check if the index is in bounds, otherwise return 0
-    size_t index = (branchIndex < storage.size()) * branchIndex;
-    // return the entity's index if it exists, otherwise return 0.
-    return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == targetEntity);
-}
-
 bool EntitySystem::IsLive(const GenerationalIndex& index)
 {
     return allocator.IsLive(index);
+}
+
+void EntitySystem::SetAllowDeregistration(bool canDeregister)
+{
+    allowDeregistration = canDeregister;
 }
