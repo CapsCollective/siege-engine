@@ -16,6 +16,8 @@ public:
     static class SceneSystem& Scene();
 
     static class EntitySystem& Entity();
+
+    static class EntitySystem& Tool();
 };
 
 #endif // A_DARK_DISCOMFORT_STATICS_H
