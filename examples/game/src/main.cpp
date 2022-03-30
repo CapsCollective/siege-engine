@@ -33,7 +33,8 @@ int main(int argc, char* argv[])
     auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
-    Statics::Entity().Add({&display, &devConsole}, true);
+    Statics::Tool().SetAllowDeregistration(false);
+    Statics::Tool().Add({&display, &devConsole});
 
     // Set the default directories
     Statics::Resource().SetBaseDirectory("examples/game/assets/");
@@ -46,7 +47,7 @@ int main(int argc, char* argv[])
         ServiceLocator::Provide(editor);
 
         // Batch register the editor and freeCam
-        Statics::Entity().Add({editor, new FreeCam()}, true);
+        Statics::Tool().Add({editor, new FreeCam()});
     }
     else
     {
@@ -67,9 +68,10 @@ int main(int argc, char* argv[])
         }
 
         // Update tool entities
-        for (auto& entity : Statics::Entity().GetTools()) entity->OnUpdate();
+        for (auto& entity : Statics::Tool().GetEntities()) entity->OnUpdate();
 
         // Entity creation is deferred until after the update loop
+        Statics::Tool().RegisterEntities();
         Statics::Entity().RegisterEntities();
         Statics::Collision().RegisterEntities();
 
@@ -83,7 +85,7 @@ int main(int argc, char* argv[])
         camera.End3D();
 
         // UI Draw entities
-        for (auto& entity : Statics::Entity().GetTools()) entity->OnDraw2D();
+        for (auto& entity : Statics::Tool().GetEntities()) entity->OnDraw2D();
 
         window.EndDraw();
 
@@ -91,6 +93,7 @@ int main(int argc, char* argv[])
         Statics::Resource().FreeResources();
         Statics::Collision().FreeEntities();
         Statics::Entity().FreeEntities();
+        Statics::Tool().FreeEntities();
         Statics::Scene().LoadNextScene();
     }
 

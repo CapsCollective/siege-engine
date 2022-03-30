@@ -41,3 +41,9 @@ class EntitySystem& Statics::Entity()
     static EntitySystem system;
     return system;
 }
+
+class EntitySystem& Statics::Tool()
+{
+    static EntitySystem system;
+    return system;
+}
