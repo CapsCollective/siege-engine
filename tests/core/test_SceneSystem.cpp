@@ -126,7 +126,6 @@ UTEST_F(test_SceneSystem, EraseOnNewScene)
 
     // It should remove them at the end of the frame
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
-    ASSERT_TRUE(Statics::Entity().GetTools().empty());
 }
 
 UTEST_F(test_SceneSystem, LoadNonEmptyScene)
