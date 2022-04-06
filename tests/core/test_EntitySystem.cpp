@@ -13,6 +13,7 @@ UTEST_F_SETUP(test_EntitySystem)
 
 UTEST_F_TEARDOWN(test_EntitySystem)
 {
+    Statics::Entity().SetAllowDeregistration(true);
     Statics::Entity().Reset();
 }
 
@@ -100,6 +101,28 @@ UTEST_F(test_EntitySystem, FreeEntities)
     ASSERT_FALSE(Statics::Entity().IsLive(idx2));
     ASSERT_FALSE(Statics::Entity().IsLive(idx3));
     ASSERT_TRUE(Statics::Entity().IsLive(idx4));
+
+    // The storage should contain the newly registered entity
+    Statics::Entity().RegisterEntities();
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
+
+    // The storage should support temporarily disabling deregistration
+    Statics::Entity().SetAllowDeregistration(false);
+    e4->QueueFree();
+
+    // The storage should still contain the entity after deregistration
+    Statics::Entity().FreeEntities();
+    ASSERT_TRUE(Statics::Entity().IsLive(idx4));
+    ASSERT_EQ(1, Statics::Entity().GetEntities().size());
+
+    // The storage should support re-enabling deregistration
+    Statics::Entity().SetAllowDeregistration(true);
+    e4->QueueFree();
+
+    // The storage should no longer contain the entity after deregistration
+    Statics::Entity().FreeEntities();
+    ASSERT_FALSE(Statics::Entity().IsLive(idx4));
+    ASSERT_TRUE(Statics::Entity().GetEntities().empty());
 }
 
 UTEST_F(test_EntitySystem, SortEntitiesByZIndex)
