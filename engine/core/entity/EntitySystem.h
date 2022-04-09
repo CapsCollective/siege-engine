@@ -1,6 +1,7 @@
 #ifndef A_DARK_DISCOMFORT_ENTITYSYSTEM_H
 #define A_DARK_DISCOMFORT_ENTITYSYSTEM_H
 
+#include <map>
 #include <vector>
 
 #include "IndexAllocator.h"
@@ -136,6 +137,25 @@ private:
      * Vector containing all entities that were queued for adding
      */
     std::vector<Entity*> registeredEntities;
+};
+
+class EntitySystemRegister
+{
+public:
+
+    static void Register(Entity* entity, EntitySystem* system);
+
+    static void Deregister(Entity* entity);
+
+    static EntitySystem* GetSystem(Entity* entity);
+
+    static void Clear(EntitySystem* system);
+
+    static void Reset();
+
+private:
+
+    static std::map<const Entity*, EntitySystem*> entitySystemMap;
 };
 
 #endif // A_DARK_DISCOMFORT_ENTITYSYSTEM_H
