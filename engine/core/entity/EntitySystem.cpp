@@ -207,3 +207,43 @@ void EntitySystem::SetAllowDeregistration(bool canDeregister)
 {
     allowDeregistration = canDeregister;
 }
+
+std::map<const Entity*, EntitySystem*> EntitySystemRegister::entitySystemMap;
+
+void EntitySystemRegister::Register(Entity* entity, EntitySystem* system)
+{
+    auto it = entitySystemMap.find(entity);
+    if (it == entitySystemMap.end())
+    {
+        entitySystemMap[entity] = system;
+    }
+}
+
+void EntitySystemRegister::Deregister(Entity* entity)
+{
+    auto it = entitySystemMap.find(entity);
+    if (it != entitySystemMap.end())
+    {
+        entitySystemMap.erase(it);
+    }
+}
+
+EntitySystem* EntitySystemRegister::GetSystem(Entity* entity)
+{
+    auto it = entitySystemMap.find(entity);
+    return it != entitySystemMap.end() ? it->second : nullptr;
+}
+
+void EntitySystemRegister::Clear(EntitySystem* system)
+{
+    for (auto it = entitySystemMap.begin(); it != entitySystemMap.end();)
+    {
+        if (it->second == system) it = entitySystemMap.erase(it);
+        else ++it;
+    }
+}
+
+void EntitySystemRegister::Reset()
+{
+    entitySystemMap.clear();
+}
