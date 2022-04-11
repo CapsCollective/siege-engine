@@ -32,8 +32,16 @@ Entity* Entity::Clone() const
 void Entity::QueueFree()
 {
     OnDestroy();
-    CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex().ToString());
-    Statics::Entity().QueueFree(this);
+    EntitySystem* system = EntitySystemRegister::GetSystem(this);
+    if (system)
+    {
+        CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex().ToString());
+        system->QueueFree(this);
+    }
+    else
+        CC_LOG_ERROR("Could not find storage for entity {} at {}",
+                     GetName(),
+                     GetIndex().ToString());
 }
 
 const String& Entity::GetName() const
@@ -101,5 +109,10 @@ void Entity::SetZIndex(int idx)
     zIndex = idx;
 
     // Inform the entity system of the change
-    Statics::Entity().SortPartial(this, oldZIndex);
+    EntitySystem* system = EntitySystemRegister::GetSystem(this);
+    if (system) system->SortPartial(this, oldZIndex);
+    else
+        CC_LOG_ERROR("Could not find storage for entity {} at {}",
+                     GetName(),
+                     GetIndex().ToString());
 }
