@@ -46,6 +46,7 @@ void EntitySystem::RegisterEntities()
         else entities.push_back(entity);
 
         packedEntities.push_back(entity);
+        EntitySystemRegister::Register(entity, this);
         entity->OnStart();
     }
 
@@ -126,6 +127,7 @@ void EntitySystem::Reset()
     // Clear queuing storages
     registeredEntities.clear();
     freedEntities.clear();
+    EntitySystemRegister::Clear(this);
 
     // Clear packedEntities, packedTools, and the allocator
     ClearStorage(packedEntities);
@@ -154,7 +156,11 @@ void EntitySystem::FreeEntities()
     if (!allowDeregistration) return;
 
     // Iterate over all entities that need to be freed
-    for (auto& entity : freedEntities) Remove(entity, packedEntities);
+    for (auto& entity : freedEntities)
+    {
+        EntitySystemRegister::Deregister(entity);
+        Remove(entity, packedEntities);
+    }
     // Clear the storage.
     freedEntities.clear();
 }
