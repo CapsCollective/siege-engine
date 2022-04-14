@@ -10,7 +10,7 @@ class EntitySystem
 {
 public:
 
-    // Public functions
+    // Public methods
 
     /**
      * Queues an entity to be added to the scene at the end of the frame.
@@ -28,10 +28,7 @@ public:
      * Returns packed game entities (for iteration purposes)
      * @return a reference to the vector of packed game entities
      */
-    const std::vector<Entity*>& GetEntities()
-    {
-        return packedEntities;
-    }
+    const std::vector<Entity*>& GetEntities();
 
     /**
      * Queues an entity for freeing at the end of the frame
@@ -63,6 +60,10 @@ public:
      */
     bool IsLive(const GenerationalIndex& index);
 
+    /**
+     * Sets the ability for the storage to perform entity deregistration
+     * @param canDeregister - whether or not the storage can deregister entities
+     */
     void SetAllowDeregistration(bool canDeregister);
 
 private:
@@ -96,17 +97,11 @@ private:
      */
     void ClearStorage(std::vector<Entity*>& storage);
 
-    /**
-     * Returns the index of a given element within a given entity vector
-     * @param entity - the entity pointer you want to find
-     * @param storage - the entity vector that you want to search over
-     * @return a -1 when no index is found, or the index if the entity
-     *         is found
-     */
-    int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage);
-
     // Private fields
 
+    /**
+     * Controls whether or not the the storage allows for entity deregistration
+     */
     bool allowDeregistration = true;
 
     /**
@@ -139,22 +134,51 @@ private:
     std::vector<Entity*> registeredEntities;
 };
 
+/**
+ * A static class for mapping entities to the systems they're registered with
+ */
 class EntitySystemRegister
 {
 public:
 
+    // Public methods
+
+    /**
+     * Adds an entry to the register for a given entity
+     * @param entity - the entity to register
+     * @param system - the system to register the entity with
+     */
     static void Register(Entity* entity, EntitySystem* system);
 
+    /**
+     * Removes an entry from the register for a given entity
+     * @param entity - the entity to deregister
+     */
     static void Deregister(Entity* entity);
 
+    /**
+     * Retrieves the entity system of a given entity
+     * @param entity - the entity to lookup
+     * @return a pointer to the entity's found storage, nullptr otherwise
+     */
     static EntitySystem* GetSystem(Entity* entity);
 
+    /**
+     * Removes all entries related to a specified storage
+     * @param system - the system to clear for
+     */
     static void Clear(EntitySystem* system);
 
+    /**
+     * Resets the entire contents of the register
+     */
     static void Reset();
 
 private:
 
+    /**
+     * A map of all entities to their registered storages
+     */
     static std::map<const Entity*, EntitySystem*> entitySystemMap;
 };
 

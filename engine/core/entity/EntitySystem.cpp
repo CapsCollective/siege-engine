@@ -5,6 +5,46 @@
 
 #include "./Entity.h"
 
+int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
+{
+    if (storage.empty()) return -1;
+
+    size_t index = 0;
+    int targetZIndex = entity->GetZIndex();
+    bool found = storage[0] == entity;
+    int32_t foundIndex = 0;
+
+    // Return the index of a given element within a given entity vector
+    while (!found && index < storage.size())
+    {
+        // Get the branches of the current node
+        size_t left = (index * 2) + 1;
+        size_t right = (index * 2) + 2;
+
+        auto searchBranch = [&entity, &storage, targetZIndex](size_t branchIndex) -> size_t {
+            // Check if the index is in bounds, otherwise return 0
+            size_t index = (branchIndex < storage.size()) * branchIndex;
+            // return the entity's index if it exists, otherwise return 0.
+            return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == entity);
+        };
+
+        // Search each branch for the entity. If no entity is found, return 0.
+        size_t isOnLeft = searchBranch(left);
+        size_t isOnRight = searchBranch(right);
+
+        // Check if either branch found the entity
+        size_t branchResults = (isOnLeft * left) + (isOnRight * right);
+
+        // If the entity was found, return the entity's index, otherwise return -1.
+        foundIndex = (int) branchResults + ((branchResults == 0) * -1);
+
+        found = (foundIndex != -1);
+
+        index++;
+    }
+    return foundIndex;
+}
+
 void EntitySystem::Add(Entity* entity)
 {
     // If the pointer is null, stop the function
@@ -32,6 +72,11 @@ void EntitySystem::Add(const std::vector<Entity*>& newEntities)
         entity->SetIndex(allocator.AllocateIndex());
         registeredEntities.emplace_back(entity);
     }
+}
+
+const std::vector<Entity*>& EntitySystem::GetEntities()
+{
+    return packedEntities;
 }
 
 void EntitySystem::RegisterEntities()
@@ -163,45 +208,6 @@ void EntitySystem::FreeEntities()
     }
     // Clear the storage.
     freedEntities.clear();
-}
-
-int32_t EntitySystem::GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
-{
-    if (storage.empty()) return -1;
-
-    size_t index = 0;
-    int targetZIndex = entity->GetZIndex();
-    bool found = storage[0] == entity;
-    int32_t foundIndex = 0;
-
-    while (!found && index < storage.size())
-    {
-        // Get the branches of the current node
-        size_t left = (index * 2) + 1;
-        size_t right = (index * 2) + 2;
-
-        auto searchBranch = [&entity, &storage, targetZIndex](size_t branchIndex) -> size_t {
-            // Check if the index is in bounds, otherwise return 0
-            size_t index = (branchIndex < storage.size()) * branchIndex;
-            // return the entity's index if it exists, otherwise return 0.
-            return (storage[index]->GetZIndex() == targetZIndex) && (storage[index] == entity);
-        };
-
-        // Search each branch for the entity. If no entity is found, return 0.
-        size_t isOnLeft = searchBranch(left);
-        size_t isOnRight = searchBranch(right);
-
-        // Check if either branch found the entity
-        size_t branchResults = (isOnLeft * left) + (isOnRight * right);
-
-        // If the entity was found, return the entity's index, otherwise return -1.
-        foundIndex = (int) branchResults + ((branchResults == 0) * -1);
-
-        found = (foundIndex != -1);
-
-        index++;
-    }
-    return foundIndex;
 }
 
 bool EntitySystem::IsLive(const GenerationalIndex& index)
