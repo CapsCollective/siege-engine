@@ -39,7 +39,7 @@ void Entity::QueueFree()
         system->QueueFree(this);
     }
     else
-        CC_LOG_ERROR("Could not find storage for entity {} at {}",
+        CC_LOG_WARNING("Could not find storage for {} at {}",
                      GetName(),
                      GetIndex().ToString());
 }
@@ -112,7 +112,7 @@ void Entity::SetZIndex(int idx)
     EntitySystem* system = EntitySystemRegister::GetSystem(this);
     if (system) system->SortPartial(this, oldZIndex);
     else
-        CC_LOG_ERROR("Could not find storage for entity {} at {}",
+        CC_LOG_WARNING("Could not find storage for {} at {}",
                      GetName(),
                      GetIndex().ToString());
 }
