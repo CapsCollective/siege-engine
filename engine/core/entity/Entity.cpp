@@ -1,7 +1,5 @@
 #include "Entity.h"
 
-#include <utils/Logging.h>
-
 #include <cmath>
 #include <utility>
 
@@ -15,9 +13,7 @@ Entity::Entity(const String& name, const Xform& transform, int zIndex) :
     name(name),
     index(GenerationalIndex()),
     zIndex(zIndex)
-{
-    CC_LOG_INFO("Registered {} at ({})", GetName(), GetIndex().ToString());
-}
+{}
 
 BoundedBox Entity::GetBoundingBox() const
 {
@@ -32,16 +28,7 @@ Entity* Entity::Clone() const
 void Entity::QueueFree()
 {
     OnDestroy();
-    EntitySystem* system = EntitySystemRegister::GetSystem(this);
-    if (system)
-    {
-        CC_LOG_INFO("Freeing {} at ({})", GetName(), GetIndex().ToString());
-        system->QueueFree(this);
-    }
-    else
-        CC_LOG_WARNING("Could not find storage for {} at {}",
-                     GetName(),
-                     GetIndex().ToString());
+    EntitySystem::QueueFree(this);
 }
 
 const String& Entity::GetName() const
@@ -104,15 +91,8 @@ void Entity::SetZIndex(int idx)
     // Only update z index if there's an actual change
     if (idx == zIndex) return;
 
-    // Swap the values
+    // Swap the values and inform the entity system of the change
     int oldZIndex = zIndex;
     zIndex = idx;
-
-    // Inform the entity system of the change
-    EntitySystem* system = EntitySystemRegister::GetSystem(this);
-    if (system) system->SortPartial(this, oldZIndex);
-    else
-        CC_LOG_WARNING("Could not find storage for {} at {}",
-                     GetName(),
-                     GetIndex().ToString());
+    EntitySystem::Resort(this, oldZIndex);
 }

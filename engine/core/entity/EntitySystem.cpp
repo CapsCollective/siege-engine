@@ -1,9 +1,11 @@
 #include "EntitySystem.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 
 #include "./Entity.h"
+#include "utils/Logging.h"
 
 int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
 {
@@ -44,6 +46,36 @@ int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
     }
     return foundIndex;
 }
+
+void EntitySystem::QueueFree(Entity* entity)
+{
+    EntitySystem* system = FindInGlobalRegister(entity);
+    if (system)
+    {
+        CC_LOG_INFO("Freeing {} at ({})", entity->GetName(), entity->GetIndex().ToString());
+        system->AddToFreeQueue(entity);
+    }
+    else
+    {
+        CC_LOG_WARNING("Could not find storage for {} at {}",
+                       entity->GetName(),
+                       entity->GetIndex().ToString());
+    }
+}
+
+void EntitySystem::Resort(Entity* entity, int oldZIdx)
+{
+    EntitySystem* system = FindInGlobalRegister(entity);
+    if (system) system->SortPartial(entity, oldZIdx);
+    else
+    {
+        CC_LOG_WARNING("Could not find storage for {} at {}",
+                       entity->GetName(),
+                       entity->GetIndex().ToString());
+    }
+}
+
+std::map<const Entity*, EntitySystem*> EntitySystem::globalEntityRegister;
 
 void EntitySystem::Add(Entity* entity)
 {
@@ -89,9 +121,10 @@ void EntitySystem::RegisterEntities()
         // If the entity's given index already exists then override the existing entry
         if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
         else entities.push_back(entity);
+        CC_LOG_INFO("Registered {} at ({})", entity->GetName(), entity->GetIndex().ToString());
 
         packedEntities.push_back(entity);
-        EntitySystemRegister::Register(entity, this);
+        AddToGlobalRegister(entity, this);
         entity->OnStart();
     }
 
@@ -132,7 +165,8 @@ void EntitySystem::SortPartial(Entity* entity, int oldZIdx)
 
 void EntitySystem::Remove(Entity* entity, std::vector<Entity*>& storage)
 {
-    if (!allowDeregistration) return;
+    // Deregistration should always be allowed at this point
+    assert(allowDeregistration);
 
     // Check if the entity's index is in bounds
     if (entity->GetIndex().index >= entities.size()) return;
@@ -151,7 +185,7 @@ void EntitySystem::Remove(Entity* entity, std::vector<Entity*>& storage)
     delete entities[entityIndex];
 }
 
-void EntitySystem::QueueFree(Entity* entity)
+void EntitySystem::AddToFreeQueue(Entity* entity)
 {
     if (!allowDeregistration) return;
 
@@ -172,7 +206,7 @@ void EntitySystem::Reset()
     // Clear queuing storages
     registeredEntities.clear();
     freedEntities.clear();
-    EntitySystemRegister::Clear(this);
+    RemoveFromGlobalRegister(this);
 
     // Clear packedEntities, packedTools, and the allocator
     ClearStorage(packedEntities);
@@ -203,7 +237,7 @@ void EntitySystem::FreeEntities()
     // Iterate over all entities that need to be freed
     for (auto& entity : freedEntities)
     {
-        EntitySystemRegister::Deregister(entity);
+        RemoveFromGlobalRegister(entity);
         Remove(entity, packedEntities);
     }
     // Clear the storage.
@@ -220,42 +254,40 @@ void EntitySystem::SetAllowDeregistration(bool canDeregister)
     allowDeregistration = canDeregister;
 }
 
-std::map<const Entity*, EntitySystem*> EntitySystemRegister::entitySystemMap;
-
-void EntitySystemRegister::Register(Entity* entity, EntitySystem* system)
+void EntitySystem::AddToGlobalRegister(Entity* entity, EntitySystem* system)
 {
-    auto it = entitySystemMap.find(entity);
-    if (it == entitySystemMap.end())
+    auto it = globalEntityRegister.find(entity);
+    if (it == globalEntityRegister.end())
     {
-        entitySystemMap[entity] = system;
+        globalEntityRegister[entity] = system;
     }
 }
 
-void EntitySystemRegister::Deregister(Entity* entity)
+void EntitySystem::RemoveFromGlobalRegister(Entity* entity)
 {
-    auto it = entitySystemMap.find(entity);
-    if (it != entitySystemMap.end())
+    auto it = globalEntityRegister.find(entity);
+    if (it != globalEntityRegister.end())
     {
-        entitySystemMap.erase(it);
+        globalEntityRegister.erase(it);
     }
 }
 
-EntitySystem* EntitySystemRegister::GetSystem(Entity* entity)
+void EntitySystem::RemoveFromGlobalRegister(EntitySystem* system)
 {
-    auto it = entitySystemMap.find(entity);
-    return it != entitySystemMap.end() ? it->second : nullptr;
-}
-
-void EntitySystemRegister::Clear(EntitySystem* system)
-{
-    for (auto it = entitySystemMap.begin(); it != entitySystemMap.end();)
+    for (auto it = globalEntityRegister.begin(); it != globalEntityRegister.end();)
     {
-        if (it->second == system) it = entitySystemMap.erase(it);
+        if (it->second == system) it = globalEntityRegister.erase(it);
         else ++it;
     }
 }
 
-void EntitySystemRegister::Reset()
+EntitySystem* EntitySystem::FindInGlobalRegister(Entity* entity)
 {
-    entitySystemMap.clear();
+    auto it = globalEntityRegister.find(entity);
+    return it != globalEntityRegister.end() ? it->second : nullptr;
+}
+
+void EntitySystem::ResetGlobalRegister()
+{
+    globalEntityRegister.clear();
 }
