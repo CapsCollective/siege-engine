@@ -2,7 +2,7 @@
 
 # Check and assign supplied arguments
 if [[ $# -lt 1 ]]; then
-  echo "Program requires at least one argument (e.g. format <dirs> [<excludess>] [--check])"
+  echo "Program requires at least one argument (e.g. format <dirs> [<excludes>] [--check])"
   exit 1
 elif [[ $# -eq 2 && "$2" -eq "--check" ]]; then
   check="$2"

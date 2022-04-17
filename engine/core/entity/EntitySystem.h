@@ -10,13 +10,30 @@ class EntitySystem
 {
 public:
 
+    // Public static members
+
+    /**
+     * Queues an entity for freeing at the end of the frame
+     * @param entity - the entity to free
+     */
+    static void QueueFree(class Entity* entity);
+
+    /**
+     * Re-sorts the entity packed index by Z-index.
+     * Implements a partial sort, so only relevant sections of the
+     * packed storage will be sorted.
+     * @param entity - the entity being compared
+     * @param oldIdx - the old Z index (for comparison)
+     */
+    static void Resort(Entity* entity, int oldZIdx);
+
     // Public methods
 
     /**
      * Queues an entity to be added to the scene at the end of the frame.
      * @param entity - the entity to add to the storage queue storage
      */
-    void Add(class Entity* entity);
+    void Add(Entity* entity);
 
     /**
      * Queues a batch of entities to be added in the scene at the end of the frame.
@@ -34,7 +51,7 @@ public:
      * Queues an entity for freeing at the end of the frame
      * @param entity - the entity to free
      */
-    void QueueFree(Entity* entity);
+    void AddToFreeQueue(Entity* entity);
 
     /**
      * Frees all queued entities
@@ -82,7 +99,6 @@ private:
      * @param entity - the entity being compared
      * @param oldIdx - the old Z index (for comparison)
      */
-    friend class Entity;
     void SortPartial(Entity* entity, int oldZIdx);
 
     /**
@@ -96,6 +112,44 @@ private:
      * @param storage - the specific storage that needs to be cleared
      */
     void ClearStorage(std::vector<Entity*>& storage);
+
+    // Private static members
+
+    /**
+     * Adds an entry to the register for a given entity
+     * @param entity - the entity to register
+     * @param system - the system to register the entity with
+     */
+    static void AddToGlobalRegister(Entity* entity, EntitySystem* system);
+
+    /**
+     * Removes an entry from the register for a given entity
+     * @param entity - the entity to deregister
+     */
+    static void RemoveFromGlobalRegister(Entity* entity);
+
+    /**
+     * Removes all entries related to a specified storage
+     * @param system - the system to clear for
+     */
+    static void RemoveFromGlobalRegister(EntitySystem* system);
+
+    /**
+     * Searches for the entity system of a given entity
+     * @param entity - the entity to lookup
+     * @return a pointer to the entity's found storage, nullptr otherwise
+     */
+    static EntitySystem* FindInGlobalRegister(Entity* entity);
+
+    /**
+     * Resets the entire contents of the global register
+     */
+    static void ResetGlobalRegister();
+
+    /**
+     * A map of all entities to their registered storages
+     */
+    static std::map<const Entity*, EntitySystem*> globalEntityRegister;
 
     // Private fields
 
@@ -132,54 +186,6 @@ private:
      * Vector containing all entities that were queued for adding
      */
     std::vector<Entity*> registeredEntities;
-};
-
-/**
- * A static class for mapping entities to the systems they're registered with
- */
-class EntitySystemRegister
-{
-public:
-
-    // Public methods
-
-    /**
-     * Adds an entry to the register for a given entity
-     * @param entity - the entity to register
-     * @param system - the system to register the entity with
-     */
-    static void Register(Entity* entity, EntitySystem* system);
-
-    /**
-     * Removes an entry from the register for a given entity
-     * @param entity - the entity to deregister
-     */
-    static void Deregister(Entity* entity);
-
-    /**
-     * Retrieves the entity system of a given entity
-     * @param entity - the entity to lookup
-     * @return a pointer to the entity's found storage, nullptr otherwise
-     */
-    static EntitySystem* GetSystem(Entity* entity);
-
-    /**
-     * Removes all entries related to a specified storage
-     * @param system - the system to clear for
-     */
-    static void Clear(EntitySystem* system);
-
-    /**
-     * Resets the entire contents of the register
-     */
-    static void Reset();
-
-private:
-
-    /**
-     * A map of all entities to their registered storages
-     */
-    static std::map<const Entity*, EntitySystem*> entitySystemMap;
 };
 
 #endif // A_DARK_DISCOMFORT_ENTITYSYSTEM_H
