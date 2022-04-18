@@ -8,13 +8,17 @@ sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
-includes := -I vendor/glfw/include -I $(VULKAN_SDK)/include
+includes := -I include -I vendor/glfw/include -I include/volk -I $(VULKAN_SDK)/include
 linkFlags = -L lib/$(platform) -lglfw3
 compileFlags := -std=c++17 $(includes)
 
 ifdef MACRO_DEFS
     macroDefines := -D $(MACRO_DEFS)
 endif
+
+ifndef DYLD_LIBRARY_PATH
+    export DYLD_LIBRARY_PATH=$(CURDIR)/lib/$(platform)
+endif 
 
 ifeq ($(OS),Windows_NT)
 
@@ -23,16 +27,17 @@ ifeq ($(OS),Windows_NT)
 
 	vulkanLibDir := Lib
 	vulkanLib := vulkan-1
-	vulkanLink := -l $(vulkanLib)
 
 	platform := Windows
 	CXX ?= g++
-	linkFlags += $(vulkanLink) -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
+	linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
 	THEN := &&
 	PATHSEP := \$(BLANK)
 	MKDIR := -mkdir -p
-	RM := -del /q
+	RM := rm -r -f
 	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+
+	volkDefines = VK_USE_PLATFORM_WIN32_KHR
 else 
 	UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -40,13 +45,15 @@ else
 		LIB_EXT :=
 		
 		vulkanLib := vulkan.so
-		vulkanLink := -lvulkan
 
 		vulkanExports := export VK_LAYER_PATH=$(VULKAN_SDK)/etc/explicit_layer.d
 
+		NUMBER_OF_PROCESSORS := $(shell nproc)
+
 		platform := Linux
+		volkDefines = VK_USE_PLATFORM_XLIB_KHR
 		CXX ?= g++
-		linkFlags += $(vulkanLink) -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+		linkFlags += -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 	endif
 	ifeq ($(UNAMEOS), Darwin)
 		
@@ -54,22 +61,23 @@ else
 		
 		vulkanLib := vulkan.1
 		vulkanLibVersion := $(patsubst %.0,%,$(VK_VERSION))
-		vulkanLink := -l $(vulkanLib) -l vulkan.$(vulkanLibVersion)
 
 		vulkanExports := export export VK_ICD_FILENAMES=$(VULKAN_SDK)/share/vulkan/icd.d/MoltenVK_icd.json; \ 
 						export VK_LAYER_PATH=$(VULKAN_SDK)/share/vulkan/explicit_layer.d
-		macOSVulkanLib = $(call COPY, $(VULKAN_SDK)/lib, lib/$(platform),libvulkan.$(vulkanLibVersion)$(LIB_EXT))
+		NUMBER_OF_PROCESSORS := $(shell sysctl -n hw.ncpu)
+		volkDefines = VK_USE_PLATFORM_MACOS_MVK
 
 		platform := macOS
 		CXX ?= clang++
-		linkFlags += $(vulkanLink) -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
+		
+		linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
 	endif
 	
 	vulkanLibDir := lib
 
 	vulkanLibDir := lib
 	vulkanLibPrefix := $(vulkanLibDir)
-	CMAKE_CMD = cmake .
+	CMAKE_CMD = cmake -G "Unix Makefiles" .
 
 	PATHSEP := /
 	MKDIR = mkdir -p
@@ -88,12 +96,23 @@ submodules:
 
 setup: submodules lib
 
-lib:
-	cd vendor/glfw $(THEN) $(CMAKE_CMD) $(THEN) "$(MAKE)" 
-	$(MKDIR) $(call platformpth, lib/$(platform))
-	$(call COPY,vendor/glfw/src,lib/$(platform),libglfw3.a)
+lib: setup-volk setup-glfw
 	$(call COPY,$(VULKAN_SDK)/$(vulkanLibDir),lib/$(platform),$(vulkanLibPrefix)$(vulkanLib)$(LIB_EXT))
-	$(macOSVulkanLib)
+
+setup-glfw:
+	$(call updateSubmodule,glfw)
+
+	cd $(call platformpth,vendor/glfw) $(THEN) $(CMAKE_CMD) $(THEN) "$(MAKE)" -j$(NUMBER_OF_PROCESSORS)
+	$(MKDIR) $(call platformpth,lib/$(platform))
+	$(call COPY,vendor/glfw/src,lib/$(platform),libglfw3.a)
+
+setup-volk:
+	$(call updateSubmodule,volk)
+
+	$(MKDIR) $(call platformpth,include/volk)
+
+	$(call COPY,vendor/volk,include/volk,volk.h)
+	$(call COPY,vendor/volk,include/volk,volk.c)
 
 # Link the program and create the executable
 $(target): $(objects)
@@ -105,7 +124,7 @@ $(target): $(objects)
 # Compile objects to the build directory
 $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(macroDefines)
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ -D$(volkDefines) $(macroDefines)
 
 clear: 
 	clear;
