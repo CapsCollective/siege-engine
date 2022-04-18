@@ -8,6 +8,9 @@ sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
+submoduleDir := vendor
+updateSubmodule = git submodule update --init $(submoduleDir)/$1
+
 includes := -I include -I vendor/glfw/include -I include/volk -I $(VULKAN_SDK)/include
 linkFlags = -L lib/$(platform) -lglfw3
 compileFlags := -std=c++17 $(includes)
