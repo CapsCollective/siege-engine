@@ -33,7 +33,7 @@ ifeq ($(OS),Windows_NT)
 	linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
 	THEN := &&
 	PATHSEP := \$(BLANK)
-	MKDIR := -mkdir -p
+	MKDIR := $(call platformpth,$(CURDIR)/scripts/windows/mkdir.bat)
 	RM := rm -r -f
 	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 
