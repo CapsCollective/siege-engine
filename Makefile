@@ -11,13 +11,9 @@ depends := $(patsubst %.o, %.d, $(objects))
 submoduleDir := vendor
 updateSubmodule = git submodule update --init $(submoduleDir)/$1
 
-includes := -I include -I vendor/glfw/include -I include/volk -I $(VULKAN_SDK)/include
+includes = -I include -I vendor/glfw/include -I include/volk -I $(vulkanIncludes)
 linkFlags = -L lib/$(platform) -lglfw3
-compileFlags := -std=c++17 $(includes)
-
-ifdef MACRO_DEFS
-    macroDefines := -D $(MACRO_DEFS)
-endif
+compileFlags = -std=c++17 $(includes)
 
 ifndef DYLD_LIBRARY_PATH
     export DYLD_LIBRARY_PATH=$(CURDIR)/lib/$(platform)
@@ -26,7 +22,6 @@ endif
 ifeq ($(OS),Windows_NT)
 
 	LIB_EXT = .lib
-	CMAKE_CMD = cmake -G "MinGW Makefiles" .
 
 	vulkanLibDir := Lib
 	vulkanLib := vulkan-1
@@ -39,6 +34,8 @@ ifeq ($(OS),Windows_NT)
 	MKDIR := $(call platformpth,$(CURDIR)/scripts/windows/mkdir.bat)
 	RM := rm -r -f
 	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+
+	generator := "MinGW Makefiles"
 
 	volkDefines = VK_USE_PLATFORM_WIN32_KHR
 else 
@@ -61,12 +58,7 @@ else
 	ifeq ($(UNAMEOS), Darwin)
 		
 		LIB_EXT := .dylib
-		
-		vulkanLib := vulkan.1
-		vulkanLibVersion := $(patsubst %.0,%,$(VK_VERSION))
 
-		vulkanExports := export export VK_ICD_FILENAMES=$(VULKAN_SDK)/share/vulkan/icd.d/MoltenVK_icd.json; \ 
-						export VK_LAYER_PATH=$(VULKAN_SDK)/share/vulkan/explicit_layer.d
 		NUMBER_OF_PROCESSORS := $(shell sysctl -n hw.ncpu)
 		volkDefines = VK_USE_PLATFORM_MACOS_MVK
 
@@ -80,7 +72,7 @@ else
 
 	vulkanLibDir := lib
 	vulkanLibPrefix := $(vulkanLibDir)
-	CMAKE_CMD = cmake -G "Unix Makefiles" .
+	generator := "Unix Makefiles"
 
 	PATHSEP := /
 	MKDIR = mkdir -p
@@ -94,18 +86,32 @@ endif
 
 all: $(target) execute clean
 
-submodules:
-	git submodule update --init --recursive
+ifndef VULKAN_SDK
+    vulkanIncludes := include/vulkan
 
-setup: submodules lib
+    setup-vulkan-headers:
+		$(call updateSubmodule,Vulkan-Headers)
+		cd $(call platformpth,vendor/Vulkan-Headers) $(THEN) git fetch --all --tags $(THEN) git checkout tags/v1.3.211
+		$(MKDIR) $(call platformpth,$(CURDIR)/vendor/Vulkan-Headers/build)
 
-lib: setup-volk setup-glfw
-	$(call COPY,$(VULKAN_SDK)/$(vulkanLibDir),lib/$(platform),$(vulkanLibPrefix)$(vulkanLib)$(LIB_EXT))
+		cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake -DCMAKE_INSTALL_PREFIX=install -G $(generator) ..
+		cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake --build . --target install
+
+		$(MKDIR) $(call platformpth,include/vulkan)
+		$(call COPY,vendor/Vulkan-Headers/include/vulkan,include/vulkan,**.h)
+
+    lib: setup-volk setup-glfw setup-vulkan-headers
+else
+    lib: setup-volk setup-glfw
+    vulkanIncludes := $(VULKAN_SDK)/include
+endif
+
+setup: lib
 
 setup-glfw:
 	$(call updateSubmodule,glfw)
 
-	cd $(call platformpth,vendor/glfw) $(THEN) $(CMAKE_CMD) $(THEN) "$(MAKE)" -j$(NUMBER_OF_PROCESSORS)
+	cd $(call platformpth,vendor/glfw) $(THEN) cmake -G $(generator) . $(THEN) "$(MAKE)" -j$(NUMBER_OF_PROCESSORS)
 	$(MKDIR) $(call platformpth,lib/$(platform))
 	$(call COPY,vendor/glfw/src,lib/$(platform),libglfw3.a)
 
@@ -127,7 +133,7 @@ $(target): $(objects)
 # Compile objects to the build directory
 $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ -D$(volkDefines) $(macroDefines)
+	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 clear: 
 	clear;
