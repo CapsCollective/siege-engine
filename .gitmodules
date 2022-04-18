@@ -7,3 +7,6 @@
 [submodule "vendor/Vulkan-Headers"]
 	path = vendor/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "vendor/Vulkan-Loader"]
+	path = vendor/Vulkan-Loader
+	url = https://github.com/KhronosGroup/Vulkan-Loader.git
