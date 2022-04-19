@@ -1,41 +1,77 @@
-include vendor/engine/make/Functions.mk
+include make/Functions.mk
+include make/Platform.mk
 
-# Set platform vars and overrides
-include vendor/engine/make/Platform.mk
+# Set platform vars
 ifeq ($(platform), Windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
 else ifeq ($(platform), Linux)
-    linkFlags += -l GL -l m -l pthread -Wl,--no-as-needed -l dl -l rt -l X11
+    linkFlags += -l GL -l m -Wl,--no-as-needed -l dl -l rt -l X11 -l pthread
 else ifeq ($(platform), macOS)
     linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
 endif
 
-# Set build vars and overrides
-include vendor/engine/make/BuildVars.mk
-compileFlags += -I vendor/engine/include -I vendor/engine/src
-linkFlags += -L vendor/engine/lib -l engine -l raylib
+# Set directories
+export libDir := $(abspath lib)
+export makeDir := $(abspath make)
+export buildDir := $(abspath bin)
+export vendorDir := $(abspath vendor)
+export engineDir := $(abspath engine)
+export testsDir := $(abspath tests)
+export examplesDir := $(abspath examples)
+export vendorIncludeDir := $(vendorDir)/include
 
-.PHONY: all setup build engine run clean
+# Set build vars
+export compileFlags := -Wall -std=c++17
+export linkFlags += -L $(libDir) -l core -l utils
+buildFlagsFile := .buildflags
 
-all: run clean
+# Set top level targets
+export utilsLib := $(libDir)/libutils.a
+export coreLib := $(libDir)/libcore.a
 
-# Sets up the project and deps
-setup:
-	cd vendor/engine $(THEN) "$(MAKE)" setup $(passFlags)
+# Set debugging build flags
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+	override CXXFLAGS += -g -DDEBUG
+else
+    override CXXFLAGS += -DNDEBUG
+endif
 
-# Set build rules and overrides
-include vendor/engine/make/BuildRules.mk
-$(target): engine $(objects)
-	$(CXX) $(objects) -o $(target) $(linkFlags)
+.PHONY: all engine utils core tests examples examples/game buildExample/% buildFlags clean format
 
-build: $(target)
+all: tests examples
 
-engine:
-	cd vendor/engine $(THEN) "$(MAKE)" lib/libengine.a $(passFlags)
+engine: buildFlags utils core
 
-run: $(target)
-	$(target) $(ARGS)
+utils: buildFlags
+	$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
+core: buildFlags
+	$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
+
+tests: buildFlags engine
+	$(MAKE) -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
+
+examples: examples/game
+
+examples/game: buildFlags engine buildExample/game
+
+buildExample/%:
+	$(MAKE) -C $(examplesDir)/$* CXXFLAGS="$(CXXFLAGS)"
+
+# Check to invalidate the build if flags have changed
+buildFlags:
+	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
+  		$(RM) $(call platformpth, $(libDir)); \
+  		$(RM) $(call platformpth, $(buildDir)); \
+    fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
+
+# Run cleanup across project-wide
 clean:
+	$(RM) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(buildDir))
-	cd vendor/engine $(THEN) "$(MAKE)" clean
+	$(RM) $(call platformpth, $(buildFlagsFile))
+
+# Run file formatting program across all source files
+format:
+	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" $(ARGS)
