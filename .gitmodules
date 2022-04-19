@@ -1,3 +1,6 @@
-[submodule "vendor/engine/vendor/raylib-cpp"]
-	path = vendor/engine/vendor/raylib-cpp
+[submodule "vendor/raylib-cpp"]
+	path = vendor/raylib-cpp
 	url = https://github.com/robloach/raylib-cpp
+[submodule "vendor/utest.h"]
+	path = vendor/utest.h
+	url = https://github.com/sheredom/utest.h

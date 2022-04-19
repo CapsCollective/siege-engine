@@ -1,0 +1,24 @@
+name: Formatting
+
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  formatting:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Install dependencies
+
+      - name: install latest clang-format
+        run: brew install clang-format
+
+      # Run formatting checks
+
+      - name: make format ARGS=--check
+        run: make format ARGS=--check

@@ -13,20 +13,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # Run setup
-
-    - name: make setup
-      run: make setup
-
     # Build and clean
 
-    - name: make build
-      run: make build
+    - name: update submodules
+      run: git submodule update --init --recursive
+
+    - name: make
+      run: make
 
     - name: make clean
       run: make clean
 
     # Rebuild with g++
 
-    - name: make build CXX=g++
-      run: make build CXX=g++
+    - name: make CXX=g++
+      run: make CXX=g++

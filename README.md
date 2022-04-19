@@ -13,17 +13,17 @@ A retro survival horror game made in [raylib](https://github.com/raysan5/raylib)
 Before building the project, you will need to install all relevant dependencies for your platform so that the project has access to all the tools required, and raylib can compile and link correctly. You can find intructions for installing dependencies on macOS, Linux, and Windows in the [docs file on installing dependencies](https://github.com/CapsCollective/raylib-cpp-starter/blob/main/docs/InstallingDependencies.md).
 
 ### Building the Project
-Once you have cloned this repository and installed dependencies, building the project is as simple as running these two commands in its root directory:
+Once you have cloned this repository and installed dependencies, building the project is as simple as updating its submodules and running Make in its root directory:
 
 #### macOS & Linux
 ```console
-$ make setup
+$ git submodule update --init --recursive
 $ make
 ```
 
 #### Windows
 ```console
-> mingw32-make setup
+> git submodule update --init --recursive
 > mingw32-make
 ```
 

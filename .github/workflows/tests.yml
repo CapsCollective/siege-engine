@@ -21,13 +21,15 @@ jobs:
       - name: install raylib dependencies
         run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-      # Run setup
+      # Build tests
 
-      - name: make setup
-        run: make setup
+      - name: update submodules
+        run: git submodule update --init --recursive
+
+      - name: make tests
+        run: make tests
 
       # Run tests
 
-      - name: make test
-        working-directory: ./vendor/engine
-        run: make test
+      - name: ./bin/testapp
+        run: ./bin/testapp

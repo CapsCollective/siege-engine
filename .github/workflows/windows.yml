@@ -13,16 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # Run setup
-      
-    - name: make setup
-      run: mingw32-make setup
-      shell: cmd
-
     # Build and clean
+
+    - name: update submodules
+      run: git submodule update --init --recursive
+      shell: cmd
       
-    - name: make build
-      run: mingw32-make build
+    - name: make
+      run: mingw32-make
       shell: cmd
       
     - name: make clean
@@ -31,6 +29,6 @@ jobs:
 
     # Rebuild with g++
 
-    - name: make build CXX=g++
-      run: mingw32-make build CXX=g++
+    - name: make CXX=g++
+      run: mingw32-make CXX=g++
       shell: cmd
