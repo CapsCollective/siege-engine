@@ -44,7 +44,7 @@ else
         volkDefines = VK_USE_PLATFORM_XLIB_KHR
         linkFlags += -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 	endif
-	ifeq ($(UNAMEOS), Darwin)
+	ifeq ($(UNAMEOS),Darwin)
 
         NUMBER_OF_PROCESSORS := $(shell sysctl -n hw.ncpu)
 		
@@ -72,34 +72,50 @@ all: $(target) execute clean
 
 ifndef VULKAN_SDK
 
-    ifndef DYLD_LIBRARY_PATH
-        DYLD_LIBRARY_PATH=$(CURDIR)/lib/$(platform)
-    endif 
+    DYLD_LIBRARY_PATH=?$(CURDIR)/lib/$(platform)
 
     vulkanIncludes := include/vulkan
 
-    setup-vulkan-headers:
-		$(call updateSubmodule,Vulkan-Headers)
-		cd $(call platformpth,vendor/Vulkan-Headers) $(THEN) git fetch --all --tags $(THEN) git checkout tags/v1.3.211
-		$(MKDIR) $(call platformpth,$(CURDIR)/vendor/Vulkan-Headers/build)
+    ifeq ($(UNAMEOS),Darwin)
+        setup-moltenVk:
+			$(call updateSubmodule,MoltenVK)
 
-		cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake -DCMAKE_INSTALL_PREFIX=install -G $(generator) ..
-		cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake --build . --target install
+			cd vendor/MoltenVK $(THEN) ./fetchDependencies --macos
+			cd vendor/MoltenVK $(THEN) $(MAKE) macos -j$(NUMBER_OF_PROCESSORS)
 
-		$(MKDIR) $(call platformpth,include/vulkan)
-		$(call COPY,vendor/Vulkan-Headers/include/vulkan,include/vulkan,**.h)
+			$(MKDIR) $(call platformpth,$(CURDIR)/include/vulkan/icd.d)
+
+			$(call COPY,vendor/MoltenVK/External/Vulkan-Headers/include/vulkan,include/vulkan,**.h)
+			$(call COPY,vendor/MoltenVK/Package/Latest/MoltenVK/dylib/macOS,include/vulkan/icd.d,**)
+			$(call COPY,vendor/MoltenVK/Package/Latest/MoltenVK/dylib/macOS,lib/$(platform),**.dylib)
+
+        VK_ICD_FILENAMES?=$(CURDIR)/include/vulkan/icd.d/MoltenVK_icd.json
+
+        lib: setup-volk setup-glfw setup-moltenVk
+    else 
+        setup-vulkan-headers:
+			$(call updateSubmodule,Vulkan-Headers)
+			cd $(call platformpth,vendor/Vulkan-Headers) $(THEN) git fetch --all --tags $(THEN) git checkout tags/v1.3.211
+			$(MKDIR) $(call platformpth,$(CURDIR)/vendor/Vulkan-Headers/build)
+
+			cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake -DCMAKE_INSTALL_PREFIX=install -G $(generator) ..
+			cd $(call platformpth,vendor/Vulkan-Headers/build) $(THEN) cmake --build . --target install
+
+			$(MKDIR) $(call platformpth,include/vulkan)
+			$(call COPY,vendor/Vulkan-Headers/include/vulkan,include/vulkan,**.h)
 	
-    setup-vulkan-loader:
-		$(call updateSubmodule,Vulkan-Loader)
-		$(MKDIR) $(call platformpth,$(CURDIR)/vendor/Vulkan-Loader/build)
+        setup-vulkan-loader:
+			$(call updateSubmodule,Vulkan-Loader)
+			$(MKDIR) $(call platformpth,$(CURDIR)/vendor/Vulkan-Loader/build)
 
-		cd $(call platformpth,vendor/Vulkan-Loader/build) $(THEN) cmake -DVULKAN_HEADERS_INSTALL_DIR=$(CURDIR)/vendor/Vulkan-Headers/build/install ..
-		cd $(call platformpth,vendor/Vulkan-Loader/build) $(THEN) cmake --build . --config Release
+			cd $(call platformpth,vendor/Vulkan-Loader/build) $(THEN) cmake -DVULKAN_HEADERS_INSTALL_DIR=$(CURDIR)/vendor/Vulkan-Headers/build/install ..
+			cd $(call platformpth,vendor/Vulkan-Loader/build) $(THEN) cmake --build . --config Release
 
-		$(MKDIR) $(call platformpth,lib/$(platform))
-		$(call COPY,$(loaderInstallDir),lib/$(platform),**.$(libSuffix))
+			$(MKDIR) $(call platformpth,lib/$(platform))
+			$(call COPY,$(loaderInstallDir),lib/$(platform),**.$(libSuffix))
 
-    lib: setup-volk setup-glfw setup-vulkan-headers setup-vulkan-loader
+        lib: setup-volk setup-glfw setup-vulkan-headers setup-vulkan-loader
+    endif
 else
     lib: setup-volk setup-glfw
     vulkanIncludes := $(VULKAN_SDK)/include
