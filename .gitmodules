@@ -13,3 +13,18 @@
 [submodule "vendor/MoltenVK"]
 	path = vendor/MoltenVK
 	url = https://github.com/KhronosGroup/MoltenVK.git
+[submodule "vendor/debug/Vulkan-ValidationLayers"]
+	path = vendor/debug/Vulkan-ValidationLayers
+	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
+[submodule "vendor/debug/SPIRV-Headers"]
+	path = vendor/debug/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers.git
+[submodule "vendor/debug/SPIRV-Tools"]
+	path = vendor/debug/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools.git
+[submodule "vendor/debug/robin-hood-hashing"]
+	path = vendor/debug/robin-hood-hashing
+	url = https://github.com/martinus/robin-hood-hashing.git
+[submodule "vendor/glslang"]
+	path = vendor/glslang
+	url = https://github.com/KhronosGroup/glslang.git

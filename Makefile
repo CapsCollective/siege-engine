@@ -27,6 +27,8 @@ ifeq ($(OS),Windows_NT)
     COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 
     loaderInstallDir := $(call platformpth,vendor/Vulkan-Loader/build/loader/Release)
+    validationLayersInstallDir := $(call platformpth,vendor/debug/Vulkan-ValidationLayers/build/layers/Release)
+    validationLayersDllInstallDir := $(validationLayersInstallDir)
 
     libSuffix = dll
     generator := "MinGW Makefiles"
@@ -57,6 +59,8 @@ else
     generator := "Unix Makefiles"
 
     loaderInstallDir := vendor/Vulkan-Loader/build/loader
+    validationLayersInstallDir := vendor/debug/Vulkan-ValidationLayers/build/share/vulkan/explicit_layer.d
+    validationLayersDllInstallDir := vendor/debug/Vulkan-ValidationLayers/build/layers/
 
     PATHSEP := /
     MKDIR := mkdir -p
@@ -72,7 +76,7 @@ all: $(target) execute clean
 
 ifndef VULKAN_SDK
 
-    DYLD_LIBRARY_PATH=?$(CURDIR)/lib/$(platform)
+    DYLD_LIBRARY_PATH=?$(call platformpth,$(CURDIR)/lib/$(platform))
 
     vulkanIncludes := include/vulkan
 
@@ -92,7 +96,66 @@ ifndef VULKAN_SDK
         VK_ICD_FILENAMES?=$(CURDIR)/include/vulkan/icd.d/MoltenVK_icd.json
 
         lib: setup-volk setup-glfw setup-moltenVk
-    else 
+    else
+        ifdef DEBUG
+            setup-vulkan-validation-layers:
+				$(call updateSubmodule,debug/Vulkan-ValidationLayers)
+				cd $(call platformpth,vendor/debug/Vulkan-ValidationLayers) $(THEN) git fetch --all --tags $(THEN) git checkout tags/v1.3.211
+
+				$(MKDIR) $(call platformpth,$(CURDIR)/vendor/debug/Vulkan-ValidationLayers/build)
+
+				cd $(call platformpth,vendor/debug/Vulkan-ValidationLayers/build) $(THEN) cmake \
+				-DVULKAN_HEADERS_INSTALL_DIR=$(CURDIR)/vendor/Vulkan-Headers/build/install \
+				-DVULKAN_LOADER_INSTALL_DIR=$(CURDIR)/vendor/Vulkan-Loader/build \
+				-DGLSLANG_INSTALL_DIR=$(CURDIR)/vendor/glslang/build/install \
+				-DSPIRV_HEADERS_INSTALL_DIR=$(CURDIR)/vendor/debug/SPIRV-Headers/build/install \
+				-DSPIRV_TOOLS_INSTALL_DIR=$(CURDIR)/vendor/debug/SPIRV-Tools/build/install \
+				-DROBIN_HOOD_HASHING_INSTALL_DIR=$(CURDIR)/vendor/debug/robin-hood-hashing/build/install \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DCMAKE_INSTALL_PREFIX=./ \
+				-DBUILD_TESTS=OFF ..
+
+				cd $(call platformpth,vendor/debug/Vulkan-ValidationLayers/build) $(THEN) cmake --build . --config Release --target install
+				$(MKDIR) $(call platformpth,include/vulkan/explicit_layer.d)
+				$(call COPY,$(validationLayersInstallDir),include/vulkan/explicit_layer.d,**.json)
+				$(call COPY,$(validationLayersInstallDir),include/vulkan/explicit_layer.d,**.$(libSuffix))
+				$(call COPY,include/vulkan/explicit_layer.d,lib/$(platform),**.$(libSuffix))
+
+            setup-validation-layers: setup-glslang setup-robin-hood setup-spirv-headers setup-spirv-tools setup-vulkan-validation-layers
+				
+            setup-robin-hood:
+				$(call updateSubmodule,debug/robin-hood-hashing)
+				cd $(call platformpth,vendor/debug/robin-hood-hashing/build) $(THEN) cmake -G $(generator) $(CURDIR)/vendor/debug/robin-hood-hashing -DCMAKE_INSTALL_PREFIX=$(CURDIR)/vendor/debug/robin-hood-hashing/build/install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release
+				cd $(call platformpth,vendor/debug/robin-hood-hashing/build) $(THEN) cmake --build $(CURDIR)/vendor/debug/robin-hood-hashing/build --target install -- -j$(NUMBER_OF_PROCESSORS)
+
+            setup-spirv-headers:
+				$(call updateSubmodule,debug/SPIRV-Headers)
+				$(MKDIR) $(call platformpth,vendor/debug/SPIRV-Headers/build)
+				cd $(call platformpth,vendor/debug/SPIRV-Headers/build) $(THEN) cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(call platformpth,$(CURDIR)/vendor/debug/SPIRV-Headers/build/install)
+				cd $(call platformpth,vendor/debug/SPIRV-Headers/build) $(THEN) cmake --build . --target install --config Release
+
+            setup-spirv-tools:
+				$(call updateSubmodule,debug/SPIRV-Tools)
+				$(MKDIR) $(call platformpth,vendor/debug/SPIRV-Tools/build)
+				cd $(call platformpth,vendor/debug/SPIRV-Tools) $(THEN) python3 utils/git-sync-deps
+				cd $(call platformpth,vendor/debug/SPIRV-Tools/build) $(THEN) cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(call platformpth,$(CURDIR)/vendor/debug/SPIRV-Tools/build/install)
+				cd $(call platformpth,vendor/debug/SPIRV-Tools/build) $(THEN) cmake --build . --target install --config Release
+
+            setup-glslang:
+				$(call updateSubmodule,glslang)
+				$(MKDIR) $(call platformpth,$(CURDIR)/vendor/glslang/build)
+
+				cd $(call platformpth,vendor/glslang/build) $(THEN) cmake -G $(generator) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/vendor/glslang/build/install ..
+				cd $(call platformpth,vendor/glslang/build) $(THEN) cmake --build . --target install -- -j$(NUMBER_OF_PROCESSORS)
+
+				$(MKDIR) $(call platformpth,lib/$(platform))
+				$(call COPY,vendor/glslang/build/glslang,lib/$(platform),libglslang.a)
+            
+            VK_LAYER_PATH ?= $(call platformpth,$(CURDIR)/include/vulkan/explicit_layer.d)
+
+            lib: setup-volk setup-glfw setup-vulkan-headers setup-vulkan-loader setup-validation-layers
+        endif
+
         setup-vulkan-headers:
 			$(call updateSubmodule,Vulkan-Headers)
 			cd $(call platformpth,vendor/Vulkan-Headers) $(THEN) git fetch --all --tags $(THEN) git checkout tags/v1.3.211
