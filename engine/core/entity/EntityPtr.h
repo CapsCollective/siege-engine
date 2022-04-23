@@ -39,7 +39,7 @@ public:
 
     operator bool() const
     {
-        return pointer && Statics::Entity().IsLive(index);
+        return pointer && EntitySystem::IsLive(pointer);
     }
 
     E* operator->() const
