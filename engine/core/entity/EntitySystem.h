@@ -13,10 +13,17 @@ public:
     // Public static members
 
     /**
+     * Determines whether a particular entity is valid
+     * @param entity - the entity to check
+     * @return true if entity is valid, false otherwise
+     */
+    static bool IsLive(class Entity* entity);
+
+    /**
      * Queues an entity for freeing at the end of the frame
      * @param entity - the entity to free
      */
-    static void QueueFree(class Entity* entity);
+    static void QueueFree(Entity* entity);
 
     /**
      * Re-sorts the entity packed index by Z-index.
