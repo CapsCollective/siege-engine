@@ -17,6 +17,7 @@ compileFlags = -std=c++17 $(includes)
 
 ifeq ($(OS),Windows_NT)
 
+    platformpth = "$(subst /,$(PATHSEP),$1)"
     platform := Windows
     CXX ?= g++
 	
@@ -24,10 +25,10 @@ ifeq ($(OS),Windows_NT)
     PATHSEP := \$(BLANK)
     MKDIR := $(call platformpth,$(CURDIR)/scripts/windows/mkdir.bat)
     RM := rm -r -f
-    COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+    COPY = -robocopy $(call platformpth,$1) $(call platformpth,$2) $3
 
-    loaderInstallDir := $(call platformpth,vendor/Vulkan-Loader/build/loader/Release)
-    validationLayersInstallDir := $(call platformpth,vendor/debug/Vulkan-ValidationLayers/build/layers/Release)
+    loaderInstallDir := vendor/Vulkan-Loader/build/loader/Release
+    validationLayersInstallDir := vendor/debug/Vulkan-ValidationLayers/build/layers/Release
     validationLayersDllInstallDir := $(validationLayersInstallDir)
 
     libSuffix = dll
@@ -210,7 +211,7 @@ $(target): $(objects)
 
 # Compile objects to the build directory
 $(buildDir)/%.o: src/%.cpp Makefile
-	$(MKDIR) $(call platformpth, $(@D))
+	$(MKDIR) $(call platformpth,$(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 clear: 
