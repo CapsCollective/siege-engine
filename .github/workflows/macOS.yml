@@ -18,7 +18,7 @@ jobs:
         # Setup dependencies
       - name: setup dependencies
         run: |
-          make setup
+          ./scripts/macos/install.sh
         # Build the app
       - name: build project
         run: |
