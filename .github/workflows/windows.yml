@@ -22,7 +22,8 @@ jobs:
         # Setup dependencies
       - name: Setup dependencies
         run: |
-          mingw32-make setup
+          ./scripts/windows/install.bat
+
         # Compile the project with dependencies
       - name: Compile Project
         run: |
