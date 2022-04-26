@@ -11,7 +11,7 @@ depends := $(patsubst %.o, %.d, $(objects))
 submoduleDir := vendor
 updateSubmodule = git submodule update --init $(submoduleDir)/$1
 
-includes = -I include -I vendor/glfw/include -I include/volk -I $(vulkanIncludes)
+includes = -I vendor/include -I vendor/glfw/include -I vendor/include/volk -I $(vulkanIncludes)
 linkFlags = -L lib/$(platform) -lglfw3
 compileFlags = -std=c++17 $(includes)
 
@@ -53,7 +53,6 @@ else
 		
         platform := macOS
         CXX ?= clang++
-        libSuffix = dylib
         volkDefines = VK_USE_PLATFORM_MACOS_MVK
         linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
 	endif
@@ -79,24 +78,12 @@ ifndef VULKAN_SDK
 
     DYLD_LIBRARY_PATH=?$(call platformpth,$(CURDIR)/lib/$(platform))
 
-    vulkanIncludes := include/vulkan
+    vulkanIncludes := vendor/include/vulkan
 
     ifeq ($(UNAMEOS),Darwin)
-        setup-moltenVk:
-			$(call updateSubmodule,MoltenVK)
 
-			cd vendor/MoltenVK $(THEN) ./fetchDependencies --macos
-			cd vendor/MoltenVK $(THEN) $(MAKE) macos -j$(NUMBER_OF_PROCESSORS)
-
-			$(MKDIR) $(call platformpth,$(CURDIR)/include/vulkan/icd.d)
-
-			$(call COPY,vendor/MoltenVK/External/Vulkan-Headers/include/vulkan,include/vulkan,**.h)
-			$(call COPY,vendor/MoltenVK/Package/Latest/MoltenVK/dylib/macOS,include/vulkan/icd.d,**)
-			$(call COPY,vendor/MoltenVK/Package/Latest/MoltenVK/dylib/macOS,lib/$(platform),**.dylib)
-
-        VK_ICD_FILENAMES?=$(CURDIR)/include/vulkan/icd.d/MoltenVK_icd.json
-
-        lib: setup-volk setup-glfw setup-moltenVk
+        VK_ICD_FILENAMES?=$(CURDIR)/lib/macOS/icd.d/MoltenVK_icd.json
+        
     else
         ifdef DEBUG
             setup-vulkan-validation-layers:
@@ -152,7 +139,7 @@ ifndef VULKAN_SDK
 				$(MKDIR) $(call platformpth,lib/$(platform))
 				$(call COPY,vendor/glslang/build/glslang,lib/$(platform),libglslang.a)
             
-            VK_LAYER_PATH ?= $(call platformpth,$(CURDIR)/include/vulkan/explicit_layer.d)
+            VK_LAYER_PATH ?= $(call platformpth,$(CURDIR)/lib/$(platform)/explicit_layer.d)
 
             lib: setup-volk setup-glfw setup-vulkan-headers setup-vulkan-loader setup-validation-layers
         endif
