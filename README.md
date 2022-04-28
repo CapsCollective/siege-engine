@@ -4,9 +4,18 @@ SNEK is an experimental rendering library that utilises Vulkan and GLFW to enabl
 
 The intention of SNEK is to serve as a learning platform for Vulkan and high performance rendering concepts.
 
+### Current Compatibility
+
+| OS          | Default Compiler | Last Manual Build  | Compile Status                                                                                                                                                                                 |
+| ----------- | ---------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **macOS**   | Clang++          | `Monterey 12.3.1`  | [![macOS](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/macOS.yml/badge.svg)](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/macOS.yml)       |
+| **Linux**   | G++              | `Ubuntu-20.04.2.0` | [![Ubuntu](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/ubuntu.yml)    |
+| **Windows** | MinGW (G++)      | `Windows 10 19041` | [![Windows](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/windows.yml/badge.svg)](https://github.com/CapsCollective/vulkan-cpp-starter/actions/workflows/windows.yml) |
+
 ## Contents
 
 - [SNEK](#snek)
+  - [Current Compatibility](#current-compatibility)
   - [Contents](#contents)
   - [Getting Started](#getting-started)
     - [Dependencies](#dependencies)
