@@ -15,6 +15,7 @@ The intention of SNEK is to serve as a learning platform for Vulkan and high per
       - [Setup without the Vulkan SDK](#setup-without-the-vulkan-sdk)
       - [Setup without the Vulkan SDK with validation layers](#setup-without-the-vulkan-sdk-with-validation-layers)
     - [Building the Project](#building-the-project)
+  - [Project Structure](#project-structure)
   - [Contributing](#contributing)
     - [How do I contribute?](#how-do-i-contribute)
     - [Contributors](#contributors)
@@ -57,7 +58,7 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    ```
 
 5. Duplicate the `.env.template` file and rename it to `.env`.
-6. Uncomment and fill in the following variables. Each variable should point to a directory or :
+6. Uncomment and fill in the following variables. Each variable should point to a directory or file:
 
    1. `VK_LAYER_PATH` - if you're using validation layers, set this to the directory where they're located.
    2. `VK_ICD_FILENAMES` - if using MacOS, set this to the path that the MoltenVK ICD is located. This usually points to a file called `MoltenVK_icd.json`.
@@ -120,6 +121,32 @@ These commands should build the project and immediately run executable.
 To build the project separately, you can call the `bin/app` target separately. The same can be done for the `execute` target.
 
 Once these are done the project should be built and ready to go. Enjoy!
+
+## Project Structure
+
+```
+[root]
+     |-[scripts]
+     |         |-[Windows] <-|
+     |         |             |
+     |         |-[MacOS]   <-|- OS-related scripts
+     |         |             |
+     |         |-[Linux]   <-|
+     |
+     |-[shaders] <- space for storing GLSL shaders
+     |
+     |-[src]
+     |     |-[Renderer]
+     |                |-[Device]
+     |                |        |-[Utils] <- Device utilities
+     |                |
+     |                |-[Pipeline] <- Graphics pipeline
+     |
+     |-[Window] <- Windowing library functions
+     |
+     |-[vendor] <- Library install location
+     |        |-[debug] <- Debug related libraries
+```
 
 ## Contributing
 
