@@ -41,6 +41,32 @@ The following are dependencies for building and running SNEK:
 - [MingW32-make](https://www.mingw-w64.org/) (windows)
 - [Python](https://www.python.org/) (all platforms)
 
+**Linux:** For linux environments the following packages are required for building the dependencies.
+
+- `libx11-xcb-dev`
+- `libxkbcommon-dev`
+- `libwayland-dev`
+- `libxrandr-dev`
+- `libasound2-dev`
+- `mesa-common-dev`
+- `libx11-dev`
+- `libxrandr-dev`
+- `libxi-dev`
+- `xorg-dev`
+- `libgl1-mesa-dev`
+- `libglu1-mesa-dev`
+
+These can be installed using `apt-get` or an equivalent package manager for your OS distribution:
+
+```
+// Only required if not building with the Vulkan SDK
+sudo apt-get update
+sudo apt-get install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
+
+// Required for building GLFW
+sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+```
+
 ### Environment Setup
 
 There are three ways to build the project:
