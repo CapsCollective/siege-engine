@@ -22,12 +22,13 @@ jobs:
         # Setup dependencies
       - name: Setup dependencies
         run: |
-          ./scripts/windows/install.bat
+          ./scripts/install.bat
 
         # Compile the project with dependencies
       - name: Compile Project
         run: |
           mingw32-make bin/app
+
         # Export the binary as artifact
       - name: Export binary
         uses: actions/upload-artifact@v2

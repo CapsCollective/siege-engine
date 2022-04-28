@@ -1,20 +1,27 @@
 #!/bin/bash
 
 ROOT_DIR="$(pwd)"
-OS="Linux"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macOS"
+    NUMBER_OF_PROCESSORS="$(sysctl -n hw.ncpu)"
+fi
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS="Linux"
+    NUMBER_OF_PROCESSORS="$(nproc)"
+fi
+
 GENERATOR="Unix Makefiles"
-NUMBER_OF_PROCESSORS="$(nproc)"
 
 SUBMODULE_DIR="${ROOT_DIR}/vendor"
 SUBMODULE_INCLUDE_DIR="${SUBMODULE_DIR}/include"
 SUBMODULE_LIB_DIR="${ROOT_DIR}/lib/${OS}"
 
-LOADER_INSTALL_DIR="${SUBMODULE_DIR}/Vulkan-Loader/build/loader"
-
 echo "Installing vulkan dependencies..."
 
 update_submodules() {
-    git submodule update --init $1
+    git submodule update --init ${SUBMODULE_DIR}/$1
 }
 
 mkdirp() { 
@@ -23,7 +30,7 @@ mkdirp() {
 
 setup_volk() {
     echo "Cloning Volk..."
-    update_submodules vendor/volk
+    update_submodules volk
 
     mkdirp ${SUBMODULE_DIR}/include/volk
 
@@ -34,7 +41,7 @@ setup_volk() {
 setup_glfw() {
     echo "Cloning glfw..."
 
-    update_submodules vendor/glfw
+    update_submodules glfw
 
     cd ${SUBMODULE_DIR}/glfw ; cmake -G "${GENERATOR}" . ; make -j${NUMBER_OF_PROCESSORS}
 
@@ -45,8 +52,24 @@ setup_glfw() {
     cd ${ROOT_DIR}
 }
 
+setup_moltenVk() {
+    echo "Cloning MoltenVk..."
+
+    update_submodules MoltenVK
+    cd ${SUBMODULE_DIR}/MoltenVK ; ./fetchDependencies --macos --v-headers-root ${SUBMODULE_DIR}/Vulkan-Headers
+    make macos -j${NUMBER_OF_PROCESSORS}
+
+    mkdirp ${SUBMODULE_LIB_DIR}/icd.d
+    mkdirp ${SUBMODULE_INCLUDE_DIR}/vulkan
+
+    cp ${SUBMODULE_DIR}/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/** ${SUBMODULE_LIB_DIR}/icd.d 
+    cp ${SUBMODULE_DIR}/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/**.dylib ${SUBMODULE_LIB_DIR} 
+
+    cd ${ROOT_DIR}
+}
+
 setup_vulkan_headers() {
-    update_submodules vendor/Vulkan-Headers
+    update_submodules Vulkan-Headers
 
     cd ${SUBMODULE_DIR}/Vulkan-Headers ; git fetch --all --tags ; git checkout tags/v1.3.211
     
@@ -65,20 +88,20 @@ setup_vulkan_headers() {
 setup_vulkan_loader() {
     echo "Cloning Vulkan Loader..."
     
-    update_submodules vendor/Vulkan-Loader
+    update_submodules Vulkan-Loader
     mkdirp ${SUBMODULE_DIR}/Vulkan-Loader/build
     
     cd ${SUBMODULE_DIR}/Vulkan-Loader/build ; cmake -DVULKAN_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Headers/build/install ..
     cd ${SUBMODULE_DIR}/Vulkan-Loader/build ; cmake --build . --config Release
 
     mkdirp ${SUBMODULE_LIB_DIR}
-    cp ${LOADER_INSTALL_DIR}/**.so ${SUBMODULE_LIB_DIR}
+    cp ${SUBMODULE_DIR}/Vulkan-Loader/build/loader/**.so ${SUBMODULE_LIB_DIR}
 
     cd ${ROOT_DIR}
 }
 
 setup_glslang() {
-    update_submodules vendor/glslang
+    update_submodules glslang
 
     mkdirp ${SUBMODULE_DIR}/glslang/build
 
@@ -92,7 +115,7 @@ setup_glslang() {
 }
 
 setup_spirv_headers() {
-    update_submodules vendor/debug/SPIRV-Headers
+    update_submodules debug/SPIRV-Headers
 
     mkdirp ${SUBMODULE_DIR}/debug/SPIRV-Headers/build
 
@@ -103,7 +126,7 @@ setup_spirv_headers() {
 }
 
 setup_spirv_tools() {
-    update_submodules vendor/debug/SPIRV-Tools
+    update_submodules debug/SPIRV-Tools
 
     mkdirp ${SUBMODULE_DIR}/debug/SPIRV-Tools/build
 
@@ -115,7 +138,7 @@ setup_spirv_tools() {
 }
 
 setup_robin_hood_hashing() {
-    update_submodules vendor/debug/robin-hood-hashing
+    update_submodules debug/robin-hood-hashing
 
     cd ${SUBMODULE_DIR}/debug/robin-hood-hashing/build ; cmake -G "${GENERATOR}" ${SUBMODULE_DIR}/debug/robin-hood-hashing -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/robin-hood-hashing/build/install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release
     cd ${SUBMODULE_DIR}/debug/robin-hood-hashing/build ; cmake --build ${SUBMODULE_DIR}/debug/robin-hood-hashing/build --target install -- -j${NUMBER_OF_PROCESSORS}
@@ -124,7 +147,7 @@ setup_robin_hood_hashing() {
 }
 
 setup_validation_layers() {
-    update_submodules vendor/debug/Vulkan-ValidationLayers
+    update_submodules debug/Vulkan-ValidationLayers
     
     cd ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers ; git fetch --all --tags ; git checkout tags/v1.3.211
 
@@ -163,20 +186,39 @@ setup_vulkan_validation_layers() {
 setup_volk
 setup_glfw
 
-if [ -z "${VULKAN_SDK}" ]
-then
-    echo "VULKAN_SDK has not been set. Setting up dependent repositories"
-    setup_vulkan_headers
-    setup_vulkan_loader
-
+if [[ -z "${VULKAN_SDK}" ]]; then
+    
+    echo "OS detected: ${OS}"
     echo "# Environment variables for Vulkan." > .env
-    echo "DYLD_LIBRARY_PATH=${SUBMODULE_LIB_DIR}" >> .env
+
+    setup_vulkan_headers
+
     echo "VULKAN_INCLUDE_DIR=${SUBMODULE_INCLUDE_DIR}/vulkan" >> .env
 
-    if [ "$1" == "DEBUG" ]
-    then
-        echo "Setting up Validation Layers..."
-        setup_vulkan_validation_layers
-        echo "VK_LAYER_PATH=${SUBMODULE_LIB_DIR}/explicit_layer.d" >> .env
+    if [[ "${OS}" == "macOS" ]]; then 
+        
+        echo "VULKAN SDK has not been set. Setting up MoltenVK..."
+
+        setup_moltenVk
+
+        echo "MoltenVK successfully installed! Generating .env file..."
+
+        echo "VK_ICD_FILENAMES=${SUBMODULE_LIB_DIR}/icd.d/MoltenVK_icd.json" >> .env
+    fi 
+
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+
+        setup_vulkan_loader
+
+        if [[ "$1" == "DEBUG" ]]; then
+            
+            echo "Setting up Validation Layers..."
+
+            setup_vulkan_validation_layers
+
+            echo "VK_LAYER_PATH=${SUBMODULE_LIB_DIR}/explicit_layer.d" >> .env
+        fi
     fi
+
+    echo "DYLD_LIBRARY_PATH=${SUBMODULE_LIB_DIR}" >> .env
 fi

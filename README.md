@@ -60,11 +60,11 @@ These can be installed using `apt-get` or an equivalent package manager for your
 
 ```
 // Only required if not building with the Vulkan SDK
-sudo apt-get update
-sudo apt-get install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
+$ sudo apt-get update
+$ sudo apt-get install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
 
 // Required for building GLFW
-sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 ```
 
 ### Environment Setup
@@ -106,12 +106,12 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
 1. Navigate to the project root.
 2. Run the install script for your platform:
 
-   ```
+   ```bash
    // Linux & macos
-   $ ./scripts/<PLATFORM>/install.sh
+   $ ./scripts/install.sh
 
    // Windows
-   > ./scripts<PLATFORM>/install.bat
+   > ./scripts/install.bat
    ```
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
@@ -123,10 +123,10 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
 
    ```
    // Linux & macos
-   $ ./scripts/<PLATFORM>/install.sh DEBUG
+   $ ./scripts/install.sh DEBUG
 
    // Windows
-   > ./scripts<PLATFORM>/install.bat DEBUG
+   > ./scripts/install.bat DEBUG
    ```
 
 3. This should install all required dependencies plus the validation layers. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
@@ -139,16 +139,16 @@ Once all dependencies have been set up, the project can be build and run using t
 
 ```
 // linux and macos
-make bin/app; make execute
+$ make bin/app; make execute
 
 // linux and macos - DEBUG
-make CXXFLAGS="-DDEBUG" bin/app; make execute
+$ make CXXFLAGS="-DDEBUG" bin/app; make execute
 
 // windows
-mingw32-make bin/app && mingw32-make execute
+> mingw32-make bin/app && mingw32-make execute
 
 // windows - DEBUG
-mingw32-make CXXFLAGS="-DDEBUG" bin/app && mingw32-make execute
+> mingw32-make CXXFLAGS="-DDEBUG" bin/app && mingw32-make execute
 ```
 
 These commands should build the project and immediately run executable.
@@ -161,12 +161,7 @@ Once these are done the project should be built and ready to go. Enjoy!
 
 ```
 [root]
-     |-[scripts]
-     |         |-[Windows] <-|
-     |         |             |
-     |         |-[MacOS]   <-|- OS-related scripts
-     |         |             |
-     |         |-[Linux]   <-|
+     |-[scripts] <- all utility scripts
      |
      |-[shaders] <- space for storing GLSL shaders
      |
@@ -179,7 +174,7 @@ Once these are done the project should be built and ready to go. Enjoy!
      |
      |-[Window] <- Windowing library functions
      |
-     |-[vendor] <- Library install location
+     |-[vendor]         <- Library install location
      |        |-[debug] <- Debug related libraries
 ```
 
