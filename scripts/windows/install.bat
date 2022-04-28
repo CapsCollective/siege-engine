@@ -90,6 +90,8 @@ EXIT /B 0
     echo "VULKAN_SDK not detected. Proceeding to pull Vulkan Headers and Loader..."
     CALL :SetupVulkanHeaders 
     CALL :SetupVulkanLoader 
+    echo "export DYLD_LIBRARY_PATH=%SUBMODULE_LIB_DIR%" > .env
+    echo "export VULKAN_INCLUDE_DIR=%SUBMODULE_INCLUDE_DIR%/vulkan" >> .env
 EXIT /B 0
 
 :SetupGlslang
@@ -184,6 +186,7 @@ EXIT /B 0
     CALL :SetupSpirvHeaders
     CALL :SetupSpirvTools
     CALL :SetupValidationLayers
+    echo "export VK_LAYER_PATH=%SUBMODULE_LIB_DIR%\explicit_layer.d" >> .env
 EXIT /B 0
 
 endlocal 
