@@ -67,4 +67,9 @@ if [ -z "${VULKAN_SDK}" ]
 then
     echo "VULKAN SDK has not been set. Setting up MoltenVK..."
     setup_moltenVk
+    echo "MoltenVK successfully installed! Generating .env file..."
+    echo "# Environment variables for Vulkan." > .env
+    echo "DYLD_LIBRARY_PATH=${SUBMODULE_LIB_DIR}" >> .env
+    echo "VK_ICD_FILENAMES=${SUBMODULE_LIB_DIR}/icd.d/MoltenVK_icd.json" >> .env
+    echo "VULKAN_INCLUDE_DIR=${SUBMODULE_INCLUDE_DIR}/vulkan" >> .env
 fi
