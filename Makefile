@@ -21,7 +21,7 @@ ifeq ($(OS),Windows_NT)
     CXX ?= g++
 	
     PATHSEP := \$(BLANK)
-    MKDIR := $(call platformpth,$(CURDIR)/scripts/windows/mkdir.bat)
+    MKDIR := $(call platformpth,$(CURDIR)/scripts/mkdir.bat)
     RM := rm -r -f
 
     volkDefines = VK_USE_PLATFORM_WIN32_KHR

@@ -26,7 +26,7 @@ jobs:
 
       - name: setup dependencies
         run: |
-          ./scripts/linux/install.sh
+          ./scripts/install.sh
 
       - name: make bin/app
         run: |
