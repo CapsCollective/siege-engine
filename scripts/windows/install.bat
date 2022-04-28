@@ -10,6 +10,8 @@ set SUBMODULE_DIR=%ROOT_DIR%\vendor
 set SUBMODULE_INCLUDE_DIR=%SUBMODULE_DIR%\include
 set SUBMODULE_LIB_DIR=%ROOT_DIR%\lib\%OS%
 
+set BUILD_TYPE=%~1
+
 set LOADER_INSTALL_DIR=%SUBMODULE_DIR%\Vulkan-Loader\build\loader\Release
 
 echo "Installing vulkan dependencies..."
@@ -17,7 +19,7 @@ echo "Installing vulkan dependencies..."
 CALL :SetupVolk
 CALL :SetupGlfw
 
-if NOT DEFINED VULKAN_SDK CALL :SetupHeadersAndLoader if %1 == DEBUG CALL :SetupVulkanValidationLayers
+if NOT DEFINED VULKAN_SDK CALL :SetupHeadersAndLoader
 
 EXIT /B %ERRORLEVEL%
 
@@ -89,9 +91,12 @@ EXIT /B 0
 :SetupHeadersAndLoader
     echo "VULKAN_SDK not detected. Proceeding to pull Vulkan Headers and Loader..."
     CALL :SetupVulkanHeaders 
-    CALL :SetupVulkanLoader 
-    echo "export DYLD_LIBRARY_PATH=%SUBMODULE_LIB_DIR%" > .env
-    echo "export VULKAN_INCLUDE_DIR=%SUBMODULE_INCLUDE_DIR%/vulkan" >> .env
+    CALL :SetupVulkanLoader
+    echo # Environment variables for Vulkan.> .env
+    echo DYLD_LIBRARY_PATH=%SUBMODULE_LIB_DIR%>> .env
+    echo VULKAN_INCLUDE_DIR=%SUBMODULE_INCLUDE_DIR%/vulkan>> .env
+
+    if "%BUILD_TYPE%" == "DEBUG" CALL :SetupVulkanValidationLayers
 EXIT /B 0
 
 :SetupGlslang
@@ -186,7 +191,7 @@ EXIT /B 0
     CALL :SetupSpirvHeaders
     CALL :SetupSpirvTools
     CALL :SetupValidationLayers
-    echo "export VK_LAYER_PATH=%SUBMODULE_LIB_DIR%\explicit_layer.d" >> .env
+    echo VK_LAYER_PATH=%SUBMODULE_LIB_DIR%\explicit_layer.d>> .env
 EXIT /B 0
 
 endlocal 
