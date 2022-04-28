@@ -169,9 +169,14 @@ then
     setup_vulkan_headers
     setup_vulkan_loader
 
+    echo "# Environment variables for Vulkan." > .env
+    echo "DYLD_LIBRARY_PATH=${SUBMODULE_LIB_DIR}" >> .env
+    echo "VULKAN_INCLUDE_DIR=${SUBMODULE_INCLUDE_DIR}/vulkan" >> .env
+
     if [ "$1" == "DEBUG" ]
     then
         echo "Setting up Validation Layers..."
         setup_vulkan_validation_layers
+        echo "VK_LAYER_PATH=${SUBMODULE_LIB_DIR}/explicit_layer.d" >> .env
     fi
 fi
