@@ -15,14 +15,13 @@ The intention of SNEK is to serve as a learning platform for Vulkan and high per
 ## Contents
 
 - [SNEK](#snek)
-  - [Current Compatibility](#current-compatibility)
+    - [Current Compatibility](#current-compatibility)
   - [Contents](#contents)
   - [Getting Started](#getting-started)
     - [Dependencies](#dependencies)
     - [Environment Setup](#environment-setup)
       - [Using the Vulkan SDK](#using-the-vulkan-sdk)
       - [Setup without the Vulkan SDK](#setup-without-the-vulkan-sdk)
-      - [Setup without the Vulkan SDK with validation layers](#setup-without-the-vulkan-sdk-with-validation-layers)
     - [Building the Project](#building-the-project)
   - [Project Structure](#project-structure)
   - [Contributing](#contributing)
@@ -115,11 +114,10 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    ```
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
+   
+**Building validation layers**
 
-#### Setup without the Vulkan SDK with validation layers
-
-1. Navigate to the project root.
-2. Run the install script for your platform with the DEBUG flag:
+If you want to build validation layers then the install scripts should be run by passing the `DEBUG` variable to the `install` script:
 
    ```
    // Linux & macos
@@ -128,8 +126,6 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    // Windows
    > ./scripts/install.bat DEBUG
    ```
-
-3. This should install all required dependencies plus the validation layers. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
 
 **NOTE**: Building the DEBUG build can take some time to complete. Please be patient while the project builds the required validation layers.
 
