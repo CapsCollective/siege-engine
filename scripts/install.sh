@@ -43,46 +43,42 @@ setup_glfw() {
 
     update_submodules glfw
 
-    cd ${SUBMODULE_DIR}/glfw ; cmake -G "${GENERATOR}" . ; make -j${NUMBER_OF_PROCESSORS}
+    cmake -G "${GENERATOR}" -B${SUBMODULE_DIR}/glfw -S${SUBMODULE_DIR}/glfw
+    make -C ${SUBMODULE_DIR}/glfw -j${NUMBER_OF_PROCESSORS}
 
     mkdirp ${SUBMODULE_LIB_DIR}
 
     cp ${SUBMODULE_DIR}/glfw/src/libglfw3.a ${SUBMODULE_LIB_DIR}
-
-    cd ${ROOT_DIR}
 }
 
 setup_moltenVk() {
     echo "Cloning MoltenVk..."
 
     update_submodules MoltenVK
-    cd ${SUBMODULE_DIR}/MoltenVK ; ./fetchDependencies --macos --v-headers-root ${SUBMODULE_DIR}/Vulkan-Headers
-    make macos -j${NUMBER_OF_PROCESSORS}
+
+    (cd ${SUBMODULE_DIR}/MoltenVK ; ./fetchDependencies --macos --v-headers-root ${SUBMODULE_DIR}/Vulkan-Headers)
+    make -C ${SUBMODULE_DIR}/MoltenVK macos -j${NUMBER_OF_PROCESSORS}
 
     mkdirp ${SUBMODULE_LIB_DIR}/icd.d
     mkdirp ${SUBMODULE_INCLUDE_DIR}/vulkan
 
     cp ${SUBMODULE_DIR}/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/** ${SUBMODULE_LIB_DIR}/icd.d 
     cp ${SUBMODULE_DIR}/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/**.dylib ${SUBMODULE_LIB_DIR} 
-
-    cd ${ROOT_DIR}
 }
 
 setup_vulkan_headers() {
     update_submodules Vulkan-Headers
 
-    cd ${SUBMODULE_DIR}/Vulkan-Headers ; git fetch --all --tags ; git checkout tags/v1.3.211
+    git -C ${SUBMODULE_DIR}/Vulkan-Headers fetch --all --tags ; git -C ${SUBMODULE_DIR}/Vulkan-Headers checkout tags/v1.3.211
     
     mkdirp ${SUBMODULE_DIR}/Vulkan-Headers/build
 
-    cd ${SUBMODULE_DIR}/Vulkan-Headers/build ; cmake -DCMAKE_INSTALL_PREFIX=install -G "${GENERATOR}" ..
-    cd ${SUBMODULE_DIR}/Vulkan-Headers/build ; cmake --build . --target install
+    cmake -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/Vulkan-Headers/build/install -G "${GENERATOR}" -B${SUBMODULE_DIR}/Vulkan-Headers/build -S${SUBMODULE_DIR}/Vulkan-Headers
+    cmake --build ${SUBMODULE_DIR}/Vulkan-Headers/build --target install 
 
     mkdirp ${SUBMODULE_INCLUDE_DIR}/vulkan
 
     cp ${SUBMODULE_DIR}/Vulkan-Headers/include/vulkan/**.h ${SUBMODULE_INCLUDE_DIR}/vulkan
-
-    cd ${ROOT_DIR}
 }
 
 setup_vulkan_loader() {
@@ -91,13 +87,11 @@ setup_vulkan_loader() {
     update_submodules Vulkan-Loader
     mkdirp ${SUBMODULE_DIR}/Vulkan-Loader/build
     
-    cd ${SUBMODULE_DIR}/Vulkan-Loader/build ; cmake -DVULKAN_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Headers/build/install ..
-    cd ${SUBMODULE_DIR}/Vulkan-Loader/build ; cmake --build . --config Release
+    cmake -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/Vulkan-Loader/build -DVULKAN_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Headers/build/install -S${SUBMODULE_DIR}/Vulkan-Loader -B${SUBMODULE_DIR}/Vulkan-Loader/build
+    cmake --build ${SUBMODULE_DIR}/Vulkan-Loader/build --config Release
 
     mkdirp ${SUBMODULE_LIB_DIR}
     cp ${SUBMODULE_DIR}/Vulkan-Loader/build/loader/**.so ${SUBMODULE_LIB_DIR}
-
-    cd ${ROOT_DIR}
 }
 
 setup_glslang() {
@@ -105,13 +99,11 @@ setup_glslang() {
 
     mkdirp ${SUBMODULE_DIR}/glslang/build
 
-    cd ${SUBMODULE_DIR}/glslang/build ; cmake -G "${GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/glslang/build/install ..
-    cd ${SUBMODULE_DIR}/glslang/build ; cmake --build . --target install -- -j${NUMBER_OF_PROCESSORS}
+    cmake -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/glslang/build -G "${GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/glslang/build/install -S${SUBMODULE_DIR}/glslang -B${SUBMODULE_DIR}/glslang/build
+    cmake --build ${SUBMODULE_DIR}/glslang/build --target install -- -j${NUMBER_OF_PROCESSORS}
 
     mkdirp ${SUBMODULE_LIB_DIR}
     cp ${SUBMODULE_DIR}/glslang/build/glslang/libglslang.a ${SUBMODULE_LIB_DIR}
-
-    cd ${ROOT_DIR}
 }
 
 setup_spirv_headers() {
@@ -119,10 +111,8 @@ setup_spirv_headers() {
 
     mkdirp ${SUBMODULE_DIR}/debug/SPIRV-Headers/build
 
-    cd ${SUBMODULE_DIR}/debug/SPIRV-Headers/build ; cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/SPIRV-Headers/build/install
-    cd ${SUBMODULE_DIR}/debug/SPIRV-Headers/build ; cmake --build . --target install --config Release
-
-    cd ${ROOT_DIR}
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/SPIRV-Headers/build/install -S${SUBMODULE_DIR}/debug/SPIRV-Headers -B${SUBMODULE_DIR}/debug/SPIRV-Headers/build
+    cmake --build ${SUBMODULE_DIR}/debug/SPIRV-Headers/build --target install --config Release
 }
 
 setup_spirv_tools() {
@@ -130,49 +120,45 @@ setup_spirv_tools() {
 
     mkdirp ${SUBMODULE_DIR}/debug/SPIRV-Tools/build
 
-    cd ${SUBMODULE_DIR}/debug/SPIRV-Tools/build ; python3 utils/git-sync-deps
-    cd ${SUBMODULE_DIR}/debug/SPIRV-Tools/build ; cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/SPIRV-Tools/build/install
-    cd ${SUBMODULE_DIR}/debug/SPIRV-Tools/build ; cmake --build . --target install --config Release
-
-    cd ${ROOT_DIR}
+    python3 ${SUBMODULE_DIR}/debug/SPIRV-Tools/utils/git-sync-deps
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/SPIRV-Tools/build/install -S${SUBMODULE_DIR}/debug/SPIRV-Tools -B${SUBMODULE_DIR}/debug/SPIRV-Tools/build
+    cmake --build ${SUBMODULE_DIR}/debug/SPIRV-Tools/build --target install --config Release
 }
 
 setup_robin_hood_hashing() {
     update_submodules debug/robin-hood-hashing
 
-    cd ${SUBMODULE_DIR}/debug/robin-hood-hashing/build ; cmake -G "${GENERATOR}" ${SUBMODULE_DIR}/debug/robin-hood-hashing -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/robin-hood-hashing/build/install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release
-    cd ${SUBMODULE_DIR}/debug/robin-hood-hashing/build ; cmake --build ${SUBMODULE_DIR}/debug/robin-hood-hashing/build --target install -- -j${NUMBER_OF_PROCESSORS}
-
-    cd ${ROOT_DIR}
+    cmake -G "${GENERATOR}" ${SUBMODULE_DIR}/debug/robin-hood-hashing -DCMAKE_INSTALL_PREFIX=${SUBMODULE_DIR}/debug/robin-hood-hashing/build/install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release -S${SUBMODULE_DIR}/debug/robin-hood-hashing -B${SUBMODULE_DIR}/debug/robin-hood-hashing/build
+    cmake --build ${SUBMODULE_DIR}/debug/robin-hood-hashing/build --target install -- -j${NUMBER_OF_PROCESSORS}
 }
 
 setup_validation_layers() {
     update_submodules debug/Vulkan-ValidationLayers
     
-    cd ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers ; git fetch --all --tags ; git checkout tags/v1.3.211
+    git -C ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers  fetch --all --tags ; git -C ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers checkout tags/v1.3.211
 
     mkdirp ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build
 
-    cd ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers ; cmake \
-        -DVULKAN_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Headers/build/install \
-        -DVULKAN_LOADER_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Loader/build \
-        -DGLSLANG_INSTALL_DIR=${SUBMODULE_DIR}/glslang/build/install \
-        -DSPIRV_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/debug/SPIRV-Headers/build/install \
-        -DSPIRV_TOOLS_INSTALL_DIR=${SUBMODULE_DIR}/debug/SPIRV-Tools/build/install \
-        -DROBIN_HOOD_HASHING_INSTALL_DIR=${SUBMODULE_DIR}/debug/robin-hood-hashing/build/install \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=./ \
-        -DBUILD_TESTS=OFF ..
+    cmake \
+    -DVULKAN_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Headers/build/install \
+    -DVULKAN_LOADER_INSTALL_DIR=${SUBMODULE_DIR}/Vulkan-Loader/build \
+    -DGLSLANG_INSTALL_DIR=${SUBMODULE_DIR}/glslang/build/install \
+    -DSPIRV_HEADERS_INSTALL_DIR=${SUBMODULE_DIR}/debug/SPIRV-Headers/build/install \
+    -DSPIRV_TOOLS_INSTALL_DIR=${SUBMODULE_DIR}/debug/SPIRV-Tools/build/install \
+    -DROBIN_HOOD_HASHING_INSTALL_DIR=${SUBMODULE_DIR}/debug/robin-hood-hashing/build/install \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=./ \
+    -DBUILD_TESTS=OFF \
+    -S${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers
+    -B${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build
     
-    cd ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build ; cmake --build . --config Release --target install
+    cmake --build ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build --config Release --target install
 
     mkdirp ${SUBMODULE_LIB_DIR}/explicit_layer.d
 
     cp ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build/share/vulkan/explicit_layer.d/**.json ${SUBMODULE_LIB_DIR}/explicit_layer.d
     cp ${SUBMODULE_DIR}/debug/Vulkan-ValidationLayers/build/layers/**.so ${SUBMODULE_LIB_DIR}/explicit_layer.d
     cp ${SUBMODULE_LIB_DIR}/explicit_layer.d/**.so ${SUBMODULE_LIB_DIR}
-
-    cd ${ROOT_DIR}
 }
 
 setup_vulkan_validation_layers() {
@@ -221,4 +207,6 @@ if [[ -z "${VULKAN_SDK}" ]]; then
     fi
 
     echo "DYLD_LIBRARY_PATH=${SUBMODULE_LIB_DIR}" >> .env
+else 
+    echo "VULKAN_SDK has been detected. Will use SDK resources for build"
 fi
