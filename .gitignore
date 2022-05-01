@@ -126,6 +126,8 @@ fabric.properties
 
 bin 
 lib
+include
+.env
 
 .DS_STORE
 .env
