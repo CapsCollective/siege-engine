@@ -47,6 +47,7 @@ namespace SnekVk::PhysicalDevice
         {
             SwapChainSupportDetails::SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySupport(device, surface);
             swapChainAdequate = swapChainSupport.hasFormats && swapChainSupport.hasPresentModes;
+            SwapChainSupportDetails::DestroySwapChainSupportDetails(swapChainSupport);
         }
 
         VkPhysicalDeviceFeatures supportedFeatures;

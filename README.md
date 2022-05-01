@@ -97,6 +97,7 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    1. `VK_LAYER_PATH` - if you're using validation layers, set this to the directory where they're located.
    2. `VK_ICD_FILENAMES` - if using MacOS, set this to the path that the MoltenVK ICD is located. This usually points to a file called `MoltenVK_icd.json`.
    3. `VULKAN_INCLUDE_DIR` - point this to the directory where the vulkan headers are located.
+   4. `GLSLC` - point this to the `glslangValidator` binary. This is generally located in the `bin` directory in the SDK.
 
 7. Save the .env file. This should be enough to build the project.
 
@@ -166,7 +167,8 @@ Once these are done the project should be built and ready to go. Enjoy!
      |                |-[Device]
      |                |        |-[Utils] <- Device utilities
      |                |
-     |                |-[Pipeline] <- Graphics pipeline
+     |                |-[Pipeline]  <- Graphics pipeline
+     |                |-[Swapchain] <- Swapchain functions
      |
      |-[Window] <- Windowing library functions
      |

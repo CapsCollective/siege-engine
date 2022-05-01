@@ -56,13 +56,8 @@ namespace SnekVk
         auto vertCode = ReadFile(vertFilePath);
         auto fragCode = ReadFile(fragFilePath);
 
-        std::cout << "Vert Size: " << vertCode.bufferSize << std::endl;
-        std::cout << "Frag Size: " << fragCode.bufferSize << std::endl;
-
         CreateShaderModule(vertCode, OUT &vertShader);
         CreateShaderModule(fragCode, OUT &fragShader);
-
-        std::cout << "create shader module" << std::endl;
 
         VkPipelineViewportStateCreateInfo viewportCreateInfo{};
         viewportCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -86,7 +81,7 @@ namespace SnekVk
         shaderStages[1].pName = "main";
         shaderStages[1].flags = 0;
         shaderStages[1].pNext = nullptr;
-        shaderStages[0].pSpecializationInfo = nullptr;
+        shaderStages[1].pSpecializationInfo = nullptr;
 
         VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo{};
         vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -106,6 +101,7 @@ namespace SnekVk
         pipelineCreateInfo.pMultisampleState = &configInfo.multisampleInfo;
         pipelineCreateInfo.pColorBlendState = &configInfo.colorBlendInfo;
         pipelineCreateInfo.pDynamicState = nullptr;
+        pipelineCreateInfo.pDepthStencilState = &configInfo.depthStencilInfo;
 
         pipelineCreateInfo.layout = configInfo.pipelineLayout;
         pipelineCreateInfo.renderPass = configInfo.renderPass;
@@ -117,12 +113,8 @@ namespace SnekVk
         SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
 
-        std::cout << "CREATED" << std::endl;
-
         DestroyFileData(vertCode);
         DestroyFileData(fragCode);
-
-        std::cout << "CREATED" << std::endl;
     }
 
     void Pipeline::CreateShaderModule(struct FileData fileData, VkShaderModule* shaderModule)
@@ -134,6 +126,11 @@ namespace SnekVk
 
         SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
             "Failed to create shader module!");
+    }
+
+    void Pipeline::Bind(VkCommandBuffer commandBuffer)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
     PipelineConfigInfo Pipeline::DefaultPipelineConfig(u32 width, u32 height)

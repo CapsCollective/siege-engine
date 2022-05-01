@@ -167,7 +167,7 @@ namespace SnekVk {
 	}
 
 	void VulkanDevice::CreateCommandPool() {
-		QueueFamilyIndices::QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+		QueueFamilyIndices::QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
 
 		VkCommandPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -190,10 +190,12 @@ namespace SnekVk {
 	}
 
 	VkFormat VulkanDevice::FindSupportedFormat(
-	const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
+		const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features) 
 	{
-		for (VkFormat format : candidates) 
+		for (size_t i = 0; i < formatCount; i++) 
 		{
+			VkFormat format = candidates[i];
+
 			VkFormatProperties props;
 			vkGetPhysicalDeviceFormatProperties(physicalDevice, format, OUT &props);
 
@@ -206,7 +208,7 @@ namespace SnekVk {
 				return format;
 			}
 		}
-		throw std::runtime_error("failed to find supported format!");
+		SNEK_ASSERT(false, "Failed to find a supported format!");
 	}
 
 	uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
@@ -222,7 +224,7 @@ namespace SnekVk {
 			}
 		}
 
-		throw std::runtime_error("failed to find suitable memory type!");
+		SNEK_ASSERT(false, "Failed to find suitable memory type!");
 	}
 
 	void VulkanDevice::CreateBuffer(
@@ -273,7 +275,7 @@ namespace SnekVk {
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		vkBeginCommandBuffer(OUT commandBuffer, &beginInfo);
 		return commandBuffer;
 	}
 
@@ -339,27 +341,21 @@ namespace SnekVk {
 		VkImage &image,
 		VkDeviceMemory &imageMemory) 
 	{
-		if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to create image!");
-		}
+		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT &image) == VK_SUCCESS, 
+			"Failed to create Image!");
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(device, image, &memRequirements);
+		vkGetImageMemoryRequirements(device, image, OUT &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to allocate image memory!");
-		}
+		SNEK_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT &imageMemory) == VK_SUCCESS,
+				"Failed to allocate image memory!");
 
-		if (vkBindImageMemory(device, image, imageMemory, 0) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to bind image memory!");
-		}
+		SNEK_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
+				"Failed to bind image memory!");
 	}
 }

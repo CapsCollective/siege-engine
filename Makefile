@@ -14,7 +14,12 @@ depends := $(patsubst %.o, %.d, $(objects))
 
 includes = -I vendor/include -I vendor/glfw/include -I vendor/include/volk -I $(VULKAN_INCLUDE_DIR)
 linkFlags = -L lib/$(platform) -lglfw3
-compileFlags = -std=c++17 $(includes)
+compileFlags := -std=c++17 $(includes)
+
+vertSources = $(call rwildcard,shaders/,*.vert)
+vertObjFiles = $(patsubst %.vert,$(buildDir)/%.vert.spv,$(vertSources))
+fragSources = $(call rwildcard,shaders/,*.frag)
+fragObjFiles = $(patsubst %.frag,$(buildDir)/%.frag.spv,$(fragSources))
 
 ifeq ($(OS),Windows_NT)
     platform := Windows
@@ -55,8 +60,12 @@ endif
 all: $(target) execute clean
 
 # Link the program and create the executable
-$(target): $(objects)
+$(target): $(objects) $(vertObjFiles) $(fragObjFiles)
 	$(CXX) $(objects) -o $(target) $(linkFlags)
+
+$(buildDir)/%.spv: % 
+	$(MKDIR) $(call platformpth, $(@D))
+	${GLSLC} $< -V -o $@
 
 # Add all rules from dependency files
 -include $(depends)

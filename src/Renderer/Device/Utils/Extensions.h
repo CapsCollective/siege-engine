@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Renderer.h"
+#include "../../Core.h"
 #include <unordered_set>
 #include <vector>
 #include <cstring>
