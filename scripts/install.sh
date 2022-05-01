@@ -162,7 +162,6 @@ setup_validation_layers() {
 }
 
 setup_vulkan_validation_layers() {
-    setup_glslang
     setup_robin_hood_hashing
     setup_spirv_headers
     setup_spirv_tools
@@ -180,6 +179,10 @@ if [[ -z "${VULKAN_SDK}" ]]; then
     setup_vulkan_headers
 
     echo "VULKAN_INCLUDE_DIR=${SUBMODULE_INCLUDE_DIR}/vulkan" >> .env
+
+    setup_glslang
+
+    echo "GLSLC=${SUBMODULE_DIR}/glslang/build/install/bin/glslangValidator" >> .env
 
     if [[ "${OS}" == "macOS" ]]; then 
         
