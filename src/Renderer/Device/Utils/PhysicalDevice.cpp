@@ -6,8 +6,7 @@ namespace SnekVk::PhysicalDevice
     bool CheckExtensionSupport(
         VkPhysicalDevice device, 
         const char* const* deviceExtensions, 
-        size_t deviceExtensionCount
-    ) 
+        size_t deviceExtensionCount) 
     {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, OUT &extensionCount, nullptr);
@@ -19,6 +18,7 @@ namespace SnekVk::PhysicalDevice
             &extensionCount,
             OUT availableExtensions);
 
+        // We use a set here so that we can store only unique values.
         std::set<std::string> requiredExtensions;
 
         for (size_t i = 0; i < deviceExtensionCount; i++)
@@ -45,6 +45,7 @@ namespace SnekVk::PhysicalDevice
         bool swapChainAdequate = false;
         if (extensionsSupported) 
         {
+            // Check if the device supports the image formats and present modes needed to render to the screen.
             SwapChainSupportDetails::SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySupport(device, surface);
             swapChainAdequate = swapChainSupport.hasFormats && swapChainSupport.hasPresentModes;
             SwapChainSupportDetails::DestroySwapChainSupportDetails(swapChainSupport);
@@ -53,6 +54,11 @@ namespace SnekVk::PhysicalDevice
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(device, OUT &supportedFeatures);
 
+        // A device is only suitable if it ticks the following boxes:
+        // 1) All extensions are supported.
+        // 2) It has the supported formats and present modes.
+        // 3) It has a graphics and present queues.
+        // 4) It supports sampler anistropy.
         return QueueFamilyIndices::IsComplete(indices) && extensionsSupported && swapChainAdequate &&
                 supportedFeatures.samplerAnisotropy;
     }

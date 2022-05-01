@@ -22,12 +22,10 @@ int main()
 {
     WINDOWS_ATTACH_CONSOLE
 
-    // Window initialisation
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     SnekVk::Renderer renderer(window);
     
-    // Main loop
     while(!window.WindowShouldClose()) {
         window.Update();
         renderer.DrawFrame();
