@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
+#include "../../Renderer.h"
 #include <iostream>
 
 namespace SnekVk::DebugUtilsMessenger

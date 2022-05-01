@@ -9,6 +9,8 @@ namespace SnekVk {
 
 	VulkanDevice::VulkanDevice(Window &window) : window{window} 
 	{
+		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+
 		CreateInstance();
 		SetupDebugMessenger();
 		CreateSurface();
@@ -74,6 +76,8 @@ namespace SnekVk {
 			"Unable to create Vulkan Instance!");
 
 		Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
+
+		volkLoadInstance(instance);
 	}
 
 	void VulkanDevice::CreateSurface() { window.CreateWindowSurface(instance, OUT &surface); }
@@ -158,6 +162,8 @@ namespace SnekVk {
 
 		vkGetDeviceQueue(device, indices.graphicsFamily, 0, OUT &graphicsQueue);
 		vkGetDeviceQueue(device, indices.presentFamily, 0, OUT &presentQueue);
+
+		volkLoadDevice(device);
 	}
 
 	void VulkanDevice::CreateCommandPool() {
