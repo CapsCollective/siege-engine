@@ -25,6 +25,7 @@ CALL :SetupVolk
 
 echo "Setting up GLSLang..."
 CALL :SetupGlslang
+CALL :SetupGlm
 
 echo "Setting up Vulkan Headers"
 CALL :SetupVulkanHeaders
@@ -73,6 +74,12 @@ EXIT /B 0
 
     cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%VENDOR_DIR%\glslang\build\install -S%VENDOR_DIR%\glslang -B%VENDOR_DIR%\glslang\build
     cmake --build %VENDOR_DIR%\glslang\build --target install -- -j%NUMBER_OF_PROCESSORS%
+EXIT /B 0
+
+:SetupGlm
+    echo "Cloning glm..."
+
+    CALL :UpdateSubmodule glm
 EXIT /B 0
 
 :SetupVulkanHeaders

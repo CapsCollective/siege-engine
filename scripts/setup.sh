@@ -62,6 +62,11 @@ setup_glslang() {
     cmake --build "${VENDOR_DIR}"/glslang/build --target install -- -j"${NUMBER_OF_PROCESSORS}"
 }
 
+setup_glm() {
+  echo "Cloning GLM..."
+  update_submodules glm
+}
+
 setup_volk() {
     echo "Cloning Volk..."
     update_submodules vulkan/volk
@@ -188,6 +193,9 @@ setup_glfw
 
 echo "Setting up GLSLang..."
 setup_glslang
+
+echo "Setting up GLM..."
+setup_glm
 
 echo "Setting up Volk..."
 setup_volk
