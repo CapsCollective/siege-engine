@@ -4,17 +4,21 @@ namespace SnekVk
 {
     VkCommandBuffer* Renderer::commandBuffers;
 
-    Renderer::Renderer(SwapChain* swapChain) 
-        : swapChain{swapChain} 
+    Renderer::Renderer(SnekVk::Window& window) 
+        : device{VulkanDevice(window)}, swapChain{SwapChain(device,  window.GetExtent())}
     {
-        commandBuffers = new VkCommandBuffer[swapChain->GetImageCount()];
+        commandBuffers = new VkCommandBuffer[swapChain.GetImageCount()];
+        CreateCommandBuffers(graphicsPipeline);
     }
     
-    Renderer::~Renderer() {}
-
-    void Renderer::CreateCommandBuffers(VulkanDevice& device, Pipeline& pipeline)
+    Renderer::~Renderer() 
     {
-        u32 size = swapChain->GetImageCount();
+        vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
+    }
+
+    void Renderer::CreateCommandBuffers(Pipeline& pipeline)
+    {
+        u32 size = swapChain.GetImageCount();
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -35,11 +39,11 @@ namespace SnekVk
             
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = swapChain->GetRenderPass();
-            renderPassInfo.framebuffer = swapChain -> GetFrameBuffer(i);
+            renderPassInfo.renderPass = swapChain.GetRenderPass();
+            renderPassInfo.framebuffer = swapChain.GetFrameBuffer(i);
             
             renderPassInfo.renderArea.offset = {0, 0};
-            renderPassInfo.renderArea.extent = swapChain->GetSwapChainExtent();
+            renderPassInfo.renderArea.extent = swapChain.GetSwapChainExtent();
 
             u32 clearValueCount = 2;
             VkClearValue clearValues[clearValueCount];
@@ -61,15 +65,38 @@ namespace SnekVk
         }
     }
 
+    void Renderer::CreatePipelineLayout()
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0; 
+        pipelineLayoutInfo.pSetLayouts = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
+        SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
+            "Failed to create pipeline layout!");
+    }
+
+    Pipeline Renderer::CreateGraphicsPipeline()
+    {
+        CreatePipelineLayout();
+        auto pipelineConfig = Pipeline::DefaultPipelineConfig(swapChain.GetWidth(), swapChain.GetHeight());
+        pipelineConfig.renderPass = swapChain.GetRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+
+        return SnekVk::Pipeline(device, "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
+    }
+
     void Renderer::DrawFrame()
     {
         u32 imageIndex;
-        auto result = swapChain->AcquireNextImage(&imageIndex);
+        auto result = swapChain.AcquireNextImage(&imageIndex);
 
         SNEK_ASSERT(result == VK_SUCCESS && result != VK_SUBOPTIMAL_KHR, 
             "Failed to acquire swapchain image!");
         
-        result = swapChain->SubmitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+        result = swapChain.SubmitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
 
         SNEK_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
     }
