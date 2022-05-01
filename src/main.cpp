@@ -1,3 +1,5 @@
+#define VOLK_IMPLEMENTATION
+
 #include "Window/Window.h"
 #include "Renderer/Device/VulkanDevice.h"
 #include "Renderer/Pipeline/Pipeline.h"
