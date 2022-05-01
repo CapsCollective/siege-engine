@@ -65,7 +65,7 @@ $(target): $(objects) $(vertObjFiles) $(fragObjFiles)
 
 $(buildDir)/%.spv: % 
 	$(MKDIR) $(call platformpth, $(@D))
-	${GLSLC} $< -o $@
+	${GLSLC} $< -V -o $@
 
 # Add all rules from dependency files
 -include $(depends)

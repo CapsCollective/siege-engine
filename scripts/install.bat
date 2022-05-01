@@ -87,9 +87,11 @@ EXIT /B 0
     echo "VULKAN_SDK not detected. Proceeding to pull Vulkan Headers and Loader..."
     CALL :SetupVulkanHeaders 
     CALL :SetupVulkanLoader
+    CALL :SetupGlslang
     echo # Environment variables for Vulkan.> .env
     echo DYLD_LIBRARY_PATH=%SUBMODULE_LIB_DIR%>> .env
-    echo VULKAN_INCLUDE_DIR=%SUBMODULE_INCLUDE_DIR%/vulkan>> .env
+    echo VULKAN_INCLUDE_DIR=%SUBMODULE_INCLUDE_DIR%\vulkan>> .env
+    echo GLSLC=%SUBMODULE_DIR%\glslang\build\install\bin\glslangValidator.exe>> .env
 
     if "%BUILD_TYPE%" == "DEBUG" CALL :SetupVulkanValidationLayers
 EXIT /B 0
@@ -173,7 +175,6 @@ EXIT /B 0
 
 :SetupVulkanValidationLayers 
     echo "Building Vulkan Validation Layers and dependencies..."
-    CALL :SetupGlslang
     CALL :SetupRobinHoodHashing
     CALL :SetupSpirvHeaders
     CALL :SetupSpirvTools
