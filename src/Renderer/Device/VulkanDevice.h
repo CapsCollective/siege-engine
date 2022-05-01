@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Renderer.h"
+#include "../Core.h"
 #include "../../Window/Window.h"
 
 #include "Utils/DebugUtilsMessenger.h"
@@ -40,11 +40,11 @@ class VulkanDevice {
     VkQueue GraphicsQueue() { return graphicsQueue; }
     VkQueue PresentQueue() { return presentQueue; }
 
-    SwapChainSupportDetails::SwapChainSupportDetails getSwapChainSupport() { return SwapChainSupportDetails::QuerySupport(physicalDevice, surface); }
+    SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport() { return SwapChainSupportDetails::QuerySupport(physicalDevice, surface); }
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    QueueFamilyIndices::QueueFamilyIndices findPhysicalQueueFamilies() { return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface); }
+    QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies() { return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface); }
     VkFormat FindSupportedFormat(
-        const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+        const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 	// Buffer Helper Functions
 	void CreateBuffer(

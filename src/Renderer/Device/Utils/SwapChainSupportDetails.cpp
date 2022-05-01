@@ -12,7 +12,10 @@ namespace SnekVk::SwapChainSupportDetails
 
         if (formatCount != 0) 
         {
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, OUT details.formats);
+            details.formats = new VkSurfaceFormatKHR[formatCount];
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats);
+            
+            details.availableFormatCount = formatCount;
             details.hasFormats = true;
         }
 
@@ -21,13 +24,22 @@ namespace SnekVk::SwapChainSupportDetails
 
         if (presentModeCount != 0) 
         {
+            details.presentModes = new VkPresentModeKHR[presentModeCount];
             vkGetPhysicalDeviceSurfacePresentModesKHR(
                 device,
                 surface,
                 &presentModeCount,
-                OUT details.presentModes);
+                details.presentModes);
+
+            details.availablePresentModeCount = presentModeCount;
             details.hasPresentModes = true;
         }
         return details;
+    }
+
+    void DestroySwapChainSupportDetails(SwapChainSupportDetails& details)
+    {
+        delete [] details.formats;
+        delete [] details.presentModes;
     }
 }

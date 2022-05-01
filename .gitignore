@@ -130,3 +130,4 @@ include
 .env
 
 .DS_STORE
+.env

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Renderer.h"
+#include "../Core.h"
 #include "../Device/VulkanDevice.h"
 
 namespace SnekVk 
@@ -38,6 +38,8 @@ namespace SnekVk
             void operator=(const Pipeline&) = delete;
 
             static PipelineConfigInfo DefaultPipelineConfig(u32 width, u32 height);
+
+            void Bind(VkCommandBuffer commandBuffer);
         private:
 
             static struct FileData ReadFile(const char* filePath);
