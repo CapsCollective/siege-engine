@@ -21,6 +21,9 @@ namespace SnekVk {
 
 	VulkanDevice::~VulkanDevice() 
 	{
+		// When the device goes out of scope, all vulkan structs must be 
+		// de-allocated in reverse order of how they were created. 
+
 		vkDestroyCommandPool(device, commandPool, nullptr);
 		vkDestroyDevice(device, nullptr);
 
@@ -40,19 +43,21 @@ namespace SnekVk {
 			SNEK_ASSERT(Extensions::CheckValidationLayerSupport(validationLayers.data(), validationLayers.size()),
 				"Validation Layers are not supported!");
 		}
-			
+		
+		// Specify general app information.
 		VkApplicationInfo appInfo {};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		appInfo.pApplicationName = "SnekVK";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "No Engine";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.apiVersion = VK_API_VERSION_1_2;
 
 		VkInstanceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
+		// Get all extensions required by our windowing system. 
 		auto extensions = Extensions::GetRequiredExtensions(enableValidationLayers);
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
@@ -60,6 +65,7 @@ namespace SnekVk {
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		if (enableValidationLayers) 
 		{
+			// Only add the ability to report on validation layers if the feature is enabled.
 			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 
