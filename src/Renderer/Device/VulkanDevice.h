@@ -107,7 +107,7 @@ namespace SnekVk {
 		 * Returns a valid Vulkan image format from a list of formats. Returns the first format that's 
 		 * found to be valid.
 		 * @param candidates - an array of acceptable formats.
-		 * @param formatCOunt - the number of elements in the candidates array. 
+		 * @param formatCount - the number of elements in the candidates array. 
 		 * @param tiling - the ideal image tiling required for the given format. 
 		 * @param features - a bitmask of required format features. Each format has different features associated
 		 * 					with it. This ensures that we only get the features we want. 
