@@ -158,23 +158,23 @@ Once these are done the project should be built and ready to go. Enjoy!
 
 ```
 [root]
-     |-[scripts] <- all utility scripts
-     |
-     |-[shaders] <- space for storing GLSL shaders
-     |
-     |-[src]
-     |     |-[Renderer]
-     |                |-[Device]
-     |                |        |-[Utils] <- Device utilities
-     |                |
-     |                |-[Model]     <- Custom 3D model class
-     |                |-[Pipeline]  <- Graphics pipeline
-     |                |-[Swapchain] <- Swapchain functions
-     |
-     |-[Window] <- Windowing library functions
-     |
-     |-[vendor]         <- Library install location
-     |        |-[vulkan] <- Vulkan related libraries
+     ├─[scripts] <- all utility scripts
+     │
+     ├─[shaders] <- space for storing GLSL shaders
+     │
+     ├─[src]
+     │     ├─[Renderer]
+     │                ├─[Device]
+     │                │        ├─[Utils] <- Device utilities
+     │                │
+     │                ├─[Model]     <- Custom 3D model class
+     │                ├─[Pipeline]  <- Graphics pipeline
+     │                ├─[Swapchain] <- Swapchain functions
+     │
+     ├─[Window] <- Windowing library functions
+     │
+     ├─[vendor]          <- library install location
+              ├─[vulkan] <- Vulkan related libraries
 ```
 
 ## Contributing
