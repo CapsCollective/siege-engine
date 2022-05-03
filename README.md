@@ -172,6 +172,7 @@ Once these are done the project should be built and ready to go. Enjoy!
      │                ├─[RenderPass] <- RenderPass class
      │                │            ├─[Utils] <- Swapchain Utilities
      │                ├─[Swapchain] <- Swapchain functions
+     │                ├─[Utils]     <- Utility classes (data structures)
      │
      ├─[Window] <- Windowing library functions
      │
