@@ -170,19 +170,22 @@ namespace SnekVk
 
     void SwapChain::CreateRenderPass()
     {
+        // Determine how depth will be handled in our image
         VkAttachmentDescription depthAttachment = Attachments::CreateDepthAttachment(FindDepthFormat());
-
         VkAttachmentReference depthAttachmentRef = Attachments::CreateDepthStencilAttachmentReference(1);
 
         // Specify our color attachments and how we want them to be displayed
         VkAttachmentDescription colorAttachment = Attachments::CreateColorAttachment(GetSwapChainImageFormat());
 
+        // Specify our color attachments and how we want them to be displayed
         VkAttachmentReference colorAttachmentRef = Attachments::CreateColorAttachmentReference(0);
 
+        // Specify a rendering command that'll be followed by the render pass
         VkSubpassDescription subpass = Attachments::CreateGraphicsSubpass(1,
                                                                           &colorAttachmentRef,
                                                                           &depthAttachmentRef);
 
+        // Enforces an order in which subpasses are evaluated
         VkSubpassDependency dependency = Attachments::CreateDependency(VK_SUBPASS_EXTERNAL,
                                                                        0,
                                                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
