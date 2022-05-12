@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Device/VulkanDevice.h"
+#include "../RenderPass/RenderPass.h"
 
 namespace SnekVk
 {
@@ -107,9 +108,9 @@ namespace SnekVk
         /**
          * @brief Get the current render pass object. 
          * 
-         * @return VkRenderPass - the raw vulkan render pass object. 
+         * @return RenderPass - the raw vulkan render pass object.
          */
-        VkRenderPass GetRenderPass() { return renderPass; }
+        RenderPass* GetRenderPass() { return &renderPass; }
 
         /**
          * @brief Loads in the next image to be written to in the Swapchain. 
@@ -207,7 +208,8 @@ namespace SnekVk
 
         // frame buffers and renderpasses
         VkFramebuffer* swapChainFrameBuffers;
-        VkRenderPass renderPass;
+        RenderPass renderPass;
+        //VkRenderPass renderPass;
 
         // Swapchain image data
         VkFormat swapChainImageFormat;
