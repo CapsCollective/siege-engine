@@ -48,8 +48,6 @@ namespace SnekVk
         }
 
         delete [] swapChainFrameBuffers;
-
-        vkDestroyRenderPass(device.Device(), renderPass, nullptr);
         
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
@@ -172,73 +170,34 @@ namespace SnekVk
 
     void SwapChain::CreateRenderPass()
     {
-        // Determine how depth will be handled in our image
-        VkAttachmentDescription depthAttachment{};
-        depthAttachment.format = FindDepthFormat();
-        depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        VkAttachmentDescription depthAttachment = Attachments::CreateDepthAttachment(FindDepthFormat());
 
-        VkAttachmentReference depthAttachmentRef{};
-        depthAttachmentRef.attachment = 1;
-        depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference depthAttachmentRef = Attachments::CreateDepthStencilAttachmentReference(1);
 
         // Specify our color attachments and how we want them to be displayed
-        VkAttachmentDescription colorAttachment = {};
-        colorAttachment.format = GetSwapChainImageFormat();
-        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentDescription colorAttachment = Attachments::CreateColorAttachment(GetSwapChainImageFormat());
 
-        VkAttachmentReference colorAttachmentRef{};
-        colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference colorAttachmentRef = Attachments::CreateColorAttachmentReference(0);
 
-        // Specify a rendering command that'll be followed by the render pass
-        VkSubpassDescription subpass{};
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &colorAttachmentRef;
-        subpass.pDepthStencilAttachment = &depthAttachmentRef;
+        VkSubpassDescription subpass = Attachments::CreateGraphicsSubpass(1,
+                                                                          &colorAttachmentRef,
+                                                                          &depthAttachmentRef);
 
-        // Enforces an order in which subpasses are evaluated
-        VkSubpassDependency dependency{};
-        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependency.srcAccessMask = 0;
-        dependency.srcStageMask = 
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        dependency.dstSubpass = 0;
-        dependency.dstStageMask = 
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        dependency.dstAccessMask = 
-            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        VkSubpassDependency dependency = Attachments::CreateDependency(VK_SUBPASS_EXTERNAL,
+                                                                       0,
+                                                                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                                                                       | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+                                                                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                                                                       | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+                                                                       0,
+                                                                       VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+                                                                       | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
 
         // Specify the number of attachments being used by this renderpass
         u32 attachmentCount = 2;
         VkAttachmentDescription attachments[] = {colorAttachment, depthAttachment};
 
-        // Specify our render pass creation information
-        VkRenderPassCreateInfo renderPassCreateInfo{};
-        renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassCreateInfo.attachmentCount = attachmentCount;
-        renderPassCreateInfo.pAttachments = attachments;
-        renderPassCreateInfo.subpassCount = 1;
-        renderPassCreateInfo.pSubpasses = &subpass;
-        renderPassCreateInfo.dependencyCount = 1;
-        renderPassCreateInfo.pDependencies = &dependency;
-
-        SNEK_ASSERT(vkCreateRenderPass(device.Device(), &renderPassCreateInfo, nullptr, OUT &renderPass) == VK_SUCCESS,
-            "Failed to create render pass!");
-
-        // TODO: Abstract this render pass into a new object for ease of initialisation.
+        renderPass.Build(&device, attachments, attachmentCount, &subpass, 1, &dependency, 1);
     }
 
     void SwapChain::CreateDepthResources()
@@ -314,7 +273,7 @@ namespace SnekVk
             // Populate the creation struct
             VkFramebufferCreateInfo frameBufferInfo{};
             frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            frameBufferInfo.renderPass = renderPass;
+            frameBufferInfo.renderPass = renderPass.GetRenderPass();
             frameBufferInfo.attachmentCount = attachmentCount;
             frameBufferInfo.pAttachments = attachments;
             frameBufferInfo.width = swapChainExtent.width;
