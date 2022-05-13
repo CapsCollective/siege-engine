@@ -197,7 +197,13 @@ namespace SnekVk
         u32 attachmentCount = 2;
         VkAttachmentDescription attachments[] = {colorAttachment, depthAttachment};
 
-        renderPass.Build(&device, attachments, attachmentCount, &subpass, 1, &dependency, 1);
+        renderPass.Build(&device,
+                         attachments,
+                         attachmentCount,
+                         &subpass,
+                         1,
+                         &dependency,
+                         1);
     }
 
     void SwapChain::CreateDepthResources()

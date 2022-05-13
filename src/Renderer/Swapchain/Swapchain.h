@@ -209,7 +209,6 @@ namespace SnekVk
         // frame buffers and renderpasses
         VkFramebuffer* swapChainFrameBuffers;
         RenderPass renderPass;
-        //VkRenderPass renderPass;
 
         // Swapchain image data
         VkFormat swapChainImageFormat;

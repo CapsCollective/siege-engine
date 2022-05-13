@@ -163,12 +163,14 @@ Once these are done the project should be built and ready to go. Enjoy!
      ├─[shaders] <- space for storing GLSL shaders
      │
      ├─[src]
-     │     ├─[Renderer]
+     │     └─[Renderer]
      │                ├─[Device]
-     │                │        ├─[Utils] <- Device utilities
+     │                │        └─[Utils] <- Device utilities
      │                │
      │                ├─[Model]     <- Custom 3D model class
      │                ├─[Pipeline]  <- Graphics pipeline
+     │                ├─[RenderPass] <- RenderPass class
+     │                │            └─[Utils] <- Swapchain Utilities
      │                ├─[Swapchain] <- Swapchain functions
      │
      ├─[Window] <- Windowing library functions

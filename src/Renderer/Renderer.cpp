@@ -43,7 +43,7 @@ namespace SnekVk
 
             u32 clearValueCount = 2;
             VkClearValue clearValues[clearValueCount];
-            clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+            clearValues[0].color = clearValue;
             clearValues[1].depthStencil = {1.0f, 0};
 
             RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
