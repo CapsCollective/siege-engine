@@ -33,6 +33,8 @@ int main()
 
     SnekVk::Renderer renderer(window);
 
+    renderer.SetClearValue(.1f, .1f, .1f, 1.f);
+
     SnekVk::Model triangle(renderer.GetDevice(), triangleVerts, 3);
 
     renderer.SubmitModel(triangle);
