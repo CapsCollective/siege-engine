@@ -348,7 +348,7 @@ namespace SnekVk {
 		VkDeviceMemory &imageMemory) 
 	{
 		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT &image) == VK_SUCCESS, 
-			"Failed to create Image!");
+			"Failed to create FrameImages!");
 
 		VkMemoryRequirements memRequirements;
 		vkGetImageMemoryRequirements(device, image, OUT &memRequirements);
