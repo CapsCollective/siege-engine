@@ -12,8 +12,8 @@ sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
-includes = -I vendor/include -I vendor/glfw/include -I vendor/include/volk -I $(VULKAN_INCLUDE_DIR)
-linkFlags = -L lib/$(platform) -lglfw3
+includes = -I vendor/vulkan/include -I vendor/glfw/include
+linkFlags = -L lib -lglfw3
 compileFlags := -std=c++17 $(includes)
 
 vertSources = $(call rwildcard,shaders/,*.vert)
@@ -22,7 +22,7 @@ fragSources = $(call rwildcard,shaders/,*.frag)
 fragObjFiles = $(patsubst %.frag,$(buildDir)/%.frag.spv,$(fragSources))
 
 ifeq ($(OS),Windows_NT)
-    platform := Windows
+    platform := windows
     CXX ?= g++
 	
     PATHSEP := \$(BLANK)
@@ -35,7 +35,7 @@ else
     UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
 
-        platform := Linux
+        platform := linux
         CXX ?= g++
         libSuffix = so
         volkDefines = VK_USE_PLATFORM_XLIB_KHR
@@ -43,7 +43,7 @@ else
 	endif
 	ifeq ($(UNAMEOS),Darwin)
 		
-        platform := macOS
+        platform := macos
         CXX ?= clang++
         volkDefines = VK_USE_PLATFORM_MACOS_MVK
         linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
@@ -55,9 +55,11 @@ else
 endif
 
 # Lists phony targets for Makefile
-.PHONY: all setup submodules execute clean
+.PHONY: all app clean
 
-all: $(target) execute clean
+all: app clean
+
+app: bin/app
 
 # Link the program and create the executable
 $(target): $(objects) $(vertObjFiles) $(fragObjFiles)
@@ -74,9 +76,6 @@ $(buildDir)/%.spv: %
 $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth,$(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
-
-execute: 
-	$(target) $(ARGS)
 
 clean: 
 	$(RM) $(call platformpth, $(buildDir)/*)
