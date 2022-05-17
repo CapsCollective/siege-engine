@@ -108,7 +108,7 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
 
    ```bash
    // Linux & macos
-   $ ./scripts/install.sh
+   $ ./scripts/setup.sh
 
    // Windows
    > ./scripts/install.bat
