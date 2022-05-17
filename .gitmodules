@@ -1,30 +1,6 @@
 [submodule "vendor/glfw"]
 	path = vendor/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "vendor/volk"]
-	path = vendor/volk
-	url = https://github.com/zeux/volk.git
-[submodule "vendor/Vulkan-Headers"]
-	path = vendor/Vulkan-Headers
-	url = https://github.com/KhronosGroup/Vulkan-Headers
-[submodule "vendor/Vulkan-Loader"]
-	path = vendor/Vulkan-Loader
-	url = https://github.com/KhronosGroup/Vulkan-Loader.git
-[submodule "vendor/MoltenVK"]
-	path = vendor/MoltenVK
-	url = https://github.com/KhronosGroup/MoltenVK.git
-[submodule "vendor/debug/Vulkan-ValidationLayers"]
-	path = vendor/debug/Vulkan-ValidationLayers
-	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
-[submodule "vendor/debug/SPIRV-Headers"]
-	path = vendor/debug/SPIRV-Headers
-	url = https://github.com/KhronosGroup/SPIRV-Headers.git
-[submodule "vendor/debug/SPIRV-Tools"]
-	path = vendor/debug/SPIRV-Tools
-	url = https://github.com/KhronosGroup/SPIRV-Tools.git
-[submodule "vendor/debug/robin-hood-hashing"]
-	path = vendor/debug/robin-hood-hashing
-	url = https://github.com/martinus/robin-hood-hashing.git
 [submodule "vendor/glslang"]
 	path = vendor/glslang
 	url = https://github.com/KhronosGroup/glslang.git
