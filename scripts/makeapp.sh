@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Require three arguments for app name, contents directory path and startup script
-if [ $# -ne 3 ]; then
-  echo "Requires three arguments (e.g. makeapp <app_name> <contents_dir> <startup_script>)"
+# Require three arguments for app name, contents directory path, startup script and build directory
+if [ $# -ne 4 ]; then
+  echo "Requires four arguments (e.g. makeapp <app_name> <contents_dir> <startup_script> <build_dir>)"
   exit 1
 fi
 
 # Set app details
 APP_NAME=$1
-APP_FILE="$APP_NAME.app"
+BUILD_DIR=$4
+APP_FILE="$BUILD_DIR/$APP_NAME.app"
 APP_CONTENTS=$2
 CONTENTS_DIR="Contents"
 APP_SCRIPT=$3

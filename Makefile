@@ -5,14 +5,18 @@ endif
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 platformpth = $(subst /,$(PATHSEP),$1)
 
-buildDir := bin
+buildDir := $(abspath bin)
+vendorDir := $(abspath vendor)
+scriptsDir := $(abspath scripts)
+releaseDir := $(buildDir)/release
+outputDir := $(abspath output)
 executable := app
 target := $(buildDir)/$(executable)
 sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
-includes = -I vendor/vulkan/include -I vendor/glfw/include
+includes = -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include
 linkFlags = -L lib -lglfw3
 compileFlags := -std=c++17 $(includes)
 
@@ -52,10 +56,12 @@ else
     PATHSEP := /
     MKDIR := mkdir -p
     RM := rm -rf
+    CP := cp -r
+    MV := mv
 endif
 
 # Lists phony targets for Makefile
-.PHONY: all app clean
+.PHONY: all app release clean
 
 all: app clean
 
@@ -76,6 +82,16 @@ $(buildDir)/%.spv: %
 $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth,$(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
+
+release: app
+	$(MKDIR) $(call platformpth, $(releaseDir))
+	$(CP) $(buildDir)/app $(releaseDir)
+	$(CP) $(buildDir)/shaders $(releaseDir)
+	$(CP) $(scriptsDir)/startup.sh $(releaseDir)
+	$(MKDIR) $(call platformpth, $(releaseDir)/lib)
+	$(CP) $(vendorDir)/vulkan/lib/$(platform)/* $(releaseDir)/lib
+	$(MKDIR) $(call platformpth, $(outputDir))
+	$(scriptsDir)/makeapp.sh "Snek" $(releaseDir) startup.sh $(outputDir)
 
 clean: 
 	$(RM) $(call platformpth, $(buildDir)/*)
