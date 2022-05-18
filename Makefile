@@ -2,6 +2,14 @@ ifneq ("$(wildcard .env)","")
     include .env
 endif
 
+# Set debugging build flags
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+	override CXXFLAGS += -g -DDEBUG
+else
+    override CXXFLAGS += -DNDEBUG
+endif
+
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 platformpth = $(subst /,$(PATHSEP),$1)
 
@@ -9,7 +17,6 @@ libDir := $(abspath lib)
 buildDir := $(abspath bin)
 vendorDir := $(abspath vendor)
 scriptsDir := $(abspath scripts)
-releaseDir := $(buildDir)/release
 outputDir := $(abspath output)
 executable := app
 target := $(buildDir)/$(executable)
@@ -42,7 +49,6 @@ ifeq ($(OS),Windows_NT)
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator.exe
     executableSuffix := .exe
-    releaseLibDir := $(releaseDir)
     startupScript := startup.bat
     makeappScript := makeapp.bat
 else 
@@ -69,9 +75,8 @@ else
     COPY = cp -r $1$(PATHSEP)$3 $2
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-    releaseLibDir := $(releaseDir)/lib
-    startupScript := startup.sh
-    makeappScript := makeapp.sh
+    startupScript := $(scriptsDir)/startup.sh
+    packageScript := $(scriptsDir)/packageapp.sh
 endif
 
 # Lists phony targets for Makefile
@@ -82,7 +87,7 @@ all: app release clean
 app: $(target)
 
 # Link the program and create the executable
-$(target): $(objects) $(glfwLib) $(vertObjFiles) $(fragObjFiles)
+$(target): $(objects) $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(buildDir)/lib
 	$(CXX) $(objects) -o $(target) $(linkFlags)
 
 $(buildDir)/%.spv: % 
@@ -93,6 +98,10 @@ $(glfwLib):
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(call COPY,$(vendorDir)/glfw/src,$(libDir),libglfw3.a)
 
+$(buildDir)/lib:
+	$(MKDIR) $(call platformpth, $(buildDir)/lib)
+	$(call COPY,$(vendorDir)/vulkan/lib/$(platform)/,$(buildDir)/lib,*)
+
 # Add all rules from dependency files
 -include $(depends)
 
@@ -101,16 +110,8 @@ $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth,$(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
-release: app
-	$(MKDIR) $(call platformpth, $(releaseDir))
-	$(MKDIR) $(call platformpth, $(releaseDir)/shaders)
-	$(call COPY,$(buildDir),$(releaseDir),app$(executableSuffix))
-	$(call COPY,$(buildDir)/shaders,$(releaseDir)/shaders)
-	$(call COPY,$(scriptsDir),$(releaseDir),$(startupScript))
-	$(MKDIR) $(call platformpth, $(releaseLibDir))
-	$(call COPY,$(vendorDir)/vulkan/lib/$(platform),$(releaseLibDir),**)
-	$(MKDIR) $(call platformpth,$(outputDir))
-	$(scriptsDir)/$(makeappScript) "Snek" $(releaseDir) $(startupScript) $(outputDir)
+package: app
+	$(packageScript) "Snek" $(outputDir) $(buildDir) $(DEBUG)
 
 clean: 
 	$(RM) $(call platformpth, $(buildDir))
