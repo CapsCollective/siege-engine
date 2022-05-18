@@ -22,7 +22,6 @@ linkFlags = -L $(libDir) -lglfw3
 compileFlags := -std=c++17 $(includes)
 
 glfwLib := $(libDir)/libglfw3.a
-glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
 
 vertSources = $(call rwildcard,shaders/,*.vert)
 vertObjFiles = $(patsubst %.vert,$(buildDir)/%.vert.spv,$(vertSources))
@@ -39,6 +38,9 @@ ifeq ($(OS),Windows_NT)
 
     volkDefines = VK_USE_PLATFORM_WIN32_KHR
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
+    COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+
+    glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator.exe
 else 
     UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -60,8 +62,10 @@ else
     PATHSEP := /
     MKDIR := mkdir -p
     RM := rm -rf
-    CP := cp -r
     MV := mv
+    COPY = $1$(PATHSEP)$3 $2
+
+    glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
 endif
 
 # Lists phony targets for Makefile
@@ -81,7 +85,7 @@ $(buildDir)/%.spv: %
 
 $(glfwLib):
 	$(MKDIR) $(call platformpth, $(libDir))
-	cp $(vendorDir)/glfw/src/libglfw3.a $(libDir)
+	$(call COPY,$(vendorDir)/glfw/src,$(libDir),libglfw3.a)
 
 # Add all rules from dependency files
 -include $(depends)
