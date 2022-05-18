@@ -41,6 +41,10 @@ ifeq ($(OS),Windows_NT)
     COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator.exe
+    executableSuffix := .exe
+    releaseLibDir := $(releaseDir)
+    startupScript := startup.bat
+    makeappScript := makeapp.bat
 else 
     UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -62,10 +66,12 @@ else
     PATHSEP := /
     MKDIR := mkdir -p
     RM := rm -rf
-    MV := mv
-    COPY = $1$(PATHSEP)$3 $2
+    COPY = cp -r $1$(PATHSEP)$3 $2
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
+    releaseLibDir := $(releaseDir)/lib
+    startupScript := startup.sh
+    makeappScript := makeapp.sh
 endif
 
 # Lists phony targets for Makefile
@@ -97,13 +103,14 @@ $(buildDir)/%.o: src/%.cpp Makefile
 
 release: app
 	$(MKDIR) $(call platformpth, $(releaseDir))
-	$(CP) $(buildDir)/app $(releaseDir)
-	$(CP) $(buildDir)/shaders $(releaseDir)
-	$(CP) $(scriptsDir)/startup.sh $(releaseDir)
-	$(MKDIR) $(call platformpth, $(releaseDir)/lib)
-	$(CP) $(vendorDir)/vulkan/lib/$(platform)/* $(releaseDir)/lib
-	$(MKDIR) $(call platformpth, $(outputDir))
-	$(scriptsDir)/makeapp.sh "Snek" $(releaseDir) startup.sh $(outputDir)
+	$(MKDIR) $(call platformpth, $(releaseDir)/shaders)
+	$(call COPY,$(buildDir),$(releaseDir),app$(executableSuffix))
+	$(call COPY,$(buildDir)/shaders,$(releaseDir)/shaders)
+	$(call COPY,$(scriptsDir),$(releaseDir),$(startupScript))
+	$(MKDIR) $(call platformpth, $(releaseLibDir))
+	$(call COPY,$(vendorDir)/vulkan/lib/$(platform),$(releaseLibDir),**)
+	$(MKDIR) $(call platformpth,$(outputDir))
+	$(scriptsDir)/$(makeappScript) "Snek" $(releaseDir) $(startupScript) $(outputDir)
 
 clean: 
 	$(RM) $(call platformpth, $(buildDir))
