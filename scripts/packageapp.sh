@@ -41,6 +41,8 @@ if [[ "$OS" == "macos" ]]; then
 SCRIPT_PATH=\$(dirname \"\$0\")
 SCRIPT_PATH=\$(cd \"\$SCRIPT_PATH\" && pwd)
 cd \"\$SCRIPT_PATH/Contents\" && ./$RUN_SCRIPT_NAME"
+  ICD_FILENAMES="
+export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'"
 else
   # Create the package directory
   EXE_FILE_NAME="$PKG_NAME"
@@ -53,7 +55,7 @@ LIB_DIR="$CONTENTS_DIR/lib"
 # Add the run script
 generate_script "$CONTENTS_DIR/$RUN_SCRIPT_NAME" "#!/bin/bash
 export DYLD_LIBRARY_PATH='./lib'
-export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
+export VK_LAYER_PATH='./lib/explicit_layer.d'$ICD_FILENAMES
 ./$EXE_FILE_NAME"
 
 # Copy across the executable, Vulkan binaries and shaders
