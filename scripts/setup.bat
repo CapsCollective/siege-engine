@@ -14,9 +14,7 @@ echo "Setting up dependencies..."
 CALL :SetupGlfw
 CALL :SetupGlslang
 
-echo GLSLC=%VENDOR_DIR%\glslang\build\install\bin\glslangValidator.exe> .env
-
-if "%BUILD_TYPE%" == "DEBUG" echo VK_LAYER_PATH=%VENDOR_DIR%\vulkan\lib\windows\explicit_layer.d>> .env
+echo VK_LAYER_PATH=%VENDOR_DIR%\vulkan\lib\windows\explicit_layer.d>> .env
 
 EXIT /B %ERRORLEVEL%
 

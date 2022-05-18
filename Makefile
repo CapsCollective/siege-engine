@@ -59,7 +59,7 @@ else
         CXX ?= g++
         libSuffix = so
         volkDefines = VK_USE_PLATFORM_XLIB_KHR
-        linkFlags += -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+        linkFlags += -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
 	endif
 	ifeq ($(UNAMEOS),Darwin)
 		

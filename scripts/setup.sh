@@ -17,6 +17,7 @@ fi
 # Set setup details
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
+BIN_DIR="${ROOT_DIR}/bin"
 
 update_submodules() {
   git submodule update --init ${VENDOR_DIR}/$1
@@ -46,16 +47,13 @@ setup_glfw
 echo "Setting up GLSLang..."
 setup_glslang
 
-VULKAN_LIB_DIR="${VENDOR_DIR}/vulkan/lib/${OS}"
+VULKAN_LIB_DIR="${BIN_DIR}/lib"
 echo "Configuring environment file..."
 {
   echo "DYLD_LIBRARY_PATH='${VULKAN_LIB_DIR}'"
+  echo "VK_LAYER_PATH='${VULKAN_LIB_DIR}/explicit_layer.d'"
 } > .env
 
 if [[ "${OS}" == "macos" ]]; then
   echo "VK_ICD_FILENAMES='${VULKAN_LIB_DIR}/icd.d/MoltenVK_icd.json'" >> .env
-fi
-
-if [[ "$1" == "DEBUG" ]]; then
-  echo "VK_LAYER_PATH='${VULKAN_LIB_DIR}/explicit_layer.d'" >> .env
 fi
