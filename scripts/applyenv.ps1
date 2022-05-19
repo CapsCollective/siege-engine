@@ -1,3 +1,8 @@
+if ($Args.Count -ne 1) {
+    Write-Output "Requires one argument (e.g. applyenv <env_file>)"
+    exit 1
+}
+
 $files = Get-Content -Path $Args[0]
 
 $files | ForEach-Object {

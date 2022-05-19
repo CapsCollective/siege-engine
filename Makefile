@@ -48,9 +48,7 @@ ifeq ($(OS),Windows_NT)
     COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator.exe
-    executableSuffix := .exe
-    startupScript := startup.bat
-    makeappScript := makeapp.bat
+    packageScript := $(scriptsDir)/packageapp.bat
 else 
     UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -75,7 +73,6 @@ else
     COPY = cp -r $1$(PATHSEP)$3 $2
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-    startupScript := $(scriptsDir)/startup.sh
     packageScript := $(scriptsDir)/packageapp.sh
 endif
 
@@ -100,7 +97,7 @@ $(glfwLib):
 
 $(buildDir)/lib:
 	$(MKDIR) $(call platformpth, $(buildDir)/lib)
-	$(call COPY,$(vendorDir)/vulkan/lib/$(platform)/,$(buildDir)/lib,*)
+	$(call COPY,$(vendorDir)/vulkan/lib/$(platform),$(buildDir)/lib,*)
 
 # Add all rules from dependency files
 -include $(depends)

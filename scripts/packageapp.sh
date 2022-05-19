@@ -31,6 +31,7 @@ else
 fi
 
 # Create the package file and add contents
+rm -rf "$OUTPUT_DIR"
 if [[ "$OS" == "macos" ]]; then
   # Create the app file
   PKG_FILE="$PKG_FILE.app"
