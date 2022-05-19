@@ -15,19 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-        # Setup dependencies
       - name: setup dependencies
         run: |
-          ./scripts/install.sh
-        # Build the app
+          ./scripts/setup.sh
+
       - name: build project
         run: |
-          make bin/app
-        # Clean the binaries
+          make package DEBUG=0
+
       - name: clean
         run: make clean
-
-        # Try build app in another compiler
-      - name: make bin/app CXX=g++
-        run: |
-          make bin/app CXX=g++
