@@ -10,6 +10,12 @@ else
     override CXXFLAGS += -DNDEBUG
 endif
 
+# Set validation layer build flags
+ifeq ($(ENABLE_VALIDATION_LAYERS), 1)
+    PACKAGE_FLAGS := --include-validation-layers
+endif
+
+
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 platformpth = $(subst /,$(PATHSEP),$1)
 
@@ -45,10 +51,11 @@ ifeq ($(OS),Windows_NT)
 
     volkDefines = VK_USE_PLATFORM_WIN32_KHR
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
-    COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+    COPY = $(call platformpth,$(CURDIR)/scripts/copy.bat) $1 $2 $3
+    COPY_DIR = $(call platformpth,$(CURDIR)/scripts/copy.bat) --copy-directory $1 $2 
 
-    glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator.exe
-    packageScript := $(scriptsDir)/packageapp.bat
+    glslangValidator := $(vendorDir)\glslang\build\install\bin\glslangValidator.exe
+    packageScript := $(scriptsDir)/package.bat
 else 
     UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -71,9 +78,10 @@ else
     MKDIR := mkdir -p
     RM := rm -rf
     COPY = cp -r $1$(PATHSEP)$3 $2
+    COPY_DIR = $(call COPY,$1,$2,$3)
 
     glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-    packageScript := $(scriptsDir)/packageapp.sh
+    packageScript := $(scriptsDir)/package.sh
 endif
 
 # Lists phony targets for Makefile
@@ -92,12 +100,12 @@ $(buildDir)/%.spv: %
 	$(glslangValidator) $< -V -o $@
 
 $(glfwLib):
-	$(MKDIR) $(call platformpth, $(libDir))
-	$(call COPY,$(vendorDir)/glfw/src,$(libDir),libglfw3.a)
+	$(MKDIR) $(call platformpth,$(libDir))
+	$(call COPY,$(call platformpth,$(vendorDir)/glfw/src),$(libDir),libglfw3.a)
 
 $(buildDir)/lib:
-	$(MKDIR) $(call platformpth, $(buildDir)/lib)
-	$(call COPY,$(vendorDir)/vulkan/lib/$(platform),$(buildDir)/lib,*)
+	$(MKDIR) $(call platformpth,$(buildDir)/lib)
+	$(call COPY_DIR,$(call platformpth,$(vendorDir)/vulkan/lib),$(call platformpth,$(buildDir)/lib))
 
 # Add all rules from dependency files
 -include $(depends)
@@ -108,7 +116,7 @@ $(buildDir)/%.o: src/%.cpp Makefile
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 package: app
-	$(packageScript) "Snek" $(outputDir) $(buildDir) $(DEBUG)
+	$(packageScript) "Snek" $(outputDir) $(buildDir) $(PACKAGE_FLAGS)
 
 clean: 
 	$(RM) $(call platformpth, $(buildDir))

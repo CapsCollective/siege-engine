@@ -4,3 +4,27 @@
 [submodule "vendor/glslang"]
 	path = vendor/glslang
 	url = https://github.com/KhronosGroup/glslang.git
+[submodule "vendor/vulkan/volk"]
+	path = vendor/vulkan/volk
+	url = https://github.com/zeux/volk.git
+[submodule "vendor/vulkan/Vulkan-Headers"]
+	path = vendor/vulkan/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "vendor/vulkan/MoltenVK"]
+	path = vendor/vulkan/MoltenVK
+	url = https://github.com/KhronosGroup/MoltenVK.git
+[submodule "vendor/vulkan/Vulkan-Loader"]
+	path = vendor/vulkan/Vulkan-Loader
+	url = https://github.com/KhronosGroup/Vulkan-Loader.git
+[submodule "vendor/vulkan/SPIRV-Headers"]
+	path = vendor/vulkan/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers.git
+[submodule "vendor/vulkan/SPIRV-Tools"]
+	path = vendor/vulkan/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools.git
+[submodule "vendor/vulkan/robin-hood-hashing"]
+	path = vendor/vulkan/robin-hood-hashing
+	url = https://github.com/martinus/robin-hood-hashing.git
+[submodule "vendor/vulkan/Vulkan-ValidationLayers"]
+	path = vendor/vulkan/Vulkan-ValidationLayers
+	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
