@@ -5,6 +5,7 @@ endif
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 platformpth = $(subst /,$(PATHSEP),$1)
 
+libDir := $(abspath lib)
 buildDir := $(abspath bin)
 vendorDir := $(abspath vendor)
 scriptsDir := $(abspath scripts)
@@ -17,8 +18,11 @@ objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
 includes = -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include
-linkFlags = -L lib -lglfw3
+linkFlags = -L $(libDir) -lglfw3
 compileFlags := -std=c++17 $(includes)
+
+glfwLib := $(libDir)/libglfw3.a
+glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
 
 vertSources = $(call rwildcard,shaders/,*.vert)
 vertObjFiles = $(patsubst %.vert,$(buildDir)/%.vert.spv,$(vertSources))
@@ -63,17 +67,21 @@ endif
 # Lists phony targets for Makefile
 .PHONY: all app release clean
 
-all: app clean
+all: app release clean
 
-app: bin/app
+app: $(target)
 
 # Link the program and create the executable
-$(target): $(objects) $(vertObjFiles) $(fragObjFiles)
+$(target): $(objects) $(glfwLib) $(vertObjFiles) $(fragObjFiles)
 	$(CXX) $(objects) -o $(target) $(linkFlags)
 
 $(buildDir)/%.spv: % 
 	$(MKDIR) $(call platformpth, $(@D))
-	${GLSLC} $< -V -o $@
+	$(glslangValidator) $< -V -o $@
+
+$(glfwLib):
+	$(MKDIR) $(call platformpth, $(libDir))
+	cp $(vendorDir)/glfw/src/libglfw3.a $(libDir)
 
 # Add all rules from dependency files
 -include $(depends)
@@ -94,4 +102,6 @@ release: app
 	$(scriptsDir)/makeapp.sh "Snek" $(releaseDir) startup.sh $(outputDir)
 
 clean: 
-	$(RM) $(call platformpth, $(buildDir)/*)
+	$(RM) $(call platformpth, $(buildDir))
+	$(RM) $(call platformpth, $(outputDir))
+	$(RM) $(call platformpth, $(libDir))

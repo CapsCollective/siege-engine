@@ -16,35 +16,26 @@ fi
 
 # Set setup details
 GENERATOR="Unix Makefiles"
-LIB_DIR="${ROOT_DIR}/lib"
-BIN_DIR="${ROOT_DIR}/bin"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
 update_submodules() {
-    git submodule update --init ${VENDOR_DIR}/$1
+  git submodule update --init ${VENDOR_DIR}/$1
 }
 
 setup_glfw() {
-    update_submodules glfw
+  update_submodules glfw
 
-    cmake -G "${GENERATOR}" -B${VENDOR_DIR}/glfw -S${VENDOR_DIR}/glfw
-    make -C ${VENDOR_DIR}/glfw -j${NUMBER_OF_PROCESSORS}
-
-    mkdir -p ${LIB_DIR}
-    cp ${VENDOR_DIR}/glfw/src/libglfw3.a ${LIB_DIR}
+  cmake -G "${GENERATOR}" -B${VENDOR_DIR}/glfw -S${VENDOR_DIR}/glfw
+  make -C ${VENDOR_DIR}/glfw -j${NUMBER_OF_PROCESSORS}
 }
 
 setup_glslang() {
-    update_submodules glslang
+  update_submodules glslang
 
-    mkdir -p ${VENDOR_DIR}/glslang/build
+  mkdir -p ${VENDOR_DIR}/glslang/build
 
-    cmake -DCMAKE_INSTALL_PREFIX=${VENDOR_DIR}/glslang/build -G "${GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${VENDOR_DIR}/glslang/build/install -S${VENDOR_DIR}/glslang -B${VENDOR_DIR}/glslang/build
-    cmake --build ${VENDOR_DIR}/glslang/build --target install -- -j${NUMBER_OF_PROCESSORS}
-
-    mkdir -p ${BIN_DIR}
-    cp ${VENDOR_DIR}/glslang/build/glslang/libglslang.a ${LIB_DIR}
-    cp ${VENDOR_DIR}/glslang/build/install/bin/glslangValidator ${BIN_DIR}
+  cmake -DCMAKE_INSTALL_PREFIX=${VENDOR_DIR}/glslang/build -G "${GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${VENDOR_DIR}/glslang/build/install -S${VENDOR_DIR}/glslang -B${VENDOR_DIR}/glslang/build
+  cmake --build ${VENDOR_DIR}/glslang/build --target install -- -j${NUMBER_OF_PROCESSORS}
 }
 
 echo "OS detected: ${OS}"
@@ -58,9 +49,7 @@ setup_glslang
 VULKAN_LIB_DIR="${VENDOR_DIR}/vulkan/lib/${OS}"
 echo "Configuring environment file..."
 {
-  echo "VULKAN_INCLUDE_DIR='${VENDOR_DIR}/vulkan/include/vulkan'"
   echo "DYLD_LIBRARY_PATH='${VULKAN_LIB_DIR}'"
-  echo "GLSLC='${BIN_DIR}/glslangValidator'"
 } > .env
 
 if [[ "${OS}" == "macos" ]]; then
@@ -68,5 +57,5 @@ if [[ "${OS}" == "macos" ]]; then
 fi
 
 if [[ "$1" == "DEBUG" ]]; then
-    echo "VK_LAYER_PATH='${VULKAN_LIB_DIR}/explicit_layer.d'" >> .env
+  echo "VK_LAYER_PATH='${VULKAN_LIB_DIR}/explicit_layer.d'" >> .env
 fi
