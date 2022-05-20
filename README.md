@@ -118,17 +118,17 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    
 **Building validation layers**
 
-If you want to build validation layers then the install scripts should be run by passing the `DEBUG` variable to the `install` script:
+If you want to build validation layers then the install scripts should be run by passing the `--include-validation-layers` flag to the `install` script:
 
    ```
    // Linux & macos
-   $ ./scripts/install.sh DEBUG
+   $ ./scripts/install.sh --include-validation-layers
 
    // Windows
    > ./scripts/install.bat DEBUG
    ```
 
-**NOTE**: Building the DEBUG build can take some time to complete. Please be patient while the project builds the required validation layers.
+**NOTE**: Building with this option can take some time to complete. Please be patient while the project builds the required validation layers.
 
 ### Building the Project
 
@@ -138,8 +138,8 @@ Once all dependencies have been set up, the project can be build and run using t
 // linux and macos
 $ make bin/app; make execute
 
-// linux and macos - DEBUG
-$ make CXXFLAGS="-DDEBUG" bin/app; make execute
+// linux and macos (with validation layers)
+$ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1" bin/app; make execute
 
 // windows
 > mingw32-make bin/app && mingw32-make execute
@@ -173,7 +173,7 @@ Once these are done the project should be built and ready to go. Enjoy!
      |-[Window] <- Windowing library functions
      |
      |-[vendor]         <- Library install location
-     |        |-[debug] <- Debug related libraries
+     |        |-[vulkan] <- Vulkan related libraries
 ```
 
 ## Contributing
