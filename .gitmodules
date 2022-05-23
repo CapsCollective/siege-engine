@@ -4,6 +4,9 @@
 [submodule "vendor/glslang"]
 	path = vendor/glslang
 	url = https://github.com/KhronosGroup/glslang.git
+[submodule "vendor/glm"]
+	path = vendor/glm
+	url = https://github.com/g-truc/glm.git
 [submodule "vendor/vulkan/volk"]
 	path = vendor/vulkan/volk
 	url = https://github.com/zeux/volk.git

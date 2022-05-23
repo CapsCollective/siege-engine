@@ -8,7 +8,6 @@ namespace SnekVk
         : device{VulkanDevice(window)}, swapChain{SwapChain(device,  window.GetExtent())}
     {
         commandBuffers = new VkCommandBuffer[swapChain.GetImageCount()];
-        CreateCommandBuffers(graphicsPipeline);
     }
     
     Renderer::~Renderer() 
@@ -16,7 +15,12 @@ namespace SnekVk
         vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
     }
 
-    void Renderer::CreateCommandBuffers(Pipeline& pipeline)
+    void Renderer::SubmitModel(Model& model)
+    {
+        CreateCommandBuffers(graphicsPipeline, model);
+    }
+
+    void Renderer::CreateCommandBuffers(Pipeline& pipeline, Model& model)
     {
         u32 size = swapChain.GetImageCount();
 
@@ -56,7 +60,8 @@ namespace SnekVk
             vkCmdBeginRenderPass(OUT commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             pipeline.Bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            model.Bind(commandBuffers[i]);
+            model.Draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(OUT commandBuffers[i]);
 
