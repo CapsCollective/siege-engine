@@ -12,10 +12,10 @@
 // std lib headers
 #include <array>
 
-#ifdef DEBUG
-	#define ENABLE_VALIDATION_LAYERS true
+#if ENABLE_VALIDATION_LAYERS == 1
+	#define VALIDATION_LAYERS_ENABLED true
 #else
-    #define ENABLE_VALIDATION_LAYERS false
+    #define VALIDATION_LAYERS_ENABLED false
 #endif
 
 namespace SnekVk {
@@ -27,7 +27,7 @@ namespace SnekVk {
 		 * will typically fail silently if no validation layers are active. We must enable
 		 * validation layers manualy if we wish to have any errors or suggestions enabled.  
 		 **/
-		static const bool enableValidationLayers = ENABLE_VALIDATION_LAYERS;
+		static const bool enableValidationLayers = VALIDATION_LAYERS_ENABLED;
 
 		public:
 		

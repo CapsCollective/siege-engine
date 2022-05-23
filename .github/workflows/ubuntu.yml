@@ -26,16 +26,12 @@ jobs:
 
       - name: setup dependencies
         run: |
-          ./scripts/install.sh
+          ./scripts/setup.sh
 
       - name: make bin/app
         run: |
-          make bin/app
-      - name: make clean
-        run: make clean
+          make package DEBUG=0
+  
 
-      - name: make bin/app CXX=g++
-        run: |
-          make bin/app CXX=g++
       - name: make clean
         run: make clean

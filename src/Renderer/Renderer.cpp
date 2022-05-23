@@ -85,7 +85,7 @@ namespace SnekVk
         pipelineConfig.renderPass = swapChain.GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
 
-        return SnekVk::Pipeline(device, "bin/shaders/simpleShader.vert.spv", "bin/shaders/simpleShader.frag.spv", pipelineConfig);
+        return SnekVk::Pipeline(device, "./shaders/simpleShader.vert.spv", "./shaders/simpleShader.frag.spv", pipelineConfig);
     }
 
     void Renderer::DrawFrame()
