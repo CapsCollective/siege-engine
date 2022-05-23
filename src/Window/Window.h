@@ -1,7 +1,7 @@
 #pragma once
 
 // Include Vulkan headers through glfw.
-#include <volk.h>
+#include <volk/volk.h>
 #include <GLFW/glfw3.h>
 #include <cstdint>
 

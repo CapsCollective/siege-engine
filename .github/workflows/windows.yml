@@ -19,27 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-        # Setup dependencies
       - name: Setup dependencies
         run: |
-          ./scripts/install.bat
+          ./scripts/setup.bat
 
-        # Compile the project with dependencies
       - name: Compile Project
         run: |
-          mingw32-make bin/app
+          mingw32-make package DEBUG=0
 
-        # Export the binary as artifact
-      - name: Export binary
-        uses: actions/upload-artifact@v2
-        with:
-          name: app.exe
-          path: bin/app.exe
-
-        # Clean binaries
       - name: Clean Project
         run: mingw32-make clean
-
-        # Re-compile with other compiler
-      - name: make bin/app CXX=g++
-        run: mingw32-make bin/app CXX=g++
