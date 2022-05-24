@@ -25,7 +25,7 @@ namespace SnekVk
             glm::vec2 position;
 
             /**
-             * @brief Get a list of binding descriptions for this Vertex. A binding description details
+             * @brief Get a list of binding colorDescriptions for this Vertex. A binding description details
              * the size of the data being sent into the GPU and the type of data being sent in.
              * 
              * @return All vertex description information in the form of a std::array<VkVertexInputBindingDescription, 1> 
@@ -33,10 +33,10 @@ namespace SnekVk
             static std::array<VkVertexInputBindingDescription, 1> GetBindingDescriptions();
 
             /**
-             * @brief Gets all attribute descriptions for our vertex. This describes where the 
+             * @brief Gets all attribute colorDescriptions for our vertex. This describes where the
              * data should be sent to and the format in which it is expected to arrive in. 
              * 
-             * @return The attribute descriptions in the form of a std::array<VkVertexInputAttributeDescription, 1> 
+             * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
             static std::array<VkVertexInputAttributeDescription, 1> GetAttributeDescriptions();
         };
