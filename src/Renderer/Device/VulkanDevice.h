@@ -271,12 +271,12 @@ namespace SnekVk {
 		/**
 		 * An array storing all required validation layers (if enabled).
 		 **/
-		const std::array<const char *, 1> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+		const std::array<const char*, 1> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
 		/**
 		 * An array storing all required extensions. All of these must be present for the renderer to start.
 		 **/
-		const std::array<const char *, 1> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		const std::array<const char*, 1> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	};
 
 }  // namespace lve

@@ -42,14 +42,14 @@ namespace SnekVk
             void Bind(VkCommandBuffer commandBuffer);
         private:
 
-            static struct FileData ReadFile(const char* filePath);
+            static Utils::Array<char> ReadFile(const char* filePath);
             void CreateGraphicsPipeline(
                 char const* vertFilePath, 
                 char const* fragFilePath, 
                 const PipelineConfigInfo& configInfo
             );
 
-            void CreateShaderModule(struct FileData fileData, VkShaderModule* shaderModule);
+            void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
 
             VulkanDevice& device;
             VkPipeline graphicsPipeline;
@@ -57,12 +57,4 @@ namespace SnekVk
             VkShaderModule vertShader;
             VkShaderModule fragShader; 
     };
-
-    struct FileData
-    {
-        char* buffer = nullptr;
-        u32 bufferSize = 0;
-    };
-
-    void DestroyFileData(FileData& data);
 }
