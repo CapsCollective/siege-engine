@@ -48,7 +48,6 @@ namespace SnekVk::PhysicalDevice
             // Check if the device supports the image formats and present modes needed to render to the screen.
             SwapChainSupportDetails::SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySupport(device, surface);
             swapChainAdequate = swapChainSupport.hasFormats && swapChainSupport.hasPresentModes;
-            SwapChainSupportDetails::DestroySwapChainSupportDetails(swapChainSupport);
         }
 
         VkPhysicalDeviceFeatures supportedFeatures;

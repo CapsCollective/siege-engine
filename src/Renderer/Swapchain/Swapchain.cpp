@@ -52,10 +52,10 @@ namespace SnekVk
         SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
 
         // Get our supported color format
-        VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats, details.availableFormatCount);
+        VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats.Data(), static_cast<u32>(details.formats.Size()));
 
         // Choose our presentation mode (the form of image buffering)
-        VkPresentModeKHR presentMode = ChoosePresentMode(details.presentModes, details.availablePresentModeCount);
+        VkPresentModeKHR presentMode = ChoosePresentMode(details.presentModes.Data(), static_cast<u32>(details.presentModes.Size()));
 
         // The size of our images. 
         VkExtent2D extent = ChooseSwapExtent(details.capabilities);
@@ -128,8 +128,6 @@ namespace SnekVk
         vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, OUT swapchainImages.GetImages());
 
         swapChainExtent = extent;
-
-        SwapChainSupportDetails::DestroySwapChainSupportDetails(details);
     }
 
     void SwapChain::CreateImageViews()

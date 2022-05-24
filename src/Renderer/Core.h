@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils/Array.h"
+
 #include <volk/volk.h>
 #include <iostream>
 #include <cstdint>
