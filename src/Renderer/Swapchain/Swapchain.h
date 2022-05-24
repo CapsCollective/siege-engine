@@ -2,6 +2,7 @@
 
 #include "../Device/VulkanDevice.h"
 #include "../RenderPass/RenderPass.h"
+#include "../Image/FrameImages.h"
 
 namespace SnekVk
 {
@@ -58,7 +59,7 @@ namespace SnekVk
          * 
          * @return VkFormat the format being used by the renderer. 
          */
-        VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
+        VkFormat GetSwapChainImageFormat() { return swapchainImages.GetFormat(); }
 
         /**
          * @brief Returns the image width and height that images are being rendered to. 
@@ -82,7 +83,7 @@ namespace SnekVk
          * 
          * @return u32 representing the number of possible active simultaneous images. 
          */
-        u32 GetImageCount() { return imageCount; }
+        u32 GetImageCount() { return FrameImages::GetImageCount(); }
 
         /**
          * @brief The the raw Vulkan swapchain struct. 
@@ -211,20 +212,12 @@ namespace SnekVk
         RenderPass renderPass;
 
         // Swapchain image data
-        VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
 
-        // Depth image data.
-        // NOTE: If these values do end up being changed dynamically, it might be a good idea to
-        // wrap them in a vector.
-        VkImage* depthImages;
-        VkDeviceMemory* depthImageMemorys;
-        VkImageView* depthImageViews;
-
         // Images and image views supported by the swapchain
-        VkImage* swapChainImages;
-        VkImageView* swapChainImageViews;
-        u32 imageCount;
+        FrameImages swapchainImages;
+        // Depth image data.
+        FrameImages depthImages;
 
         // The raw Vulkan swapchain object
         VkSwapchainKHR swapChain;
