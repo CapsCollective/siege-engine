@@ -15,13 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: setup dependencies
-        run: |
-          ./scripts/setup.sh
+      - name: perform setup
+        run: ./scripts/setup.sh
 
-      - name: build project
-        run: |
-          make package DEBUG=0
-
-      - name: clean
-        run: make clean
+      - name: build and package executable
+        run: make package
