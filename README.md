@@ -111,7 +111,7 @@ Building and running SNEK with the Vulkan SDK is the quickest way to get started
    $ ./scripts/setup.sh
 
    // Windows
-   > ./scripts/install.bat
+   > ./scripts/setup.bat
    ```
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
@@ -125,7 +125,7 @@ If you want to build validation layers then the install scripts should be run by
 $ ./scripts/install.sh --include-validation-layers
 
 // Windows
-> ./scripts/install.bat DEBUG
+> ./scripts/setup.bat --include-validation-layers
 ```
 
 **NOTE**: Building with this option can take some time to complete. Please be patient while the project builds the required validation layers.
@@ -145,7 +145,7 @@ $ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1" bin/app; make execute
 > mingw32-make bin/app && mingw32-make execute
 
 // windows - DEBUG
-> mingw32-make CXXFLAGS="-DDEBUG" bin/app && mingw32-make execute
+> mingw32-make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1" bin/app && mingw32-make execute
 ```
 
 These commands should build the project and immediately run executable.
@@ -165,12 +165,12 @@ Once these are done the project should be built and ready to go. Enjoy!
      ├─[src]
      │     └─[Renderer]
      │                ├─[Device]
-     │                │        └─[Utils] <- Device utilities
+     │                │        ├─[Utils] <- Device utilities
      │                │
      │                ├─[Model]     <- Custom 3D model class
      │                ├─[Pipeline]  <- Graphics pipeline
      │                ├─[RenderPass] <- RenderPass class
-     │                │            └─[Utils] <- Swapchain Utilities
+     │                │            ├─[Utils] <- Swapchain Utilities
      │                ├─[Swapchain] <- Swapchain functions
      │
      ├─[Window] <- Windowing library functions
