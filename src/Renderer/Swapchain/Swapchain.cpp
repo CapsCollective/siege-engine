@@ -17,13 +17,9 @@ namespace SnekVk
 
     SwapChain::~SwapChain() 
     {
-        u32 imageCount = GetImageCount(); 
-        for (u32 i = 0; i < imageCount; i++)
-        {
-            vkDestroyImageView(device.Device(), swapChainImageViews[i], nullptr);
-        }
+        u32 imageCount = FrameImages::GetImageCount();
 
-        delete [] swapChainImageViews;
+        swapchainImages.DestroyFrameImages();
 
         if (GetSwapChain() != nullptr)
         {
@@ -31,16 +27,7 @@ namespace SnekVk
             swapChain = nullptr;
         }
 
-        for (size_t i = 0; i < imageCount; i++)
-        {
-            vkDestroyImageView(device.Device(), depthImageViews[i], nullptr);
-            vkDestroyImage(device.Device(), depthImages[i], nullptr);
-            vkFreeMemory(device.Device(), depthImageMemorys[i], nullptr);
-        }
-
-        delete [] depthImageViews;
-        delete [] depthImages;
-        delete [] depthImageMemorys;
+        depthImages.DestroyFrameImages();
 
         for (size_t i = 0; i < imageCount; i++)
         {
@@ -83,7 +70,7 @@ namespace SnekVk
         {
             imageCount = details.capabilities.maxImageCount;
         }   
-        std::cout << "Image Count: " << imageCount << std::endl;
+        std::cout << "FrameImages Count: " << imageCount << std::endl;
 
         // Now we populate the base swapchain creation struct
         VkSwapchainCreateInfoKHR createInfo {};
@@ -131,15 +118,15 @@ namespace SnekVk
         SNEK_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT &swapChain) == VK_SUCCESS,
                 "Failed to create Swapchain!");
 
+        swapchainImages = FrameImages(&device, surfaceFormat.format);
+
         // Once the swapchain has been created, get the number of images supported. 
         vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT &imageCount, nullptr);
-        swapChainImages = new VkImage[imageCount];
-        // Initialise the images
-        vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, OUT swapChainImages);
 
-        // Finally, set the corresponding values in the Swapchain.
-        this->imageCount = imageCount;
-        swapChainImageFormat = surfaceFormat.format;
+        FrameImages::SetImageCount(imageCount);
+
+        vkGetSwapchainImagesKHR(device.Device(), swapChain, &imageCount, OUT swapchainImages.GetImages());
+
         swapChainExtent = extent;
 
         SwapChainSupportDetails::DestroySwapChainSupportDetails(details);
@@ -147,25 +134,7 @@ namespace SnekVk
 
     void SwapChain::CreateImageViews()
     {
-        swapChainImageViews = new VkImageView[imageCount];
-
-        // Create our image views for each image supported:
-        for (size_t i = 0; i < imageCount; i++)
-        {
-            VkImageViewCreateInfo createInfo{};
-            createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = swapChainImages[i];
-            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = swapChainImageFormat;
-            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            createInfo.subresourceRange.baseMipLevel = 0;
-            createInfo.subresourceRange.levelCount = 1;
-            createInfo.subresourceRange.baseArrayLayer = 0;
-            createInfo.subresourceRange.layerCount = 1;
-
-            SNEK_ASSERT(vkCreateImageView(device.Device(), &createInfo, nullptr, OUT &swapChainImageViews[i]) == VK_SUCCESS,
-                    "Failed to create texture image view!");
-        }
+        swapchainImages.InitColorImageView2D();
     }
 
     void SwapChain::CreateRenderPass()
@@ -213,58 +182,18 @@ namespace SnekVk
     {
         // Start by getting our depth information
         VkFormat format = FindDepthFormat();
-        VkExtent2D swapChainExtent = GetSwapChainExtent();
+        VkExtent2D extent = GetSwapChainExtent();
 
         // Initialise our depth image information. 
-        depthImages = new VkImage[imageCount];
-        depthImageMemorys = new VkDeviceMemory[imageCount];
-        depthImageViews = new VkImageView[imageCount];
+        depthImages = FrameImages(&device, format);
 
-        for (size_t i = 0; i < imageCount; i++)
-        {
-            // Specify the type of image
-            VkImageCreateInfo imageInfo{};
-            imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-            imageInfo.imageType = VK_IMAGE_TYPE_2D;
-            imageInfo.extent.width = swapChainExtent.width;
-            imageInfo.extent.height = swapChainExtent.height;
-            imageInfo.extent.depth = 1;
-            imageInfo.mipLevels = 1;
-            imageInfo.arrayLayers = 1;
-            imageInfo.format = format;
-            imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-            imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-            imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            imageInfo.flags = 0;
-
-            // Create the depth images using the device
-            device.CreateImageWithInfo(
-                imageInfo, 
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                OUT depthImages[i], 
-                OUT depthImageMemorys[i]);
-
-            // Set up the view image creation struct
-            VkImageViewCreateInfo viewInfo{};
-            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            viewInfo.image = depthImages[i];
-            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            viewInfo.format = format;
-            viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            viewInfo.subresourceRange.baseMipLevel = 0;
-            viewInfo.subresourceRange.levelCount = 1;
-            viewInfo.subresourceRange.baseArrayLayer = 0;
-            viewInfo.subresourceRange.layerCount = 1;
-
-            SNEK_ASSERT(vkCreateImageView(device.Device(), &viewInfo, nullptr, OUT &depthImageViews[i]) == VK_SUCCESS,
-                "Failed to create texture image view!");
-        }
+        depthImages.InitDepthImageView2D(extent.width, extent.height, 1);
     }
 
     void SwapChain::CreateFrameBuffers()
     {
+        u32 imageCount = FrameImages::GetImageCount();
+
         // Initialise the framebuffers storage
         swapChainFrameBuffers = new VkFramebuffer[imageCount];
 
@@ -274,7 +203,7 @@ namespace SnekVk
             // We have two sets of image views we need to render images with
             u32 attachmentCount = 2;
 
-            VkImageView attachments[] {swapChainImageViews[i], depthImageViews[i]};
+            VkImageView attachments[] {swapchainImages.GetImageView(i), depthImages.GetImageView(i)};
 
             // Get our extents
             VkExtent2D swapChainExtent = GetSwapChainExtent();
@@ -289,13 +218,16 @@ namespace SnekVk
             frameBufferInfo.height = swapChainExtent.height;
             frameBufferInfo.layers = 1;
 
-            SNEK_ASSERT(vkCreateFramebuffer(device.Device(), &frameBufferInfo, nullptr, OUT &swapChainFrameBuffers[i]) == VK_SUCCESS,
-                "Failed to create framebuffer");
+            SNEK_ASSERT(vkCreateFramebuffer(device.Device(),
+                                            &frameBufferInfo, nullptr, OUT &swapChainFrameBuffers[i]) == VK_SUCCESS,
+                                            "Failed to create framebuffer");
         }
     }
 
     void SwapChain::CreateSyncObjects()
     {
+        u32 imageCount = FrameImages::GetImageCount();
+
         // A semaphor for holding images that are available for use. We create one per frame in flight.
         imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
         // A semaphor for holding images that are finished rendering. We create one per frame in flight.
