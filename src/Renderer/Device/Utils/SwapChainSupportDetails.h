@@ -3,6 +3,8 @@
 #include "../../Core.h"
 #include <vector>
 
+// TODO: Move this out of device utils (since it's being used by the swapchain)
+
 namespace SnekVk::SwapChainSupportDetails
 {
     /**

@@ -19,13 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup dependencies
-        run: |
-          ./scripts/setup.bat
+      - name: perform setup
+        run: ./scripts/setup.bat
 
-      - name: Compile Project
-        run: |
-          mingw32-make package DEBUG=0
-
-      - name: Clean Project
-        run: mingw32-make clean
+      - name: build and package executable
+        run: mingw32-make package

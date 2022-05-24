@@ -24,14 +24,8 @@ jobs:
       - name: install glfw dependencies
         run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-      - name: setup dependencies
-        run: |
-          ./scripts/setup.sh
+      - name: perform setup
+        run: ./scripts/setup.sh
 
-      - name: make bin/app
-        run: |
-          make package DEBUG=0
-  
-
-      - name: make clean
-        run: make clean
+      - name: build and package executable
+        run: make package
