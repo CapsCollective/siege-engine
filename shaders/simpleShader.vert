@@ -11,5 +11,5 @@ layout (push_constant) uniform Push {
 } push;
 
 void main() {
-    gl_Position = vec4(position + push.offset, 0.0, 1.0);
+    gl_Position = vec4(push.transform * position + push.offset, 0.0, 1.0);
 }
