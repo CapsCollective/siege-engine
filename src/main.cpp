@@ -3,6 +3,9 @@
 #include "Window/Window.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Model/Model.h"
+#include "Components/Shape.h"
+
+#include <glm/gtc/constants.hpp>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -33,30 +36,29 @@ int main()
 
     SnekVk::Renderer renderer(window);
 
-    renderer.SetClearValue(.1f, .1f, .1f, 1.f);
+    SnekVk::Model triangleModel(SnekVk::Renderer::GetDevice(), triangleVerts, 3);
 
-    SnekVk::Model models[] = {
-        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
-        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
-        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3),
-        SnekVk::Model(SnekVk::Renderer::GetDevice(), triangleVerts, 3)
-    };
+    Components::Shape triangles[4];
 
-    for (size_t i = 0; i < 4; i++) renderer.SubmitModel(&models[i]);
+    for (size_t i = 0; i < 4; i++) 
+    {
+        triangles[i] = Components::Shape(&triangleModel);
+        renderer.SubmitModel(triangles[i].GetModel());
+    }
     
     while(!window.WindowShouldClose()) {
-        static int frame = 0;
-        frame = (frame + 1) % 200;
 
         window.Update();
         renderer.ClearDeviceQueue();
 
         for (int i = 0; i < 4; i++)
         {
-            SnekVk::Model::PushConstantData push{};
-            push.offset = {-0.5f + frame * 0.01f, -0.4f + i * 0.25f};
-            push.color = {0.0f, 0.0f, 0.2f + 0.2f * i};
-            models[i].SetPushConstant(push);
+            float sine = glm::sin(glfwGetTime()) + 0.5f / 2;
+            triangles[i].SetTransform({0.0f, sine});
+            triangles[i].SetColor({0.0f, 0.0f, 0.2f + 0.2f * i});
+            triangles[i].SetScale({sine, sine});
+            triangles[i].SetRotation(
+                glm::mod(triangles[i].GetTransform().rotation + 0.01f, glm::two_pi<float>()));
         }
 
         renderer.DrawFrame();
