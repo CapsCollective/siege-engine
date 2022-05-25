@@ -7,22 +7,24 @@ namespace SnekVk
     SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) 
         : device{device}, windowExtent{windowExtent}
     {
-        CreateSwapChain();
-        CreateImageViews();
-        CreateRenderPass();
-        CreateDepthResources();
-        CreateFrameBuffers();
-        CreateSyncObjects();
+        Init();
     }
 
     SwapChain::~SwapChain() 
+    {
+        ClearSwapChain();
+        ClearMemory();
+    }
+
+    void SwapChain::ClearSwapChain(bool isRecreated)
     {
         u32 imageCount = FrameImages::GetImageCount();
 
         swapchainImages.DestroyFrameImages();
 
-        if (GetSwapChain() != nullptr)
+        if (!isRecreated && swapChain != nullptr)
         {
+            std::cout << "Clearing Swapchain" << std::endl;
             vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
             swapChain = nullptr;
         }
@@ -33,8 +35,6 @@ namespace SnekVk
         {
             vkDestroyFramebuffer(device.Device(), swapChainFrameBuffers[i], nullptr);
         }
-
-        delete [] swapChainFrameBuffers;
         
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
@@ -42,8 +42,41 @@ namespace SnekVk
             vkDestroySemaphore(device.Device(), imageAvailableSemaphores[i], nullptr);
             vkDestroyFence(device.Device(), inFlightFences[i], nullptr);
         }
+    }
 
+    void SwapChain::ClearMemory()
+    {
+        // De-allocate arrays
+
+        delete [] swapChainFrameBuffers;
+        
         delete [] imagesInFlight;
+
+        // Set values to nullptr
+        swapChainFrameBuffers = nullptr;
+
+        imagesInFlight = nullptr;
+    }
+
+    void SwapChain::RecreateSwapchain()
+    {
+        std::cout << "Re-creating Swapchain" << std::endl;
+        // Destroy all Vulkan structs
+        ClearSwapChain(true);
+
+        // Re-create all Vulkan structs
+        Init();
+    }
+
+    void SwapChain::Init()
+    {
+        CreateSwapChain();
+        CreateImageViews();
+        CreateRenderPass();
+        CreateDepthResources();
+        CreateFrameBuffers();
+        CreateSyncObjects();
+        std::cout << "Recreated Swapchain" << std::endl;
     }
 
     void SwapChain::CreateSwapChain()
@@ -112,8 +145,7 @@ namespace SnekVk
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        // specifies if there's an old swapchain for it to copy data from
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
         SNEK_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT &swapChain) == VK_SUCCESS,
                 "Failed to create Swapchain!");
@@ -193,7 +225,7 @@ namespace SnekVk
         u32 imageCount = FrameImages::GetImageCount();
 
         // Initialise the framebuffers storage
-        swapChainFrameBuffers = new VkFramebuffer[imageCount];
+        if (swapChainFrameBuffers == nullptr) swapChainFrameBuffers = new VkFramebuffer[imageCount];
 
         // We need a separate frame buffer for each image that we want to draw
         for(size_t i = 0; i < imageCount; i++)
@@ -225,15 +257,11 @@ namespace SnekVk
     void SwapChain::CreateSyncObjects()
     {
         u32 imageCount = FrameImages::GetImageCount();
-
-        // A semaphor for holding images that are available for use. We create one per frame in flight.
-        imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
-        // A semaphor for holding images that are finished rendering. We create one per frame in flight.
-        renderFinishedSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
         
-        // A set of fences for holding our max number of images that can be swapped at once
-        inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
-        imagesInFlight = new VkFence[imageCount];
+        if (imageAvailableSemaphores == nullptr) imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+        if (renderFinishedSemaphores == nullptr) renderFinishedSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+        if (inFlightFences == nullptr) inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
+        if (imagesInFlight == nullptr) imagesInFlight = new VkFence[imageCount];
 
         // Set all images in flight to null
         for (size_t i = 0; i < imageCount; i++) imagesInFlight[i] = VK_NULL_HANDLE;

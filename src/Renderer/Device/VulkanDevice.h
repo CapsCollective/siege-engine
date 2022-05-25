@@ -39,9 +39,9 @@ namespace SnekVk {
 
 		// Deleting move and copy constructors
 		VulkanDevice(const VulkanDevice &) = delete;
-		void operator=(const VulkanDevice &) = delete;
+		VulkanDevice& operator=(const VulkanDevice &) = delete;
 		VulkanDevice(VulkanDevice &&) = delete;
-		VulkanDevice &operator=(VulkanDevice &&) = delete;
+		VulkanDevice& operator=(VulkanDevice &&) = delete;
 		
 		/**
 		 * Returns a copy of the command pool held by the device. 
