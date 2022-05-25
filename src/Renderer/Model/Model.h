@@ -16,6 +16,12 @@ namespace SnekVk
     {
         public:
 
+        struct PushConstantData
+        {
+            glm::vec2 offset;
+            alignas(16) glm::vec3 color;
+        };
+
         /**
          * @brief The Vertex struct represents all the vertex data that'll be passed into our shaders.
          * Right now all we expect is a vector 2 for it's position in 2D space. 
@@ -76,6 +82,10 @@ namespace SnekVk
          */
         void Draw(VkCommandBuffer commandBuffer);
 
+        // TODO: Remove this when no longer relevant. 
+        PushConstantData& GetPushConstant() { return pushConstant; }
+        void SetPushConstant(PushConstantData newData) { pushConstant = newData; }
+
         private:
 
         /**
@@ -89,5 +99,7 @@ namespace SnekVk
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         u32 vertexCount;
+
+        PushConstantData pushConstant;
     };
 }

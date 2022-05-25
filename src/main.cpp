@@ -25,12 +25,6 @@ SnekVk::Model::Vertex triangleVerts[] = {
     {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
 };
 
-SnekVk::Model::Vertex triangleVerts2[] = {
-    {{0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
-    {{1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}, 
-    {{-1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}
-};
-
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
@@ -41,15 +35,30 @@ int main()
 
     renderer.SetClearValue(.1f, .1f, .1f, 1.f);
 
-    SnekVk::Model triangle(renderer.GetDevice(), triangleVerts, 3);
-    SnekVk::Model triangle2(renderer.GetDevice(), triangleVerts2, 3);
+    SnekVk::Model models[] = {
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3),
+        SnekVk::Model(renderer.GetDevice(), triangleVerts, 3)
+    };
 
-    renderer.SubmitModel(&triangle);
-    renderer.SubmitModel(&triangle2);
+    for (size_t i = 0; i < 4; i++) renderer.SubmitModel(&models[i]);
     
     while(!window.WindowShouldClose()) {
+        static int frame = 0;
+        frame = (frame + 1) % 200;
+
         window.Update();
         renderer.ClearDeviceQueue();
+
+        for (int i = 0; i < 4; i++)
+        {
+            models[i].SetPushConstant(
+                {{-0.5f + frame * 0.01f, -0.4f + i * 0.25f}, 
+                {0.0f, 0.0f, 0.2f + 0.2f * i}}
+            );
+        }
+
         renderer.DrawFrame();
     }
 

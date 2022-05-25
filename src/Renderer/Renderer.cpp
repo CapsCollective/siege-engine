@@ -42,6 +42,8 @@ namespace SnekVk
 
     void Renderer::RecordCommandBuffer(int imageIndex)
     {
+        static int frame = 0;
+        frame = (frame + 1) % 200;
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -78,6 +80,16 @@ namespace SnekVk
         for (auto& model : models)
         {
             model->Bind(commandBuffers[imageIndex]);
+
+            vkCmdPushConstants(
+                commandBuffers[imageIndex],
+                pipelineLayout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(Model::PushConstantData),
+                &model->GetPushConstant()
+            );
+
             model->Draw(commandBuffers[imageIndex]);
         }
         
@@ -141,12 +153,17 @@ namespace SnekVk
 
     void Renderer::CreatePipelineLayout()
     {
+        VkPushConstantRange range{};
+        range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        range.offset = 0; 
+        range.size = sizeof(Model::PushConstantData);
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0; 
         pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
-        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &range;
 
         SNEK_ASSERT(vkCreatePipelineLayout(device.Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS, 
             "Failed to create pipeline layout!");
