@@ -12,14 +12,18 @@ namespace SnekVk
     class Renderer
     {
         public:
-            Renderer(SnekVk::Window& window);
+            Model CreateModel(Model::Vertex* vertices, u32 vertexCount);
+
+            Renderer(Window& window);
             ~Renderer();
 
+            void DestroyRenderer();
+
             void SubmitModel(Model* model);
-            void CreateCommandBuffers();
+            
             void DrawFrame();
 
-            VulkanDevice& GetDevice() { return device; }
+            static VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
 
             void CreatePipelineLayout();
@@ -33,6 +37,8 @@ namespace SnekVk
             
             VkClearColorValue clearValue {0, 0, 0, 1.f};
 
+            void CreateCommandBuffers();
+
             void RecordCommandBuffer(int imageIndex);
             void RecreateSwapChain();
             void FreeCommandBuffers();
@@ -40,12 +46,12 @@ namespace SnekVk
 
             SnekVk::Window& window;
             
-            VulkanDevice device;
+            static VulkanDevice device;
             SwapChain swapChain;
 
             std::vector<Model*> models;
 
             VkPipelineLayout pipelineLayout{nullptr};
-            Pipeline graphicsPipeline{CreateGraphicsPipeline()};
+            Pipeline graphicsPipeline;
     };
 }
