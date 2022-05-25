@@ -30,7 +30,7 @@ sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 
-includes = -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I vendor/glm
+includes = -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm
 linkFlags = -L $(libDir) -lglfw3
 compileFlags := -std=c++17 $(includes)
 

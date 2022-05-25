@@ -10,10 +10,22 @@ namespace SnekVk
         Init();
     }
 
+    SwapChain::SwapChain(VulkanDevice& device) : device{device}
+    {}
+
     SwapChain::~SwapChain() 
+    {}
+
+    void SwapChain::DestroySwapChain()
     {
         ClearSwapChain();
         ClearMemory();
+    }
+
+    void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
+    {
+        this->windowExtent = windowExtent;
+        Init();
     }
 
     void SwapChain::ClearSwapChain(bool isRecreated)

@@ -7,13 +7,20 @@ namespace SnekVk
     Model::Model(VulkanDevice& device, const Vertex* vertices, u32 vertexCount)
         : device{device}, vertexCount{vertexCount}
     {
-        pushConstant = {{0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}};
         CreateVertexBuffers(vertices);
     }
 
+    // Destroy the vertex buffer and free the memory
     Model::~Model()
     {
-        // Destroy the vertex buffer and free the memory
+        std::cout << "Destroying Model" << std::endl;
+        vkDestroyBuffer(device.Device(), vertexBuffer, nullptr);
+        vkFreeMemory(device.Device(), vertexBufferMemory, nullptr);
+    }
+
+    void Model::DestroyModel()
+    {
+        std::cout << "Destroying Model" << std::endl;
         vkDestroyBuffer(device.Device(), vertexBuffer, nullptr);
         vkFreeMemory(device.Device(), vertexBufferMemory, nullptr);
     }
