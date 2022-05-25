@@ -20,9 +20,9 @@ static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
 SnekVk::Model::Vertex triangleVerts[] = {
-    {{0.0f, -0.5f}},
-    {{0.5f, 0.5f}},
-    {{-0.5f, 0.5f}}
+    {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}}, 
+    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
 };
 
 int main() 
