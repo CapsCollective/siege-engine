@@ -48,7 +48,7 @@ namespace SnekVk
 
         // Delete copy constructors. 
         SwapChain(const SwapChain&) = delete;
-        void operator=(const SwapChain*) = delete;
+        SwapChain& operator=(const SwapChain*) = delete;
 
         // Getters
 
@@ -130,8 +130,12 @@ namespace SnekVk
          */
         VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
 
+        void RecreateSwapchain();
+
         private:
         
+        void Init();
+
         /**
          * @brief Create a Vulkan swapchain object. 
          */
@@ -202,13 +206,16 @@ namespace SnekVk
          * @return VkFormat - the supported image format. 
          */
         VkFormat FindDepthFormat();
-        
+
+        void ClearSwapChain(bool isRecreated = false);
+        void ClearMemory();
+
         // Device and window data
         VulkanDevice& device;
         VkExtent2D windowExtent;
 
         // frame buffers and renderpasses
-        VkFramebuffer* swapChainFrameBuffers;
+        VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
         RenderPass renderPass;
 
         // Swapchain image data
@@ -223,10 +230,10 @@ namespace SnekVk
         VkSwapchainKHR swapChain;
 
         // Synchronisation objects
-        VkSemaphore* imageAvailableSemaphores;
-        VkSemaphore* renderFinishedSemaphores;
-        VkFence* inFlightFences;
-        VkFence* imagesInFlight;
+        VkSemaphore* imageAvailableSemaphores {VK_NULL_HANDLE};
+        VkSemaphore* renderFinishedSemaphores {VK_NULL_HANDLE};
+        VkFence* inFlightFences {VK_NULL_HANDLE};
+        VkFence* imagesInFlight {VK_NULL_HANDLE};
         size_t currentFrame = 0;
     };
 }

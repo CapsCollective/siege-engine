@@ -23,7 +23,10 @@ namespace SnekVk
             }
             
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
             window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+            glfwSetWindowUserPointer(window, this);
+            glfwSetWindowSizeCallback(window, ResizeCallback);
             glfwWindows++;
         }
 
@@ -52,7 +55,15 @@ namespace SnekVk
 
         bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
+        bool WasResized() { return wasResized; }
+
+        void ResetWindowResized() { wasResized = false; }
+
+        void WaitEvents() { glfwWaitEvents(); }
+
     private:
+
+        static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
 
         // Private static variables
 
@@ -67,5 +78,6 @@ namespace SnekVk
 
         int width;
         int height;
+        bool wasResized = false;
     };
 }
