@@ -33,6 +33,36 @@ namespace Components
         {transform.position.x, transform.position.y, transform.position.z, 1.0f}};
     }
 
+    glm::mat3 CalculateNormalMatrix(Transform& transform)
+    {
+        const float c3 = glm::cos(transform.rotation.z);
+        const float s3 = glm::sin(transform.rotation.z);
+        const float c2 = glm::cos(transform.rotation.x);
+        const float s2 = glm::sin(transform.rotation.x);
+        const float c1 = glm::cos(transform.rotation.y);
+        const float s1 = glm::sin(transform.rotation.y);
+
+        glm::vec3 inverseScale = 1.0f / transform.scale;
+
+        return glm::mat3{
+            {
+                inverseScale.x * (c1 * c3 + s1 * s2 * s3),
+                inverseScale.x * (c2 * s3),
+                inverseScale.x * (c1 * s2 * s3 - c3 * s1),
+            },
+            {
+                inverseScale.y * (c3 * s1 * s2 - c1 * s3),
+                inverseScale.y * (c2 * c3),
+                inverseScale.y * (c1 * c3 * s2 + s1 * s3),
+            },
+            {
+                inverseScale.z * (c2 * s1),
+                inverseScale.z * (-s2),
+                inverseScale.z * (c1 * c2),
+            }
+        };
+    }
+
     Shape::Shape() {}
 
     Shape::Shape(SnekVk::Model* model) : model{model} {}

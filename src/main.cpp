@@ -169,16 +169,25 @@ int main()
 
     SnekVk::Model cubeModel({cubeVerts, 24, cubeIndices, 36});
 
+    SnekVk::Model cubeObjModel("assets/models/cube.obj");
+
+    SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
+
     // Create shapes for use
 
     std::vector<Components::Shape> shapes = 
     {
-        Components::Shape(&cubeModel)
+        Components::Shape(&cubeObjModel),
+        Components::Shape(&vaseObjModel)
     };
 
-    shapes[0].SetPosition({0.f, 0.f, 2.5f});
+    shapes[0].SetPosition({0.f, 0.5f, 2.5f});
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
+
+    shapes[1].SetPosition({0.f, 0.f, 2.5f});
+    shapes[1].SetScale({2.f, 2.f, 2.f});
+    shapes[1].SetColor({.5f, 0.f, 0.f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -214,7 +223,7 @@ int main()
         {
             for (auto& shape : shapes)
             {
-                renderer.DrawModel(shape.GetModel(), projectionView * shape.GetTransform(), shape.GetColor());
+                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), projectionView);
             }
             renderer.EndFrame();
         }
