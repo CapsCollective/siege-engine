@@ -54,12 +54,14 @@ namespace SnekVk
             "Failed to allocate command buffer");
     }
 
-    void Renderer::DrawModel(Model* model, const Model::PushConstantData& pushData)
+    void Renderer::DrawModel(Model* model, glm::mat4 transform, glm::vec3 color)
     {
         auto commandBuffer = GetCurrentCommandBuffer();
         graphicsPipeline.Bind(commandBuffer);
 
         model->Bind(commandBuffer);
+
+        Model::PushConstantData pushData = { transform, color };
 
         vkCmdPushConstants(
             commandBuffer,
