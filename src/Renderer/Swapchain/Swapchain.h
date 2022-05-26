@@ -47,8 +47,6 @@ namespace SnekVk
         SwapChain(VulkanDevice& device);
         ~SwapChain();
 
-        void DestroySwapChain();
-
         // Delete copy constructors. 
         SwapChain(const SwapChain&) = delete;
         SwapChain& operator=(const SwapChain*) = delete;

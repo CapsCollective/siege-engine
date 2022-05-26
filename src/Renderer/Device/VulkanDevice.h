@@ -37,13 +37,14 @@ namespace SnekVk {
 		VulkanDevice();
 
 		~VulkanDevice();
-		void DestroyDevice();
 
 		// Deleting move and copy constructors
 		VulkanDevice(const VulkanDevice &) = delete;
 		VulkanDevice& operator=(const VulkanDevice &) = delete;
 		VulkanDevice(VulkanDevice &&) = delete;
 		VulkanDevice& operator=(VulkanDevice &&) = delete;
+
+		static VulkanDevice* GetDeviceInstance() { return vulkanDeviceInstance; }
 
 		void SetWindow(Window* window);
 		
@@ -120,24 +121,6 @@ namespace SnekVk {
 			const VkFormat* candidates, size_t formatCount, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 		// Buffer Helper Functions
-
-		/**
-		 * Creates a memory buffer for transferring data to our GPU. Allocates resulting data to the 'buffer'
-		 * and 'bufferMemory' variables respectively. 
-		 * 
-		 * @param size - specifies the size of the buffer.
-		 * @param usage - specifies what the buffer will be used for (i.e: vertex definitions).
-		 * @param properties - specifies the the properties the buffer should have.
-		 * @param buffer - the buffer that the function should write data to.
-		 * @param bufferMemory - the buffer memory data the function should write data to.
-		 **/
-		void CreateBuffer(
-			VkDeviceSize size,
-			VkBufferUsageFlags usage,
-			VkMemoryPropertyFlags properties,
-			VkBuffer &buffer,
-			VkDeviceMemory &bufferMemory);
-
 
 		/** 
 		 * Prepares a command buffer for writing.
@@ -261,10 +244,14 @@ namespace SnekVk {
 		 **/
 		void CreateCommandPool();
 
+		static void SetVulkanDeviceInstance(VulkanDevice* device) { vulkanDeviceInstance = device; }
+
+		static VulkanDevice* vulkanDeviceInstance;
+
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		Window *window {nullptr};
+		Window* window {nullptr};
 		VkCommandPool commandPool;
 
 		VkDevice device;

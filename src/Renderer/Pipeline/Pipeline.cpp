@@ -20,7 +20,9 @@ namespace SnekVk
     {}
 
     Pipeline::~Pipeline() 
-    {}
+    {
+        ClearPipeline();
+    }
 
     Utils::Array<char> Pipeline::ReadFile(const char* filePath)
     {
@@ -85,6 +87,9 @@ namespace SnekVk
         // In order to pass in vertex information, we must assign a set of descriptions to the shader.
         // These descriptions detail all data binding and which locations these bindings must be set to. 
         // In our case, we have a generic set of descriptions for our Vertex structs. 
+
+        // TODO: Maybe inject these into the config. Right now the pipeline is highly coupled 
+        // to the models. 
         auto bindingDescriptions = Model::Vertex::GetBindingDescriptions();
         auto attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
 

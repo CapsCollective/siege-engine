@@ -7,6 +7,8 @@
 
 namespace SnekVk {
 
+	VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
+
 	VulkanDevice::VulkanDevice(Window* window) : window{window} 
 	{
 		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
@@ -17,6 +19,8 @@ namespace SnekVk {
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateCommandPool();
+
+		SetVulkanDeviceInstance(this);
 	}
 
 	VulkanDevice::VulkanDevice()
@@ -36,12 +40,11 @@ namespace SnekVk {
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateCommandPool();
+
+		SetVulkanDeviceInstance(this);
 	}
 
 	VulkanDevice::~VulkanDevice() 
-	{}
-
-	void VulkanDevice::DestroyDevice()
 	{
 		// When the device goes out of scope, all vulkan structs must be 
 		// de-allocated in reverse order of how they were created. 
@@ -255,41 +258,8 @@ namespace SnekVk {
 		SNEK_ASSERT(false, "Failed to find suitable memory type!");
 	}
 
-	void VulkanDevice::CreateBuffer(
-		VkDeviceSize size,
-		VkBufferUsageFlags usage,
-		VkMemoryPropertyFlags properties,
-		VkBuffer &buffer,
-		VkDeviceMemory &bufferMemory) 
+	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() 
 	{
-		VkBufferCreateInfo bufferInfo{};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = size;
-		bufferInfo.usage = usage;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		if (vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to create vertex buffer!");
-		}
-
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
-
-		if (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) != VK_SUCCESS) 
-		{
-			throw std::runtime_error("failed to allocate vertex buffer memory!");
-		}
-
-  		vkBindBufferMemory(device, buffer, bufferMemory, 0);
-	}
-
-	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() {
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
