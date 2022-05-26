@@ -38,7 +38,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
-            void DrawModel(Model* model, Model::Transform transform, glm::mat4 perspectiveMatrix);
+            void DrawModel(Model* model, Model::Transform transform, Camera::GPUCameraData cameraData);
 
             bool StartFrame();
             void EndFrame();
@@ -56,6 +56,8 @@ namespace SnekVk
             VkClearColorValue clearValue {0, 0, 0, 1.f};
 
             void CreateCommandBuffers();
+            void CreateDescriptors();
+
             void RecreateSwapChain();
             void FreeCommandBuffers();
 
@@ -76,5 +78,10 @@ namespace SnekVk
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
+
+            Buffer::Buffer uniformCamBuffer;
+            VkDescriptorPool descriptorPool;
+            VkDescriptorSetLayout globalLayout;
+            VkDescriptorSet globalDescriptor;
     };
 }
