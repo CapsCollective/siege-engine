@@ -23,6 +23,7 @@ echo "%*"| find "--include-validation-layers" >nul
 IF "%ERRORLEVEL%" EQU "1" CALL :DeleteDebugSymbols
 
 robocopy "%BIN_DIR%\shaders" "%PKG_FILE%\shaders" * /E
+robocopy "%BIN_DIR%\assets" "%PKG_FILE%\assets" * /E
 robocopy "%BIN_DIR%" "%PKG_FILE%" "app.exe"
 rename %PKG_FILE%\app.exe %PKG_NAME%.exe
 
