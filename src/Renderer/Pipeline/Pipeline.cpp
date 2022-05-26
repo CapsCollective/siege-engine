@@ -7,16 +7,15 @@
 namespace SnekVk 
 {
     Pipeline::Pipeline(
-        VulkanDevice& device, 
         const PipelineConfig::ShaderConfig* shaders,
         u32 shaderCount,
         const PipelineConfigInfo& configInfo
-    ) : Pipeline(device)
+    ) : Pipeline()
     {
         CreateGraphicsPipeline(shaders, shaderCount, configInfo);
     }
 
-    Pipeline::Pipeline(VulkanDevice& device) : device{device}
+    Pipeline::Pipeline()
     {}
 
     Pipeline::~Pipeline() 
@@ -118,7 +117,9 @@ namespace SnekVk
         pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
         pipelineCreateInfo.basePipelineIndex = -1;
 
-        SNEK_ASSERT(vkCreateGraphicsPipelines(device.Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
+        auto device = VulkanDevice::GetDeviceInstance();
+
+        SNEK_ASSERT(vkCreateGraphicsPipelines(device->Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
             == VK_SUCCESS, "Failed to create graphics pipeline!")
     }
 
@@ -132,14 +133,15 @@ namespace SnekVk
 
     void Pipeline::ClearPipeline()
     {
+        auto device = VulkanDevice::GetDeviceInstance();
         // TODO: Maybe we can get away without destroying the shader modules when 
         // re-creating the pipeline?
         for (size_t i = 0; i < shaderModuleCount; i++)
         {
-            vkDestroyShaderModule(device.Device(), shaderModules[i], nullptr);
+            vkDestroyShaderModule(device->Device(), shaderModules[i], nullptr);
         }
         
-        vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
+        vkDestroyPipeline(device->Device(), graphicsPipeline, nullptr);
     }
 
     void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)
@@ -151,7 +153,9 @@ namespace SnekVk
         // array to 32-bit unsigned integers. 
         createInfo.pCode = reinterpret_cast<const u32*>(fileData.Data());
 
-        SNEK_ASSERT(vkCreateShaderModule(device.Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
+        auto device = VulkanDevice::GetDeviceInstance();
+
+        SNEK_ASSERT(vkCreateShaderModule(device->Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
             "Failed to create shader module!");
     }
 

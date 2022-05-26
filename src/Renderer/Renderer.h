@@ -5,6 +5,8 @@
 #include "Pipeline/Pipeline.h"
 #include "Model/Model.h"
 #include "Camera/Camera.h"
+#include "Material/Material.h"
+#include "Lights/PointLight.h"
 
 namespace SnekVk 
 {
@@ -15,8 +17,6 @@ namespace SnekVk
             ~Renderer();
 
             void DestroyRenderer();
-
-            static VulkanDevice* GetDevicePtr() { return deviceInstance; }
 
             VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
@@ -31,6 +31,7 @@ namespace SnekVk
             float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
 
             void SetMainCamera(Camera* camera) { mainCamera = camera; }
+            void SetPointLight(PointLight* light) { this->light = light;}
             
             bool IsFrameStarted() { return isFrameStarted; }
 
@@ -41,18 +42,19 @@ namespace SnekVk
             }
             
             void DrawModel(Model* model, const Model::Transform& transform);
+            void DrawModel2D(Model* model, const Model::Transform2D& transform);
+
+            void RegisterMaterial(Material* mat) { currentMat = mat; }
 
             bool StartFrame();
             void EndFrame();
 
-            void CreatePipelineLayout();
             void ClearDeviceQueue() { vkDeviceWaitIdle(device.Device()); } 
             Pipeline CreateGraphicsPipeline();
 
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
-
-            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
+            static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
             
             static VulkanDevice* deviceInstance;
             static Utils::Array<VkCommandBuffer> commandBuffers;
@@ -60,7 +62,6 @@ namespace SnekVk
             VkClearColorValue clearValue {0, 0, 0, 1.f};
 
             void CreateCommandBuffers();
-            void CreateDescriptors();
 
             void RecreateSwapChain();
             void FreeCommandBuffers();
@@ -77,25 +78,31 @@ namespace SnekVk
             VulkanDevice device;
             SwapChain swapChain;
 
-            // Graphics pipeline-specific data
-            VkPipelineLayout pipelineLayout{nullptr};
-            Pipeline graphicsPipeline;
-
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
             
-            Buffer::Buffer objectTransformsBuffer;
+            Material* currentMat{nullptr};
+            Model* currentModel{nullptr};
 
-            VkDescriptorPool descriptorPool;
-
-            VkDescriptorSetLayout objectLayout;
-            VkDescriptorSet objectDescriptor;
-
+            // TODO: there's some duplicated logic here. Will need to 
+            // create a separate object for managing models and uniforms.
             Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
+            Model::Transform2D transforms2D[MAX_OBJECT_TRANSFORMS];
+
             Model* models[MAX_OBJECT_TRANSFORMS];
             size_t modelCount = 0;
 
+            Model* models2D[MAX_OBJECT_TRANSFORMS];
+            size_t model2DCount = 0;
+
+            // End of duplicated logic
+
+            Utils::StringId bufferId;
+            Utils::StringId lightId;
+            Utils::StringId cameraDataId;
+
             Camera* mainCamera;
+            PointLight* light;
     };
 }

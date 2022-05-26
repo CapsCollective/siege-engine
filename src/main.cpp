@@ -6,10 +6,13 @@
 #include "Components/Shape.h"
 #include "Input/Input.h"
 #include "Utils/Math.h"
+#include "Renderer/Material/Material.h"
+#include "Renderer/Shader/Shader.h"
+#include "Renderer/Lights/PointLight.h"
 
-#include <glm/gtc/constants.hpp>
 #include <vector>
 #include <chrono>
+#include <cmath>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -26,20 +29,21 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-SnekVk::Vertex triangleVerts[] = {
+SnekVk::Vertex2D triangleVerts[] = {
     {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
     {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
     {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
+    sizeof(triangleVerts),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
     0  // no indices specified
 };
 
-SnekVk::Vertex squareVerts[] = {
+SnekVk::Vertex2D squareVerts[] = {
     {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
     {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
     {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
@@ -51,6 +55,7 @@ u32 squareIndices[] = {
 };
 
 SnekVk::Mesh::MeshData squareMeshData {
+    sizeof(squareVerts),
     squareVerts,
     4,
     squareIndices,
@@ -100,6 +105,7 @@ u32 cubeIndices[] = {
 };
 
 SnekVk::Mesh::MeshData cubeMeshData {
+    sizeof(cubeVerts),
     cubeVerts,
     24,
     cubeIndices,
@@ -158,7 +164,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
-    
+
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
     window.DisableCursor();
@@ -171,42 +177,109 @@ int main()
 
     Components::Shape cameraObject;
 
+    // Shader Declaration
+
+    // Vertex shaders
+
+    auto diffuseShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/simpleShader.vert.spv")
+        .WithStage(SnekVk::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(SnekVk::Vertex))
+        .WithVertexAttribute(offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
+        .WithUniform(1, "cameraData", sizeof(glm::mat4), 1);
+        
+    
+    auto spriteShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/simpleShader2D.vert.spv")
+        .WithStage(SnekVk::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(SnekVk::Vertex2D))
+        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
+        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
+        .WithUniform(1, "cameraData", sizeof(glm::mat4));
+
+    // Fragment shaders
+
+    auto fragShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/simpleShader.frag.spv")
+        .WithStage(SnekVk::PipelineConfig::FRAGMENT);
+
+    auto diffuseFragShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/diffuseFragShader.frag.spv")
+        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
+        .WithUniform(2, "lightData", sizeof(SnekVk::PointLight::Data)); // TIL: bindings must be unique accross all available shaders 
+
+    // Material Declaration
+                                // vertex       // fragment  
+    SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
+    SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
+
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
+
     // Generate models
 
     // Generating models from raw vertices
 
     SnekVk::Model triangleModel(triangleMeshData);
-
     SnekVk::Model squareModel(squareMeshData);
-
-    SnekVk::Model cubeModel(cubeMeshData);
 
     // Generating models from .obj files
 
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
-
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
+
+    // Set 2D sprite material
+    triangleModel.SetMaterial(&spriteMat);
+    squareModel.SetMaterial(&spriteMat);
+
+    // Set 3D diffuse material
+    cubeObjModel.SetMaterial(&diffuseMat);
+    vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),
-        Components::Shape(&vaseObjModel),
+        Components::Shape(&cubeObjModel),
+        Components::Shape(&vaseObjModel)
+    };
+
+    std::vector<Components::Shape> shapes2D = 
+    {
         Components::Shape(&triangleModel),
         Components::Shape(&squareModel)
     };
 
-    shapes[0].SetPosition({0.f, 0.5f, 2.5f});
+    shapes[0].SetPosition({0.f, .5f, 2.5f});
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
-    shapes[1].SetPosition({0.f, 0.f, 2.5f});
-    shapes[1].SetScale({2.f, 2.f, 2.f});
+    shapes[1].SetPosition({0.f, 1.f, 2.5f});
+    shapes[1].SetScale({3.f, 3.f, 0.01f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
+    shapes[1].SetRotationX(1.570796f);
 
-    shapes[2].SetPosition({1.5f, 0.f, 2.5f});
+    shapes[2].SetPosition({0.f, 0.f, 2.5f});
+    shapes[2].SetScale({2.f, 2.f, 2.f});
+    shapes[2].SetColor({.5f, 0.f, 0.f});
 
-    shapes[3].SetPosition({-1.5f, 0.f, 2.5f});
+    shapes2D[0].SetPosition({1.5f, 0.f, 2.5f});
+
+    shapes2D[1].SetPosition({-1.5f, 0.f, 2.5f});
+
+    // Lights
+
+    SnekVk::PointLight light;
+    
+    light.SetPosition({0.0f, -1.0f, 1.5f});
+    light.SetColor({1.f, 0.f, 0.f, 1.0f});
+    light.SetAmbientColor({1.f, 1.f, 1.f, .02f});
+
+    renderer.SetPointLight(&light);
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -219,6 +292,9 @@ int main()
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
+
+        float lightColor = abs(sin(glfwGetTime()) * 0.5);
+        light.SetColor({1.f, 0.f, 0.f, lightColor});
 
         window.Update();
 
@@ -243,6 +319,11 @@ int main()
         for (auto& shape : shapes)
         {
             renderer.DrawModel(shape.GetModel(), shape.GetTransform());
+        }
+
+        for (auto& shape : shapes2D)
+        {
+            renderer.DrawModel2D(shape.GetModel(), shape.GetTransform2D());
         }
         
         renderer.EndFrame();

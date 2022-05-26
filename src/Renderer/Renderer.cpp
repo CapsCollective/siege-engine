@@ -7,29 +7,16 @@ namespace SnekVk
 
     Renderer::Renderer(Window& window) : 
         window{window},
-        swapChain{SwapChain(device)},
-        graphicsPipeline{Pipeline(device)}
+        swapChain{SwapChain(device)}
     {
         device.SetWindow(&window);
         swapChain.SetWindowExtents(window.GetExtent());
 
         if (deviceInstance == nullptr) deviceInstance = &device;
 
-        CreateDescriptors();
-        
-        CreatePipelineLayout();
-
-        PipelineConfig::ShaderConfig shaders[] = 
-        {
-            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
-        };
-
-        graphicsPipeline.RecreatePipeline(
-            shaders,
-            2,
-            CreateDefaultPipelineConfig()
-        );
+        bufferId = INTERN_STR("objectBuffer");
+        lightId = INTERN_STR("lightData");
+        cameraDataId = INTERN_STR("cameraData");
 
         CreateCommandBuffers();
     }
@@ -37,10 +24,7 @@ namespace SnekVk
     Renderer::~Renderer() 
     {
         std::cout << "Destroying renderer" << std::endl;
-        vkDestroyDescriptorSetLayout(device.Device(), objectLayout, nullptr);
-        vkDestroyDescriptorPool(device.Device(), descriptorPool, nullptr);
-        vkDestroyPipelineLayout(device.Device(), pipelineLayout, nullptr);
-        Buffer::DestroyBuffer(objectTransformsBuffer);
+        Material::DestroyDescriptorPool();
     }
 
     void Renderer::CreateCommandBuffers()
@@ -57,87 +41,21 @@ namespace SnekVk
             "Failed to allocate command buffer");
     }
 
-    void Renderer::CreateDescriptors()
-    {
-
-        Buffer::CreateBuffer(
-            sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS,
-            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-            // Ensures that CPU and GPU memory are consistent across both devices.
-            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            OUT objectTransformsBuffer.buffer,
-            OUT objectTransformsBuffer.bufferMemory
-        );
-        
-        // Create a descriptor set for our object transforms.
-
-        VkDescriptorSetLayoutBinding objectBufferBinding {};
-        objectBufferBinding.binding = 0;
-        objectBufferBinding.descriptorCount = 1;
-        objectBufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        objectBufferBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-        VkDescriptorSetLayoutCreateInfo objectLayoutCreateInfo{};
-        objectLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        objectLayoutCreateInfo.pNext = nullptr;
-
-        objectLayoutCreateInfo.bindingCount = 1;
-        objectLayoutCreateInfo.flags = 0;
-        objectLayoutCreateInfo.pBindings = &objectBufferBinding;
-        
-        SNEK_ASSERT(vkCreateDescriptorSetLayout(device.Device(), &objectLayoutCreateInfo, nullptr, &objectLayout) == VK_SUCCESS,
-                "Failed to create descriptor set!");
-        
-        VkDescriptorPoolSize poolSizes[] = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
-            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10}
-        };
-
-        VkDescriptorPoolCreateInfo poolCreateInfo {};
-        poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolCreateInfo.flags = 0;
-        poolCreateInfo.maxSets = 10;
-        poolCreateInfo.poolSizeCount = 2;
-        poolCreateInfo.pPoolSizes = poolSizes;
-
-        SNEK_ASSERT(vkCreateDescriptorPool(device.Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
-            "Unable to create descriptor pool!");
-
-        // Object transform allocate info
-        VkDescriptorSetAllocateInfo allocateInfo2 {};
-        allocateInfo2.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocateInfo2.pNext = nullptr;
-        allocateInfo2.descriptorPool = descriptorPool;
-        allocateInfo2.descriptorSetCount = 1;
-        allocateInfo2.pSetLayouts = &objectLayout;
-        
-        vkAllocateDescriptorSets(device.Device(), &allocateInfo2, &objectDescriptor);
-
-        VkDescriptorBufferInfo objBufferInfo {};
-        objBufferInfo.buffer = objectTransformsBuffer.buffer;
-        objBufferInfo.offset = 0;
-        objBufferInfo.range = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
-
-        VkWriteDescriptorSet writeDescriptorSet {};
-        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.pNext = nullptr;
-        writeDescriptorSet.dstBinding = 0;
-        writeDescriptorSet.dstSet = objectDescriptor;
-        writeDescriptorSet.descriptorCount = 1;
-        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        writeDescriptorSet.pBufferInfo = &objBufferInfo;
-
-        VkWriteDescriptorSet writeDescriptorSets[] = {writeDescriptorSet};
-
-        vkUpdateDescriptorSets(device.Device(), 1, writeDescriptorSets, 0, nullptr);
-    }
-
     void Renderer::DrawModel(Model* model, const Model::Transform& transform)
     {
         models[modelCount] = model;
-        transforms[modelCount] = { mainCamera->GetProjView() * transform.transform, transform.normalMatrix };
+        // might need to see if there's a way to avoid a copy here.
+        transforms[modelCount] = { transform.transform, transform.normalMatrix };
         SNEK_ASSERT(modelCount++ <= MAX_OBJECT_TRANSFORMS, 
+                "LIMIT REACHED ON RENDERABLE MODELS");
+    }
+
+    void Renderer::DrawModel2D(Model* model, const Model::Transform2D& transform)
+    {
+        models2D[model2DCount] = model;
+        // might need to see if there's a way to avoid a copy here.
+        transforms2D[model2DCount] = { transform.transform };
+        SNEK_ASSERT(model2DCount++ <= MAX_OBJECT_TRANSFORMS, 
                 "LIMIT REACHED ON RENDERABLE MODELS");
     }
 
@@ -147,19 +65,59 @@ namespace SnekVk
 
         auto commandBuffer = GetCurrentCommandBuffer();
 
-        VkDeviceSize bufferSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
+        VkDeviceSize bufferSize = sizeof(transforms[0]) * MAX_OBJECT_TRANSFORMS;
+        VkDeviceSize dirToLightBufferSize = sizeof(PointLight::Data);
+        VkDeviceSize cameraDataBufferSize = sizeof(glm::mat4);
 
-        // TODO - profile this as we're unsure whether one big copy is better than a few small ones
-        Buffer::CopyData<Model::Transform>(objectTransformsBuffer, bufferSize, transforms);
+        glm::mat4 cameraData = mainCamera->GetProjView();
 
         for (size_t i = 0; i < modelCount; i++)
         {
-            models[i]->Bind(commandBuffer);
-            
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &objectDescriptor, 0, nullptr);
+            auto model = models[i];
 
-            models[i]->Draw(commandBuffer, i);
+            if (currentMat != model->GetMaterial())
+            {
+                currentMat = model->GetMaterial();
+                currentMat->SetUniformData(bufferId, bufferSize, transforms);
+                currentMat->SetUniformData(lightId, dirToLightBufferSize, &light->GetLightData());
+                currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
+                currentMat->Bind(commandBuffer);
+            } 
+
+            if (currentModel != model)
+            {
+                currentModel = model;
+                currentModel->Bind(commandBuffer);
+            }
+
+            model->Draw(commandBuffer, i);
         }
+
+        VkDeviceSize bufferSize2D = sizeof(transforms2D[0]) * MAX_OBJECT_TRANSFORMS;
+
+        for (size_t i = 0; i < model2DCount; i++)
+        {
+            auto model = models2D[i];
+
+            if (currentMat != model->GetMaterial())
+            {
+                currentMat = model->GetMaterial();
+                currentMat->SetUniformData(bufferId, bufferSize2D, transforms2D);
+                currentMat->SetUniformData("cameraData", cameraDataBufferSize, &cameraData);
+                currentMat->Bind(commandBuffer);
+            } 
+
+            if (currentModel != model)
+            {
+                currentModel = model;
+                currentModel->Bind(commandBuffer);
+            }
+
+            model->Draw(commandBuffer, i);
+        }
+
+        currentModel = nullptr;
+        currentMat = nullptr;
     }
 
     void Renderer::RecreateSwapChain()
@@ -180,20 +138,9 @@ namespace SnekVk
 
         // Re-create the pipeline once the swapchain renderpass 
         // becomes available again.
-        if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat)) {
-            // Clear our graphics pipeline before swapchain re-creation
-            graphicsPipeline.ClearPipeline();
-
-            PipelineConfig::ShaderConfig shaders[] = 
-            {
-                { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-                { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
-            };
-
-            graphicsPipeline.RecreatePipeline(
-                shaders,
-                2,
-                CreateDefaultPipelineConfig());
+        if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat)) 
+        {
+            currentMat->RecreatePipeline();
         }
     }
 
@@ -204,58 +151,6 @@ namespace SnekVk
             device.GetCommandPool(), 
             swapChain.GetImageCount(), 
             commandBuffers.Data());
-    }
-
-    PipelineConfigInfo Renderer::CreateDefaultPipelineConfig()
-    {
-        VertexDescription::Attribute vertexAttributes[] = {
-            { offsetof(Vertex, position), VertexDescription::AttributeType::VEC3 },
-            { offsetof(Vertex, color), VertexDescription::AttributeType::VEC3 },
-            { offsetof(Vertex, normal), VertexDescription::AttributeType::VEC3 },
-            { offsetof(Vertex, uv), VertexDescription::AttributeType::VEC2 }
-        };
-
-        auto vertexBinding = VertexDescription::CreateBinding(
-            0, 
-            sizeof(Vertex), 
-            VertexDescription::InputRate::VERTEX, 
-            vertexAttributes, 
-            4);
-
-        auto pipelineConfig = Pipeline::DefaultPipelineConfig();
-        pipelineConfig.renderPass = swapChain.GetRenderPass()->GetRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
-        
-        pipelineConfig.vertexData = VertexDescription::CreateDescriptions(1, &vertexBinding);
-
-        return pipelineConfig;
-    }
-
-    void Renderer::CreatePipelineLayout()
-    {
-        VkDescriptorSetLayout layouts[] = { objectLayout};
-
-        PipelineConfig::CreatePipelineLayout(device.Device(), OUT &pipelineLayout, layouts, 1);
-    }
-
-    Pipeline Renderer::CreateGraphicsPipeline()
-    {
-        CreatePipelineLayout();
-
-        SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
-
-        PipelineConfig::ShaderConfig shaders[] = 
-        {
-            { "shaders/simpleShader.vert.spv", PipelineConfig::PipelineStage::VERTEX },
-            { "shaders/simpleShader.frag.spv", PipelineConfig::PipelineStage::FRAGMENT }
-        };
-
-        return SnekVk::Pipeline(
-            device, 
-            shaders,
-            2,
-            CreateDefaultPipelineConfig()
-        );
     }
 
     bool Renderer::StartFrame()
@@ -284,12 +179,6 @@ namespace SnekVk
             "Failed to begin recording command buffer");
         
         BeginSwapChainRenderPass(commandBuffer);
-
-        // Might need to find a better way to structure this section.
-        // We should be able to only re-bind a pipeline when a new one is 
-        // provided.
-        // This can probably be bundled with a material system when ready.
-        graphicsPipeline.Bind(commandBuffer);
         
         return true;
     }
@@ -323,9 +212,14 @@ namespace SnekVk
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT; 
 
         // Reset the collections of models
-        memset(transforms, 0, sizeof(Model::Transform) * modelCount);
-        memset(models, 0, sizeof(Model*) * modelCount);
+        memset(transforms, 0, sizeof(transforms[0]) * modelCount);
+        memset(models, 0, sizeof(models[0]) * modelCount);
         modelCount = 0;
+
+        // TODO: Duplicated logic, might be good to create standalone container
+        memset(transforms2D, 0, sizeof(transforms2D[0]) * model2DCount);
+        memset(models, 0, sizeof(models2D[0]) * model2DCount);
+        model2DCount = 0;
     }
 
     void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
