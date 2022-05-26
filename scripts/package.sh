@@ -66,4 +66,5 @@ if [[ $* != *--include-validation-layers* ]]; then
 fi
 
 cp -r "$BIN_DIR/shaders" "$CONTENTS_DIR"
+cp -r "$BIN_DIR/assets" "$CONTENTS_DIR"
 cp -r "$BIN_DIR/app" "$EXE_FILE"
