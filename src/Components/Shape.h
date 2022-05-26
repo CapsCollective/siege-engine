@@ -34,6 +34,8 @@ namespace Components
         glm::vec3& GetColor() { return fillColor; }
         SnekVk::Model* GetModel() { return model; }
 
+        const SnekVk::Model::PushConstantData& GetPushConstantData() const { return pushConstantData; }
+
         void SetColor(glm::vec3 newColor);
         void SetScale(glm::vec2 newScale);
         void SetTransform(glm::vec2 newPos);
@@ -42,6 +44,7 @@ namespace Components
         private: 
         
         SnekVk::Model* model;
+        SnekVk::Model::PushConstantData pushConstantData{};
         Transform2D transform{};
         glm::vec3 fillColor{0.0f};
     };

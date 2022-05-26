@@ -80,6 +80,11 @@ namespace SnekVk
         Init();
     }
 
+    bool SwapChain::CompareSwapFormats(VkFormat oldImageFormat, VkFormat oldDepthFormat)
+    {
+        return oldImageFormat == swapChainImageFormat && oldDepthFormat == swapChainDepthFormat;
+    }
+
     void SwapChain::Init()
     {
         CreateSwapChain();
@@ -224,12 +229,13 @@ namespace SnekVk
     {
         // Start by getting our depth information
         VkFormat format = FindDepthFormat();
-        VkExtent2D extent = GetSwapChainExtent();
+        swapChainDepthFormat = format;
+        VkExtent2D swapChainExtent = GetSwapChainExtent();
 
         // Initialise our depth image information. 
         depthImages = FrameImages(&device, format);
 
-        depthImages.InitDepthImageView2D(extent.width, extent.height, 1);
+        depthImages.InitDepthImageView2D(swapChainExtent.width, swapChainExtent.height, 1);
     }
 
     void SwapChain::CreateFrameBuffers()

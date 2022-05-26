@@ -30,7 +30,6 @@ namespace SnekVk
         struct Vertex
         {
             glm::vec2 position;
-            glm::vec3 color;
 
             /**
              * @brief Get a list of binding colorDescriptions for this Vertex. A binding description details
@@ -46,7 +45,7 @@ namespace SnekVk
              * 
              * @return The attribute colorDescriptions in the form of a std::array<VkVertexInputAttributeDescription, 1>
              */
-            static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
+            static std::array<VkVertexInputAttributeDescription, 1> GetAttributeDescriptions();
         };
 
         // 'Structors
@@ -88,10 +87,6 @@ namespace SnekVk
          */
         void Draw(VkCommandBuffer commandBuffer);
 
-        // TODO: Remove this when no longer relevant. 
-        PushConstantData& GetPushConstant() { return pushConstant; }
-        void SetPushConstant(PushConstantData newData) { pushConstant = newData; }
-
         private:
 
         /**
@@ -105,7 +100,5 @@ namespace SnekVk
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         u32 vertexCount;
-
-        PushConstantData pushConstant;
     };
 }

@@ -5,8 +5,6 @@
 #include "Pipeline/Pipeline.h"
 #include "Model/Model.h"
 
-#include <vector>
-
 namespace SnekVk 
 {
     class Renderer
@@ -19,12 +17,28 @@ namespace SnekVk
 
             void DestroyRenderer();
 
-            void SubmitModel(Model* model);
-            
-            void DrawFrame();
-
             static VulkanDevice& GetDevice() { return device; }
             SwapChain& GetSwapChain() { return swapChain; }
+            VkRenderPass GetSwapChanRenderPass() { return swapChain.GetRenderPass()->GetRenderPass(); }
+
+            int GetCurrentFrameIndex() const
+            {
+                SNEK_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+                return currentFrameIndex;
+            }
+            
+            bool IsFrameStarted() { return isFrameStarted; }
+
+            VkCommandBuffer GetCurrentCommandBuffer() const 
+            { 
+                SNEK_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
+                return commandBuffers[currentFrameIndex]; 
+            }
+            
+            void DrawModel(Model* model, const Model::PushConstantData& pushData);
+
+            bool StartFrame();
+            void EndFrame();
 
             void CreatePipelineLayout();
             void ClearDeviceQueue() { vkDeviceWaitIdle(device.Device()); } 
@@ -38,10 +52,12 @@ namespace SnekVk
             VkClearColorValue clearValue {0, 0, 0, 1.f};
 
             void CreateCommandBuffers();
-
-            void RecordCommandBuffer(int imageIndex);
             void RecreateSwapChain();
             void FreeCommandBuffers();
+
+            void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+            void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
+
             PipelineConfigInfo CreateDefaultPipelineConfig();
 
             SnekVk::Window& window;
@@ -49,9 +65,11 @@ namespace SnekVk
             static VulkanDevice device;
             SwapChain swapChain;
 
-            std::vector<Model*> models;
-
             VkPipelineLayout pipelineLayout{nullptr};
             Pipeline graphicsPipeline;
+
+            u32 currentImageIndex;
+            bool isFrameStarted{false};
+            int currentFrameIndex{0};
     };
 }
