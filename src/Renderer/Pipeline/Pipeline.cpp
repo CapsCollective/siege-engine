@@ -1,5 +1,4 @@
 #include "Pipeline.h"
-#include "../Mesh/Mesh.h"
 
 #include <fstream>
 #include <string>
@@ -9,11 +8,12 @@ namespace SnekVk
 {
     Pipeline::Pipeline(
         VulkanDevice& device, 
-        const char* vertFilePath, 
-        const char* fragFilePath, 
-        const PipelineConfigInfo& configInfo) : device{device}
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
+        const PipelineConfigInfo& configInfo
+    ) : Pipeline(device)
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+        CreateGraphicsPipeline(shaders, shaderCount, configInfo);
     }
 
     Pipeline::Pipeline(VulkanDevice& device) : device{device}
@@ -48,8 +48,8 @@ namespace SnekVk
     }
 
     void Pipeline::CreateGraphicsPipeline(
-        char const* vertFilePath, 
-        char const* fragFilePath, 
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
         const PipelineConfigInfo& configInfo)
     {
 
@@ -58,31 +58,25 @@ namespace SnekVk
         
         SNEK_ASSERT(configInfo.renderPass != VK_NULL_HANDLE, 
                 "Cannot create graphics pipeline: no renderpass config provided in configInfo");
+        
+        SNEK_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.");
 
-        auto vertCode = ReadFile(vertFilePath);
-        auto fragCode = ReadFile(fragFilePath);
+        shaderModuleCount = shaderCount;
+        
+        VkPipelineShaderStageCreateInfo shaderStages[shaderCount];
 
-        CreateShaderModule(vertCode, OUT &vertShader);
-        CreateShaderModule(fragCode, OUT &fragShader);
+        PipelineConfig::PipelineStage stages[shaderCount];
 
-        // We only support the vertex and fragment stages atm. Each stage is represented
-        // by a PipelineShaderStageCreateInfo struct. 
-        VkPipelineShaderStageCreateInfo shaderStages[2];
-        shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT; // vertex stage of the pipeline
-        shaderStages[0].module = vertShader;
-        shaderStages[0].pName = "main";
-        shaderStages[0].flags = 0;
-        shaderStages[0].pNext = nullptr;
-        shaderStages[0].pSpecializationInfo = nullptr;
+        for (size_t i = 0; i < shaderCount; i++)
+        {
+            auto shaderCode = ReadFile(shaders[i].filePath);
 
-        shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT; // fragment stage of the pipeline
-        shaderStages[1].module = fragShader;
-        shaderStages[1].pName = "main";
-        shaderStages[1].flags = 0;
-        shaderStages[1].pNext = nullptr;
-        shaderStages[1].pSpecializationInfo = nullptr;
+            CreateShaderModule(shaderCode, OUT &shaderModules[i]);
+
+            stages[i] = shaders[i].stage;
+        }
+
+        PipelineConfig::CreateDefaultPipelineStages(OUT shaderStages, stages, shaderModules, shaderCount);
 
         // In order to pass in vertex information, we must assign a set of descriptions to the shader.
         // These descriptions detail all data binding and which locations these bindings must be set to. 
@@ -90,22 +84,23 @@ namespace SnekVk
 
         // TODO: Maybe inject these into the config. Right now the pipeline is highly coupled 
         // to the models. 
-        auto bindingDescriptions = GetVertexBindingDescriptions();
-        auto attributeDescriptions = GetVertexAttributeDescriptions();
+        
+        auto bindingDescriptions = configInfo.vertexData.bindings;
+        auto attributeDescriptions = configInfo.vertexData.attributes;
 
         // Bind the descriptions to the pipeline to allow us to pass in vertex info via 
         // vertex buffers.
         VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo{};
         vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<u32>(attributeDescriptions.size());
-        vertexInputCreateInfo.vertexBindingDescriptionCount = static_cast<u32>(bindingDescriptions.size());
-        vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        vertexInputCreateInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+        vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<u32>(attributeDescriptions.Size());
+        vertexInputCreateInfo.vertexBindingDescriptionCount = static_cast<u32>(bindingDescriptions.Size());
+        vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.Data();
+        vertexInputCreateInfo.pVertexBindingDescriptions = bindingDescriptions.Data();
 
         // Pass in all pipeline config details to the pipeline create info struct. 
         VkGraphicsPipelineCreateInfo pipelineCreateInfo{};
         pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineCreateInfo.stageCount = 2;
+        pipelineCreateInfo.stageCount = shaderCount;
         pipelineCreateInfo.pStages = shaderStages;
         pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
         pipelineCreateInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
@@ -128,19 +123,21 @@ namespace SnekVk
     }
 
     void Pipeline::RecreatePipeline(
-        const char* vertFilePath, 
-        const char* fragFilePath, 
+        const PipelineConfig::ShaderConfig* shaders,
+        u32 shaderCount,
         const PipelineConfigInfo& configInfo)
     {
-        CreateGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+        CreateGraphicsPipeline(shaders, shaderCount, configInfo);
     }
 
     void Pipeline::ClearPipeline()
     {
         // TODO: Maybe we can get away without destroying the shader modules when 
         // re-creating the pipeline?
-        vkDestroyShaderModule(device.Device(), vertShader, nullptr);
-        vkDestroyShaderModule(device.Device(), fragShader, nullptr);
+        for (size_t i = 0; i < shaderModuleCount; i++)
+        {
+            vkDestroyShaderModule(device.Device(), shaderModules[i], nullptr);
+        }
         
         vkDestroyPipeline(device.Device(), graphicsPipeline, nullptr);
     }
@@ -167,82 +164,64 @@ namespace SnekVk
     {
         PipelineConfigInfo configInfo {};
 
-        // Input Assembly specifies how vertices are interpreted in the pipeline. 
-        configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        // Here we specify that all vertices should be interpreted as a list of triangles. Every three
-        // vertices will therefore be considered to be attached as a triangle.
-        configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+        configInfo.inputAssemblyInfo = PipelineConfig::InitInputAssemblyStateCreateInfo();
+        
+        configInfo.viewportInfo = 
+                PipelineConfig::InitViewPortCreateInfo(1, nullptr, 1, nullptr);
+        
+        configInfo.rasterizationInfo = PipelineConfig::InitRasterizationCreateInfo(
+            VK_FALSE, 
+            VK_FALSE, 
+            VK_POLYGON_MODE_FILL, 
+            VK_CULL_MODE_NONE, 
+            VK_FRONT_FACE_CLOCKWISE,
+            VK_FALSE
+        );
 
-        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.viewportInfo.viewportCount = 1;
-        configInfo.viewportInfo.pViewports = nullptr;
-        configInfo.viewportInfo.scissorCount = 1;
-        configInfo.viewportInfo.pScissors = nullptr;
-
-        // Defines how we handle rasterisation for our vertices. 
-        configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;       
-        configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
-        configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL; // fill the space between vertices.
-        configInfo.rasterizationInfo.lineWidth = 1.0f;
-        configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
-        configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // clockwise front-face. 
-        configInfo.rasterizationInfo.depthBiasEnable = VK_FALSE;
-        configInfo.rasterizationInfo.depthBiasConstantFactor = 0.0f;
-        configInfo.rasterizationInfo.depthBiasClamp = 0.0f;
-        configInfo.rasterizationInfo.depthBiasSlopeFactor = 0.0f;
-
-        // Defines how multi-sampling is handled. 
-        configInfo.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        configInfo.multisampleInfo.sampleShadingEnable = VK_FALSE;
-        configInfo.multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        configInfo.multisampleInfo.minSampleShading = 1.0f;
-        configInfo.multisampleInfo.pSampleMask = nullptr;
-        configInfo.multisampleInfo.alphaToCoverageEnable = VK_FALSE;
-        configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE;
+        configInfo.multisampleInfo = PipelineConfig::InitMultiSampleCreateInfo(
+            VK_SAMPLE_COUNT_1_BIT, 
+            VK_FALSE, 
+            1.0f, 
+            nullptr, 
+            VK_FALSE, 
+            VK_FALSE
+        );
 
         // Configures that types of colors we handle. In our case we allow a 4-part vector containing
         // an R,G,B, and A value. 
-        configInfo.colorBlendAttachment.colorWriteMask = 
-                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        configInfo.colorBlendAttachment.blendEnable = VK_FALSE;
-        configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-        configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;    
-        configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-        configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        configInfo.colorBlendAttachment = PipelineConfig::InitColorBlendAttachment(
+            VK_FALSE,
+            VK_BLEND_FACTOR_ONE,
+            VK_BLEND_FACTOR_ZERO,
+            VK_BLEND_OP_ADD,
+            VK_BLEND_FACTOR_ONE,
+            VK_BLEND_FACTOR_ZERO,
+            VK_BLEND_OP_ADD
+        );
 
         // Specifies further configurations for color blending
-        configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
-        configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY; 
-        configInfo.colorBlendInfo.attachmentCount = 1;
-        configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
-        configInfo.colorBlendInfo.blendConstants[0] = 0.0f;
-        configInfo.colorBlendInfo.blendConstants[1] = 0.0f;
-        configInfo.colorBlendInfo.blendConstants[2] = 0.0f;
-        configInfo.colorBlendInfo.blendConstants[3] = 0.0f;
+        configInfo.colorBlendInfo = PipelineConfig::InitColorBlendCreateInfo(
+            VK_FALSE, 
+            VK_LOGIC_OP_COPY, 
+            1, 
+            &configInfo.colorBlendAttachment
+        );
 
         // Determines how image depth is handled
-        configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
-        configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
-        configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-        configInfo.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-        configInfo.depthStencilInfo.minDepthBounds = 0.0f;
-        configInfo.depthStencilInfo.maxDepthBounds = 1.0f; 
-        configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
-        configInfo.depthStencilInfo.front = {};
-        configInfo.depthStencilInfo.back = {};
+        configInfo.depthStencilInfo = PipelineConfig::InitDepthStencilCreateInfo(
+            VK_TRUE, 
+            VK_TRUE, 
+            VK_COMPARE_OP_LESS, 
+            VK_FALSE, 
+            VK_FALSE
+        );
 
         configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
-        configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.Data();
-        configInfo.dynamicStateInfo.dynamicStateCount = static_cast<u32>(configInfo.dynamicStateEnables.Size());
-        configInfo.dynamicStateInfo.flags = 0;
+        configInfo.dynamicStateInfo = PipelineConfig::InitDynamicStateCreateInfo(
+            static_cast<u32>(configInfo.dynamicStateEnables.Size()),
+            configInfo.dynamicStateEnables.Data()
+        );
 
         return configInfo;
     }

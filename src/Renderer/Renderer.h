@@ -29,6 +29,8 @@ namespace SnekVk
             }
 
             float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
+
+            void SetMainCamera(Camera* camera) { mainCamera = camera; }
             
             bool IsFrameStarted() { return isFrameStarted; }
 
@@ -38,7 +40,7 @@ namespace SnekVk
                 return commandBuffers[currentFrameIndex]; 
             }
             
-            void DrawModel(Model* model, Model::Transform transform, Camera::GPUCameraData cameraData);
+            void DrawModel(Model* model, const Model::Transform& transform);
 
             bool StartFrame();
             void EndFrame();
@@ -49,6 +51,8 @@ namespace SnekVk
 
             void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
         private:
+
+            static constexpr size_t MAX_OBJECT_TRANSFORMS = 10000;
             
             static VulkanDevice* deviceInstance;
             static Utils::Array<VkCommandBuffer> commandBuffers;
@@ -64,6 +68,8 @@ namespace SnekVk
             void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
             void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
+            void DrawFrame();
+
             PipelineConfigInfo CreateDefaultPipelineConfig();
 
             SnekVk::Window& window;
@@ -78,10 +84,18 @@ namespace SnekVk
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
+            
+            Buffer::Buffer objectTransformsBuffer;
 
-            Buffer::Buffer uniformCamBuffer;
             VkDescriptorPool descriptorPool;
-            VkDescriptorSetLayout globalLayout;
-            VkDescriptorSet globalDescriptor;
+
+            VkDescriptorSetLayout objectLayout;
+            VkDescriptorSet objectDescriptor;
+
+            Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
+            Model* models[MAX_OBJECT_TRANSFORMS];
+            size_t modelCount = 0;
+
+            Camera* mainCamera;
     };
 }

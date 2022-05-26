@@ -27,9 +27,9 @@ static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
 SnekVk::Vertex triangleVerts[] = {
-    {{0.0f, -0.5f, 0.f}},
-    {{0.5f, 0.5f, 0.f}}, 
-    {{-0.5f, 0.5f, 0.f}}
+    {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
+    {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
+    {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
@@ -40,10 +40,10 @@ SnekVk::Mesh::MeshData triangleMeshData {
 };
 
 SnekVk::Vertex squareVerts[] = {
-    {{0.5f, 0.5f, 0.f}}, // top right
-    {{0.5f, -0.5f, 0.f}}, // bottom right
-    {{-0.5f, -0.5f, 0.f}}, // bottom left
-    {{-0.5f, 0.5f, 0.f}}, // top left
+    {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
+    {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
+    {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
+    {{-0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
 u32 squareIndices[] = {
@@ -112,7 +112,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     auto mousePos = Input::GetCursorPosition();
 
     glm::vec3 rotate{0};
-    float lookSpeed = 2.1f;
+    float lookSpeed = 4.0f;
 
     float differenceX = mousePos.x - oldMousePos.x;
     float differenceY = oldMousePos.y - mousePos.y;
@@ -173,22 +173,27 @@ int main()
 
     // Generate models
 
+    // Generating models from raw vertices
+
     SnekVk::Model triangleModel(triangleMeshData);
 
     SnekVk::Model squareModel(squareMeshData);
 
     SnekVk::Model cubeModel(cubeMeshData);
 
+    // Generating models from .obj files
+
     SnekVk::Model cubeObjModel("assets/models/cube.obj");
 
     SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
 
     // Create shapes for use
-
     std::vector<Components::Shape> shapes = 
     {
         Components::Shape(&cubeObjModel),
-        Components::Shape(&vaseObjModel)
+        Components::Shape(&vaseObjModel),
+        Components::Shape(&triangleModel),
+        Components::Shape(&squareModel)
     };
 
     shapes[0].SetPosition({0.f, 0.5f, 2.5f});
@@ -199,9 +204,15 @@ int main()
     shapes[1].SetScale({2.f, 2.f, 2.f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
 
+    shapes[2].SetPosition({1.5f, 0.f, 2.5f});
+
+    shapes[3].SetPosition({-1.5f, 0.f, 2.5f});
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
+
+    renderer.SetMainCamera(&camera);
 
     while(!window.WindowShouldClose()) {
         
@@ -227,14 +238,14 @@ int main()
             camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
         }
 
-        if (renderer.StartFrame()) 
+        if (!renderer.StartFrame()) continue;
+        
+        for (auto& shape : shapes)
         {
-            for (auto& shape : shapes)
-            {
-                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), camera.GetCameraData());
-            }
-            renderer.EndFrame();
+            renderer.DrawModel(shape.GetModel(), shape.GetTransform());
         }
+        
+        renderer.EndFrame();
     }
 
     renderer.ClearDeviceQueue();
