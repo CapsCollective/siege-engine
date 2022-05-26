@@ -1,5 +1,5 @@
 #include "Pipeline.h"
-#include "../Model/Model.h"
+#include "../Mesh/Mesh.h"
 
 #include <fstream>
 #include <string>
@@ -90,8 +90,8 @@ namespace SnekVk
 
         // TODO: Maybe inject these into the config. Right now the pipeline is highly coupled 
         // to the models. 
-        auto bindingDescriptions = Model::Vertex::GetBindingDescriptions();
-        auto attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
+        auto bindingDescriptions = GetVertexBindingDescriptions();
+        auto attributeDescriptions = GetVertexAttributeDescriptions();
 
         // Bind the descriptions to the pipeline to allow us to pass in vertex info via 
         // vertex buffers.

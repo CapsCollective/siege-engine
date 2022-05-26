@@ -60,8 +60,8 @@ const Input::MouseCoordinates& Input::GetCursorPosition()
 Input::MouseCoordinates Input::GetNormalisedMousePosition()
 {
     return {
-        Utils::Math::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
-        Utils::Math::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight())
+        glm::clamp<float>(Utils::Math::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()), -1.f, 1.f),
+        glm::clamp<float>(Utils::Math::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight()), -1.f, 1.f)
     };
 }
 

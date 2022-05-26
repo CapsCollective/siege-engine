@@ -51,15 +51,15 @@ namespace SnekVk
 
         model->Bind(commandBuffer);
 
-        Model::PushConstantData pushData = { perspectiveMatrix * transform.transform, transform.normalMatrix };
+        transform.transform = perspectiveMatrix * transform.transform;
 
         vkCmdPushConstants(
             commandBuffer,
             pipelineLayout,
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             0,
-            sizeof(Model::PushConstantData),
-            &pushData
+            sizeof(Model::Transform),
+            &transform
         );
 
         model->Draw(commandBuffer);
@@ -121,7 +121,7 @@ namespace SnekVk
         VkPushConstantRange range{};
         range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         range.offset = 0; 
-        range.size = sizeof(Model::PushConstantData);
+        range.size = sizeof(Model::Transform);
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
