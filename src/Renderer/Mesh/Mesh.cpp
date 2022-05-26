@@ -8,50 +8,9 @@ namespace SnekVk
             && left.normal == right.normal && left.uv == right.uv;
     }
 
-    void SetVertexBindingDescriptions(VertexDescription::Data* vertexData)
+    bool operator==(const Vertex2D& left, const Vertex2D& right)
     {
-        vertexData->bindings = { VertexDescription::CreateBinding(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX) }; 
-    }
-
-    void SetVertexAttributeDescriptions(VertexDescription::Data* vertexData)
-    {
-        vertexData->attributes = {
-            VertexDescription::CreateAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)),
-            VertexDescription::CreateAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)),
-            VertexDescription::CreateAttribute(2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
-            VertexDescription::CreateAttribute(3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv))
-        };
-    }
-
-    Utils::Array<VkVertexInputBindingDescription> GetVertexBindingDescriptions()
-    {
-        Utils::Array<VkVertexInputBindingDescription> bindingDescriptions = 
-        {
-            VertexDescription::CreateBinding(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX)
-        };
-                
-        return bindingDescriptions;
-    }
-
-    Utils::Array<VkVertexInputAttributeDescription> GetVertexAttributeDescriptions()
-    {
-        Utils::Array<VkVertexInputAttributeDescription> attributeDescriptions = {
-            VertexDescription::CreateAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)),
-            VertexDescription::CreateAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)),
-            VertexDescription::CreateAttribute(2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
-            VertexDescription::CreateAttribute(3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv))
-        };
-
-        return attributeDescriptions;
-    }
-
-    VertexDescription::Data GetDescriptionData()
-    {
-        return 
-        { 
-            GetVertexBindingDescriptions(), 
-            GetVertexAttributeDescriptions()
-        };
+        return left.color == right.color && left.position == right.position;
     }
 
     Mesh::Mesh() {}
@@ -71,18 +30,19 @@ namespace SnekVk
 
     void Mesh::LoadVertices(const Mesh::MeshData& meshData)
     {
-        this->vertexCount = meshData.vertexCount;
-        this->indexCount = meshData.indexCount;
+        vertexCount = meshData.vertexCount;
+        indexCount = meshData.indexCount;
+        vertexSize = meshData.vertexSize;
 
         CreateVertexBuffers(meshData.vertices);
         CreateIndexBuffer(meshData.indices);
     }
 
-    void Mesh::CreateVertexBuffers(const Vertex* vertices)
+    void Mesh::CreateVertexBuffers(const void* vertices)
     {
         SNEK_ASSERT(vertexCount >= 3, "Vertex count must be at least 3!");
 
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        VkDeviceSize bufferSize = vertexSize;
 
         Buffer::Buffer stagingBuffer;
 
@@ -96,7 +56,7 @@ namespace SnekVk
             OUT stagingBuffer.buffer,
             OUT stagingBuffer.bufferMemory);
 
-        Buffer::CopyData<Vertex>(stagingBuffer, bufferSize, vertices);
+        Buffer::CopyData(stagingBuffer, bufferSize, vertices);
 
         Buffer::CreateBuffer(
             bufferSize,
@@ -133,7 +93,7 @@ namespace SnekVk
             OUT stagingBuffer.bufferMemory
         );
 
-        Buffer::CopyData<u32>(stagingBuffer, bufferSize, indices);
+        Buffer::CopyData(stagingBuffer, bufferSize, indices);
 
         Buffer::CreateBuffer(
             bufferSize,

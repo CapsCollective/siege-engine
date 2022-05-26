@@ -38,6 +38,16 @@ namespace SnekVk::Buffer
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);
     };
 
+    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset)
+    {
+        auto device = VulkanDevice::GetDeviceInstance()->Device();
+
+        void* data;
+        vkMapMemory(device, dstBuffer.bufferMemory, offset, size, 0, &data);
+        memcpy(data, bufferData, size);
+        vkUnmapMemory(device, dstBuffer.bufferMemory);
+    }
+
     void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
     {
         VulkanDevice::GetDeviceInstance()->CopyBuffer(srcBuffer, dstBuffer, size);
@@ -48,5 +58,16 @@ namespace SnekVk::Buffer
         VkDevice device = VulkanDevice::GetDeviceInstance()->Device();
         if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
         if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
+    }
+
+    size_t PadUniformBufferSize(size_t originalSize)
+    {
+        // Calculate required alignment based on minimum device offset alignment
+        size_t minUboAlignment = VulkanDevice::GetDeviceInstance()->GetDeviceAlignment();
+        size_t alignedSize = originalSize;
+        if (minUboAlignment > 0) {
+            alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+        }
+        return alignedSize;
     }
 }

@@ -107,6 +107,8 @@ namespace SnekVk
          */
         u32 GetHeight() { return swapChainExtent.height; }
 
+        static SwapChain* GetInstance() { return instance; }
+
         /**
          * @brief Get the current render pass object. 
          * 
@@ -225,6 +227,9 @@ namespace SnekVk
 
         // Device and window data
         VulkanDevice& device;
+
+        static SwapChain* instance;
+
         VkExtent2D windowExtent;
 
         // frame buffers and renderpasses

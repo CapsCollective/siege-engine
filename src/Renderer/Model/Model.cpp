@@ -13,7 +13,18 @@ namespace std
         size_t operator()(const SnekVk::Vertex &vertex) const 
         {
             size_t seed = 0;
-            SnekVk::Utils::HashCombine(seed, vertex.color, vertex.normal, vertex.uv);
+            SnekVk::Utils::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+            return seed;
+        };
+    };
+
+    template<>
+    struct hash<SnekVk::Vertex2D>
+    {
+        size_t operator()(const SnekVk::Vertex2D &vertex) const 
+        {
+            size_t seed = 0;
+            SnekVk::Utils::HashCombine(seed, vertex.position, vertex.color);
             return seed;
         };
     };
@@ -103,6 +114,7 @@ namespace SnekVk
 
         modelMesh.LoadVertices(
             {
+                sizeof(Vertex) * objVertices.size(),
                 objVertices.data(), 
                 static_cast<u32>(objVertices.size()), 
                 objIndices.data(), 

@@ -1,10 +1,17 @@
 #pragma once
 
 #include "Utils/Array.h"
+#include "Utils/StackArray.h"
+#include "Utils/Hash.h"
 
 #include <volk/volk.h>
 #include <iostream>
 #include <cstdint>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
 
 // Custom type declarations
 typedef uint32_t u32;
@@ -28,6 +35,8 @@ typedef size_t size;
     } \
 
 #define OUT
+
+#define INTERN_STR(str) Utils::WSID(str)
 
 namespace SnekVk 
 {

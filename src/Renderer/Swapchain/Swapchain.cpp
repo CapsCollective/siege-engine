@@ -4,6 +4,8 @@
 
 namespace SnekVk
 {
+    SwapChain* SwapChain::instance = nullptr;
+
     SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) 
         : device{device}, windowExtent{windowExtent}
     {
@@ -90,7 +92,8 @@ namespace SnekVk
         CreateDepthResources();
         CreateFrameBuffers();
         CreateSyncObjects();
-        std::cout << "Recreated Swapchain" << std::endl;
+
+        if (instance == nullptr) instance = this;
     }
 
     void SwapChain::CreateSwapChain()

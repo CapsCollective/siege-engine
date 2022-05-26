@@ -46,14 +46,7 @@ namespace SnekVk::Buffer
      * @param size - the size of the buffer
      * @param bufferData - the data being copied into the buffer
      **/
-    template<typename T>
-    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const T* bufferData, VkDeviceSize offset = 0)
-    {
-        void* data;
-        vkMapMemory(VulkanDevice::GetDeviceInstance()->Device(), dstBuffer.bufferMemory, offset, size, 0, &data);
-        memcpy(data, bufferData, size);
-        vkUnmapMemory(VulkanDevice::GetDeviceInstance()->Device(), dstBuffer.bufferMemory);
-    }
+    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset = 0);
 
     /**
      * Copies a buffer. This is generally used when copying the values within a buffer into
@@ -71,4 +64,6 @@ namespace SnekVk::Buffer
      * @param buffer - the buffer to be destroyed.
      **/
     void DestroyBuffer(Buffer& buffer);
+
+    size_t PadUniformBufferSize(size_t originalSize);
 }
