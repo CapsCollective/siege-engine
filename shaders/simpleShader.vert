@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 // 'in' keyword specifies that position gets data from a buffer
 layout(location = 0) in vec3 position;
@@ -8,26 +8,27 @@ layout(location = 3) in vec2 uv;
 
 layout(location = 0) out vec3 fragColor;
 
-layout (push_constant) uniform Push {
+struct ObjectData 
+{
     mat4 transform;
     mat4 normalMatrix;
-} push;
+};
 
-layout (set = 0, binding = 0) uniform CameraBuffer {
-    mat4 projection;
-    mat4 view;
-    mat4 viewProj;
-} cameraData;
+layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
+    ObjectData objects[];
+} objectBuffer;
 
 const vec3 DIRECTION_TO_LIGHT = normalize(vec3(1.0, -3.0, -1.0));
 const float AMBIENT = 0.03;
 
 void main() {
-    mat4 transformMatrix = cameraData.viewProj * push.transform;
+
+    ObjectData object = objectBuffer.objects[gl_BaseInstance];
+    mat4 transformMatrix = object.transform;
 
     gl_Position = transformMatrix * vec4(position, 1.0);
 
-    vec3 normalWorldSpace = normalize(mat3(push.normalMatrix) * normal);
+    vec3 normalWorldSpace = normalize(mat3(object.normalMatrix) * normal);
 
     float lightIntensity = AMBIENT + max(dot(normalWorldSpace, DIRECTION_TO_LIGHT), 0);
 

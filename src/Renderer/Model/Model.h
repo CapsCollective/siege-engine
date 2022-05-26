@@ -40,13 +40,15 @@ namespace SnekVk
         Model& operator=(const Model&) = delete;
 
         void Bind(VkCommandBuffer commandBuffer);
-
+        
         /**
          * @brief Draws the current set vertices (and writes them to the currently bound vertex buffer).
          * 
          * @param commandBuffer The command buffer being used to draw the image
          */
-        void Draw(VkCommandBuffer commandBuffer);
+        void Draw(VkCommandBuffer commandBuffer, u32 instance = 0);
+
+        bool IsIndexed() { return modelMesh.HasIndexBuffer(); }
 
         private:
 

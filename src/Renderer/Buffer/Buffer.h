@@ -47,10 +47,10 @@ namespace SnekVk::Buffer
      * @param bufferData - the data being copied into the buffer
      **/
     template<typename T>
-    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const T* bufferData)
+    void CopyData(Buffer& dstBuffer, VkDeviceSize size, const T* bufferData, VkDeviceSize offset = 0)
     {
         void* data;
-        vkMapMemory(VulkanDevice::GetDeviceInstance()->Device(), dstBuffer.bufferMemory, 0, size, 0, &data);
+        vkMapMemory(VulkanDevice::GetDeviceInstance()->Device(), dstBuffer.bufferMemory, offset, size, 0, &data);
         memcpy(data, bufferData, size);
         vkUnmapMemory(VulkanDevice::GetDeviceInstance()->Device(), dstBuffer.bufferMemory);
     }

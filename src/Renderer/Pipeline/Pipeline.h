@@ -2,6 +2,7 @@
 
 #include "../Core.h"
 #include "../Device/VulkanDevice.h"
+#include "PipelineConfig.h"
 
 namespace SnekVk 
 {
@@ -35,9 +36,13 @@ namespace SnekVk
         Utils::Array<VkDynamicState> dynamicStateEnables;
         VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 
-        VkPipelineLayout pipelineLayout{nullptr};
+        // Dependent structs on other data. 
+
+        VkPipelineLayout pipelineLayout{nullptr}; // needs descriptor sets & push constants
         VkRenderPass renderPass{nullptr};
         u32 subPass{0}; 
+
+        VertexDescription::Data vertexData;
     };
 
     class Pipeline 
@@ -49,6 +54,13 @@ namespace SnekVk
                 VulkanDevice& device, 
                 const char* vertFilePath, 
                 const char* fragFilePath, 
+                const PipelineConfigInfo& configInfo
+            );
+
+            Pipeline(
+                VulkanDevice& device, 
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
                 const PipelineConfigInfo& configInfo
             );
 
@@ -85,10 +97,18 @@ namespace SnekVk
                 const PipelineConfigInfo& configInfo
             );
 
+            void RecreatePipeline(
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
+                const PipelineConfigInfo& configInfo
+            );
+
             // TODO: document this
             void ClearPipeline();
 
         private:
+
+            static constexpr size_t MAX_SHADER_MODULES = 2;
 
             /**
              * Reads a file and returns the contents in binary. This is particularly
@@ -98,16 +118,9 @@ namespace SnekVk
              **/
             static Utils::Array<char> ReadFile(const char* filePath);
 
-            /**
-             * Creates the vulkan graphics pipeline and assigns it to the 'graphicsPipeline' 
-             * member variable. 
-             * @param vertFilePath the path to vertex shader.
-             * @param fragFilePath the path to the fragment shader.
-             * @param configInfo the configuration struct for the pipeline. 
-             **/
             void CreateGraphicsPipeline(
-                char const* vertFilePath, 
-                char const* fragFilePath, 
+                const PipelineConfig::ShaderConfig* shaders,
+                u32 shaderCount,
                 const PipelineConfigInfo& configInfo
             );
 
@@ -132,8 +145,7 @@ namespace SnekVk
              **/
             VkPipeline graphicsPipeline;
 
-            // Shader modules for our vertex and index shaders.
-            VkShaderModule vertShader;
-            VkShaderModule fragShader; 
+            VkShaderModule shaderModules[MAX_SHADER_MODULES];
+            size_t shaderModuleCount = 0; 
     };
 }

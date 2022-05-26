@@ -139,6 +139,7 @@ namespace SnekVk {
 
 		vkGetPhysicalDeviceProperties(physicalDevice, OUT &properties);
 		std::cout << "physical device: " << properties.deviceName << std::endl;
+		std::cout << "GPU has a minumum buffer alignment of " << properties.limits.minUniformBufferOffsetAlignment << std::endl;
 	}
 
 	void VulkanDevice::CreateLogicalDevice() 
