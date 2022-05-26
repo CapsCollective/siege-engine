@@ -10,32 +10,24 @@ namespace Components
 
     void Shape::SetColor(glm::vec3 newColor) 
     { 
-        fillColor = newColor; 
-        SnekVk::Model::PushConstantData oldData = model->GetPushConstant();
-        
-        model->SetPushConstant({ oldData.transform, oldData.offset, fillColor });
+        fillColor = newColor;
+        pushConstantData.color = newColor;
     }
     void Shape::SetTransform(glm::vec2 newPos) 
     { 
-        SnekVk::Model::PushConstantData oldData = model->GetPushConstant();
-        
-        model->SetPushConstant({ oldData.transform, newPos, oldData.color });
-        transform.position = newPos; 
+        transform.position = newPos;
+        pushConstantData.offset = newPos;
     }
 
     void Shape::SetScale(glm::vec2 newScale) 
     { 
         transform.scale = newScale;
-
-        SnekVk::Model::PushConstantData oldData = model->GetPushConstant();
-        model->SetPushConstant({ transform.transform(), oldData.offset, oldData.color });
+        pushConstantData.transform = transform.transform();
     }
 
     void Shape::SetRotation(float rotation)
     {
         transform.rotation = rotation;
-
-        SnekVk::Model::PushConstantData oldData = model->GetPushConstant();
-        model->SetPushConstant({ transform.transform(), oldData.offset, oldData.color });
+        pushConstantData.transform = transform.transform();
     }
 }

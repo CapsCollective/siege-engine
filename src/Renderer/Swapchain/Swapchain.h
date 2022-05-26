@@ -137,6 +137,11 @@ namespace SnekVk
 
         void RecreateSwapchain();
 
+        bool CompareSwapFormats(VkFormat oldImageFormat, VkFormat oldDepthFormat);
+
+        VkFormat GetImageFormat() { return swapChainImageFormat; }
+        VkFormat GetDepthFormat() { return swapChainDepthFormat; }
+
         private:
         
         void Init();
@@ -223,7 +228,9 @@ namespace SnekVk
         VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
         RenderPass renderPass;
 
-        // Swapchain image data
+        VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
+
         VkExtent2D swapChainExtent;
 
         // Images and image views supported by the swapchain
