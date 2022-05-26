@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Device/VulkanDevice.h"
+#include "../Buffer/Buffer.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -48,17 +48,23 @@ namespace SnekVk
             static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions();
         };
 
+        struct Data 
+        {
+            Vertex* vertices;
+            u32 vertexCount;
+            u32* indices;
+            u32 indexCount;
+        };
+
         // 'Structors
+
         /**
          * @brief Constructor for creating a new model.
          * 
-         * @param device The VulkanDevice being used for rendering. 
-         * @param vertices An array of vertices in model space.
-         * @param vertexCount The number of vertices to be used. 
+         * @param configData a struct specifying the config information required to create a model
          */
-        Model(VulkanDevice& device, const Vertex* vertices, u32 vertexCount);
-
-        Model(VulkanDevice& device);
+        Model(const Data& configData);
+        Model();
         ~Model();
 
         void DestroyModel();
@@ -95,10 +101,13 @@ namespace SnekVk
          * @param vertices An array of all vertices in model space.
          */
         void CreateVertexBuffers(const Vertex* vertices);
-        
-        VulkanDevice& device;
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        void CreateIndexBuffer(const u32* indices);
+
+        Buffer::Buffer vertexBuffer;
         u32 vertexCount;
+
+        bool hasIndexBuffer = false;
+        Buffer::Buffer indexBuffer;
+        u32 indexCount;
     };
 }

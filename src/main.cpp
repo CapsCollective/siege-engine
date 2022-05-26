@@ -5,6 +5,7 @@
 #include "Renderer/Model/Model.h"
 #include "Components/Shape.h"
 #include "Input/Input.h"
+#include "Utils/Math.h"
 
 #include <glm/gtc/constants.hpp>
 #include <vector>
@@ -32,89 +33,70 @@ SnekVk::Model::Vertex triangleVerts[] = {
 };
 
 SnekVk::Model::Vertex squareVerts[] = {
-    {{-0.5f, -0.5f, 0.f}},
-    {{0.5f, 0.5f, 0.f}},
-    {{-0.5f, 0.5f, 0.f}},
-    {{-0.5f, -0.5f, 0.f}},
-    {{0.5f, -0.5f, 0.f}},
-    {{0.5f, 0.5f, 0.f}}, 
+    {{0.5f, 0.5f, 0.f}}, // top right
+    {{0.5f, -0.5f, 0.f}}, // bottom right
+    {{-0.5f, -0.5f, 0.f}}, // bottom left
+    {{-0.5f, 0.5f, 0.f}}, // top left
+
+    // Movement on any axis requires offsetting 
+    // each vertex by the desired offset. 
+    // i.e: Moving this square right requires all 
+    // x vertices to be incremented by 1.
+    // {{3.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top right
+    // {{3.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
+    // {{1.f, -2.f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
+    // {{1.f, 0.f, 0.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
-SnekVk::Utils::Array<SnekVk::Model::Vertex> GenerateCubeVertices() {
-  SnekVk::Utils::Array<SnekVk::Model::Vertex> vertices{
- 
-      // left face (white)
-      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-      {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-      {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
- 
-      // right face (yellow)
-      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-      {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-      {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
- 
-      // top face (orange, remember y axis points down)
-      {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-      {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-      {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-      {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-      {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-      {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
- 
-      // bottom face (red)
-      {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-      {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-      {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-      {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-      {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-      {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
- 
-      // nose face (blue)
-      {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-      {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-      {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-      {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-      {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-      {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
- 
-      // tail face (green)
-      {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-      {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-      {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-      {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-      {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-      {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
- 
-  };
+// Indices would be incremented by unique index count. 
+// I.e: indices for second square would be index + size. 
+// (0 = 4, 1 = 5...etc).
+u32 squareIndices[] = {
+    0, 1, 3, 1, 2, 3,
+    // 4, 5, 7, 5, 6, 7
+};
 
-  return vertices;
-}
+SnekVk::Model::Vertex cubeVerts[] =  {
+    {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+    {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+    {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+    {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
 
-std::vector<SnekVk::Model::Vertex> GenerateCircleVertices(u32 numSides)
-{
-    std::vector<SnekVk::Model::Vertex> uniqueVertices {};
-    for (size_t i = 0 ; i < numSides; i++)
-    {
-        float angle = i * glm::two_pi<float>() / numSides;
-        uniqueVertices.push_back({{glm::cos(angle), glm::sin(angle), 0.f}});
-    }
+    // right face (yellow)
+    {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+    {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+    {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+    {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
 
-    uniqueVertices.push_back({});
-    std::vector<SnekVk::Model::Vertex> vertices {};
-    for (size_t i = 0 ; i < numSides; i++)
-    {
-        vertices.push_back(uniqueVertices[i]);
-        vertices.push_back(uniqueVertices[(i + 1) % numSides]);
-        vertices.push_back(uniqueVertices[numSides]);
-    }
-    return vertices;
-}
+    // top face (orange, remember y axis points down)
+    {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+    {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+    {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+    {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+
+    // bottom face (red)
+    {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+    {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+    {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+    {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+
+    // nose face (blue)
+    {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+    {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+    {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+    {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+
+    // tail face (green)
+    {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+    {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+    {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+    {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+};
+
+u32 cubeIndices[] = {
+    0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
+    12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21
+};
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
@@ -122,7 +104,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     auto mousePos = Input::GetNormalisedMousePosition();
 
     glm::vec3 rotate{0};
-    float lookSpeed = 2.f;
+    float lookSpeed = 3.f;
 
     float differenceX = mousePos.x - oldMousePos.x;
     float differenceY = oldMousePos.y - mousePos.y;
@@ -132,7 +114,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {
-        viewerObject.SetRotation(viewerObject.GetRotation() + lookSpeed * deltaTime * glm::normalize(rotate));
+        glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
+        viewerObject.SetRotation(Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -140,7 +123,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
 
     float yaw = viewerObject.GetRotation().y;
-    const glm::vec3 forwardDir = {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const glm::vec3 forwardDir{glm::sin(yaw), 0.f, glm::cos(yaw)};
     const glm::vec3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
     const glm::vec3 upDir{0.f, -1.f, 0.f};
 
@@ -155,7 +138,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
     {
-        viewerObject.SetPosition(viewerObject.GetPosition() + lookSpeed * deltaTime * glm::normalize(moveDir));
+        glm::vec3 newMove = viewerObject.GetPosition() + lookSpeed * glm::normalize(moveDir);
+        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;
@@ -164,10 +148,6 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 int main() 
 {
     WINDOWS_ATTACH_CONSOLE
-
-    auto circleVertices = GenerateCircleVertices(64);
-
-    auto cubeVertices = GenerateCubeVertices();
     
     SnekVk::Window window("Snek", WIDTH, HEIGHT);
 
@@ -181,17 +161,13 @@ int main()
 
     Components::Shape cameraObject;
 
-    camera.SetViewTarget(glm::vec3(-1.f,-2.f,2.f), glm::vec3(0.f, 0.f, 2.5f));
-
     // Generate models
 
-    SnekVk::Model triangleModel(SnekVk::Renderer::GetDevice(), triangleVerts, 3);
+    SnekVk::Model triangleModel({triangleVerts, 3, nullptr, 0});
 
-    SnekVk::Model squareModel(SnekVk::Renderer::GetDevice(), squareVerts, 6);
+    SnekVk::Model squareModel({squareVerts, 4, squareIndices, 6});
 
-    SnekVk::Model circleModel(SnekVk::Renderer::GetDevice(), circleVertices.data(), circleVertices.size());
-
-    SnekVk::Model cubeModel(SnekVk::Renderer::GetDevice(), cubeVertices.Data(), cubeVertices.Size());
+    SnekVk::Model cubeModel({cubeVerts, 24, cubeIndices, 36});
 
     // Create shapes for use
 

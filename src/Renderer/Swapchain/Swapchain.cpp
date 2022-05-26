@@ -14,9 +14,6 @@ namespace SnekVk
     {}
 
     SwapChain::~SwapChain() 
-    {}
-
-    void SwapChain::DestroySwapChain()
     {
         ClearSwapChain();
         ClearMemory();

@@ -25,14 +25,12 @@ bool Input::IsKeyDown(int key)
     {
         if (hasKey) keyMap[key] = 1;
     }
-    std::cout << hasKey << std::endl;
     return hasKey;
 }
 
 bool Input::IsKeyJustPressed(int key)
 {
     bool hasKey = glfwGetKey(windowPtr->GetGlfwWindow(), key) == GLFW_PRESS;
-    std::cout << hasKey << std::endl;
 
     bool keyEntryExists = keyMap.find(key) != keyMap.end();
     if (keyEntryExists && hasKey)
@@ -42,21 +40,15 @@ bool Input::IsKeyJustPressed(int key)
             keyMap[key] = 1;
             return true;
         }
-        else 
-        {
-            return false;
-        }
+        else return false;
     } 
     else if (hasKey && !keyEntryExists)
     {
         keyMap[key] = 1;
         return true;
     } 
-    else if (!hasKey && keyEntryExists)
-    {
-        keyMap[key] = 0;
-    }
-    
+    else if (!hasKey && keyEntryExists) keyMap[key] = 0;
+
     return false;
 }
 
