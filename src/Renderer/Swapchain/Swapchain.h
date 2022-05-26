@@ -142,6 +142,11 @@ namespace SnekVk
         VkFormat GetImageFormat() { return swapChainImageFormat; }
         VkFormat GetDepthFormat() { return swapChainDepthFormat; }
 
+        float ExtentAspectRatio() const
+        {
+            return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
+        }
+
         private:
         
         void Init();

@@ -24,6 +24,12 @@ namespace SnekVk
             
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+            if (glfwRawMouseMotionSupported())
+            {
+                glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+            }
+
             window = glfwCreateWindow(width, height, name, nullptr, nullptr);
             glfwSetWindowUserPointer(window, this);
             glfwSetWindowSizeCallback(window, ResizeCallback);
@@ -47,6 +53,8 @@ namespace SnekVk
 
         VkExtent2D GetExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
 
+        GLFWwindow* GetGlfwWindow() { return window; }
+
         // Public Functions
 
         void Update();
@@ -58,6 +66,12 @@ namespace SnekVk
         bool WasResized() { return wasResized; }
 
         void ResetWindowResized() { wasResized = false; }
+
+        void EnableCursor() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+
+        void DisableCursor() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+
+        void ToggleCursor(bool state) { state ? DisableCursor() : EnableCursor(); }
 
         void WaitEvents() { glfwWaitEvents(); }
 

@@ -4,6 +4,7 @@
 #include "Swapchain/Swapchain.h"
 #include "Pipeline/Pipeline.h"
 #include "Model/Model.h"
+#include "Camera/Camera.h"
 
 namespace SnekVk 
 {
@@ -26,6 +27,8 @@ namespace SnekVk
                 SNEK_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
                 return currentFrameIndex;
             }
+
+            float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
             
             bool IsFrameStarted() { return isFrameStarted; }
 
