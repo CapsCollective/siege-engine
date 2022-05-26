@@ -227,13 +227,11 @@ int main()
             camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
         }
 
-        auto projectionView = camera.GetProjection() * camera.GetView();
-
         if (renderer.StartFrame()) 
         {
             for (auto& shape : shapes)
             {
-                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), projectionView);
+                renderer.DrawModel(shape.GetModel(), shape.GetTransform(), camera.GetCameraData());
             }
             renderer.EndFrame();
         }
