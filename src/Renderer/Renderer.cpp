@@ -57,7 +57,6 @@ namespace SnekVk
     void Renderer::DrawModel(Model* model, glm::mat4 transform, glm::vec3 color)
     {
         auto commandBuffer = GetCurrentCommandBuffer();
-        graphicsPipeline.Bind(commandBuffer);
 
         model->Bind(commandBuffer);
 
@@ -185,6 +184,8 @@ namespace SnekVk
         
         
         BeginSwapChainRenderPass(commandBuffer);
+
+        graphicsPipeline.Bind(commandBuffer);
         
         return true;
     }
