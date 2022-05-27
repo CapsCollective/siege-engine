@@ -26,7 +26,7 @@ namespace SnekVk
         enum Topology
         {
             LINE_LIST = 1,
-            LINE_STRING = 2,
+            LINE_STRIP = 2,
             TRIANGLE_LIST = 3
         };
 

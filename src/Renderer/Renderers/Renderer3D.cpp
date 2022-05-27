@@ -4,71 +4,48 @@
 namespace SnekVk
 {
     // static initialisation
-    Utils::StringId Renderer3D::transformId;
     Utils::StringId Renderer3D::globalDataId;
 
-    u64 Renderer3D::transformSize = sizeof(Model::Transform) * MAX_OBJECT_TRANSFORMS;
+    Material Renderer3D::gridMaterial;
 
-    Utils::StackArray<Model::Transform, Renderer3D::MAX_OBJECT_TRANSFORMS> Renderer3D::transforms;
-    Utils::StackArray<Model*, Renderer3D::MAX_OBJECT_TRANSFORMS> Renderer3D::models;
+    ModelRenderer Renderer3D::modelRenderer;
+    DebugRenderer3D Renderer3D::debugRenderer;
+    BillboardRenderer Renderer3D::billboardRenderer;
+    LightRenderer Renderer3D::lightRenderer;
 
-    Material* Renderer3D::currentMaterial = nullptr;
-    Model* Renderer3D::currentModel = nullptr;
-
-    Model* Renderer3D::lightModel = nullptr;
-
-    Material Renderer3D::lineMaterial;
-    Model Renderer3D::lineModel;
-    Renderer3D::LineData Renderer3D::lineData;
-
-    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> Renderer3D::lines;
+    Renderer3D::GlobalData Renderer3D::global3DData;
 
     void Renderer3D::Initialise()
     {
-        transformId = INTERN_STR("objectBuffer");
         globalDataId = INTERN_STR("globalData");
 
-        auto vertexShader = Shader::BuildShader()
-            .FromShader("shaders/line.vert.spv")
-            .WithStage(PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(glm::vec3))
-            .WithVertexAttribute(0, SnekVk::VertexDescription::VEC3)
-            .WithUniform(0, "globalData", sizeof(GlobalData), 1)
-            .WithUniform(1, "lineData", sizeof(LineData), 1);
+        modelRenderer.Initialise("globalData", sizeof(GlobalData));
+        debugRenderer.Initialise("globalData", sizeof(GlobalData));
+        billboardRenderer.Initialise("globalData", sizeof(GlobalData));
+        lightRenderer.Initialise("globalData", sizeof(GlobalData));
         
-        auto fragmentShader = Shader::BuildShader()
-            .FromShader("shaders/line.frag.spv")
-            .WithStage(PipelineConfig::FRAGMENT);
+        auto gridShader = SnekVk::Shader::BuildShader()
+            .FromShader("shaders/grid.vert.spv")
+            .WithStage(SnekVk::PipelineConfig::VERTEX)
+            .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
         
-        lineMaterial.SetVertexShader(&vertexShader);
-        lineMaterial.SetFragmentShader(&fragmentShader);
-        lineMaterial.SetTopology(Material::Topology::LINE_LIST);
-        lineMaterial.BuildMaterial();
+        auto gridFragShader = SnekVk::Shader::BuildShader()
+            .FromShader("shaders/grid.frag.spv")
+            .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 
-        glm::vec3 vertices[] = 
-        {
-            {0.f, 0.f, 0.f},
-            {0.f, 0.f, 0.f}
-        };
+        gridMaterial.SetVertexShader(&gridShader);
+        gridMaterial.SetFragmentShader(&gridFragShader);
+        gridMaterial.BuildMaterial();
+    }
 
-        lineModel.SetMesh({
-            sizeof(glm::vec3),
-            vertices,
-            2,
-            nullptr,
-            0
-        });
-
-        lineModel.SetMaterial(&lineMaterial);
+    void Renderer3D::DrawBillboard(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& colour)
+    {
+        billboardRenderer.DrawBillboard(position, scale, colour);
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& rotation)
     {
-        models.Append(model);
-
-        auto transform = Utils::Math::CalculateTransform3D(position, rotation, scale);
-        auto normal = Utils::Math::CalculateNormalMatrix(rotation, scale);
-        transforms.Append({transform, normal});
+        modelRenderer.DrawModel(model, position, scale, rotation);
     }
 
     void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale)
@@ -81,111 +58,66 @@ namespace SnekVk
         DrawModel(model, position, glm::vec3{1.f}, glm::vec3{0.f});
     }
 
-    void Renderer3D::DrawBillboard(Model* model, const glm::vec3& position, const glm::vec2& scale, const float& rotation)
+    void Renderer3D::DrawPointLight(const glm::vec3& position, const float& radius, const glm::vec4& colour, const glm::vec4& ambientColor)
+    {   
+        global3DData.lightData = {colour, ambientColor, position};
+
+        lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
+    }
+
+    void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& cameraData)
     {
+        global3DData.cameraData = cameraData;
+        u64 globalDataSize = sizeof(global3DData);
+
+        modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+        lightRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+        debugRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+        billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData);
         
+        #ifdef ENABLE_GRID
+        RenderGrid(commandBuffer, global3DData);
+        #endif
     }
 
-    void Renderer3D::DrawLight(Model* model)
+    void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour)
     {
-        lightModel = model;
+        debugRenderer.DrawLine(origin, destination, colour);
     }
 
-    void Renderer3D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+    void Renderer3D::RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
     {
-        if (models.Count() == 0) return;
+        gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
+        gridMaterial.Bind(commandBuffer);
 
-        RenderModels(commandBuffer, globalData);
-        RenderLights(commandBuffer, globalData);
-        RenderLines(commandBuffer, globalData);
-
-        currentModel = nullptr;
-        currentMaterial = nullptr;
-    }
-
-    void Renderer3D::DrawLine(const glm::vec3& origin, const glm::vec3& destination, glm::vec3 color)
-    {
-        lines.Append(origin);
-        lines.Append(destination);
-
-        lineData.color = color;
-    }
-
-    void Renderer3D::RenderModels(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        for (size_t i = 0; i < models.Count(); i++)
-        {
-            auto& model = models.Get(i);
-
-            if (currentMaterial != model->GetMaterial())
-            {
-                currentMaterial = model->GetMaterial();
-                currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
-                currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-                currentMaterial->Bind(commandBuffer);
-            } 
-
-            if (currentModel != model)
-            {
-                currentModel = model;
-                currentModel->Bind(commandBuffer);
-            }
-
-            model->Draw(commandBuffer, i);
-        }
-    }
-    
-    // TODO(Aryeh): This is rendering a billboard. Might want to defer this to a billboard renderer
-    void Renderer3D::RenderLights(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        if (lightModel == nullptr) return; 
-
-        auto lightMaterial = lightModel->GetMaterial();
-
-        if (lightMaterial == nullptr) return;
-
-        lightMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        lightMaterial->Bind(commandBuffer);
-
-        lightModel->Bind(commandBuffer);
-        lightModel->Draw(commandBuffer, 0);
-    }
-
-    void Renderer3D::RenderLines(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
-    {
-        lineMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-        lineMaterial.SetUniformData("lineData", sizeof(LineData), &lineData);
-        lineMaterial.Bind(commandBuffer);
-
-        lineModel.UpdateMesh(
-            {
-                sizeof(glm::vec3),
-                lines.Data(),
-                static_cast<u32>(lines.Count()),
-                nullptr,
-                0
-            }
-        );
-
-        lineModel.Bind(commandBuffer);
-        lineModel.Draw(commandBuffer, 0);
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
     }
 
     void Renderer3D::RecreateMaterials()
     {
-        if (currentMaterial) currentMaterial->RecreatePipeline(); 
+        modelRenderer.RecreateMaterials();
+        debugRenderer.RecreateMaterials();
+        billboardRenderer.RecreateMaterials();
+        lightRenderer.RecreateMaterials();
+
+        gridMaterial.RecreatePipeline();
     }
 
     void Renderer3D::Flush()
     {
-        transforms.Clear();
-        lines.Clear();
-        models.Clear();
+        modelRenderer.Flush();
+        debugRenderer.Flush();
+        billboardRenderer.Flush();
+        lightRenderer.Flush();
     }
 
     void Renderer3D::DestroyRenderer3D()
     {
-        lineModel.DestroyModel();
-        lineMaterial.DestroyMaterial();
+        modelRenderer.Destroy();
+        debugRenderer.Destroy();
+        billboardRenderer.Destroy();
+        lightRenderer.Destroy();
+
+        gridMaterial.DestroyMaterial();
     }
 }

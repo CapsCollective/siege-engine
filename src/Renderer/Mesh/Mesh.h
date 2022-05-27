@@ -40,6 +40,7 @@ namespace SnekVk
         public:
 
         static constexpr size_t MAX_VERTICES = 10000;
+        static constexpr size_t MAX_INDICES = 100000;
 
         struct MeshData
         {
@@ -59,6 +60,10 @@ namespace SnekVk
 
         void LoadVertices(const Mesh::MeshData& meshData);
         void UpdateVertices(const Mesh::MeshData& meshData);
+
+        void UpdateVertexBuffer(const void* vertices);
+        void UpdateIndexBuffer(u32* indices);
+
         void Bind(VkCommandBuffer commandBuffer);
         void DestroyMesh();
 
@@ -78,13 +83,16 @@ namespace SnekVk
         void CreateIndexBuffer(const u32* indices);
 
         Buffer::Buffer globalStagingBuffer;
+        Buffer::Buffer globalIndexStagingBuffer;
 
         Buffer::Buffer vertexBuffer;
-        u32 vertexCount = 0;
+        Buffer::Buffer indexBuffer;
 
         bool hasIndexBuffer = false;
-        Buffer::Buffer indexBuffer;
+        bool hasVertexBuffer = false;
+
         u32 indexCount = 0;
+        u32 vertexCount = 0;
 
         u64 vertexSize = 0;
 

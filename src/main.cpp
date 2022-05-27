@@ -216,13 +216,6 @@ int main()
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer2D::GlobalData));
 
-    auto pointLightVertShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/pointLight.vert.spv")
-        .WithStage(SnekVk::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(glm::vec2))
-        .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
-
     // Fragment shaders
 
     auto fragShader = SnekVk::Shader::BuildShader()
@@ -233,20 +226,15 @@ int main()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
-    
-    auto pointLightFragShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/pointLight.frag.spv")
-        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
     // Material Declaration
                                 // vertex       // fragment  
     SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
 
-    SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+    //SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat, &pointLightMat});
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     // Generate models
 
@@ -254,8 +242,6 @@ int main()
 
     SnekVk::Model triangleModel(triangleMeshData);
     SnekVk::Model squareModel(squareMeshData);
-
-    SnekVk::Model pointLightModel(rawSquareMeshData);
 
     // Generating models from .obj files
 
@@ -269,8 +255,6 @@ int main()
     // Set 3D diffuse material
     cubeObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&diffuseMat);
-
-    pointLightModel.SetMaterial(&pointLightMat);
 
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
@@ -287,39 +271,28 @@ int main()
         Components::Shape(&squareModel)
     };
 
-    shapes[0].SetPosition({0.f, .5f, 2.5f});
+    shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
-    shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({3.f, 3.f, 0.001f});
+    shapes[1].SetPosition({0.f, 0.f, 0.f});
+    shapes[1].SetScale({3.f, 3.f, 0.01f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
-    shapes[2].SetPosition({0.f, 0.f, 2.5f});
+    shapes[2].SetPosition({0.f, -1.f, 0.f});
     shapes[2].SetScale({2.f, 2.f, 2.f});
     shapes[2].SetColor({.5f, 0.f, 0.f});
 
-    shapes2D[0].SetPosition2D({1.5f, 0.f});
+    shapes2D[0].SetPosition2D({1.5f, -1.f});
     shapes2D[0].SetScale2D({.5f, 0.5f});
-    shapes2D[0].SetRotation2D(10.f);
-    shapes2D[0].SetZIndex(2.5f);
+    shapes2D[0].SetZIndex(0.f);
 
-    shapes2D[1].SetPosition2D({-1.5f, 0.f});
+    shapes2D[1].SetPosition2D({-1.5f, -1.f});
     shapes2D[1].SetScale2D({.5f, 0.5f});
-    shapes2D[1].SetZIndex(2.5f);
+    shapes2D[1].SetZIndex(0.f);
 
-    // Lights
-
-    SnekVk::PointLight light(
-        {0.0f, -1.0f, 1.5f}, 
-        {1.f, 0.f, 0.f, 1.0f}, 
-        {1.f, 1.f, 1.f, .02f}
-    );
-
-    light.SetModel(&pointLightModel);
-
-    renderer.SetPointLight(&light);
+    cameraObject.SetPosition({0.f, -1.f, -2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -334,8 +307,6 @@ int main()
         currentTime = newTime;
 
         auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
-        
-        light.SetColor({1.f, 0.f, 0.f, alpha});
 
         window.Update();
 
@@ -356,26 +327,6 @@ int main()
         }
 
         if (!renderer.StartFrame()) continue;
-
-        SnekVk::Renderer3D::DrawLine({4.f, 1.f, -1.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({3.f, 1.f, -1.5f}, {3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({2.f, 1.f, -1.5f}, {2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({1.f, 1.f, -1.5f}, {1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({0.f, 1.f, -1.5f}, {0.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-1.f, 1.f, -1.5f}, {-1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-2.f, 1.f, -1.5f}, {-2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-3.f, 1.f, -1.5f}, {-3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {-4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 6.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 5.5f}, {4.f, 1.f, 5.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 4.5f}, {4.f, 1.f, 4.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 3.5f}, {4.f, 1.f, 3.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 2.5f}, {4.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 1.5f}, {4.f, 1.f, 1.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 0.5f}, {4.f, 1.f, 0.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
         
         for (auto& shape : shapes)
         {
@@ -383,7 +334,12 @@ int main()
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
-        SnekVk::Renderer3D::DrawLight(&pointLightModel);
+        SnekVk::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
+        
+        SnekVk::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
+
+        SnekVk::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
 
         for (auto& shape : shapes2D)
         {
