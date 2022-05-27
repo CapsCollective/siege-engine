@@ -114,6 +114,12 @@ namespace SnekVk::Utils
             }
         }
 
+        void Clear()
+        {
+            count = 0;
+            memset(states, false, sizeof(bool) * S);
+        }
+
         private:
 
         bool isValidIndex(size_t index)

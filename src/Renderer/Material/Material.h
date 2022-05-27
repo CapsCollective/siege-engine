@@ -4,6 +4,7 @@
 #include "../Pipeline/Pipeline.h"
 #include "../Buffer/Buffer.h"
 #include "../Shader/Shader.h"
+#include "../DescriptorPool/DescriptorPool.h"
 
 namespace SnekVk
 {
@@ -22,6 +23,13 @@ namespace SnekVk
             POINT = 2
         };
 
+        enum Topology
+        {
+            LINE_LIST = 1,
+            LINE_STRING = 2,
+            TRIANGLE_LIST = 3
+        };
+
         Material();
         Material(Shader* vertexShader);
         Material(Shader* vertexShader, Shader* fragmentShader);
@@ -34,23 +42,23 @@ namespace SnekVk
         void CreateDescriptors();
 
         void SetPolygonMode(PolygonMode mode) { shaderSettings.mode = mode; }
+        void SetTopology(Topology topology) { shaderSettings.topology = topology; }
         void BuildMaterial();
-
-        static void DestroyDescriptorPool() 
-        { 
-            if (descriptorPool != VK_NULL_HANDLE) 
-            {
-                vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(), descriptorPool, nullptr);
-            }
-        }
 
         void SetUniformData(VkDeviceSize dataSize, const void* data);
         void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
         void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
 
+        void SetVertexShader(Shader* shader);
+        void SetFragmentShader(Shader* shader);
+
+        bool HasProperty(Utils::StringId id);
+
         void Bind(VkCommandBuffer commandBuffer);
         void CreatePipeline();
         void RecreatePipeline();
+
+        void DestroyMaterial();
 
         static void BuildMaterials(std::initializer_list<Material*> materials);
 
@@ -75,6 +83,7 @@ namespace SnekVk
 
         Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
+        Property& GetProperty(Utils::StringId id);
         void AddShader(Shader* shader);
         void SetShaderProperties(Shader* shader, u64& offset);
 
@@ -87,9 +96,8 @@ namespace SnekVk
 
         struct {
             PolygonMode mode = PolygonMode::FILL;
+            Topology topology = Topology::TRIANGLE_LIST;
         } shaderSettings;
-
-        static VkDescriptorPool descriptorPool;
 
         size_t vertexCount = 0;
         u32 shaderCount = 0;
@@ -109,5 +117,7 @@ namespace SnekVk
         
         Pipeline pipeline;
         VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};
+
+        bool isFreed = false;
     };
 }

@@ -40,5 +40,9 @@ typedef size_t size;
 
 namespace SnekVk 
 {
-
+    struct CameraData
+    {
+        glm::mat4 projectionMatrix;
+        glm::mat4 viewMatrix;
+    };
 }

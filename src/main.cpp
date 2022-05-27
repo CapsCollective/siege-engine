@@ -30,13 +30,13 @@ static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
 SnekVk::Vertex2D triangleVerts[] = {
-    {{0.0f, -0.5f, 0.f}, {1.f, 0.f, 0.f}},
-    {{0.5f, 0.5f, 0.f}, {0.f, 1.f, 0.f}}, 
-    {{-0.5f, 0.5f, 0.f}, {0.f, 0.f, 1.f}}
+    {{0.f, -1.f}, {1.f, 0.f, 0.f}},
+    {{1.f, 1.f}, {0.f, 1.f, 0.f}}, 
+    {{-1.f, 1.f}, {0.f, 0.f, 1.f}}
 };
 
 SnekVk::Mesh::MeshData triangleMeshData {
-    sizeof(triangleVerts),
+    sizeof(SnekVk::Vertex2D),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
@@ -44,10 +44,10 @@ SnekVk::Mesh::MeshData triangleMeshData {
 };
 
 SnekVk::Vertex2D squareVerts[] = {
-    {{0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top right
-    {{0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom right
-    {{-0.5f, -0.5f, 0.f}, {1.f, 0.f, 0.f}}, // bottom left
-    {{-0.5f, 0.5f, 0.f}, {1.f, 0.f, 0.f}}, // top left
+    {{1.f, 1.f}, {1.f, 0.f, 0.f}}, // top right
+    {{1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom right
+    {{-1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom left
+    {{-1.f, 1.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
 u32 squareIndices[] = {
@@ -55,8 +55,23 @@ u32 squareIndices[] = {
 };
 
 SnekVk::Mesh::MeshData squareMeshData {
-    sizeof(squareVerts),
+    sizeof(SnekVk::Vertex2D),
     squareVerts,
+    4,
+    squareIndices,
+    6
+};
+
+glm::vec2 squareVertsRaw[] = {
+    {1.f, 1.f},
+    {1.f, -1.f},
+    {-1.f, -1.f},
+    {-1.f, 1.f}
+};
+
+SnekVk::Mesh::MeshData rawSquareMeshData {
+    sizeof(glm::vec2),
+    squareVertsRaw,
     4,
     squareIndices,
     6
@@ -105,7 +120,7 @@ u32 cubeIndices[] = {
 };
 
 SnekVk::Mesh::MeshData cubeMeshData {
-    sizeof(cubeVerts),
+    sizeof(SnekVk::Vertex),
     cubeVerts,
     24,
     cubeIndices,
@@ -190,17 +205,23 @@ int main()
         .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
         .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
-        .WithUniform(1, "cameraData", sizeof(glm::mat4), 1);
-        
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData), 1);
     
     auto spriteShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/simpleShader2D.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex2D))
-        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC2)
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
         .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
-        .WithUniform(1, "cameraData", sizeof(glm::mat4));
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer2D::GlobalData));
+
+    auto pointLightVertShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/pointLight.vert.spv")
+        .WithStage(SnekVk::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(glm::vec2))
+        .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
     // Fragment shaders
 
@@ -211,14 +232,21 @@ int main()
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
         .FromShader("shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(2, "lightData", sizeof(SnekVk::PointLight::Data)); // TIL: bindings must be unique accross all available shaders 
+        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
+    
+    auto pointLightFragShader = SnekVk::Shader::BuildShader()
+        .FromShader("shaders/pointLight.frag.spv")
+        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
+        .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
 
     // Material Declaration
                                 // vertex       // fragment  
     SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
+    SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+
+    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat, &pointLightMat});
 
     // Generate models
 
@@ -226,6 +254,8 @@ int main()
 
     SnekVk::Model triangleModel(triangleMeshData);
     SnekVk::Model squareModel(squareMeshData);
+
+    SnekVk::Model pointLightModel(rawSquareMeshData);
 
     // Generating models from .obj files
 
@@ -240,6 +270,8 @@ int main()
     cubeObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&diffuseMat);
 
+    pointLightModel.SetMaterial(&pointLightMat);
+
     // Create shapes for use
     std::vector<Components::Shape> shapes = 
     {
@@ -248,6 +280,7 @@ int main()
         Components::Shape(&vaseObjModel)
     };
 
+    // TODO(Aryeh): create a separate object for representing 2D shapes
     std::vector<Components::Shape> shapes2D = 
     {
         Components::Shape(&triangleModel),
@@ -259,7 +292,7 @@ int main()
     shapes[0].SetColor({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 1.f, 2.5f});
-    shapes[1].SetScale({3.f, 3.f, 0.01f});
+    shapes[1].SetScale({3.f, 3.f, 0.001f});
     shapes[1].SetColor({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
@@ -267,17 +300,24 @@ int main()
     shapes[2].SetScale({2.f, 2.f, 2.f});
     shapes[2].SetColor({.5f, 0.f, 0.f});
 
-    shapes2D[0].SetPosition({1.5f, 0.f, 2.5f});
+    shapes2D[0].SetPosition2D({1.5f, 0.f});
+    shapes2D[0].SetScale2D({.5f, 0.5f});
+    shapes2D[0].SetRotation2D(10.f);
+    shapes2D[0].SetZIndex(2.5f);
 
-    shapes2D[1].SetPosition({-1.5f, 0.f, 2.5f});
+    shapes2D[1].SetPosition2D({-1.5f, 0.f});
+    shapes2D[1].SetScale2D({.5f, 0.5f});
+    shapes2D[1].SetZIndex(2.5f);
 
     // Lights
 
-    SnekVk::PointLight light;
-    
-    light.SetPosition({0.0f, -1.0f, 1.5f});
-    light.SetColor({1.f, 0.f, 0.f, 1.0f});
-    light.SetAmbientColor({1.f, 1.f, 1.f, .02f});
+    SnekVk::PointLight light(
+        {0.0f, -1.0f, 1.5f}, 
+        {1.f, 0.f, 0.f, 1.0f}, 
+        {1.f, 1.f, 1.f, .02f}
+    );
+
+    light.SetModel(&pointLightModel);
 
     renderer.SetPointLight(&light);
 
@@ -293,8 +333,9 @@ int main()
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
 
-        float lightColor = abs(sin(glfwGetTime()) * 0.5);
-        light.SetColor({1.f, 0.f, 0.f, lightColor});
+        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
+        
+        light.SetColor({1.f, 0.f, 0.f, alpha});
 
         window.Update();
 
@@ -306,7 +347,7 @@ int main()
 
         float aspect = renderer.GetAspectRatio();
 
-        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
         if (inputEnabled)
         {
@@ -315,15 +356,38 @@ int main()
         }
 
         if (!renderer.StartFrame()) continue;
+
+        SnekVk::Renderer3D::DrawLine({4.f, 1.f, -1.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({3.f, 1.f, -1.5f}, {3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({2.f, 1.f, -1.5f}, {2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({1.f, 1.f, -1.5f}, {1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({0.f, 1.f, -1.5f}, {0.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-1.f, 1.f, -1.5f}, {-1.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-2.f, 1.f, -1.5f}, {-2.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-3.f, 1.f, -1.5f}, {-3.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {-4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 6.5f}, {4.f, 1.f, 6.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 5.5f}, {4.f, 1.f, 5.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 4.5f}, {4.f, 1.f, 4.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 3.5f}, {4.f, 1.f, 3.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 2.5f}, {4.f, 1.f, 2.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 1.5f}, {4.f, 1.f, 1.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, 0.5f}, {4.f, 1.f, 0.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -0.5f}, {4.f, 1.f, -0.5f}, {1.f, 1.f, 1.f});
+        SnekVk::Renderer3D::DrawLine({-4.f, 1.f, -1.5f}, {4.f, 1.f, -1.5f}, {1.f, 1.f, 1.f});
         
         for (auto& shape : shapes)
         {
-            renderer.DrawModel(shape.GetModel(), shape.GetTransform());
+            SnekVk::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
         }
+
+        // TODO(Aryeh): This will eventually need to take in multiple lights.
+        SnekVk::Renderer3D::DrawLight(&pointLightModel);
 
         for (auto& shape : shapes2D)
         {
-            renderer.DrawModel2D(shape.GetModel(), shape.GetTransform2D());
+            SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
         }
         
         renderer.EndFrame();
