@@ -6,29 +6,25 @@ on:
     
   pull_request:
     branches: [ main ]
+
+  workflow_dispatch:
     
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: PowerShell
+    
     steps:
     - uses: actions/checkout@v2
 
-    # Build and clean
+    - name: perform setup
+      run: ./scripts/setup.bat
 
     - name: update submodules
       run: git submodule update --init --recursive
       shell: cmd
       
-    - name: make
-      run: mingw32-make
-      shell: cmd
-      
-    - name: make clean
-      run: mingw32-make clean
-      shell: cmd
-
-    # Rebuild with g++
-
-    - name: make CXX=g++
-      run: mingw32-make CXX=g++
-      shell: cmd
+    - name: build and package executable
+      run: mingw32-make package
