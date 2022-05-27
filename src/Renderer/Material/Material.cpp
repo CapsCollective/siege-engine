@@ -5,8 +5,6 @@
 
 namespace SnekVk
 {
-    VkDescriptorPool Material::descriptorPool = {VK_NULL_HANDLE};
-
     Material::Material()
         : Material(nullptr, nullptr, 0) {}
 
@@ -32,42 +30,28 @@ namespace SnekVk
 
     Material::Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount)
         : vertexShader(vertexShader), fragmentShader(fragmentShader), shaderCount(shaderCount)
+    {}
+
+    void Material::SetVertexShader(Shader* shader) 
     {
-        auto device = VulkanDevice::GetDeviceInstance();
+        if (vertexShader == nullptr) shaderCount++;
+        vertexShader = shader; 
+        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
 
-        // TODO: Make this into a separate class 
-        if (descriptorPool == VK_NULL_HANDLE) 
-        {
-            VkDescriptorPoolSize poolSizes[] = {
-                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10},
-                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10},
-                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10},
-                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 10}
-            };
+    }
 
-            VkDescriptorPoolCreateInfo poolCreateInfo {};
-            poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolCreateInfo.flags = 0;
-            poolCreateInfo.maxSets = 10;
-            poolCreateInfo.poolSizeCount = 4;
-            poolCreateInfo.pPoolSizes = poolSizes;
-
-            SNEK_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
-                "Unable to create descriptor pool!");
-        }
+    void Material::SetFragmentShader(Shader* shader) 
+    {
+        if (fragmentShader == nullptr) shaderCount++;
+        fragmentShader = shader; 
+        bufferSize += Buffer::PadUniformBufferSize(shader->GetUniformSize());
     }
 
     Material::~Material() 
     {
-        auto device = VulkanDevice::GetDeviceInstance();
+        if (isFreed) return;
 
-        for (auto& property : propertiesArray)
-        {
-            vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
-        }
-        
-        vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
-        Buffer::DestroyBuffer(buffer);
+        DestroyMaterial();
     }
 
     void Material::CreateLayout(
@@ -126,6 +110,7 @@ namespace SnekVk
 
         auto pipelineConfig = Pipeline::DefaultPipelineConfig();
         pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode)shaderSettings.mode;
+        pipelineConfig.inputAssemblyInfo.topology = (VkPrimitiveTopology)shaderSettings.topology;
         
         pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
@@ -148,6 +133,8 @@ namespace SnekVk
     void Material::CreateDescriptors()
     {
         auto device = VulkanDevice::GetDeviceInstance();
+
+        auto descriptorPool = DescriptorPool::GetDescriptorPool();
 
         // Create a descriptor set for our object transforms.
 
@@ -243,6 +230,14 @@ namespace SnekVk
 
         for(auto& uniform : uniforms)
         {
+            if (HasProperty(uniform.id))
+            {
+                std::cout << "Property already exists!" << std::endl;
+                auto& property = GetProperty(uniform.id);
+                property.stage = property.stage | (VkShaderStageFlags) shader->GetStage();
+                continue;
+            };
+
             Property property = {
                 uniform.binding, 
                 uniform.id, 
@@ -262,6 +257,24 @@ namespace SnekVk
             offset += (uniform.size * uniform.arraySize) * uniform.dynamicCount;
         }
     }
+    
+    void Material::DestroyMaterial()
+    {
+        auto device = VulkanDevice::GetDeviceInstance();
+
+        for (auto& property : propertiesArray)
+        {
+            vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
+        }
+
+        pipeline.DestroyPipeline();
+        
+        vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
+        
+        Buffer::DestroyBuffer(buffer);
+
+        isFreed = true;
+    }
 
     void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     {
@@ -277,6 +290,17 @@ namespace SnekVk
                 return;
             }
         }
+    }
+
+    bool Material::HasProperty(Utils::StringId id)
+    {
+        for(auto& property : propertiesArray)
+        {
+            if (id == property.id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void Material::SetUniformData(const char* name, VkDeviceSize dataSize, const void* data)
@@ -295,6 +319,16 @@ namespace SnekVk
     void Material::BuildMaterials(std::initializer_list<Material*> materials)
     {
         for (auto material : materials) material->BuildMaterial();
+    }
+
+    Material::Property& Material::GetProperty(Utils::StringId id)
+    {
+        for(auto& property : propertiesArray)
+        {
+            if (id == property.id) return property;
+        }
+
+        SNEK_ASSERT(false, "No property with ID: " << id << " exists!");
     }
 
     void Material::BuildMaterial()

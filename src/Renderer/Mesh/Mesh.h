@@ -23,8 +23,13 @@ namespace SnekVk
 
     struct Vertex2D
     {
-        glm::vec3 position;
+        glm::vec2 position;
         glm::vec3 color;
+    };
+
+    struct BillboardVertex
+    {
+        glm::vec2 position;
     };
 
     bool operator==(const Vertex& left, const Vertex& right);
@@ -33,6 +38,8 @@ namespace SnekVk
     class Mesh
     {
         public:
+
+        static constexpr size_t MAX_VERTICES = 10000;
 
         struct MeshData
         {
@@ -51,7 +58,9 @@ namespace SnekVk
         void operator=(const Mesh& other) = delete;
 
         void LoadVertices(const Mesh::MeshData& meshData);
+        void UpdateVertices(const Mesh::MeshData& meshData);
         void Bind(VkCommandBuffer commandBuffer);
+        void DestroyMesh();
 
         bool HasIndexBuffer() { return hasIndexBuffer; }
 
@@ -68,6 +77,8 @@ namespace SnekVk
         void CreateVertexBuffers(const void* vertices);
         void CreateIndexBuffer(const u32* indices);
 
+        Buffer::Buffer globalStagingBuffer;
+
         Buffer::Buffer vertexBuffer;
         u32 vertexCount = 0;
 
@@ -76,5 +87,7 @@ namespace SnekVk
         u32 indexCount = 0;
 
         u64 vertexSize = 0;
+
+        bool isFreed = false;
     };
 }

@@ -7,12 +7,16 @@
 #include "Camera/Camera.h"
 #include "Material/Material.h"
 #include "Lights/PointLight.h"
+#include "Renderers/Renderer3D.h"
+#include "Renderers/Renderer2D.h"
+#include "DescriptorPool/DescriptorPool.h"
 
 namespace SnekVk 
 {
     class Renderer
     {
         public:
+
             Renderer(Window& window);
             ~Renderer();
 
@@ -40,11 +44,6 @@ namespace SnekVk
                 SNEK_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
                 return commandBuffers[currentFrameIndex]; 
             }
-            
-            void DrawModel(Model* model, const Model::Transform& transform);
-            void DrawModel2D(Model* model, const Model::Transform2D& transform);
-
-            void RegisterMaterial(Material* mat) { currentMat = mat; }
 
             bool StartFrame();
             void EndFrame();
@@ -81,26 +80,6 @@ namespace SnekVk
             u32 currentImageIndex;
             bool isFrameStarted{false};
             int currentFrameIndex{0};
-            
-            Material* currentMat{nullptr};
-            Model* currentModel{nullptr};
-
-            // TODO: there's some duplicated logic here. Will need to 
-            // create a separate object for managing models and uniforms.
-            Model::Transform transforms[MAX_OBJECT_TRANSFORMS];
-            Model::Transform2D transforms2D[MAX_OBJECT_TRANSFORMS];
-
-            Model* models[MAX_OBJECT_TRANSFORMS];
-            size_t modelCount = 0;
-
-            Model* models2D[MAX_OBJECT_TRANSFORMS];
-            size_t model2DCount = 0;
-
-            // End of duplicated logic
-
-            Utils::StringId bufferId;
-            Utils::StringId lightId;
-            Utils::StringId cameraDataId;
 
             Camera* mainCamera;
             PointLight* light;

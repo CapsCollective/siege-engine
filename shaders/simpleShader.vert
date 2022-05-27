@@ -16,13 +16,27 @@ struct ObjectData
     mat4 normalMatrix;
 };
 
-layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
+struct CameraData
+{
+    mat4 projectionMatrix;
+    mat4 viewMatrix;
+};
+
+struct LightData
+{
+    vec4 lightColor;
+    vec4 ambientLightColor;
+    vec3 position;
+};
+
+layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer {
     ObjectData objects[];
 } objectBuffer;
 
-layout (set = 1, binding = 1) uniform ProjectionView {
-    mat4 projectionView;
-} projectionView;
+layout (set = 1, binding = 1) uniform GlobalData {
+    CameraData cameraData;
+    LightData lightData;
+} globalData;
 
 void main() {
 
@@ -30,7 +44,9 @@ void main() {
 
     vec4 positionWorld = object.transform * vec4(position, 1.0);
 
-    gl_Position = projectionView.projectionView * positionWorld;
+    CameraData camera = globalData.cameraData;
+
+    gl_Position = camera.projectionMatrix * camera.viewMatrix * positionWorld;
     fragNormalWorld = normalize(mat3(object.normalMatrix) * normal);
     fragPosWorld = positionWorld.xyz;
     fragColor = color;

@@ -11,4 +11,9 @@ namespace Utils::Math
     float Lerp(float origin, float destination, float time);
 
     glm::vec3 Lerp(glm::vec3 origin, glm::vec3 destination, float time);
+
+    template <typename T> 
+    int Sign(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
 }
