@@ -12,7 +12,8 @@ namespace SnekVk
         enum AttributeType
         {
             VEC2 = VK_FORMAT_R32G32_SFLOAT,
-            VEC3 = VK_FORMAT_R32G32B32_SFLOAT
+            VEC3 = VK_FORMAT_R32G32B32_SFLOAT,
+            VEC4 = VK_FORMAT_R32G32B32A32_SFLOAT
         };
 
         enum InputRate
