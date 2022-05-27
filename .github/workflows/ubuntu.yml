@@ -31,5 +31,5 @@ jobs:
     - name: perform setup
       run: ./scripts/setup.sh
 
-    - name: build and package executable
-      run: make package
+    - name: build all targets
+      run: make

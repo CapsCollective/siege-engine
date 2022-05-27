@@ -17,6 +17,10 @@ set DEBUG=%~1
 
 echo "Setting up dependencies..."
 
+echo "Setting up raylib..."
+echo "Cloning raylib..."
+git submodule update --init --recursive %VENDOR_DIR%/raylib-cpp
+
 echo "Setting up GLFW..."
 CALL :SetupGlfw
 

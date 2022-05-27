@@ -21,10 +21,6 @@ jobs:
 
     - name: perform setup
       run: ./scripts/setup.bat
-
-    - name: update submodules
-      run: git submodule update --init --recursive
-      shell: cmd
       
-    - name: build and package executable
-      run: mingw32-make package
+    - name: build all targets
+      run: mingw32-make

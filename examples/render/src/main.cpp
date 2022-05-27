@@ -1,14 +1,14 @@
 #define VOLK_IMPLEMENTATION
 
-#include "Window/Window.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Model/Model.h"
-#include "Components/Shape.h"
-#include "Input/Input.h"
-#include "Utils/Math.h"
-#include "Renderer/Material/Material.h"
-#include "Renderer/Shader/Shader.h"
-#include "Renderer/Lights/PointLight.h"
+#include <render/Window/Window.h>
+#include <render/Renderer/Renderer.h>
+#include <render/Renderer/Model/Model.h>
+#include <render/Components/Shape.h>
+#include <render/Input/Input.h>
+#include <render/Utils/Math.h>
+#include <render/Renderer/Material/Material.h>
+#include <render/Renderer/Shader/Shader.h>
+#include <render/Renderer/Lights/PointLight.h>
 
 #include <vector>
 #include <chrono>
