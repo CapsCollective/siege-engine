@@ -6,25 +6,21 @@ on:
     
   pull_request:
     branches: [ main ]
+
+  workflow_dispatch:
     
 jobs:
   build:
     runs-on: macos-latest
+    
     steps:
     - uses: actions/checkout@v2
 
-    # Build and clean
+    - name: perform setup
+      run: ./scripts/setup.sh
 
     - name: update submodules
       run: git submodule update --init --recursive
 
-    - name: make
-      run: make
-
-    - name: make clean
-      run: make clean
-
-    # Rebuild with g++
-
-    - name: make CXX=g++
-      run: make CXX=g++
+    - name: build and package executable
+      run: make package

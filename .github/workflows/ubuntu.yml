@@ -6,33 +6,30 @@ on:
     
   pull_request:
     branches: [ main ]
+
+  workflow_dispatch:
     
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v2
 
-    # Install dependencies
-
     - name: update apt
-      run: sudo apt-get update
+      run: sudo apt update
+
+    - name: install vulkan dependencies
+      run: sudo apt install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
+
+    - name: install glfw dependencies
+      run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
     - name: install raylib dependencies
       run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-    # Build and clean
+    - name: perform setup
+      run: ./scripts/setup.sh
 
-    - name: update submodules
-      run: git submodule update --init --recursive
-
-    - name: make
-      run: make
-
-    - name: make clean
-      run: make clean
-
-    # Rebuild with g++
-      
-    - name: make CXX=g++
-      run: make CXX=g++
+    - name: build and package executable
+      run: make package
