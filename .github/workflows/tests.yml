@@ -23,9 +23,6 @@ jobs:
 
       # Build tests
 
-      - name: update submodules
-        run: git submodule update --init --recursive
-
       - name: make tests
         run: make tests
 

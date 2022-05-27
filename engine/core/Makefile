@@ -1,21 +1,21 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set platform vars
-ifeq ($(platform), Windows)
-    libGenDir := src
-else ifeq ($(platform), macOS)
-    libGenDir := src
-endif
-raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
-
 # Set build vars for core
 coreSrcDir := .
 coreBuildDir := $(buildDir)/core
 coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
 coreObjects := $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
 coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
+
+# Set build vars
+ifeq ($(platform), windows)
+    libGenDir := src
+else ifeq ($(platform), macos)
+    libGenDir := src
+endif
 raylibIncludeDir := $(vendorIncludeDir)/raylib
+raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
 # Build the static library for the engine core
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)

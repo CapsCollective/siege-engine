@@ -188,6 +188,10 @@ setup_validation_layers() {
 
 echo "OS detected: ${OS}"
 
+echo "Setting up raylib..."
+echo "Cloning raylib..."
+git submodule update --init --recursive "${VENDOR_DIR}"/raylib-cpp
+
 echo "Setting up GLFW..."
 setup_glfw
 

@@ -19,8 +19,5 @@ jobs:
     - name: perform setup
       run: ./scripts/setup.sh
 
-    - name: update submodules
-      run: git submodule update --init --recursive
-
-    - name: build and package executable
-      run: make package
+    - name: build all targets
+      run: make

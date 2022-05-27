@@ -5,6 +5,7 @@
 #include <core/entity/EntityPtr.h>
 
 #include "../ServiceLocator.h"
+#include "MessageDisplay.h"
 
 class DevConsole : public Entity
 {
