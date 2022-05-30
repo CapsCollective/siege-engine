@@ -57,7 +57,7 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 render-assets:
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir))
 	$(call COPY_DIR,$(binDir)/engine/render/build,$(exampleRenderBuildDir))
-	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
+	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets)
 	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
 
 # Package the built application and all its assets to the output directory
