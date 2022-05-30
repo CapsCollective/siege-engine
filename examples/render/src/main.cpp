@@ -197,7 +197,7 @@ int main()
     // Vertex shaders
 
     auto diffuseShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/simpleShader.vert.spv")
+        .FromShader("assets/shaders/simpleShader.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex))
         .WithVertexAttribute(offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3)
@@ -208,7 +208,7 @@ int main()
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData), 1);
     
     auto spriteShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/simpleShader2D.vert.spv")
+        .FromShader("assets/shaders/simpleShader2D.vert.spv")
         .WithStage(SnekVk::PipelineConfig::VERTEX)
         .WithVertexType(sizeof(SnekVk::Vertex2D))
         .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC2)
@@ -219,11 +219,11 @@ int main()
     // Fragment shaders
 
     auto fragShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/simpleShader.frag.spv")
+        .FromShader("assets/shaders/simpleShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT);
 
     auto diffuseFragShader = SnekVk::Shader::BuildShader()
-        .FromShader("shaders/diffuseFragShader.frag.spv")
+        .FromShader("assets/shaders/diffuseFragShader.frag.spv")
         .WithStage(SnekVk::PipelineConfig::FRAGMENT)
         .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
 

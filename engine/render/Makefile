@@ -10,9 +10,8 @@ renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
 
 # Set shader build vars
-renderShadersDir := shaders
-vertSources := $(call rwildcard,$(renderShadersDir),*.vert)
-fragSources := $(call rwildcard,$(renderShadersDir),*.frag)
+vertSources := $(call rwildcard,assets/shaders,*.vert)
+fragSources := $(call rwildcard,assets/shaders,*.frag)
 vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
 fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
@@ -49,7 +48,7 @@ $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 # Compile shaders to the build directory
-$(renderBuildDir)/shaders/%.spv: $(renderSrcDir)/shaders/%
+$(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 	$(MKDIR) $(call platformpth, $(@D))
 	$(glslangValidator) $< -V -o $@
 
