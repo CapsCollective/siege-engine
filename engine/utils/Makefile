@@ -3,10 +3,10 @@ include $(makeDir)/Platform.mk
 
 # Set build vars for utils
 utilsSrcDir := .
-utilsBuildDir := $(buildDir)/utils
+utilsBinDir := $(binDir)/engine/utils
 utilsSources := $(call rwildcard,$(utilsSrcDir)/,*.cpp)
-utilsObjects := $(call findobjs,$(utilsSrcDir),$(utilsBuildDir),$(utilsSources))
-utilsDepends := $(patsubst %.o, %.d, $(call rwildcard,$(utilsBuildDir)/,*.o))
+utilsObjects := $(call findobjs,$(utilsSrcDir),$(utilsBinDir),$(utilsSources))
+utilsDepends := $(patsubst %.o, %.d, $(call rwildcard,$(utilsBinDir)/,*.o))
 
 # Build the static library for utils
 $(utilsLib): $(utilsObjects)
@@ -17,6 +17,6 @@ $(utilsLib): $(utilsObjects)
 -include $(utilsDepends)
 
 # Compile object files to the build directory
-$(utilsBuildDir)/%.o: $(utilsSrcDir)/%.cpp
+$(utilsBinDir)/%.o: $(utilsSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS)

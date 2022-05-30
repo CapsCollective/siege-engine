@@ -23,8 +23,8 @@ jobs:
 
       # Build tests
 
-      - name: make tests
-        run: make tests
+      - name: make testapp
+        run: make testapp
 
       # Run tests
 
