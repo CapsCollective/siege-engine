@@ -3,7 +3,7 @@
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
 
-namespace SnekVk::Buffer
+namespace Siege::Buffer
 {
     struct Buffer
     {

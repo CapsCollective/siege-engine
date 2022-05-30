@@ -1,6 +1,6 @@
 #include "DebugUtilsMessenger.h"
 
-namespace SnekVk::DebugUtilsMessenger
+namespace Siege::DebugUtilsMessenger
 {
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(

@@ -1,6 +1,6 @@
 #include "DebugRenderer3D.h"
 
-namespace SnekVk
+namespace Siege
 {
     DebugRenderer3D::DebugRenderer3D() {}
     
@@ -15,8 +15,8 @@ namespace SnekVk
             .FromShader("assets/shaders/line.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(LineVertex))
-            .WithVertexAttribute(offsetof(LineVertex, position), SnekVk::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(LineVertex, colour), SnekVk::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(LineVertex, position), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(LineVertex, colour), Siege::VertexDescription::VEC3)
             .WithUniform(0, globalDataAttributeName, globalDataSize, 1);
         
         // fragmentShaders

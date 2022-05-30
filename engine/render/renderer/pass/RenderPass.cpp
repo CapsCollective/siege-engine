@@ -1,6 +1,6 @@
 #include "RenderPass.h"
 
-namespace SnekVk
+namespace Siege
 {
 
     RenderPass::~RenderPass()
@@ -57,7 +57,7 @@ namespace SnekVk
         renderPassCreateInfo.dependencyCount = dependencyCount;
         renderPassCreateInfo.pDependencies = dependencies;
 
-        SNEK_ASSERT(vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT &renderPass) == VK_SUCCESS,
+        CC_ASSERT(vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT &renderPass) == VK_SUCCESS,
                     "Failed to create render pass!")
     }
 }

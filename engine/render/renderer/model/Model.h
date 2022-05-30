@@ -13,7 +13,7 @@
 
 #include <unordered_map>
 
-namespace SnekVk 
+namespace Siege
 {
     /**
      * @brief The model class contains all rendering data required by our shaders. Models

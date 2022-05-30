@@ -4,7 +4,7 @@
 #include "../device/VulkanDevice.h"
 #include "utils/Attachments.h"
 
-namespace SnekVk
+namespace Siege
 {
     /**
      * @brief The RenderPass class is a utilitly class which encapsulates the Vulkan RenderPass capabilities. The

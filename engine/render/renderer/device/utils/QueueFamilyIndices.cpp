@@ -1,6 +1,6 @@
 #include "QueueFamilyIndices.h"
 
-namespace SnekVk::QueueFamilyIndices
+namespace Siege::QueueFamilyIndices
 {
     bool IsComplete(QueueFamilyIndices& indices) { return indices.graphicsFamilyHasValue && indices.presentFamilyHasValue; }
 

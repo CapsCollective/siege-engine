@@ -4,7 +4,7 @@
 #include "../pass/RenderPass.h"
 #include "../image/FrameImages.h"
 
-namespace SnekVk
+namespace Siege
 {
     /**
      * @brief The Swapchain class defines the creation and usage of a graphics swapchain. 

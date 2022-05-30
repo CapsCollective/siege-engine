@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-namespace SnekVk 
+namespace Siege
 {
     Pipeline::Pipeline(
         const PipelineConfig::ShaderConfig* shaders,
@@ -32,7 +32,7 @@ namespace SnekVk
         // Read the file as binary and consume the entire file. 
         std::ifstream file { filePath, std::ios::ate | std::ios::binary };
 
-        SNEK_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
+        CC_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
 
         // Since we consumed the entire file, we can tell the size by checking where
         // the file stream is reading from (which presumably is at the end of the file).
@@ -56,13 +56,13 @@ namespace SnekVk
         const PipelineConfigInfo& configInfo)
     {
 
-        SNEK_ASSERT(configInfo.pipelineLayout != VK_NULL_HANDLE, 
+        CC_ASSERT(configInfo.pipelineLayout != VK_NULL_HANDLE,
                 "Cannot create graphics pipeline: no pipeline config provided in configInfo");
         
-        SNEK_ASSERT(configInfo.renderPass != VK_NULL_HANDLE, 
+        CC_ASSERT(configInfo.renderPass != VK_NULL_HANDLE,
                 "Cannot create graphics pipeline: no renderpass config provided in configInfo");
         
-        SNEK_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.");
+        CC_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.");
 
         shaderModuleCount = shaderCount;
         
@@ -123,7 +123,7 @@ namespace SnekVk
 
         auto device = VulkanDevice::GetDeviceInstance();
 
-        SNEK_ASSERT(vkCreateGraphicsPipelines(device->Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline) 
+        CC_ASSERT(vkCreateGraphicsPipelines(device->Device(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, OUT &graphicsPipeline)
             == VK_SUCCESS, "Failed to create graphics pipeline!")
     }
 
@@ -165,7 +165,7 @@ namespace SnekVk
 
         auto device = VulkanDevice::GetDeviceInstance();
 
-        SNEK_ASSERT(vkCreateShaderModule(device->Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS, 
+        CC_ASSERT(vkCreateShaderModule(device->Device(), &createInfo, nullptr, OUT shaderModule) == VK_SUCCESS,
             "Failed to create shader module!");
     }
 

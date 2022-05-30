@@ -4,7 +4,7 @@
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails.h"
 
-namespace SnekVk::PhysicalDevice
+namespace Siege::PhysicalDevice
 {
     /**
      * Checks a physical device's compaitibility with Vulkan. This 

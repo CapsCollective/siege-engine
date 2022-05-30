@@ -4,7 +4,7 @@
 #include "../model/Model.h"
 #include "../material/Material.h"
 
-namespace SnekVk
+namespace Siege
 {
     class DebugRenderer3D
     {

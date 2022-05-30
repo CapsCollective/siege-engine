@@ -4,7 +4,7 @@
 #include <cstring>
 #include <cstdint>
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     // from: https://stackoverflow.com/a/57595105
     template <typename T, typename... Rest>

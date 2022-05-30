@@ -2,7 +2,7 @@
 
 #include "../Core.h"
 
-namespace SnekVk
+namespace Siege
 {
     // TEMPORARY
     class VertexDescription

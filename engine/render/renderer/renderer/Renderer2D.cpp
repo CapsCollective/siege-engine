@@ -1,6 +1,6 @@
 #include "Renderer2D.h"
 
-namespace SnekVk
+namespace Siege
 {
     Utils::StringId Renderer2D::transformId;
     Utils::StringId Renderer2D::globalDataId;

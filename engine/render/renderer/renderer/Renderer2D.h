@@ -6,7 +6,7 @@
 #include "../utils/Math.h"
 #include "../camera/Camera.h"
 
-namespace SnekVk
+namespace Siege
 {
     class Renderer2D
     {

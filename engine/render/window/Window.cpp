@@ -1,6 +1,6 @@
 #include "Window.h"
 
-namespace SnekVk 
+namespace Siege
 {
     bool Window::glfwInitialised = false;
     size_t Window::glfwWindows = 0;

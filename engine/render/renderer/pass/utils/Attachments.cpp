@@ -1,6 +1,6 @@
 #include "Attachments.h"
 
-namespace SnekVk
+namespace Siege
 {
     VkAttachmentDescription Attachments::CreateColorAttachment(VkFormat format)
     {

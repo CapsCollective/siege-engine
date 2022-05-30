@@ -3,7 +3,7 @@
 #include "../swapchain/Swapchain.h"
 #include "../utils/Descriptor.h"
 
-namespace SnekVk
+namespace Siege
 {
     Material::Material()
         : Material(nullptr, nullptr, 0) {}
@@ -11,7 +11,7 @@ namespace SnekVk
     Material::Material(Shader* vertexShader) 
         : Material(vertexShader, nullptr, 1) 
     {
-        SNEK_ASSERT(vertexShader != nullptr, 
+        CC_ASSERT(vertexShader != nullptr,
             "Error: the vertex shader must not be null when using this constructor");
 
         bufferSize += Buffer::PadUniformBufferSize(vertexShader->GetUniformSize());
@@ -20,7 +20,7 @@ namespace SnekVk
     Material::Material(Shader* vertexShader, Shader* fragmentShader)
         : Material(vertexShader, fragmentShader, 2) 
     {
-        SNEK_ASSERT(vertexShader != nullptr && fragmentShader != nullptr, 
+        CC_ASSERT(vertexShader != nullptr && fragmentShader != nullptr,
             "Error: the vertex and fragment shaders must not be null when using this constructor");
         
         bufferSize +=
@@ -104,7 +104,7 @@ namespace SnekVk
 
         CreateLayout(layouts, bindingCount);
 
-        SNEK_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
+        CC_ASSERT(pipelineLayout != nullptr, "Cannot create pipeline without a valid layout!");
         
         // TODO(Aryeh): Maybe pipelineConfig should be a builder class?
 
@@ -170,7 +170,7 @@ namespace SnekVk
 
             // Create all layouts
             
-            SNEK_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
+            CC_ASSERT(Utils::Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
             "Failed to create descriptor set!");
 
             u64 offset = property.offset;
@@ -329,7 +329,7 @@ namespace SnekVk
             if (id == property.id) return property;
         }
 
-        SNEK_ASSERT(false, "No property with ID: " << id << " exists!");
+        CC_ASSERT(false, "No property with ID: " << id << " exists!");
     }
 
     void Material::BuildMaterial()

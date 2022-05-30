@@ -1,6 +1,6 @@
 #include "LightRenderer.h"
 
-namespace SnekVk
+namespace Siege
 {
     LightRenderer::LightRenderer() {}
     LightRenderer::~LightRenderer() {}
@@ -10,16 +10,16 @@ namespace SnekVk
         globalDataId = INTERN_STR(globalDataAttributeName);
         lightDataId = INTERN_STR("lightUBO");
 
-        auto pointLightVertShader = SnekVk::Shader::BuildShader()
+        auto pointLightVertShader = Siege::Shader::BuildShader()
             .FromShader("assets/shaders/pointLight.vert.spv")
-            .WithStage(SnekVk::PipelineConfig::VERTEX)
+            .WithStage(Siege::PipelineConfig::VERTEX)
             .WithVertexType(sizeof(glm::vec2))
-            .WithVertexAttribute(0, SnekVk::VertexDescription::VEC2)
+            .WithVertexAttribute(0, Siege::VertexDescription::VEC2)
             .WithUniform(0, globalDataAttributeName, globalDataSize);
 
-        auto pointLightFragShader = SnekVk::Shader::BuildShader()
+        auto pointLightFragShader = Siege::Shader::BuildShader()
             .FromShader("assets/shaders/pointLight.frag.spv")
-            .WithStage(SnekVk::PipelineConfig::FRAGMENT)
+            .WithStage(Siege::PipelineConfig::FRAGMENT)
             .WithUniform(0, globalDataAttributeName, globalDataSize);
         
         lightMaterial.SetVertexShader(&pointLightVertShader);

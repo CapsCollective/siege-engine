@@ -6,7 +6,7 @@
 #include "../utils/Hash.h"
 #include <map>
 
-namespace SnekVk
+namespace Siege
 {
     class Shader
     {

@@ -1,6 +1,6 @@
 #include "BillboardRenderer.h"
 
-namespace SnekVk
+namespace Siege
 {
     BillboardRenderer::BillboardRenderer() {}
     BillboardRenderer::~BillboardRenderer() {}
@@ -14,8 +14,8 @@ namespace SnekVk
             .FromShader("assets/shaders/billboard.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(BillboardVertex))
-            .WithVertexAttribute(offsetof(BillboardVertex, position), SnekVk::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(BillboardVertex, colour), SnekVk::VertexDescription::VEC4)
+            .WithVertexAttribute(offsetof(BillboardVertex, position), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(BillboardVertex, colour), Siege::VertexDescription::VEC4)
             .WithUniform(0, globalDataAttributeName, globalDataSize)
             .WithStorage(1, "positions", sizeof(BillboardUBO), 1000);
         

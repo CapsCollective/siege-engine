@@ -5,7 +5,7 @@
 
 // TODO: Move this out of device utils (since it's being used by the swapchain)
 
-namespace SnekVk::SwapChainSupportDetails
+namespace Siege::SwapChainSupportDetails
 {
     /**
      * A struct for storing swapchain support information. 

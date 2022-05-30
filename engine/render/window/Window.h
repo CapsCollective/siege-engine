@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <cstdint>
 
-namespace SnekVk 
+namespace Siege
 {
     class Window 
     {

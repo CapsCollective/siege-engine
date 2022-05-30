@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstring>
 
-namespace SnekVk::Extensions
+namespace Siege::Extensions
 {
     /**
      * Searches for available validation layers and checks that all required layers exist. 

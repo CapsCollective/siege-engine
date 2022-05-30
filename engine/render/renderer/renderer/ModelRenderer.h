@@ -4,7 +4,7 @@
 #include "../model/Model.h"
 #include "../utils/Math.h"
 
-namespace SnekVk
+namespace Siege
 {
     class ModelRenderer
     {

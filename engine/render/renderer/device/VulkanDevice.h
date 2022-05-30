@@ -18,7 +18,7 @@
     #define VALIDATION_LAYERS_ENABLED false
 #endif
 
-namespace SnekVk {
+namespace Siege {
 
 	class VulkanDevice {
 		/**
@@ -33,7 +33,7 @@ namespace SnekVk {
 		
 		// 'Structors
 
-		VulkanDevice(SnekVk::Window *window);
+		VulkanDevice(Siege::Window *window);
 		VulkanDevice();
 
 		~VulkanDevice();
@@ -274,4 +274,4 @@ namespace SnekVk {
 		const std::array<const char*, 1> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	};
 
-}  // namespace lve
+}

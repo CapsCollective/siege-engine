@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-namespace SnekVk
+namespace Siege
 {
     Shader::Shader() {}
 
@@ -90,7 +90,7 @@ namespace SnekVk
     {
         size_t index = vertexBindings.Count() - 1;
 
-        SNEK_ASSERT(index >= 0, "A vertex type must be added before creating attributes!");
+        CC_ASSERT(index >= 0, "A vertex type must be added before creating attributes!");
 
         auto& binding = vertexBindings.Get(index);
         auto& attributes = binding.attributes;
@@ -105,7 +105,7 @@ namespace SnekVk
 
     void Shader::SetUniformType(u32 binding, const char* name, VkDescriptorType type, u64 size, size_t arraySize, size_t count)
     {
-        SNEK_ASSERT(uniforms.Count() <= uniforms.Size(), 
+        CC_ASSERT(uniforms.Count() <= uniforms.Size(),
             std::string("ERROR: Maximum number of uniforms have been reached. Maximum is " 
             + std::to_string(uniforms.Size())).c_str());
 

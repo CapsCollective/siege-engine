@@ -2,7 +2,7 @@
 
 #include "../../Core.h"
 
-namespace SnekVk::QueueFamilyIndices
+namespace Siege::QueueFamilyIndices
 {
     /**
      * A struct storing the indices of our present and graphics queues.  

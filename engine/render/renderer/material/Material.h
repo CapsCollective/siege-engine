@@ -6,7 +6,7 @@
 #include "../shader/Shader.h"
 #include "../descriptor/DescriptorPool.h"
 
-namespace SnekVk
+namespace Siege
 {
     class Material
     {

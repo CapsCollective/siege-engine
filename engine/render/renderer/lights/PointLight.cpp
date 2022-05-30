@@ -1,6 +1,6 @@
 #include "PointLight.h"
 
-namespace SnekVk
+namespace Siege
 {
 
     PointLight::PointLight()
