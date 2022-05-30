@@ -3,10 +3,10 @@ include $(makeDir)/Platform.mk
 
 # Set build vars for core
 coreSrcDir := .
-coreBuildDir := $(buildDir)/core
+coreBinDir := $(binDir)/engine/core
 coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
-coreObjects := $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
-coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
+coreObjects := $(call findobjs,$(coreSrcDir),$(coreBinDir),$(coreSources))
+coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBinDir)/,*.o))
 
 # Set build vars
 ifeq ($(platform), windows)
@@ -14,7 +14,7 @@ ifeq ($(platform), windows)
 else ifeq ($(platform), macos)
     libGenDir := src
 endif
-raylibIncludeDir := $(vendorIncludeDir)/raylib
+raylibIncludeDir := $(vendorDir)/include/raylib
 raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
 # Build the static library for the engine core
@@ -28,7 +28,7 @@ $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 -include $(coreDepends)
 
 # Compile object files to the build directory
-$(coreBuildDir)/%.o: $(coreSrcDir)/%.cpp
+$(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(raylibIncludeDir) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 

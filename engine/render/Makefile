@@ -1,24 +1,21 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set validation layer build flags
-ifeq ($(ENABLE_VALIDATION_LAYERS), 1)
-    PACKAGE_FLAGS := --include-validation-layers
-endif
-
 # Set build vars for render
 renderSrcDir := .
-renderBuildDir := $(buildDir)/render
+renderBinDir := $(binDir)/engine/render
 renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
-renderObjects := $(call findobjs,$(renderSrcDir),$(renderBuildDir),$(renderSources))
-renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBuildDir)/,*.o))
+renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
+renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
+renderBuildDir := $(renderBinDir)/build
+libBinDir := $(renderBuildDir)/lib
 
 # Find shader values for build
 shadersDir := shaders
 vertSources = $(call rwildcard,$(shadersDir),*.vert)
 fragSources = $(call rwildcard,$(shadersDir),*.frag)
-vertObjFiles = $(patsubst %.vert,$(buildDir)/%.vert.spv,$(vertSources))
-fragObjFiles = $(patsubst %.frag,$(buildDir)/%.frag.spv,$(fragSources))
+vertObjFiles = $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
+fragObjFiles = $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
 # Set build vars
 ifeq ($(platform), windows)
@@ -34,7 +31,7 @@ endif
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
 
 # Build the static library for render
-$(renderLib): $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(buildDir)/lib $(renderObjects)
+$(renderLib): $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(libBinDir) $(renderObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(renderLib))
 	$(call COPY,$(vendorDir)/glfw/src,$(libDir)/librender.a,libglfw3.a)
@@ -44,14 +41,14 @@ $(renderLib): $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(buildDir)/lib $(rende
 -include $(renderDepends)
 
 # Compile object files to the build directory
-$(renderBuildDir)/%.o: $(renderSrcDir)/%.cpp
+$(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
-$(buildDir)/lib:
-	$(MKDIR) $(call platformpth,$(buildDir)/lib)
-	$(call COPY_DIR,$(vendorDir)/vulkan/lib,$(buildDir)/lib)
+$(libBinDir):
+	$(MKDIR) $(call platformpth,$(libBinDir))
+	$(call COPY_DIR,$(vendorDir)/vulkan/lib,$(libBinDir))
 
-$(buildDir)/%.spv: %
+$(renderBuildDir)/%.spv: %
 	$(MKDIR) $(call platformpth, $(@D))
 	$(glslangValidator) $< -V -o $@

@@ -8,7 +8,7 @@
 #include <utils/String.h>
 
 // Const declarations
-static constexpr const char* SCENE_DIR = "tests/data/";
+static constexpr const char* SCENE_DIR = "data/";
 static constexpr const char* TEST_FILE = "test.scene";
 static constexpr const char* UNTITLED_FILE = "untitled.scene";
 

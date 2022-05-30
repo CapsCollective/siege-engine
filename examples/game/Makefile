@@ -3,29 +3,33 @@ include $(makeDir)/Platform.mk
 
 # Set build vars for exampleGame
 exampleGameSrcDir := .
-exampleGameBuildDir := $(buildDir)/examples/game
+exampleGameBinDir := $(binDir)/examples/game
 exampleGameSources := $(call rwildcard,$(exampleGameSrcDir)/,*.cpp)
-exampleGameObjects := $(call findobjs,$(exampleGameSrcDir),$(exampleGameBuildDir),$(exampleGameSources))
-exampleGameDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBuildDir)/,*.o))
-assetsDir := assets
-assetsBuildDir := $(buildDir)/examples/game/$(assetsDir)
+exampleGameObjects := $(call findobjs,$(exampleGameSrcDir),$(exampleGameBinDir),$(exampleGameSources))
+exampleGameDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBinDir)/,*.o))
+exampleGameBuildDir := $(exampleGameBinDir)/build
+exampleGameOutputName := "Game Example"
 
 # Set build vars
 linkFlags += -l core -l utils
 
 # Link the object files and create an executable
-$(exampleGameExecutable): $(exampleGameObjects) $(assetsBuildDir)
-	$(CXX) $(exampleGameObjects) -o $(exampleGameExecutable) $(linkFlags)
+$(exampleGameApp): $(exampleGameObjects) $(exampleGameBuildDir)
+	$(CXX) $(exampleGameObjects) -o $(exampleGameApp) $(linkFlags)
 
 # Add all rules from dependency files
 -include $(exampleGameDepends)
 
 # Compile object files to the build directory
-$(exampleGameBuildDir)/%.o: $(exampleGameSrcDir)/%.cpp
+$(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy the assets directory to the build directory
-$(assetsBuildDir):
-	$(MKDIR) $(call platformpth,$(assetsBuildDir))
-	$(call COPY_DIR,$(assetsDir),$(assetsBuildDir))
+# Copy the output files to the build directory
+$(exampleGameBuildDir):
+	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets)
+	$(call COPY_DIR,assets,$(exampleGameBuildDir)/assets)
+
+package:
+	$(RM) "$(outputDir)/$(exampleGameOutputName)"*
+	$(packageScript) $(exampleGameOutputName) $(shell basename $(exampleGameApp)) $(outputDir) $(exampleGameBuildDir)
