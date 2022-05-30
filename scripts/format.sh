@@ -14,7 +14,7 @@ dirs=$1
 
 # Find all required files
 for dir in $dirs; do
-  files+="$(find $dir -iname *.h -o -iname *.cpp $excludes) "
+  files+="$(find $dir -iname "*.h" -o -iname "*.cpp" $excludes) "
 done
 count=$(wc -w <<< $files)
 

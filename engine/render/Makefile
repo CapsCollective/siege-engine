@@ -1,21 +1,20 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build vars for render
+# Set source build vars
 renderSrcDir := .
 renderBinDir := $(binDir)/engine/render
 renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
 renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
 renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
-libBinDir := $(renderBuildDir)/lib
 
-# Find shader values for build
-shadersDir := shaders
-vertSources = $(call rwildcard,$(shadersDir),*.vert)
-fragSources = $(call rwildcard,$(shadersDir),*.frag)
-vertObjFiles = $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
-fragObjFiles = $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
+# Set shader build vars
+renderShadersDir := shaders
+vertSources := $(call rwildcard,$(renderShadersDir),*.vert)
+fragSources := $(call rwildcard,$(renderShadersDir),*.frag)
+vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
+fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
 # Set build vars
 ifeq ($(platform), windows)
@@ -30,8 +29,12 @@ else ifeq ($(platform), macos)
 endif
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
 
-# Build the static library for render
-$(renderLib): $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(libBinDir) $(renderObjects)
+.PHONY: all vulkan-libs
+
+all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
+
+# Build the static library
+$(renderLib): $(renderObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(renderLib))
 	$(call COPY,$(vendorDir)/glfw/src,$(libDir)/librender.a,libglfw3.a)
@@ -40,15 +43,17 @@ $(renderLib): $(glfwLib) $(vertObjFiles) $(fragObjFiles) $(libBinDir) $(renderOb
 # Add all rules from dependency files
 -include $(renderDepends)
 
-# Compile object files to the build directory
+# Compile object files to the bin directory
 $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
-$(libBinDir):
-	$(MKDIR) $(call platformpth,$(libBinDir))
-	$(call COPY_DIR,$(vendorDir)/vulkan/lib,$(libBinDir))
-
-$(renderBuildDir)/%.spv: %
+# Compile shaders to the build directory
+$(renderBuildDir)/shaders/%.spv: $(renderSrcDir)/shaders/%
 	$(MKDIR) $(call platformpth, $(@D))
 	$(glslangValidator) $< -V -o $@
+
+# Copy Vulkan libraries to the build directory
+vulkan-libs:
+	$(MKDIR) $(call platformpth, $(renderBuildDir)/lib)
+	$(call COPY,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib,**)

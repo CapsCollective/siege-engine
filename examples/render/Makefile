@@ -1,17 +1,16 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build vars for exampleRender
+# Set source build vars
 exampleRenderSrcDir := .
 exampleRenderBinDir := $(binDir)/examples/render
 exampleRenderSources := $(call rwildcard,$(exampleRenderSrcDir)/,*.cpp)
 exampleRenderObjects := $(call findobjs,$(exampleRenderSrcDir),$(exampleRenderBinDir),$(exampleRenderSources))
 exampleRenderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleRenderBinDir)/,*.o))
 exampleRenderBuildDir := $(exampleRenderBinDir)/build
-engineRenderBuildDir := $(binDir)/engine/render/build
 exampleRenderOutputName := "Render Example"
 
-# Set packaging vars for exampleRender
+# Set packaging vars
 ifeq ($(platform), linux)
     packagingEnvVars := \
     	export DYLD_LIBRARY_PATH='./lib'; \
@@ -38,25 +37,30 @@ endif
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
 linkFlags += -lrender
 
+.PHONY: all render-assets
+
+all: $(exampleRenderApp) render-assets
+
 # Link the object files and create an executable
-$(exampleRenderApp): $(exampleRenderObjects) $(exampleRenderBuildDir)
+$(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
 	$(CXX) $(exampleRenderObjects) -o $(exampleRenderApp) $(linkFlags)
 
 # Add all rules from dependency files
 -include $(exampleRenderDepends)
 
-# Compile object files to the build directory
+# Compile object files to the bin directory
 $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I$(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy the output files to the build directory
-$(exampleRenderBuildDir):
+# Copy assets (and other required build files) directory to the build directory
+render-assets:
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir))
-	$(call COPY_DIR,$(engineRenderBuildDir),$(exampleRenderBuildDir))
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets)
-	$(call COPY_DIR,assets,$(exampleRenderBuildDir)/assets)
+	$(call COPY_DIR,$(binDir)/engine/render/build,$(exampleRenderBuildDir))
+	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
+	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
 
+# Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleRenderOutputName)"*
 	$(packageScript) $(exampleRenderOutputName) $(shell basename $(exampleRenderApp)) $(outputDir) $(exampleRenderBuildDir) $(packagingFlags)

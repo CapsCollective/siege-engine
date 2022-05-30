@@ -1,7 +1,7 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build vars for core
+# Set source build vars
 coreSrcDir := .
 coreBinDir := $(binDir)/engine/core
 coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
@@ -17,7 +17,7 @@ endif
 raylibIncludeDir := $(vendorDir)/include/raylib
 raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
-# Build the static library for the engine core
+# Build the static library
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(coreLib))
@@ -27,11 +27,12 @@ $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 # Add all rules from dependency files
 -include $(coreDepends)
 
-# Compile object files to the build directory
+# Compile object files to the bin directory
 $(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(raylibIncludeDir) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
+# TODO move this into setup file
 # Copy the relevant header files into includes
 $(raylibIncludeDir):
 	$(MKDIR) $(call platformpth, $(raylibIncludeDir)/raylib)
