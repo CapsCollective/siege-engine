@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <unordered_set>
 
-namespace SnekVk::Extensions
+namespace Siege::Extensions
 {
     bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size) 
     {
@@ -73,7 +73,7 @@ namespace SnekVk::Extensions
         for (const auto &required : requiredExtensions) 
         {
             std::cout << "\t" << required << std::endl;
-            SNEK_ASSERT(available.find(required) != available.end(), 
+            CC_ASSERT(available.find(required) != available.end(),
                 "Failed to find GLFW Extensions!");
         }
     }

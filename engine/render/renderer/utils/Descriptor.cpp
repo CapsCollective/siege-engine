@@ -1,7 +1,7 @@
 #include "Descriptor.h"
 #include <iostream>
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     VkDescriptorSetLayoutBinding Descriptor::CreateLayoutBinding(
         uint32_t binding, 

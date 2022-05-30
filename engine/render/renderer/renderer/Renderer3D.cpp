@@ -1,7 +1,7 @@
 #include "Renderer3D.h"
 #include <iostream>
 
-namespace SnekVk
+namespace Siege
 {
     // static initialisation
     Utils::StringId Renderer3D::globalDataId;
@@ -24,14 +24,14 @@ namespace SnekVk
         billboardRenderer.Initialise("globalData", sizeof(GlobalData));
         lightRenderer.Initialise("globalData", sizeof(GlobalData));
         
-        auto gridShader = SnekVk::Shader::BuildShader()
+        auto gridShader = Siege::Shader::BuildShader()
             .FromShader("assets/shaders/grid.vert.spv")
-            .WithStage(SnekVk::PipelineConfig::VERTEX)
-            .WithUniform(0, "globalData", sizeof(SnekVk::Renderer3D::GlobalData));
+            .WithStage(Siege::PipelineConfig::VERTEX)
+            .WithUniform(0, "globalData", sizeof(Siege::Renderer3D::GlobalData));
         
-        auto gridFragShader = SnekVk::Shader::BuildShader()
+        auto gridFragShader = Siege::Shader::BuildShader()
             .FromShader("assets/shaders/grid.frag.spv")
-            .WithStage(SnekVk::PipelineConfig::FRAGMENT);
+            .WithStage(Siege::PipelineConfig::FRAGMENT);
 
         gridMaterial.SetVertexShader(&gridShader);
         gridMaterial.SetFragmentShader(&gridFragShader);

@@ -11,7 +11,7 @@
 #include "renderer/Renderer2D.h"
 #include "descriptor/DescriptorPool.h"
 
-namespace SnekVk 
+namespace Siege
 {
     class Renderer
     {
@@ -28,7 +28,7 @@ namespace SnekVk
 
             int GetCurrentFrameIndex() const
             {
-                SNEK_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+                CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
                 return currentFrameIndex;
             }
 
@@ -40,7 +40,7 @@ namespace SnekVk
 
             VkCommandBuffer GetCurrentCommandBuffer() const 
             { 
-                SNEK_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
+                CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
                 return commandBuffers[currentFrameIndex]; 
             }
 
@@ -69,7 +69,7 @@ namespace SnekVk
 
             void DrawFrame();
 
-            SnekVk::Window& window;
+            Siege::Window& window;
             
             VulkanDevice device;
             SwapChain swapChain;

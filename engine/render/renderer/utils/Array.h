@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdint>
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     template<typename Array>
     class ArrayIterator

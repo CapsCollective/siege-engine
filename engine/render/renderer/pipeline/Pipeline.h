@@ -4,7 +4,7 @@
 #include "../device/VulkanDevice.h"
 #include "PipelineConfig.h"
 
-namespace SnekVk 
+namespace Siege
 {
     /**
      * A configuration struct containing all relevant pipeline config data. 

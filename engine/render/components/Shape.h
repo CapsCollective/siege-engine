@@ -17,14 +17,14 @@ namespace Components
         public: 
 
         Shape();
-        Shape(SnekVk::Model* model);
+        Shape(Siege::Model* model);
 
         ~Shape();
 
-        SnekVk::Model::Transform GetTransform() { return { CalculateTransform(transform), CalculateNormalMatrix(transform) }; };
-        SnekVk::Model::Transform2D GetTransform2D() { return { CalculateTransform(transform) }; };
+        Siege::Model::Transform GetTransform() { return { CalculateTransform(transform), CalculateNormalMatrix(transform) }; };
+        Siege::Model::Transform2D GetTransform2D() { return { CalculateTransform(transform) }; };
         glm::vec3& GetColor() { return fillColor; }
-        SnekVk::Model* GetModel() { return model; }
+        Siege::Model* GetModel() { return model; }
 
         glm::vec3& GetRotation() { return transform.rotation; }
         glm::vec3& GetPosition() { return transform.position; }
@@ -66,7 +66,7 @@ namespace Components
 
         glm::mat3 CalculateNormalMatrix(Transform& transform);
         
-        SnekVk::Model* model;
+        Siege::Model* model;
         Transform transform{};
         glm::vec3 fillColor{0.0f};
     };

@@ -18,7 +18,7 @@ VkImageView Image::CreateImageView(VkDevice device,
                                                                  pNext,
                                                                  createFlags);
 
-    SNEK_ASSERT(vkCreateImageView(device, &createInfo, nullptr, OUT &imageView) == VK_SUCCESS,
+    CC_ASSERT(vkCreateImageView(device, &createInfo, nullptr, OUT &imageView) == VK_SUCCESS,
                 "Failed to create texture image view!");
 
     return imageView;

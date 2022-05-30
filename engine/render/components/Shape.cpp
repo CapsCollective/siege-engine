@@ -65,7 +65,7 @@ namespace Components
 
     Shape::Shape() {}
 
-    Shape::Shape(SnekVk::Model* model) : model{model} {}
+    Shape::Shape(Siege::Model* model) : model{model} {}
 
     Shape::~Shape() {}
 

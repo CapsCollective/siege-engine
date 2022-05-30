@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-namespace SnekVk
+namespace Siege
 {
     Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
     VulkanDevice* Renderer::deviceInstance = nullptr;
@@ -44,7 +44,7 @@ namespace SnekVk
         allocInfo.commandPool = device.GetCommandPool();
         allocInfo.commandBufferCount = static_cast<u32>(commandBuffers.Size());
 
-        SNEK_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) == VK_SUCCESS,
+        CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) == VK_SUCCESS,
             "Failed to allocate command buffer");
     }
 
@@ -98,7 +98,7 @@ namespace SnekVk
 
     bool Renderer::StartFrame()
     {
-        SNEK_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
+        CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
 
         auto result = swapChain.AcquireNextImage(&currentImageIndex);
 
@@ -108,7 +108,7 @@ namespace SnekVk
             return false;
         }
 
-        SNEK_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, 
+        CC_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR,
             "Failed to acquire swapchain image!");
 
         isFrameStarted = true;
@@ -118,7 +118,7 @@ namespace SnekVk
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-        SNEK_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
+        CC_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
             "Failed to begin recording command buffer");
         
         BeginSwapChainRenderPass(commandBuffer);
@@ -128,7 +128,7 @@ namespace SnekVk
 
     void Renderer::EndFrame()
     {
-        SNEK_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!");
+        CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!");
 
         DrawFrame();
 
@@ -136,7 +136,7 @@ namespace SnekVk
 
         EndSwapChainRenderPass(commandBuffer);
 
-        SNEK_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
+        CC_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
             "Failed to record command buffer!");
 
         auto result = swapChain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
@@ -148,7 +148,7 @@ namespace SnekVk
             RecreateSwapChain();
         } else if (result != VK_SUCCESS) 
         {
-            SNEK_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
+            CC_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
         }
 
         isFrameStarted = false;
@@ -160,8 +160,8 @@ namespace SnekVk
 
     void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     {
-        SNEK_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
-        SNEK_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
+        CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
+        CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
 
         u32 clearValueCount = 2;
             VkClearValue clearValues[clearValueCount];
@@ -191,8 +191,8 @@ namespace SnekVk
 
     void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
     {
-        SNEK_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
-        SNEK_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
+        CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
+        CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin a render pass on a command buffer from another frame!");
         
         RenderPass::End(commandBuffer);
     }

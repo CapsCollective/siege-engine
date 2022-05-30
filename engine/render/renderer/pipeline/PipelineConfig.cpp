@@ -1,6 +1,6 @@
 #include "PipelineConfig.h"
 
-namespace SnekVk
+namespace Siege
 {
     VkVertexInputBindingDescription VertexDescription::CreateBinding(
             u32 binding,
@@ -270,7 +270,7 @@ namespace SnekVk
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = 
                 CreatePipelineLayoutCreateInfo(layouts, layoutCount, pushConstants, pushConstantCount);
 
-        SNEK_ASSERT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, pipelineLayout) == VK_SUCCESS, 
+        CC_ASSERT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, pipelineLayout) == VK_SUCCESS,
             "Failed to create pipeline layout!");
     }
 

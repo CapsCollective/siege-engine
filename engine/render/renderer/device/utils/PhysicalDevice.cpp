@@ -1,7 +1,7 @@
 #include "PhysicalDevice.h"
 #include <set>
 
-namespace SnekVk::PhysicalDevice
+namespace Siege::PhysicalDevice
 {
     bool CheckExtensionSupport(
         VkPhysicalDevice device, 

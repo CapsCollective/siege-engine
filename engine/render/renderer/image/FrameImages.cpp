@@ -1,6 +1,6 @@
 #include "FrameImages.h"
 
-namespace SnekVk {
+namespace Siege {
     u32 FrameImages::imageCount = 0;
 
     FrameImages::FrameImages() = default;

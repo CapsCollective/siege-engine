@@ -1,6 +1,6 @@
 #include "Math.h"
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     glm::mat4 Math::CalculateTransform3D(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
     {

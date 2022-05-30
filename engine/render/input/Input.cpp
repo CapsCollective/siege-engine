@@ -1,13 +1,13 @@
 #include "Input.h"
 #include <iostream>
     
-SnekVk::Window* Input::windowPtr = nullptr;
+Siege::Window* Input::windowPtr = nullptr;
 Input::MouseCoordinates Input::currentMouseCoordinates;
 bool Input::movedLastFrame{false};
 
 std::map<int, int> Input::keyMap;
 
-void Input::SetWindowPointer(SnekVk::Window* window)
+void Input::SetWindowPointer(Siege::Window* window)
 {
     // TODO: Fail if inputted pointer is nullptr
     windowPtr = window;

@@ -11,7 +11,7 @@
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
 
-namespace SnekVk
+namespace Siege
 {
     class Renderer3D
     {

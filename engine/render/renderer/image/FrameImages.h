@@ -4,7 +4,7 @@
 #include "../device/VulkanDevice.h"
 #include "utils/Image.h"
 
-namespace SnekVk
+namespace Siege
 {
     class FrameImages
     {

@@ -3,7 +3,7 @@
 #include <volk/volk.h>
 #include <cstdint>
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     // TODO document this
     class Descriptor

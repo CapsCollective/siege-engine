@@ -26,14 +26,14 @@ class Input
             double x;
             double y;
         };
-        static void SetWindowPointer(SnekVk::Window* window);
+        static void SetWindowPointer(Siege::Window* window);
         static bool IsKeyDown(int key);
         static bool IsKeyJustPressed(int key);
 
         static const MouseCoordinates& GetCursorPosition();
         static MouseCoordinates GetNormalisedMousePosition();
     private:
-        static SnekVk::Window* windowPtr;
+        static Siege::Window* windowPtr;
         static bool movedLastFrame;
         static MouseCoordinates currentMouseCoordinates;
         static std::map<int, int> keyMap;

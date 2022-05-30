@@ -1,6 +1,6 @@
 #include "SwapChainSupportDetails.h"
 
-namespace SnekVk::SwapChainSupportDetails
+namespace Siege::SwapChainSupportDetails
 {
     SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface) 
     {

@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace SnekVk
+namespace Siege
 {
     SwapChain* SwapChain::instance = nullptr;
 
@@ -164,7 +164,7 @@ namespace SnekVk
 
         createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
-        SNEK_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT &swapChain) == VK_SUCCESS,
+        CC_ASSERT(vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT &swapChain) == VK_SUCCESS,
                 "Failed to create Swapchain!");
 
         swapchainImages = FrameImages(&device, surfaceFormat.format);
@@ -266,7 +266,7 @@ namespace SnekVk
             frameBufferInfo.height = swapChainExtent.height;
             frameBufferInfo.layers = 1;
 
-            SNEK_ASSERT(vkCreateFramebuffer(device.Device(),
+            CC_ASSERT(vkCreateFramebuffer(device.Device(),
                                             &frameBufferInfo, nullptr, OUT &swapChainFrameBuffers[i]) == VK_SUCCESS,
                                             "Failed to create framebuffer");
         }
@@ -295,7 +295,7 @@ namespace SnekVk
         // Create the synchronisation objects
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            SNEK_ASSERT(
+            CC_ASSERT(
                 vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, OUT &imageAvailableSemaphores[i]) == VK_SUCCESS &&
                 vkCreateSemaphore(device.Device(), &semaphoreInfo, nullptr, OUT &renderFinishedSemaphores[i]) == VK_SUCCESS &&
                 vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT &inFlightFences[i]) == VK_SUCCESS, 
@@ -366,7 +366,7 @@ namespace SnekVk
         vkResetFences(device.Device(), 1, OUT &inFlightFences[currentFrame]);
 
         // Submit the command buffer to the graphics queue
-        SNEK_ASSERT(vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, OUT inFlightFences[currentFrame]) == VK_SUCCESS,
+        CC_ASSERT(vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, OUT inFlightFences[currentFrame]) == VK_SUCCESS,
             "Failed to submit draw command buffer");
 
         // Set up our presentation information and the semaphores to wait on

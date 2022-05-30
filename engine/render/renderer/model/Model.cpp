@@ -8,29 +8,29 @@
 namespace std 
 {
     template<>
-    struct hash<SnekVk::Vertex>
+    struct hash<Siege::Vertex>
     {
-        size_t operator()(const SnekVk::Vertex &vertex) const 
+        size_t operator()(const Siege::Vertex &vertex) const
         {
             size_t seed = 0;
-            SnekVk::Utils::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+            Siege::Utils::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
             return seed;
         };
     };
 
     template<>
-    struct hash<SnekVk::Vertex2D>
+    struct hash<Siege::Vertex2D>
     {
-        size_t operator()(const SnekVk::Vertex2D &vertex) const 
+        size_t operator()(const Siege::Vertex2D &vertex) const
         {
             size_t seed = 0;
-            SnekVk::Utils::HashCombine(seed, vertex.position, vertex.color);
+            Siege::Utils::HashCombine(seed, vertex.position, vertex.color);
             return seed;
         };
     };
 }
 
-namespace SnekVk
+namespace Siege
 {
     Model::Model(const Mesh::MeshData& meshData)
     {
@@ -60,7 +60,7 @@ namespace SnekVk
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
 
-        SNEK_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
+        CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
             warn + err);
         
         std::vector<Vertex> objVertices;

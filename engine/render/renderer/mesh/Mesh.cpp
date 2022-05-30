@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-namespace SnekVk
+namespace Siege
 {
     bool operator==(const Vertex& left, const Vertex& right) 
     {

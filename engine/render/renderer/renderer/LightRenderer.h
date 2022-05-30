@@ -3,7 +3,7 @@
 #include "../Core.h"
 #include "../model/Model.h"
 
-namespace SnekVk
+namespace Siege
 {
     class LightRenderer
     {

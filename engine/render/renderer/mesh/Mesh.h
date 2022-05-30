@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 #include <array>
 
-namespace SnekVk 
+namespace Siege
 {
     struct Vertex
     {

@@ -1,6 +1,6 @@
 #include "DescriptorPool.h"
 
-namespace SnekVk
+namespace Siege
 {
     VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
     Utils::StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES> DescriptorPool::sizes;
@@ -23,7 +23,7 @@ namespace SnekVk
             poolCreateInfo.poolSizeCount = static_cast<u32>(sizes.Count());
             poolCreateInfo.pPoolSizes = sizes.Data();
 
-            SNEK_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
+            CC_ASSERT(vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) == VK_SUCCESS,
                 "Unable to create descriptor pool!");
         }
     }

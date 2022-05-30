@@ -1,6 +1,6 @@
 #include "Hash.h"
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     // Constexpr implementation and helpers
     uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc) {

@@ -1,6 +1,6 @@
 #include "ModelRenderer.h"
 
-namespace SnekVk
+namespace Siege
 {
     ModelRenderer::ModelRenderer() {}
     ModelRenderer::~ModelRenderer() {}

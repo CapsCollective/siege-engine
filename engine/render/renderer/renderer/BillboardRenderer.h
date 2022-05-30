@@ -4,7 +4,7 @@
 #include "../Material/Material.h"
 #include "../Model/Model.h"
 
-namespace SnekVk
+namespace Siege
 {
     class BillboardRenderer
     {

@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace SnekVk
+namespace Siege
 {
     void Camera::SetOrthographicProjection(
         float left, float right, float top, float bottom, float near, float far) 
@@ -18,7 +18,7 @@ namespace SnekVk
  
     void Camera::SetPerspectiveProjection(float fovy, float aspect, float near, float far) 
     {
-        SNEK_ASSERT(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "");
+        CC_ASSERT(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "");
         
         const float tanHalfFovy = tan(fovy / 2.f);
         projectionMatrix = glm::mat4{0.0f};

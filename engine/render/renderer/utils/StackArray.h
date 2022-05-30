@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstring>
 
-namespace SnekVk::Utils
+namespace Siege::Utils
 {
     template<typename T, size_t S>
     class StackArray

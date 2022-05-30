@@ -22,11 +22,11 @@ typedef size_t size;
 #define EXIT_APP abort();
 
 #define REPORT_ASSERT_FAILURE(expr, file, line, message) \
-    std::cout << "SNEK ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: "  << line << std::endl; \
+    std::cout << "ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: "  << line << std::endl; \
     std::cout  << "                        Message: " << message << std::endl; 
 
 // Custom assert macro
-#define SNEK_ASSERT(expr, message) \
+#define CC_ASSERT(expr, message) \
     if (expr) { } \
     else \
     { \
@@ -38,7 +38,7 @@ typedef size_t size;
 
 #define INTERN_STR(str) Utils::WSID(str)
 
-namespace SnekVk 
+namespace Siege
 {
     struct CameraData
     {

@@ -1,6 +1,6 @@
 #include "Buffer.h"
 
-namespace SnekVk::Buffer
+namespace Siege::Buffer
 {
     // TODO: Wrap this in a static class 'BufferAllocator' so that we 
     // don't need to keep a static instance.
@@ -21,7 +21,7 @@ namespace SnekVk::Buffer
         auto deviceInstance = VulkanDevice::GetDeviceInstance();
         VkDevice device = deviceInstance->Device();
 
-		SNEK_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) == VK_SUCCESS,
+		CC_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT &buffer) == VK_SUCCESS,
 			"failed to create vertex buffer!");
 
 		VkMemoryRequirements memRequirements;
@@ -32,7 +32,7 @@ namespace SnekVk::Buffer
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = deviceInstance->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		SNEK_ASSERT (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) == VK_SUCCESS,
+		CC_ASSERT (vkAllocateMemory(device, &allocInfo, nullptr, OUT &bufferMemory) == VK_SUCCESS,
 			"failed to allocate vertex buffer memory!");
 
   		vkBindBufferMemory(device, buffer, bufferMemory, 0);

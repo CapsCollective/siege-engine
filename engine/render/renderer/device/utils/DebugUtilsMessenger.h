@@ -3,7 +3,7 @@
 #include "../../Core.h"
 #include <iostream>
 
-namespace SnekVk::DebugUtilsMessenger
+namespace Siege::DebugUtilsMessenger
 {
   /**
    * A function pointer that acts as a callback for validation layers. 

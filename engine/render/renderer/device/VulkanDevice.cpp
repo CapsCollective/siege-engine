@@ -5,13 +5,13 @@
 #include <iostream>
 #include <set>
 
-namespace SnekVk {
+namespace Siege {
 
 	VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
 
 	VulkanDevice::VulkanDevice(Window* window) : window{window} 
 	{
-		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+		CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
 
 		CreateInstance();
 		SetupDebugMessenger();
@@ -30,9 +30,9 @@ namespace SnekVk {
 
 	void VulkanDevice::SetWindow(Window* window)
 	{
-		SNEK_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+		CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
 
-		SNEK_ASSERT(window != nullptr, "Must provide a valid pointer to a window!");
+		CC_ASSERT(window != nullptr, "Must provide a valid pointer to a window!");
 
 		this->window = window;
 
@@ -67,14 +67,14 @@ namespace SnekVk {
 	{
 		if (enableValidationLayers)
 		{
-			SNEK_ASSERT(Extensions::CheckValidationLayerSupport(validationLayers.data(), validationLayers.size()),
+			CC_ASSERT(Extensions::CheckValidationLayerSupport(validationLayers.data(), validationLayers.size()),
 				"Validation Layers are not supported!");
 		}
 		
 		// Specify general app information.
 		VkApplicationInfo appInfo {};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "SnekVK";
+		appInfo.pApplicationName = "Render Example";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "No Engine";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -105,7 +105,7 @@ namespace SnekVk {
 			createInfo.pNext = nullptr;
 		}
 
-		SNEK_ASSERT(vkCreateInstance(&createInfo, nullptr, OUT &instance) == VK_SUCCESS, 
+		CC_ASSERT(vkCreateInstance(&createInfo, nullptr, OUT &instance) == VK_SUCCESS,
 			"Unable to create Vulkan Instance!");
 
 		Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
@@ -120,7 +120,7 @@ namespace SnekVk {
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(instance, OUT &deviceCount, nullptr);
 
-		SNEK_ASSERT(deviceCount > 0, "Failed to find GPUs with Vulkan Support!");
+		CC_ASSERT(deviceCount > 0, "Failed to find GPUs with Vulkan Support!");
 
 		std::cout << "Device count: " << deviceCount << std::endl;
 
@@ -137,7 +137,7 @@ namespace SnekVk {
 			}
 		}
 
-		SNEK_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
+		CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
 
 		vkGetPhysicalDeviceProperties(physicalDevice, OUT &properties);
 		std::cout << "physical device: " << properties.deviceName << std::endl;
@@ -191,7 +191,7 @@ namespace SnekVk {
 		}
 
 
-		SNEK_ASSERT(vkCreateDevice(physicalDevice, &createInfo, nullptr, OUT &device) == VK_SUCCESS, 
+		CC_ASSERT(vkCreateDevice(physicalDevice, &createInfo, nullptr, OUT &device) == VK_SUCCESS,
 			"failed to create logical device!");
 
 		vkGetDeviceQueue(device, indices.graphicsFamily, 0, OUT &graphicsQueue);
@@ -209,7 +209,7 @@ namespace SnekVk {
 		poolInfo.flags =
 			VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		SNEK_ASSERT(vkCreateCommandPool(device, &poolInfo, nullptr, OUT &commandPool) == VK_SUCCESS, "Failed to create command pool!");
+		CC_ASSERT(vkCreateCommandPool(device, &poolInfo, nullptr, OUT &commandPool) == VK_SUCCESS, "Failed to create command pool!");
 	}
 
 	void VulkanDevice::SetupDebugMessenger() 
@@ -219,7 +219,7 @@ namespace SnekVk {
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		DebugUtilsMessenger::PopulateCreateInfo(OUT createInfo);
 
-		SNEK_ASSERT(DebugUtilsMessenger::CreateMessenger(instance, &createInfo, nullptr, OUT &debugMessenger) == VK_SUCCESS, 
+		CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance, &createInfo, nullptr, OUT &debugMessenger) == VK_SUCCESS,
 			"Failed to create DebugUtilsMessenger!");
 	}
 
@@ -242,7 +242,7 @@ namespace SnekVk {
 				return format;
 			}
 		}
-		SNEK_ASSERT(false, "Failed to find a supported format!");
+		CC_ASSERT(false, "Failed to find a supported format!");
 	}
 
 	uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
@@ -258,7 +258,7 @@ namespace SnekVk {
 			}
 		}
 
-		SNEK_ASSERT(false, "Failed to find suitable memory type!");
+		CC_ASSERT(false, "Failed to find suitable memory type!");
 	}
 
 	VkCommandBuffer VulkanDevice::BeginSingleTimeCommands() 
@@ -342,7 +342,7 @@ namespace SnekVk {
 		VkImage &image,
 		VkDeviceMemory &imageMemory) 
 	{
-		SNEK_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT &image) == VK_SUCCESS, 
+		CC_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT &image) == VK_SUCCESS,
 			"Failed to create FrameImages!");
 
 		VkMemoryRequirements memRequirements;
@@ -353,10 +353,10 @@ namespace SnekVk {
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		SNEK_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT &imageMemory) == VK_SUCCESS,
+		CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT &imageMemory) == VK_SUCCESS,
 				"Failed to allocate image memory!");
 
-		SNEK_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
+		CC_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
 				"Failed to bind image memory!");
 	}
 }

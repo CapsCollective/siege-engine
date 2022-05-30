@@ -29,21 +29,21 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-SnekVk::Vertex2D triangleVerts[] = {
+Siege::Vertex2D triangleVerts[] = {
     {{0.f, -1.f}, {1.f, 0.f, 0.f}},
     {{1.f, 1.f}, {0.f, 1.f, 0.f}}, 
     {{-1.f, 1.f}, {0.f, 0.f, 1.f}}
 };
 
-SnekVk::Mesh::MeshData triangleMeshData {
-    sizeof(SnekVk::Vertex2D),
+Siege::Mesh::MeshData triangleMeshData {
+    sizeof(Siege::Vertex2D),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
     0  // no indices specified
 };
 
-SnekVk::Vertex2D squareVerts[] = {
+Siege::Vertex2D squareVerts[] = {
     {{1.f, 1.f}, {1.f, 0.f, 0.f}}, // top right
     {{1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom right
     {{-1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom left
@@ -54,8 +54,8 @@ u32 squareIndices[] = {
     0, 1, 3, 1, 2, 3
 };
 
-SnekVk::Mesh::MeshData squareMeshData {
-    sizeof(SnekVk::Vertex2D),
+Siege::Mesh::MeshData squareMeshData {
+    sizeof(Siege::Vertex2D),
     squareVerts,
     4,
     squareIndices,
@@ -69,7 +69,7 @@ glm::vec2 squareVertsRaw[] = {
     {-1.f, 1.f}
 };
 
-SnekVk::Mesh::MeshData rawSquareMeshData {
+Siege::Mesh::MeshData rawSquareMeshData {
     sizeof(glm::vec2),
     squareVertsRaw,
     4,
@@ -77,7 +77,7 @@ SnekVk::Mesh::MeshData rawSquareMeshData {
     6
 };
 
-SnekVk::Vertex cubeVerts[] =  {
+Siege::Vertex cubeVerts[] =  {
     {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
     {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
     {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
@@ -119,8 +119,8 @@ u32 cubeIndices[] = {
     12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21
 };
 
-SnekVk::Mesh::MeshData cubeMeshData {
-    sizeof(SnekVk::Vertex),
+Siege::Mesh::MeshData cubeMeshData {
+    sizeof(Siege::Vertex),
     cubeVerts,
     24,
     cubeIndices,
@@ -180,15 +180,15 @@ int main()
 {
     WINDOWS_ATTACH_CONSOLE
 
-    SnekVk::Window window("Snek", WIDTH, HEIGHT);
+    Siege::Window window("Render Example", WIDTH, HEIGHT);
 
     window.DisableCursor();
 
     Input::SetWindowPointer(&window);
 
-    SnekVk::Renderer renderer(window);
+    Siege::Renderer renderer(window);
 
-    SnekVk::Camera camera;
+    Siege::Camera camera;
 
     Components::Shape cameraObject;
 
@@ -196,57 +196,57 @@ int main()
 
     // Vertex shaders
 
-    auto diffuseShader = SnekVk::Shader::BuildShader()
+    auto diffuseShader = Siege::Shader::BuildShader()
         .FromShader("assets/shaders/simpleShader.vert.spv")
-        .WithStage(SnekVk::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(SnekVk::Vertex))
-        .WithVertexAttribute(offsetof(SnekVk::Vertex, position), SnekVk::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(SnekVk::Vertex, color), SnekVk::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(SnekVk::Vertex, normal), SnekVk::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(SnekVk::Vertex, uv), SnekVk::VertexDescription::VEC2)
-        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform), 1000)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData), 1);
+        .WithStage(Siege::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(Siege::Vertex))
+        .WithVertexAttribute(offsetof(Siege::Vertex, position), Siege::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(Siege::Vertex, color), Siege::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(Siege::Vertex, normal), Siege::VertexDescription::VEC3)
+        .WithVertexAttribute(offsetof(Siege::Vertex, uv), Siege::VertexDescription::VEC2)
+        .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform), 1000)
+        .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData), 1);
     
-    auto spriteShader = SnekVk::Shader::BuildShader()
+    auto spriteShader = Siege::Shader::BuildShader()
         .FromShader("assets/shaders/simpleShader2D.vert.spv")
-        .WithStage(SnekVk::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(SnekVk::Vertex2D))
-        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, position), SnekVk::VertexDescription::VEC2)
-        .WithVertexAttribute(offsetof(SnekVk::Vertex2D, color), SnekVk::VertexDescription::VEC3)
-        .WithStorage(0, "objectBuffer", sizeof(SnekVk::Model::Transform2D), 1000)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer2D::GlobalData));
+        .WithStage(Siege::PipelineConfig::VERTEX)
+        .WithVertexType(sizeof(Siege::Vertex2D))
+        .WithVertexAttribute(offsetof(Siege::Vertex2D, position), Siege::VertexDescription::VEC2)
+        .WithVertexAttribute(offsetof(Siege::Vertex2D, color), Siege::VertexDescription::VEC3)
+        .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
+        .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
 
     // Fragment shaders
 
-    auto fragShader = SnekVk::Shader::BuildShader()
+    auto fragShader = Siege::Shader::BuildShader()
         .FromShader("assets/shaders/simpleShader.frag.spv")
-        .WithStage(SnekVk::PipelineConfig::FRAGMENT);
+        .WithStage(Siege::PipelineConfig::FRAGMENT);
 
-    auto diffuseFragShader = SnekVk::Shader::BuildShader()
+    auto diffuseFragShader = Siege::Shader::BuildShader()
         .FromShader("assets/shaders/diffuseFragShader.frag.spv")
-        .WithStage(SnekVk::PipelineConfig::FRAGMENT)
-        .WithUniform(1, "globalData", sizeof(SnekVk::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders 
+        .WithStage(Siege::PipelineConfig::FRAGMENT)
+        .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders
 
     // Material Declaration
                                 // vertex       // fragment  
-    SnekVk::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
-    SnekVk::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material 
+    Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
+    Siege::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material
 
-    //SnekVk::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+    //Siege::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
 
-    SnekVk::Material::BuildMaterials({&diffuseMat, &spriteMat});
+    Siege::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     // Generate models
 
     // Generating models from raw vertices
 
-    SnekVk::Model triangleModel(triangleMeshData);
-    SnekVk::Model squareModel(squareMeshData);
+    Siege::Model triangleModel(triangleMeshData);
+    Siege::Model squareModel(squareMeshData);
 
     // Generating models from .obj files
 
-    SnekVk::Model cubeObjModel("assets/models/cube.obj");
-    SnekVk::Model vaseObjModel("assets/models/smooth_vase.obj");
+    Siege::Model cubeObjModel("assets/models/cube.obj");
+    Siege::Model vaseObjModel("assets/models/smooth_vase.obj");
 
     // Set 2D sprite material
     triangleModel.SetMaterial(&spriteMat);
@@ -330,20 +330,20 @@ int main()
         
         for (auto& shape : shapes)
         {
-            SnekVk::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
+            Siege::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
-        SnekVk::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
+        Siege::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
         
-        SnekVk::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
-        SnekVk::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
 
-        SnekVk::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
 
         for (auto& shape : shapes2D)
         {
-            SnekVk::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
+            Siege::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
         }
         
         renderer.EndFrame();
