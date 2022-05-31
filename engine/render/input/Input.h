@@ -1,9 +1,9 @@
 #pragma once
 
+#include <map>
+
 #include "../Utils/Math.h"
 #include "../Window/Window.h"
-
-#include <map>
 
 #define KEY_W GLFW_KEY_W
 #define KEY_A GLFW_KEY_A
@@ -18,26 +18,28 @@
 
 #define KEY_ESCAPE GLFW_KEY_ESCAPE
 
-class Input 
+class Input
 {
-    public:
-        struct MouseCoordinates
-        {
-            double x;
-            double y;
-        };
-        static void SetWindowPointer(Siege::Window* window);
-        static bool IsKeyDown(int key);
-        static bool IsKeyJustPressed(int key);
+public:
 
-        static const MouseCoordinates& GetCursorPosition();
-        static MouseCoordinates GetNormalisedMousePosition();
-    private:
-        static Siege::Window* windowPtr;
-        static bool movedLastFrame;
-        static MouseCoordinates currentMouseCoordinates;
-        static std::map<int, int> keyMap;
+    struct MouseCoordinates
+    {
+        double x;
+        double y;
+    };
+    static void SetWindowPointer(Siege::Window* window);
+    static bool IsKeyDown(int key);
+    static bool IsKeyJustPressed(int key);
 
-        static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+    static const MouseCoordinates& GetCursorPosition();
+    static MouseCoordinates GetNormalisedMousePosition();
 
+private:
+
+    static Siege::Window* windowPtr;
+    static bool movedLastFrame;
+    static MouseCoordinates currentMouseCoordinates;
+    static std::map<int, int> keyMap;
+
+    static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 };
