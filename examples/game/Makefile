@@ -19,6 +19,7 @@ all: $(exampleGameApp) game-assets
 
 # Link the object files and create an executable
 $(exampleGameApp): $(utilsLib) $(coreLib) $(exampleGameObjects)
+	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) $(exampleGameObjects) -o $(exampleGameApp) $(linkFlags)
 
 # Add all rules from dependency files

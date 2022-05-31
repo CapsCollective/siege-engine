@@ -4,7 +4,6 @@
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$SCRIPT_DIR/.." || exit
 ROOT_DIR=$(pwd -P)
-BIN_DIR="$ROOT_DIR/bin"
 
 # Find the current OS
 if [ "$(uname)" == "Darwin" ]; then
@@ -192,6 +191,10 @@ echo "Setting up raylib..."
 echo "Cloning raylib..."
 git submodule update --init --recursive "${VENDOR_DIR}"/raylib-cpp
 
+echo "Setting up utest..."
+echo "Cloning utest..."
+git submodule update --init --recursive "${VENDOR_DIR}"/utest.h
+
 echo "Setting up GLFW..."
 setup_glfw
 
@@ -229,13 +232,14 @@ if [[ $* == *--include-validation-layers* ]]; then
     setup_validation_layers
 fi
 
+VULKAN_LIB_DIR
 echo "Configuring environment file..."
 {
-    echo "DYLD_LIBRARY_PATH='${BIN_DIR}/lib'"
-    echo "VK_LAYER_PATH='${BIN_DIR}/lib/explicit_layer.d'"
+    echo "DYLD_LIBRARY_PATH='${VULKAN_LIB_DIR}'"
+    echo "VK_LAYER_PATH='${VULKAN_LIB_DIR}/explicit_layer.d'"
 } > .env
 if [[ "${OS}" == "macos" ]]; then
-    echo "VK_ICD_FILENAMES='${BIN_DIR}/lib/icd.d/MoltenVK_icd.json'" >> .env
+    echo "VK_ICD_FILENAMES='${VULKAN_LIB_DIR}/icd.d/MoltenVK_icd.json'" >> .env
 fi
 
 echo "Setup complete"

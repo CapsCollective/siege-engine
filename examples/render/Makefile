@@ -43,6 +43,7 @@ all: $(exampleRenderApp) render-assets
 
 # Link the object files and create an executable
 $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
+	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) $(exampleRenderObjects) -o $(exampleRenderApp) $(linkFlags)
 
 # Add all rules from dependency files
