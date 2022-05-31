@@ -19,6 +19,7 @@ all: $(testApp) test-data
 
 # Link the object files and create an executable
 $(testApp): $(utestIncludeDir) $(testObjects)
+	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) $(testObjects) -o $(testApp) $(linkFlags)
 
 # Add all rules from dependency files

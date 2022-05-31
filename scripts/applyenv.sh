@@ -7,4 +7,4 @@ if [ $# -ne 1 ]; then
 fi
 
 ENV_FILE=$1
-export $(xargs <"$ENV_FILE")
+export "$(xargs "<$ENV_FILE")"
