@@ -6,47 +6,78 @@
 
 namespace Siege
 {
-    class FrameImages
+class FrameImages
+{
+public:
+
+    static constexpr u32 MAX_IMAGES = 5;
+
+    FrameImages();
+    FrameImages(VulkanDevice* vulkanDevice, VkFormat format);
+    ~FrameImages();
+
+    void InitColorImageView2D();
+    void InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imageDepth);
+
+    void DestroyFrameImages();
+
+    void SetFormat(VkFormat format)
     {
-    public:
-        static constexpr u32 MAX_IMAGES = 5;
+        imageFormat = format;
+    }
+    void SetImageView(VkImageView imageView, size_t index)
+    {
+        imageViews[index] = imageView;
+    }
 
-        FrameImages();
-        FrameImages(VulkanDevice* vulkanDevice, VkFormat format);
-        ~FrameImages();
+    VkFormat GetFormat()
+    {
+        return imageFormat;
+    }
 
-        void InitColorImageView2D();
-        void InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imageDepth);
+    VkImage* GetImages()
+    {
+        return images;
+    }
+    VkImageView* GetImageViews()
+    {
+        return imageViews;
+    }
+    VkDeviceMemory* GetImageMemorys()
+    {
+        return imageMemorys;
+    }
 
-        void DestroyFrameImages();
+    VkImage GetImage(size_t index)
+    {
+        return images[index];
+    }
+    VkImageView GetImageView(size_t index)
+    {
+        return imageViews[index];
+    }
 
-        void SetFormat(VkFormat format) { imageFormat = format; }
-        void SetImageView(VkImageView imageView, size_t index) { imageViews[index] = imageView; }
+    static void SetImageCount(u32 count)
+    {
+        imageCount = count;
+    }
+    static u32 GetImageCount()
+    {
+        return imageCount;
+    }
 
-        VkFormat GetFormat() { return imageFormat; }
+private:
 
-        VkImage* GetImages() { return images; }
-        VkImageView* GetImageViews() { return imageViews; }
-        VkDeviceMemory* GetImageMemorys() { return imageMemorys; }
+    VulkanDevice* device {nullptr};
 
-        VkImage GetImage(size_t index) { return images[index]; }
-        VkImageView GetImageView(size_t index) { return imageViews[index]; }
+    VkImage images[MAX_IMAGES] {VK_NULL_HANDLE};
+    VkImageView imageViews[MAX_IMAGES] {VK_NULL_HANDLE};
+    VkDeviceMemory imageMemorys[MAX_IMAGES] {VK_NULL_HANDLE};
 
-        static void SetImageCount(u32 count) { imageCount = count; }
-        static u32 GetImageCount() { return imageCount; }
-    private:
+    VkFormat imageFormat {VK_FORMAT_UNDEFINED};
 
-        VulkanDevice* device {nullptr};
+    bool hasInfo {false};
 
-        VkImage images[MAX_IMAGES] {VK_NULL_HANDLE};
-        VkImageView imageViews[MAX_IMAGES] {VK_NULL_HANDLE};
-        VkDeviceMemory imageMemorys[MAX_IMAGES] {VK_NULL_HANDLE};
-
-        VkFormat imageFormat {VK_FORMAT_UNDEFINED};
-
-        bool hasInfo{false};
-
-        static u32 imageCount;
-    };
-}
-
+    static u32 imageCount;
+};
+} // namespace Siege

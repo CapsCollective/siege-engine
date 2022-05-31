@@ -6,7 +6,7 @@ VkImageView Image::CreateImageView(VkDevice device,
                                    VkFormat format,
                                    VkComponentMapping componentMapping,
                                    VkImageSubresourceRange subResourceRange,
-                                   const void *pNext,
+                                   const void* pNext,
                                    VkImageViewCreateFlags createFlags)
 {
     VkImageView imageView;
@@ -18,8 +18,8 @@ VkImageView Image::CreateImageView(VkDevice device,
                                                                  pNext,
                                                                  createFlags);
 
-    CC_ASSERT(vkCreateImageView(device, &createInfo, nullptr, OUT &imageView) == VK_SUCCESS,
-                "Failed to create texture image view!");
+    CC_ASSERT(vkCreateImageView(device, &createInfo, nullptr, OUT & imageView) == VK_SUCCESS,
+              "Failed to create texture image view!");
 
     return imageView;
 }
@@ -29,21 +29,17 @@ VkImageViewCreateInfo Image::CreateImageViewCreateInfo(VkImage image,
                                                        VkFormat format,
                                                        VkComponentMapping componentMapping,
                                                        VkImageSubresourceRange subResourceRange,
-                                                       const void *pNext,
-                                                       VkImageViewCreateFlags
-                                                       createFlags)
+                                                       const void* pNext,
+                                                       VkImageViewCreateFlags createFlags)
 {
-    return
-    {
-            VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+    return {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             pNext,
             createFlags,
             image,
             viewType,
             format,
             componentMapping,
-            subResourceRange
-    };
+            subResourceRange};
 }
 
 VkImageCreateInfo Image::CreateImageCreateInfo(VkImageType type,
@@ -58,23 +54,17 @@ VkImageCreateInfo Image::CreateImageCreateInfo(VkImageType type,
                                                VkImageUsageFlags usage,
                                                VkSharingMode sharingMode,
                                                u32 queueFamilyCount,
-                                               const uint32_t *pQueueFamilyIndices,
+                                               const uint32_t* pQueueFamilyIndices,
                                                VkImageLayout initialLayout,
                                                VkImageCreateFlags flags,
-                                               const void *pNext)
+                                               const void* pNext)
 {
-    return
-    {
-            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+    return {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
             pNext,
             flags,
             type,
             format,
-            {
-                imageWidth,
-                imageHeight,
-                imageDepth
-            },
+            {imageWidth, imageHeight, imageDepth},
             mipLevels,
             arrayLevels,
             sampleFlags,
@@ -83,6 +73,5 @@ VkImageCreateInfo Image::CreateImageCreateInfo(VkImageType type,
             sharingMode,
             queueFamilyCount,
             pQueueFamilyIndices,
-            initialLayout
-    };
+            initialLayout};
 }

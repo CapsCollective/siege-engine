@@ -1,98 +1,128 @@
 #pragma once
 
-// Include Vulkan headers through glfw.
 #include <volk/volk.h>
-#include <GLFW/glfw3.h>
+
 #include <cstdint>
+
+// Include Vulkan headers through GLFW
+#include <GLFW/glfw3.h>
 
 namespace Siege
 {
-    class Window 
+class Window
+{
+public:
+
+    // 'Structors
+
+    Window(char const* name, int width, int height) : width(width), height(height), name(name)
     {
-    public:
-
-        // 'Structors
-
-        Window(char const* name, int width, int height) : 
-        width(width), height(height), name(name) 
+        if (!glfwInitialised)
         {
-            if (!glfwInitialised)
-            {
-                glfwInit();
-                glfwInitialised = true;    
-            }
-            
-            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-            window = glfwCreateWindow(width, height, name, nullptr, nullptr);
-
-            if (glfwRawMouseMotionSupported())
-            {
-                glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-            }
-
-            glfwSetWindowUserPointer(window, this);
-            glfwSetWindowSizeCallback(window, ResizeCallback);
-            glfwWindows++;
+            glfwInit();
+            glfwInitialised = true;
         }
 
-        Window() :
-            Window("Window", 800, 600) {}
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        ~Window() 
+        window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+
+        if (glfwRawMouseMotionSupported())
         {
-            glfwDestroyWindow(window);
-            if (--glfwWindows <= 0) glfwTerminate();
+            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
 
-        // Public Getters
+        glfwSetWindowUserPointer(window, this);
+        glfwSetWindowSizeCallback(window, ResizeCallback);
+        glfwWindows++;
+    }
 
-        const int& GetHeight() { return height; }
+    Window() : Window("Window", 800, 600) {}
 
-        const int& GetWidth() { return width; }
+    ~Window()
+    {
+        glfwDestroyWindow(window);
+        if (--glfwWindows <= 0) glfwTerminate();
+    }
 
-        VkExtent2D GetExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+    // Public Getters
 
-        GLFWwindow* GetGlfwWindow() { return window; }
+    const int& GetHeight()
+    {
+        return height;
+    }
 
-        // Public Functions
+    const int& GetWidth()
+    {
+        return width;
+    }
 
-        void Update();
+    VkExtent2D GetExtent()
+    {
+        return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+    }
 
-        bool WindowShouldClose();
+    GLFWwindow* GetGlfwWindow()
+    {
+        return window;
+    }
 
-        bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+    // Public Functions
 
-        bool WasResized() { return wasResized; }
+    void Update();
 
-        void ResetWindowResized() { wasResized = false; }
+    bool WindowShouldClose();
 
-        void EnableCursor() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+    bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
-        void DisableCursor() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+    bool WasResized()
+    {
+        return wasResized;
+    }
 
-        void ToggleCursor(bool state) { state ? DisableCursor() : EnableCursor(); }
+    void ResetWindowResized()
+    {
+        wasResized = false;
+    }
 
-        void WaitEvents() { glfwWaitEvents(); }
+    void EnableCursor()
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 
-    private:
+    void DisableCursor()
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 
-        static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
+    void ToggleCursor(bool state)
+    {
+        state ? DisableCursor() : EnableCursor();
+    }
 
-        // Private static variables
+    void WaitEvents()
+    {
+        glfwWaitEvents();
+    }
 
-        static bool glfwInitialised;
-        static size_t glfwWindows;
+private:
 
-        // Private variables
+    static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
 
-        GLFWwindow* window;
+    // Private static variables
 
-        char const* name;
+    static bool glfwInitialised;
+    static size_t glfwWindows;
 
-        int width;
-        int height;
-        bool wasResized = false;
-    };
-}
+    // Private variables
+
+    GLFWwindow* window;
+
+    char const* name;
+
+    int width;
+    int height;
+    bool wasResized = false;
+};
+} // namespace Siege

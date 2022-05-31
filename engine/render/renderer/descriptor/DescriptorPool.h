@@ -5,21 +5,24 @@
 
 namespace Siege
 {
-    class DescriptorPool
+class DescriptorPool
+{
+public:
+
+    static void AddPoolSize(const VkDescriptorType type, const u32 size);
+    static VkDescriptorPool& GetDescriptorPool()
     {
-        public:
-        
-        static void AddPoolSize(const VkDescriptorType type, const u32 size);
-        static VkDescriptorPool& GetDescriptorPool() { return descriptorPool; }
-        
-        static void BuildPool();
-        static void DestroyPool();
+        return descriptorPool;
+    }
 
-        private:
+    static void BuildPool();
+    static void DestroyPool();
 
-        static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 10;
-        
-        static VkDescriptorPool descriptorPool;
-        static Utils::StackArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
-    };
-}
+private:
+
+    static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 10;
+
+    static VkDescriptorPool descriptorPool;
+    static Utils::StackArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
+};
+} // namespace Siege

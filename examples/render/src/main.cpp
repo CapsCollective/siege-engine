@@ -1,46 +1,44 @@
 #define VOLK_IMPLEMENTATION
 
-#include <render/Window/Window.h>
-#include <render/Renderer/Renderer.h>
-#include <render/Renderer/Model/Model.h>
 #include <render/Components/Shape.h>
 #include <render/Input/Input.h>
-#include <render/Utils/Math.h>
-#include <render/Renderer/Material/Material.h>
-#include <render/Renderer/Shader/Shader.h>
 #include <render/Renderer/Lights/PointLight.h>
+#include <render/Renderer/Material/Material.h>
+#include <render/Renderer/Model/Model.h>
+#include <render/Renderer/Renderer.h>
+#include <render/Renderer/Shader/Shader.h>
+#include <render/Utils/Math.h>
+#include <render/Window/Window.h>
 
-#include <vector>
 #include <chrono>
 #include <cmath>
+#include <vector>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
 
-#define WINDOWS_ATTACH_CONSOLE\
-    AttachConsole(ATTACH_PARENT_PROCESS);\
-    freopen("CON", "w", stdout);\
-    freopen("CON", "w", stderr);\
+#define WINDOWS_ATTACH_CONSOLE            \
+    AttachConsole(ATTACH_PARENT_PROCESS); \
+    freopen("CON", "w", stdout);          \
+    freopen("CON", "w", stderr);          \
     freopen("CON", "r", stdin);
 #else
-    #define WINDOWS_ATTACH_CONSOLE
+#define WINDOWS_ATTACH_CONSOLE
 #endif
 
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-Siege::Vertex2D triangleVerts[] = {
-    {{0.f, -1.f}, {1.f, 0.f, 0.f}},
-    {{1.f, 1.f}, {0.f, 1.f, 0.f}}, 
-    {{-1.f, 1.f}, {0.f, 0.f, 1.f}}
-};
+Siege::Vertex2D triangleVerts[] = {{{0.f, -1.f}, {1.f, 0.f, 0.f}},
+                                   {{1.f, 1.f}, {0.f, 1.f, 0.f}},
+                                   {{-1.f, 1.f}, {0.f, 0.f, 1.f}}};
 
 Siege::Mesh::MeshData triangleMeshData {
     sizeof(Siege::Vertex2D),
     triangleVerts, // Vertex array
     3, // 3 vertices
     0, // no indices
-    0  // no indices specified
+    0 // no indices specified
 };
 
 Siege::Vertex2D squareVerts[] = {
@@ -50,34 +48,15 @@ Siege::Vertex2D squareVerts[] = {
     {{-1.f, 1.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
-u32 squareIndices[] = {
-    0, 1, 3, 1, 2, 3
-};
+u32 squareIndices[] = {0, 1, 3, 1, 2, 3};
 
-Siege::Mesh::MeshData squareMeshData {
-    sizeof(Siege::Vertex2D),
-    squareVerts,
-    4,
-    squareIndices,
-    6
-};
+Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
 
-glm::vec2 squareVertsRaw[] = {
-    {1.f, 1.f},
-    {1.f, -1.f},
-    {-1.f, -1.f},
-    {-1.f, 1.f}
-};
+glm::vec2 squareVertsRaw[] = {{1.f, 1.f}, {1.f, -1.f}, {-1.f, -1.f}, {-1.f, 1.f}};
 
-Siege::Mesh::MeshData rawSquareMeshData {
-    sizeof(glm::vec2),
-    squareVertsRaw,
-    4,
-    squareIndices,
-    6
-};
+Siege::Mesh::MeshData rawSquareMeshData {sizeof(glm::vec2), squareVertsRaw, 4, squareIndices, 6};
 
-Siege::Vertex cubeVerts[] =  {
+Siege::Vertex cubeVerts[] = {
     {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
     {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
     {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
@@ -114,25 +93,17 @@ Siege::Vertex cubeVerts[] =  {
     {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
 };
 
-u32 cubeIndices[] = {
-    0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
-    12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21
-};
+u32 cubeIndices[] = {0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
+                     12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21};
 
-Siege::Mesh::MeshData cubeMeshData {
-    sizeof(Siege::Vertex),
-    cubeVerts,
-    24,
-    cubeIndices,
-    36
-};
+Siege::Mesh::MeshData cubeMeshData {sizeof(Siege::Vertex), cubeVerts, 24, cubeIndices, 36};
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
     static auto oldMousePos = Input::GetCursorPosition();
     auto mousePos = Input::GetCursorPosition();
 
-    glm::vec3 rotate{0};
+    glm::vec3 rotate {0};
     float lookSpeed = 4.0f;
 
     float differenceX = mousePos.x - oldMousePos.x;
@@ -144,7 +115,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {
         glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
-        viewerObject.SetRotation(Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+        viewerObject.SetRotation(
+            Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -152,11 +124,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
 
     float yaw = viewerObject.GetRotation().y;
-    const glm::vec3 forwardDir{glm::sin(yaw), 0.f, glm::cos(yaw)};
-    const glm::vec3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
-    const glm::vec3 upDir{0.f, -1.f, 0.f};
+    const glm::vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const glm::vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
+    const glm::vec3 upDir {0.f, -1.f, 0.f};
 
-    glm::vec3 moveDir{0.f};
+    glm::vec3 moveDir {0.f};
     if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
     if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
     if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
@@ -176,7 +148,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     oldMousePos = mousePos;
 }
 
-int main() 
+int main()
 {
     WINDOWS_ATTACH_CONSOLE
 
@@ -196,43 +168,51 @@ int main()
 
     // Vertex shaders
 
-    auto diffuseShader = Siege::Shader::BuildShader()
-        .FromShader("assets/shaders/simpleShader.vert.spv")
-        .WithStage(Siege::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(Siege::Vertex))
-        .WithVertexAttribute(offsetof(Siege::Vertex, position), Siege::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(Siege::Vertex, color), Siege::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(Siege::Vertex, normal), Siege::VertexDescription::VEC3)
-        .WithVertexAttribute(offsetof(Siege::Vertex, uv), Siege::VertexDescription::VEC2)
-        .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform), 1000)
-        .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData), 1);
-    
-    auto spriteShader = Siege::Shader::BuildShader()
-        .FromShader("assets/shaders/simpleShader2D.vert.spv")
-        .WithStage(Siege::PipelineConfig::VERTEX)
-        .WithVertexType(sizeof(Siege::Vertex2D))
-        .WithVertexAttribute(offsetof(Siege::Vertex2D, position), Siege::VertexDescription::VEC2)
-        .WithVertexAttribute(offsetof(Siege::Vertex2D, color), Siege::VertexDescription::VEC3)
-        .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
-        .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
+    auto diffuseShader =
+        Siege::Shader::BuildShader()
+            .FromShader("assets/shaders/simpleShader.vert.spv")
+            .WithStage(Siege::PipelineConfig::VERTEX)
+            .WithVertexType(sizeof(Siege::Vertex))
+            .WithVertexAttribute(offsetof(Siege::Vertex, position), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(Siege::Vertex, color), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(Siege::Vertex, normal), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(Siege::Vertex, uv), Siege::VertexDescription::VEC2)
+            .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform), 1000)
+            .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData), 1);
+
+    auto spriteShader =
+        Siege::Shader::BuildShader()
+            .FromShader("assets/shaders/simpleShader2D.vert.spv")
+            .WithStage(Siege::PipelineConfig::VERTEX)
+            .WithVertexType(sizeof(Siege::Vertex2D))
+            .WithVertexAttribute(offsetof(Siege::Vertex2D, position),
+                                 Siege::VertexDescription::VEC2)
+            .WithVertexAttribute(offsetof(Siege::Vertex2D, color), Siege::VertexDescription::VEC3)
+            .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
+            .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
 
     // Fragment shaders
 
     auto fragShader = Siege::Shader::BuildShader()
-        .FromShader("assets/shaders/simpleShader.frag.spv")
-        .WithStage(Siege::PipelineConfig::FRAGMENT);
+                          .FromShader("assets/shaders/simpleShader.frag.spv")
+                          .WithStage(Siege::PipelineConfig::FRAGMENT);
 
-    auto diffuseFragShader = Siege::Shader::BuildShader()
-        .FromShader("assets/shaders/diffuseFragShader.frag.spv")
-        .WithStage(Siege::PipelineConfig::FRAGMENT)
-        .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique accross all available shaders
+    auto diffuseFragShader =
+        Siege::Shader::BuildShader()
+            .FromShader("assets/shaders/diffuseFragShader.frag.spv")
+            .WithStage(Siege::PipelineConfig::FRAGMENT)
+            .WithUniform(1,
+                         "globalData",
+                         sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique
+                                                                 // accross all available shaders
 
     // Material Declaration
-                                // vertex       // fragment  
+    // vertex       // fragment
     Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
-    Siege::Material spriteMat(&spriteShader, &fragShader);  // 2D sprite material
+    Siege::Material spriteMat(&spriteShader, &fragShader); // 2D sprite material
 
-    //Siege::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light shader
+    // Siege::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light
+    // shader
 
     Siege::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
@@ -257,19 +237,13 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    std::vector<Components::Shape> shapes = 
-    {
-        Components::Shape(&cubeObjModel),
-        Components::Shape(&cubeObjModel),
-        Components::Shape(&vaseObjModel)
-    };
+    std::vector<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
+                                             Components::Shape(&cubeObjModel),
+                                             Components::Shape(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    std::vector<Components::Shape> shapes2D = 
-    {
-        Components::Shape(&triangleModel),
-        Components::Shape(&squareModel)
-    };
+    std::vector<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
+                                               Components::Shape(&squareModel)};
 
     shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
@@ -300,17 +274,19 @@ int main()
 
     renderer.SetMainCamera(&camera);
 
-    while(!window.WindowShouldClose()) {
-        
+    while (!window.WindowShouldClose())
+    {
         auto newTime = std::chrono::high_resolution_clock::now();
-        float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+        float frameTime =
+            std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime)
+                .count();
         currentTime = newTime;
 
         auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
 
         window.Update();
 
-        if (Input::IsKeyJustPressed(KEY_ESCAPE)) 
+        if (Input::IsKeyJustPressed(KEY_ESCAPE))
         {
             inputEnabled = !inputEnabled;
             window.ToggleCursor(inputEnabled);
@@ -327,15 +303,21 @@ int main()
         }
 
         if (!renderer.StartFrame()) continue;
-        
+
         for (auto& shape : shapes)
         {
-            Siege::Renderer3D::DrawModel(shape.GetModel(), shape.GetPosition(), shape.GetScale(), shape.GetRotation());
+            Siege::Renderer3D::DrawModel(shape.GetModel(),
+                                         shape.GetPosition(),
+                                         shape.GetScale(),
+                                         shape.GetRotation());
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
-        Siege::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f}, 0.05f, {1.f, 0.f, 0.f, alpha}, {1.f, 1.f, 1.f, .02f});
-        
+        Siege::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f},
+                                          0.05f,
+                                          {1.f, 0.f, 0.f, alpha},
+                                          {1.f, 1.f, 1.f, .02f});
+
         Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
 
@@ -343,9 +325,13 @@ int main()
 
         for (auto& shape : shapes2D)
         {
-            Siege::Renderer2D::DrawModel(shape.GetModel(), shape.GetPosition2D(), shape.GetScale2D(), shape.GetRotation2D(), shape.GetZIndex());
+            Siege::Renderer2D::DrawModel(shape.GetModel(),
+                                         shape.GetPosition2D(),
+                                         shape.GetScale2D(),
+                                         shape.GetRotation2D(),
+                                         shape.GetZIndex());
         }
-        
+
         renderer.EndFrame();
     }
 

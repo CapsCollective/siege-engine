@@ -1,83 +1,109 @@
 #pragma once
 
-#include "device/VulkanDevice.h"
-#include "swapchain/Swapchain.h"
-#include "pipeline/Pipeline.h"
-#include "model/Model.h"
 #include "camera/Camera.h"
-#include "material/Material.h"
-#include "lights/PointLight.h"
-#include "renderer/Renderer3D.h"
-#include "renderer/Renderer2D.h"
 #include "descriptor/DescriptorPool.h"
+#include "device/VulkanDevice.h"
+#include "lights/PointLight.h"
+#include "material/Material.h"
+#include "model/Model.h"
+#include "pipeline/Pipeline.h"
+#include "renderer/Renderer2D.h"
+#include "renderer/Renderer3D.h"
+#include "swapchain/Swapchain.h"
 
 namespace Siege
 {
-    class Renderer
+class Renderer
+{
+public:
+
+    Renderer(Window& window);
+    ~Renderer();
+
+    void DestroyRenderer();
+
+    VulkanDevice& GetDevice()
     {
-        public:
+        return device;
+    }
+    SwapChain& GetSwapChain()
+    {
+        return swapChain;
+    }
+    VkRenderPass GetSwapChanRenderPass()
+    {
+        return swapChain.GetRenderPass()->GetRenderPass();
+    }
 
-            Renderer(Window& window);
-            ~Renderer();
+    int GetCurrentFrameIndex() const
+    {
+        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+        return currentFrameIndex;
+    }
 
-            void DestroyRenderer();
+    float GetAspectRatio() const
+    {
+        return swapChain.ExtentAspectRatio();
+    }
 
-            VulkanDevice& GetDevice() { return device; }
-            SwapChain& GetSwapChain() { return swapChain; }
-            VkRenderPass GetSwapChanRenderPass() { return swapChain.GetRenderPass()->GetRenderPass(); }
+    void SetMainCamera(Camera* camera)
+    {
+        mainCamera = camera;
+    }
 
-            int GetCurrentFrameIndex() const
-            {
-                CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
-                return currentFrameIndex;
-            }
+    bool IsFrameStarted()
+    {
+        return isFrameStarted;
+    }
 
-            float GetAspectRatio() const { return swapChain.ExtentAspectRatio(); }
+    VkCommandBuffer GetCurrentCommandBuffer() const
+    {
+        CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
+        return commandBuffers[currentFrameIndex];
+    }
 
-            void SetMainCamera(Camera* camera) { mainCamera = camera; }
-            
-            bool IsFrameStarted() { return isFrameStarted; }
+    bool StartFrame();
+    void EndFrame();
 
-            VkCommandBuffer GetCurrentCommandBuffer() const 
-            { 
-                CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
-                return commandBuffers[currentFrameIndex]; 
-            }
+    void ClearDeviceQueue()
+    {
+        vkDeviceWaitIdle(device.Device());
+    }
+    Pipeline CreateGraphicsPipeline();
 
-            bool StartFrame();
-            void EndFrame();
+    void SetClearValue(float r, float g, float b, float a)
+    {
+        clearValue = {r, g, b, a};
+    }
 
-            void ClearDeviceQueue() { vkDeviceWaitIdle(device.Device()); } 
-            Pipeline CreateGraphicsPipeline();
+private:
 
-            void SetClearValue(float r, float g, float b, float a) { clearValue = {r, g, b, a}; }
-        private:
-            static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-            
-            static VulkanDevice* deviceInstance;
-            static Utils::Array<VkCommandBuffer> commandBuffers;
-            
-            VkClearColorValue clearValue {0, 0, 0, 1.f};
+    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-            void CreateCommandBuffers();
+    static VulkanDevice* deviceInstance;
+    static Utils::Array<VkCommandBuffer> commandBuffers;
 
-            void RecreateSwapChain();
-            void FreeCommandBuffers();
+    VkClearColorValue clearValue {0, 0, 0, 1.f};
 
-            void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-            void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
+    void CreateCommandBuffers();
 
-            void DrawFrame();
+    void RecreateSwapChain();
+    void FreeCommandBuffers();
 
-            Siege::Window& window;
-            
-            VulkanDevice device;
-            SwapChain swapChain;
+    void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+    void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-            u32 currentImageIndex;
-            bool isFrameStarted{false};
-            int currentFrameIndex{0};
+    void DrawFrame();
 
-            Camera* mainCamera;
-    };
-}
+    Siege::Window& window;
+
+    VulkanDevice device;
+    SwapChain swapChain;
+
+    u32 currentImageIndex;
+    bool isFrameStarted {false};
+    int currentFrameIndex {0};
+
+    Camera* mainCamera;
+};
+} // namespace Siege
