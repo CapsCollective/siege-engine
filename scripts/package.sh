@@ -2,7 +2,7 @@
 
 # Require a minimum number of arguments
 if [ $# -lt 4 ]; then
-  echo "Requires at least three arguments (e.g. package.sh <package_name> <executable_name> <output_dir> <build_dir> [--env-vars | --excludes])"
+  echo "Requires at least four arguments (e.g. package.sh <package_name> <executable_name> <output_dir> <build_dir> [--env-vars | --excludes])"
   exit 1
 fi
 

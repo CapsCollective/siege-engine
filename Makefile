@@ -4,7 +4,7 @@ include make/Platform.mk
 # Set debugging build flags
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
-	override CXXFLAGS += -g -DDEBUG -DCC_LOG_LEVEL=2
+    override CXXFLAGS += -g -DDEBUG -DCC_LOG_LEVEL=2
 else
     override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0
 endif
@@ -31,11 +31,15 @@ export exampleRenderApp := $(binDir)/examples/render/build/app
 # Set build vars
 export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
-buildFlagsFile := .buildflags
+buildFlagsFile:=.buildflags
 ifeq ($(platform), windows)
     export linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
     export packageScript = $(scriptsDir)/package.bat
 else ifeq ($(platform), linux)
+    cmd := 	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
+			$(RM) $(call platformpth, $(libDir)); \
+			$(RM) $(call platformpth, $(binDir)); \
+		fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
     export linkFlags += -Wl,--no-as-needed -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
     formatScript = $(scriptsDir)/format.sh
     export packageScript = $(scriptsDir)/package.sh
@@ -50,22 +54,22 @@ endif
 all: testapp package-gameapp package-renderapp
 
 $(utilsLib): buildFlags
-	$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
 $(coreLib): buildFlags
-	$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
 $(renderLib): buildFlags
-	$(MAKE) -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 $(testApp): buildFlags $(utilsLib) $(coreLib)
-	$(MAKE) -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
 $(exampleGameApp): buildFlags $(utilsLib) $(coreLib)
-	$(MAKE) -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
 $(exampleRenderApp): buildFlags $(renderLib)
-	$(MAKE) -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)
 
@@ -74,17 +78,14 @@ gameapp: $(exampleGameApp)
 renderapp: $(exampleRenderApp)
 
 package-gameapp: gameapp
-	$(MAKE) package -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" package -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
 package-renderapp: renderapp
-	$(MAKE) package -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
+	"$(MAKE)" package -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed
 buildFlags:
-	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
-  		$(RM) $(call platformpth, $(libDir)); \
-  		$(RM) $(call platformpth, $(binDir)); \
-    fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
+	$(BUILD_FLAGS_SCRIPT) $(buildFlagsFile) "$(CXXFLAGS)" "$(libDir) $(binDir)"
 
 # Run cleanup across project
 clean:

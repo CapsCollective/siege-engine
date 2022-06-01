@@ -36,8 +36,9 @@ all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
 $(renderLib): $(renderObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(renderLib))
-	$(call COPY,$(vendorDir)/glfw/src,$(libDir)/librender.a,libglfw3.a)
-	ar -rs $(renderLib) $(renderObjects)
+	$(call COPY,$(vendorDir)/glfw/src,$(libDir),libglfw3.a)
+	mv $(call platformpth,$(libDir)/libglfw3.a) $(call platformpth,$(libDir)/librender.a)
+	ar -rcs $(renderLib) $(renderObjects) 
 
 # Add all rules from dependency files
 -include $(renderDepends)
@@ -55,4 +56,4 @@ $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 # Copy Vulkan libraries to the build directory
 vulkan-libs:
 	$(MKDIR) $(call platformpth, $(renderBuildDir)/lib)
-	$(call COPY,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib,**)
+	$(call COPY_DIR,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib)
