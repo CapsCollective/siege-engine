@@ -283,7 +283,7 @@ private:
     FrameImages depthImages;
 
     // The raw Vulkan swapchain object
-    VkSwapchainKHR swapChain;
+    VkSwapchainKHR swapChain {VK_NULL_HANDLE};
 
     // Synchronisation objects
     VkSemaphore* imageAvailableSemaphores {VK_NULL_HANDLE};

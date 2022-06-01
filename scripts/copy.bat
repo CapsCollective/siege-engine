@@ -9,6 +9,10 @@ set DESTINATION=%DESTINATION:/=\%
 set FILE=%3
 set FILE=%FILE:/=\%
 
+set COPY_FILE=0
+set RENAME=0
+set COPY_DIR=0
+
 if "%1" EQU "--copy-directory" ( CALL :XCopy %DESTINATION% %FILE% ) ELSE ( CALL :Robocopy %FIRST_ARG% %DESTINATION% %FILE% )
 
 EXIT /B %ERRORLEVEL%
@@ -16,7 +20,7 @@ EXIT /B %ERRORLEVEL%
 endlocal 
 
 :XCopy
-    XCopy "%~1" "%~2" /s /i
+    XCopy "%~1" "%~2" /s /i /y
 EXIT /B 0
 
 :Robocopy 

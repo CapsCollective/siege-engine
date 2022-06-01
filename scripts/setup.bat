@@ -3,17 +3,18 @@
 setlocal enableextensions
 
 set ROOT_DIR=%cd%
+
+set VULKAN_VERSION=1.3.211
 set GENERATOR=MinGW Makefiles
 set VENDOR_DIR=%ROOT_DIR%\vendor
-set BIN_DIR=%ROOT_DIR%\bin
 
-# Vulkan dependency variables
+set BIN_DIR=%ROOT_DIR%\bin
+set BUILD_DIR=examples\render\build
+
 set VULKAN_VENDOR_DIR=%VENDOR_DIR%\vulkan
 set VULKAN_LIB_DIR=%VULKAN_VENDOR_DIR%\lib
 set VULKAN_INCLUDE_DIR=%VULKAN_VENDOR_DIR%\include\vulkan
 set VOLK_INCLUDE_DIR=%VULKAN_VENDOR_DIR%\include\volk
-
-set DEBUG=%~1
 
 echo "Setting up dependencies..."
 
@@ -37,7 +38,15 @@ CALL :SetupVulkanHeaders
 echo "Setting up Vulkan Loader"
 CALL :SetupVulkanLoader
 
-if "%DEBUG%" EQU "DEBUG" CALL :SetupVulkanValidationLayers
+echo "%*"| find "*--include-validation-layers*" >nul
+
+IF "%ERRORLEVEL%" EQU "1" CALL :SetupVulkanValidationLayers
+
+echo "Configuring environment file..."
+
+echo VK_LAYER_PATH=%BIN_DIR%\%BUILD_DIR%\lib\explicit_layer.d> .env
+
+echo "Setup Complete"
 
 EXIT /B %ERRORLEVEL%
 
@@ -91,7 +100,7 @@ EXIT /B 0
 
     CALL :UpdateSubmodule vulkan\Vulkan-Headers
 
-    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-Headers 1.3.211
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-Headers %VULKAN_VERSION%
 
     git -C %VULKAN_VENDOR_DIR%\Vulkan-Headers fetch --all --tags && git -C %VULKAN_VENDOR_DIR%\Vulkan-Headers checkout tags/v1.3.211
 
@@ -112,7 +121,7 @@ EXIT /B 0
 
     CALL :UpdateSubmodule vulkan\Vulkan-Loader
 
-    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-Loader 1.3.211
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-Loader %VULKAN_VERSION%
 
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\Vulkan-Loader\build
 
@@ -169,7 +178,7 @@ EXIT /B 0
 
     CALL :UpdateSubmodule vulkan\Vulkan-ValidationLayers
 
-    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-ValidationLayers 1.3.211
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\Vulkan-ValidationLayers %VULKAN_VERSION%
 
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\Vulkan-ValidationLayers\build
 
@@ -200,8 +209,6 @@ EXIT /B 0
     CALL :SetupSpirvHeaders
     CALL :SetupSpirvTools
     CALL :SetupValidationLayers
-
-    echo VK_LAYER_PATH=%BIN_DIR%\lib\explicit_layer.d> .env
 EXIT /B 0
 
 endlocal 

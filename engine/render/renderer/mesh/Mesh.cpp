@@ -45,7 +45,7 @@ void Mesh::LoadVertices(const Mesh::MeshData& meshData)
                          OUT globalStagingBuffer.bufferMemory);
 
     // TODO(Aryeh): Only create this if there actually are indices
-    Buffer::CreateBuffer(sizeof(u32) * MAX_INDICES,
+    Buffer::CreateBuffer(indexSize * MAX_INDICES,
                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          // specifies that data is accessible on the CPU.
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -95,9 +95,9 @@ void Mesh::CreateVertexBuffers(const void* vertices)
 
 void Mesh::CreateIndexBuffer(const u32* indices)
 {
-    VkDeviceSize bufferSize = sizeof(u32) * MAX_INDICES;
+    VkDeviceSize bufferSize = indexSize * MAX_INDICES;
 
-    Buffer::CopyData(globalIndexStagingBuffer, bufferSize, indices);
+    Buffer::CopyData(globalIndexStagingBuffer, indexSize * indexCount, indices);
 
     Buffer::CreateBuffer(bufferSize,
                          VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,

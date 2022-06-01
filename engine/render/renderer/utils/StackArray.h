@@ -50,6 +50,11 @@ public:
         return data;
     }
 
+    const T* Data() const
+    {
+        return data;
+    }
+
     void Set(size_t index, T value)
     {
         count += !Exists(index);

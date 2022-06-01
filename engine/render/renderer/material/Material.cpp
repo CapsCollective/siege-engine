@@ -181,9 +181,11 @@ void Material::CreateDescriptors()
 
         u64 offset = property.offset;
 
-        std::cout << property.size + offset << std::endl;
+        bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer,
+                                                             offset,
+                                                             property.size * property.count);
 
-        bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size);
+        std::cout << "Property Size: " << property.size * property.count << std::endl;
 
         std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
         Utils::Descriptor::AllocateSets(device->Device(),
@@ -247,7 +249,7 @@ void Material::SetShaderProperties(Shader* shader, u64& offset)
                              uniform.id,
                              (VkShaderStageFlags) shader->GetStage(),
                              offset,
-                             uniform.size,
+                             uniform.size * uniform.arraySize,
                              uniform.dynamicCount};
 
         property.descriptorBinding = {VK_NULL_HANDLE,
