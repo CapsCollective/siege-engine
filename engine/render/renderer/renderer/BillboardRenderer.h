@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Core.h"
-#include "../Material/Material.h"
-#include "../Model/Model.h"
+#include "../material/Material.h"
+#include "../model/Model.h"
 
 namespace Siege
 {

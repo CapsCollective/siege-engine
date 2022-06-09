@@ -2,8 +2,8 @@
 
 #include <map>
 
-#include "../Utils/Math.h"
-#include "../Window/Window.h"
+#include "../utils/Math.h"
+#include "../window/Window.h"
 
 #define KEY_W GLFW_KEY_W
 #define KEY_A GLFW_KEY_A
