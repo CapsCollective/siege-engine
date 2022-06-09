@@ -12,9 +12,9 @@ ifeq ($(OS), Windows_NT)
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
-	ifeq ($(UNAMEOS), linux)
+	ifeq ($(UNAMEOS), Linux)
 		# Set Linux macros
-		platform := Linux
+		platform := linux
 		CXX ?= g++
 	endif
 	ifeq ($(UNAMEOS), Darwin)

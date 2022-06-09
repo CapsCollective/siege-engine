@@ -27,13 +27,6 @@ endif
 packagingFlags = --env-vars "$(packagingEnvVars)" --excludes "$(packagingExcludes)"
 
 # Set build vars
-ifeq ($(platform), windows)
-    linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
-else ifeq ($(platform), linux)
-	linkFlags += -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
-else ifeq ($(platform), macos)
-	linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
-endif
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
 linkFlags += -lrender
 

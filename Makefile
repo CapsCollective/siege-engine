@@ -9,21 +9,6 @@ else
     override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0
 endif
 
-# Set platform vars
-ifeq ($(platform), windows)
-	glslangValidator = $(vendorDir)\glslang\build\install\bin\glslangValidator.exe
-    linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
-    export packageScript = $(scriptsDir)/package.bat
-else ifeq ($(platform), linux)
-    linkFlags += -l GL -l m -Wl,--no-as-needed -l dl -l rt -l X11 -l pthread
-    formatScript = $(scriptsDir)/format.sh
-    export packageScript = $(scriptsDir)/package.sh
-else ifeq ($(platform), macos)
-    linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
-    formatScript = $(scriptsDir)/format.sh
-    export packageScript = $(scriptsDir)/package.sh
-endif
-
 # Set directories
 export libDir := $(abspath lib)
 export makeDir := $(abspath make)
@@ -47,6 +32,18 @@ export exampleRenderApp := $(binDir)/examples/render/build/app
 export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
 buildFlagsFile := .buildflags
+ifeq ($(platform), windows)
+    export linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
+    export packageScript = $(scriptsDir)/package.bat
+else ifeq ($(platform), linux)
+    export linkFlags += -Wl,--no-as-needed -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
+    formatScript = $(scriptsDir)/format.sh
+    export packageScript = $(scriptsDir)/package.sh
+else ifeq ($(platform), macos)
+    export linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
+    formatScript = $(scriptsDir)/format.sh
+    export packageScript = $(scriptsDir)/package.sh
+endif
 
 .PHONY: all testapp gameapp renderapp package-gameapp package-renderapp buildFlags clean format
 

@@ -6,27 +6,33 @@ on:
     
   pull_request:
     branches: [ main ]
+
+  workflow_dispatch:
     
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      # Install dependencies
+    - name: update apt
+      run: sudo apt update
 
-      - name: update apt
-        run: sudo apt-get update
+    - name: install vulkan dependencies
+      run: sudo apt install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
 
-      - name: install raylib dependencies
-        run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+    - name: install glfw dependencies
+      run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-      # Build tests
+    - name: install raylib dependencies
+      run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-      - name: make testapp
-        run: make testapp
+    - name: perform setup
+      run: ./scripts/setup.sh
 
-      # Run tests
+    - name: make testapp
+      run: make testapp
 
-      - name: ./bin/testapp
-        run: ./bin/testapp
+    - name: run testapp
+      run: cd bin/tests/build; ./app

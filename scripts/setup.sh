@@ -232,7 +232,6 @@ if [[ $* == *--include-validation-layers* ]]; then
     setup_validation_layers
 fi
 
-VULKAN_LIB_DIR
 echo "Configuring environment file..."
 {
     echo "DYLD_LIBRARY_PATH='${VULKAN_LIB_DIR}'"
