@@ -22,7 +22,6 @@ bool CheckExtensionSupport(VkPhysicalDevice device,
         requiredExtensions.insert(deviceExtensions[i]);
     }
 
-    bool foundAll = true;
     for (size_t i = 0; i < extensionCount; i++)
     {
         VkExtensionProperties extension = availableExtensions[i];

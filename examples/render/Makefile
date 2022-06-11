@@ -62,5 +62,5 @@ render-assets:
 
 # Package the built application and all its assets to the output directory
 package:
-	$(RM) $(platformpth,$(outputDir)/"$(exampleRenderOutputName)")
+	$(RM) "$(outputDir)/$(exampleRenderOutputName)"
 	$(packageScript) $(exampleRenderOutputName) $(shell basename $(exampleRenderApp)) $(outputDir) $(exampleRenderBuildDir) $(packagingFlags)

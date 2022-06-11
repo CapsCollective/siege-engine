@@ -18,7 +18,7 @@ class Shape
 public:
 
     Shape();
-    Shape(Siege::Model* model);
+    explicit Shape(Siege::Model* model);
 
     ~Shape();
 

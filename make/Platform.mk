@@ -5,10 +5,10 @@ ifeq ($(OS), Windows_NT)
 	CXX ?= g++
 	THEN := &&
 	PATHSEP := \$(BLANK)
-	MKDIR := $(call platformpth,$(scriptsDir)/mkdir.bat)
+	MKDIR := $(scriptsDir)/mkdir.bat
 	RM := rm -r -f
-	COPY = $(call platformpth,$(scriptsDir)/copy.bat) $1 $2 $3
-	COPY_DIR = $(call platformpth,$(scriptsDir)/copy.bat) --copy-directory $1 $2
+	COPY = $(scriptsDir)/copy.bat $1 $2 $3
+	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
 	RENAME := move
     VALIDATION_LAYERS_INSTALL_DIR :=explicit_layer.d
     BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat

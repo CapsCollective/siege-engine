@@ -22,6 +22,10 @@ echo "Setting up raylib..."
 echo "Cloning raylib..."
 git submodule update --init --recursive %VENDOR_DIR%/raylib-cpp
 
+echo "Setting up utest..."
+echo "Cloning utest..."
+git submodule update --init --recursive %VENDOR_DIR%/utest.h
+
 echo "Setting up GLFW..."
 CALL :SetupGlfw
 
@@ -38,9 +42,9 @@ CALL :SetupVulkanHeaders
 echo "Setting up Vulkan Loader"
 CALL :SetupVulkanLoader
 
-echo "%*"| find "*--include-validation-layers*" >nul
+echo "%*"| find "--include-validation-layers" >nul
 
-IF "%ERRORLEVEL%" EQU "1" CALL :SetupVulkanValidationLayers
+IF "%ERRORLEVEL%" EQU "0" CALL :SetupVulkanValidationLayers
 
 echo "Configuring environment file..."
 
@@ -128,7 +132,7 @@ EXIT /B 0
     mkdir %BUILD_DIR%
 
     cmake -DCMAKE_INSTALL_PREFIX=%BUILD_DIR% -DVULKAN_HEADERS_INSTALL_DIR=%VULKAN_VENDOR_DIR%\Vulkan-Headers\build\install -S%VULKAN_VENDOR_DIR%\Vulkan-Loader -B%BUILD_DIR%
-    cmake --build %BUILD_DIR% --config Release
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --config Release
 
     mkdir %VULKAN_LIB_DIR%
 
@@ -158,8 +162,8 @@ EXIT /B 0
     mkdir %BUILD_DIR%
 
     python3 %VULKAN_VENDOR_DIR%\SPIRV-Tools\utils\git-sync-deps
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -S%VULKAN_VENDOR_DIR%\SPIRV-Tools -B%BUILD_DIR%
-    cmake --build %BUILD_DIR% --target install --config Release
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -DCMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_PROCESSORS% -S%VULKAN_VENDOR_DIR%\SPIRV-Tools -B%BUILD_DIR%
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --target install --config Release
 EXIT /B 0
 
 :SetupRobinHoodHashing
@@ -194,7 +198,7 @@ EXIT /B 0
         -S%VULKAN_VENDOR_DIR%\Vulkan-ValidationLayers ^
         -B%BUILD_DIR%
 
-    cmake --build %BUILD_DIR% --config Release --target install
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --config Release --target install
 
     mkdir %VULKAN_LIB_DIR%\explicit_layer.d
 

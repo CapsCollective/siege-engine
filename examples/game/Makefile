@@ -37,5 +37,5 @@ game-assets:
 
 # Package the built application and all its assets to the output directory
 package: all
-	$(RM) "$(outputDir)/$(exampleGameOutputName)"*
+	$(RM) $(call platformpth,$(outputDir)/$(exampleGameOutputName))
 	$(packageScript) $(exampleGameOutputName) $(shell basename $(exampleGameApp)) $(outputDir) $(exampleGameBuildDir)

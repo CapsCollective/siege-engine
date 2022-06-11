@@ -36,10 +36,6 @@ ifeq ($(platform), windows)
     export linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
     export packageScript = $(scriptsDir)/package.bat
 else ifeq ($(platform), linux)
-    cmd := 	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
-			$(RM) $(call platformpth, $(libDir)); \
-			$(RM) $(call platformpth, $(binDir)); \
-		fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
     export linkFlags += -Wl,--no-as-needed -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
     formatScript = $(scriptsDir)/format.sh
     export packageScript = $(scriptsDir)/package.sh

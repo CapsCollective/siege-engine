@@ -28,9 +28,9 @@ Material::Material(Shader* vertexShader, Shader* fragmentShader) :
 }
 
 Material::Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount) :
+    shaderCount(shaderCount),
     vertexShader(vertexShader),
-    fragmentShader(fragmentShader),
-    shaderCount(shaderCount)
+    fragmentShader(fragmentShader)
 {}
 
 void Material::SetVertexShader(Shader* shader)

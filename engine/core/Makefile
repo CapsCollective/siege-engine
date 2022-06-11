@@ -21,7 +21,8 @@ raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(coreLib))
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir)/libcore.a,libraylib.a)
+	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
+	mv $(call platformpth,$(libDir)/libraylib.a) $(call platformpth,$(libDir)/libcore.a)
 	ar -rs $(coreLib) $(coreObjects)
 
 # Add all rules from dependency files

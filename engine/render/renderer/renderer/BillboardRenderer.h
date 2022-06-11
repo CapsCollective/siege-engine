@@ -38,8 +38,6 @@ private:
         alignas(16) glm::vec3 scale;
     };
 
-    u32 billboardCount;
-
     Material billboardMaterial;
     Model billboardModel;
 

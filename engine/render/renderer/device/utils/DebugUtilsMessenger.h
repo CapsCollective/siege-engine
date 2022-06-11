@@ -18,7 +18,8 @@ namespace Siege::DebugUtilsMessenger
  * @param pCallbackData the data being returned by the validationLayer
  * @param pUserData a void pointer containing any data inserted for usage.
  **/
-static VKAPI_ATTR VkBool32 VKAPI_CALL
+// TODO use this function or remove it
+[[maybe_unused]] static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
