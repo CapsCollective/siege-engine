@@ -105,11 +105,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     glm::vec3 rotate {0};
     float lookSpeed = 4.0f;
 
-    float differenceX = mousePos.x - oldMousePos.x;
-    float differenceY = oldMousePos.y - mousePos.y;
+    double differenceX = mousePos.x - oldMousePos.x;
+    double differenceY = oldMousePos.y - mousePos.y;
 
-    rotate.y += differenceX;
-    rotate.x += differenceY;
+    rotate.y += float(differenceX);
+    rotate.x += float(differenceY);
 
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {

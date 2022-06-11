@@ -15,7 +15,7 @@ public:
 
     // 'Structors
 
-    Window(char const* name, int width, int height) : width(width), height(height), name(name)
+    Window(char const* name, int width, int height) : width(width), height(height)
     {
         if (!glfwInitialised)
         {
@@ -48,17 +48,17 @@ public:
 
     // Public Getters
 
-    const int& GetHeight()
+    const int& GetHeight() const
     {
         return height;
     }
 
-    const int& GetWidth()
+    const int& GetWidth() const
     {
         return width;
     }
 
-    VkExtent2D GetExtent()
+    VkExtent2D GetExtent() const
     {
         return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
     }
@@ -76,7 +76,7 @@ public:
 
     bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
-    bool WasResized()
+    bool WasResized() const
     {
         return wasResized;
     }
@@ -118,8 +118,6 @@ private:
     // Private variables
 
     GLFWwindow* window;
-
-    char const* name;
 
     int width;
     int height;

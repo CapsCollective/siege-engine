@@ -17,10 +17,9 @@ class Renderer
 {
 public:
 
-    Renderer(Window& window);
-    ~Renderer();
+    explicit Renderer(Window& window);
 
-    void DestroyRenderer();
+    ~Renderer();
 
     VulkanDevice& GetDevice()
     {
@@ -51,7 +50,7 @@ public:
         mainCamera = camera;
     }
 
-    bool IsFrameStarted()
+    bool IsFrameStarted() const
     {
         return isFrameStarted;
     }
@@ -69,11 +68,10 @@ public:
     {
         vkDeviceWaitIdle(device.Device());
     }
-    Pipeline CreateGraphicsPipeline();
 
     void SetClearValue(float r, float g, float b, float a)
     {
-        clearValue = {r, g, b, a};
+        clearValue = {{r, g, b, a}};
     }
 
 private:
@@ -83,7 +81,7 @@ private:
     static VulkanDevice* deviceInstance;
     static Utils::Array<VkCommandBuffer> commandBuffers;
 
-    VkClearColorValue clearValue {0, 0, 0, 1.f};
+    VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 
     void CreateCommandBuffers();
 

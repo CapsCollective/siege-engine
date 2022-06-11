@@ -61,10 +61,9 @@ glm::mat3 Math::CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3
                           inverseScale.z * (c1 * c2),
                       }};
 }
-
-static glm::mat2 CalculateTransform2D(const glm::vec2& position,
-                                      const float& rotation,
-                                      const glm::vec2& scale)
+glm::mat2 Math::CalculateTransform2D(const glm::vec2& position,
+                                     const float& rotation,
+                                     const glm::vec2& scale)
 {
     const float s = glm::sin(rotation);
     const float c = glm::cos(rotation);
