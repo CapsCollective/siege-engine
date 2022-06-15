@@ -5,13 +5,12 @@ ifeq ($(OS), Windows_NT)
 	CXX ?= g++
 	THEN := &&
 	PATHSEP := \$(BLANK)
-	MKDIR := $(scriptsDir)/mkdir.bat
+	MKDIR = $(scriptsDir)/mkdir.bat
 	RM := rm -r -f
 	COPY = $(scriptsDir)/copy.bat $1 $2 $3
 	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
-	RENAME := move
-    VALIDATION_LAYERS_INSTALL_DIR :=explicit_layer.d
-    BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
+	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
@@ -33,7 +32,6 @@ else
 	RM := rm -rf
 	COPY = cp -r $1$(PATHSEP)$3 $2
 	COPY_DIR = $(call COPY,$1,$2,$3)
-	RENAME := mv
-    VALIDATION_LAYERS_INSTALL_DIR :=lib/explicit_layer.d
-    BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.sh
+	VALIDATION_LAYERS_INSTALL_DIR := lib/explicit_layer.d
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.sh
 endif
