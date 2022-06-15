@@ -1,7 +1,7 @@
-![macOS Status](../../workflows/macOS/badge.svg)
-![Linux Status](../../workflows/Ubuntu/badge.svg)
-![Windows Status](../../workflows/Windows/badge.svg)
-![Tests Status](../../workflows/Tests/badge.svg)
+![macOS Status](../../workflows/macos/badge.svg)
+![Linux Status](../../workflows/ubuntu/badge.svg)
+![Windows Status](../../workflows/windows/badge.svg)
+![Tests Status](../../workflows/tests/badge.svg)
 # Siege Engine
 
 A lightweight, cross-platform game engine
@@ -26,13 +26,13 @@ A lightweight, cross-platform game engine
 
 ### Dependencies
 
-The following are dependencies for building and running SNEK:
+The following are dependencies for building and running the project:
 
 - [Cmake](https://cmake.org/) (all platforms)
-- [GNU Make](https://www.gnu.org/software/make/) (linux & macos)
-- [MingW32-make](https://www.mingw-w64.org/) (windows)
+- [GNU Make](https://www.gnu.org/software/make/) (Linux & macOS)
+- [MingW32-make](https://www.mingw-w64.org/) (Windows)
 - [Python](https://www.python.org/) (all platforms)
-- [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) (windows)
+- [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) (Windows)
 
 **Linux:** For linux environments the following packages are required for building the dependencies.
 
@@ -63,7 +63,7 @@ $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi
 ### Setup
 
 1. Navigate to the project root.
-2. Run the install script for your platform:
+2. Run the setup script for your platform:
 
    ```bash
    // Linux & macos
@@ -77,7 +77,7 @@ $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi
 
 **Building validation layers**
 
-If you want to build validation layers then the install scripts should be run by passing the `--include-validation-layers` flag to the `install` script:
+If you want to build validation layers then the setup scripts should be run by passing the `--include-validation-layers` flag:
 
 ```
 // Linux & macos
@@ -118,93 +118,21 @@ Once these are done the project should be built and ready to go. Enjoy!
      ├─[engine]
      │        │
      │        ├─[core]
-     │        │      │
-     │        │      ├─[entity]
-     │        │      │
-     │        │      ├─[input]
-     │        │      │
-     │        │      ├─[physics]
-     │        │      │
-     │        │      ├─[render]
-     │        │      │
-     │        │      ├─[scene]
      │        │
      │        ├─[render]
-     │        │        │  
-     │        │        ├─[assets]
-     │        │        │        ├─[shaders]
-     │        │        │
-     │        │        ├─[components]
-     │        │        │
-     │        │        ├─[input]
-     │        │        │       
-     │        │        ├─[renderer]
-     │        │        │          │
-     │        │        │          ├─[buffer]
-     │        │        │          │
-     │        │        │          ├─[camera]
-     │        │        │          │
-     │        │        │          ├─[descriptor]
-     │        │        │          │
-     │        │        │          ├─[device]
-     │        │        │          │        │
-     │        │        │          │        ├─[utils]
-     │        │        │          │
-     │        │        │          ├─[image]
-     │        │        │          │       │
-     │        │        │          │       ├─[utils]
-     │        │        │          │
-     │        │        │          ├─[lights]
-     │        │        │          │
-     │        │        │          ├─[material]
-     │        │        │          │
-     │        │        │          ├─[mesh]
-     │        │        │          │
-     │        │        │          ├─[model]
-     │        │        │          │
-     │        │        │          ├─[pass]
-     │        │        │          │      │
-     │        │        │          │      ├─[utils]
-     │        │        │          │
-     │        │        │          ├─[pipeline]
-     │        │        │          │
-     │        │        │          ├─[renderer]
-     │        │        │          │
-     │        │        │          ├─[shader]
-     │        │        │          │
-     │        │        │          ├─[swapchain]
-     │        │        │          │
-     │        │        │          ├─[utils]
-     │        │        ├─[utils]
-     │        │        │
-     │        │        ├─[window]
      │        │
      │        ├─[utils]
      │
      ├─[examples]
      │          │
      │          ├─[game]
-     │          │      │
-     │          │      ├─[assets]
-     │          │      │
-     │          │      ├─[src]
      │          │      
      │          ├─[render]
-     │                   │
-     │                   ├─[assets]
-     │                   │
-     │                   ├─[src]
      ├─[make]
      │
      ├─[scripts]
      │
      ├─[tests]
-     │       │
-     │       ├─[core]
-     │       │
-     │       ├─[data]
-     │       │
-     │       ├─[utils]
      │
      ├─[vendor]
 ```
@@ -216,9 +144,9 @@ Once these are done the project should be built and ready to go. Enjoy!
 It's pretty simple actually:
 
 1. Fork it from [here](https://github.com/CapsCollective/a-dark-discomfort/fork)
-2. Create your feature branch (git checkout -b cool-new-feature)
-3. Commit your changes (git commit -m "Added some feature")
-4. Push to the branch (git push origin cool-new-feature)
+2. Create your feature branch (`git checkout -b cool-new-feature`)
+3. Commit your changes (`git commit -m "Added some feature"`)
+4. Push to the branch (`git push origin cool-new-feature`)
 5. Create a new pull request for it!
 
 ### Contributors
