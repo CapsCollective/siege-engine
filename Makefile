@@ -1,77 +1,97 @@
 include make/Functions.mk
 include make/Platform.mk
 
+# Set debugging build flags
+DEBUG ?= 1
+ifeq ($(DEBUG), 1)
+    override CXXFLAGS += -g -DDEBUG -DCC_LOG_LEVEL=2
+else
+    override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0
+endif
+
 # Set platform vars
-ifeq ($(platform), Windows)
+ifeq ($(platform), windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
-else ifeq ($(platform), Linux)
-    linkFlags += -l GL -l m -Wl,--no-as-needed -l dl -l rt -l X11 -l pthread
-else ifeq ($(platform), macOS)
+    export packageScript = $(scriptsDir)/package.bat
+else ifeq ($(platform), linux)
+    linkFlags += -Wl,--no-as-needed -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
+    formatScript = $(scriptsDir)/format.sh
+    export packageScript = $(scriptsDir)/package.sh
+else ifeq ($(platform), macos)
     linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
+    formatScript = $(scriptsDir)/format.sh
+    export packageScript = $(scriptsDir)/package.sh
 endif
 
 # Set directories
 export libDir := $(abspath lib)
 export makeDir := $(abspath make)
-export buildDir := $(abspath bin)
+export binDir := $(abspath bin)
 export vendorDir := $(abspath vendor)
+export scriptsDir := $(abspath scripts)
+export outputDir := $(abspath output)
 export engineDir := $(abspath engine)
 export testsDir := $(abspath tests)
 export examplesDir := $(abspath examples)
-export vendorIncludeDir := $(vendorDir)/include
-
-# Set build vars
-export compileFlags := -Wall -std=c++17
-export linkFlags += -L $(libDir) -l core -l utils
-buildFlagsFile := .buildflags
 
 # Set top level targets
 export utilsLib := $(libDir)/libutils.a
 export coreLib := $(libDir)/libcore.a
+export renderLib := $(libDir)/librender.a
+export testApp := $(binDir)/tests/build/app
+export exampleGameApp := $(binDir)/examples/game/build/app
+export exampleRenderApp := $(binDir)/examples/render/build/app
 
-# Set debugging build flags
-DEBUG ?= 1
-ifeq ($(DEBUG), 1)
-	override CXXFLAGS += -g -DDEBUG
-else
-    override CXXFLAGS += -DNDEBUG
-endif
+# Set build vars
+export compileFlags := -Wall -std=c++17
+export linkFlags += -L $(libDir)
+buildFlagsFile:=.buildflags
 
-.PHONY: all engine utils core tests examples examples/game buildExample/% buildFlags clean format
+.PHONY: all testapp gameapp renderapp package-gameapp package-renderapp buildFlags clean format
 
-all: tests examples
+all: testapp package-gameapp package-renderapp
 
-engine: buildFlags utils core
+$(utilsLib): buildFlags
+	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-utils: buildFlags
-	$(MAKE) -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
+$(coreLib): buildFlags
+	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-core: buildFlags
-	$(MAKE) -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
+$(renderLib): buildFlags
+	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-tests: buildFlags engine
-	$(MAKE) -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
+$(testApp): buildFlags $(utilsLib) $(coreLib)
+	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
-examples: examples/game
+$(exampleGameApp): buildFlags $(utilsLib) $(coreLib)
+	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-examples/game: buildFlags engine buildExample/game
+$(exampleRenderApp): buildFlags $(renderLib)
+	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-buildExample/%:
-	$(MAKE) -C $(examplesDir)/$* CXXFLAGS="$(CXXFLAGS)"
+testapp: $(testApp)
+
+gameapp: $(exampleGameApp)
+
+renderapp: $(exampleRenderApp)
+
+package-gameapp: gameapp
+	"$(MAKE)" package -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
+
+package-renderapp: renderapp
+	"$(MAKE)" package -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed
 buildFlags:
-	@if [[ -f "$(buildFlagsFile)" && "`cat $(buildFlagsFile)`" != "$(CXXFLAGS)" ]]; then \
-  		$(RM) $(call platformpth, $(libDir)); \
-  		$(RM) $(call platformpth, $(buildDir)); \
-    fi; echo $(CXXFLAGS) | tee $(buildFlagsFile) >/dev/null
+	$(BUILD_FLAGS_SCRIPT) $(buildFlagsFile) "$(CXXFLAGS)" "$(libDir) $(binDir)"
 
-# Run cleanup across project-wide
+# Run cleanup across project
 clean:
 	$(RM) $(call platformpth, $(libDir))
-	$(RM) $(call platformpth, $(buildDir))
+	$(RM) $(call platformpth, $(binDir))
+	$(RM) $(call platformpth, $(outputDir))
 	$(RM) $(call platformpth, $(buildFlagsFile))
 
 # Run file formatting program across all source files
 format:
-	./format.sh "$(engineDir) $(examplesDir) $(testsDir)" $(ARGS)
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)" $(ARGS)

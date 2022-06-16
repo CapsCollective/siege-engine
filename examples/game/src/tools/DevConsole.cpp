@@ -9,7 +9,6 @@
 #include <stdexcept>
 
 #include "EditorController.h"
-#include "MessageDisplay.h"
 
 void DevConsole::OnUpdate()
 {

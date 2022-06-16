@@ -1,5 +1,18 @@
-include
-lib
-bin
+# macOS filesystem
+.DS_STORE
+
+# Visual Studio Code
+.vscode
+
+# Jetbrains
 .idea
+
+# Build Files
+.env
 .buildflags
+
+# Intermediates
+bin
+lib
+include
+output

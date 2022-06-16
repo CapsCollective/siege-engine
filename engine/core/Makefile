@@ -1,37 +1,39 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set platform vars
-ifeq ($(platform), Windows)
+# Set source build vars
+coreSrcDir := .
+coreBinDir := $(binDir)/engine/core
+coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
+coreObjects := $(call findobjs,$(coreSrcDir),$(coreBinDir),$(coreSources))
+coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBinDir)/,*.o))
+
+# Set build vars
+ifeq ($(platform), windows)
     libGenDir := src
-else ifeq ($(platform), macOS)
+else ifeq ($(platform), macos)
     libGenDir := src
 endif
+raylibIncludeDir := $(vendorDir)/include/raylib
 raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
-# Set build vars for core
-coreSrcDir := .
-coreBuildDir := $(buildDir)/core
-coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
-coreObjects := $(call findobjs,$(coreSrcDir),$(coreBuildDir),$(coreSources))
-coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBuildDir)/,*.o))
-raylibIncludeDir := $(vendorIncludeDir)/raylib
-
-# Build the static library for the engine core
+# Build the static library
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(coreLib))
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir)/libcore.a,libraylib.a)
+	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
+	mv $(call platformpth,$(libDir)/libraylib.a) $(call platformpth,$(libDir)/libcore.a)
 	ar -rs $(coreLib) $(coreObjects)
 
 # Add all rules from dependency files
 -include $(coreDepends)
 
-# Compile object files to the build directory
-$(coreBuildDir)/%.o: $(coreSrcDir)/%.cpp
+# Compile object files to the bin directory
+$(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(raylibIncludeDir) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
+# TODO move this into setup file
 # Copy the relevant header files into includes
 $(raylibIncludeDir):
 	$(MKDIR) $(call platformpth, $(raylibIncludeDir)/raylib)
