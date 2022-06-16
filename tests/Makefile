@@ -1,24 +1,32 @@
 include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
-# Set build vars for tests
+# Set source build vars
 testSrcDir := .
-testExecutable := $(buildDir)/testapp
-testBuildDir := $(buildDir)/tests
+testBinDir := $(binDir)/tests
 testSources := $(call rwildcard,$(testSrcDir)/,*.cpp)
-testObjects := $(call findobjs,$(testSrcDir),$(testBuildDir),$(testSources))
-testDepends := $(patsubst %.o, %.d, $(call rwildcard,$(testBuildDir)/,*.o))
-utestIncludeDir := $(vendorIncludeDir)/utest
+testObjects := $(call findobjs,$(testSrcDir),$(testBinDir),$(testSources))
+testDepends := $(patsubst %.o, %.d, $(call rwildcard,$(testBinDir)/,*.o))
+testBuildDir := $(testBinDir)/build
+
+# Set build vars
+utestIncludeDir := $(vendorDir)/include/utest
+linkFlags += -l core -l utils
+
+.PHONY: all test-data
+
+all: $(testApp) test-data
 
 # Link the object files and create an executable
-$(testExecutable): $(utestIncludeDir) $(testObjects)
-	$(CXX) $(testObjects) -o $(testExecutable) $(linkFlags)
+$(testApp): $(utestIncludeDir) $(testObjects)
+	$(MKDIR) $(call platformpth, $(@D))
+	$(CXX) $(testObjects) -o $(testApp) $(linkFlags)
 
 # Add all rules from dependency files
 -include $(testDepends)
 
-# Compile object files to the build directory
-$(testBuildDir)/%.o: $(testSrcDir)/%.cpp
+# Compile object files to the bin directory
+$(testBinDir)/%.o: $(testSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(utestIncludeDir) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
@@ -26,3 +34,8 @@ $(testBuildDir)/%.o: $(testSrcDir)/%.cpp
 $(utestIncludeDir):
 	$(MKDIR) $(call platformpth, $(utestIncludeDir))
 	$(call COPY,$(vendorDir)/utest.h,$(utestIncludeDir),utest.h)
+
+# Copy the data directory to the build directory
+test-data:
+	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
+	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,**)

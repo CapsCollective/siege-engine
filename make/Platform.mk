@@ -1,24 +1,27 @@
 # Check for Windows
 ifeq ($(OS), Windows_NT)
 	# Set Windows macros
-	platform := Windows
+	platform := windows
 	CXX ?= g++
 	THEN := &&
 	PATHSEP := \$(BLANK)
-	MKDIR := -mkdir -p
-	RM := -del /q
-	COPY = -robocopy "$(call platformpth,$1)" "$(call platformpth,$2)" $3
+	MKDIR = $(scriptsDir)/mkdir.bat
+	RM := rm -r -f
+	COPY = $(scriptsDir)/copy.bat $1 $2 $3
+	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
+	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
 		# Set Linux macros
-		platform := Linux
+		platform := linux
 		CXX ?= g++
 	endif
 	ifeq ($(UNAMEOS), Darwin)
 		# Set macOS macros
-		platform := macOS
+		platform := macos
 		CXX ?= clang++
 	endif
 
@@ -27,5 +30,8 @@ else
 	PATHSEP := /
 	MKDIR := mkdir -p
 	RM := rm -rf
-	COPY = cp $1$(PATHSEP)$3 $2
+	COPY = cp -r $1$(PATHSEP)$3 $2
+	COPY_DIR = $(call COPY,$1,$2,$3)
+	VALIDATION_LAYERS_INSTALL_DIR := lib/explicit_layer.d
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.sh
 endif
