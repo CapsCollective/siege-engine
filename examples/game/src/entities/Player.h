@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_PLAYER_H
-#define A_DARK_DISCOMFORT_PLAYER_H
+#ifndef SIEGE_ENGINE_PLAYER_H
+#define SIEGE_ENGINE_PLAYER_H
 
 #include <core/entity/Entity.h>
 #include <core/render/RenderSystem.h>
@@ -46,4 +46,4 @@ private:
     Vec3 velocity;
 };
 
-#endif // A_DARK_DISCOMFORT_PLAYER_H
+#endif // SIEGE_ENGINE_PLAYER_H

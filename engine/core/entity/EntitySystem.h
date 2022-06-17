@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_ENTITYSYSTEM_H
-#define A_DARK_DISCOMFORT_ENTITYSYSTEM_H
+#ifndef SIEGE_ENGINE_ENTITYSYSTEM_H
+#define SIEGE_ENGINE_ENTITYSYSTEM_H
 
 #include <map>
 #include <vector>
@@ -195,4 +195,4 @@ private:
     std::vector<Entity*> registeredEntities;
 };
 
-#endif // A_DARK_DISCOMFORT_ENTITYSYSTEM_H
+#endif // SIEGE_ENGINE_ENTITYSYSTEM_H

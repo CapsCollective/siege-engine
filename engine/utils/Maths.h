@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_MATHS_H
-#define A_DARK_DISCOMFORT_MATHS_H
+#ifndef SIEGE_ENGINE_MATHS_H
+#define SIEGE_ENGINE_MATHS_H
 
 #include <cmath>
 
@@ -188,4 +188,4 @@ struct RayCast
     Vec3 direction;
 };
 
-#endif // A_DARK_DISCOMFORT_MATHS_H
+#endif // SIEGE_ENGINE_MATHS_H

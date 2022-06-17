@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
-#define A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
+#ifndef SIEGE_ENGINE_MESSAGEDISPLAY_H
+#define SIEGE_ENGINE_MESSAGEDISPLAY_H
 
 #include <core/entity/Entity.h>
 
@@ -30,4 +30,4 @@ private:
     String displayMessage;
 };
 
-#endif // A_DARK_DISCOMFORT_MESSAGEDISPLAY_H
+#endif // SIEGE_ENGINE_MESSAGEDISPLAY_H
