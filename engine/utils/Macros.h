@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_MACROS_H
-#define A_DARK_DISCOMFORT_MACROS_H
+#ifndef SIEGE_ENGINE_MACROS_H
+#define SIEGE_ENGINE_MACROS_H
 
 // Reserved character macros
 #define _COMMA ,
@@ -16,4 +16,4 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#endif // A_DARK_DISCOMFORT_MACROS_H
+#endif // SIEGE_ENGINE_MACROS_H

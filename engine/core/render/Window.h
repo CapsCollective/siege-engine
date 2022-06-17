@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_WINDOW_H
-#define A_DARK_DISCOMFORT_WINDOW_H
+#ifndef SIEGE_ENGINE_WINDOW_H
+#define SIEGE_ENGINE_WINDOW_H
 
 #include <utils/Colour.h>
 #include <utils/String.h>
@@ -41,4 +41,4 @@ private:
     static float deltaTime;
 };
 
-#endif // A_DARK_DISCOMFORT_WINDOW_H
+#endif // SIEGE_ENGINE_WINDOW_H

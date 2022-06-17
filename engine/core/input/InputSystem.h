@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_INPUTSYSTEM_H
-#define A_DARK_DISCOMFORT_INPUTSYSTEM_H
+#ifndef SIEGE_ENGINE_INPUTSYSTEM_H
+#define SIEGE_ENGINE_INPUTSYSTEM_H
 
 #include <utils/Maths.h>
 
@@ -137,4 +137,4 @@ public:
     Vec3 GetMousePos();
 };
 
-#endif // A_DARK_DISCOMFORT_INPUTSYSTEM_H
+#endif // SIEGE_ENGINE_INPUTSYSTEM_H

@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_FILESYSTEM_H
-#define A_DARK_DISCOMFORT_FILESYSTEM_H
+#ifndef SIEGE_ENGINE_FILESYSTEM_H
+#define SIEGE_ENGINE_FILESYSTEM_H
 
 #include "String.h"
 
@@ -14,4 +14,4 @@ bool Save(const String& filename, const String& content);
 
 } // namespace FileSystem
 
-#endif // A_DARK_DISCOMFORT_FILESYSTEM_H
+#endif // SIEGE_ENGINE_FILESYSTEM_H
