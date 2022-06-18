@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_DEVCONSOLE_H
-#define A_DARK_DISCOMFORT_DEVCONSOLE_H
+#ifndef SIEGE_ENGINE_DEVCONSOLE_H
+#define SIEGE_ENGINE_DEVCONSOLE_H
 
 #include <core/entity/Entity.h>
 #include <core/entity/EntityPtr.h>
@@ -47,4 +47,4 @@ private:
     EntityPtr<MessageDisplay> messageDisplay;
 };
 
-#endif // A_DARK_DISCOMFORT_DEVCONSOLE_H
+#endif // SIEGE_ENGINE_DEVCONSOLE_H

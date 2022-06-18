@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_STRING_H
-#define A_DARK_DISCOMFORT_STRING_H
+#ifndef SIEGE_ENGINE_STRING_H
+#define SIEGE_ENGINE_STRING_H
 
 #include <ostream>
 #include <utility>
@@ -603,4 +603,4 @@ String operator+(const char& lhs, const String& rhs);
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
 
-#endif // A_DARK_DISCOMFORT_STRING_H
+#endif // SIEGE_ENGINE_STRING_H

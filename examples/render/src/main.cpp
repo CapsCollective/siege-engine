@@ -133,8 +133,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
     if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
 
-    if (Input::IsKeyDown(KEY_Q)) moveDir += upDir;
-    if (Input::IsKeyDown(KEY_E)) moveDir -= upDir;
+    if (Input::IsKeyDown(KEY_E)) moveDir += upDir;
+    if (Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
 
     float moveSpeed = 2.f;
 

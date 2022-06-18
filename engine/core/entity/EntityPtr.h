@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_ENTITYPTR_H
-#define A_DARK_DISCOMFORT_ENTITYPTR_H
+#ifndef SIEGE_ENGINE_ENTITYPTR_H
+#define SIEGE_ENGINE_ENTITYPTR_H
 
 #include "../Statics.h"
 #include "Entity.h"
@@ -39,7 +39,7 @@ public:
 
     operator bool() const
     {
-        return pointer && Statics::Entity().IsLive(index);
+        return pointer && EntitySystem::IsLive(pointer);
     }
 
     E* operator->() const
@@ -106,4 +106,4 @@ private:
     GenerationalIndex index;
 };
 
-#endif // A_DARK_DISCOMFORT_ENTITYPTR_H
+#endif // SIEGE_ENGINE_ENTITYPTR_H

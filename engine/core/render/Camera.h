@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_CAMERA_H
-#define A_DARK_DISCOMFORT_CAMERA_H
+#ifndef SIEGE_ENGINE_CAMERA_H
+#define SIEGE_ENGINE_CAMERA_H
 
 #include <utils/Maths.h>
 
@@ -26,4 +26,4 @@ public:
 private:
 };
 
-#endif // A_DARK_DISCOMFORT_CAMERA_H
+#endif // SIEGE_ENGINE_CAMERA_H

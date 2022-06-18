@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_FREECAM_H
-#define A_DARK_DISCOMFORT_FREECAM_H
+#ifndef SIEGE_ENGINE_FREECAM_H
+#define SIEGE_ENGINE_FREECAM_H
 
 #include <core/entity/Entity.h>
 
@@ -40,4 +40,4 @@ private:
     Vec3 previousMousePosition;
 };
 
-#endif // A_DARK_DISCOMFORT_FREECAM_H
+#endif // SIEGE_ENGINE_FREECAM_H

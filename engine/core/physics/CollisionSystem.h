@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
-#define A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
+#ifndef SIEGE_ENGINE_COLLISIONSYSTEM_H
+#define SIEGE_ENGINE_COLLISIONSYSTEM_H
 
 #include <vector>
 
@@ -65,4 +65,4 @@ private:
     std::vector<Entity*> removedEntities;
 };
 
-#endif // A_DARK_DISCOMFORT_COLLISIONSYSTEM_H
+#endif // SIEGE_ENGINE_COLLISIONSYSTEM_H

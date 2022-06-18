@@ -1,8 +1,9 @@
-![macOS Status](../../workflows/macos/badge.svg)
-![Linux Status](../../workflows/ubuntu/badge.svg)
-![Windows Status](../../workflows/windows/badge.svg)
-![Tests Status](../../workflows/tests/badge.svg)
 # Siege Engine
+![macOS Status](../../workflows/macOS/badge.svg)
+![Linux Status](../../workflows/Ubuntu/badge.svg)
+![Windows Status](../../workflows/Windows/badge.svg)
+![Tests Status](../../workflows/Tests/badge.svg)
+![Formatting Status](../../workflows/Formatting/badge.svg)
 
 A lightweight, cross-platform game engine
 
@@ -143,7 +144,7 @@ Once these are done the project should be built and ready to go. Enjoy!
 
 It's pretty simple actually:
 
-1. Fork it from [here](https://github.com/CapsCollective/a-dark-discomfort/fork)
+1. Fork it from [here](https://github.com/CapsCollective/siege-engine/fork)
 2. Create your feature branch (`git checkout -b cool-new-feature`)
 3. Commit your changes (`git commit -m "Added some feature"`)
 4. Push to the branch (`git push origin cool-new-feature`)

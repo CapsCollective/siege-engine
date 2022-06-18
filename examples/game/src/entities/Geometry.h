@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_GEOMETRY_H
-#define A_DARK_DISCOMFORT_GEOMETRY_H
+#ifndef SIEGE_ENGINE_GEOMETRY_H
+#define SIEGE_ENGINE_GEOMETRY_H
 
 #include <core/entity/Entity.h>
 #include <core/render/RenderSystem.h>
@@ -53,4 +53,4 @@ private:
     String modelPath, texturePath;
 };
 
-#endif // A_DARK_DISCOMFORT_GEOMETRY_H
+#endif // SIEGE_ENGINE_GEOMETRY_H
