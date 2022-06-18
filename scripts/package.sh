@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+#
+# This code is released under an unmodified zlib license.
+# For conditions of distribution and use, please see:
+#     https://opensource.org/licenses/Zlib
+
 # Require a minimum number of arguments
 if [ $# -lt 4 ]; then
   echo "Requires at least four arguments (e.g. package.sh <package_name> <executable_name> <output_dir> <build_dir> [--env-vars | --excludes])"
