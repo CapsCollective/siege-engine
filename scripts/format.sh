@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+#
+# This code is released under an unmodified zlib license.
+# For conditions of distribution and use, please see:
+#     https://opensource.org/licenses/Zlib
+
 # Check and assign supplied arguments
 if [[ $# -lt 1 ]]; then
   echo "Program requires at least one argument (e.g. format <dirs> [--check])"
