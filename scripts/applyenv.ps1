@@ -1,3 +1,9 @@
+# Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+#
+# This code is released under an unmodified zlib license.
+# For conditions of distribution and use, please see:
+#     https://opensource.org/licenses/Zlib
+
 if ($Args.Count -ne 1) {
     Write-Output "Requires one argument (e.g. applyenv <env_file>)"
     exit 1

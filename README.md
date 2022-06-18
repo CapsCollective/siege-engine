@@ -117,24 +117,17 @@ Once these are done the project should be built and ready to go. Enjoy!
 ```
 [root]
      ├─[engine]
-     │        │
      │        ├─[core]
-     │        │
      │        ├─[render]
-     │        │
      │        ├─[utils]
      │
      ├─[examples]
-     │          │
      │          ├─[game]
-     │          │      
      │          ├─[render]
+     │
      ├─[make]
-     │
      ├─[scripts]
-     │
      ├─[tests]
-     │
      ├─[vendor]
 ```
 
@@ -157,4 +150,4 @@ It's pretty simple actually:
 
 ## Licence
 
-This project is licenced under an unmodified zlib/libpng licence, which is an OSI-certified, BSD-like licence that allows static linking with closed source software. Check [`LICENCE`](LICENSE) for further details.
+This project is licenced under an unmodified zlib/libpng licence, which is an OSI-certified, BSD-like licence that allows static linking with closed source software. Check [`LICENCE`](LICENCE) for further details.
