@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_SCENEFILE_H
-#define A_DARK_DISCOMFORT_SCENEFILE_H
+#ifndef SIEGE_ENGINE_SCENEFILE_H
+#define SIEGE_ENGINE_SCENEFILE_H
 
 #include <utils/Macros.h>
 #include <utils/Maths.h>
@@ -196,4 +196,4 @@ inline String DefineField(const String& name, const String& content)
     return name + NAME_SEP + content + SEP;
 }
 
-#endif // A_DARK_DISCOMFORT_SCENEFILE_H
+#endif // SIEGE_ENGINE_SCENEFILE_H

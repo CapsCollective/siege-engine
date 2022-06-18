@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_LOGGING_H
-#define A_DARK_DISCOMFORT_LOGGING_H
+#ifndef SIEGE_ENGINE_LOGGING_H
+#define SIEGE_ENGINE_LOGGING_H
 
 #include <iostream>
 #include <utility>
@@ -150,4 +150,4 @@ static void VariantFormat(String& text, const VariantContainer* variantItems, co
 #define CC_LOG_INFO(...)
 #endif
 
-#endif // A_DARK_DISCOMFORT_LOGGING_H
+#endif // SIEGE_ENGINE_LOGGING_H

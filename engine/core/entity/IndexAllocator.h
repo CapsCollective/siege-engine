@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_INDEXALLOCATOR_H
-#define A_DARK_DISCOMFORT_INDEXALLOCATOR_H
+#ifndef SIEGE_ENGINE_INDEXALLOCATOR_H
+#define SIEGE_ENGINE_INDEXALLOCATOR_H
 
 #include <utils/String.h>
 
@@ -117,4 +117,4 @@ private:
     std::vector<size_t> freeEntries;
 };
 
-#endif // A_DARK_DISCOMFORT_INDEXALLOCATOR_H
+#endif // SIEGE_ENGINE_INDEXALLOCATOR_H

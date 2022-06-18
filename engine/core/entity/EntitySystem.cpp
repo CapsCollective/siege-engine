@@ -47,6 +47,16 @@ int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
     return foundIndex;
 }
 
+bool EntitySystem::IsLive(Entity* entity)
+{
+    EntitySystem* system = FindInGlobalRegister(entity);
+    if (system) return system->IsLive(entity->GetIndex());
+    CC_LOG_WARNING("Could not find storage for {} at {}",
+                   entity->GetName(),
+                   entity->GetIndex().ToString());
+    return false;
+}
+
 void EntitySystem::QueueFree(Entity* entity)
 {
     EntitySystem* system = FindInGlobalRegister(entity);

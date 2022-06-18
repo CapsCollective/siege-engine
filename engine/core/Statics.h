@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_STATICS_H
-#define A_DARK_DISCOMFORT_STATICS_H
+#ifndef SIEGE_ENGINE_STATICS_H
+#define SIEGE_ENGINE_STATICS_H
 
 class Statics
 {
@@ -20,4 +20,4 @@ public:
     static class EntitySystem& Tool();
 };
 
-#endif // A_DARK_DISCOMFORT_STATICS_H
+#endif // SIEGE_ENGINE_STATICS_H

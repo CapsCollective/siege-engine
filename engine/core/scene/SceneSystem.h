@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_SCENESYSTEM_H
-#define A_DARK_DISCOMFORT_SCENESYSTEM_H
+#ifndef SIEGE_ENGINE_SCENESYSTEM_H
+#define SIEGE_ENGINE_SCENESYSTEM_H
 
 #include <utils/String.h>
 
@@ -61,4 +61,4 @@ private:
     String nextScene;
 };
 
-#endif // A_DARK_DISCOMFORT_SCENESYSTEM_H
+#endif // SIEGE_ENGINE_SCENESYSTEM_H

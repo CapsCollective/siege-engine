@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_COLOUR_H
-#define A_DARK_DISCOMFORT_COLOUR_H
+#ifndef SIEGE_ENGINE_COLOUR_H
+#define SIEGE_ENGINE_COLOUR_H
 
 struct Colour
 {
@@ -33,4 +33,4 @@ struct Colour
     int a;
 };
 
-#endif // A_DARK_DISCOMFORT_COLOUR_H
+#endif // SIEGE_ENGINE_COLOUR_H

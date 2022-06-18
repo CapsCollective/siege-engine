@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_ENTITY_H
-#define A_DARK_DISCOMFORT_ENTITY_H
+#ifndef SIEGE_ENGINE_ENTITY_H
+#define SIEGE_ENGINE_ENTITY_H
 
 #include <utils/Maths.h>
 #include <utils/String.h>
@@ -218,4 +218,4 @@ private:
     int zIndex;
 };
 
-#endif // A_DARK_DISCOMFORT_ENTITY_H
+#endif // SIEGE_ENGINE_ENTITY_H

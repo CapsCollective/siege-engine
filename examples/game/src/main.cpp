@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     bool isEditorMode = argc > 1 && String(argv[1]) == "--editor";
 
     // Create a window and main camera
-    Window window("A Dark Discomfort", 800, 450);
+    Window window("Game Example", 800, 450);
     ServiceLocator::Provide(&window);
 
     Cam camera;

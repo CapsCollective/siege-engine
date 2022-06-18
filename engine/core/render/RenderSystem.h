@@ -1,5 +1,5 @@
-#ifndef A_DARK_DISCOMFORT_RENDERSYSTEM_H
-#define A_DARK_DISCOMFORT_RENDERSYSTEM_H
+#ifndef SIEGE_ENGINE_RENDERSYSTEM_H
+#define SIEGE_ENGINE_RENDERSYSTEM_H
 
 #include <utils/Colour.h>
 #include <utils/Maths.h>
@@ -50,4 +50,4 @@ private:
     std::map<EntityPtr<Entity>, RenderItem> renderItems;
 };
 
-#endif // A_DARK_DISCOMFORT_RENDERSYSTEM_H
+#endif // SIEGE_ENGINE_RENDERSYSTEM_H
