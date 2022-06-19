@@ -185,14 +185,14 @@ Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstStageMask
 Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcAccessMask(
     VkAccessFlags accessMask)
 {
-    srcStageMask = accessMask;
+    srcAccessMask = accessMask;
     return *this;
 }
 
 Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstAccessMask(
     VkAccessFlags accessMask)
 {
-    dstStageMask = accessMask;
+    dstAccessMask = accessMask;
     return *this;
 }
 

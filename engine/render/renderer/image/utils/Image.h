@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_IMAGE_H
+#define SIEGE_ENGINE_IMAGE_H
 
 #include "../../Core.h"
 
@@ -36,7 +37,7 @@ public:
         VkImageUsageFlags usage,
         VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         u32 queueFamilyCount = 0,
-        const uint32_t* pQueueFamilyIndices = 0,
+        const uint32_t* pQueueFamilyIndices = VK_NULL_HANDLE,
         VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         VkImageCreateFlags flags = 0,
         const void* pNext = nullptr);
@@ -51,3 +52,5 @@ private:
                                                            const void* pNext = nullptr,
                                                            VkImageViewCreateFlags createFlags = 0);
 };
+
+#endif // SIEGE_ENGINE_IMAGE_H

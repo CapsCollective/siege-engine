@@ -37,8 +37,6 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    u32 imageCount = FrameImages::GetImageCount();
-
     swapchainImages.DestroyFrameImages();
 
     if (!isRecreated && swapChain != nullptr)
@@ -48,12 +46,9 @@ void SwapChain::ClearSwapChain(bool isRecreated)
         swapChain = nullptr;
     }
 
+    renderPass.DestroyRenderPass();
     depthImages.DestroyFrameImages();
-
-    for (size_t i = 0; i < imageCount; i++)
-    {
-        vkDestroyFramebuffer(device.Device(), swapChainFrameBuffers[i], nullptr);
-    }
+    framebuffers.DestroyFramebuffer(device.Device());
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
@@ -67,12 +62,7 @@ void SwapChain::ClearMemory()
 {
     // De-allocate arrays
 
-    delete[] swapChainFrameBuffers;
-
     delete[] imagesInFlight;
-
-    // Set values to nullptr
-    swapChainFrameBuffers = nullptr;
 
     imagesInFlight = nullptr;
 }
@@ -185,6 +175,7 @@ void SwapChain::CreateSwapChain()
     vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT & imageCount, nullptr);
 
     FrameImages::SetImageCount(imageCount);
+    Framebuffer::SetImageCount(imageCount);
 
     vkGetSwapchainImagesKHR(device.Device(),
                             swapChain,
@@ -241,40 +232,19 @@ void SwapChain::CreateDepthResources()
 // TODO: Refactor this
 void SwapChain::CreateFrameBuffers()
 {
-    u32 imageCount = FrameImages::GetImageCount();
+    VkExtent2D extent = GetSwapChainExtent();
 
-    // Initialise the framebuffers storage
-    if (swapChainFrameBuffers == nullptr) swapChainFrameBuffers = new VkFramebuffer[imageCount];
-
-    // We need a separate frame buffer for each image that we want to draw
-    for (size_t i = 0; i < imageCount; i++)
-    {
-        // We have two sets of image views we need to render images with
-        u32 attachmentCount = 2;
-
-        VkImageView attachments[] {swapchainImages.GetImageView(i), depthImages.GetImageView(i)};
-
-        // Get our extents
-        VkExtent2D swapChainExtent = GetSwapChainExtent();
-
-        // Populate the creation struct
-        VkFramebufferCreateInfo frameBufferInfo {};
-        frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        frameBufferInfo.renderPass = renderPass.GetRenderPass();
-        frameBufferInfo.attachmentCount = attachmentCount;
-        frameBufferInfo.pAttachments = attachments;
-        frameBufferInfo.width = swapChainExtent.width;
-        frameBufferInfo.height = swapChainExtent.height;
-        frameBufferInfo.layers = 1;
-
-        CC_ASSERT(vkCreateFramebuffer(device.Device(),
-                                      &frameBufferInfo,
-                                      nullptr,
-                                      OUT & swapChainFrameBuffers[i]) == VK_SUCCESS,
-                  "Failed to create framebuffer");
-    }
+    // Create a set of framebuffers to begin with.
+    framebuffers = Framebuffer(Framebuffer::Config()
+                                   .WithRenderPass(renderPass.GetRenderPass())
+                                   .WithColorAttachments(&swapchainImages)
+                                   .WithDepthAttachments(&depthImages)
+                                   .WithImageDimensions(extent.width, extent.height)
+                                   .WithLayers(1),
+                               device.Device());
 }
 
+// TODO(Aryeh): See if this logic can be encapsulated in an object
 void SwapChain::CreateSyncObjects()
 {
     u32 imageCount = FrameImages::GetImageCount();

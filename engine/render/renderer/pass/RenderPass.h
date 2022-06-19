@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDER_PASS_H
+#define SIEGE_ENGINE_RENDER_PASS_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -220,3 +221,5 @@ private:
     VulkanDevice* device {nullptr};
 };
 } // namespace Siege
+
+#endif // SIEGE_ENGINE_RENDER_PASS_H

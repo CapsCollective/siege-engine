@@ -13,7 +13,7 @@ namespace Siege
 
 RenderPass::~RenderPass()
 {
-    DestroyRenderPass();
+    // DestroyRenderPass();
 }
 
 void RenderPass::DestroyRenderPass()
