@@ -12,9 +12,187 @@
 
 namespace Siege
 {
+/**
+ * @brief The Attachments class is intended to act as a static class full of utility functions for
+ * building Vulkan objects. The class contains functions for: 1) Creating subpasses. 2) Creating
+ * subpass dependencies. 3) Creating attachments.
+ */
 class Attachments
 {
 public:
+
+    /**
+     * @brief A builder class for creating a VkSubpassDescription. This class follows the builder
+     * pattern and is intended to utilise function chaining to create data members. For example:
+     *
+     * ```
+     * VkSubpassDescription subpass = SubPassBuilder()
+     *                                    .WithColorReference(...)
+     *                                    .WithDepthReference(...)
+     *                                    .BuildGraphicsSubPass()
+     * ```
+     */
+    class SubPassBuilder
+    {
+    public:
+
+        static constexpr u32 MAX_COLOR_REFERENCES = 2;
+
+        /**
+         * @brief A default constructor for the SubPassBuilder.
+         */
+        SubPassBuilder() = default;
+
+        /**
+         * @brief A default destructor for the SubPassBuilder.
+         */
+        ~SubPassBuilder() = default;
+
+        /**
+         * @brief Adds a color reference. A VkAttachmentReference is a struct in which the index of
+         * a needed attachment is specified, along with the desired image layout when the attachment
+         * is complete. The maximum number of color references is equal to the MAX_COLOR_REFERENCES
+         * static variable.
+         * @param reference the VkAttachmentReference being added.
+         * @return the current builder object.
+         */
+        SubPassBuilder& WithColorReference(VkAttachmentReference reference);
+
+        /**
+         * @brief Adds a depth reference. Only one depth reference can be used per subpass.
+         * @param reference the VkAttachmentReference sttoring our depth data.
+         * @return the current builder object.
+         */
+        SubPassBuilder& WithDepthReference(VkAttachmentReference reference);
+
+        /**
+         * @brief Builds a VkSubpassDescription using the inputted attachment references.
+         * @return a VkSubpassDescription with all the inputted data.
+         */
+        VkSubpassDescription BuildGraphicsSubPass();
+
+    private:
+
+        // A subpass can contain multiple color references
+        Utils::StackArray<VkAttachmentReference, MAX_COLOR_REFERENCES> colorReferences;
+
+        // A subpass can only contain a single depth reference.
+        VkAttachmentReference depthReference {};
+    };
+
+    /**
+     * @brief A builder class for creating a subpass dependency. Subpass dependencies allow us to
+     * specify an order in which subpasses must be processed. If a subpass requires the output of
+     * another subpass, we can specify which stages we need to wait for before starting the
+     * rendering process.
+     *
+     * This class follows the builder pattern and isvintended to utilise function chaining to create
+     * data members. For example:
+     *
+     * ```
+     * DependencyBuilder builder = DependencyBuilder()
+     *                                 .WithSrcSubPass(...)
+     *                                 .WithDstSubPass(...)
+     *                                 ...
+     *                                 .Build();
+     * ```
+     */
+    class DependencyBuilder
+    {
+    public:
+
+        /**
+         * @brief A default constructor for the DependencyBuilder.
+         */
+        DependencyBuilder() = default;
+
+        /**
+         * @brief A default destructor for the DependencyBuilder.
+         */
+        ~DependencyBuilder() = default;
+
+        /**
+         * @brief Specifies the index of the subpass that we depend on. Execution of this subpass
+         * will not occur until the subpass in this index is complete.
+         * @param subpass the index of the subpass we depend on.
+         * @return the current builder object.
+         */
+        DependencyBuilder& WithSrcSubPass(u32 subpass);
+
+        /**
+         * @brief Specifies the index of the current subpass. This will pick the appropriate subpass
+         * for us to use once the dependant subpass is complete.
+         * @param subpass the index of the current subpass.
+         * @return the current builder object.
+         */
+        DependencyBuilder& WithDstSubPass(u32 subpass);
+
+        /**
+         * @brief Specifies which rendering processes need to be complete before moving onto the
+         * current subpass.
+         * @param stageMask a set of stage flags which specify the stages which need to be complete
+         * before evaulating this subpass.
+         * @return the current builder object.
+         */
+        DependencyBuilder& WithSrcStageMask(VkPipelineStageFlags stageMask);
+
+        /**
+         * @brief Specifies which stage masks the current subpass will be executing. This creates a
+         * dependency where the dstStageMasks can't be executed until the srcStageMasks are
+         * complete.
+         * @param stageMask a set of stage flags which this subpass will execute.
+         * @return the current builder object.
+         */
+        DependencyBuilder& WithDstStageMask(VkPipelineStageFlags stageMask);
+
+        /**
+         * @brief Specifies which memory access types will be used by the subpass we depend on.
+         * @param accessMask a set of stage flags specifying the memory access type used.
+         * @return the current builder object.
+         */
+        DependencyBuilder& WithSrcAccessMask(VkAccessFlags accessMask);
+
+        /**
+         * @brief Specifies the memory access types used by the current subpass after the subpass it
+         * depends on is complete.
+         * @param accessMask a set of stage flags specifying the memory access required.
+         * @return the current builder object
+         */
+        DependencyBuilder& WithDstAccessMask(VkAccessFlags accessMask);
+
+        /**
+         * @brief Uses all data inserted into the builder and returns a VkSubpassDependency.
+         * @return a VkSubpassDependency with all of the dependency data.
+         */
+        VkSubpassDependency Build();
+
+    private:
+
+        u32 srcSubpass;
+        u32 dstSubpass;
+        VkPipelineStageFlags srcStageMask;
+        VkPipelineStageFlags dstStageMask;
+        VkAccessFlags srcAccessMask;
+        VkAccessFlags dstAccessMask;
+    };
+
+    /**
+     * @brief A shorthand function for creating a SubPassBuilder.
+     * @return an empty SubPassBuilder object.
+     */
+    static SubPassBuilder CreateSubPass()
+    {
+        return SubPassBuilder {};
+    }
+
+    /**
+     * @brief A shorthand function for creating a DependencyBuilder.
+     * @return an empty DependencyBuilder object.
+     */
+    static DependencyBuilder CreateSubPassDependency()
+    {
+        return DependencyBuilder {};
+    }
 
     /**
      * @brief Creates a default Color Attachment.

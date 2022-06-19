@@ -49,6 +49,12 @@ public:
     {
         return count;
     }
+
+    size_t Count() const
+    {
+        return count;
+    }
+
     size_t Size()
     {
         return S;

@@ -29,6 +29,106 @@ class RenderPass
 public:
 
     /**
+     * @brief The config class is a container for storing all of our render pass information before
+     creating it.
+     * This class is to be used for storing render pass attachments and subpass information. This
+     class follows the
+     * builder pattern. It is intended to be created via the chaining of functions such as:
+     * ```
+     * RenderPass::CreateConfig().WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
+                                 .WithSubPass(Attachments::CreateSubPass(...)
+                                 .WithDependency(Attachments::CreateSubPassDependency();
+     * ```
+     */
+    class Config
+    {
+    public:
+
+        /**
+         * @brief A default constructor for the class. Currently does not accept any parameters.
+         */
+        Config() = default;
+
+        /**
+         * @brief A default destructor for the class. This class will not be containing any
+         * allocated memory, so a destructor is not needed.
+         */
+        ~Config() = default;
+
+        /**
+         * @brief Specifies the maximum number of attachments that can be configured.
+         */
+        static constexpr u32 MAX_ATTACHMENTS = 2;
+
+        /**
+         * @brief Specifies the maximum number of subpasses that can be configured.
+         */
+        static constexpr u32 MAX_SUBPASSES = 1;
+
+        /**
+         * @brief Specifies the maximum number of subpass dependencies that can be configured.
+         */
+        static constexpr u32 MAX_DEPENDENCIES = 1;
+
+        /**
+         * @brief Adds a render pass attachment to the Config class. The number of attachments
+         * allowed is based off the MAX_ATTACHMENTS static variable.
+         * @param attachment the VkAttachmentDescription being added.
+         * @return the current object.
+         */
+        Config& WithAttachment(const VkAttachmentDescription& attachment);
+
+        /**
+         * @brief Adds a subpass to the Config class. The number of subpasses allowed is based off
+         * the MAX_SUBPASSES static variable.
+         * @param subpass the VkSubpassDescription to be added.
+         * @return the current object.
+         */
+        Config& WithSubPass(const VkSubpassDescription& subpass);
+
+        /**
+         * @brief Adds a subpass dependency to the Config class. The number of dependencies allowed
+         * is based off the MAX_DEPENDENCIES static variable.
+         * @param dependency the VkSubpassDependency to be added.
+         * @return the current object.
+         */
+        Config& WithDependency(const VkSubpassDependency& dependency);
+
+        /**
+         * @brief Returns the array storing our attachments.
+         * @return a Utils::StackArray with our renderpass attachments.
+         */
+        const Utils::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS>& GetAttachments() const
+        {
+            return attachments;
+        }
+
+        /**
+         * @brief Returns the array storing our subpasses.
+         * @return a Utils::StackArray with our renderpass subpasses.
+         */
+        const Utils::StackArray<VkSubpassDescription, MAX_SUBPASSES>& GetSubPasses() const
+        {
+            return subpasses;
+        }
+
+        /**
+         * @brief Returns an array storing our subpass dependencies.
+         * @return a Utils::StackArray with our subpass dependencies.
+         */
+        const Utils::StackArray<VkSubpassDependency, MAX_DEPENDENCIES>& GetDependencies() const
+        {
+            return dependencies;
+        }
+
+    private:
+
+        Utils::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS> attachments;
+        Utils::StackArray<VkSubpassDescription, MAX_SUBPASSES> subpasses;
+        Utils::StackArray<VkSubpassDependency, MAX_DEPENDENCIES> dependencies;
+    };
+
+    /**
      * @brief An empty constructor. The RenderPass class relies on the Build() method to initialize
      * the Vulkan RenderPass object.
      */
@@ -39,22 +139,28 @@ public:
      * operations the RenderPass will be responsible for, along with any graphics stages the
      * renderpass may rely on.
      *
-     * @param vulkanDevice The device being used to allocate memory from for these operations
-     * @param attachments Attachments are explicit declarations of the stages we wish to use in our
-     * graphics pipeline
-     * @param attachmentCount The number of attachments the RenderPass is using
-     * @param subpasses Specifies any sub operations we wish to accomplish within the RenderPass
-     * @param subpassCount The number of subpasses
-     * @param dependencies Any dependencies the pipeline may rely on
-     * @param dependencyCount The number of dependencies the RenderPass has
+     * @param vulkanDevice The device instance being used to crete the render pass
+     * @param config Config variables used to create the renderpass
      */
-    void Build(VulkanDevice* vulkanDevice,
-               VkAttachmentDescription* attachments,
-               u32 attachmentCount,
-               VkSubpassDescription* subpasses,
-               u32 subpassCount,
-               VkSubpassDependency* dependencies,
-               u32 dependencyCount);
+    void Initialise(VulkanDevice* vulkanDevice, const Config& config);
+
+    /**
+     * @brief A shorthand function for creating an empty Config.
+     * @return an empty Config object.
+     */
+    static Config CreateConfig()
+    {
+        return Config {};
+    }
+
+    /**
+     * @brief A static function for creating a renderpass. Does the same thing as the renderpass'
+     * Initialise function.
+     * @param device the VulkanDevice being used.
+     * @param renderpass the RenderPass to be configured.
+     * @param config the RenderPass' configuration options.
+     */
+    static void Initialise(VulkanDevice* device, RenderPass& renderpass, const Config& config);
 
     /**
      * @brief Begins a RenderPass. Any rendering operations that occur will utilise the attachments

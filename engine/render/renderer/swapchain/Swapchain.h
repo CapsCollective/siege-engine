@@ -103,7 +103,7 @@ public:
      *
      * @return u32 representing the number of possible active simultaneous images.
      */
-    u32 GetImageCount()
+    static u32 GetImageCount()
     {
         return FrameImages::GetImageCount();
     }
@@ -123,7 +123,7 @@ public:
      *
      * @return u32 representing the width of the image.
      */
-    u32 GetWidth()
+    u32 GetWidth() const
     {
         return swapChainExtent.width;
     }
@@ -133,7 +133,7 @@ public:
      *
      * @return u32 representing the image height.
      */
-    u32 GetHeight()
+    u32 GetHeight() const
     {
         return swapChainExtent.height;
     }
@@ -271,12 +271,12 @@ private:
 
     // Device and window data
     VulkanDevice& device;
+    VkExtent2D windowExtent;
 
     static SwapChain* instance;
 
-    VkExtent2D windowExtent;
-
     // frame buffers and renderpasses
+    // TODO: Refactor this into a HeapArray
     VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
     RenderPass renderPass;
 
@@ -294,6 +294,7 @@ private:
     VkSwapchainKHR swapChain {VK_NULL_HANDLE};
 
     // Synchronisation objects
+    // TODO: Refactor these into HeapArrays
     VkSemaphore* imageAvailableSemaphores {VK_NULL_HANDLE};
     VkSemaphore* renderFinishedSemaphores {VK_NULL_HANDLE};
     VkFence* inFlightFences {VK_NULL_HANDLE};
