@@ -16,6 +16,7 @@
 
 #include "utils/Array.h"
 #include "utils/Hash.h"
+#include "utils/HeapArray.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
