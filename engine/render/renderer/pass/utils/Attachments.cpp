@@ -132,4 +132,77 @@ VkAttachmentReference Attachments::CreateColorAttachmentReference(u32 attachment
 {
     return CreateAttachmentReference(attachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 }
+
+// SubPassBuilder functions
+
+Attachments::SubPassBuilder& Attachments::SubPassBuilder::WithColorReference(
+    VkAttachmentReference reference)
+{
+    colorReferences.Append(reference);
+    return *this;
+}
+
+Attachments::SubPassBuilder& Attachments::SubPassBuilder::WithDepthReference(
+    VkAttachmentReference reference)
+{
+    depthReference = reference;
+    return *this;
+}
+
+VkSubpassDescription Attachments::SubPassBuilder::BuildGraphicsSubPass()
+{
+    return CreateGraphicsSubpass(colorReferences.Count(), colorReferences.Data(), &depthReference);
+}
+
+// DependencyBuilder Functions
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcSubPass(u32 subpass)
+{
+    srcSubpass = subpass;
+    return *this;
+}
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstSubPass(u32 subpass)
+{
+    dstSubpass = subpass;
+    return *this;
+}
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcStageMask(
+    VkPipelineStageFlags stageMask)
+{
+    srcStageMask = stageMask;
+    return *this;
+}
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstStageMask(
+    VkPipelineStageFlags stageMask)
+{
+    dstStageMask = stageMask;
+    return *this;
+}
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcAccessMask(
+    VkAccessFlags accessMask)
+{
+    srcStageMask = accessMask;
+    return *this;
+}
+
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstAccessMask(
+    VkAccessFlags accessMask)
+{
+    dstStageMask = accessMask;
+    return *this;
+}
+
+VkSubpassDependency Attachments::DependencyBuilder::Build()
+{
+    return CreateDependency(srcSubpass,
+                            dstSubpass,
+                            srcStageMask,
+                            dstStageMask,
+                            srcAccessMask,
+                            dstAccessMask);
+}
 } // namespace Siege
