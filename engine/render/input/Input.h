@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_INPUT_H
+#define SIEGE_ENGINE_INPUT_H
 
 #include <map>
 
@@ -51,3 +52,5 @@ private:
 
     static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 };
+
+#endif

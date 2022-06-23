@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
+#define SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 
 #include <iostream>
 
@@ -67,3 +68,5 @@ void DestroyMessenger(VkInstance instance,
  **/
 void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 } // namespace Siege::DebugUtilsMessenger
+
+#endif

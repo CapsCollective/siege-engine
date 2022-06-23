@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_MODEL_H
+#define SIEGE_ENGINE_MODEL_H
 
 #include "../buffer/Buffer.h"
 #include "../material/Material.h"
@@ -86,3 +87,5 @@ private:
     Material* material {nullptr};
 };
 } // namespace Siege
+
+#endif

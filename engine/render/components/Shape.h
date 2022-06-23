@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_SHAPE_H
+#define SIEGE_ENGINE_SHAPE_H
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -134,3 +135,5 @@ private:
     glm::vec3 fillColor {0.0f};
 };
 } // namespace Components
+
+#endif

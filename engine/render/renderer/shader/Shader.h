@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_SHADER_H
+#define SIEGE_ENGINE_SHADER_H
 
 #include <map>
 
@@ -126,3 +127,5 @@ public:
     u64 sizeOfUniforms = 0;
 };
 } // namespace Siege
+
+#endif

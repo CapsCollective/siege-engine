@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_VULKAN_DEVICE_H
+#define SIEGE_ENGINE_VULKAN_DEVICE_H
 
 #include "../../window/Window.h"
 #include "../Core.h"
@@ -324,3 +325,5 @@ private:
 };
 
 } // namespace Siege
+
+#endif

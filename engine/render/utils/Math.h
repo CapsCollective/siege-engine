@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER_UTILS_MATH_H
+#define SIEGE_ENGINE_RENDERER_UTILS_MATH_H
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -26,3 +27,5 @@ int Sign(T val)
     return (T(0) < val) - (val < T(0));
 }
 } // namespace Utils::Math
+
+#endif

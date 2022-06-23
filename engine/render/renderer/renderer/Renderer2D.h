@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER2D_H
+#define SIEGE_ENGINE_RENDERER2D_H
 
 #include "../Core.h"
 #include "../camera/Camera.h"
@@ -59,3 +60,5 @@ private:
     static Model* currentModel;
 };
 } // namespace Siege
+
+#endif

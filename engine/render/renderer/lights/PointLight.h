@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_POINT_LIGHT_H
+#define SIEGE_ENGINE_POINT_LIGHT_H
 
 #include "../Core.h"
 #include "../model/Model.h"
@@ -61,3 +62,5 @@ private:
     Model* model;
 };
 } // namespace Siege
+
+#endif

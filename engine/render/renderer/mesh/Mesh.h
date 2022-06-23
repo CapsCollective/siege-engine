@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_MESH_H
+#define SIEGE_ENGINE_MESH_H
 
 #include "../Core.h"
 #include "../buffer/Buffer.h"
@@ -116,3 +117,5 @@ private:
     bool isFreed = false;
 };
 } // namespace Siege
+
+#endif

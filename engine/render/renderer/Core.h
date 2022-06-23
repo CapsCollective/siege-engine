@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_CORE_H
+#define SIEGE_ENGINE_CORE_H
 
 #include <volk/volk.h>
 
@@ -57,3 +58,5 @@ struct CameraData
     glm::mat4 viewMatrix;
 };
 } // namespace Siege
+
+#endif

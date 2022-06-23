@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_DESCRIPTOR_POOL_H
+#define SIEGE_ENGINE_DESCRIPTOR_POOL_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -34,3 +35,5 @@ private:
     static Utils::StackArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
 };
 } // namespace Siege
+
+#endif

@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_ARRAY_H
+#define SIEGE_ENGINE_ARRAY_H
 
 #include <cstdint>
 #include <iostream>
@@ -213,3 +214,5 @@ private:
     }
 };
 } // namespace Siege::Utils
+
+#endif

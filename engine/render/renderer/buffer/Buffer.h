@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_BUFFER_H
+#define SIEGE_ENGINE_BUFFER_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -80,3 +81,5 @@ void DestroyBuffer(Buffer& buffer);
 
 size_t PadUniformBufferSize(size_t originalSize);
 } // namespace Siege::Buffer
+
+#endif

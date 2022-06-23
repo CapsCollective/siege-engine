@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_SWAP_CHAIN_SUPPORT_DETAILS_H
+#define SIEGE_ENGINE_SWAP_CHAIN_SUPPORT_DETAILS_H
 
 #include <vector>
 
@@ -43,3 +44,5 @@ struct SwapChainSupportDetails
  **/
 SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface);
 } // namespace Siege::SwapChainSupportDetails
+
+#endif

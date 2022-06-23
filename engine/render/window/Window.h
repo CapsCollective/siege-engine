@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER_WINDOW_H
+#define SIEGE_ENGINE_RENDERER_WINDOW_H
 
 #include <volk/volk.h>
 
@@ -132,3 +133,5 @@ private:
     bool wasResized = false;
 };
 } // namespace Siege
+
+#endif
