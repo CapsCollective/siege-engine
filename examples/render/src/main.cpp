@@ -16,6 +16,7 @@
 #include <render/renderer/shader/Shader.h>
 #include <render/utils/Math.h>
 #include <render/window/Window.h>
+#include <utils/HeapArray.h>
 
 #include <chrono>
 #include <cmath>

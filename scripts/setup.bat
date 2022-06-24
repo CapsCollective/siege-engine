@@ -56,7 +56,7 @@ IF "%ERRORLEVEL%" EQU "0" CALL :SetupVulkanValidationLayers
 
 echo "Configuring environment file..."
 
-echo VK_LAYER_PATH=%BIN_DIR%\%BUILD_DIR%\lib\explicit_layer.d> .env
+echo VK_LAYER_PATH=%BUILD_DIR%\lib\explicit_layer.d> .env
 
 echo "Setup Complete"
 
@@ -97,8 +97,8 @@ EXIT /B 0
 
     mkdir %VENDOR_DIR%\glslang\build
 
-    cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%VENDOR_DIR%\glslang\build\install -S%VENDOR_DIR%\glslang -B%VENDOR_DIR%\glslang\build
-    cmake --build %VENDOR_DIR%\glslang\build --target install -- -j%NUMBER_OF_PROCESSORS%
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%VENDOR_DIR%\glslang\build\install -S%VENDOR_DIR%\glslang -B%VENDOR_DIR%\glslang\build
+    cmake --build %VENDOR_DIR%\glslang\build --parallel %NUMBER_OF_PROCESSORS% --target install
 EXIT /B 0
 
 :SetupGlm
@@ -120,8 +120,8 @@ EXIT /B 0
 
     mkdir %BUILD_DIR%
 
-    cmake -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -G "%GENERATOR%" -B%BUILD_DIR% -S%VULKAN_VENDOR_DIR%\Vulkan-Headers
-    cmake --build %BUILD_DIR% --target install
+    cmake -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -B%BUILD_DIR% -S%VULKAN_VENDOR_DIR%\Vulkan-Headers
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --target install
 
     mkdir %VULKAN_INCLUDE_DIR%
 
@@ -157,7 +157,7 @@ EXIT /B 0
     mkdir %BUILD_DIR%
 
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -S%VULKAN_VENDOR_DIR%\SPIRV-Headers -B%BUILD_DIR%
-    cmake --build %BUILD_DIR% --target install --config Release
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --target install --config Release
 EXIT /B 0
 
 :SetupSpirvTools
@@ -181,8 +181,8 @@ EXIT /B 0
 
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\robin-hood-hashing\build
 
-    cmake -G "%GENERATOR%" %VULKAN_VENDOR_DIR%\robin-hood-hashing -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release -S%VULKAN_VENDOR_DIR%\robin-hood-hashing -B%BUILD_DIR%
-    cmake --build %BUILD_DIR% --target install -- -j%NUMBER_OF_PROCESSORS%
+    cmake %VULKAN_VENDOR_DIR%\robin-hood-hashing -DCMAKE_INSTALL_PREFIX=%BUILD_DIR%\install -DRH_STANDALONE_PROJECT=OFF -DCMAKE_BUILD_TYPE=Release -S%VULKAN_VENDOR_DIR%\robin-hood-hashing -B%BUILD_DIR%
+    cmake --build %BUILD_DIR% --parallel %NUMBER_OF_PROCESSORS% --target install
 EXIT /B 0
 
 :SetupValidationLayers

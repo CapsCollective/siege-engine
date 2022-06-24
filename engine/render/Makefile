@@ -21,6 +21,8 @@ fragSources := $(call rwildcard,assets/shaders,*.frag)
 vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
 fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
+linkFlags += -l utils
+
 # Set build vars
 ifeq ($(platform), windows)
     volkDefines = VK_USE_PLATFORM_WIN32_KHR
@@ -52,12 +54,12 @@ $(renderLib): $(renderObjects)
 # Compile object files to the bin directory
 $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 # Compile shaders to the build directory
 $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 	$(MKDIR) $(call platformpth, $(@D))
-	$(glslangValidator) $< -V -o $@
+	$(call platformpth,$(glslangValidator)) $< -V -o $@
 
 # Copy Vulkan libraries to the build directory
 vulkan-libs:
