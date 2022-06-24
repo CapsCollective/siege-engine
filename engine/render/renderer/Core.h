@@ -9,6 +9,7 @@
 #ifndef SIEGE_ENGINE_CORE_H
 #define SIEGE_ENGINE_CORE_H
 
+#include <utils/HeapArray.h>
 #include <volk/volk.h>
 
 #include <cstdint>
@@ -16,7 +17,6 @@
 
 #include "utils/Array.h"
 #include "utils/Hash.h"
-#include "utils/HeapArray.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL

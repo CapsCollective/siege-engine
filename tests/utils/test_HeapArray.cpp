@@ -1,13 +1,14 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-// This code is released under an unmodified zlib license.
-// For conditions of distribution and use, please see:
-//     https://opensource.org/licenses/Zlib
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
 //
 
-#include <render/renderer/utils/HeapArray.h>
 #include <utest.h>
+#include <utils/HeapArray.h>
+
 #include <utility>
 
 UTEST(test_HeapArray, CreateEmptyHeapArray)
@@ -292,7 +293,38 @@ UTEST(test_HeapArray, IterateUsingRangedForLoop)
     size_t index = 0;
     for (auto& element : array)
     {
-        ASSERT_EQ(element, expectedResults[index++]);
+        ASSERT_EQ(expectedResults[index++], element);
+    }
+}
+
+UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
+{
+    Siege::Utils::HeapArray<uint32_t> array(5);
+
+    array[0] = 1;
+    array[1] = 2;
+    array[3] = 4;
+    array[4] = 5;
+
+    uint32_t expectedResults[] = {1, 2, 4, 5};
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        ASSERT_EQ(expectedResults[index++], element);
+    }
+}
+
+UTEST(test_HeapArray, IterateOverSingleElementArray)
+{
+    Siege::Utils::HeapArray<uint32_t> array({1});
+
+    uint32_t expectedResults[] = {1};
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        ASSERT_EQ(expectedResults[index++], element);
     }
 }
 
