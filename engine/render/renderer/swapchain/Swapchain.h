@@ -55,7 +55,7 @@ public:
      * usually must follow the extents of the window.
      */
     SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    SwapChain(VulkanDevice& device);
+    explicit SwapChain(VulkanDevice& device);
     ~SwapChain();
 
     // Delete copy constructors.

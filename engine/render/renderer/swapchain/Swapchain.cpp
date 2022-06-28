@@ -37,6 +37,7 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
+    // TODO(Aryeh): Change the swapchain re-creation to work with destructors.
     swapchainImages.DestroyFrameImages();
 
     if (!isRecreated && swapChain != nullptr)
@@ -48,7 +49,6 @@ void SwapChain::ClearSwapChain(bool isRecreated)
 
     renderPass.DestroyRenderPass();
     depthImages.DestroyFrameImages();
-    framebuffers.DestroyFramebuffer(device.Device());
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
@@ -167,7 +167,7 @@ void SwapChain::CreateSwapChain()
 
     CC_ASSERT(
         vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!");
+        "Failed to create Swapchain!")
 
     swapchainImages = FrameImages(&device, surfaceFormat.format);
 
@@ -229,12 +229,11 @@ void SwapChain::CreateDepthResources()
     depthImages.InitDepthImageView2D(extent.width, extent.height, 1);
 }
 
-// TODO: Refactor this
 void SwapChain::CreateFrameBuffers()
 {
     VkExtent2D extent = GetSwapChainExtent();
 
-    // Create a set of framebuffers to begin with.
+    // Create a set of frame buffers to begin with.
     framebuffers = Framebuffer(Framebuffer::Config()
                                    .WithRenderPass(renderPass.GetRenderPass())
                                    .WithColorAttachments(&swapchainImages)
@@ -244,7 +243,7 @@ void SwapChain::CreateFrameBuffers()
                                device.Device());
 }
 
-// TODO(Aryeh): See if this logic can be encapsulated in an object
+// TODO(Aryeh): See if this logic can be encapsulated in an object/s
 void SwapChain::CreateSyncObjects()
 {
     u32 imageCount = FrameImages::GetImageCount();
@@ -281,7 +280,7 @@ void SwapChain::CreateSyncObjects()
                                   OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
                 vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
                     VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!");
+            "Failed to create synchronization objects fora  frame!")
     }
 }
 

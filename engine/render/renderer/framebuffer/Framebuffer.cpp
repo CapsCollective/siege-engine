@@ -19,7 +19,7 @@ Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& devi
 
 void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 {
-    for (size_t i = 0; i < IMAGE_COUNT; i++) vkDestroyFramebuffer(device, framebuffers[i], nullptr);
+    for (auto& framebuffer : framebuffers) vkDestroyFramebuffer(device, framebuffer, nullptr);
 }
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
@@ -47,8 +47,27 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
         CC_ASSERT(vkCreateFramebuffer(device, &frameBufferInfo, nullptr, OUT & framebuffers[i]) ==
                       VK_SUCCESS,
-                  "Failed to create framebuffer");
+                  "Failed to create framebuffer")
     }
+}
+
+Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
+{
+    auto device = VulkanDevice::GetDeviceInstance()->Device();
+
+    if (framebuffers.Size() > 0) DestroyFramebuffer(device);
+
+    framebuffers = std::move(other.framebuffers);
+    other.framebuffers.Reset();
+
+    return *this;
+}
+
+Framebuffer::~Framebuffer()
+{
+    auto device = VulkanDevice::GetDeviceInstance();
+    DestroyFramebuffer(device->Device());
+    framebuffers.Reset();
 }
 
 // Config functions

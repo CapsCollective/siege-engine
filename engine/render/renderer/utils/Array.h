@@ -172,6 +172,12 @@ public:
         return data[index];
     }
 
+    void Reset()
+    {
+        size = 0;
+        data = nullptr;
+    }
+
     T* Data()
     {
         return data;

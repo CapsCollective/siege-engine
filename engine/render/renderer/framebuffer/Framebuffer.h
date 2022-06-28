@@ -182,7 +182,9 @@ public:
     /**
      * @brief A default empty destructor.
      */
-    ~Framebuffer() = default;
+    ~Framebuffer();
+
+    Framebuffer& operator=(Framebuffer&& other) noexcept;
 
     /**
      * @brief Initialises the Framebuffer using the Configs and Device objects.
