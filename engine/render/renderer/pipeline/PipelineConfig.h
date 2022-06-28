@@ -33,7 +33,7 @@ public:
     struct Attribute
     {
         u32 offset = 0;
-        AttributeType type;
+        AttributeType type {};
     };
 
     struct Binding
@@ -82,7 +82,7 @@ public:
     struct ShaderConfig
     {
         const char* filePath {nullptr};
-        PipelineStage stage;
+        PipelineStage stage {};
     };
 
     /**

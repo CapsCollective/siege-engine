@@ -42,7 +42,7 @@ public:
 
     // 'Structors
 
-    VulkanDevice(Siege::Window* window);
+    explicit VulkanDevice(Siege::Window* window);
     VulkanDevice();
 
     ~VulkanDevice();
@@ -58,7 +58,7 @@ public:
         return vulkanDeviceInstance;
     }
 
-    void SetWindow(Window* window);
+    void SetWindow(Window* newWindow);
 
     /**
      * Returns a copy of the command pool held by the device.
@@ -113,7 +113,7 @@ public:
         return presentQueue;
     }
 
-    size_t GetDeviceAlignment()
+    size_t GetDeviceAlignment() const
     {
         return properties.limits.minUniformBufferOffsetAlignment;
     }
@@ -135,7 +135,7 @@ public:
      * @param properties - The available device memory properties. Used to query for available
      *memory.
      **/
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryProperties);
 
     /**
      * Returns a struct containing the indices for our graphics and present queues.
@@ -211,14 +211,14 @@ public:
      * @param imageMemory - the image memory being allocated to.
      **/
     void CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
-                             VkMemoryPropertyFlags properties,
+                             VkMemoryPropertyFlags memoryProperties,
                              VkImage& image,
                              VkDeviceMemory& imageMemory);
 
     /**
-     * A struct containing all our GPU information (such as it's name)
+     * A struct containing all our GPU information
      **/
-    VkPhysicalDeviceProperties properties;
+    VkPhysicalDeviceProperties properties {};
 
 private:
 
@@ -296,18 +296,18 @@ private:
 
     static VulkanDevice* vulkanDeviceInstance;
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
+    VkInstance instance {VK_NULL_HANDLE};
+    VkDebugUtilsMessengerEXT debugMessenger {VK_NULL_HANDLE};
 
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
     Window* window {nullptr};
-    VkCommandPool commandPool;
+    VkCommandPool commandPool {VK_NULL_HANDLE};
 
-    VkDevice device;
-    VkSurfaceKHR surface;
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
+    VkDevice device {VK_NULL_HANDLE};
+    VkSurfaceKHR surface {VK_NULL_HANDLE};
+    VkQueue graphicsQueue {};
+    VkQueue presentQueue {};
 
     /**
      * An array storing all required validation layers (if enabled).

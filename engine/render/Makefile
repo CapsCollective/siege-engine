@@ -52,7 +52,7 @@ $(renderLib): $(renderObjects)
 # Compile object files to the bin directory
 $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
 
 # Compile shaders to the build directory
 $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%

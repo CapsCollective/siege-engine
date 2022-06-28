@@ -44,7 +44,7 @@ Siege::Mesh::MeshData triangleMeshData {
     sizeof(Siege::Vertex2D),
     triangleVerts, // Vertex array
     3, // 3 vertices
-    0, // no indices
+    nullptr, // no indices
     0 // no indices specified
 };
 
@@ -58,52 +58,6 @@ Siege::Vertex2D squareVerts[] = {
 u32 squareIndices[] = {0, 1, 3, 1, 2, 3};
 
 Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
-
-glm::vec2 squareVertsRaw[] = {{1.f, 1.f}, {1.f, -1.f}, {-1.f, -1.f}, {-1.f, 1.f}};
-
-Siege::Mesh::MeshData rawSquareMeshData {sizeof(glm::vec2), squareVertsRaw, 4, squareIndices, 6};
-
-Siege::Vertex cubeVerts[] = {
-    {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-    {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-    {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-    {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-
-    // right face (yellow)
-    {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-    {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-    {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-    {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-
-    // top face (orange, remember y axis points down)
-    {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-    {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-    {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-    {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-
-    // bottom face (red)
-    {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-    {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-    {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-    {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-
-    // nose face (blue)
-    {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-    {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-    {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-    {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-
-    // tail face (green)
-    {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-    {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-    {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-    {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-};
-
-u32 cubeIndices[] = {0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
-                     12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21};
-
-Siege::Mesh::MeshData cubeMeshData {sizeof(Siege::Vertex), cubeVerts, 24, cubeIndices, 36};
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
@@ -281,6 +235,8 @@ int main()
 
     renderer.SetMainCamera(&camera);
 
+    renderer.SetClearValue(1.f, 1.f, 1.f, 1.f);
+
     while (!window.WindowShouldClose())
     {
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -289,9 +245,9 @@ int main()
                 .count();
         currentTime = newTime;
 
-        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
+        auto alpha = std::clamp<float>(abs(sin(static_cast<float>(glfwGetTime()))), 0.001f, 1.f);
 
-        window.Update();
+        Siege::Window::Update();
 
         if (Input::IsKeyJustPressed(KEY_ESCAPE))
         {

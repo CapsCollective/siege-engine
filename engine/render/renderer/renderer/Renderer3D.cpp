@@ -8,21 +8,19 @@
 
 #include "Renderer3D.h"
 
-#include <iostream>
-
 namespace Siege
 {
 // static initialisation
-Utils::StringId Renderer3D::globalDataId;
+Utils::StringId Renderer3D::globalDataId {};
 
-Material Renderer3D::gridMaterial;
+Material Renderer3D::gridMaterial {};
 
-ModelRenderer Renderer3D::modelRenderer;
-DebugRenderer3D Renderer3D::debugRenderer;
-BillboardRenderer Renderer3D::billboardRenderer;
-LightRenderer Renderer3D::lightRenderer;
+ModelRenderer Renderer3D::modelRenderer {};
+DebugRenderer3D Renderer3D::debugRenderer {};
+BillboardRenderer Renderer3D::billboardRenderer {};
+LightRenderer Renderer3D::lightRenderer {};
 
-Renderer3D::GlobalData Renderer3D::global3DData;
+Renderer3D::GlobalData Renderer3D::global3DData {};
 
 void Renderer3D::Initialise()
 {

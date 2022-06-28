@@ -8,17 +8,12 @@
 
 #include "Swapchain.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 // TODO: Fix the warnings
 SwapChain* SwapChain::instance = nullptr;
-
-SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) :
-    device {device},
-    windowExtent {windowExtent}
-{
-    Init();
-}
 
 SwapChain::SwapChain(VulkanDevice& device) : device {device} {}
 
@@ -29,9 +24,9 @@ SwapChain::~SwapChain()
 }
 
 // TODO: Is there a better way to handle swapchain creation?
-void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
+void SwapChain::SetWindowExtents(VkExtent2D newWindowExtent)
 {
-    this->windowExtent = windowExtent;
+    windowExtent = newWindowExtent;
     Init();
 }
 
@@ -43,7 +38,7 @@ void SwapChain::ClearSwapChain(bool isRecreated)
 
     if (!isRecreated && swapChain != nullptr)
     {
-        std::cout << "Clearing Swapchain" << std::endl;
+        CC_LOG_INFO("Clearing Swapchain")
         vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
         swapChain = nullptr;
     }
@@ -79,7 +74,8 @@ void SwapChain::ClearMemory()
 
 void SwapChain::RecreateSwapchain()
 {
-    std::cout << "Re-creating Swapchain" << std::endl;
+    CC_LOG_INFO("Re-creating Swapchain")
+
     // Destroy all Vulkan structs
     ClearSwapChain(true);
 
@@ -121,7 +117,7 @@ void SwapChain::CreateSwapChain()
     // The size of our images.
     VkExtent2D extent = ChooseSwapExtent(details.capabilities);
 
-    std::cout << "Extent: " << extent.width << "x" << extent.height << std::endl;
+    CC_LOG_INFO("Swapchain created with image extents: [{}x{}]", extent.width, extent.height)
 
     // Get the image count we can support
     u32 imageCount = details.capabilities.minImageCount + 1;
@@ -131,7 +127,8 @@ void SwapChain::CreateSwapChain()
     {
         imageCount = details.capabilities.maxImageCount;
     }
-    std::cout << "FrameImages Count: " << imageCount << std::endl;
+
+    CC_LOG_INFO("Images supported by swapchain: {}", imageCount)
 
     // Now we populate the base swapchain creation struct
     VkSwapchainCreateInfoKHR createInfo {};
@@ -177,7 +174,7 @@ void SwapChain::CreateSwapChain()
 
     CC_ASSERT(
         vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!");
+        "Failed to create Swapchain!")
 
     swapchainImages = FrameImages(&device, surfaceFormat.format);
 
@@ -203,28 +200,25 @@ void SwapChain::CreateRenderPass()
 {
     swapChainImageFormat = GetSwapChainImageFormat();
     swapChainDepthFormat = FindDepthFormat();
-    RenderPass::Initialise(
-        &device,
-        OUT renderPass,
-        RenderPass::CreateConfig()
-            .WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
-            .WithAttachment(Attachments::CreateDepthAttachment(swapChainDepthFormat))
-            .WithSubPass(
-                Attachments::CreateSubPass()
-                    .WithColorReference(Attachments::CreateColorAttachmentReference(0))
-                    .WithDepthReference(Attachments::CreateDepthStencilAttachmentReference(1))
-                    .BuildGraphicsSubPass())
-            .WithDependency(Attachments::CreateSubPassDependency()
-                                .WithSrcSubPass(VK_SUBPASS_EXTERNAL)
-                                .WithDstSubPass(0)
-                                .WithSrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                .WithDstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                .WithSrcAccessMask(0)
-                                .WithDstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-                                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
-                                .Build()));
+    renderPass = RenderPass(RenderPass::CreateConfig()
+                                .WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
+                                .WithAttachment(Attachments::CreateDepthAttachment(swapChainDepthFormat))
+                                .WithSubPass(
+                                    Attachments::CreateSubPass()
+                                        .WithColorReference(Attachments::CreateColorAttachmentReference(0))
+                                        .WithDepthReference(Attachments::CreateDepthStencilAttachmentReference(1))
+                                        .BuildGraphicsSubPass())
+                                .WithDependency(Attachments::CreateSubPassDependency()
+                                                    .WithSrcSubPass(VK_SUBPASS_EXTERNAL)
+                                                    .WithDstSubPass(0)
+                                                    .WithSrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                                                      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
+                                                    .WithDstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                                                      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
+                                                    .WithSrcAccessMask(0)
+                                                    .WithDstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                                                       VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
+                                                    .Build()));
 }
 
 void SwapChain::CreateDepthResources()
@@ -255,7 +249,7 @@ void SwapChain::CreateFrameBuffers()
         VkImageView attachments[] {swapchainImages.GetImageView(i), depthImages.GetImageView(i)};
 
         // Get our extents
-        VkExtent2D swapChainExtent = GetSwapChainExtent();
+        VkExtent2D extent = GetSwapChainExtent();
 
         // Populate the creation struct
         VkFramebufferCreateInfo frameBufferInfo {};
@@ -263,15 +257,15 @@ void SwapChain::CreateFrameBuffers()
         frameBufferInfo.renderPass = renderPass.GetRenderPass();
         frameBufferInfo.attachmentCount = attachmentCount;
         frameBufferInfo.pAttachments = attachments;
-        frameBufferInfo.width = swapChainExtent.width;
-        frameBufferInfo.height = swapChainExtent.height;
+        frameBufferInfo.width = extent.width;
+        frameBufferInfo.height = extent.height;
         frameBufferInfo.layers = 1;
 
         CC_ASSERT(vkCreateFramebuffer(device.Device(),
                                       &frameBufferInfo,
                                       nullptr,
                                       OUT & swapChainFrameBuffers[i]) == VK_SUCCESS,
-                  "Failed to create framebuffer");
+                  "Failed to create framebuffer")
     }
 }
 
@@ -311,7 +305,7 @@ void SwapChain::CreateSyncObjects()
                                   OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
                 vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
                     VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!");
+            "Failed to create synchronization objects fora  frame!")
     }
 }
 
@@ -333,7 +327,7 @@ VkResult SwapChain::AcquireNextImage(u32* imageIndex)
                                  imageIndex);
 }
 
-VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex)
+VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, const u32* imageIndex)
 {
     u32 index = *imageIndex;
 
@@ -379,7 +373,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* im
     CC_ASSERT(
         vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, OUT inFlightFences[currentFrame]) ==
             VK_SUCCESS,
-        "Failed to submit draw command buffer");
+        "Failed to submit draw command buffer")
 
     // Set up our presentation information and the semaphores to wait on
     VkPresentInfoKHR presentInfo {};
@@ -424,24 +418,24 @@ VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* format
     return formats[0];
 }
 
-VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
+VkPresentModeKHR SwapChain::ChoosePresentMode(const VkPresentModeKHR* presentModes,
                                               size_t presentModeCount)
 {
     for (size_t i = 0; i < presentModeCount; i++)
     {
-        VkPresentModeKHR& availablePresentMode = presentModes[i];
+        VkPresentModeKHR availablePresentMode = presentModes[i];
 
         // Ideally, we want to support triple buffering since it has the best
         // balance between performance and image quality
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
         {
-            std::cout << "Present Mode: Mailbox" << std::endl;
+            CC_LOG_INFO("Present Mode: Mailbox")
             return availablePresentMode;
         }
     }
 
     // If triple buffering is not available then use v-sync
-    std::cout << "Present Mode: V-Sync" << std::endl;
+    CC_LOG_INFO("Present Mode: V-Sync")
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 

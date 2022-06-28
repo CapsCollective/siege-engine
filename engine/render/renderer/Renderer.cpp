@@ -8,6 +8,8 @@
 
 #include "Renderer.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
@@ -35,7 +37,7 @@ Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(devic
 
 Renderer::~Renderer()
 {
-    std::cout << "Destroying renderer" << std::endl;
+    CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
 }
@@ -52,7 +54,7 @@ void Renderer::CreateCommandBuffers()
 
     CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) ==
                   VK_SUCCESS,
-              "Failed to allocate command buffer");
+              "Failed to allocate command buffer")
 }
 
 void Renderer::DrawFrame()
@@ -74,7 +76,7 @@ void Renderer::RecreateSwapChain()
     while (extent.width == 0 || extent.height == 0)
     {
         extent = window.GetExtent();
-        window.WaitEvents();
+        Window::WaitEvents();
     }
 
     auto oldImageFormat = swapChain.GetImageFormat();
@@ -92,17 +94,9 @@ void Renderer::RecreateSwapChain()
     }
 }
 
-void Renderer::FreeCommandBuffers()
-{
-    vkFreeCommandBuffers(device.Device(),
-                         device.GetCommandPool(),
-                         swapChain.GetImageCount(),
-                         commandBuffers.Data());
-}
-
 bool Renderer::StartFrame()
 {
-    CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
+    CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!")
 
     auto result = swapChain.AcquireNextImage(&currentImageIndex);
 
@@ -113,7 +107,7 @@ bool Renderer::StartFrame()
     }
 
     CC_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR,
-              "Failed to acquire swapchain image!");
+              "Failed to acquire swapchain image!")
 
     isFrameStarted = true;
 
@@ -123,7 +117,7 @@ bool Renderer::StartFrame()
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
     CC_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
-              "Failed to begin recording command buffer");
+              "Failed to begin recording command buffer")
 
     BeginSwapChainRenderPass(commandBuffer);
 
@@ -132,7 +126,7 @@ bool Renderer::StartFrame()
 
 void Renderer::EndFrame()
 {
-    CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!");
+    CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 
     DrawFrame();
 
@@ -141,7 +135,7 @@ void Renderer::EndFrame()
     EndSwapChainRenderPass(commandBuffer);
 
     CC_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
-              "Failed to record command buffer!");
+              "Failed to record command buffer!")
 
     auto result = swapChain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
 
@@ -152,7 +146,7 @@ void Renderer::EndFrame()
     }
     else if (result != VK_SUCCESS)
     {
-        CC_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
+        CC_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!")
     }
 
     isFrameStarted = false;
@@ -164,12 +158,13 @@ void Renderer::EndFrame()
 
 void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
-    CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
+    CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!")
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
-              "Can't begin a render pass on a command buffer from another frame!");
+              "Can't begin a render pass on a command buffer from another frame!")
 
     u32 clearValueCount = 2;
     VkClearValue clearValues[clearValueCount];
+
     clearValues[0].color = clearValue;
     clearValues[1].depthStencil = {1.0f, 0};
 
@@ -194,11 +189,11 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
+void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer) const
 {
-    CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
+    CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!")
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
-              "Can't begin a render pass on a command buffer from another frame!");
+              "Can't begin a render pass on a command buffer from another frame!")
 
     RenderPass::End(commandBuffer);
 }

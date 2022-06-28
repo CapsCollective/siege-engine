@@ -10,11 +10,11 @@
 
 namespace Siege
 {
-DebugRenderer3D::DebugRenderer3D() {}
+DebugRenderer3D::DebugRenderer3D() = default;
 
-DebugRenderer3D::~DebugRenderer3D() {}
+DebugRenderer3D::~DebugRenderer3D() = default;
 
-void DebugRenderer3D::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void DebugRenderer3D::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
 
@@ -66,11 +66,6 @@ void DebugRenderer3D::DrawLine(const glm::vec3& origin,
     lines.Append({origin, colour});
     lines.Append({destination, colour});
 }
-
-void DebugRenderer3D::DrawCube(const glm::vec3& position,
-                               const glm::vec3& rotation,
-                               const glm::vec3& scale)
-{}
 
 void DebugRenderer3D::Flush()
 {

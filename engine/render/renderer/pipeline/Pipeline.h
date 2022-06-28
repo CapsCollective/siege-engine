@@ -23,13 +23,13 @@ namespace Siege
  * 1) viewport configuration
  * 2) viewport scissor configurations
  * 3) input assembly - how vertices are submitted to the shader
- * 4) resterization - how vertices are represented
+ * 4) rasterization - how vertices are represented
  * 5) multisampling - how we handle multi-sampling to avoid aliasing.
  * 6) color blending - how colors are blended together in the shader.
  * 7) depth stencil - how depth is represented within the shader.
  * 8) A pipeline layout representing how data is laid out in the shader.
  * 9) Our render pass.
- * 9) Any subpasses used by the pipeline.
+ * 9) Any sub-passes used by the pipeline.
  **/
 struct PipelineConfigInfo
 {
@@ -42,7 +42,7 @@ struct PipelineConfigInfo
     VkPipelineDepthStencilStateCreateInfo depthStencilInfo {};
 
     Utils::Array<VkDynamicState> dynamicStateEnables;
-    VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+    VkPipelineDynamicStateCreateInfo dynamicStateInfo {};
 
     // Dependent structs on other data.
 
@@ -50,7 +50,7 @@ struct PipelineConfigInfo
     VkRenderPass renderPass {nullptr};
     u32 subPass {0};
 
-    VertexDescription::Data vertexData;
+    VertexDescription::Data vertexData {};
 };
 
 class Pipeline
@@ -58,14 +58,6 @@ class Pipeline
 public:
 
     // 'Structors
-
-    Pipeline(const char* vertFilePath,
-             const char* fragFilePath,
-             const PipelineConfigInfo& configInfo);
-
-    Pipeline(const PipelineConfig::ShaderConfig* shaders,
-             u32 shaderCount,
-             const PipelineConfigInfo& configInfo);
 
     Pipeline();
 
@@ -78,9 +70,9 @@ public:
     /**
      * Creates a default pipelineConfig struct. This struct currently configures
      * a pipeline to draw a 2D shape with custom vertices (using a vertex buffer).
-     * @param width the image width (generally accessible from the swapchain)
-     * @param height the image height (generally accessible from the swapchain)
-     * @returns a PipleineConfigInfo struct with a default configuration.
+     * @param width the image width (generally accessible from the swap-chain)
+     * @param height the image height (generally accessible from the swap-chain)
+     * @returns a PipelineConfigInfo struct with a default configuration.
      **/
     static PipelineConfigInfo DefaultPipelineConfig();
 
@@ -92,11 +84,6 @@ public:
      * @param commandBuffer the command buffer being bound to.
      **/
     void Bind(VkCommandBuffer commandBuffer);
-
-    // TODO: document this
-    void RecreatePipeline(const char* vertFilePath,
-                          const char* fragFilePath,
-                          const PipelineConfigInfo& configInfo);
 
     void RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
                           u32 shaderCount,
@@ -116,7 +103,7 @@ private:
      * @param filePath a raw c string specifying the file path.
      * @returns a heap-allocated array containing the file contents.
      **/
-    static Utils::Array<char> ReadFile(const char* filePath);
+    static Utils::Array<char> ReadFile(const String& filePath);
 
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
                                 u32 shaderCount,
@@ -129,14 +116,14 @@ private:
      * @param fileData an array containing our binary shader data.
      * @param shaderModule a pointer to a shaderModule that we want to populate.
      **/
-    void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
+    static void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
 
     /**
      * The vulkan representation of a graphics pipeline.
      **/
-    VkPipeline graphicsPipeline;
+    VkPipeline graphicsPipeline {VK_NULL_HANDLE};
 
-    VkShaderModule shaderModules[MAX_SHADER_MODULES];
+    VkShaderModule shaderModules[MAX_SHADER_MODULES] {};
     size_t shaderModuleCount = 0;
 
     bool isFreed = false;

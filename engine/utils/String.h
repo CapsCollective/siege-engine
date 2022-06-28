@@ -226,6 +226,18 @@ public:
     static String FromInt(const int& value);
 
     /**
+     * Conversion method for 32-bit unsigned integer values
+     * @param value - the integer value to convert.
+     */
+    static String FromInt32(const uint32_t& value);
+
+    /**
+     * Conversion method for 32-bit unsigned integer values
+     * @param value - the integer value to convert.
+     */
+    static String FromUInt64(const uint64_t& value);
+
+    /**
      * Conversion method for float values
      * @param value - the float value to convert
      */

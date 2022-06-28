@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <utils/Logging.h>
 #include <volk/volk.h>
 
 #include <cstdint>
@@ -30,10 +31,12 @@ typedef size_t size;
 
 #define EXIT_APP abort();
 
-#define REPORT_ASSERT_FAILURE(expr, file, line, message)                                        \
-    std::cout << "ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: " << line \
-              << std::endl;                                                                     \
-    std::cout << "                        Message: " << message << std::endl;
+#define REPORT_ASSERT_FAILURE(expr, file, line, message)                       \
+    CC_LOG_ERROR("ASSERTION FAILURE: {} in file: {} on line: {}\nMessage: {}", \
+                 #expr,                                                        \
+                 file,                                                         \
+                 line,                                                         \
+                 message);
 
 // Custom assert macro
 #define CC_ASSERT(expr, message)                                   \

@@ -21,7 +21,7 @@ public:
     BillboardRenderer();
     ~BillboardRenderer();
 
-    void Initialise(const char* globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
     void Destroy();
 
     void DrawBillboard(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& colour);
@@ -46,11 +46,11 @@ private:
         alignas(16) glm::vec3 scale;
     };
 
-    Material billboardMaterial;
-    Model billboardModel;
+    Material billboardMaterial {};
+    Model billboardModel {};
 
-    Utils::StringId globalDataId;
-    Utils::StringId positionsId;
+    Utils::StringId globalDataId {};
+    Utils::StringId positionsId {};
 
     Utils::StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
     Utils::StackArray<u32, Mesh::MAX_INDICES> indices;

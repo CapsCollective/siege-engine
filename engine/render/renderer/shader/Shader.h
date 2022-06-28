@@ -40,12 +40,12 @@ public:
 
     struct Uniform
     {
-        Utils::StringId id;
+        Utils::StringId id {0};
         u32 binding = 0;
         u64 size = 0;
         size_t arraySize = 0;
         size_t dynamicCount = 1;
-        VkDescriptorType type;
+        VkDescriptorType type {};
     };
 
     struct VertexBinding
@@ -60,18 +60,18 @@ public:
 
     static Shader BuildShader();
 
-    Shader& FromShader(const char* filePath);
-    Shader& WithStage(PipelineConfig::PipelineStage stage);
+    Shader& FromShader(const String& newFilePath);
+    Shader& WithStage(PipelineConfig::PipelineStage newStage);
 
-    Shader& WithUniform(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+    Shader& WithUniform(u32 binding, const String& name, u64 size, size_t arraySize = 1);
     Shader& WithDynamicUniform(u32 binding,
-                               const char* name,
+                               const String& name,
                                u64 size,
                                size_t arraySize,
                                size_t count);
-    Shader& WithStorage(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+    Shader& WithStorage(u32 binding, const String& name, u64 size, size_t arraySize = 1);
     Shader& WithDynamicStorage(u32 binding,
-                               const char* name,
+                               const String& name,
                                u64 size,
                                size_t arraySize,
                                size_t count);
@@ -96,33 +96,33 @@ public:
         return uniforms;
     }
 
-    const char* GetPath()
+    const String& GetPath() const
     {
         return filePath;
     }
-    PipelineConfig::PipelineStage GetStage()
+    PipelineConfig::PipelineStage GetStage() const
     {
         return stage;
     }
 
-    u64 GetUniformSize()
+    u64 GetUniformSize() const
     {
         return sizeOfUniforms;
     }
 
     void SetUniformType(u32 binding,
-                        const char* name,
+                        const String& name,
                         VkDescriptorType type,
                         u64 size,
                         size_t arraySize,
                         size_t count = 1);
 
-    const char* filePath;
+    String filePath;
 
     Utils::StackArray<Uniform, MAX_UNIFORMS> uniforms;
     Utils::StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
 
-    PipelineConfig::PipelineStage stage;
+    PipelineConfig::PipelineStage stage {};
     u64 sizeOfUniforms = 0;
 };
 } // namespace Siege

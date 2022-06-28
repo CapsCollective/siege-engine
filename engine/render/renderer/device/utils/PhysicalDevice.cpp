@@ -50,7 +50,7 @@ bool IsSuitable(VkPhysicalDevice device,
     bool extensionsSupported =
         CheckExtensionSupport(device, deviceExtensions, deviceExtensionCount);
 
-    bool swapChainAdequate = false;
+    bool swapChainAdequate;
     if (extensionsSupported)
     {
         // Check if the device supports the image formats and present modes needed to render to the

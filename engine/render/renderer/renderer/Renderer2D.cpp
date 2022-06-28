@@ -56,7 +56,7 @@ void Renderer2D::DrawModel(Model* model, const glm::vec2& position)
 
 void Renderer2D::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    for (auto& model: models) model->GetMaterial()->RecreatePipeline();
 }
 
 void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)

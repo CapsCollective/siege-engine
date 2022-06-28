@@ -14,15 +14,8 @@
 
 namespace Siege
 {
-Pipeline::Pipeline(const PipelineConfig::ShaderConfig* shaders,
-                   u32 shaderCount,
-                   const PipelineConfigInfo& configInfo) :
-    Pipeline()
-{
-    CreateGraphicsPipeline(shaders, shaderCount, configInfo);
-}
 
-Pipeline::Pipeline() {}
+Pipeline::Pipeline() = default;
 
 Pipeline::~Pipeline()
 {
@@ -33,12 +26,13 @@ Pipeline::~Pipeline()
     isFreed = true;
 }
 
-Utils::Array<char> Pipeline::ReadFile(const char* filePath)
+// TODO(Aryeh): Move this to utils/FileSystem once HeapArray has been merged.
+Utils::Array<char> Pipeline::ReadFile(const String& filePath)
 {
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath, std::ios::ate | std::ios::binary};
 
-    CC_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
+    CC_ASSERT(file.is_open(), (String("Could not find file: ") + filePath))
 
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).
@@ -61,12 +55,12 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
                                       const PipelineConfigInfo& configInfo)
 {
     CC_ASSERT(configInfo.pipelineLayout != VK_NULL_HANDLE,
-              "Cannot create graphics pipeline: no pipeline config provided in configInfo");
+              "Cannot create graphics pipeline: no pipeline config provided in configInfo")
 
     CC_ASSERT(configInfo.renderPass != VK_NULL_HANDLE,
-              "Cannot create graphics pipeline: no renderpass config provided in configInfo");
+              "Cannot create graphics pipeline: no renderpass config provided in configInfo")
 
-    CC_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.");
+    CC_ASSERT(shaderCount <= MAX_SHADER_MODULES, "Max allowed shader modules has been reached.")
 
     shaderModuleCount = shaderCount;
 
@@ -180,7 +174,7 @@ void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* 
 
     CC_ASSERT(vkCreateShaderModule(device->Device(), &createInfo, nullptr, OUT shaderModule) ==
                   VK_SUCCESS,
-              "Failed to create shader module!");
+              "Failed to create shader module!")
 }
 
 void Pipeline::Bind(VkCommandBuffer commandBuffer)

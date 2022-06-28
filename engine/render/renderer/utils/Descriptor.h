@@ -19,14 +19,6 @@ class Descriptor
 {
 public:
 
-    enum Type
-    {
-        UNIFORM = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        STORAGE = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        UNIFORM_DYNAMIC = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-        STORAGE_DYNAMIC = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-    };
-
     static VkDescriptorSetLayoutBinding CreateLayoutBinding(uint32_t binding,
                                                             uint32_t count,
                                                             uint32_t type,

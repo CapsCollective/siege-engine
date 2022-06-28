@@ -13,7 +13,6 @@
 #include "../pipeline/PipelineConfig.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <array>
 #include <glm/glm.hpp>
@@ -59,7 +58,7 @@ public:
     };
 
     Mesh();
-    Mesh(const MeshData& meshData);
+    explicit Mesh(const MeshData& meshData);
     ~Mesh();
 
     Mesh(const Mesh&) = delete;
@@ -74,16 +73,16 @@ public:
     void Bind(VkCommandBuffer commandBuffer);
     void DestroyMesh();
 
-    bool HasIndexBuffer()
+    bool HasIndexBuffer() const
     {
         return hasIndexBuffer;
     }
 
-    u32 GetVertexCount()
+    u32 GetVertexCount() const
     {
         return vertexCount;
     }
-    u32 GetIndexCount()
+    u32 GetIndexCount() const
     {
         return indexCount;
     }

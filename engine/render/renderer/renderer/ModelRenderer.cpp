@@ -10,10 +10,10 @@
 
 namespace Siege
 {
-ModelRenderer::ModelRenderer() {}
-ModelRenderer::~ModelRenderer() {}
+ModelRenderer::ModelRenderer() = default;
+ModelRenderer::~ModelRenderer() = default;
 
-void ModelRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void ModelRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     transformId = INTERN_STR("objectBuffer");
@@ -74,6 +74,6 @@ void ModelRenderer::Flush()
 
 void ModelRenderer::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    for (auto& model: models) model->GetMaterial()->RecreatePipeline();
 }
 } // namespace Siege

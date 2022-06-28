@@ -16,6 +16,8 @@ exampleRenderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleRenderBin
 exampleRenderBuildDir := $(exampleRenderBinDir)/build
 exampleRenderOutputName := "Render Example"
 
+linkFlags += -l utils
+
 # Set packaging vars
 ifeq ($(platform), linux)
     packagingEnvVars := \

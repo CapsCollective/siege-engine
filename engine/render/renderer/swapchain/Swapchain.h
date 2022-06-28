@@ -44,16 +44,7 @@ public:
 
     // 'Structors
 
-    /**
-     * @brief Creates a new Swapchain object to buffer our images.
-     *
-     * @param device a reference to a device. Devices are always destroyed last, so we can
-     * guarantee that object destruction will occur at the correct time.
-     * @param windowExtent the window resolution. Images need to be scaled to an extent, this
-     * usually must follow the extents of the window.
-     */
-    SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    SwapChain(VulkanDevice& device);
+    explicit SwapChain(VulkanDevice& device);
     ~SwapChain();
 
     // Delete copy constructors.
@@ -118,26 +109,6 @@ public:
         return swapChain;
     }
 
-    /**
-     * @brief Get the swapchain image width.
-     *
-     * @return u32 representing the width of the image.
-     */
-    u32 GetWidth() const
-    {
-        return swapChainExtent.width;
-    }
-
-    /**
-     * @brief Get the swapchain image height.
-     *
-     * @return u32 representing the image height.
-     */
-    u32 GetHeight() const
-    {
-        return swapChainExtent.height;
-    }
-
     static SwapChain* GetInstance()
     {
         return instance;
@@ -153,7 +124,7 @@ public:
         return &renderPass;
     }
 
-    void SetWindowExtents(VkExtent2D windowExtent);
+    void SetWindowExtents(VkExtent2D newWindowExtent);
 
     /**
      * @brief Loads in the next image to be written to in the Swapchain.
@@ -170,7 +141,7 @@ public:
      * @param imageIndex - the index of the image being drawn.
      * @return VkResult - the result of submitting the buffer.
      */
-    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
+    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, const u32* imageIndex);
 
     void RecreateSwapchain();
 
@@ -240,7 +211,8 @@ private:
      * @param formatCount - the number of formats provided.
      * @return VkSurfaceFormatKHR - the chosen
      */
-    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats, size_t formatCount);
+    static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats,
+                                                      size_t formatCount);
 
     /**
      * @brief Chooses the presentation mode that the window surface will use for images.
@@ -249,7 +221,8 @@ private:
      * @param presentModeCount  - the number of presentation modes in the array.
      * @return VkPresentModeKHR - the chosen presentation mode.
      */
-    VkPresentModeKHR ChoosePresentMode(VkPresentModeKHR* presentModes, size_t presentModeCount);
+    static VkPresentModeKHR ChoosePresentMode(const VkPresentModeKHR* presentModes,
+                                              size_t presentModeCount);
 
     /**
      * @brief Chooses an image size extent that's supported by the swapchain.
@@ -271,7 +244,7 @@ private:
 
     // Device and window data
     VulkanDevice& device;
-    VkExtent2D windowExtent;
+    VkExtent2D windowExtent {};
 
     static SwapChain* instance;
 
@@ -280,10 +253,10 @@ private:
     VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
     RenderPass renderPass;
 
-    VkFormat swapChainImageFormat;
-    VkFormat swapChainDepthFormat;
+    VkFormat swapChainImageFormat {};
+    VkFormat swapChainDepthFormat {};
 
-    VkExtent2D swapChainExtent;
+    VkExtent2D swapChainExtent {};
 
     // Images and image views supported by the swapchain
     FrameImages swapchainImages;

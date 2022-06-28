@@ -10,8 +10,7 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
-
-#include <cstring>
+#include <utils/String.h>
 
 namespace std
 {
@@ -45,29 +44,31 @@ Model::Model(const Mesh::MeshData& meshData)
     modelMesh.LoadVertices(meshData);
 }
 
-Model::Model(const char* filePath)
+Model::Model(const String& filePath)
 {
     LoadModelFromFile(filePath);
 }
 
-Model::Model() {}
+Model::Model() = default;
 
 // Destroy the vertex buffer and free the memory
-Model::~Model() {}
+Model::~Model() = default;
 
 void Model::DestroyModel()
 {
     modelMesh.DestroyMesh();
 }
 
-void Model::LoadModelFromFile(const char* filePath)
+void Model::LoadModelFromFile(const String& filePath)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
+
     std::string warn, err;
 
-    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath), warn + err);
+    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
+              (warn + err).c_str())
 
     std::vector<Vertex> objVertices;
     std::vector<u32> objIndices;

@@ -78,7 +78,7 @@ public:
 
     // Public Functions
 
-    void Update();
+    static void Update();
 
     bool WindowShouldClose();
 
@@ -109,7 +109,7 @@ public:
         state ? DisableCursor() : EnableCursor();
     }
 
-    void WaitEvents()
+    static void WaitEvents()
     {
         glfwWaitEvents();
     }

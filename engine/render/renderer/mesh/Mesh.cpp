@@ -21,7 +21,7 @@ bool operator==(const Vertex2D& left, const Vertex2D& right)
     return left.color == right.color && left.position == right.position;
 }
 
-Mesh::Mesh() {}
+Mesh::Mesh() = default;
 
 Mesh::Mesh(const MeshData& meshData)
 {
@@ -31,7 +31,7 @@ Mesh::Mesh(const MeshData& meshData)
 Mesh::~Mesh()
 {
     if (isFreed) return;
-    std::cout << "Destroying Mesh" << std::endl;
+    CC_LOG_INFO("Destroying Mesh", )
     DestroyMesh();
 }
 
@@ -167,9 +167,9 @@ void Mesh::UpdateIndexBuffer(u32* indices)
         return;
     }
 
-    VkDeviceSize indexSize = sizeof(u32) * indexCount;
+    VkDeviceSize size = sizeof(u32) * indexCount;
 
-    Buffer::CopyData(globalIndexStagingBuffer, indexSize, indices);
-    Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, indexSize);
+    Buffer::CopyData(globalIndexStagingBuffer, size, indices);
+    Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, size);
 }
 } // namespace Siege

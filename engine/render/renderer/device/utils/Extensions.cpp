@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include <unordered_set>
+#include <utils/String.h>
 #include <vector>
 
 namespace Siege::Extensions
@@ -29,9 +30,9 @@ bool CheckValidationLayerSupport(const char* const* validationLayers, size_t siz
         const char* layerName = validationLayers[i];
         bool layerFound = false;
 
-        for (size_t i = 0; i < layerCount; i++)
+        for (size_t j = 0; j < layerCount; j++)
         {
-            VkLayerProperties layerProperties = availableLayers[i];
+            VkLayerProperties layerProperties = availableLayers[j];
             if (strcmp(layerName, layerProperties.layerName) == 0)
             {
                 layerFound = true;
@@ -71,21 +72,24 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     VkExtensionProperties extensions[extensionCount];
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, OUT extensions);
 
-    std::cout << "available extensions:" << std::endl;
+    String availableExtensionMessage = "Available extensions:\n";
+
     std::unordered_set<std::string> available;
     for (size_t i = 0; i < extensionCount; i++)
     {
         VkExtensionProperties extension = extensions[i];
-        std::cout << "\t" << extension.extensionName << std::endl;
+        availableExtensionMessage.Append(String("\t") + String(extension.extensionName) + String("\n"));
         available.insert(extension.extensionName);
     }
 
-    std::cout << "required extensions:" << std::endl;
+    CC_LOG_INFO("{}",availableExtensionMessage.Str())
+
+    String requiredExtensionMessage = "Required extensions:";
     auto requiredExtensions = GetRequiredExtensions(enableValidationLayers);
     for (const auto& required : requiredExtensions)
     {
-        std::cout << "\t" << required << std::endl;
-        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!");
+        requiredExtensionMessage.Append(String("\t") + String(required) + String("\n"));
+        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!")
     }
 }
 } // namespace Siege::Extensions

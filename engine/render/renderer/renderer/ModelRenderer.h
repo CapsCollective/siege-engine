@@ -21,7 +21,7 @@ public:
     ModelRenderer();
     ~ModelRenderer();
 
-    void Initialise(const char* globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
     void Destroy();
 
     void DrawModel(Model* model,
@@ -40,8 +40,8 @@ private:
     // TODO(Aryeh): Make this configurable via macros
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    Utils::StringId globalDataId;
-    Utils::StringId transformId;
+    Utils::StringId globalDataId {};
+    Utils::StringId transformId {};
 
     Utils::StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
     Utils::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;

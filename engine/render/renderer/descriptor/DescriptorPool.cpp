@@ -14,7 +14,7 @@ VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
 Utils::StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES>
     DescriptorPool::sizes;
 
-void DescriptorPool::AddPoolSize(const VkDescriptorType type, const u32 size)
+void DescriptorPool::AddPoolSize(const VkDescriptorType& type, const u32& size)
 {
     sizes.Append({type, size});
 }
@@ -35,7 +35,7 @@ void DescriptorPool::BuildPool()
         CC_ASSERT(
             vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) ==
                 VK_SUCCESS,
-            "Unable to create descriptor pool!");
+            "Unable to create descriptor pool!")
     }
 }
 

@@ -27,8 +27,8 @@ public:
 
     struct GlobalData
     {
-        CameraData cameraData;
-        PointLight::Data lightData;
+        CameraData cameraData {};
+        PointLight::Data lightData {};
     };
 
     static void Initialise();
@@ -49,7 +49,6 @@ public:
     static void DrawLine(const glm::vec3& origin,
                          const glm::vec3& destination,
                          const glm::vec3& colour);
-    static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
     static void DrawPointLight(const glm::vec3& position,
                                const float& radius,
                                const glm::vec4& colour,

@@ -9,7 +9,9 @@
 #include "VulkanDevice.h"
 
 // std headers
-#include <cstring>
+#include <utils/Logging.h>
+#include <utils/String.h>
+
 #include <iostream>
 #include <set>
 
@@ -20,7 +22,7 @@ VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
 
 VulkanDevice::VulkanDevice(Window* window) : window {window}
 {
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
     CreateInstance();
     SetupDebugMessenger();
@@ -37,13 +39,13 @@ VulkanDevice::VulkanDevice()
     SetVulkanDeviceInstance(this);
 }
 
-void VulkanDevice::SetWindow(Window* window)
+void VulkanDevice::SetWindow(Window* newWindow)
 {
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
-    CC_ASSERT(window != nullptr, "Must provide a valid pointer to a window!");
+    CC_ASSERT(newWindow != nullptr, "Must provide a valid pointer to a window!")
 
-    this->window = window;
+    window = newWindow;
 
     CreateInstance();
     SetupDebugMessenger();
@@ -78,7 +80,7 @@ void VulkanDevice::CreateInstance()
     {
         CC_ASSERT(Extensions::CheckValidationLayerSupport(validationLayers.data(),
                                                           validationLayers.size()),
-                  "Validation Layers are not supported!");
+                  "Validation Layers are not supported!")
     }
 
     // Specify general app information.
@@ -99,9 +101,10 @@ void VulkanDevice::CreateInstance()
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (enableValidationLayers)
     {
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+
         // Only add the ability to report on validation layers if the feature is enabled.
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -116,7 +119,7 @@ void VulkanDevice::CreateInstance()
     }
 
     CC_ASSERT(vkCreateInstance(&createInfo, nullptr, OUT & instance) == VK_SUCCESS,
-              "Unable to create Vulkan Instance!");
+              "Unable to create Vulkan Instance!")
 
     Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
 
@@ -133,32 +136,32 @@ void VulkanDevice::PickPhysicalDevice()
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, OUT & deviceCount, nullptr);
 
-    CC_ASSERT(deviceCount > 0, "Failed to find GPUs with Vulkan Support!");
+    CC_ASSERT(deviceCount > 0, "Failed to find GPUs with Vulkan Support!")
 
-    std::cout << "Device count: " << deviceCount << std::endl;
+    CC_LOG_INFO("Device count: {}", deviceCount)
 
     VkPhysicalDevice devices[deviceCount];
     vkEnumeratePhysicalDevices(instance, &deviceCount, OUT devices);
 
     for (size_t i = 0; i < deviceCount; i++)
     {
-        VkPhysicalDevice device = devices[i];
-        if (PhysicalDevice::IsSuitable(device,
+        VkPhysicalDevice currentDevice = devices[i];
+        if (PhysicalDevice::IsSuitable(currentDevice,
                                        surface,
                                        deviceExtensions.data(),
                                        deviceExtensions.size()))
         {
-            physicalDevice = device;
+            physicalDevice = currentDevice;
             break;
         }
     }
 
-    CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
+    CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
 
     vkGetPhysicalDeviceProperties(physicalDevice, OUT & properties);
-    std::cout << "physical device: " << properties.deviceName << std::endl;
-    std::cout << "GPU has a minumum buffer alignment of "
-              << properties.limits.minUniformBufferOffsetAlignment << std::endl;
+    CC_LOG_INFO("physical device: {}", properties.deviceName)
+    CC_LOG_INFO("GPU has a minimum buffer alignment of {}",
+                properties.limits.minUniformBufferOffsetAlignment)
 }
 
 void VulkanDevice::CreateLogicalDevice()
@@ -209,7 +212,7 @@ void VulkanDevice::CreateLogicalDevice()
     }
 
     CC_ASSERT(vkCreateDevice(physicalDevice, &createInfo, nullptr, OUT & device) == VK_SUCCESS,
-              "failed to create logical device!");
+              "failed to create logical device!")
 
     vkGetDeviceQueue(device, indices.graphicsFamily, 0, OUT & graphicsQueue);
     vkGetDeviceQueue(device, indices.presentFamily, 0, OUT & presentQueue);
@@ -228,7 +231,7 @@ void VulkanDevice::CreateCommandPool()
         VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     CC_ASSERT(vkCreateCommandPool(device, &poolInfo, nullptr, OUT & commandPool) == VK_SUCCESS,
-              "Failed to create command pool!");
+              "Failed to create command pool!")
 }
 
 void VulkanDevice::SetupDebugMessenger()
@@ -242,7 +245,7 @@ void VulkanDevice::SetupDebugMessenger()
                                                    &createInfo,
                                                    nullptr,
                                                    OUT & debugMessenger) == VK_SUCCESS,
-              "Failed to create DebugUtilsMessenger!");
+              "Failed to create DebugUtilsMessenger!")
 }
 
 VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,
@@ -257,33 +260,31 @@ VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, OUT & props);
 
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-        {
-            return format;
-        }
-        else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-                 (props.optimalTilingFeatures & features) == features)
+        if ((tiling == VK_IMAGE_TILING_LINEAR &&
+             (props.linearTilingFeatures & features) == features) ||
+            (tiling == VK_IMAGE_TILING_OPTIMAL &&
+             (props.optimalTilingFeatures & features) == features))
         {
             return format;
         }
     }
-    CC_ASSERT(false, "Failed to find a supported format!");
+    CC_ASSERT(false, "Failed to find a supported format!")
 }
 
-uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryProperties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
     {
         if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+            (memProperties.memoryTypes[i].propertyFlags & memoryProperties) == memoryProperties)
         {
             return i;
         }
     }
 
-    CC_ASSERT(false, "Failed to find suitable memory type!");
+    CC_ASSERT(false, "Failed to find suitable memory type!")
 }
 
 VkCommandBuffer VulkanDevice::BeginSingleTimeCommands()
@@ -364,12 +365,12 @@ void VulkanDevice::CopyBufferToImage(VkBuffer buffer,
 }
 
 void VulkanDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
-                                       VkMemoryPropertyFlags properties,
+                                       VkMemoryPropertyFlags memoryProperties,
                                        VkImage& image,
                                        VkDeviceMemory& imageMemory)
 {
     CC_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT & image) == VK_SUCCESS,
-              "Failed to create FrameImages!");
+              "Failed to create FrameImages!")
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(device, image, OUT & memRequirements);
@@ -377,12 +378,12 @@ void VulkanDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
     VkMemoryAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, memoryProperties);
 
     CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & imageMemory) == VK_SUCCESS,
-              "Failed to allocate image memory!");
+              "Failed to allocate image memory!")
 
     CC_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
-              "Failed to bind image memory!");
+              "Failed to bind image memory!")
 }
 } // namespace Siege

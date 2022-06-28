@@ -135,6 +135,19 @@ public:
     RenderPass();
 
     /**
+     * @brief A single-argument constructor for the Renderpass class.
+     * @param config the Config object used to initialise the renderPass.
+     */
+    explicit RenderPass(const Config& config);
+
+    /**
+     * @brief Move assignment operator.
+     * @param other the render pass to move data from.
+     * @return the new render pass.
+     */
+    RenderPass& operator=(RenderPass&& other) noexcept;
+
+    /**
      * @brief Initialises the RenderPass. Creating a RenderPass requires us to explicitly state what
      * operations the RenderPass will be responsible for, along with any graphics stages the
      * renderpass may rely on.

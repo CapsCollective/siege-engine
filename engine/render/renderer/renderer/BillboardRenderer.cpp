@@ -10,10 +10,10 @@
 
 namespace Siege
 {
-BillboardRenderer::BillboardRenderer() {}
-BillboardRenderer::~BillboardRenderer() {}
+BillboardRenderer::BillboardRenderer() = default;
+BillboardRenderer::~BillboardRenderer() = default;
 
-void BillboardRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void BillboardRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     positionsId = INTERN_STR("positions");

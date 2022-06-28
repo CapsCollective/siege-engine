@@ -21,12 +21,11 @@ public:
     DebugRenderer3D();
     ~DebugRenderer3D();
 
-    void Initialise(const char* globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
     void Destroy();
 
     // Wire primitives
     void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
-    void DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 
     void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
 
@@ -45,17 +44,16 @@ private:
     void RenderLines(VkCommandBuffer& commandBuffer,
                      const u64& globalDataSize,
                      const void* globalData);
-    void RenderRects();
 
-    glm::vec3 lineColor;
+    glm::vec3 lineColor {1.f, 1.f, 1.f};
 
-    Material lineMaterial;
-    Model lineModel;
+    Material lineMaterial {};
+    Model lineModel {};
 
-    Material rectMaterial;
-    Model rectModel;
+    Material rectMaterial {};
+    Model rectModel {};
 
-    Utils::StringId globalDataId;
+    Utils::StringId globalDataId {};
 
     Utils::StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;

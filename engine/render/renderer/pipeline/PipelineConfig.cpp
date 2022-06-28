@@ -263,7 +263,7 @@ void PipelineConfig::CreatePipelineLayout(VkDevice device,
 
     CC_ASSERT(
         vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, pipelineLayout) == VK_SUCCESS,
-        "Failed to create pipeline layout!");
+        "Failed to create pipeline layout!")
 }
 
 VkPipelineShaderStageCreateInfo PipelineConfig::CreateShaderStage(

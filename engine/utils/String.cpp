@@ -263,6 +263,16 @@ bool String::GetFloat(float& value) const
     return false;
 }
 
+String String::FromUInt64(const uint64_t& value)
+{
+    return GetFromFormat("%d", value);
+}
+
+String String::FromInt32(const uint32_t& value)
+{
+    return GetFromFormat("%d", value);
+}
+
 String String::FromInt(const int& value)
 {
     return GetFromFormat("%d", value);

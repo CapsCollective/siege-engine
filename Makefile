@@ -63,7 +63,7 @@ $(utilsLib): buildFlags
 $(coreLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-$(renderLib): buildFlags
+$(renderLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 $(testApp): buildFlags $(utilsLib) $(coreLib)

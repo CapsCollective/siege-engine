@@ -65,6 +65,8 @@ public:
     DEFINE_VARIANT_TYPE(const char* data, data);
     DEFINE_VARIANT_TYPE(const char data, data);
     DEFINE_VARIANT_TYPE(const int& data, String::FromInt(data));
+    DEFINE_VARIANT_TYPE(const uint32_t& data, String::FromInt32(data));
+    DEFINE_VARIANT_TYPE(const uint64_t& data, String::FromUInt64(data));
     DEFINE_VARIANT_TYPE(const float& data, String::FromFloat(data));
     DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
     DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));

@@ -11,9 +11,26 @@
 namespace Siege
 {
 
+RenderPass::RenderPass(const Config& config)
+{
+    device = VulkanDevice::GetDeviceInstance();
+    Initialise(device, config);
+}
+
 RenderPass::~RenderPass()
 {
     DestroyRenderPass();
+}
+
+RenderPass& RenderPass::operator=(RenderPass&& other) noexcept
+{
+    if (renderPass) DestroyRenderPass();
+
+    renderPass = other.renderPass;
+    device = other.device;
+
+    other.renderPass = VK_NULL_HANDLE;
+    return *this;
 }
 
 void RenderPass::DestroyRenderPass()
@@ -70,7 +87,7 @@ void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config
     CC_ASSERT(
         vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT & renderPass) ==
             VK_SUCCESS,
-        "Failed to create render pass!");
+        "Failed to create render pass!")
 }
 
 void RenderPass::Initialise(VulkanDevice* device,

@@ -27,19 +27,16 @@ public:
     enum PolygonMode
     {
         FILL = 0,
-        LINE = 1,
-        POINT = 2
     };
 
     enum Topology
     {
         LINE_LIST = 1,
-        LINE_STRIP = 2,
         TRIANGLE_LIST = 3
     };
 
     Material();
-    Material(Shader* vertexShader);
+    explicit Material(Shader* vertexShader);
     Material(Shader* vertexShader, Shader* fragmentShader);
 
     Material(const Material&) = delete;
@@ -53,15 +50,15 @@ public:
     {
         shaderSettings.mode = mode;
     }
+
     void SetTopology(Topology topology)
     {
         shaderSettings.topology = topology;
     }
+
     void BuildMaterial();
 
-    void SetUniformData(VkDeviceSize dataSize, const void* data);
     void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
-    void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
 
     void SetVertexShader(Shader* shader);
     void SetFragmentShader(Shader* shader);
@@ -82,18 +79,18 @@ private:
     {
         VkDescriptorSetLayout layout {VK_NULL_HANDLE};
         VkDescriptorSet descriptorSet {VK_NULL_HANDLE};
-        Shader::DescriptorType type;
+        Shader::DescriptorType type {};
     };
 
     struct Property
     {
         uint32_t binding = 0;
         Utils::StringId id = 0;
-        VkShaderStageFlags stage;
+        VkShaderStageFlags stage {};
         u64 offset = 0;
         u64 size = 0;
         size_t count = 0;
-        DescriptorBinding descriptorBinding;
+        DescriptorBinding descriptorBinding {};
     };
 
     Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
