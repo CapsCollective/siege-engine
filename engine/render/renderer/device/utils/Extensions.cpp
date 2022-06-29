@@ -9,9 +9,9 @@
 #include "Extensions.h"
 
 #include <GLFW/glfw3.h>
+#include <utils/String.h>
 
 #include <unordered_set>
-#include <utils/String.h>
 #include <vector>
 
 namespace Siege::Extensions
@@ -78,11 +78,12 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     for (size_t i = 0; i < extensionCount; i++)
     {
         VkExtensionProperties extension = extensions[i];
-        availableExtensionMessage.Append(String("\t") + String(extension.extensionName) + String("\n"));
+        availableExtensionMessage.Append(String("\t") + String(extension.extensionName) +
+                                         String("\n"));
         available.insert(extension.extensionName);
     }
 
-    CC_LOG_INFO("{}",availableExtensionMessage.Str())
+    CC_LOG_INFO("{}", availableExtensionMessage.Str())
 
     String requiredExtensionMessage = "Required extensions:";
     auto requiredExtensions = GetRequiredExtensions(enableValidationLayers);

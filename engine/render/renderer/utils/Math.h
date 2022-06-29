@@ -9,6 +9,8 @@
 #pragma once
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <utils/Maths.h>
+
 #include <glm/glm.hpp>
 
 namespace Siege::Utils
@@ -17,13 +19,13 @@ class Math
 {
 public:
 
-    static glm::mat4 CalculateTransform3D(const glm::vec3& position,
-                                          const glm::vec3& rotation,
-                                          const glm::vec3& scale);
+    static glm::mat4 CalculateTransform3D(const Vec3& position,
+                                          const Vec3& rotation,
+                                          const Vec3& scale);
     // TODO use this function or remove it
     [[maybe_unused]] static glm::mat2 CalculateTransform2D(const glm::vec2& position,
                                                            const float& rotation,
                                                            const glm::vec2& scale);
-    static glm::mat3 CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3& scale);
+    static glm::mat3 CalculateNormalMatrix(const Vec3& rotation, const Vec3& scale);
 };
 } // namespace Siege::Utils

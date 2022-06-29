@@ -59,9 +59,7 @@ void DebugRenderer3D::RecreateMaterials()
 }
 
 // Wire primitives
-void DebugRenderer3D::DrawLine(const glm::vec3& origin,
-                               const glm::vec3& destination,
-                               const glm::vec3& colour)
+void DebugRenderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec3& colour)
 {
     lines.Append({origin, colour});
     lines.Append({destination, colour});

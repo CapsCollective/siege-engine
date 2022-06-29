@@ -200,25 +200,26 @@ void SwapChain::CreateRenderPass()
 {
     swapChainImageFormat = GetSwapChainImageFormat();
     swapChainDepthFormat = FindDepthFormat();
-    renderPass = RenderPass(RenderPass::CreateConfig()
-                                .WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
-                                .WithAttachment(Attachments::CreateDepthAttachment(swapChainDepthFormat))
-                                .WithSubPass(
-                                    Attachments::CreateSubPass()
-                                        .WithColorReference(Attachments::CreateColorAttachmentReference(0))
-                                        .WithDepthReference(Attachments::CreateDepthStencilAttachmentReference(1))
-                                        .BuildGraphicsSubPass())
-                                .WithDependency(Attachments::CreateSubPassDependency()
-                                                    .WithSrcSubPass(VK_SUBPASS_EXTERNAL)
-                                                    .WithDstSubPass(0)
-                                                    .WithSrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                                      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                                    .WithDstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                                      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                                    .WithSrcAccessMask(0)
-                                                    .WithDstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-                                                                       VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
-                                                    .Build()));
+    renderPass = RenderPass(
+        RenderPass::CreateConfig()
+            .WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
+            .WithAttachment(Attachments::CreateDepthAttachment(swapChainDepthFormat))
+            .WithSubPass(
+                Attachments::CreateSubPass()
+                    .WithColorReference(Attachments::CreateColorAttachmentReference(0))
+                    .WithDepthReference(Attachments::CreateDepthStencilAttachmentReference(1))
+                    .BuildGraphicsSubPass())
+            .WithDependency(Attachments::CreateSubPassDependency()
+                                .WithSrcSubPass(VK_SUBPASS_EXTERNAL)
+                                .WithDstSubPass(0)
+                                .WithSrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
+                                .WithDstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
+                                .WithSrcAccessMask(0)
+                                .WithDstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
+                                .Build()));
 }
 
 void SwapChain::CreateDepthResources()

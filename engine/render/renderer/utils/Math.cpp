@@ -10,9 +10,7 @@
 
 namespace Siege::Utils
 {
-glm::mat4 Math::CalculateTransform3D(const glm::vec3& position,
-                                     const glm::vec3& rotation,
-                                     const glm::vec3& scale)
+glm::mat4 Math::CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3& scale)
 {
     const float s3 = glm::sin(rotation.z);
     const float c3 = glm::cos(rotation.z);
@@ -42,7 +40,7 @@ glm::mat4 Math::CalculateTransform3D(const glm::vec3& position,
                       {position.x, position.y, position.z, 1.0f}};
 }
 
-glm::mat3 Math::CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3& scale)
+glm::mat3 Math::CalculateNormalMatrix(const Vec3& rotation, const Vec3& scale)
 {
     const float c3 = glm::cos(rotation.z);
     const float s3 = glm::sin(rotation.z);
@@ -51,7 +49,8 @@ glm::mat3 Math::CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3
     const float c1 = glm::cos(rotation.y);
     const float s1 = glm::sin(rotation.y);
 
-    glm::vec3 inverseScale = 1.0f / scale;
+    glm::vec3 targetScale = {scale.x, scale.y, scale.z};
+    glm::vec3 inverseScale = 1.0f / targetScale;
 
     return glm::mat3 {{
                           inverseScale.x * (c1 * c3 + s1 * s2 * s3),

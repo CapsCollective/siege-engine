@@ -22,9 +22,9 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName, const u64&
 void ModelRenderer::Destroy() {}
 
 void ModelRenderer::DrawModel(Model* model,
-                              const glm::vec3& position,
-                              const glm::vec3& scale,
-                              const glm::vec3& rotation)
+                              const Vec3& position,
+                              const Vec3& scale,
+                              const Vec3& rotation)
 {
     models.Append(model);
 
@@ -74,6 +74,6 @@ void ModelRenderer::Flush()
 
 void ModelRenderer::RecreateMaterials()
 {
-    for (auto& model: models) model->GetMaterial()->RecreatePipeline();
+    for (auto& model : models) model->GetMaterial()->RecreatePipeline();
 }
 } // namespace Siege

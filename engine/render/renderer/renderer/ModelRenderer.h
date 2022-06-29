@@ -24,10 +24,7 @@ public:
     void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
     void Destroy();
 
-    void DrawModel(Model* model,
-                   const glm::vec3& position,
-                   const glm::vec3& scale,
-                   const glm::vec3& rotation);
+    void DrawModel(Model* model, const Vec3& position, const Vec3& scale, const Vec3& rotation);
 
     void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
 

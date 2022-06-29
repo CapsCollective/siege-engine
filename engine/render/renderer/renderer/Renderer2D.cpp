@@ -35,9 +35,9 @@ void Renderer2D::DrawModel(Model* model,
 {
     models.Append(model);
 
-    auto transform = Utils::Math::CalculateTransform3D(glm::vec3(position.x, position.y, zIndex),
-                                                       glm::vec3(0.f, 0.f, rotation),
-                                                       glm::vec3(scale.x, scale.y, 0.f));
+    auto transform = Utils::Math::CalculateTransform3D(Vec3(position.x, position.y, zIndex),
+                                                       Vec3(0.f, 0.f, rotation),
+                                                       Vec3(scale.x, scale.y, 0.f));
     transforms.Append({transform});
 }
 
@@ -56,7 +56,7 @@ void Renderer2D::DrawModel(Model* model, const glm::vec2& position)
 
 void Renderer2D::RecreateMaterials()
 {
-    for (auto& model: models) model->GetMaterial()->RecreatePipeline();
+    for (auto& model : models) model->GetMaterial()->RecreatePipeline();
 }
 
 void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)

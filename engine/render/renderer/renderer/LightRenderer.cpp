@@ -44,7 +44,7 @@ void LightRenderer::Destroy()
     lightModel.DestroyModel();
 }
 
-void LightRenderer::DrawPointLight(const glm::vec3& position,
+void LightRenderer::DrawPointLight(const Vec3& position,
                                    const float& radius,
                                    const glm::vec4& colour,
                                    const glm::vec4& ambientColor)

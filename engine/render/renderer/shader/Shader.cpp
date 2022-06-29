@@ -7,6 +7,7 @@
 //
 
 #include "Shader.h"
+
 #include <utils/Logging.h>
 
 namespace Siege
@@ -37,7 +38,7 @@ Shader& Shader::WithUniform(u32 binding, const String& name, u64 size, size_t ar
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size, arraySize);
 
-    CC_LOG_INFO("SHADER: [{}] - Added uniform [{}] for binding [{}]",filePath, name, binding)
+    CC_LOG_INFO("SHADER: [{}] - Added uniform [{}] for binding [{}]", filePath, name, binding)
 
     return *this;
 }
@@ -55,7 +56,10 @@ Shader& Shader::WithDynamicUniform(u32 binding,
                    arraySize,
                    count);
 
-    CC_LOG_INFO("SHADER: [{}] - Added dynamic uniform [{}] for binding [{}]",filePath, name, binding)
+    CC_LOG_INFO("SHADER: [{}] - Added dynamic uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
@@ -64,7 +68,10 @@ Shader& Shader::WithStorage(u32 binding, const String& name, u64 size, size_t ar
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size, arraySize);
 
-    CC_LOG_INFO("SHADER: [{}] - Added storage uniform [{}] for binding [{}]",filePath, name, binding)
+    CC_LOG_INFO("SHADER: [{}] - Added storage uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }

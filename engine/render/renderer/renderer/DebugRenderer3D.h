@@ -25,7 +25,7 @@ public:
     void Destroy();
 
     // Wire primitives
-    void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
+    void DrawLine(const Vec3& origin, const Vec3& destination, const Vec3& colour);
 
     void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
 
@@ -37,15 +37,15 @@ private:
 
     struct LineVertex
     {
-        glm::vec3 position;
-        glm::vec3 colour;
+        Vec3 position;
+        Vec3 colour;
     };
 
     void RenderLines(VkCommandBuffer& commandBuffer,
                      const u64& globalDataSize,
                      const void* globalData);
 
-    glm::vec3 lineColor {1.f, 1.f, 1.f};
+    Vec3 lineColor {1.f, 1.f, 1.f};
 
     Material lineMaterial {};
     Model lineModel {};
@@ -56,6 +56,5 @@ private:
     Utils::StringId globalDataId {};
 
     Utils::StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
-    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
 };
 } // namespace Siege

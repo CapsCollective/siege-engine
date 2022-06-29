@@ -26,6 +26,17 @@ struct hash<Siege::Vertex>
 };
 
 template<>
+struct hash<Vec3>
+{
+    size_t operator()(const Vec3& vec) const
+    {
+        size_t seed = 0;
+        Siege::Utils::HashCombine(seed, vec.x, vec.y, vec.z);
+        return seed;
+    };
+};
+
+template<>
 struct hash<Siege::Vertex2D>
 {
     size_t operator()(const Siege::Vertex2D& vertex) const

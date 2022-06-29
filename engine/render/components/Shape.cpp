@@ -49,7 +49,8 @@ glm::mat3 Shape::CalculateNormalMatrix(Transform& transform)
     const float c1 = glm::cos(transform.rotation.y);
     const float s1 = glm::sin(transform.rotation.y);
 
-    glm::vec3 inverseScale = 1.0f / transform.scale;
+    glm::vec3 scale = {transform.scale.x, transform.scale.y, transform.scale.z};
+    glm::vec3 inverseScale = 1.0f / scale;
 
     return glm::mat3 {{
                           inverseScale.x * (c1 * c3 + s1 * s2 * s3),
@@ -74,21 +75,21 @@ Shape::Shape(Siege::Model* model) : model {model} {}
 
 Shape::~Shape() {}
 
-void Shape::SetColor(glm::vec3 newColor)
+void Shape::SetColor(Vec3 newColor)
 {
     fillColor = newColor;
 }
-void Shape::SetPosition(glm::vec3 newPos)
+void Shape::SetPosition(Vec3 newPos)
 {
     transform.position = newPos;
 }
 
-void Shape::SetScale(glm::vec3 newScale)
+void Shape::SetScale(Vec3 newScale)
 {
     transform.scale = newScale;
 }
 
-void Shape::SetRotation(glm::vec3 rotation)
+void Shape::SetRotation(Vec3 rotation)
 {
     transform.rotation = rotation;
 }
@@ -120,11 +121,11 @@ void Shape::SetRotation2D(float rotation)
 
 void Shape::SetPosition2D(glm::vec2 newPos)
 {
-    transform.position = glm::vec3(newPos.x, newPos.y, transform.position.z);
+    transform.position = Vec3(newPos.x, newPos.y, transform.position.z);
 }
 
 void Shape::SetScale2D(glm::vec2 newScale)
 {
-    transform.scale = glm::vec3(newScale, 0.f);
+    transform.scale = Vec3(newScale.x, newScale.y, 0.f);
 }
 } // namespace Components

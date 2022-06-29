@@ -44,7 +44,7 @@ public:
                        glm::vec3 target,
                        glm::vec3 up = glm::vec3 {0.f, -1.f, 0.f});
 
-    void SetViewYXZ(glm::vec3 position, glm::vec3 rotation);
+    void SetViewYXZ(Vec3 position, Vec3 rotation);
 
     const glm::mat4& GetProjection()
     {

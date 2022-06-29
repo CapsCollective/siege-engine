@@ -32,6 +32,30 @@
 
 #define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
 
+class Float
+{
+public:
+
+    static float Lerp(const float& origin, const float& destination, const float& time);
+
+    static constexpr float Epsilon()
+    {
+        return std::numeric_limits<float>::epsilon();
+    }
+
+    static float Normalise(const float& value);
+
+    static float Normalise(const float& value, const float& min, const float& max);
+
+    static float Abs(const float& value);
+
+    static float Max(const float& lhs, const float& rhs);
+
+    static float Min(const float& lhs, const float& rhs);
+
+    static float Clamp(const float& value, const float& min, const float& max);
+};
+
 struct Vec3
 {
     // Public constants
@@ -49,6 +73,11 @@ struct Vec3
     Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
     Vec3& operator=(const Vec3& rhs) = default;
+
+    bool operator==(const Vec3& rhs) const
+    {
+        return x == rhs.x && y == rhs.y && z == rhs.z;
+    }
 
     // Operator overloads
 
@@ -102,12 +131,26 @@ struct Vec3
         return {0.f, 0.f, z};
     }
 
+    static Vec3 Lerp(const Vec3& origin, const Vec3& destination, const float& time)
+    {
+        return {Float::Lerp(origin.x, destination.x, time),
+                Float::Lerp(origin.y, destination.y, time),
+                Float::Lerp(origin.z, destination.z, time)};
+    }
+
+    static float Dot(const Vec3& vecA, const Vec3& vecB)
+    {
+        return (vecA.x * vecB.x) + (vecA.y * vecB.y) + (vecA.z * vecB.z);
+    }
+
     // Public members
 
     float x;
     float y;
     float z;
 };
+
+Vec3 operator*(const float& lhs, const Vec3&);
 
 struct Xform
 {

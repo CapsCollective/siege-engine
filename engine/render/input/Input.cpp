@@ -8,11 +8,8 @@
 
 #include "Input.h"
 
-#include <iostream>
-
 Siege::Window* Input::windowPtr = nullptr;
 Input::MouseCoordinates Input::currentMouseCoordinates;
-bool Input::movedLastFrame {false};
 
 std::map<int, int> Input::keyMap;
 
@@ -68,14 +65,11 @@ const Input::MouseCoordinates& Input::GetCursorPosition()
 
 Input::MouseCoordinates Input::GetNormalisedMousePosition()
 {
-    return {glm::clamp<float>(
-                Utils::Math::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
-                -1.f,
-                1.f),
-            glm::clamp<float>(
-                Utils::Math::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight()),
-                -1.f,
-                1.f)};
+    auto width = static_cast<float>(windowPtr->GetWidth());
+    auto height = static_cast<float>(windowPtr->GetHeight());
+
+    return {Float::Clamp(Float::Normalise(currentMouseCoordinates.x, 0, width), -1.f, 1.f),
+            Float::Clamp(Float::Normalise(currentMouseCoordinates.y, 0, height), -1.f, 1.f)};
 }
 
 void Input::GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)

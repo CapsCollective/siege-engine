@@ -45,7 +45,7 @@ void Renderer3D::Initialise()
     gridMaterial.BuildMaterial();
 }
 
-void Renderer3D::DrawBillboard(const glm::vec3& position,
+void Renderer3D::DrawBillboard(const Vec3& position,
                                const glm::vec2& scale,
                                const glm::vec4& colour)
 {
@@ -53,24 +53,24 @@ void Renderer3D::DrawBillboard(const glm::vec3& position,
 }
 
 void Renderer3D::DrawModel(Model* model,
-                           const glm::vec3& position,
-                           const glm::vec3& scale,
-                           const glm::vec3& rotation)
+                           const Vec3& position,
+                           const Vec3& scale,
+                           const Vec3& rotation)
 {
     modelRenderer.DrawModel(model, position, scale, rotation);
 }
 
-void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale)
+void Renderer3D::DrawModel(Model* model, const Vec3& position, const Vec3& scale)
 {
-    DrawModel(model, position, scale, glm::vec3 {0.f});
+    DrawModel(model, position, scale, Vec3::Zero);
 }
 
-void Renderer3D::DrawModel(Model* model, const glm::vec3& position)
+void Renderer3D::DrawModel(Model* model, const Vec3& position)
 {
-    DrawModel(model, position, glm::vec3 {1.f}, glm::vec3 {0.f});
+    DrawModel(model, position, {1.f, 1.f, 1.f}, Vec3::Zero);
 }
 
-void Renderer3D::DrawPointLight(const glm::vec3& position,
+void Renderer3D::DrawPointLight(const Vec3& position,
                                 const float& radius,
                                 const glm::vec4& colour,
                                 const glm::vec4& ambientColor)
@@ -95,9 +95,7 @@ void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& camera
 #endif
 }
 
-void Renderer3D::DrawLine(const glm::vec3& origin,
-                          const glm::vec3& destination,
-                          const glm::vec3& colour)
+void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec3& colour)
 {
     debugRenderer.DrawLine(origin, destination, colour);
 }

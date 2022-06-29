@@ -14,7 +14,6 @@
 #include <render/renderer/material/Material.h>
 #include <render/renderer/model/Model.h>
 #include <render/renderer/shader/Shader.h>
-#include <render/utils/Math.h>
 #include <render/window/Window.h>
 
 #include <chrono>
@@ -64,7 +63,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     static auto oldMousePos = Input::GetCursorPosition();
     auto mousePos = Input::GetCursorPosition();
 
-    glm::vec3 rotate {0};
+    Vec3 rotate {Vec3::Zero};
     float lookSpeed = 4.0f;
 
     double differenceX = mousePos.x - oldMousePos.x;
@@ -73,11 +72,10 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     rotate.y += float(differenceX);
     rotate.x += float(differenceY);
 
-    if (glm::dot(rotate, rotate) > glm::epsilon<float>())
+    if (Vec3::Dot(rotate, rotate) > Float::Epsilon())
     {
-        glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
-        viewerObject.SetRotation(
-            Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+        Vec3 newRotation = viewerObject.GetRotation() + lookSpeed * rotate.Normalise();
+        viewerObject.SetRotation(Vec3::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -85,13 +83,16 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
 
     float yaw = viewerObject.GetRotation().y;
-    const glm::vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
-    const glm::vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
-    const glm::vec3 upDir {0.f, -1.f, 0.f};
+    const Vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const Vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
+    const Vec3 upDir {0.f, -1.f, 0.f};
 
-    glm::vec3 moveDir {0.f};
+    Vec3 moveDir {Vec3::Zero};
     if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
-    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
+    if (Input::IsKeyDown(KEY_S))
+    {
+        moveDir -= forwardDir;
+    }
     if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
     if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
 
@@ -100,10 +101,10 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     float moveSpeed = 2.f;
 
-    if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
+    if (Vec3::Dot(moveDir, moveDir) > Float::Epsilon())
     {
-        glm::vec3 newMove = viewerObject.GetPosition() + moveSpeed * glm::normalize(moveDir);
-        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
+        Vec3 newMove = viewerObject.GetPosition() + moveSpeed * moveDir.Normalise();
+        viewerObject.SetPosition(Vec3::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;

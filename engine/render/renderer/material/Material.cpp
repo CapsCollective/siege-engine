@@ -28,9 +28,8 @@ Material::Material(Shader* vertexShader) : Material(vertexShader, nullptr, 1)
 Material::Material(Shader* vertexShader, Shader* fragmentShader) :
     Material(vertexShader, fragmentShader, 2)
 {
-    CC_ASSERT(
-        vertexShader != nullptr && fragmentShader != nullptr,
-        "Error: the vertex and fragment shaders must not be null when using this constructor")
+    CC_ASSERT(vertexShader != nullptr && fragmentShader != nullptr,
+              "Error: the vertex and fragment shaders must not be null when using this constructor")
 
     bufferSize += (Buffer::PadUniformBufferSize(vertexShader->GetUniformSize()) +
                    Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize()));
@@ -203,8 +202,9 @@ void Material::CreateDescriptors()
                                                                    (VkDescriptorType) binding.type,
                                                                    bufferInfos[i]);
 
-        CC_LOG_INFO("Property[{}/{}] - Created a property for pipeline stage [{}] with a size of [{} bytes] for binding [{}]",
-                    static_cast<uint64_t>(i+1),
+        CC_LOG_INFO("Property[{}/{}] - Created a property for pipeline stage [{}] with a size of "
+                    "[{} bytes] for binding [{}]",
+                    static_cast<uint64_t>(i + 1),
                     static_cast<uint64_t>(propertiesCount),
                     stage,
                     property.size * property.count,
@@ -213,7 +213,7 @@ void Material::CreateDescriptors()
 
     CC_LOG_INFO("Successfully created {}/{} descriptor sets",
                 static_cast<uint64_t>(descriptorSets.Count()),
-                    static_cast<uint64_t>(propertiesCount))
+                static_cast<uint64_t>(propertiesCount))
 
     Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
 }
@@ -264,7 +264,11 @@ void Material::SetShaderProperties(Shader* shader, u64& offset)
                                       (Shader::DescriptorType) uniform.type};
         propertiesArray.Append(property);
 
-        CC_LOG_INFO("Binding[{}] - Added new uniform with size [{} bytes] and an offset of [{} bytes]", uniform.binding, uniform.size, offset)
+        CC_LOG_INFO(
+            "Binding[{}] - Added new uniform with size [{} bytes] and an offset of [{} bytes]",
+            uniform.binding,
+            uniform.size,
+            offset)
 
         offset += (uniform.size * uniform.arraySize) * uniform.dynamicCount;
     }
@@ -302,9 +306,9 @@ void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const v
 
 bool Material::HasProperty(Utils::StringId id)
 {
-
-    return std::any_of(propertiesArray.begin(), propertiesArray.end(),
-                       [id](Property& property) { return id == property.id; });
+    return std::any_of(propertiesArray.begin(), propertiesArray.end(), [id](Property& property) {
+        return id == property.id;
+    });
 }
 
 void Material::BuildMaterials(std::initializer_list<Material*> materials)

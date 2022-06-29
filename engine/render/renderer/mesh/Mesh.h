@@ -21,9 +21,9 @@ namespace Siege
 {
 struct Vertex
 {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec3 normal;
+    Vec3 position;
+    Vec3 color;
+    Vec3 normal;
     glm::vec2 uv;
 };
 

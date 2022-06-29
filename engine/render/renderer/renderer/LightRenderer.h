@@ -24,7 +24,7 @@ public:
 
     void Destroy();
 
-    void DrawPointLight(const glm::vec3& position,
+    void DrawPointLight(const Vec3& position,
                         const float& radius,
                         const glm::vec4& colour,
                         const glm::vec4& ambientColor);

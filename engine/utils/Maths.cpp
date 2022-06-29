@@ -13,6 +13,41 @@ const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
 const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
 
+float Float::Lerp(const float& origin, const float& destination, const float& time)
+{
+    return origin * (1.0f - time) + destination * time;
+}
+
+float Float::Normalise(const float& value)
+{
+    return Normalise(value, 0, 1);
+}
+
+float Float::Normalise(const float& value, const float& min, const float& max)
+{
+    return 2 * ((value - min) / (max - min)) - 1;
+}
+
+float Float::Abs(const float& value)
+{
+    return (static_cast<float>(-(value) < 0) * value) + (static_cast<float>(-(value) > 0) * -value);
+}
+
+float Float::Max(const float& lhs, const float& rhs)
+{
+    return ((lhs + rhs + Abs(lhs - rhs)) / 2);
+}
+
+float Float::Min(const float& lhs, const float& rhs)
+{
+    return ((lhs + rhs - Abs(lhs - rhs)) / 2);
+}
+
+float Float::Clamp(const float& value, const float& min, const float& max)
+{
+    return Min(Max(value, min), max);
+}
+
 Vec3 Vec3::Normalise() const
 {
     float length = Length();
@@ -34,6 +69,11 @@ bool Vec3::FromString(Vec3& vec, const String& string)
     // Try to convert the components to float values and return them as a Vector3
     return (components[0].GetFloat(vec.x) && components[1].GetFloat(vec.y) &&
             components[2].GetFloat(vec.z));
+}
+
+Vec3 operator*(const float& lhs, const Vec3& rhs)
+{
+    return {lhs * rhs.x, lhs * rhs.y, lhs * rhs.z};
 }
 
 bool BoundedBox::Intersects(const BoundedBox& other) const

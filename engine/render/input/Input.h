@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include <utils/Maths.h>
+
 #include <map>
 
-#include "../utils/Math.h"
 #include "../window/Window.h"
 
 #define KEY_W GLFW_KEY_W
@@ -32,9 +33,10 @@ public:
 
     struct MouseCoordinates
     {
-        double x;
-        double y;
+        float x;
+        float y;
     };
+
     static void SetWindowPointer(Siege::Window* window);
     static bool IsKeyDown(int key);
     static bool IsKeyJustPressed(int key);
@@ -45,7 +47,6 @@ public:
 private:
 
     static Siege::Window* windowPtr;
-    static bool movedLastFrame;
     static MouseCoordinates currentMouseCoordinates;
     static std::map<int, int> keyMap;
 

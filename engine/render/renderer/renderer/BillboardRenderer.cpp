@@ -53,7 +53,7 @@ void BillboardRenderer::Destroy()
     billboardModel.DestroyModel();
 }
 
-void BillboardRenderer::DrawBillboard(const glm::vec3& position,
+void BillboardRenderer::DrawBillboard(const Vec3& position,
                                       const glm::vec2& scale,
                                       const glm::vec4& colour)
 {
@@ -71,7 +71,7 @@ void BillboardRenderer::DrawBillboard(const glm::vec3& position,
     indices.Append(vertices.Count() - 2);
     indices.Append(vertices.Count() - 1);
 
-    positions.Append({position, glm::vec3(scale, 0.f)});
+    positions.Append({position, scale});
 }
 
 void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
