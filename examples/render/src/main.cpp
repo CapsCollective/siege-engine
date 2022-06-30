@@ -111,10 +111,8 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 }
 
 // TODO(Aryeh): Move the following to Utils:
-// * Hash
 // * Math
 // * StackArray
-// * Assert macro
 
 // TODO(Aryeh): Change all vec3 colors to the Color object.
 // TODO(Aryeh): Change pipeline shader reading function to use utils filesystem.

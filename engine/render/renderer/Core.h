@@ -28,24 +28,6 @@ typedef uint64_t u64;
 typedef int32_t i32;
 typedef size_t size;
 
-#define EXIT_APP abort();
-
-#define REPORT_ASSERT_FAILURE(expr, file, line, message)                       \
-    CC_LOG_ERROR("ASSERTION FAILURE: {} in file: {} on line: {}\nMessage: {}", \
-                 #expr,                                                        \
-                 file,                                                         \
-                 line,                                                         \
-                 message);
-
-// Custom assert macro
-#define CC_ASSERT(expr, message)                                   \
-    if (expr) {}                                                   \
-    else                                                           \
-    {                                                              \
-        REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \
-        EXIT_APP                                                   \
-    }
-
 namespace Siege
 {
 struct CameraData
