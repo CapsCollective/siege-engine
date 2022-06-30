@@ -13,7 +13,7 @@
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "../pipeline/Pipeline.h"
-#include "../utils/Hash.h"
+#include <utils/Hash.h>
 
 namespace Siege
 {

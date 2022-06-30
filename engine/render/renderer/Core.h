@@ -10,12 +10,11 @@
 
 #include <utils/Logging.h>
 #include <volk/volk.h>
+#include <utils/Hash.h>
 
 #include <cstdint>
-#include <iostream>
 
 #include "utils/Array.h"
-#include "utils/Hash.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -40,17 +39,12 @@ typedef size_t size;
 
 // Custom assert macro
 #define CC_ASSERT(expr, message)                                   \
-    if (expr)                                                      \
-    {}                                                             \
+    if (expr) {}                                                   \
     else                                                           \
     {                                                              \
         REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \
         EXIT_APP                                                   \
     }
-
-#define OUT
-
-#define INTERN_STR(str) Utils::WSID(str)
 
 namespace Siege
 {

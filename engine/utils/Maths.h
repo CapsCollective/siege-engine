@@ -13,6 +13,7 @@
 
 #include "Macros.h"
 #include "String.h"
+#include "Hash.h"
 
 // Define macros
 
@@ -148,6 +149,18 @@ struct Vec3
     float x;
     float y;
     float z;
+};
+
+// Math object hashes
+template<>
+struct std::hash<Vec3>
+{
+    size_t operator()(const Vec3& vec) const
+    {
+        size_t seed = 0;
+        Siege::Utils::HashCombine(seed, vec.x, vec.y, vec.z);
+        return seed;
+    };
 };
 
 Vec3 operator*(const float& lhs, const Vec3&);

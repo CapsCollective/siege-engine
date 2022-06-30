@@ -8,14 +8,15 @@
 
 #include "Model.h"
 
+#include <utils/Maths.h>
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <utils/String.h>
 
-namespace std
-{
+// Hashing functions
+
 template<>
-struct hash<Siege::Vertex>
+struct std::hash<Siege::Vertex>
 {
     size_t operator()(const Siege::Vertex& vertex) const
     {
@@ -26,18 +27,7 @@ struct hash<Siege::Vertex>
 };
 
 template<>
-struct hash<Vec3>
-{
-    size_t operator()(const Vec3& vec) const
-    {
-        size_t seed = 0;
-        Siege::Utils::HashCombine(seed, vec.x, vec.y, vec.z);
-        return seed;
-    };
-};
-
-template<>
-struct hash<Siege::Vertex2D>
+struct std::hash<Siege::Vertex2D>
 {
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
@@ -46,7 +36,6 @@ struct hash<Siege::Vertex2D>
         return seed;
     };
 };
-} // namespace std
 
 namespace Siege
 {

@@ -11,23 +11,23 @@
 namespace Siege::Utils
 {
 // Constexpr implementation and helpers
-uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc)
+uint32_t Crc32Impl(const uint8_t* p, size_t len, uint32_t crc)
 {
-    return len ? crc32_impl(p + 1, len - 1, (crc >> 8) ^ crc_table[(crc & 0xFF) ^ *p]) : crc;
+    return len ? Crc32Impl(p + 1, len - 1, (crc >> 8) ^ crc_table[(crc & 0xFF) ^ *p]) : crc;
 }
 
-uint32_t crc32(const uint8_t* data, size_t length)
+uint32_t Crc32(const uint8_t* data, size_t length)
 {
-    return ~crc32_impl(data, length, ~0);
+    return ~Crc32Impl(data, length, ~0);
 }
 
-size_t strlen_c(const char* str)
+size_t StrlenC(const char* str)
 {
-    return *str ? 1 + strlen_c(str + 1) : 0;
+    return *str ? 1 + StrlenC(str + 1) : 0;
 }
 
 StringId WSID(const char* str)
 {
-    return crc32((uint8_t*) str, strlen_c(str));
+    return Crc32((uint8_t*) str, StrlenC(str));
 }
 } // namespace Siege::Utils

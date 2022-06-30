@@ -110,6 +110,17 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     oldMousePos = mousePos;
 }
 
+// TODO(Aryeh): Move the following to Utils:
+// * Hash
+// * Math
+// * StackArray
+// * Assert macro
+
+// TODO(Aryeh): Change all vec3 colors to the Color object.
+// TODO(Aryeh): Change pipeline shader reading function to use utils filesystem.
+// TODO(Aryeh): Move Input to another module (probably Engine).
+// TODO(Aryeh): Write Unit Tests for renderer.
+
 int main()
 {
     WINDOWS_ATTACH_CONSOLE
@@ -282,7 +293,7 @@ int main()
                                           {1.f, 0.f, 0.f, alpha},
                                           {1.f, 1.f, 1.f, .02f});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {0.f, 1.f, 0.f, 1.f});
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
 
         Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
