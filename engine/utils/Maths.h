@@ -11,9 +11,9 @@
 
 #include <cmath>
 
+#include "Hash.h"
 #include "Macros.h"
 #include "String.h"
-#include "Hash.h"
 
 // Define macros
 

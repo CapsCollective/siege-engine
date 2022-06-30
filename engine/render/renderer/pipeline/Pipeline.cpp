@@ -8,8 +8,6 @@
 
 #include "Pipeline.h"
 
-#include <fstream>
-#include <iostream>
 #include <string>
 
 namespace Siege
@@ -24,30 +22,6 @@ Pipeline::~Pipeline()
     ClearPipeline();
 
     isFreed = true;
-}
-
-// TODO(Aryeh): Move this to utils/FileSystem once HeapArray has been merged.
-Utils::Array<char> Pipeline::ReadFile(const String& filePath)
-{
-    // Read the file as binary and consume the entire file.
-    std::ifstream file {filePath, std::ios::ate | std::ios::binary};
-
-    CC_ASSERT(file.is_open(), (String("Could not find file: ") + filePath))
-
-    // Since we consumed the entire file, we can tell the size by checking where
-    // the file stream is reading from (which presumably is at the end of the file).
-    u32 size = static_cast<u32>(file.tellg());
-
-    Utils::Array<char> buffer(size);
-
-    // Move to the beginning of the file.
-    file.seekg(0);
-
-    file.read(buffer.Data(), size);
-
-    file.close();
-
-    return buffer;
 }
 
 void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
@@ -70,7 +44,7 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
 
     for (size_t i = 0; i < shaderCount; i++)
     {
-        auto shaderCode = ReadFile(shaders[i].filePath);
+        auto shaderCode = FileSystem::ReadAsBinary(shaders[i].filePath);
 
         CreateShaderModule(shaderCode, OUT & shaderModules[i]);
 
@@ -161,14 +135,15 @@ void Pipeline::DestroyPipeline()
     isFreed = true;
 }
 
-void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)
+void Pipeline::CreateShaderModule(const FileSystem::FileData& fileData,
+                                  VkShaderModule* shaderModule)
 {
     VkShaderModuleCreateInfo createInfo {};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = fileData.Size();
+    createInfo.codeSize = fileData.fileSize;
     // Because the code is expected to be numerical, we need to cast the values in the
     // array to 32-bit unsigned integers.
-    createInfo.pCode = reinterpret_cast<const u32*>(fileData.Data());
+    createInfo.pCode = reinterpret_cast<const u32*>(fileData.data);
 
     auto device = VulkanDevice::GetDeviceInstance();
 

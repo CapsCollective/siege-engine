@@ -32,6 +32,27 @@ String FileSystem::Read(const String& filename)
     return content;
 }
 
+FileSystem::FileData FileSystem::ReadAsBinary(const String& filename)
+{
+    // Try open the file for reading
+    FILE* file = fopen(filename, "r");
+    if (!file) return {};
+
+    // Determine file size
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    rewind(file);
+
+    FileSystem::FileData fileContent(size);
+
+    // Copy the content
+    fread(fileContent.data, sizeof(char), size, file);
+
+    // Close the file stream and return
+    fclose(file);
+    return fileContent;
+}
+
 bool FileSystem::Exists(const String& filename)
 {
     std::ifstream file(filename);

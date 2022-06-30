@@ -35,7 +35,8 @@
 
 // Custom assert macro
 #define CC_ASSERT(expr, message)                                   \
-    if (expr) {}                                                   \
+    if (expr)                                                      \
+    {}                                                             \
     else                                                           \
     {                                                              \
         REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \

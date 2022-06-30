@@ -8,9 +8,9 @@
 
 #pragma once
 
+#include <utils/Hash.h>
 #include <utils/Logging.h>
 #include <volk/volk.h>
-#include <utils/Hash.h>
 
 #include <cstdint>
 

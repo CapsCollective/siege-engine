@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <utils/FileSystem.h>
+
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
 #include "PipelineConfig.h"
@@ -97,14 +99,6 @@ private:
 
     static constexpr size_t MAX_SHADER_MODULES = 2;
 
-    /**
-     * Reads a file and returns the contents in binary. This is particularly
-     * useful for binary shader file formats (like spir-v).
-     * @param filePath a raw c string specifying the file path.
-     * @returns a heap-allocated array containing the file contents.
-     **/
-    static Utils::Array<char> ReadFile(const String& filePath);
-
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
                                 u32 shaderCount,
                                 const PipelineConfigInfo& configInfo);
@@ -116,7 +110,8 @@ private:
      * @param fileData an array containing our binary shader data.
      * @param shaderModule a pointer to a shaderModule that we want to populate.
      **/
-    static void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
+    static void CreateShaderModule(const FileSystem::FileData& fileData,
+                                   VkShaderModule* shaderModule);
 
     /**
      * The vulkan representation of a graphics pipeline.
