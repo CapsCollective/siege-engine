@@ -36,6 +36,11 @@ bool Vec3::FromString(Vec3& vec, const String& string)
             components[2].GetFloat(vec.z));
 }
 
+bool Vec3::operator==(const Vec3& other)
+{
+    return x == other.x && y == other.y && z == other.z;
+}
+
 bool BoundedBox::Intersects(const BoundedBox& other) const
 {
     if ((max.x >= other.min.x) && (min.x <= other.max.x))
