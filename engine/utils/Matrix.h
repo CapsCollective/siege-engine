@@ -120,6 +120,7 @@ struct Matrix2x2
 
     float Determinant() const;
     Matrix2x2 Inverse() const;
+    Matrix2x2 Transpose() const;
 
 private:
 
@@ -220,6 +221,7 @@ struct Matrix3x3
 
     float Determinant() const;
     Matrix3x3 Inverse() const;
+    Matrix3x3 Transpose() const;
 
 private:
 

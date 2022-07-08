@@ -8,10 +8,9 @@
 
 #include "Maths.h"
 
-
 // ---------------------------------------- Vec2 --------------------------------------------------
 
-Vec2::Vec2(const Vec3& other) : x{other.x}, y {other.y} {}
+Vec2::Vec2(const Vec3& other) : x {other.x}, y {other.y} {}
 
 // Define static members
 const Vec2 Vec2::Zero = {0.f, 0.f};

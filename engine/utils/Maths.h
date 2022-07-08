@@ -16,22 +16,21 @@
 
 // Define macros
 
-#define DEFINE_OPERATOR_NO_IMP(op, lhsType, rhsType) \
-   lhsType& operator op(const rhsType& rhs);
+#define DEFINE_OPERATOR_NO_IMP(op, lhsType, rhsType) lhsType& operator op(const rhsType& rhs);
 
 #define DEFINE_CONST_OPERATOR_NO_IMP(op, lhsType, rhsType) \
-   lhsType operator op(const rhsType& rhs) const;
+    lhsType operator op(const rhsType& rhs) const;
 
 #define DEFINE_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType& lhsType::operator op(const rhsType& rhs) \
-    {                                               \
-        body(op, _SEMICOLON) return *this;          \
+    lhsType& lhsType::operator op(const rhsType& rhs)   \
+    {                                                   \
+        body(op, _SEMICOLON) return *this;              \
     }
 
 #define DEFINE_CONST_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType lhsType::operator op(const rhsType& rhs) const         \
-    {                                                     \
-        return {body(op, _COMMA)};                        \
+    lhsType lhsType::operator op(const rhsType& rhs) const    \
+    {                                                         \
+        return {body(op, _COMMA)};                            \
     }
 
 #define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
@@ -125,7 +124,10 @@ struct Vec2
 
     Vec2 XComp() const
     {
-        return {x, 0.f,};
+        return {
+            x,
+            0.f,
+        };
     }
 
     Vec2 YComp() const

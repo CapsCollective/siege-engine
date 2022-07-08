@@ -288,4 +288,3 @@ UTEST(test_Vec2, GetVectorLength)
 
     ASSERT_EQ(3.60555127546f, length);
 }
-
