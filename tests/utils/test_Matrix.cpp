@@ -381,6 +381,18 @@ UTEST(test_Matrix2x2, TestReverseOperator)
     }
 }
 
+UTEST(test_Matrix2x2, TestTranspose)
+{
+    Siege::Utils::Matrix2x2 expected = {1.f, 3.f, 2.f, 4.f};
+
+    Siege::Utils::Matrix2x2 matrix = {1.f, 2.f, 3.f, 4.f};
+
+    Siege::Utils::Matrix2x2 transposed = matrix.Transpose();
+
+
+    ASSERT_TRUE(expected == transposed);
+}
+
 // -------------------------------------- Matrix3x3 -----------------------------------------------
 
 UTEST(test_Matrix3x3, CreateEmptyMatrix)
@@ -756,6 +768,24 @@ UTEST(test_Matrix3x3, TestReverseOperator)
     }
 }
 
+UTEST(test_Matrix3x3, TestTranspose)
+{
+    Siege::Utils::Matrix3x3 expected = {{1.f, 4.f, 7.f}, {2.f, 5.f, 8.f}, {3.f, 6.f, 9.f}};
+
+    Siege::Utils::Matrix3x3 matrix = {{1.f, 2.f, 3.f}, {4.f, 5.f, 6.f}, {7.f, 8.f, 9.f}};
+
+    Siege::Utils::Matrix3x3 transposed = matrix.Transpose();
+
+    for (size_t i = 0; i < 9; i++)
+    {
+        ASSERT_TRUE(expected == transposed);
+    }
+}
+
+// -------------------------------------- Matrix4x4 -----------------------------------------------
+
+
+
 // Define test fixture
 struct test_Matrix_Benchmark
 {
@@ -794,6 +824,86 @@ UTEST_F_TEARDOWN(test_Matrix_Benchmark)
 {
     std::cout << "TORN DOWN" << std::endl;
     test_Matrix_Benchmark::CurrentVal() = 0;
+}
+
+UTEST_F(test_Matrix_Benchmark, TestMatrix2x2ExecutionTimes)
+{
+    float* testVals = test_Matrix_Benchmark::RandomValues();
+    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
+
+    float additionTime = 0.f;
+    float createTime = 0.f;
+    size_t size = sizeof(Siege::Utils::Matrix2x2);
+
+    for (size_t i = 0; i < 1000000; i++)
+    {
+        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
+              x1 = testVals[currentIndex++], y1 = testVals[currentIndex++];
+
+        auto startInit = std::chrono::high_resolution_clock::now();
+
+        Siege::Utils::Matrix2x2 mat0 = {x0, y0, x1, y1};
+
+        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
+                          std::chrono::high_resolution_clock::now() - startInit)
+                          .count();
+
+        Siege::Utils::Matrix2x2 mat1 = {testVals[currentIndex++], testVals[currentIndex++],
+                                        testVals[currentIndex++], testVals[currentIndex++]};
+
+        auto start = std::chrono::high_resolution_clock::now();
+        Siege::Utils::Matrix2x2 mat2 = mat0 * mat1;
+        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
+                            std::chrono::high_resolution_clock::now() - start)
+                            .count();
+    }
+
+    test_Matrix_Benchmark::CurrentVal() = currentIndex;
+
+    std::cout << "SIZE: " << size << std::endl;
+    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
+    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
+    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
+              << "ms" << std::endl;
+}
+
+UTEST_F(test_Matrix_Benchmark, TestGlm2x2ExecutionTimes)
+{
+    float* testVals = test_Matrix_Benchmark::RandomValues();
+    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
+
+    float additionTime = 0.f;
+    float createTime = 0.f;
+    size_t size = sizeof(glm::mat2);
+
+    for (size_t i = 0; i < 1000000; i++)
+    {
+        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
+              x1 = testVals[currentIndex++], y1 = testVals[currentIndex++];
+
+        auto startInit = std::chrono::high_resolution_clock::now();
+        glm::mat2 mat0 = { x0, y0, x1, y1 };
+        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
+                          std::chrono::high_resolution_clock::now() - startInit)
+                          .count();
+
+        glm::mat2 mat1 = {testVals[currentIndex++], testVals[currentIndex++],
+                          testVals[currentIndex++], testVals[currentIndex++]};
+
+        auto start = std::chrono::high_resolution_clock::now();
+        glm::mat2 mat2 = mat0 * mat1;
+        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
+                            std::chrono::high_resolution_clock::now() - start)
+                            .count();
+    }
+
+    test_Matrix_Benchmark::CurrentVal() = currentIndex;
+
+    std::cout << "SIZE: " << size << std::endl;
+    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
+    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
+    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
+              << "ms" << std::endl;
 }
 
 UTEST_F(test_Matrix_Benchmark, TestMatrixExecutionTimes)
@@ -885,3 +995,5 @@ UTEST_F(test_Matrix_Benchmark, TestGlmExecutionTimes)
     std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
               << "ms" << std::endl;
 }
+
+// -------------------------------------- Matrix4x4 -----------------------------------------------

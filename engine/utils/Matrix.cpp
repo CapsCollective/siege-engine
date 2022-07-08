@@ -184,6 +184,8 @@ Matrix2x2 Matrix2x2::Inverse() const
             values[0] * oneOverDeterminant};
 }
 
+Matrix2x2 Matrix2x2::Transpose() const { return { values[0], values[2], values[1], values[3] }; }
+
 // -------------------------------------- Matrix3x3 -----------------------------------------------
 
 const Matrix3x3 Matrix3x3::Identity = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
@@ -383,6 +385,15 @@ Matrix3x3 Matrix3x3::Inverse() const
             +(values[3] * values[7] - values[4] * values[6]) * oneOverDeterminant,
             -(values[0] * values[7] - values[1] * values[6]) * oneOverDeterminant,
             +(values[0] * values[4] - values[1] * values[3]) * oneOverDeterminant};
+}
+
+Matrix3x3 Matrix3x3::Transpose() const
+{
+    return {
+        values[0], values[3], values[6],
+        values[1], values[4], values[7],
+        values[2], values[5], values[8]
+    };
 }
 
 const float& Matrix3x3::Get(const size_t& rowIndex, const size_t& colIndex)
