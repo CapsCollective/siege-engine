@@ -16,6 +16,24 @@
 
 // Define macros
 
+#define DEFINE_OPERATOR_NO_IMP(op, lhsType, rhsType) \
+   lhsType& operator op(const rhsType& rhs);
+
+#define DEFINE_CONST_OPERATOR_NO_IMP(op, lhsType, rhsType) \
+   lhsType operator op(const rhsType& rhs) const;
+
+#define DEFINE_OPERATOR_IMP(op, lhsType, rhsType, body) \
+    lhsType& lhsType::operator op(const rhsType& rhs) \
+    {                                               \
+        body(op, _SEMICOLON) return *this;          \
+    }
+
+#define DEFINE_CONST_OPERATOR_IMP(op, lhsType, rhsType, body) \
+    lhsType lhsType::operator op(const rhsType& rhs) const         \
+    {                                                     \
+        return {body(op, _COMMA)};                        \
+    }
+
 #define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
     lhsType& operator op(const rhsType& rhs)        \
     {                                               \
@@ -31,6 +49,94 @@
 #define VEC_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep
 
 #define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
+
+#define VEC2_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep
+
+#define VEC2_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep
+
+typedef struct Vec2 Vec2;
+typedef struct Vec3 Vec3;
+
+// ---------------------------------------- Vec2 --------------------------------------------------
+
+struct Vec2
+{
+    // Public constants
+
+    static const Vec2 Zero;
+    static const Vec2 One;
+    static const Vec2 Up;
+
+    // 'Structors
+
+    Vec2() : Vec2(0.f, 0.f) {}
+    Vec2(const float& x, const float& y) : x(x), y(y) {}
+    Vec2(const Vec3& other);
+
+    // Operator overloads
+
+    Vec2& operator=(const Vec2& rhs) = default;
+
+    DEFINE_OPERATOR(+=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_OPERATOR(-=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_OPERATOR(*=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_OPERATOR(/=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+
+    DEFINE_OPERATOR_NO_IMP(+=, Vec2, Vec3)
+    DEFINE_OPERATOR_NO_IMP(-=, Vec2, Vec3)
+    DEFINE_OPERATOR_NO_IMP(*=, Vec2, Vec3)
+    DEFINE_OPERATOR_NO_IMP(/=, Vec2, Vec3)
+
+    bool operator==(const Vec2& other);
+    bool operator!=(const Vec2& other);
+
+    DEFINE_OPERATOR(+=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_OPERATOR(-=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_OPERATOR(*=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_OPERATOR(/=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+
+    DEFINE_CONST_OPERATOR(+, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_CONST_OPERATOR(-, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_CONST_OPERATOR(*, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+    DEFINE_CONST_OPERATOR(/, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
+
+    DEFINE_CONST_OPERATOR_NO_IMP(+, Vec2, Vec3)
+    DEFINE_CONST_OPERATOR_NO_IMP(-, Vec2, Vec3)
+    DEFINE_CONST_OPERATOR_NO_IMP(*, Vec2, Vec3)
+    DEFINE_CONST_OPERATOR_NO_IMP(/, Vec2, Vec3)
+
+    DEFINE_CONST_OPERATOR(+, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_CONST_OPERATOR(-, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_CONST_OPERATOR(*, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+    DEFINE_CONST_OPERATOR(/, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
+
+    // Static methods
+
+    static bool FromString(OUT Vec2& vec, const String& string);
+
+    // Public methods
+
+    String ToString() const;
+
+    float Length() const
+    {
+        return sqrtf(x * x + y * y);
+    }
+
+    Vec2 XComp() const
+    {
+        return {x, 0.f,};
+    }
+
+    Vec2 YComp() const
+    {
+        return {0.f, y};
+    }
+
+    float x, y;
+};
+
+// ---------------------------------------- Vec3 --------------------------------------------------
 
 struct Vec3
 {
