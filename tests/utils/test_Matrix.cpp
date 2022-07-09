@@ -35,6 +35,16 @@ UTEST(test_Matrix2x2, CreateMatrixWithValues)
     }
 }
 
+UTEST(test_Matrix2x2, CreateMatrixWithVectors)
+{
+    Siege::Utils::Matrix2x2 matrix = {{0, 1}, {2, 3}};
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        ASSERT_EQ(i, matrix[i]);
+    }
+}
+
 UTEST(test_Matrix2x2, CreateIdentityMatrix)
 {
     float expectedValues[] = {1.f, 0.f, 0.f, 1.f};
