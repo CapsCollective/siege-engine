@@ -66,9 +66,9 @@ namespace Siege::Utils
 
 // Possible Matrix/Vector operations:
 
-// 2x2 * 2x2 = 2x2 -> TBD
+// 2x2 * 2x2 = 2x2 -> DONE
 // 2x3 * 3x2 = 2x3 -> TBD
-// 3x3 * 3x3 = 3x3 -> (DONE)
+// 3x3 * 3x3 = 3x3 -> DONE
 // 3x3 * 3x2 = 3x2 -> TBD
 // 3x3 * 3x4 = 3x4 -> TBD
 // 3x3 * 3x1 = 3x1 -> a 3 dimensional vector (DONE)
@@ -77,11 +77,11 @@ namespace Siege::Utils
 
 struct Matrix2x2
 {
-    Matrix2x2() : Matrix2x2(0, 0, 0, 0) {}
+    Matrix2x2(const float& x0 = 0, const float& y0 = 0, const float& x1 = 0, const float& y1 = 0) :
+        values {x0, y0, x1, y1} {}
 
-    Matrix2x2(const float& x0, const float& y0, const float& x1, const float& y1) :
-        values {x0, y0, x1, y1}
-    {}
+    Matrix2x2(const Vec2& row0, const Vec2& row1)
+        : Matrix2x2(row0.x, row0.y, row1.x, row1.y) {}
 
     static const Matrix2x2 Identity;
     static const Matrix2x2 Zero;
@@ -161,19 +161,17 @@ inline Vec2 operator*(const Matrix2x2& lhs, const Vec2& rhs)
 
 struct Matrix3x3
 {
-    Matrix3x3(const float& vx0,
-              const float& vy0,
-              const float& vz0,
-              const float& vx1,
-              const float& vy1,
-              const float& vz1,
-              const float& vx2,
-              const float& vy2,
-              const float& vz2) :
-        values {vx0, vy0, vz0, vx1, vy1, vz1, vx2, vy2, vz2}
+    Matrix3x3(const float& vx0 = 0.f,
+              const float& vy0 = 0.f,
+              const float& vz0 = 0.f,
+              const float& vx1 = 0.f,
+              const float& vy1 = 0.f,
+              const float& vz1 = 0.f,
+              const float& vx2 = 0.f,
+              const float& vy2 = 0.f,
+              const float& vz2 = 0.f)
+        : values {vx0, vy0, vz0, vx1, vy1, vz1, vx2, vy2, vz2}
     {}
-
-    Matrix3x3() : Matrix3x3(0, 0, 0, 0, 0, 0, 0, 0, 0) {}
 
     Matrix3x3(const Vec3& vec0, const Vec3& vec1, const Vec3& vec2) :
         Matrix3x3(vec0.x, vec0.y, vec0.z, vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z)
@@ -266,6 +264,7 @@ inline Matrix3x3 operator/(const Matrix3x3& lhs, const Matrix3x3& rhs)
 //
 //     float values[16];
 // };
+
 } // namespace Siege::Utils
 
 #endif // SIEGE_ENGINE_MATRIX_H
