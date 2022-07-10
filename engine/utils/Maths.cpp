@@ -128,7 +128,7 @@ bool Vec4::FromString(OUT Vec4& vec, const String& string)
 
 bool Vec4::operator==(const Vec4& other)
 {
-    return x == other.x && y == other.y && z == other.z == w == other.w;
+    return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
 bool Vec4::operator!=(const Vec4& other)

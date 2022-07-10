@@ -662,7 +662,7 @@ UTEST(test_Matrix3x3, MultiplyVectorByMatrix)
     ASSERT_TRUE(expected == result);
 }
 
-UTEST(test_Matrix3x3, MultiplyVectorByWithTimesOperator)
+UTEST(test_Matrix3x3, MultiplyVectorWithTimesOperator)
 {
     Vec3 expected {10, 10, 30};
 
@@ -794,216 +794,565 @@ UTEST(test_Matrix3x3, TestTranspose)
 
 // -------------------------------------- Matrix4x4 -----------------------------------------------
 
-
-
-// Define test fixture
-struct test_Matrix_Benchmark
+UTEST(test_Matrix4x4, CreateEmptyMatrix)
 {
-    test_Matrix_Benchmark() {}
+    Siege::Utils::Matrix4x4 matrix;
 
-    static float* RandomValues()
+    for (size_t i = 0; i < 16; i++)
     {
-        static bool initialised = false;
-        static float randomValues[180000000];
-
-        if (!initialised)
-        {
-            std::cout << "INITIALISED" << std::endl;
-            int seed = rand() % 1000000;
-
-            for (size_t i = 0; i < 180000000; i++) randomValues[i] = seed + i % 1000000;
-            initialised = true;
-        }
-
-        return randomValues;
+        ASSERT_EQ(0.f, matrix[i]);
     }
-
-    static size_t& CurrentVal()
-    {
-        static size_t currentVal = 0;
-        return currentVal;
-    }
-};
-
-UTEST_F_SETUP(test_Matrix_Benchmark)
-{
-    std::cout << "STARTED UP" << std::endl;
 }
 
-UTEST_F_TEARDOWN(test_Matrix_Benchmark)
+UTEST(test_Matrix4x4, CreateMatrixWithValues)
 {
-    std::cout << "TORN DOWN" << std::endl;
-    test_Matrix_Benchmark::CurrentVal() = 0;
+    float expectedValues[] = {1.f, 2.f, 3.f, 4.f,
+                              5.f, 6.f, 7.f, 8.f,
+                              9.f, 10.f, 11.f, 12.f,
+                              13.f, 14.f, 15.f, 16.f};
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 2.f, 3.f, 4.f},
+                                      {5.f, 6.f, 7.f, 8.f},
+                                      {9.f, 10.f, 11.f, 12.f},
+                                      {13.f, 14.f, 15.f, 16.f}};
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expectedValues[i], matrix[i]);
+    }
 }
 
-UTEST_F(test_Matrix_Benchmark, TestMatrix2x2ExecutionTimes)
+UTEST(test_Matrix4x4, CreateIdentityMatrix)
 {
-    float* testVals = test_Matrix_Benchmark::RandomValues();
-    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
+    float expectedValues[] = {1.f, 0.f, 0.f, 0.f,
+                              0.f, 1.f, 0.f, 0.f,
+                              0.f, 0.f, 1.f, 0.f,
+                              0.f, 0.f, 0.f, 1.f};
 
-    float additionTime = 0.f;
-    float createTime = 0.f;
-    size_t size = sizeof(Siege::Utils::Matrix2x2);
+    Siege::Utils::Matrix4x4 matrix = Siege::Utils::Matrix4x4::Identity;
 
-    for (size_t i = 0; i < 1000000; i++)
+    for (size_t i = 0; i < 16; i++)
     {
-        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
-              x1 = testVals[currentIndex++], y1 = testVals[currentIndex++];
+        ASSERT_EQ(expectedValues[i], matrix[i]);
+    }
+}
 
-        auto startInit = std::chrono::high_resolution_clock::now();
+UTEST(test_Matrix4x4, CopyMatrixUsingConstructor)
+{
+    Siege::Utils::Matrix4x4 matrixA = Siege::Utils::Matrix4x4::Identity;
+    Siege::Utils::Matrix4x4 matrixB = {matrixA};
 
-        Siege::Utils::Matrix2x2 mat0 = {x0, y0, x1, y1};
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(matrixA[i], matrixB[i]);
+    }
+}
 
-        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                          std::chrono::high_resolution_clock::now() - startInit)
-                          .count();
+UTEST(test_Matrix4x4, TestMatrixCopyInDifferentScopes)
+{
+    float expectedValues[] = {1.f, 0.f, 0.f, 0.f,
+                              0.f, 1.f, 0.f, 0.f,
+                              0.f, 0.f, 1.f, 0.f,
+                              0.f, 0.f, 0.f, 1.f};
 
-        Siege::Utils::Matrix2x2 mat1 = {testVals[currentIndex++], testVals[currentIndex++],
-                                        testVals[currentIndex++], testVals[currentIndex++]};
+    Siege::Utils::Matrix4x4 matrixA;
 
-        auto start = std::chrono::high_resolution_clock::now();
-        Siege::Utils::Matrix2x2 mat2 = mat0 * mat1;
-        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                            std::chrono::high_resolution_clock::now() - start)
-                            .count();
+    { // Open a new scope. MatrixB should not be in memory once we leave the brackets
+        Siege::Utils::Matrix4x4 matrixB = Siege::Utils::Matrix4x4::Identity;
+        matrixA = matrixB;
     }
 
-    test_Matrix_Benchmark::CurrentVal() = currentIndex;
-
-    std::cout << "SIZE: " << size << std::endl;
-    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
-    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
-    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
-              << "ms" << std::endl;
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expectedValues[i], matrixA[i]);
+    }
 }
 
-UTEST_F(test_Matrix_Benchmark, TestGlm2x2ExecutionTimes)
+UTEST(test_Matrix4x4, GetElementInMatrix)
 {
-    float* testVals = test_Matrix_Benchmark::RandomValues();
-    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
+    float expected = 1;
 
-    float additionTime = 0.f;
-    float createTime = 0.f;
-    size_t size = sizeof(glm::mat2);
+    Siege::Utils::Matrix4x4 matrixA = Siege::Utils::Matrix4x4::Identity;
 
-    for (size_t i = 0; i < 1000000; i++)
+    float result0 = matrixA.Get(0, 0);
+    float result1 = matrixA.Get(1, 1);
+
+    ASSERT_EQ(expected, result0);
+    ASSERT_EQ(expected, result1);
+}
+
+UTEST(test_Matrix4x4, CheckMatrixEquality)
+{
+    Siege::Utils::Matrix4x4 matrixA = Siege::Utils::Matrix4x4::Identity;
+    Siege::Utils::Matrix4x4 matrixB = {};
+    Siege::Utils::Matrix4x4 matrixC = matrixA;
+
+    ASSERT_TRUE(matrixA == matrixC);
+    ASSERT_FALSE(matrixA == matrixB);
+    ASSERT_TRUE(matrixB == Siege::Utils::Matrix4x4::Zero);
+    ASSERT_FALSE(matrixB == matrixC);
+}
+
+UTEST(test_Matrix4x4, AddMatrices)
+{
+    float expectedValues[] = {2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f};
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    matrixA.Add(matrixB);
+
+    for (size_t i = 0; i < 16; i++)
     {
-        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
-              x1 = testVals[currentIndex++], y1 = testVals[currentIndex++];
+        ASSERT_EQ(expectedValues[i], matrixA[i]);
+    }
+}
 
-        auto startInit = std::chrono::high_resolution_clock::now();
-        glm::mat2 mat0 = { x0, y0, x1, y1 };
-        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                          std::chrono::high_resolution_clock::now() - startInit)
-                          .count();
+UTEST(test_Matrix4x4, AddMatricesWithPlusEqualsOperator)
+{
+    float expectedValues[] = {2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f};
 
-        glm::mat2 mat1 = {testVals[currentIndex++], testVals[currentIndex++],
-                          testVals[currentIndex++], testVals[currentIndex++]};
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
 
-        auto start = std::chrono::high_resolution_clock::now();
-        glm::mat2 mat2 = mat0 * mat1;
-        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                            std::chrono::high_resolution_clock::now() - start)
-                            .count();
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    matrixA += matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expectedValues[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, AddMatricesAndReturnNewMatrix)
+{
+    float expectedValues[] = {2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f,
+                              2.f, 2.f, 2.f, 2.f};
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    auto matrixC = matrixA + matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expectedValues[i], matrixC[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, SubtractMatrices)
+{
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Zero;
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    matrixA.Subtract(matrixB);
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, SubtractMatricesWithMinusEqualsOperator)
+{
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Zero;
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    matrixA -= matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, SubtractMatricesAndReturnNewMatrix)
+{
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Zero;
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f},
+                                       {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixC = matrixA - matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixC[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyByScalar)
+{
+
+    Siege::Utils::Matrix4x4 expected = {{3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f}};
+
+    matrix.MultiplyScalar(3.f);
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrix[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyByScalarUsingTimesEqualsOperator)
+{
+    Siege::Utils::Matrix4x4 expected = {{3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f}};
+
+    matrix *= 3.f;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrix[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyByScalarUsingEqualsOperator)
+{
+    Siege::Utils::Matrix4x4 expected = {{3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f},
+                                        {3.f, 3.f, 3.f, 3.f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f},
+                                      {1.f, 1.f, 1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = matrix * 3.f;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixB[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyTwoMatrices)
+{
+    Siege::Utils::Matrix4x4 expected = {{43.f, 45.f, 47.f, 49.f},
+                                        {37.f, 35.f, 33.f, 31.f},
+                                        {107.f, 109.f, 111.f, 113.f},
+                                        {101.f, 99.f, 97.f, 95.f}};
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 2.f, 3.f, 4.f},
+                                       {4.f, 3.f, 2.f, 1.f},
+                                       {5.f, 6.f, 7.f, 8.f},
+                                       {8.f, 7.f, 6.f, 5.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{4.f, 3.f, 2.f, 1.f},
+                                       {1.f, 2.f, 3.f, 4.f},
+                                       {7.f, 6.f, 5.f, 4.f},
+                                       {4.f, 5.f, 6.f, 7.f}};
+
+    matrixA.Multiply(matrixB);
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyTwoMatricesUsingTimesEqualsOperator)
+{
+    Siege::Utils::Matrix4x4 expected = {{43.f, 45.f, 47.f, 49.f},
+                                        {37.f, 35.f, 33.f, 31.f},
+                                        {107.f, 109.f, 111.f, 113.f},
+                                        {101.f, 99.f, 97.f, 95.f}};
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 2.f, 3.f, 4.f},
+                                       {4.f, 3.f, 2.f, 1.f},
+                                       {5.f, 6.f, 7.f, 8.f},
+                                       {8.f, 7.f, 6.f, 5.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{4.f, 3.f, 2.f, 1.f},
+                                       {1.f, 2.f, 3.f, 4.f},
+                                       {7.f, 6.f, 5.f, 4.f},
+                                       {4.f, 5.f, 6.f, 7.f}};
+
+    matrixA *= matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyTwoMatricesUsingTimesOperator)
+{
+    Siege::Utils::Matrix4x4 expected = {{43.f, 45.f, 47.f, 49.f},
+                                        {37.f, 35.f, 33.f, 31.f},
+                                        {107.f, 109.f, 111.f, 113.f},
+                                        {101.f, 99.f, 97.f, 95.f}};
+
+    Siege::Utils::Matrix4x4 matrixA = {{1.f, 2.f, 3.f, 4.f},
+                                       {4.f, 3.f, 2.f, 1.f},
+                                       {5.f, 6.f, 7.f, 8.f},
+                                       {8.f, 7.f, 6.f, 5.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{4.f, 3.f, 2.f, 1.f},
+                                       {1.f, 2.f, 3.f, 4.f},
+                                       {7.f, 6.f, 5.f, 4.f},
+                                       {4.f, 5.f, 6.f, 7.f}};
+
+    Siege::Utils::Matrix4x4 matrixC = matrixA * matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixC[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, MultiplyVectorByMatrix)
+{
+    Vec4 expected {14, 16, 38, 40};
+
+    Vec4 vector = {2, 1, 2, 1};
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 2.f, 3.f, 4.f},
+                                      {4.f, 3.f, 2.f, 1.f},
+                                      {5.f, 6.f, 7.f, 8.f},
+                                      {8.f, 7.f, 6.f, 5.f}};
+
+    Vec4 result = matrix.Multiply(vector);
+
+    ASSERT_TRUE(expected == result);
+}
+
+UTEST(test_Matrix4x4, MultiplyVectorWithTimesOperator)
+{
+    Vec4 expected {14, 16, 38, 40};
+
+    Vec4 vector = {2, 1, 2, 1};
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 2.f, 3.f, 4.f},
+                                      {4.f, 3.f, 2.f, 1.f},
+                                      {5.f, 6.f, 7.f, 8.f},
+                                      {8.f, 7.f, 6.f, 5.f}};
+
+    Vec4 result = matrix * vector;
+
+    ASSERT_TRUE(expected == result);
+}
+
+UTEST(test_Matrix4x4, CalculateDeterminant)
+{
+    float expectedDeterminant = 0.f;
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 2.f, 3.f, 4.f},
+                                      {4.f, 3.f, 2.f, 1.f},
+                                      {5.f, 6.f, 7.f, 8.f},
+                                      {8.f, 7.f, 6.f, 5.f}};
+
+    float determinant = matrix.Determinant();
+    ASSERT_EQ(expectedDeterminant, determinant);
+
+    Siege::Utils::Matrix4x4 matrix0 = {{5, 2, 3, 6},
+                                       {8, 4, 2, 8},
+                                       {4, 6, 9, 2},
+                                       {3, 6, 9, 2}};
+    expectedDeterminant = 128.f;
+    determinant = matrix0.Determinant();
+    ASSERT_EQ(expectedDeterminant, determinant);
+
+    determinant = Siege::Utils::Matrix4x4::Determinant(matrix0);
+    ASSERT_EQ(expectedDeterminant, determinant);
+}
+
+UTEST(test_Matrix4x4, CalculateInverse)
+{
+    Siege::Utils::Matrix4x4 expected = {{0.f, 0.f, 1.f, -1.f},
+                                        {-0.53125f, 0.375f, -0.625f, 0.71875f},
+                                        {0.3125f, -0.25f, 0.25f, -0.1875f},
+                                        {0.1875f, 0.f, -0.75f, 0.6875f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{5, 2, 3, 6},
+                                      {8, 4, 2, 8},
+                                      {4, 6, 9, 2},
+                                      {3, 6, 9, 2}};
+
+    Siege::Utils::Matrix4x4 result = matrix.Inverse();
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_TRUE((result[0] - expected[0]) < std::numeric_limits<float>::epsilon());
     }
 
-    test_Matrix_Benchmark::CurrentVal() = currentIndex;
+    result = Siege::Utils::Matrix4x4::Inverse(matrix);
 
-    std::cout << "SIZE: " << size << std::endl;
-    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
-    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
-    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
-              << "ms" << std::endl;
-}
-
-UTEST_F(test_Matrix_Benchmark, TestMatrixExecutionTimes)
-{
-    float* testVals = test_Matrix_Benchmark::RandomValues();
-    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
-
-    float additionTime = 0.f;
-    float createTime = 0.f;
-    size_t size = sizeof(Siege::Utils::Matrix3x3);
-
-    for (size_t i = 0; i < 1000000; i++)
+    for (size_t i = 0; i < 16; i++)
     {
-        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
-              z0 = testVals[currentIndex++], x1 = testVals[currentIndex++],
-              y1 = testVals[currentIndex++], z1 = testVals[currentIndex++],
-              x2 = testVals[currentIndex++], y2 = testVals[currentIndex++],
-              z2 = testVals[currentIndex++];
-
-        auto startInit = std::chrono::high_resolution_clock::now();
-
-        Siege::Utils::Matrix3x3 mat0 = {x0, y0, z0, x1, y1, z1, x2, y2, z2};
-
-        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                          std::chrono::high_resolution_clock::now() - startInit)
-                          .count();
-
-        Siege::Utils::Matrix3x3 mat1 = {
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]},
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]},
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]}};
-
-        auto start = std::chrono::high_resolution_clock::now();
-        Siege::Utils::Matrix3x3 mat2 = mat0 * mat1;
-        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                            std::chrono::high_resolution_clock::now() - start)
-                            .count();
+        ASSERT_TRUE((result[0] - expected[0]) < std::numeric_limits<float>::epsilon());
     }
-
-    test_Matrix_Benchmark::CurrentVal() = currentIndex;
-
-    std::cout << "SIZE: " << size << std::endl;
-    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
-    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
-    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
-              << "ms" << std::endl;
 }
 
-UTEST_F(test_Matrix_Benchmark, TestGlmExecutionTimes)
+UTEST(test_Matrix4x4, DivideMatrix)
 {
-    float* testVals = test_Matrix_Benchmark::RandomValues();
-    size_t currentIndex = test_Matrix_Benchmark::CurrentVal();
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Identity;
 
-    float additionTime = 0.f;
-    float createTime = 0.f;
-    size_t size = sizeof(glm::mat3);
+    Siege::Utils::Matrix4x4 matrixA = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
 
-    for (size_t i = 0; i < 1000000; i++)
+    Siege::Utils::Matrix4x4 matrixB = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
+
+    matrixA.Divide(matrixB);
+
+    for (size_t i = 0; i < 16; i++)
     {
-        float x0 = testVals[currentIndex++], y0 = testVals[currentIndex++],
-              z0 = testVals[currentIndex++], x1 = testVals[currentIndex++],
-              y1 = testVals[currentIndex++], z1 = testVals[currentIndex++],
-              x2 = testVals[currentIndex++], y2 = testVals[currentIndex++],
-              z2 = testVals[currentIndex++];
-
-        auto startInit = std::chrono::high_resolution_clock::now();
-        glm::mat3 mat0 = {x0, y0, z0, x1, y1, z1, x2, y2, z2};
-        createTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                          std::chrono::high_resolution_clock::now() - startInit)
-                          .count();
-
-        glm::mat3 mat1 = {
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]},
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]},
-            {testVals[currentIndex++], testVals[currentIndex++], testVals[currentIndex++]}};
-
-        auto start = std::chrono::high_resolution_clock::now();
-        glm::mat3 mat2 = mat0 * mat1;
-        additionTime += std::chrono::duration<float, std::chrono::microseconds::period>(
-                            std::chrono::high_resolution_clock::now() - start)
-                            .count();
+        ASSERT_EQ(expected[i], matrixA[i]);
     }
-
-    test_Matrix_Benchmark::CurrentVal() = currentIndex;
-
-    std::cout << "SIZE: " << size << std::endl;
-    std::cout << "CREATION TIME: " << createTime * 0.001 << "ms" << std::endl;
-    std::cout << "EXECUTION TIME: " << additionTime * 0.001 << "ms" << std::endl;
-    std::cout << "AVERAGE EXECUTION TIME PER ITERATION: " << (additionTime * 0.001) / 1000000
-              << "ms" << std::endl;
 }
 
-// -------------------------------------- Matrix4x4 -----------------------------------------------
+UTEST(test_Matrix4x4, DivideMatrixWithSlashEqualsOperator)
+{
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Identity;
+
+    Siege::Utils::Matrix4x4 matrixA = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
+
+    matrixA /= matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], matrixA[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, DivideMatrixWithSlashOperator)
+{
+    Siege::Utils::Matrix4x4 expected = Siege::Utils::Matrix4x4::Identity;
+
+    Siege::Utils::Matrix4x4 matrixA = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
+
+    Siege::Utils::Matrix4x4 matrixB = {{5.f, 2.f, 3.f, 6.f},
+                                       {8.f, 4.f, 2.f, 8.f},
+                                       {4.f, 6.f, 9.f, 2.f},
+                                       {3.f, 6.f, 9.f, 2.f}};
+
+    Siege::Utils::Matrix4x4 result = matrixA / matrixB;
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], result[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, TestTranspose)
+{
+    Siege::Utils::Matrix4x4 expected = {{1.f, 5.f, 9.f, 13},
+                                        {2.f, 6.f, 10.f, 14.f},
+                                        {3.f, 7.f, 11.f, 15.f},
+                                        {4.f, 8.f, 12.f, 16.f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{1.f, 2.f, 3.f, 4.f},
+                                      {5.f, 6.f, 7.f, 8.f},
+                                      {9.f, 10.f, 11.f, 12.f},
+                                      {13.f, 14.f, 15.f, 16.f}};
+
+    Siege::Utils::Matrix4x4 transposed = matrix.Transpose();
+    Siege::Utils::Matrix4x4 transposedS = Siege::Utils::Matrix4x4::Transpose(matrix);
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_EQ(expected[i], transposed[i]);
+        ASSERT_EQ(expected[i], transposedS[i]);
+    }
+}
+
+UTEST(test_Matrix4x4, TestReverseOperator)
+{
+    Siege::Utils::Matrix4x4 expected = {{1.f, -1.f, 1.f, -1.f},
+                                        {-1.f, 1.f, -1.f, 1.f},
+                                        {1.f, -1.f, 1.f, -1.f},
+                                        {-1.f, 1.f, -1.f, 1.f}};
+
+    Siege::Utils::Matrix4x4 matrix = {{-1.f, 1.f, -1.f, 1.f},
+                                      {1.f, -1.f, 1.f, -1.f},
+                                      {-1.f, 1.f, -1.f, 1.f},
+                                      {1.f, -1.f, 1.f, -1.f}};
+
+    for (size_t i = 0; i < 16; i++)
+    {
+        ASSERT_TRUE(expected == -matrix);
+    }
+}
