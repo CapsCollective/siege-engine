@@ -47,7 +47,7 @@ typedef size_t size;
 
 #define OUT
 
-#define INTERN_STR(str) Utils::WSID(str)
+#define INTERN_STR(str) Mat::WSID(str)
 
 namespace Siege
 {

@@ -74,7 +74,7 @@ public:
     private:
 
         // A subpass can contain multiple color references
-        Utils::StackArray<VkAttachmentReference, MAX_COLOR_REFERENCES> colorReferences;
+        Mat::StackArray<VkAttachmentReference, MAX_COLOR_REFERENCES> colorReferences;
 
         // A subpass can only contain a single depth reference.
         VkAttachmentReference depthReference {};

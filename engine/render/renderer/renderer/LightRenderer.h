@@ -53,10 +53,10 @@ private:
     Model lightModel;
     Material lightMaterial;
 
-    Utils::StringId globalDataId;
-    Utils::StringId lightDataId;
+    Mat::StringId globalDataId;
+    Mat::StringId lightDataId;
 
-    Utils::StackArray<glm::vec2, Mesh::MAX_VERTICES> pointLightVertices;
-    Utils::StackArray<u32, Mesh::MAX_INDICES> pointLightIndices;
+    Mat::StackArray<glm::vec2, Mesh::MAX_VERTICES> pointLightVertices;
+    Mat::StackArray<u32, Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege

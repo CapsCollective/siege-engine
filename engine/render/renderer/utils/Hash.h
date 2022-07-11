@@ -12,7 +12,7 @@
 #include <cstring>
 #include <functional>
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 // from: https://stackoverflow.com/a/57595105
 template<typename T, typename... Rest>
@@ -57,4 +57,4 @@ uint32_t crc32(const uint8_t* data, size_t length);
 size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
-} // namespace Siege::Utils
+} // namespace Siege::Mat

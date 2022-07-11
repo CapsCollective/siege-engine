@@ -55,9 +55,9 @@ private:
     Material rectMaterial;
     Model rectModel;
 
-    Utils::StringId globalDataId;
+    Mat::StringId globalDataId;
 
-    Utils::StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
-    Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
+    Mat::StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
+    Mat::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
 };
 } // namespace Siege

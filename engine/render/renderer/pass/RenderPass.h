@@ -96,36 +96,36 @@ public:
 
         /**
          * @brief Returns the array storing our attachments.
-         * @return a Utils::StackArray with our renderpass attachments.
+         * @return a Mat::StackArray with our renderpass attachments.
          */
-        const Utils::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS>& GetAttachments() const
+        const Mat::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS>& GetAttachments() const
         {
             return attachments;
         }
 
         /**
          * @brief Returns the array storing our subpasses.
-         * @return a Utils::StackArray with our renderpass subpasses.
+         * @return a Mat::StackArray with our renderpass subpasses.
          */
-        const Utils::StackArray<VkSubpassDescription, MAX_SUBPASSES>& GetSubPasses() const
+        const Mat::StackArray<VkSubpassDescription, MAX_SUBPASSES>& GetSubPasses() const
         {
             return subpasses;
         }
 
         /**
          * @brief Returns an array storing our subpass dependencies.
-         * @return a Utils::StackArray with our subpass dependencies.
+         * @return a Mat::StackArray with our subpass dependencies.
          */
-        const Utils::StackArray<VkSubpassDependency, MAX_DEPENDENCIES>& GetDependencies() const
+        const Mat::StackArray<VkSubpassDependency, MAX_DEPENDENCIES>& GetDependencies() const
         {
             return dependencies;
         }
 
     private:
 
-        Utils::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS> attachments;
-        Utils::StackArray<VkSubpassDescription, MAX_SUBPASSES> subpasses;
-        Utils::StackArray<VkSubpassDependency, MAX_DEPENDENCIES> dependencies;
+        Mat::StackArray<VkAttachmentDescription, MAX_ATTACHMENTS> attachments;
+        Mat::StackArray<VkSubpassDescription, MAX_SUBPASSES> subpasses;
+        Mat::StackArray<VkSubpassDependency, MAX_DEPENDENCIES> dependencies;
     };
 
     /**

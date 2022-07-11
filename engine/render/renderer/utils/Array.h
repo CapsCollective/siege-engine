@@ -12,7 +12,7 @@
 #include <iostream>
 #include <memory>
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 template<typename Array>
 class ArrayIterator
@@ -212,4 +212,4 @@ private:
         }
     }
 };
-} // namespace Siege::Utils
+} // namespace Siege::Mat

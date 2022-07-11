@@ -31,6 +31,6 @@ private:
     static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 10;
 
     static VkDescriptorPool descriptorPool;
-    static Utils::StackArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
+    static Mat::StackArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
 };
 } // namespace Siege

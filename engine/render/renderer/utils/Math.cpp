@@ -8,7 +8,7 @@
 
 #include "Math.h"
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 glm::mat4 Math::CalculateTransform3D(const glm::vec3& position,
                                      const glm::vec3& rotation,
@@ -80,4 +80,4 @@ glm::mat2 Math::CalculateTransform2D(const glm::vec2& position,
     glm::mat2 scaleMat {{scale.x, .0f}, {.0f, scale.y}};
     return rotMatrix * scaleMat;
 }
-} // namespace Siege::Utils
+} // namespace Siege::Mat

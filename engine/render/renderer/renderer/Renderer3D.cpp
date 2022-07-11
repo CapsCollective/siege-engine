@@ -13,7 +13,7 @@
 namespace Siege
 {
 // static initialisation
-Utils::StringId Renderer3D::globalDataId;
+Mat::StringId Renderer3D::globalDataId;
 
 Material Renderer3D::gridMaterial;
 

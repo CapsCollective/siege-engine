@@ -10,13 +10,13 @@
 
 namespace Siege
 {
-Utils::StringId Renderer2D::transformId;
-Utils::StringId Renderer2D::globalDataId;
+Mat::StringId Renderer2D::transformId;
+Mat::StringId Renderer2D::globalDataId;
 
 u64 Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
 
-Utils::StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
-Utils::StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
+Mat::StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
+Mat::StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
 Material* Renderer2D::currentMaterial = nullptr;
 Model* Renderer2D::currentModel = nullptr;
@@ -35,9 +35,9 @@ void Renderer2D::DrawModel(Model* model,
 {
     models.Append(model);
 
-    auto transform = Utils::Math::CalculateTransform3D(glm::vec3(position.x, position.y, zIndex),
-                                                       glm::vec3(0.f, 0.f, rotation),
-                                                       glm::vec3(scale.x, scale.y, 0.f));
+    auto transform = Mat::Math::CalculateTransform3D(glm::vec3(position.x, position.y, zIndex),
+                                                     glm::vec3(0.f, 0.f, rotation),
+                                                     glm::vec3(scale.x, scale.y, 0.f));
     transforms.Append({transform});
 }
 

@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 VkDescriptorSetLayoutBinding Descriptor::CreateLayoutBinding(uint32_t binding,
                                                              uint32_t count,
@@ -101,4 +101,4 @@ void Descriptor::WriteSets(VkDevice device,
 {
     vkUpdateDescriptorSets(device, setCount, sets, copyCount, copies);
 }
-} // namespace Siege::Utils
+} // namespace Siege::Mat

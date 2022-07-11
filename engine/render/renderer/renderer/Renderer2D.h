@@ -47,13 +47,13 @@ private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    static Utils::StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static Utils::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    static Mat::StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static Mat::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     static u64 transformSize;
 
-    static Utils::StringId transformId;
-    static Utils::StringId globalDataId;
+    static Mat::StringId transformId;
+    static Mat::StringId globalDataId;
 
     static Material* currentMaterial;
     static Model* currentModel;

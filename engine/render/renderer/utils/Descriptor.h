@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 // TODO document this
 class Descriptor
@@ -79,4 +79,4 @@ public:
 
 private:
 };
-} // namespace Siege::Utils
+} // namespace Siege::Mat

@@ -16,7 +16,7 @@
 
 #include "Array.h"
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 template<typename T, size_t S>
 class StackArray
@@ -184,4 +184,4 @@ private:
     T data[S];
     size_t count {0};
 };
-} // namespace Siege::Utils
+} // namespace Siege::Mat

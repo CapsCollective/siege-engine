@@ -152,7 +152,7 @@ struct EntityData
     /**
      * The entity position
      */
-    Vec3 position;
+    Siege::Vec::Vec3 position;
 
     /**
      * The entity rotation

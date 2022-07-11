@@ -49,11 +49,11 @@ private:
     Material billboardMaterial;
     Model billboardModel;
 
-    Utils::StringId globalDataId;
-    Utils::StringId positionsId;
+    Mat::StringId globalDataId;
+    Mat::StringId positionsId;
 
-    Utils::StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
-    Utils::StackArray<u32, Mesh::MAX_INDICES> indices;
-    Utils::StackArray<BillboardUBO, 1000> positions;
+    Mat::StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
+    Mat::StackArray<u32, Mesh::MAX_INDICES> indices;
+    Mat::StackArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege

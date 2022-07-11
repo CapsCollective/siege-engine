@@ -47,8 +47,8 @@ public:
 
     struct Data
     {
-        Utils::Array<VkVertexInputBindingDescription> bindings;
-        Utils::Array<VkVertexInputAttributeDescription> attributes;
+        Mat::Array<VkVertexInputBindingDescription> bindings;
+        Mat::Array<VkVertexInputAttributeDescription> attributes;
     };
 
     static Data CreateDescriptions(size_t bindingCount, Binding* bindings);

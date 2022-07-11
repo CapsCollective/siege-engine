@@ -40,11 +40,11 @@ private:
     // TODO(Aryeh): Make this configurable via macros
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    Utils::StringId globalDataId;
-    Utils::StringId transformId;
+    Mat::StringId globalDataId;
+    Mat::StringId transformId;
 
-    Utils::StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-    Utils::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    Mat::StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
+    Mat::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};

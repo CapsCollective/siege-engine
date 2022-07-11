@@ -16,7 +16,7 @@
 UTEST(test_Logging, CorrectReplacementPoints)
 {
     // When given the correct number of points and values it should format correctly
-    Logging::VariantContainer vc[] {1, "$$", 1.2f, Vec3::Zero};
+    Logging::VariantContainer vc[] {1, "$$", 1.2f, Siege::Vec::Vec3::Zero};
     String fmt = "{} is {} very well {} formatted {}!";
     Logging::VariantFormat(fmt, vc, sizeof(vc) / sizeof(Logging::VariantContainer));
     ASSERT_STREQ("1 is $$ very well 1.200000 formatted Vector3(0.00,0.00,0.00)!", fmt.Str());

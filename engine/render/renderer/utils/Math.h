@@ -12,7 +12,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-namespace Siege::Utils
+namespace Siege::Mat
 {
 class Math
 {
@@ -27,4 +27,4 @@ public:
                                                            const glm::vec2& scale);
     static glm::mat3 CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3& scale);
 };
-} // namespace Siege::Utils
+} // namespace Siege::Mat
