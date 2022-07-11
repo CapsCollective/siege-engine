@@ -28,7 +28,7 @@ void Player::OnStart()
 void Player::OnUpdate()
 {
     // Get move axes as vector
-    Vec3 move = {
+    Siege::Vec::Vec3 move = {
         (float) (-Statics::Input().KeyDown(Key::LEFT) + Statics::Input().KeyDown(Key::RIGHT)),
         0.f,
         (float) (-Statics::Input().KeyDown(Key::UP) + Statics::Input().KeyDown(Key::DOWN)),
@@ -38,7 +38,7 @@ void Player::OnUpdate()
     velocity += move.Normalise() * speed * Window::GetDeltaTime();
 
     // Apply force of gravity
-    velocity += Vec3(0.f, -0.01f, 0.f);
+    velocity += Siege::Vec::Vec3(0.f, -0.01f, 0.f);
 
     // Set the resulting attempted move's velocity to the object's position
     velocity = Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);
@@ -56,10 +56,10 @@ void Player::OnDestroy()
 
 BoundedBox Player::GetBoundingBox() const
 {
-    Vec3 position = transform.GetPosition();
+    Siege::Vec::Vec3 position = transform.GetPosition();
     return BoundedBox {
-        position - Vec3::One,
-        position + Vec3::One,
+        position - Siege::Vec::Vec3::One,
+        position + Siege::Vec::Vec3::One,
     };
 }
 

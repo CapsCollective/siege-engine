@@ -210,7 +210,7 @@ int main()
             .WithUniform(1,
                          "globalData",
                          sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique
-                                                                 // accross all available shaders
+                                                                 // across all available shaders
 
     // Material Declaration
     // vertex       // fragment

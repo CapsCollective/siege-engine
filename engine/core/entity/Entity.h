@@ -40,7 +40,7 @@ public:
      * @param name - a const reference to the name of the
      *               entity as a string
      */
-    Entity(const String& name) : Entity(name, {Vec3::Zero, 0.f}) {};
+    Entity(const String& name) : Entity(name, {Siege::Vec::Vec3::Zero, 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
@@ -129,7 +129,7 @@ public:
      * @return a constant reference to the entity's
      *         position as a Vec3
      */
-    const Vec3& GetPosition() const;
+    const Siege::Vec::Vec3& GetPosition() const;
 
     /**
      * Getter method for the entity's rotation attribute
@@ -141,7 +141,7 @@ public:
      * Getter method for the entity's scale attribute
      * @return the entity's scale as a Vec3
      */
-    const Vec3& GetScale() const;
+    const Siege::Vec::Vec3& GetScale() const;
 
     /**
      * Getter method for the entity's transform
@@ -172,7 +172,7 @@ public:
      * @param position - a Vector3 to set as the entity's
      *                   position
      */
-    void SetPosition(const Vec3& position);
+    void SetPosition(const Siege::Vec::Vec3& position);
 
     /**
      * Setter method for the entity's rotation attribute
@@ -189,7 +189,7 @@ public:
      * @param scale - a Vector3 to set as the entity's
      *                scale
      */
-    void SetScale(const Vec3& scale);
+    void SetScale(const Siege::Vec::Vec3& scale);
 
     /**
      * Setter method for the entity's z-index value

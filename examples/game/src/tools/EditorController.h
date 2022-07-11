@@ -48,7 +48,7 @@ public:
 
     void SelectEntity(class Entity* entity);
 
-    bool TrySetPos(Vec3 position);
+    bool TrySetPos(Siege::Vec::Vec3 position);
 
     bool TrySetRot(float rotation);
 

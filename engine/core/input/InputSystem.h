@@ -142,7 +142,7 @@ public:
 
     void DisableMouseCursor();
 
-    Vec3 GetMousePos();
+    Siege::Vec::Vec3 GetMousePos();
 };
 
 #endif // SIEGE_ENGINE_INPUTSYSTEM_H

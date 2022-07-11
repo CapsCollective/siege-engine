@@ -24,8 +24,8 @@ void FreeCam::OnUpdate()
         if (Statics::Input().MousePressed(Mouse::RIGHT)) Statics::Input().DisableMouseCursor();
 
         // Calculate current mouse positional values
-        Vec3 mousePosition = Statics::Input().GetMousePos();
-        Vec3 mousePositionDelta = {
+        Siege::Vec::Vec3 mousePosition = Statics::Input().GetMousePos();
+        Siege::Vec::Vec3 mousePositionDelta = {
             mousePosition.x - previousMousePosition.x,
             mousePosition.y - previousMousePosition.y,
             0,
@@ -35,7 +35,7 @@ void FreeCam::OnUpdate()
         previousMousePosition = mousePosition;
 
         // Calculate and set the rotational values
-        Vec3 rotate = {
+        Siege::Vec::Vec3 rotate = {
             mousePositionDelta.x,
             -mousePositionDelta.y,
             0.f,
@@ -44,16 +44,16 @@ void FreeCam::OnUpdate()
         rotation += (rotate * lookSpeed * deltaTime);
 
         // Get movement as vector
-        Vec3 move = {
+        Siege::Vec::Vec3 move = {
             (float) (-Statics::Input().KeyDown(Key::A) + Statics::Input().KeyDown(Key::D)),
             (float) (-Statics::Input().KeyDown(Key::Q) + Statics::Input().KeyDown(Key::E)),
             (float) (-Statics::Input().KeyDown(Key::W) + Statics::Input().KeyDown(Key::S)),
         };
 
         // Set the new position and look rotation of the camera
-        Vec3 position(camera->GetPosition());
+        Siege::Vec::Vec3 position(camera->GetPosition());
         position = position + move.Normalise() * moveSpeed * deltaTime;
-        Vec3 target(position + rotation);
+        Siege::Vec::Vec3 target(position + rotation);
         camera->SetPosition(position);
         camera->SetTarget(target);
     }

@@ -90,7 +90,9 @@ public:
     DEFINE_VARIANT_TYPE(unsigned long data, String::FromU32(data));
     DEFINE_VARIANT_TYPE(unsigned long long data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(Vec3 data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec::Vec2& data, "Vector2(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec::Vec3& data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec::Vec4& data, "Vector4(" + data.ToString() + ")");
 
     /**
      * Returns the data held by the variant container

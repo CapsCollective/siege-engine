@@ -174,10 +174,15 @@ void Material::CreateDescriptors()
 
         // Create all layouts
 
-        CC_ASSERT(Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
-                  "Failed to create descriptor set!");
+        CC_ASSERT(
+            Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
+            "Failed to create descriptor set!");
 
         uint64_t offset = property.offset;
+
+        bufferInfos[i] = Descriptor::CreateBufferInfo(buffer.buffer,
+                                                           offset,
+                                                           property.size * property.count);
 
         bufferInfos[i] =
             Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);

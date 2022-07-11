@@ -9,351 +9,29 @@
 #ifndef SIEGE_ENGINE_MATHS_H
 #define SIEGE_ENGINE_MATHS_H
 
-#include <cmath>
-
-#include "Macros.h"
-#include "String.h"
-
-// Define macros
-
-#define DEFINE_OPERATOR_NO_IMP(op, lhsType, rhsType) lhsType& operator op(const rhsType& rhs);
-
-#define DEFINE_CONST_OPERATOR_NO_IMP(op, lhsType, rhsType) \
-    lhsType operator op(const rhsType& rhs) const;
-
-#define DEFINE_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType& lhsType::operator op(const rhsType& rhs)   \
-    {                                                   \
-        body(op, _SEMICOLON) return *this;              \
-    }
-
-#define DEFINE_CONST_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType lhsType::operator op(const rhsType& rhs) const    \
-    {                                                         \
-        return {body(op, _COMMA)};                            \
-    }
-
-#define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType& operator op(const rhsType& rhs)        \
-    {                                               \
-        body(op, _SEMICOLON) return *this;          \
-    }
-
-#define DEFINE_CONST_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType operator op(const rhsType& rhs) const         \
-    {                                                     \
-        return {body(op, _COMMA)};                        \
-    }
-
-#define VEC_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep
-
-#define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
-
-#define VEC2_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep
-
-#define VEC2_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep
-
-#define VEC4_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep w op rhs.w sep
-
-#define VEC4_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep w op rhs sep
-
-#define VEC4_OPERATOR_BODY_VEC3(op, sep) \
-    x op rhs.x sep y op rhs.y sep z op rhs.z sep w sep
-
-#define VEC4_OPERATOR_BODY_VEC2(op, sep) \
-    x op rhs.x sep y op rhs.y sep z sep w sep
-
-typedef struct Vec2 Vec2;
-typedef struct Vec3 Vec3;
-typedef struct Vec4 Vec4;
-
-// ---------------------------------------- Vec2 --------------------------------------------------
-
-struct Vec2
-{
-    // Public constants
-
-    static const Vec2 Zero;
-    static const Vec2 One;
-    static const Vec2 Up;
-
-    // 'Structors
-
-    Vec2(const float& x = 0.f, const float& y = 0.f) : x(x), y(y) {}
-    Vec2(const Vec3& other);
-    Vec2(const Vec4& other);
-
-    // Operator overloads
-
-    Vec2& operator=(const Vec2& rhs) = default;
-
-    DEFINE_OPERATOR(+=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(-=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(*=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(/=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    DEFINE_OPERATOR_NO_IMP(+=, Vec2, Vec3)
-    DEFINE_OPERATOR_NO_IMP(-=, Vec2, Vec3)
-    DEFINE_OPERATOR_NO_IMP(*=, Vec2, Vec3)
-    DEFINE_OPERATOR_NO_IMP(/=, Vec2, Vec3)
-
-    DEFINE_OPERATOR_NO_IMP(+=, Vec2, Vec4)
-    DEFINE_OPERATOR_NO_IMP(-=, Vec2, Vec4)
-    DEFINE_OPERATOR_NO_IMP(*=, Vec2, Vec4)
-    DEFINE_OPERATOR_NO_IMP(/=, Vec2, Vec4)
-
-    bool operator==(const Vec2& other);
-    bool operator!=(const Vec2& other);
-
-    DEFINE_OPERATOR(+=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(-=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(*=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(/=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    DEFINE_CONST_OPERATOR(+, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(-, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(*, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(/, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    DEFINE_CONST_OPERATOR_NO_IMP(+, Vec2, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(-, Vec2, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(*, Vec2, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(/, Vec2, Vec3)
-
-    DEFINE_CONST_OPERATOR_NO_IMP(+, Vec2, Vec4)
-    DEFINE_CONST_OPERATOR_NO_IMP(-, Vec2, Vec4)
-    DEFINE_CONST_OPERATOR_NO_IMP(*, Vec2, Vec4)
-    DEFINE_CONST_OPERATOR_NO_IMP(/, Vec2, Vec4)
-
-    DEFINE_CONST_OPERATOR(+, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(-, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(*, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(/, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    // Static methods
-
-    static bool FromString(OUT Vec2& vec, const String& string);
-
-    // Public methods
-
-    String ToString() const;
-
-    Vec2 Normalise() const;
-
-    float Length() const
-    {
-        return sqrtf(x * x + y * y);
-    }
-
-    Vec2 XComp() const { return { x, 0.f, }; }
-
-    Vec2 YComp() const
-    {
-        return {0.f, y};
-    }
-
-    float x, y;
-};
-
-// ---------------------------------------- Vec3 --------------------------------------------------
-
-struct Vec3
-{
-    // Public constants
-
-    static const Vec3 Zero;
-
-    static const Vec3 One;
-
-    static const Vec3 Up;
-
-    // 'Structors
-
-    Vec3(float x = 0.f, float y = 0.f, float z = 0.f) : x(x), y(y), z(z) {}
-
-    Vec3& operator=(const Vec3& rhs) = default;
-
-    // Operator overloads
-
-    DEFINE_OPERATOR(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(-=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(*=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(/=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    bool operator==(const Vec3& other);
-
-    DEFINE_OPERATOR(+=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(-=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(*=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(/=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    DEFINE_CONST_OPERATOR(+, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(-, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(*, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(/, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    DEFINE_CONST_OPERATOR(+, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(-, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(*, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(/, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    // Static methods
-
-    static bool FromString(OUT Vec3& vec, const String& string);
-
-    // Public methods
-
-    String ToString() const;
-
-    Vec3 Normalise() const;
-
-    float Length() const
-    {
-        return sqrtf(x * x + y * y + z * z);
-    }
-
-    Vec3 XComp() const
-    {
-        return {x, 0.f, 0.f};
-    }
-
-    Vec3 YComp() const
-    {
-        return {0.f, y, 0.f};
-    }
-
-    Vec3 ZComp() const
-    {
-        return {0.f, 0.f, z};
-    }
-
-    // Public members
-
-    float x;
-    float y;
-    float z;
-};
-
-// ---------------------------------------- Vec4 --------------------------------------------------
-
-struct Vec4
-{
-    static const Vec4 Zero;
-
-    static const Vec4 One;
-
-    static const Vec4 Up;
-
-    // 'Structors
-
-    Vec4(const float& x = 0.f, const float& y = 0.f, const float& z = 0.f, const float& w = 0.f)
-        : x{x}, y{y}, z{z}, w{w} {}
-
-    Vec4(const Vec2& other);
-    Vec4(const Vec3& other);
-
-    // Operator overloads
-
-    Vec4& operator=(const Vec4& rhs) = default;
-
-    DEFINE_OPERATOR(+=, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(-=, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(*=, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_OPERATOR(/=, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-
-    DEFINE_OPERATOR_NO_IMP(+=, Vec4, Vec2)
-    DEFINE_OPERATOR_NO_IMP(-=, Vec4, Vec2)
-    DEFINE_OPERATOR_NO_IMP(*=, Vec4, Vec2)
-    DEFINE_OPERATOR_NO_IMP(/=, Vec4, Vec2)
-
-    DEFINE_OPERATOR_NO_IMP(+=, Vec4, Vec3)
-    DEFINE_OPERATOR_NO_IMP(-=, Vec4, Vec3)
-    DEFINE_OPERATOR_NO_IMP(*=, Vec4, Vec3)
-    DEFINE_OPERATOR_NO_IMP(/=, Vec4, Vec3)
-
-    bool operator!=(const Vec4& other);
-    bool operator==(const Vec4& other);
-
-    DEFINE_OPERATOR(+=, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(-=, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(*=, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_OPERATOR(/=, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-
-    DEFINE_CONST_OPERATOR(+, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(-, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(*, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-    DEFINE_CONST_OPERATOR(/, Vec4, Vec4, VEC4_OPERATOR_BODY_VEC)
-
-    DEFINE_CONST_OPERATOR_NO_IMP(+, Vec4, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(-, Vec4, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(*, Vec4, Vec3)
-    DEFINE_CONST_OPERATOR_NO_IMP(/, Vec4, Vec3)
-
-    DEFINE_CONST_OPERATOR_NO_IMP(+, Vec4, Vec2)
-    DEFINE_CONST_OPERATOR_NO_IMP(-, Vec4, Vec2)
-    DEFINE_CONST_OPERATOR_NO_IMP(*, Vec4, Vec2)
-    DEFINE_CONST_OPERATOR_NO_IMP(/, Vec4, Vec2)
-
-    DEFINE_CONST_OPERATOR(+, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(-, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(*, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-    DEFINE_CONST_OPERATOR(/, Vec4, float, VEC4_OPERATOR_BODY_FLOAT)
-
-    // Static methods
-
-    static bool FromString(OUT Vec4& vec, const String& string);
-
-    Vec4 XComp() const
-    {
-        return {x};
-    }
-
-    Vec4 YComp() const
-    {
-        return {0.f, y};
-    }
-
-    Vec4 ZComp() const
-    {
-        return {0.f, 0.f, z};
-    }
-
-    Vec4 WComp() const
-    {
-        return {0.f, 0.f, 0.f, w};
-    }
-
-    String ToString() const;
-
-    float Length() const
-    {
-        return sqrtf(x * x + y * y + z * z + w * w);
-    }
-
-    Vec4 Normalise() const;
-
-    float x, y, z, w;
-};
-
-// ---------------------------------------- Xform -------------------------------------------------
+#include "Vec/Vec2.h"
+#include "Vec/Vec3.h"
+#include "Vec/Vec4.h"
 
 struct Xform
 {
 public:
 
-    Xform() : Xform(Vec3::Zero) {}
+    Xform() : Xform(Siege::Vec::Vec3::Zero) {}
 
-    explicit Xform(Vec3 position) : Xform(position, 0.f) {}
+    explicit Xform(Siege::Vec::Vec3 position) : Xform(position, 0.f) {}
 
-    Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One) {}
+    Xform(Siege::Vec::Vec3 position, float rotation) :
+        Xform(position, rotation, Siege::Vec::Vec3::One)
+    {}
 
-    Xform(Vec3 position, float rotation, Vec3 scale) :
+    Xform(Siege::Vec::Vec3 position, float rotation, Siege::Vec::Vec3 scale) :
         position(position),
         rotation(rotation),
         scale(scale)
     {}
 
-    const Vec3& GetPosition() const
+    const Siege::Vec::Vec3& GetPosition() const
     {
         return position;
     }
@@ -363,12 +41,12 @@ public:
         return rotation;
     }
 
-    const Vec3& GetScale() const
+    const Siege::Vec::Vec3& GetScale() const
     {
         return scale;
     }
 
-    void SetPosition(const Vec3& newPosition)
+    void SetPosition(const Siege::Vec::Vec3& newPosition)
     {
         position = newPosition;
     }
@@ -378,25 +56,25 @@ public:
         rotation = fmod(newRotation, 360.f);
     }
 
-    void SetScale(const Vec3& newScale)
+    void SetScale(const Siege::Vec::Vec3& newScale)
     {
         scale = newScale;
     }
 
 private:
 
-    Vec3 position;
+    Siege::Vec::Vec3 position;
     float rotation;
-    Vec3 scale;
+    Siege::Vec::Vec3 scale;
 };
 
 struct BoundedBox
 {
     // 'Structors
 
-    BoundedBox() : BoundedBox(Vec3(), Vec3()) {}
+    BoundedBox() : BoundedBox(Siege::Vec::Vec3(), Siege::Vec::Vec3()) {}
 
-    BoundedBox(Vec3 min, Vec3 max) : min(min), max(max) {}
+    BoundedBox(Siege::Vec::Vec3 min, Siege::Vec::Vec3 max) : min(min), max(max) {}
 
     // Public methods
 
@@ -406,22 +84,25 @@ struct BoundedBox
 
     // Public members
 
-    Vec3 min;
-    Vec3 max;
+    Siege::Vec::Vec3 min;
+    Siege::Vec::Vec3 max;
 };
 
 struct RayCast
 {
     // 'Structors
 
-    RayCast() : RayCast(Vec3(), Vec3()) {}
+    RayCast() : RayCast(Siege::Vec::Vec3(), Siege::Vec::Vec3()) {}
 
-    RayCast(Vec3 position, Vec3 direction) : position(position), direction(direction) {}
+    RayCast(Siege::Vec::Vec3 position, Siege::Vec::Vec3 direction) :
+        position(position),
+        direction(direction)
+    {}
 
     // Public members
 
-    Vec3 position;
-    Vec3 direction;
+    Siege::Vec::Vec3 position;
+    Siege::Vec::Vec3 direction;
 };
 
 #endif // SIEGE_ENGINE_MATHS_H
