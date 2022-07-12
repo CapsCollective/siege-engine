@@ -28,30 +28,30 @@ void Renderer2D::Initialise()
 }
 
 void Renderer2D::DrawModel(Model* model,
-                           const glm::vec2& position,
-                           const glm::vec2& scale,
+                           const Siege::Vec2& position,
+                           const Siege::Vec2& scale,
                            const float& rotation,
                            const float& zIndex)
 {
     models.Append(model);
 
-    auto transform = Math::CalculateTransform3D(glm::vec3(position.x, position.y, zIndex),
-                                                glm::vec3(0.f, 0.f, rotation),
-                                                glm::vec3(scale.x, scale.y, 0.f));
+    auto transform = Math::CalculateTransform3D(Siege::Vec3(position.x, position.y, zIndex),
+                                                Siege::Vec3(0.f, 0.f, rotation),
+                                                Siege::Vec3(scale.x, scale.y, 0.f));
     transforms.Append({transform});
 }
 
 void Renderer2D::DrawModel(Model* model,
-                           const glm::vec2& position,
-                           const glm::vec2& scale,
+                           const Siege::Vec2& position,
+                           const Siege::Vec2& scale,
                            const float& zIndex)
 {
     DrawModel(model, position, scale, 0.f, zIndex);
 }
 
-void Renderer2D::DrawModel(Model* model, const glm::vec2& position)
+void Renderer2D::DrawModel(Model* model, const Siege::Vec2& position)
 {
-    DrawModel(model, position, glm::vec2(1.f), 0.f, 0.f);
+    DrawModel(model, position, {1.f, 1.f}, 0.f, 0.f);
 }
 
 void Renderer2D::RecreateMaterials()

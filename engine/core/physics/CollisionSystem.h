@@ -52,7 +52,7 @@ public:
      * @return the resulting linear velocity after
      *         applying any collision events
      */
-    Siege::Vec::Vec3 MoveAndSlide(const BoundedBox& boundingBox, Siege::Vec::Vec3 velocity);
+    Siege::Vec3 MoveAndSlide(const BoundedBox& boundingBox, Siege::Vec3 velocity);
 
     /**
      * Checks a given bounding box for collisions against

@@ -11,7 +11,7 @@
 #include "Vec3.h"
 #include "Vec4.h"
 
-namespace Siege::Vec
+namespace Siege
 {
 
 Vec2::Vec2(const Vec3& other) : x {other.x}, y {other.y} {}
@@ -73,4 +73,4 @@ Vec2 Vec2::Normalise() const
     if (length == 0.f) length = 1.f;
     return *this * 1.f / length;
 }
-} // namespace Siege::Vec
+} // namespace Siege

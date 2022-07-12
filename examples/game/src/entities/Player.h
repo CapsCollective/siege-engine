@@ -22,12 +22,12 @@ public:
 
     // 'Structors
 
-    Player() : Player({Siege::Vec::Vec3::Zero, 0.f}) {};
+    Player() : Player({Siege::Vec3::Zero, 0.f}) {};
 
     explicit Player(const Xform& transform) :
         Entity(ENTITY_NAME, transform),
         speed(1.5f),
-        velocity(Siege::Vec::Vec3::Zero) {};
+        velocity(Siege::Vec3::Zero) {};
 
     // Public overrides
 
@@ -51,7 +51,7 @@ private:
 
     float speed;
 
-    Siege::Vec::Vec3 velocity;
+    Siege::Vec3 velocity;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H

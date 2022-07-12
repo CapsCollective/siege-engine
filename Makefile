@@ -72,7 +72,7 @@ $(testApp): buildFlags $(utilsLib) $(coreLib) $(renderLib)
 $(exampleGameApp): buildFlags $(coreLib)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleRenderApp): buildFlags $(renderLib)
+$(exampleRenderApp): buildFlags $(utilsLib) $(renderLib)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)

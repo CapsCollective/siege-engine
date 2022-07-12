@@ -8,9 +8,7 @@
 
 #include "Mat3x3.h"
 
-#include <cassert>
-
-namespace Siege::Mat
+namespace Siege
 {
 const Mat3x3 Mat3x3::Identity = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
 
@@ -49,7 +47,7 @@ Mat3x3 Mat3x3::MultiplyScalar(const Mat3x3& lhs, const float& rhs)
     return newMat;
 }
 
-Vec::Vec3 Mat3x3::Multiply(const Mat3x3& lhs, const Vec::Vec3& rhs)
+Vec3 Mat3x3::Multiply(const Mat3x3& lhs, const Vec3& rhs)
 {
     return lhs.Multiply(rhs);
 }
@@ -62,14 +60,6 @@ float Mat3x3::Determinant(const Mat3x3& mat)
 Mat3x3 Mat3x3::Inverse(const Mat3x3& mat)
 {
     return mat.Inverse();
-}
-
-const float& Mat3x3::operator[](const size_t& index) const
-{
-    assert(index < 9 &&
-           "Error: trying to index into matrix with a size that's greater than matrix!");
-
-    return values[index];
 }
 
 float& Mat3x3::operator[](const size_t& index)
@@ -177,7 +167,7 @@ void Mat3x3::Multiply(const Mat3x3& matrix)
     values[8] = DOT3(m0x2, m0y2, m0z2, m1cx2, m1cy2, m1cz2);
 }
 
-Vec::Vec3 Mat3x3::Multiply(const Vec::Vec3& vector) const
+Vec3 Mat3x3::Multiply(const Vec3& vector) const
 {
     return {(values[0] * vector.x) + (values[1] * vector.y) + (values[2] * vector.z),
             (values[3] * vector.x) + (values[4] * vector.y) + (values[5] * vector.z),
@@ -228,4 +218,34 @@ const float& Mat3x3::Get(const size_t& rowIndex, const size_t& colIndex)
 {
     return values[(3 * rowIndex) + colIndex];
 }
-} // namespace Siege::Mat
+
+Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs)
+{
+    return Mat3x3::Add(lhs, rhs);
+}
+
+Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs)
+{
+    return Mat3x3::Subtract(lhs, rhs);
+}
+
+Mat3x3 operator*(const Mat3x3& lhs, const float& scalar)
+{
+    return Mat3x3::MultiplyScalar(lhs, scalar);
+}
+
+Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs)
+{
+    return Mat3x3::Multiply(lhs, rhs);
+}
+
+const Vec3 operator*(const Mat3x3& lhs, const Siege::Vec3& rhs)
+{
+    return Mat3x3::Multiply(lhs, rhs);
+}
+
+Mat3x3 operator/(const Mat3x3& lhs, const Mat3x3& rhs)
+{
+    return Mat3x3::Divide(lhs, rhs);
+}
+} // namespace Siege

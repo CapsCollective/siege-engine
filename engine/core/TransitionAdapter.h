@@ -16,11 +16,11 @@
 
 // Raylib conversions
 
-Siege::Vec::Vec3 ToVec3(raylib::Vector3 vector);
+Siege::Vec3 ToVec3(raylib::Vector3 vector);
 
-raylib::Vector3 FromVec3(Siege::Vec::Vec3 vector);
+raylib::Vector3 FromVec3(Siege::Vec3 vector);
 
-Siege::Vec::Vec3 ToVec3(Vector2 vector);
+Siege::Vec3 ToVec3(Vector2 vector);
 
 RayCast ToRayCast(Ray ray);
 

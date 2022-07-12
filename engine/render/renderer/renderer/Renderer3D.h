@@ -35,26 +35,27 @@ public:
     static void Initialise();
 
     static void DrawModel(Model* model,
-                          const glm::vec3& position,
-                          const glm::vec3& scale,
-                          const glm::vec3& rotation);
-    static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
-    static void DrawModel(Model* model, const glm::vec3& position);
+                          const Siege::Vec3& position,
+                          const Siege::Vec3& scale,
+                          const Siege::Vec3& rotation);
+    static void DrawModel(Model* model, const Siege::Vec3& position, const Siege::Vec3& scale);
+    static void DrawModel(Model* model, const Siege::Vec3& position);
 
-    static void DrawBillboard(const glm::vec3& position,
-                              const glm::vec2& scale,
-                              const glm::vec4& colour);
+    static void DrawBillboard(const Siege::Vec3& position,
+                              const Siege::Vec2& scale,
+                              const Siege::Vec4& colour);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
-    static void DrawLine(const glm::vec3& origin,
-                         const glm::vec3& destination,
-                         const glm::vec3& colour);
-    static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
-    static void DrawPointLight(const glm::vec3& position,
+    static void DrawLine(const Siege::Vec3& origin,
+                         const Siege::Vec3& destination,
+                         const Siege::Vec4& colour);
+
+    static void DrawRect(const Siege::Vec3& position, const Siege::Vec2& scale, Siege::Vec4& color);
+    static void DrawPointLight(const Siege::Vec3& position,
                                const float& radius,
-                               const glm::vec4& colour,
-                               const glm::vec4& ambientColor);
+                               const Siege::Vec4& colour,
+                               const Siege::Vec4& ambientColor);
 
     static void RecreateMaterials();
 

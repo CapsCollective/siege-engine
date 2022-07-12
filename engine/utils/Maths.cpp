@@ -28,7 +28,7 @@ bool BoundedBox::Intersects(const RayCast& ray) const
     bool insideBox = (ray.position.x > min.x) && (ray.position.x < max.x) &&
                      (ray.position.y > min.y) && (ray.position.y < max.y) &&
                      (ray.position.z > min.z) && (ray.position.z < max.z);
-    Siege::Vec::Vec3 direction = insideBox ? ray.direction * -1 : ray.direction;
+    Siege::Vec3 direction = insideBox ? ray.direction * -1 : ray.direction;
 
     float t[11] = {};
     t[8] = 1.0f / direction.x;

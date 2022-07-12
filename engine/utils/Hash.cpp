@@ -8,9 +8,8 @@
 
 #include "Hash.h"
 
-namespace Hash
+namespace Siege::Hash
 {
-
 // Constexpr implementation and helpers
 uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc)
 {

@@ -101,8 +101,8 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("setpos", argument))
             {
                 // Try to convert the argument to a Vector3, and set the entity's position
-                Siege::Vec::Vec3 position;
-                if (Siege::Vec::Vec3::FromString(position, argument))
+                Siege::Vec3 position;
+                if (Siege::Vec3::FromString(position, argument))
                 {
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {

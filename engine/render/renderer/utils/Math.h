@@ -11,6 +11,10 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <utils/mat/Mat2x2.h>
+#include <utils/mat/Mat3x3.h>
+#include <utils/mat/Mat4x4.h>
+
 #include <glm/glm.hpp>
 
 // TODO(Aryeh): Move this to utils.
@@ -21,14 +25,15 @@ class Math
 {
 public:
 
-    static glm::mat4 CalculateTransform3D(const glm::vec3& position,
-                                          const glm::vec3& rotation,
-                                          const glm::vec3& scale);
+    static Siege::Mat4x4 CalculateTransform3D(const Siege::Vec3& position,
+                                              const Siege::Vec3& rotation,
+                                              const Siege::Vec3& scale);
     // TODO use this function or remove it
-    [[maybe_unused]] static glm::mat2 CalculateTransform2D(const glm::vec2& position,
-                                                           const float& rotation,
-                                                           const glm::vec2& scale);
-    static glm::mat3 CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3& scale);
+    [[maybe_unused]] static Siege::Mat2x2 CalculateTransform2D(const Siege::Vec2& position,
+                                                               const float& rotation,
+                                                               const Siege::Vec2& scale);
+    static Siege::Mat3x3 CalculateNormalMatrix(const Siege::Vec3& rotation,
+                                               const Siege::Vec3& scale);
 };
 } // namespace Siege
 

@@ -19,7 +19,7 @@
 
 #define VEC2_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep
 
-namespace Siege::Vec
+namespace Siege
 {
 
 struct Vec2
@@ -113,6 +113,21 @@ struct Vec2
 
     float x, y;
 };
-} // namespace Siege::Vec
+
+inline Vec2 operator/(const float& scalar, const Vec2& vec)
+{
+    return {scalar / vec.x, scalar / vec.y};
+}
+
+inline Vec2 operator*(const float& scalar, const Vec2& vec)
+{
+    return {scalar * vec.x, scalar * vec.y};
+}
+
+inline bool operator==(const Vec2& lhs, const Vec2& rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_VEC2_H

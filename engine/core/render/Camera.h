@@ -21,15 +21,15 @@ public:
 
     void End3D();
 
-    Siege::Vec::Vec3 GetScreenPos(const Siege::Vec::Vec3& position);
+    Siege::Vec3 GetScreenPos(const Siege::Vec3& position);
 
     RayCast GetMouseRay();
 
-    Siege::Vec::Vec3 GetPosition();
+    Siege::Vec3 GetPosition();
 
-    void SetPosition(const Siege::Vec::Vec3& position);
+    void SetPosition(const Siege::Vec3& position);
 
-    void SetTarget(const Siege::Vec::Vec3& target);
+    void SetTarget(const Siege::Vec3& target);
 
 private:
 };

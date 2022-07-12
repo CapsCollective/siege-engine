@@ -638,11 +638,11 @@ struct std::hash<String>
     size_t operator()(const String& string) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed,
-                          string.At(0),
-                          string.At(string.Size()),
-                          string.Size(),
-                          string.Capacity());
+        Siege::Hash::HashCombine(seed,
+                           string.At(0),
+                           string.At(string.Size()),
+                           string.Size(),
+                           string.Capacity());
         return seed;
     };
 };

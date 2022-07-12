@@ -38,7 +38,7 @@ BoundedBox Geometry::GetBoundingBox() const
     };
 }
 
-const Siege::Vec::Vec3& Geometry::GetDimensions()
+const Siege::Vec3& Geometry::GetDimensions()
 {
     return GetScale();
 }
@@ -67,8 +67,8 @@ static String Serialise(Entity* entity)
 
 static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
 {
-    Siege::Vec::Vec3 dimensions;
-    if (!Siege::Vec::Vec3::FromString(dimensions, args[CUSTOM_FIELD_1]))
+    Siege::Vec3 dimensions;
+    if (!Siege::Vec3::FromString(dimensions, args[CUSTOM_FIELD_1]))
     {
         CC_LOG_WARNING("Failed to deserialise dimensions with value {}", args[CUSTOM_FIELD_1]);
     }

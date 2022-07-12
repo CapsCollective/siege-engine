@@ -45,35 +45,35 @@ void Renderer3D::Initialise()
     gridMaterial.BuildMaterial();
 }
 
-void Renderer3D::DrawBillboard(const glm::vec3& position,
-                               const glm::vec2& scale,
-                               const glm::vec4& colour)
+void Renderer3D::DrawBillboard(const Siege::Vec3& position,
+                               const Siege::Vec2& scale,
+                               const Siege::Vec4& colour)
 {
     billboardRenderer.DrawBillboard(position, scale, colour);
 }
 
 void Renderer3D::DrawModel(Model* model,
-                           const glm::vec3& position,
-                           const glm::vec3& scale,
-                           const glm::vec3& rotation)
+                           const Siege::Vec3& position,
+                           const Siege::Vec3& scale,
+                           const Siege::Vec3& rotation)
 {
     modelRenderer.DrawModel(model, position, scale, rotation);
 }
 
-void Renderer3D::DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale)
+void Renderer3D::DrawModel(Model* model, const Siege::Vec3& position, const Siege::Vec3& scale)
 {
-    DrawModel(model, position, scale, glm::vec3 {0.f});
+    DrawModel(model, position, scale, Siege::Vec3::Zero);
 }
 
-void Renderer3D::DrawModel(Model* model, const glm::vec3& position)
+void Renderer3D::DrawModel(Model* model, const Siege::Vec3& position)
 {
-    DrawModel(model, position, glm::vec3 {1.f}, glm::vec3 {0.f});
+    DrawModel(model, position, Siege::Vec3::One, Siege::Vec3::Zero);
 }
 
-void Renderer3D::DrawPointLight(const glm::vec3& position,
+void Renderer3D::DrawPointLight(const Siege::Vec3& position,
                                 const float& radius,
-                                const glm::vec4& colour,
-                                const glm::vec4& ambientColor)
+                                const Siege::Vec4& colour,
+                                const Siege::Vec4& ambientColor)
 {
     global3DData.lightData = {colour, ambientColor, position};
 
@@ -95,9 +95,9 @@ void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& camera
 #endif
 }
 
-void Renderer3D::DrawLine(const glm::vec3& origin,
-                          const glm::vec3& destination,
-                          const glm::vec3& colour)
+void Renderer3D::DrawLine(const Siege::Vec3& origin,
+                          const Siege::Vec3& destination,
+                          const Siege::Vec4& colour)
 {
     debugRenderer.DrawLine(origin, destination, colour);
 }

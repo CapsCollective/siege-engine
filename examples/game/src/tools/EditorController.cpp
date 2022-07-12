@@ -137,7 +137,7 @@ void EditorController::OnUpdate()
         {
             case POSITION: {
                 // Calculate move from input
-                Siege::Vec::Vec3 move = Siege::Vec::Vec3::Zero;
+                Siege::Vec3 move = Siege::Vec3::Zero;
                 float precision = MOVE_LEVELS[movePrecision];
                 move.x = precision * (float) (-Statics::Input().KeyPressed(Key::LEFT) +
                                               Statics::Input().KeyPressed(Key::RIGHT));
@@ -149,7 +149,7 @@ void EditorController::OnUpdate()
                                                             move.z = verticalMove;
 
                 // Apply the move to the position of the entity
-                Siege::Vec::Vec3 entityPosition = selectedEntity->GetPosition();
+                Siege::Vec3 entityPosition = selectedEntity->GetPosition();
                 selectedEntity->SetPosition(entityPosition + move);
                 break;
             }
@@ -178,7 +178,7 @@ void EditorController::OnDraw2D()
     String rotLabel = String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
-    Siege::Vec::Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
+    Siege::Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
     Statics::Render().DrawText2D(nameLabel,
                                  (int) screenPosition.x - Window::GetTextWidth(nameLabel, 20) / 2,
                                  (int) screenPosition.y,
@@ -253,7 +253,7 @@ void EditorController::AdjustPrecision(int adjustment)
     }
 }
 
-bool EditorController::TrySetPos(Siege::Vec::Vec3 position)
+bool EditorController::TrySetPos(Siege::Vec3 position)
 {
     if (!selectedEntity) return false;
     selectedEntity->SetPosition(position);

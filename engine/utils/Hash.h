@@ -13,9 +13,9 @@
 #include <cstring>
 #include <functional>
 
-#define INTERN_STR(str) Hash::WSID(str)
+#define INTERN_STR(str) Siege::Hash::WSID(str)
 
-namespace Hash
+namespace Siege::Hash
 {
 // from: https://stackoverflow.com/a/57595105
 template<typename T, typename... Rest>

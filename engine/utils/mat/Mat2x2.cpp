@@ -8,9 +8,7 @@
 
 #include "Mat2x2.h"
 
-#include <cassert>
-
-namespace Siege::Mat
+namespace Siege
 {
 const Mat2x2 Mat2x2::Identity = {1.f, 0.f, 0.f, 1.f};
 const Mat2x2 Mat2x2::Zero = {};
@@ -63,7 +61,7 @@ Mat2x2 Mat2x2::Inverse(const Mat2x2& mat)
     return mat.Inverse();
 }
 
-Vec::Vec2 Mat2x2::Multiply(const Mat2x2& lhs, const Vec::Vec2& rhs)
+Vec2 Mat2x2::Multiply(const Mat2x2& lhs, const Vec2& rhs)
 {
     return lhs.Multiply(rhs);
 }
@@ -88,18 +86,10 @@ void Mat2x2::Multiply(const Mat2x2& other)
     values[3] = DOT(m0x1, m0y1, m1x1, m1y1);
 }
 
-Vec::Vec2 Mat2x2::Multiply(const Vec::Vec2& vector) const
+Vec2 Mat2x2::Multiply(const Vec2& vector) const
 {
     return {(values[0] * vector.x) + (values[1] * vector.y),
             (values[2] * vector.x) + (values[3] * vector.y)};
-}
-
-const float& Mat2x2::operator[](const size_t& index) const
-{
-    assert(index < 4 &&
-           "Error: trying to index into matrix with a size that's greater than matrix!");
-
-    return values[index];
 }
 
 bool Mat2x2::operator==(const Mat2x2& other)
@@ -184,4 +174,34 @@ Mat2x2 Mat2x2::Transpose() const
 {
     return {values[0], values[2], values[1], values[3]};
 }
-} // namespace Siege::Mat
+
+Mat2x2 operator+(const Mat2x2& lhs, const Mat2x2& rhs)
+{
+    return Mat2x2::Add(lhs, rhs);
+}
+
+Mat2x2 operator-(const Mat2x2& lhs, const Mat2x2& rhs)
+{
+    return Mat2x2::Subtract(lhs, rhs);
+}
+
+Mat2x2 operator*(const Mat2x2& lhs, const float& scalar)
+{
+    return Mat2x2::MultiplyScalar(lhs, scalar);
+}
+
+Mat2x2 operator*(const Mat2x2& lhs, const Mat2x2& rhs)
+{
+    return Mat2x2::Multiply(lhs, rhs);
+}
+
+Mat2x2 operator/(const Mat2x2& lhs, const Mat2x2& rhs)
+{
+    return Mat2x2::Divide(lhs, rhs);
+}
+
+Vec2 operator*(const Mat2x2& lhs, const Vec2& rhs)
+{
+    return Mat2x2::Multiply(lhs, rhs);
+}
+} // namespace Siege

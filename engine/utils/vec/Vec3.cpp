@@ -8,7 +8,7 @@
 
 #include "Vec3.h"
 
-namespace Siege::Vec
+namespace Siege
 {
 // Define static members
 const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
@@ -20,6 +20,18 @@ Vec3 Vec3::Normalise() const
     float length = Length();
     if (length == 0.f) length = 1.f;
     return *this * 1.f / length;
+}
+
+float Vec3::Dot(const Vec3& other) const
+{
+    return (x * other.x) + (y * other.y) + (z * other.z);
+}
+
+Vec3 Vec3::Cross(const Vec3& other) const
+{
+    return {(y * other.z) - (other.y * z),
+            (z * other.x) - (other.z * x),
+            (x * other.y) - (other.x * y)};
 }
 
 String Vec3::ToString() const
@@ -38,8 +50,16 @@ bool Vec3::FromString(Vec3& vec, const String& string)
             components[2].GetFloat(vec.z));
 }
 
+Vec3& Vec3::operator=(const Vec2& rhs)
+{
+    x = rhs.x;
+    y = rhs.y;
+    z = 0.f;
+    return *this;
+}
+
 bool Vec3::operator==(const Vec3& other)
 {
     return x == other.x && y == other.y && z == other.z;
 }
-} // namespace Siege::Vec
+} // namespace Siege

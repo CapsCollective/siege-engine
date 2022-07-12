@@ -85,8 +85,6 @@ public:
 
 private:
 
-    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-
     static VulkanDevice* deviceInstance;
     static Array<VkCommandBuffer> commandBuffers;
 
@@ -95,7 +93,6 @@ private:
     void CreateCommandBuffers();
 
     void RecreateSwapChain();
-    void FreeCommandBuffers();
 
     void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);

@@ -10,17 +10,17 @@
 
 // Raylib conversions
 
-Siege::Vec::Vec3 ToVec3(raylib::Vector3 vector)
+Siege::Vec3 ToVec3(raylib::Vector3 vector)
 {
     return {vector.x, vector.y, vector.z};
 }
 
-raylib::Vector3 FromVec3(Siege::Vec::Vec3 vector)
+raylib::Vector3 FromVec3(Siege::Vec3 vector)
 {
     return {vector.x, vector.y, vector.z};
 }
 
-Siege::Vec::Vec3 ToVec3(Vector2 vector)
+Siege::Vec3 ToVec3(Vector2 vector)
 {
     return {vector.x, vector.y, 0.f};
 }

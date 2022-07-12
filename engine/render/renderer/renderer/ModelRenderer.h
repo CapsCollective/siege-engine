@@ -26,9 +26,9 @@ public:
     void Destroy();
 
     void DrawModel(Model* model,
-                   const glm::vec3& position,
-                   const glm::vec3& scale,
-                   const glm::vec3& rotation);
+                   const Siege::Vec3& position,
+                   const Siege::Vec3& scale,
+                   const Siege::Vec3& rotation);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,

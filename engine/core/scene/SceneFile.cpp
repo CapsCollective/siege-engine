@@ -76,7 +76,7 @@ void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<E
         EntityData data;
         if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
               args[ENTITY_Z_IDX].GetInt(data.zIndex) &&
-              Siege::Vec::Vec3::FromString(data.position, args[ENTITY_POS])))
+              Siege::Vec3::FromString(data.position, args[ENTITY_POS])))
         {
             CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
         }

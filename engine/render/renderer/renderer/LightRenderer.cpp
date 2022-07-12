@@ -46,10 +46,10 @@ void LightRenderer::Destroy()
     lightModel.DestroyModel();
 }
 
-void LightRenderer::DrawPointLight(const glm::vec3& position,
+void LightRenderer::DrawPointLight(const Siege::Vec3& position,
                                    const float& radius,
-                                   const glm::vec4& colour,
-                                   const glm::vec4& ambientColor)
+                                   const Siege::Vec4& colour,
+                                   const Siege::Vec4& ambientColor)
 {
     pointLightVertices.Append({1.f, 1.f});
     pointLightVertices.Append({1.f, -1.f});
