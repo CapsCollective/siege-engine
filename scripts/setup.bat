@@ -97,8 +97,8 @@ EXIT /B 0
 
     mkdir %VENDOR_DIR%\glslang\build
 
-    cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%VENDOR_DIR%\glslang\build\install -S%VENDOR_DIR%\glslang -B%VENDOR_DIR%\glslang\build
-    cmake --build %VENDOR_DIR%\glslang\build --target install -- -j%NUMBER_OF_PROCESSORS%
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%VENDOR_DIR%\glslang\build\install -S%VENDOR_DIR%\glslang -B%VENDOR_DIR%\glslang\build
+    cmake --build %VENDOR_DIR%\glslang\build --target install
 EXIT /B 0
 
 :SetupGlm

@@ -9,10 +9,12 @@
 #ifndef SIEGE_ENGINE_MAT3X3_H
 #define SIEGE_ENGINE_MAT3X3_H
 
-#include "../Vec/Vec3.h"
+#include <cassert>
+
+#include "../vec/Vec3.h"
 #include "Macros.h"
 
-namespace Siege::Mat
+namespace Siege
 {
 struct Mat3x3
 {
@@ -28,7 +30,7 @@ struct Mat3x3
         values {vx0, vy0, vz0, vx1, vy1, vz1, vx2, vy2, vz2}
     {}
 
-    Mat3x3(const Vec::Vec3& vec0, const Vec::Vec3& vec1, const Vec::Vec3& vec2) :
+    Mat3x3(const Vec3& vec0, const Vec3& vec1, const Vec3& vec2) :
         Mat3x3(vec0.x, vec0.y, vec0.z, vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z)
     {}
 
@@ -42,12 +44,19 @@ struct Mat3x3
     static Mat3x3 Multiply(const Mat3x3& lhs, const Mat3x3& rhs);
     static Mat3x3 Subtract(const Mat3x3& lhs, const Mat3x3& rhs);
     static Mat3x3 MultiplyScalar(const Mat3x3& lhs, const float& rhs);
-    static Vec::Vec3 Multiply(const Mat3x3& lhs, const Vec::Vec3& rhs);
+    static Vec3 Multiply(const Mat3x3& lhs, const Vec3& rhs);
 
     static float Determinant(const Mat3x3& mat);
     static Mat3x3 Inverse(const Mat3x3& mat);
 
-    const float& operator[](const size_t& index) const;
+    constexpr float const& operator[](const size_t& index) const
+    {
+        assert(index < 9 &&
+               "Error: trying to index into matrix with a size that's greater than matrix!");
+
+        return values[index];
+    }
+
     float& operator[](const size_t& index);
 
     Mat3x3& operator+=(const Mat3x3& other);
@@ -68,7 +77,7 @@ struct Mat3x3
     void MultiplyScalar(const float& scalar);
 
     void Multiply(const Mat3x3& matrix);
-    Vec::Vec3 Multiply(const Vec::Vec3& vector) const;
+    Vec3 Multiply(const Vec3& vector) const;
 
     void Divide(const Mat3x3& other);
 
@@ -81,35 +90,12 @@ private:
     float values[9];
 };
 
-inline Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs)
-{
-    return Mat3x3::Add(lhs, rhs);
-}
-
-inline Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs)
-{
-    return Mat3x3::Subtract(lhs, rhs);
-}
-
-inline Mat3x3 operator*(const Mat3x3& lhs, const float& scalar)
-{
-    return Mat3x3::MultiplyScalar(lhs, scalar);
-}
-
-inline Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs)
-{
-    return Mat3x3::Multiply(lhs, rhs);
-}
-
-inline const Vec::Vec3 operator*(const Mat3x3& lhs, const Siege::Vec::Vec3& rhs)
-{
-    return Mat3x3::Multiply(lhs, rhs);
-}
-
-inline Mat3x3 operator/(const Mat3x3& lhs, const Mat3x3& rhs)
-{
-    return Mat3x3::Divide(lhs, rhs);
-}
-} // namespace Siege::Mat
+Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3x3 operator*(const Mat3x3& lhs, const float& scalar);
+Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs);
+const Vec3 operator*(const Mat3x3& lhs, const Siege::Vec3& rhs);
+Mat3x3 operator/(const Mat3x3& lhs, const Mat3x3& rhs);
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_MAT3X3_H

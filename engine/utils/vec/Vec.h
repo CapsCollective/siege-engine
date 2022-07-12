@@ -8,12 +8,12 @@
 
 #ifndef SIEGE_ENGINE_VEC_H
 
-namespace Siege::Vec
+namespace Siege
 {
 typedef struct Vec2 Vec2;
 typedef struct Vec3 Vec3;
 typedef struct Vec4 Vec4;
-} // namespace Siege::Vec
+} // namespace Siege
 
 #define SIEGE_ENGINE_VEC_H
 

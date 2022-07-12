@@ -15,7 +15,7 @@
 
 #define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
 
-namespace Siege::Vec
+namespace Siege
 {
 struct Vec3
 {
@@ -32,6 +32,7 @@ struct Vec3
     Vec3(float x = 0.f, float y = 0.f, float z = 0.f) : x(x), y(y), z(z) {}
 
     Vec3& operator=(const Vec3& rhs) = default;
+    Vec3& operator=(const Vec2& rhs);
 
     // Operator overloads
 
@@ -67,6 +68,10 @@ struct Vec3
 
     Vec3 Normalise() const;
 
+    float Dot(const Vec3& other) const;
+
+    Vec3 Cross(const Vec3& other) const;
+
     float Length() const
     {
         return sqrtf(x * x + y * y + z * z);
@@ -93,6 +98,22 @@ struct Vec3
     float y;
     float z;
 };
-} // namespace Siege::Vec
+
+inline Vec3 operator/(const float& scalar, const Vec3& vec)
+{
+    return {scalar / vec.x, scalar / vec.y, scalar / vec.z};
+}
+
+inline Vec3 operator*(const float& scalar, const Vec3& vec)
+{
+    return {scalar * vec.x, scalar * vec.y, scalar * vec.z};
+}
+
+inline bool operator==(const Vec3& lhs, const Vec3& rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_VEC3_H

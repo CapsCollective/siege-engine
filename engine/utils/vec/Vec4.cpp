@@ -7,7 +7,7 @@
 
 #include "Vec4.h"
 
-namespace Siege::Vec
+namespace Siege
 {
 // Define static members
 const Vec4 Vec4::Zero = {0.f, 0.f, 0.f, 0.f};
@@ -69,4 +69,4 @@ Vec4 Vec4::Normalise() const
     if (length == 0.f) length = 1.f;
     return *this * 1.f / length;
 }
-} // namespace Siege::Vec
+} // namespace Siege

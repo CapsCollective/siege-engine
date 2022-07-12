@@ -9,10 +9,13 @@
 #ifndef SIEGE_ENGINE_MAT4X4_H
 #define SIEGE_ENGINE_MAT4X4_H
 
-#include "../Vec/Vec4.h"
-#include "Macros.h"
+#include <cassert>
 
-namespace Siege::Mat
+#include "../vec/Vec4.h"
+#include "Macros.h"
+#include "Mat3x3.h"
+
+namespace Siege
 {
 struct Mat4x4
 {
@@ -37,10 +40,7 @@ public:
         values {x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3}
     {}
 
-    Mat4x4(const Vec::Vec4& row0,
-           const Vec::Vec4& row1,
-           const Vec::Vec4& row2,
-           const Vec::Vec4& row3) :
+    Mat4x4(const Vec4& row0, const Vec4& row1, const Vec4& row2, const Vec4& row3) :
         Mat4x4(row0.x,
                row0.y,
                row0.z,
@@ -59,6 +59,13 @@ public:
                row3.w)
     {}
 
+    Mat4x4(const Mat3x3& other) :
+        Mat4x4({other[0], other[1], other[2], 0.f},
+               {other[3], other[4], other[5], 0.f},
+               {other[6], other[7], other[8], 0.f},
+               {0.f, 0.f, 0.f, 1.f})
+    {}
+
     // public const variables
 
     static const Mat4x4 Identity;
@@ -70,7 +77,7 @@ public:
     static Mat4x4 Subtract(const Mat4x4& lhs, const Mat4x4& rhs);
     static Mat4x4 MultiplyScalar(const Mat4x4& lhs, const float& scalar);
     static Mat4x4 Multiply(const Mat4x4& lhs, const Mat4x4& rhs);
-    static Vec::Vec4 Multiply(const Mat4x4& lhs, const Vec::Vec4& rhs);
+    static Vec4 Multiply(const Mat4x4& lhs, const Vec4& rhs);
     static Mat4x4 Divide(const Mat4x4& lhs, const Mat4x4& rhs);
 
     static float Determinant(const Mat4x4& matrix);
@@ -79,7 +86,14 @@ public:
 
     // operators
 
-    const float& operator[](const size_t& index) const;
+    constexpr float const& operator[](const size_t& index) const
+    {
+        assert(index < 16 &&
+               "Error: trying to index into matrix with a size that's greater than matrix!");
+
+        return values[index];
+    }
+
     float& operator[](const size_t& index);
 
     bool operator==(const Mat4x4& other);
@@ -100,47 +114,22 @@ public:
     void Subtract(const Mat4x4& other);
     void MultiplyScalar(const float& scalar);
     void Multiply(const Mat4x4& rhs);
-    Vec::Vec4 Multiply(const Vec::Vec4& vector) const;
+    Vec4 Multiply(const Vec4& vector) const;
     void Divide(const Mat4x4& rhs);
 
     float Determinant() const;
     Mat4x4 Inverse() const;
     Mat4x4 Transpose() const;
 
-private:
-
     float values[16];
 };
 
-inline Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs)
-{
-    return Mat4x4::Add(lhs, rhs);
-}
-
-inline Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs)
-{
-    return Mat4x4::Subtract(lhs, rhs);
-}
-
-inline Mat4x4 operator*(const Mat4x4& lhs, const float& scalar)
-{
-    return Mat4x4::MultiplyScalar(lhs, scalar);
-}
-
-inline Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs)
-{
-    return Mat4x4::Multiply(lhs, rhs);
-}
-
-inline Vec::Vec4 operator*(const Mat4x4& lhs, const Vec::Vec4& rhs)
-{
-    return Mat4x4::Multiply(lhs, rhs);
-}
-
-inline Mat4x4 operator/(const Mat4x4& lhs, const Mat4x4& rhs)
-{
-    return Mat4x4::Divide(lhs, rhs);
-}
-} // namespace Siege::Mat
+Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4x4 operator*(const Mat4x4& lhs, const float& scalar);
+Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs);
+Vec4 operator*(const Mat4x4& lhs, const Vec4& rhs);
+Mat4x4 operator/(const Mat4x4& lhs, const Mat4x4& rhs);
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_MAT4X4_H

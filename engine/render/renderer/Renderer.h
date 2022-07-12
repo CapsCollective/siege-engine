@@ -84,17 +84,14 @@ public:
 
 private:
 
-    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-
     static VulkanDevice* deviceInstance;
-    static Mat::Array<VkCommandBuffer> commandBuffers;
+    static Array<VkCommandBuffer> commandBuffers;
 
     VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 
     void CreateCommandBuffers();
 
     void RecreateSwapChain();
-    void FreeCommandBuffers();
 
     void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);

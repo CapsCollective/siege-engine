@@ -18,7 +18,7 @@
 
 #define VEC4_OPERATOR_BODY_VEC2(op, sep) x op rhs.x sep y op rhs.y sep z sep w sep
 
-namespace Siege::Vec
+namespace Siege
 {
 struct Vec4
 {
@@ -122,6 +122,21 @@ struct Vec4
 
     float x, y, z, w;
 };
-} // namespace Siege::Vec
+
+inline Vec4 operator/(const float& scalar, const Vec4& vec)
+{
+    return {scalar / vec.x, scalar / vec.y, scalar / vec.z, scalar / vec.w};
+}
+
+inline Vec4 operator*(const float& scalar, const Vec4& vec)
+{
+    return {scalar * vec.x, scalar * vec.y, scalar * vec.z, scalar * vec.w};
+}
+
+inline bool operator==(const Vec4& lhs, const Vec4& rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_VEC4_H

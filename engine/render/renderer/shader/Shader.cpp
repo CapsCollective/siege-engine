@@ -129,7 +129,7 @@ void Shader::SetUniformType(u32 binding,
                           std::to_string(uniforms.Size()))
                   .c_str());
 
-    Mat::StringId strId = INTERN_STR(name);
+    StringId strId = INTERN_STR(name);
 
     auto paddedSize = Buffer::PadUniformBufferSize(size);
 

@@ -8,9 +8,7 @@
 
 #include "Mat4x4.h"
 
-#include <cassert>
-
-namespace Siege::Mat
+namespace Siege
 {
 const Mat4x4 Mat4x4::Identity = {
     1.f,
@@ -30,6 +28,7 @@ const Mat4x4 Mat4x4::Identity = {
     0.f,
     1.f,
 };
+
 const Mat4x4 Mat4x4::Zero {};
 
 // static functions
@@ -62,7 +61,7 @@ Mat4x4 Mat4x4::Multiply(const Mat4x4& lhs, const Mat4x4& rhs)
     return newMat;
 }
 
-Vec::Vec4 Mat4x4::Multiply(const Mat4x4& lhs, const Vec::Vec4& rhs)
+Vec4 Mat4x4::Multiply(const Mat4x4& lhs, const Vec4& rhs)
 {
     return lhs.Multiply(rhs);
 }
@@ -83,14 +82,6 @@ Mat4x4 Mat4x4::Inverse(const Mat4x4& matrix)
 }
 
 // operators
-
-const float& Mat4x4::operator[](const size_t& index) const
-{
-    assert(index < 16 &&
-           "Error: trying to index into matrix with a size that's greater than matrix!");
-
-    return values[index];
-}
 
 float& Mat4x4::operator[](const size_t& index)
 {
@@ -221,7 +212,7 @@ void Mat4x4::Multiply(const Mat4x4& rhs)
     values[15] = DOT4(m0x3, m0y3, m0z3, m0w3, m1cx3, m1cy3, m1cz3, m1cw3);
 }
 
-Vec::Vec4 Mat4x4::Multiply(const Vec::Vec4& vector) const
+Vec4 Mat4x4::Multiply(const Vec4& vector) const
 {
     return {(values[0] * vector.x) + (values[1] * vector.y) + (values[2] * vector.z) +
                 (values[3] * vector.w),
@@ -247,7 +238,7 @@ float Mat4x4::Determinant() const
     float SubFactor04 = values[2] * values[11] - values[3] * values[10];
     float SubFactor05 = values[2] * values[7] - values[3] * values[6];
 
-    Siege::Vec::Vec4 coefficient = {
+    Siege::Vec4 coefficient = {
         +(values[5] * SubFactor00 - values[9] * SubFactor01 + values[13] * SubFactor02),
         -(values[1] * SubFactor00 - values[9] * SubFactor03 + values[13] * SubFactor04),
         +(values[1] * SubFactor01 - values[5] * SubFactor03 + values[13] * SubFactor05),
@@ -260,53 +251,53 @@ float Mat4x4::Determinant() const
 
 Mat4x4 Mat4x4::Inverse() const
 {
-    Vec::Vec4 fac0 = {(values[10] * values[15]) - (values[14] * values[11]),
-                      (values[10] * values[15]) - (values[14] * values[11]),
-                      (values[6] * values[15]) - (values[14] * values[7]),
-                      (values[6] * values[11]) - (values[10] * values[7])};
+    Vec4 fac0 = {(values[10] * values[15]) - (values[14] * values[11]),
+                 (values[10] * values[15]) - (values[14] * values[11]),
+                 (values[6] * values[15]) - (values[14] * values[7]),
+                 (values[6] * values[11]) - (values[10] * values[7])};
 
-    Vec::Vec4 fac1 = {values[9] * values[15] - values[13] * values[11],
-                      values[9] * values[15] - values[13] * values[11],
-                      values[5] * values[15] - values[13] * values[7],
-                      values[5] * values[11] - values[9] * values[7]};
+    Vec4 fac1 = {values[9] * values[15] - values[13] * values[11],
+                 values[9] * values[15] - values[13] * values[11],
+                 values[5] * values[15] - values[13] * values[7],
+                 values[5] * values[11] - values[9] * values[7]};
 
-    Vec::Vec4 fac2 = {values[9] * values[14] - values[13] * values[10],
-                      values[9] * values[14] - values[13] * values[10],
-                      values[5] * values[14] - values[13] * values[6],
-                      values[5] * values[10] - values[9] * values[6]};
+    Vec4 fac2 = {values[9] * values[14] - values[13] * values[10],
+                 values[9] * values[14] - values[13] * values[10],
+                 values[5] * values[14] - values[13] * values[6],
+                 values[5] * values[10] - values[9] * values[6]};
 
-    Vec::Vec4 fac3 = {values[8] * values[15] - values[12] * values[11],
-                      values[8] * values[15] - values[12] * values[11],
-                      values[4] * values[15] - values[12] * values[7],
-                      values[4] * values[11] - values[8] * values[7]};
+    Vec4 fac3 = {values[8] * values[15] - values[12] * values[11],
+                 values[8] * values[15] - values[12] * values[11],
+                 values[4] * values[15] - values[12] * values[7],
+                 values[4] * values[11] - values[8] * values[7]};
 
-    Vec::Vec4 fac4 = {values[8] * values[14] - values[12] * values[10],
-                      values[8] * values[14] - values[12] * values[10],
-                      values[4] * values[14] - values[12] * values[6],
-                      values[4] * values[10] - values[8] * values[6]};
+    Vec4 fac4 = {values[8] * values[14] - values[12] * values[10],
+                 values[8] * values[14] - values[12] * values[10],
+                 values[4] * values[14] - values[12] * values[6],
+                 values[4] * values[10] - values[8] * values[6]};
 
-    Vec::Vec4 fac5 = {values[8] * values[13] - values[12] * values[9],
-                      values[8] * values[13] - values[12] * values[9],
-                      values[4] * values[13] - values[12] * values[5],
-                      values[4] * values[9] - values[8] * values[5]};
+    Vec4 fac5 = {values[8] * values[13] - values[12] * values[9],
+                 values[8] * values[13] - values[12] * values[9],
+                 values[4] * values[13] - values[12] * values[5],
+                 values[4] * values[9] - values[8] * values[5]};
 
-    Vec::Vec4 vec0 = {values[4], values[0], values[0], values[0]};
-    Vec::Vec4 vec1 = {values[5], values[1], values[1], values[1]};
-    Vec::Vec4 vec2 = {values[6], values[2], values[2], values[2]};
-    Vec::Vec4 vec3 = {values[7], values[3], values[3], values[3]};
+    Vec4 vec0 = {values[4], values[0], values[0], values[0]};
+    Vec4 vec1 = {values[5], values[1], values[1], values[1]};
+    Vec4 vec2 = {values[6], values[2], values[2], values[2]};
+    Vec4 vec3 = {values[7], values[3], values[3], values[3]};
 
-    Vec::Vec4 inv0 = vec1 * fac0 - vec2 * fac1 + vec3 * fac2;
-    Vec::Vec4 inv1 = vec0 * fac0 - vec2 * fac3 + vec3 * fac4;
-    Vec::Vec4 inv2 = vec0 * fac1 - vec1 * fac3 + vec3 * fac5;
-    Vec::Vec4 inv3 = vec0 * fac2 - vec1 * fac4 + vec2 * fac5;
+    Vec4 inv0 = vec1 * fac0 - vec2 * fac1 + vec3 * fac2;
+    Vec4 inv1 = vec0 * fac0 - vec2 * fac3 + vec3 * fac4;
+    Vec4 inv2 = vec0 * fac1 - vec1 * fac3 + vec3 * fac5;
+    Vec4 inv3 = vec0 * fac2 - vec1 * fac4 + vec2 * fac5;
 
-    Vec::Vec4 signA = {+1, -1, +1, -1};
-    Vec::Vec4 signB = {-1, +1, -1, +1};
+    Vec4 signA = {+1, -1, +1, -1};
+    Vec4 signB = {-1, +1, -1, +1};
 
     Mat4x4 inverse = {inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB};
 
-    Vec::Vec4 dot0 = Vec::Vec4(inverse[0], inverse[4], inverse[8], inverse[12]) *
-                     Vec::Vec4(values[0], values[1], values[2], values[3]);
+    Vec4 dot0 = Vec4(inverse[0], inverse[4], inverse[8], inverse[12]) *
+                Vec4(values[0], values[1], values[2], values[3]);
     float dot = (dot0.x + dot0.y) + (dot0.z + dot0.w);
 
     float OneOverDeterminant = 1.f / dot;
@@ -333,4 +324,34 @@ Mat4x4 Mat4x4::Transpose() const
             values[11],
             values[15]};
 }
-} // namespace Siege::Mat
+
+Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return Mat4x4::Add(lhs, rhs);
+}
+
+Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return Mat4x4::Subtract(lhs, rhs);
+}
+
+Mat4x4 operator*(const Mat4x4& lhs, const float& scalar)
+{
+    return Mat4x4::MultiplyScalar(lhs, scalar);
+}
+
+Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return Mat4x4::Multiply(lhs, rhs);
+}
+
+Vec4 operator*(const Mat4x4& lhs, const Vec4& rhs)
+{
+    return Mat4x4::Multiply(lhs, rhs);
+}
+
+Mat4x4 operator/(const Mat4x4& lhs, const Mat4x4& rhs)
+{
+    return Mat4x4::Divide(lhs, rhs);
+}
+} // namespace Siege

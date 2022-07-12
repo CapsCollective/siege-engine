@@ -43,14 +43,13 @@ void CollisionSystem::FreeEntities()
     removedEntities.clear();
 }
 
-Siege::Vec::Vec3 CollisionSystem::MoveAndSlide(const BoundedBox& boundingBox,
-                                               Siege::Vec::Vec3 velocity)
+Siege::Vec3 CollisionSystem::MoveAndSlide(const BoundedBox& boundingBox, Siege::Vec3 velocity)
 {
     // TODO convert this system to use OBBs with separating plane theorem
     // TODO add collision sweeping for more accurate results
     // Get the min and max values for the bounding box
-    const Siege::Vec::Vec3& boxMin = boundingBox.min;
-    const Siege::Vec::Vec3& boxMax = boundingBox.max;
+    const Siege::Vec3& boxMin = boundingBox.min;
+    const Siege::Vec3& boxMax = boundingBox.max;
 
     // Calculate the bounding box positions for each component of the object's velocity
     BoundedBox yBox = {boxMin + velocity.YComp(), boxMax + velocity.YComp()};

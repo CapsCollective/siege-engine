@@ -11,8 +11,7 @@
 namespace Siege
 {
 VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
-Mat::StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES>
-    DescriptorPool::sizes;
+StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES> DescriptorPool::sizes;
 
 void DescriptorPool::AddPoolSize(const VkDescriptorType type, const u32 size)
 {

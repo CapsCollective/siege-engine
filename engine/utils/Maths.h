@@ -9,29 +9,27 @@
 #ifndef SIEGE_ENGINE_MATHS_H
 #define SIEGE_ENGINE_MATHS_H
 
-#include "Vec/Vec2.h"
-#include "Vec/Vec3.h"
-#include "Vec/Vec4.h"
+#include "vec/Vec2.h"
+#include "vec/Vec3.h"
+#include "vec/Vec4.h"
 
 struct Xform
 {
 public:
 
-    Xform() : Xform(Siege::Vec::Vec3::Zero) {}
+    Xform() : Xform(Siege::Vec3::Zero) {}
 
-    explicit Xform(Siege::Vec::Vec3 position) : Xform(position, 0.f) {}
+    explicit Xform(Siege::Vec3 position) : Xform(position, 0.f) {}
 
-    Xform(Siege::Vec::Vec3 position, float rotation) :
-        Xform(position, rotation, Siege::Vec::Vec3::One)
-    {}
+    Xform(Siege::Vec3 position, float rotation) : Xform(position, rotation, Siege::Vec3::One) {}
 
-    Xform(Siege::Vec::Vec3 position, float rotation, Siege::Vec::Vec3 scale) :
+    Xform(Siege::Vec3 position, float rotation, Siege::Vec3 scale) :
         position(position),
         rotation(rotation),
         scale(scale)
     {}
 
-    const Siege::Vec::Vec3& GetPosition() const
+    const Siege::Vec3& GetPosition() const
     {
         return position;
     }
@@ -41,12 +39,12 @@ public:
         return rotation;
     }
 
-    const Siege::Vec::Vec3& GetScale() const
+    const Siege::Vec3& GetScale() const
     {
         return scale;
     }
 
-    void SetPosition(const Siege::Vec::Vec3& newPosition)
+    void SetPosition(const Siege::Vec3& newPosition)
     {
         position = newPosition;
     }
@@ -56,25 +54,25 @@ public:
         rotation = fmod(newRotation, 360.f);
     }
 
-    void SetScale(const Siege::Vec::Vec3& newScale)
+    void SetScale(const Siege::Vec3& newScale)
     {
         scale = newScale;
     }
 
 private:
 
-    Siege::Vec::Vec3 position;
+    Siege::Vec3 position;
     float rotation;
-    Siege::Vec::Vec3 scale;
+    Siege::Vec3 scale;
 };
 
 struct BoundedBox
 {
     // 'Structors
 
-    BoundedBox() : BoundedBox(Siege::Vec::Vec3(), Siege::Vec::Vec3()) {}
+    BoundedBox() : BoundedBox(Siege::Vec3(), Siege::Vec3()) {}
 
-    BoundedBox(Siege::Vec::Vec3 min, Siege::Vec::Vec3 max) : min(min), max(max) {}
+    BoundedBox(Siege::Vec3 min, Siege::Vec3 max) : min(min), max(max) {}
 
     // Public methods
 
@@ -84,25 +82,23 @@ struct BoundedBox
 
     // Public members
 
-    Siege::Vec::Vec3 min;
-    Siege::Vec::Vec3 max;
+    Siege::Vec3 min;
+    Siege::Vec3 max;
 };
 
 struct RayCast
 {
     // 'Structors
 
-    RayCast() : RayCast(Siege::Vec::Vec3(), Siege::Vec::Vec3()) {}
+    RayCast() : RayCast(Siege::Vec3(), Siege::Vec3()) {}
 
-    RayCast(Siege::Vec::Vec3 position, Siege::Vec::Vec3 direction) :
-        position(position),
-        direction(direction)
+    RayCast(Siege::Vec3 position, Siege::Vec3 direction) : position(position), direction(direction)
     {}
 
     // Public members
 
-    Siege::Vec::Vec3 position;
-    Siege::Vec::Vec3 direction;
+    Siege::Vec3 position;
+    Siege::Vec3 direction;
 };
 
 #endif // SIEGE_ENGINE_MATHS_H

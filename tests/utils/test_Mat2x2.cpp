@@ -7,11 +7,11 @@
 //
 
 #include <utest.h>
-#include <utils/Mat/Mat2x2.h>
+#include <utils/mat/Mat2x2.h>
 
 UTEST(test_Matrix2x2, CreateEmptyMatrix)
 {
-    Siege::Mat::Mat2x2 matrix;
+    Siege::Mat2x2 matrix;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -21,7 +21,7 @@ UTEST(test_Matrix2x2, CreateEmptyMatrix)
 
 UTEST(test_Matrix2x2, CreateMatrixWithValues)
 {
-    Siege::Mat::Mat2x2 matrix = {0, 1, 2, 3};
+    Siege::Mat2x2 matrix = {0, 1, 2, 3};
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -31,7 +31,7 @@ UTEST(test_Matrix2x2, CreateMatrixWithValues)
 
 UTEST(test_Matrix2x2, CreateMatrixWithVectors)
 {
-    Siege::Mat::Mat2x2 matrix = {{0, 1}, {2, 3}};
+    Siege::Mat2x2 matrix = {{0, 1}, {2, 3}};
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -43,7 +43,7 @@ UTEST(test_Matrix2x2, CreateIdentityMatrix)
 {
     float expectedValues[] = {1.f, 0.f, 0.f, 1.f};
 
-    Siege::Mat::Mat2x2 matrix = Siege::Mat::Mat2x2::Identity;
+    Siege::Mat2x2 matrix = Siege::Mat2x2::Identity;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -53,8 +53,8 @@ UTEST(test_Matrix2x2, CreateIdentityMatrix)
 
 UTEST(test_Matrix2x2, CopyMatrixUsingConstructor)
 {
-    Siege::Mat::Mat2x2 matrixA = Siege::Mat::Mat2x2::Identity;
-    Siege::Mat::Mat2x2 matrixB = {matrixA};
+    Siege::Mat2x2 matrixA = Siege::Mat2x2::Identity;
+    Siege::Mat2x2 matrixB = {matrixA};
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -66,10 +66,10 @@ UTEST(test_Matrix2x2, TestMatrixCopyInDifferentScopes)
 {
     float expectedValues[] = {1.f, 0.f, 0.f, 1.f};
 
-    Siege::Mat::Mat2x2 matrixA;
+    Siege::Mat2x2 matrixA;
 
     { // Open a new scope. MatrixB should not be in memory once we leave the brackets
-        Siege::Mat::Mat2x2 matrixB = Siege::Mat::Mat2x2::Identity;
+        Siege::Mat2x2 matrixB = Siege::Mat2x2::Identity;
         matrixA = matrixB;
     }
 
@@ -83,7 +83,7 @@ UTEST(test_Matrix2x2, GetElementInMatrix)
 {
     float expected = 1;
 
-    Siege::Mat::Mat2x2 matrixA = Siege::Mat::Mat2x2::Identity;
+    Siege::Mat2x2 matrixA = Siege::Mat2x2::Identity;
 
     float result0 = matrixA.Get(0, 0);
     float result1 = matrixA.Get(1, 1);
@@ -94,13 +94,13 @@ UTEST(test_Matrix2x2, GetElementInMatrix)
 
 UTEST(test_Matrix2x2, CheckMatrixEquality)
 {
-    Siege::Mat::Mat2x2 matrixA = Siege::Mat::Mat2x2::Identity;
-    Siege::Mat::Mat2x2 matrixB = {};
-    Siege::Mat::Mat2x2 matrixC = matrixA;
+    Siege::Mat2x2 matrixA = Siege::Mat2x2::Identity;
+    Siege::Mat2x2 matrixB = {};
+    Siege::Mat2x2 matrixC = matrixA;
 
     ASSERT_TRUE(matrixA == matrixC);
     ASSERT_FALSE(matrixA == matrixB);
-    ASSERT_TRUE(matrixB == Siege::Mat::Mat2x2::Zero);
+    ASSERT_TRUE(matrixB == Siege::Mat2x2::Zero);
     ASSERT_FALSE(matrixB == matrixC);
 }
 
@@ -108,8 +108,8 @@ UTEST(test_Matrix2x2, AddMatrices)
 {
     float expectedValues[] = {2.f, 2.f, 2.f, 2.f};
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
     matrixA.Add(matrixB);
 
@@ -123,8 +123,8 @@ UTEST(test_Matrix2x2, AddMatricesWithPlusEqualsOperator)
 {
     float expectedValues[] = {2.f, 2.f, 2.f, 2.f};
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
     matrixA += matrixB;
 
@@ -138,8 +138,8 @@ UTEST(test_Matrix2x2, AddMatricesAndReturnNewMatrix)
 {
     float expectedValues[] = {2.f, 2.f, 2.f, 2.f};
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
     auto matrixC = matrixA + matrixB;
 
@@ -151,10 +151,10 @@ UTEST(test_Matrix2x2, AddMatricesAndReturnNewMatrix)
 
 UTEST(test_Matrix2x2, SubtractMatrices)
 {
-    Siege::Mat::Mat2x2 expected = Siege::Mat::Mat2x2::Zero;
+    Siege::Mat2x2 expected = Siege::Mat2x2::Zero;
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
     matrixA.Subtract(matrixB);
 
@@ -166,10 +166,10 @@ UTEST(test_Matrix2x2, SubtractMatrices)
 
 UTEST(test_Matrix2x2, SubtractMatricesWithMinusEqualsOperator)
 {
-    Siege::Mat::Mat2x2 expected = Siege::Mat::Mat2x2::Zero;
+    Siege::Mat2x2 expected = Siege::Mat2x2::Zero;
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
     matrixA -= matrixB;
 
@@ -181,12 +181,12 @@ UTEST(test_Matrix2x2, SubtractMatricesWithMinusEqualsOperator)
 
 UTEST(test_Matrix2x2, SubtractMatricesAndReturnNewMatrix)
 {
-    Siege::Mat::Mat2x2 expected = Siege::Mat::Mat2x2::Zero;
+    Siege::Mat2x2 expected = Siege::Mat2x2::Zero;
 
-    Siege::Mat::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixB = {1.f, 1.f, 1.f, 1.f};
 
-    Siege::Mat::Mat2x2 matrixC = matrixA - matrixB;
+    Siege::Mat2x2 matrixC = matrixA - matrixB;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -196,8 +196,8 @@ UTEST(test_Matrix2x2, SubtractMatricesAndReturnNewMatrix)
 
 UTEST(test_Matrix2x2, MultiplyByScalar)
 {
-    Siege::Mat::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
-    Siege::Mat::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
+    Siege::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
 
     matrix.MultiplyScalar(3.f);
 
@@ -209,8 +209,8 @@ UTEST(test_Matrix2x2, MultiplyByScalar)
 
 UTEST(test_Matrix2x2, MultiplyByScalarUsingTimesEqualsOperator)
 {
-    Siege::Mat::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
-    Siege::Mat::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
+    Siege::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
 
     matrix *= 3.f;
 
@@ -222,10 +222,10 @@ UTEST(test_Matrix2x2, MultiplyByScalarUsingTimesEqualsOperator)
 
 UTEST(test_Matrix2x2, MultiplyByScalarUsingTimesOperator)
 {
-    Siege::Mat::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
-    Siege::Mat::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
+    Siege::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
 
-    Siege::Mat::Mat2x2 matrixB = matrix * 3.f;
+    Siege::Mat2x2 matrixB = matrix * 3.f;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -235,9 +235,9 @@ UTEST(test_Matrix2x2, MultiplyByScalarUsingTimesOperator)
 
 UTEST(test_Matrix2x2, MultiplyTwoMatrices)
 {
-    Siege::Mat::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f}; // 1 2  3 2  5 4
-    Siege::Mat::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f}; // 3 3  1 1  12 6
-    Siege::Mat::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f}; //
+    Siege::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f}; // 1 2  3 2  5 4
+    Siege::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f}; // 3 3  1 1  12 6
+    Siege::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f}; //
 
     matrixA.Multiply(matrixB);
 
@@ -246,9 +246,9 @@ UTEST(test_Matrix2x2, MultiplyTwoMatrices)
 
 UTEST(test_Matrix2x2, MultiplyTwoMatricesUsingTimesEqualsOperator)
 {
-    Siege::Mat::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f};
-    Siege::Mat::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f};
-    Siege::Mat::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f};
+    Siege::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f};
+    Siege::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f};
+    Siege::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f};
 
     matrixA *= matrixB;
 
@@ -257,35 +257,35 @@ UTEST(test_Matrix2x2, MultiplyTwoMatricesUsingTimesEqualsOperator)
 
 UTEST(test_Matrix2x2, MultiplyTwoMatricesUsingTimesOperator)
 {
-    Siege::Mat::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f};
-    Siege::Mat::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f};
-    Siege::Mat::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f};
+    Siege::Mat2x2 expected = {5.f, 4.f, 12.f, 9.f};
+    Siege::Mat2x2 matrixA = {1.f, 2.f, 3.f, 3.f};
+    Siege::Mat2x2 matrixB = {3.f, 2.f, 1.f, 1.f};
 
-    Siege::Mat::Mat2x2 matrixC = matrixA * matrixB;
+    Siege::Mat2x2 matrixC = matrixA * matrixB;
 
     ASSERT_TRUE(expected == matrixC);
 }
 
 UTEST(test_Matrix2x2, MultiplyVectorByMatrix)
 {
-    Siege::Vec::Vec2 expected {4, 9};
+    Siege::Vec2 expected {4, 9};
 
-    Siege::Vec::Vec2 vector = {2, 1};
-    Siege::Mat::Mat2x2 matrix = {1.f, 2.f, 3.f, 3.f};
+    Siege::Vec2 vector = {2, 1};
+    Siege::Mat2x2 matrix = {1.f, 2.f, 3.f, 3.f};
 
-    Siege::Vec::Vec2 result = matrix.Multiply(vector);
+    Siege::Vec2 result = matrix.Multiply(vector);
 
     ASSERT_TRUE(expected == result);
 }
 
 UTEST(test_Matrix2x2, MultiplyVectorByWithTimesOperator)
 {
-    Siege::Vec::Vec2 expected {4, 9};
+    Siege::Vec2 expected {4, 9};
 
-    Siege::Vec::Vec2 vector = {2, 1};
-    Siege::Mat::Mat2x2 matrix = {1.f, 2.f, 3.f, 3.f};
+    Siege::Vec2 vector = {2, 1};
+    Siege::Mat2x2 matrix = {1.f, 2.f, 3.f, 3.f};
 
-    Siege::Vec::Vec2 result = matrix * vector;
+    Siege::Vec2 result = matrix * vector;
 
     ASSERT_TRUE(expected == result);
 }
@@ -293,34 +293,34 @@ UTEST(test_Matrix2x2, MultiplyVectorByWithTimesOperator)
 UTEST(test_Matrix2x2, CalculateDeterminant)
 {
     float expectedDeterminant = 0;
-    Siege::Mat::Mat2x2 matrix = {1.f, 2.f, 1.f, 2.f};
+    Siege::Mat2x2 matrix = {1.f, 2.f, 1.f, 2.f};
 
     float determinant = matrix.Determinant();
     ASSERT_EQ(expectedDeterminant, determinant);
 
-    Siege::Mat::Mat2x2 matrix0 = {5.f, 2.f, 3.f, 3.f};
+    Siege::Mat2x2 matrix0 = {5.f, 2.f, 3.f, 3.f};
     expectedDeterminant = 9.f;
     determinant = matrix0.Determinant();
     ASSERT_EQ(expectedDeterminant, determinant);
 
-    determinant = Siege::Mat::Mat2x2::Determinant(matrix0);
+    determinant = Siege::Mat2x2::Determinant(matrix0);
     ASSERT_EQ(expectedDeterminant, determinant);
 }
 
 UTEST(test_Matrix2x2, CalculateInverse)
 {
-    Siege::Mat::Mat2x2 expected = {0.25f, -0.25f, -0.25, 1.25f};
+    Siege::Mat2x2 expected = {0.25f, -0.25f, -0.25, 1.25f};
 
-    Siege::Mat::Mat2x2 matrix = {5.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrix = {5.f, 1.f, 1.f, 1.f};
 
-    Siege::Mat::Mat2x2 result = matrix.Inverse();
+    Siege::Mat2x2 result = matrix.Inverse();
 
     for (size_t i = 0; i < 4; i++)
     {
         ASSERT_TRUE((result[0] - expected[0]) < std::numeric_limits<float>::epsilon());
     }
 
-    result = Siege::Mat::Mat2x2::Inverse(matrix);
+    result = Siege::Mat2x2::Inverse(matrix);
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -330,10 +330,10 @@ UTEST(test_Matrix2x2, CalculateInverse)
 
 UTEST(test_Matrix2x2, DivideMatrix)
 {
-    Siege::Mat::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
+    Siege::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
 
-    Siege::Mat::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
+    Siege::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
 
     matrixA.Divide(matrixB);
 
@@ -345,10 +345,10 @@ UTEST(test_Matrix2x2, DivideMatrix)
 
 UTEST(test_Matrix2x2, DivideMatrixWithSlashEqualsOperator)
 {
-    Siege::Mat::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
+    Siege::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
 
-    Siege::Mat::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
+    Siege::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
 
     matrixA /= matrixB;
 
@@ -360,12 +360,12 @@ UTEST(test_Matrix2x2, DivideMatrixWithSlashEqualsOperator)
 
 UTEST(test_Matrix2x2, DivideMatrixWithSlashOperator)
 {
-    Siege::Mat::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
+    Siege::Mat2x2 expected = {1.f, 0.f, 0.545454545455f, 3.2727272727f};
 
-    Siege::Mat::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
-    Siege::Mat::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
+    Siege::Mat2x2 matrixA = {2.f, 4.f, 6.f, 1.f};
+    Siege::Mat2x2 matrixB = {5.f, 1.f, 1.f, 1.f};
 
-    Siege::Mat::Mat2x2 result = matrixA / matrixB;
+    Siege::Mat2x2 result = matrixA / matrixB;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -375,9 +375,9 @@ UTEST(test_Matrix2x2, DivideMatrixWithSlashOperator)
 
 UTEST(test_Matrix2x2, TestReverseOperator)
 {
-    Siege::Mat::Mat2x2 expected = {1.f, -1.f, 1.f, -1.f};
+    Siege::Mat2x2 expected = {1.f, -1.f, 1.f, -1.f};
 
-    Siege::Mat::Mat2x2 matrix = {-1.f, 1.f, -1.f, 1.f};
+    Siege::Mat2x2 matrix = {-1.f, 1.f, -1.f, 1.f};
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -387,11 +387,11 @@ UTEST(test_Matrix2x2, TestReverseOperator)
 
 UTEST(test_Matrix2x2, TestTranspose)
 {
-    Siege::Mat::Mat2x2 expected = {1.f, 3.f, 2.f, 4.f};
+    Siege::Mat2x2 expected = {1.f, 3.f, 2.f, 4.f};
 
-    Siege::Mat::Mat2x2 matrix = {1.f, 2.f, 3.f, 4.f};
+    Siege::Mat2x2 matrix = {1.f, 2.f, 3.f, 4.f};
 
-    Siege::Mat::Mat2x2 transposed = matrix.Transpose();
+    Siege::Mat2x2 transposed = matrix.Transpose();
 
     ASSERT_TRUE(expected == transposed);
 }

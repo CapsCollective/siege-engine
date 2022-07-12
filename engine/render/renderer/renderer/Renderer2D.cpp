@@ -10,13 +10,13 @@
 
 namespace Siege
 {
-Mat::StringId Renderer2D::transformId;
-Mat::StringId Renderer2D::globalDataId;
+StringId Renderer2D::transformId;
+StringId Renderer2D::globalDataId;
 
 u64 Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
 
-Mat::StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
-Mat::StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
+StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
+StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
 Material* Renderer2D::currentMaterial = nullptr;
 Model* Renderer2D::currentModel = nullptr;
@@ -28,30 +28,30 @@ void Renderer2D::Initialise()
 }
 
 void Renderer2D::DrawModel(Model* model,
-                           const glm::vec2& position,
-                           const glm::vec2& scale,
+                           const Siege::Vec2& position,
+                           const Siege::Vec2& scale,
                            const float& rotation,
                            const float& zIndex)
 {
     models.Append(model);
 
-    auto transform = Mat::Math::CalculateTransform3D(glm::vec3(position.x, position.y, zIndex),
-                                                     glm::vec3(0.f, 0.f, rotation),
-                                                     glm::vec3(scale.x, scale.y, 0.f));
+    auto transform = Math::CalculateTransform3D({position.x, position.y, zIndex},
+                                                {0.f, 0.f, rotation},
+                                                {scale.x, scale.y, 0.f});
     transforms.Append({transform});
 }
 
 void Renderer2D::DrawModel(Model* model,
-                           const glm::vec2& position,
-                           const glm::vec2& scale,
+                           const Siege::Vec2& position,
+                           const Siege::Vec2& scale,
                            const float& zIndex)
 {
     DrawModel(model, position, scale, 0.f, zIndex);
 }
 
-void Renderer2D::DrawModel(Model* model, const glm::vec2& position)
+void Renderer2D::DrawModel(Model* model, const Siege::Vec2& position)
 {
-    DrawModel(model, position, glm::vec2(1.f), 0.f, 0.f);
+    DrawModel(model, position, {1.f, 1.f}, 0.f, 0.f);
 }
 
 void Renderer2D::RecreateMaterials()

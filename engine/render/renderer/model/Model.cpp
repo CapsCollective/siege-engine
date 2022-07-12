@@ -11,8 +11,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include <cstring>
-
 namespace std
 {
 template<>
@@ -21,7 +19,40 @@ struct hash<Siege::Vertex>
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Siege::Mat::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        Siege::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        return seed;
+    };
+};
+
+template<>
+struct hash<Siege::Vec3>
+{
+    size_t operator()(const Siege::Vec3& vertex) const
+    {
+        size_t seed = 0;
+        Siege::HashCombine(seed, vertex.x, vertex.y, vertex.z);
+        return seed;
+    };
+};
+
+template<>
+struct hash<Siege::Vec2>
+{
+    size_t operator()(const Siege::Vec2& vertex) const
+    {
+        size_t seed = 0;
+        Siege::HashCombine(seed, vertex.x, vertex.y);
+        return seed;
+    };
+};
+
+template<>
+struct hash<Siege::Vec4>
+{
+    size_t operator()(const Siege::Vec4& vertex) const
+    {
+        size_t seed = 0;
+        Siege::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
         return seed;
     };
 };
@@ -32,7 +63,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Siege::Mat::HashCombine(seed, vertex.position, vertex.color);
+        Siege::HashCombine(seed, vertex.position, vertex.color);
         return seed;
     };
 };
@@ -67,7 +98,7 @@ void Model::LoadModelFromFile(const char* filePath)
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath), warn + err);
+    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath), warn + err)
 
     std::vector<Vertex> objVertices;
     std::vector<u32> objIndices;
@@ -134,7 +165,7 @@ void Model::Bind(VkCommandBuffer commandBuffer)
     modelMesh.Bind(commandBuffer);
 }
 
-void Model::Draw(VkCommandBuffer commandBuffer, u32 instance)
+void Model::Draw(VkCommandBuffer commandBuffer, const u32& instance)
 {
     if (modelMesh.HasIndexBuffer())
         vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, instance);

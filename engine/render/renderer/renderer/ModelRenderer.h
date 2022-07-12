@@ -25,9 +25,9 @@ public:
     void Destroy();
 
     void DrawModel(Model* model,
-                   const glm::vec3& position,
-                   const glm::vec3& scale,
-                   const glm::vec3& rotation);
+                   const Siege::Vec3& position,
+                   const Siege::Vec3& scale,
+                   const Siege::Vec3& rotation);
 
     void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
 
@@ -40,11 +40,11 @@ private:
     // TODO(Aryeh): Make this configurable via macros
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    Mat::StringId globalDataId;
-    Mat::StringId transformId;
+    StringId globalDataId;
+    StringId transformId;
 
-    Mat::StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-    Mat::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
+    StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};

@@ -63,7 +63,7 @@ $(utilsLib): buildFlags
 $(coreLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-$(renderLib): buildFlags
+$(renderLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 $(testApp): buildFlags $(utilsLib) $(coreLib) $(renderLib)
@@ -72,7 +72,7 @@ $(testApp): buildFlags $(utilsLib) $(coreLib) $(renderLib)
 $(exampleGameApp): buildFlags $(utilsLib) $(coreLib)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleRenderApp): buildFlags $(renderLib)
+$(exampleRenderApp): buildFlags $(utilsLib) $(renderLib)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)

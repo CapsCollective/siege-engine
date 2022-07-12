@@ -22,14 +22,14 @@ void ModelRenderer::Initialise(const char* globalDataAttributeName, const u64& g
 void ModelRenderer::Destroy() {}
 
 void ModelRenderer::DrawModel(Model* model,
-                              const glm::vec3& position,
-                              const glm::vec3& scale,
-                              const glm::vec3& rotation)
+                              const Siege::Vec3& position,
+                              const Siege::Vec3& scale,
+                              const Siege::Vec3& rotation)
 {
     models.Append(model);
 
-    auto transform = Mat::Math::CalculateTransform3D(position, rotation, scale);
-    auto normal = Mat::Math::CalculateNormalMatrix(rotation, scale);
+    auto transform = Math::CalculateTransform3D(position, rotation, scale);
+    auto normal = Math::CalculateNormalMatrix(rotation, scale);
     transforms.Append({transform, normal});
 }
 

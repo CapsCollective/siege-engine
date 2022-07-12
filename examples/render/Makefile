@@ -16,6 +16,8 @@ exampleRenderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleRenderBin
 exampleRenderBuildDir := $(exampleRenderBinDir)/build
 exampleRenderOutputName := "Render Example"
 
+linkFlags += -lutils
+
 # Set packaging vars
 ifeq ($(platform), linux)
     packagingEnvVars := \
@@ -40,7 +42,7 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
-linkFlags += -lrender
+linkFlags += -l render -l utils
 
 .PHONY: all render-assets
 
@@ -57,7 +59,7 @@ $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
 # Compile object files to the bin directory
 $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I$(engineDir) $< -o $@ $(CXXFLAGS)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
 # Copy assets (and other required build files) directory to the build directory
 render-assets:

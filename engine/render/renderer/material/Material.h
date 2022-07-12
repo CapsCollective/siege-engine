@@ -60,13 +60,13 @@ public:
     void BuildMaterial();
 
     void SetUniformData(VkDeviceSize dataSize, const void* data);
-    void SetUniformData(Mat::StringId id, VkDeviceSize dataSize, const void* data);
+    void SetUniformData(StringId id, VkDeviceSize dataSize, const void* data);
     void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
 
     void SetVertexShader(Shader* shader);
     void SetFragmentShader(Shader* shader);
 
-    bool HasProperty(Mat::StringId id);
+    bool HasProperty(StringId id);
 
     void Bind(VkCommandBuffer commandBuffer);
     void CreatePipeline();
@@ -88,7 +88,7 @@ private:
     struct Property
     {
         uint32_t binding = 0;
-        Mat::StringId id = 0;
+        StringId id = 0;
         VkShaderStageFlags stage;
         u64 offset = 0;
         u64 size = 0;
@@ -98,7 +98,7 @@ private:
 
     Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
-    Property& GetProperty(Mat::StringId id);
+    Property& GetProperty(StringId id);
     void AddShader(Shader* shader);
     void SetShaderProperties(Shader* shader, u64& offset);
 
@@ -119,15 +119,15 @@ private:
     Shader* vertexShader {nullptr};
     Shader* fragmentShader {nullptr};
 
-    Mat::StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
+    StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
     Buffer::Buffer buffer;
     u64 bufferSize = 0;
 
-    Mat::StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
-    Mat::StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
+    StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
+    StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
-    Mat::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
+    StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
 
     Pipeline pipeline;
     VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

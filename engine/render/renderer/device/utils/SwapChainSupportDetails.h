@@ -25,10 +25,10 @@ struct SwapChainSupportDetails
     VkSurfaceCapabilitiesKHR capabilities {};
 
     // An array of available surface formats
-    Mat::Array<VkSurfaceFormatKHR> formats {};
+    Array<VkSurfaceFormatKHR> formats {};
 
     // A array of present modes
-    Mat::Array<VkPresentModeKHR> presentModes {};
+    Array<VkPresentModeKHR> presentModes {};
 
     bool hasFormats = false;
     bool hasPresentModes = false;

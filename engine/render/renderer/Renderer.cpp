@@ -10,7 +10,7 @@
 
 namespace Siege
 {
-Mat::Array<VkCommandBuffer> Renderer::commandBuffers;
+Array<VkCommandBuffer> Renderer::commandBuffers;
 VulkanDevice* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
@@ -42,7 +42,7 @@ Renderer::~Renderer()
 
 void Renderer::CreateCommandBuffers()
 {
-    commandBuffers = Mat::Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers = Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -90,14 +90,6 @@ void Renderer::RecreateSwapChain()
         Renderer3D::RecreateMaterials();
         Renderer2D::RecreateMaterials();
     }
-}
-
-void Renderer::FreeCommandBuffers()
-{
-    vkFreeCommandBuffers(device.Device(),
-                         device.GetCommandPool(),
-                         swapChain.GetImageCount(),
-                         commandBuffers.Data());
 }
 
 bool Renderer::StartFrame()

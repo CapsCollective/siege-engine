@@ -167,9 +167,9 @@ void Mesh::UpdateIndexBuffer(u32* indices)
         return;
     }
 
-    VkDeviceSize indexSize = sizeof(u32) * indexCount;
+    VkDeviceSize size = sizeof(u32) * indexCount;
 
-    Buffer::CopyData(globalIndexStagingBuffer, indexSize, indices);
-    Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, indexSize);
+    Buffer::CopyData(globalIndexStagingBuffer, size, indices);
+    Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, size);
 }
 } // namespace Siege

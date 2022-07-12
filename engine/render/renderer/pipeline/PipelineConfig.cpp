@@ -36,8 +36,8 @@ VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCoun
         totalAttributes += bindings[i].attributeCount;
     }
 
-    vertexData.bindings = Mat::Array<VkVertexInputBindingDescription>(bindingCount);
-    vertexData.attributes = Mat::Array<VkVertexInputAttributeDescription>(totalAttributes);
+    vertexData.bindings = Array<VkVertexInputBindingDescription>(bindingCount);
+    vertexData.attributes = Array<VkVertexInputAttributeDescription>(totalAttributes);
 
     size_t processedAttributes = 0;
     for (size_t i = 0; i < bindingCount; i++)
