@@ -249,7 +249,7 @@ UTEST(test_Matrix4x4, MultiplyByScalar)
                             {1.f, 1.f, 1.f, 1.f},
                             {1.f, 1.f, 1.f, 1.f}};
 
-    matrix.MultiplyScalar(3.f);
+    matrix.Multiply(3.f);
 
     for (size_t i = 0; i < 16; i++)
     {
