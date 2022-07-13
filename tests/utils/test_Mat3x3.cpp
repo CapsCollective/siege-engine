@@ -191,7 +191,7 @@ UTEST(test_Matrix3x3, MultiplyByScalar)
     Siege::Mat3x3 expected = {{3.f, 3.f, 3.f}, {3.f, 3.f, 3.f}, {3.f, 3.f, 3.f}};
     Siege::Mat3x3 matrix = {{1.f, 1.f, 1.f}, {1.f, 1.f, 1.f}, {1.f, 1.f, 1.f}};
 
-    matrix.MultiplyScalar(3.f);
+    matrix.Multiply(3.f);
 
     for (size_t i = 0; i < 9; i++)
     {

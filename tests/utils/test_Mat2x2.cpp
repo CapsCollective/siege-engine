@@ -199,7 +199,7 @@ UTEST(test_Matrix2x2, MultiplyByScalar)
     Siege::Mat2x2 expected = {3.f, 3.f, 3.f, 3.f};
     Siege::Mat2x2 matrix = {1.f, 1.f, 1.f, 1.f};
 
-    matrix.MultiplyScalar(3.f);
+    matrix.Multiply(3.f);
 
     for (size_t i = 0; i < 4; i++)
     {
