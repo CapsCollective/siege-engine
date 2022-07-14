@@ -14,6 +14,8 @@
 #include <cstdint>
 #include <vector>
 
+namespace Siege
+{
 /**
  * A struct for allocator index entry info
  */
@@ -124,5 +126,7 @@ private:
      */
     std::vector<size_t> freeEntries;
 };
+
+}
 
 #endif // SIEGE_ENGINE_INDEXALLOCATOR_H

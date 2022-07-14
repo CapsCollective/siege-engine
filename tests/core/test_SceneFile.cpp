@@ -12,11 +12,13 @@
 
 #include <utility>
 
+using namespace Siege;
+
 class TestEntity1 : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const Siege::String ENTITY_NAME;
 
     TestEntity1() : Entity(ENTITY_NAME) {};
 
@@ -238,7 +240,7 @@ UTEST_F(test_SceneFile, DeserialiseSingleEntity)
 
     // It should retain its standard field values
     ASSERT_STREQ("TestEntity1", entities[0]->GetName().Str());
-    Siege::Vec3 pos(entities[0]->GetPosition());
+    Vec3 pos(entities[0]->GetPosition());
     ASSERT_EQ(1.f, pos.x);
     ASSERT_EQ(2.f, pos.y);
     ASSERT_EQ(3.f, pos.z);

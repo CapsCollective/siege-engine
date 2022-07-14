@@ -8,19 +8,21 @@
 
 #include "TransitionAdapter.h"
 
+namespace Siege
+{
 // Raylib conversions
 
-Siege::Vec3 ToVec3(raylib::Vector3 vector)
+Vec3 ToVec3(raylib::Vector3 vector)
 {
     return {vector.x, vector.y, vector.z};
 }
 
-raylib::Vector3 FromVec3(Siege::Vec3 vector)
+raylib::Vector3 FromVec3(Vec3 vector)
 {
     return {vector.x, vector.y, vector.z};
 }
 
-Siege::Vec3 ToVec3(Vector2 vector)
+Vec3 ToVec3(Vector2 vector)
 {
     return {vector.x, vector.y, 0.f};
 }
@@ -56,4 +58,5 @@ Color FromColour(Colour color)
             (unsigned char) color.g,
             (unsigned char) color.b,
             (unsigned char) color.a};
+}
 }

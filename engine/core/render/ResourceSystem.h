@@ -14,6 +14,11 @@
 #include <map>
 #include <vector>
 
+typedef struct Model Model;
+typedef struct Texture Texture;
+
+namespace Siege
+{
 class ResourceSystem
 {
 public:
@@ -75,17 +80,18 @@ private:
     /**
      * Model resources queued for freeing.
      */
-    std::vector<struct Model*> freedModels;
+    std::vector<Model*> freedModels;
 
     /**
      * Texture resources queued for freeing.
      */
-    std::vector<struct Texture*> freedTextures;
+    std::vector<Texture*> freedTextures;
 
     /**
      * The default base directory for finding resources.
      */
     String baseDir;
 };
+}
 
 #endif // SIEGE_ENGINE_RESOURCESYSTEM_H

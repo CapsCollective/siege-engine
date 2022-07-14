@@ -282,10 +282,10 @@ UTEST(test_Vec2, MultiplyScalar)
 
 UTEST(test_Vec2, GetString)
 {
-    String expected = "5.00,10.00";
+    Siege::String expected = "5.00,10.00";
 
     Siege::Vec2 vec0 = {5, 10};
-    String result = vec0.ToString();
+    Siege::String result = vec0.ToString();
 
     ASSERT_STREQ(expected.Str(), result.Str());
 }

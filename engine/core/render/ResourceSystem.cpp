@@ -7,13 +7,16 @@
 //
 
 #include "ResourceSystem.h"
-
 #include <raylib/raylib-cpp.hpp>
+
 #include <vector>
 
-static std::map<String, Model> models;
+static std::map<Siege::String, Model> models = std::map<Siege::String, Model>();
 
-static std::map<String, Texture> textures;
+static std::map<Siege::String, Texture> textures = std::map<Siege::String, Texture>();
+
+namespace Siege
+{
 
 void ResourceSystem::RegisterModel(const String& path)
 {
@@ -75,4 +78,5 @@ void ResourceSystem::SetBaseDirectory(const String& dir)
 const String& ResourceSystem::GetBaseDirectory()
 {
     return baseDir;
+}
 }

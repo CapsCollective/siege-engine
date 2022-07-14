@@ -8,6 +8,8 @@
 
 #include "Maths.h"
 
+namespace Siege
+{
 // -------------------------------------- BoundedBox -----------------------------------------------
 
 bool BoundedBox::Intersects(const BoundedBox& other) const
@@ -28,7 +30,7 @@ bool BoundedBox::Intersects(const RayCast& ray) const
     bool insideBox = (ray.position.x > min.x) && (ray.position.x < max.x) &&
                      (ray.position.y > min.y) && (ray.position.y < max.y) &&
                      (ray.position.z > min.z) && (ray.position.z < max.z);
-    Siege::Vec3 direction = insideBox ? ray.direction * -1 : ray.direction;
+    Vec3 direction = insideBox ? ray.direction * -1 : ray.direction;
 
     float t[11] = {};
     t[8] = 1.0f / direction.x;
@@ -45,4 +47,5 @@ bool BoundedBox::Intersects(const RayCast& ray) const
     t[7] = (float) fmin(fmin(fmax(t[0], t[1]), fmax(t[2], t[3])), fmax(t[4], t[5]));
 
     return !((t[7] < 0) || (t[6] > t[7]));
+}
 }

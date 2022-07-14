@@ -13,23 +13,25 @@
 #include "vec/Vec3.h"
 #include "vec/Vec4.h"
 
+namespace Siege
+{
 struct Xform
 {
 public:
 
-    Xform() : Xform(Siege::Vec3::Zero) {}
+    Xform() : Xform(Vec3::Zero) {}
 
-    explicit Xform(Siege::Vec3 position) : Xform(position, 0.f) {}
+    explicit Xform(Vec3 position) : Xform(position, 0.f) {}
 
-    Xform(Siege::Vec3 position, float rotation) : Xform(position, rotation, Siege::Vec3::One) {}
+    Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One) {}
 
-    Xform(Siege::Vec3 position, float rotation, Siege::Vec3 scale) :
+    Xform(Vec3 position, float rotation, Vec3 scale) :
         position(position),
         rotation(rotation),
         scale(scale)
     {}
 
-    const Siege::Vec3& GetPosition() const
+    const Vec3& GetPosition() const
     {
         return position;
     }
@@ -39,12 +41,12 @@ public:
         return rotation;
     }
 
-    const Siege::Vec3& GetScale() const
+    const Vec3& GetScale() const
     {
         return scale;
     }
 
-    void SetPosition(const Siege::Vec3& newPosition)
+    void SetPosition(const Vec3& newPosition)
     {
         position = newPosition;
     }
@@ -54,25 +56,25 @@ public:
         rotation = fmod(newRotation, 360.f);
     }
 
-    void SetScale(const Siege::Vec3& newScale)
+    void SetScale(const Vec3& newScale)
     {
         scale = newScale;
     }
 
 private:
 
-    Siege::Vec3 position;
+    Vec3 position;
     float rotation;
-    Siege::Vec3 scale;
+    Vec3 scale;
 };
 
 struct BoundedBox
 {
     // 'Structors
 
-    BoundedBox() : BoundedBox(Siege::Vec3(), Siege::Vec3()) {}
+    BoundedBox() : BoundedBox(Vec3(), Vec3()) {}
 
-    BoundedBox(Siege::Vec3 min, Siege::Vec3 max) : min(min), max(max) {}
+    BoundedBox(Vec3 min, Vec3 max) : min(min), max(max) {}
 
     // Public methods
 
@@ -82,23 +84,24 @@ struct BoundedBox
 
     // Public members
 
-    Siege::Vec3 min;
-    Siege::Vec3 max;
+    Vec3 min;
+    Vec3 max;
 };
 
 struct RayCast
 {
     // 'Structors
 
-    RayCast() : RayCast(Siege::Vec3(), Siege::Vec3()) {}
+    RayCast() : RayCast(Vec3(), Vec3()) {}
 
-    RayCast(Siege::Vec3 position, Siege::Vec3 direction) : position(position), direction(direction)
+    RayCast(Vec3 position, Vec3 direction) : position(position), direction(direction)
     {}
 
     // Public members
 
-    Siege::Vec3 position;
-    Siege::Vec3 direction;
+    Vec3 position;
+    Vec3 direction;
 };
+}
 
 #endif // SIEGE_ENGINE_MATHS_H

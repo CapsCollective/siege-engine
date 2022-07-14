@@ -11,7 +11,7 @@
 
 #include "String.h"
 
-namespace FileSystem
+namespace Siege::FileSystem
 {
 
 String Read(const String& filename);

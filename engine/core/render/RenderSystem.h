@@ -18,6 +18,8 @@
 
 #include "../entity/EntityPtr.h"
 
+namespace Siege
+{
 struct ModelData
 {
     String modelPath;
@@ -57,5 +59,6 @@ private:
 
     std::map<EntityPtr<Entity>, RenderItem> renderItems;
 };
+}
 
 #endif // SIEGE_ENGINE_RENDERSYSTEM_H

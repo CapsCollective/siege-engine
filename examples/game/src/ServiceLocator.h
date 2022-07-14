@@ -10,18 +10,20 @@
 #define SIEGE_ENGINE_SERVICELOCATOR_H
 
 #include <utils/ServiceLocatorUtils.h>
+#include <core/render/Camera.h>
+#include <core/render/Window.h>
 
 class ServiceLocator
 {
 public:
 
-    REGISTER_SERVICE(Camera, class Cam)
+    REGISTER_SERVICE(Camera, class Siege::Cam)
 
     REGISTER_SERVICE(EditorController, class EditorController)
 
     REGISTER_SERVICE(MessageDisplay, class MessageDisplay)
 
-    REGISTER_SERVICE(Window, class Window)
+    REGISTER_SERVICE(Window, class Siege::Window)
 };
 
 #endif // SIEGE_ENGINE_SERVICELOCATOR_H

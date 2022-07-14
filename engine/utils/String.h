@@ -15,6 +15,8 @@
 
 #include "Macros.h"
 
+namespace Siege
+{
 /**
  * The String class provides an alternative to standard strings, bundling in greater manipulation
  * functionality and providing a relatively compact implementation of small String optimisation.
@@ -610,5 +612,6 @@ String operator+(const char& lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
+}
 
 #endif // SIEGE_ENGINE_STRING_H

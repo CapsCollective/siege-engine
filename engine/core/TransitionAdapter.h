@@ -14,13 +14,15 @@
 #include "../utils/Colour.h"
 #include "../utils/Maths.h"
 
+namespace Siege
+{
 // Raylib conversions
 
-Siege::Vec3 ToVec3(raylib::Vector3 vector);
+Vec3 ToVec3(raylib::Vector3 vector);
 
-raylib::Vector3 FromVec3(Siege::Vec3 vector);
+raylib::Vector3 FromVec3(Vec3 vector);
 
-Siege::Vec3 ToVec3(Vector2 vector);
+Vec3 ToVec3(Vector2 vector);
 
 RayCast ToRayCast(Ray ray);
 
@@ -33,5 +35,6 @@ BoundingBox FromBoundedBox(BoundedBox bbox);
 Colour ToColour(Color color);
 
 Color FromColour(Colour color);
+}
 
 #endif // SIEGE_ENGINE_TRANSITIONADAPTER_H

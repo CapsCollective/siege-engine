@@ -448,10 +448,10 @@ UTEST(test_Vec4, MultiplyScalar)
 
 UTEST(test_Vec4, GetString)
 {
-    String expected = "5.00,10.00,15.00,20.00";
+    Siege::String expected = "5.00,10.00,15.00,20.00";
 
     Siege::Vec4 vec0 = {5, 10, 15, 20};
-    String result = vec0.ToString();
+    Siege::String result = vec0.ToString();
 
     ASSERT_STREQ(expected.Str(), result.Str());
 }

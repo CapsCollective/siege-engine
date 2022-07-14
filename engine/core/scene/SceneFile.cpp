@@ -16,6 +16,8 @@
 #include "../entity/Entity.h"
 #include "../render/ResourceSystem.h"
 
+namespace Siege
+{
 void SceneFile::RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
@@ -76,7 +78,7 @@ void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<E
         EntityData data;
         if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
               args[ENTITY_Z_IDX].GetInt(data.zIndex) &&
-              Siege::Vec3::FromString(data.position, args[ENTITY_POS])))
+              Vec3::FromString(data.position, args[ENTITY_POS])))
         {
             CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
         }
@@ -97,4 +99,5 @@ void SceneFile::DeserialiseLines(const std::vector<String>& lines, std::vector<E
 String SceneFile::MakeScenePath(const String& sceneName)
 {
     return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
+}
 }
