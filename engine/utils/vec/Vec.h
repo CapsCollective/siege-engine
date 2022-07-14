@@ -10,6 +10,9 @@
 
 namespace Siege
 {
+
+// Forward declarations of our vector classes.
+
 typedef struct Vec2 Vec2;
 typedef struct Vec3 Vec3;
 typedef struct Vec4 Vec4;

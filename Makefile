@@ -60,19 +60,19 @@ all: testapp package-gameapp package-renderapp
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-$(coreLib): buildFlags  $(utilsLib)
+$(coreLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
 $(renderLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-$(testApp): buildFlags $(utilsLib) $(coreLib) $(renderLib)
+$(testApp): buildFlags $(utilsLib) $(coreLib)
 	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
 $(exampleGameApp): buildFlags $(coreLib)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleRenderApp): buildFlags $(utilsLib) $(renderLib)
+$(exampleRenderApp): buildFlags $(renderLib)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)
