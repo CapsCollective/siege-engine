@@ -100,4 +100,4 @@ String SceneFile::MakeScenePath(const String& sceneName)
 {
     return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
 }
-}
+} // namespace Siege

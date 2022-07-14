@@ -204,6 +204,6 @@ private:
      */
     std::vector<Entity*> registeredEntities;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITYSYSTEM_H

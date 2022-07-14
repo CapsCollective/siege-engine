@@ -6,14 +6,14 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include "Mat4x4.h"
+#include "Mat4.h"
 
 namespace Siege
 {
 
 // Static Variables
 
-const Mat4x4 Mat4x4::Identity = {
+const Mat4 Mat4::Identity = {
     1.f,
     0.f,
     0.f,
@@ -32,61 +32,61 @@ const Mat4x4 Mat4x4::Identity = {
     1.f,
 };
 
-const Mat4x4 Mat4x4::Zero {};
+const Mat4 Mat4::Zero {};
 
 // Static functions
 
-Mat4x4 Mat4x4::Add(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 Mat4::Add(const Mat4& lhs, const Mat4& rhs)
 {
-    Mat4x4 newMat = lhs;
+    Mat4 newMat = lhs;
     newMat.Add(rhs);
     return newMat;
 }
 
-Mat4x4 Mat4x4::Subtract(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 Mat4::Subtract(const Mat4& lhs, const Mat4& rhs)
 {
-    Mat4x4 newMat = lhs;
+    Mat4 newMat = lhs;
     newMat.Subtract(rhs);
     return newMat;
 }
 
-Mat4x4 Mat4x4::Multiply(const Mat4x4& lhs, const float& scalar)
+Mat4 Mat4::Multiply(const Mat4& lhs, const float& scalar)
 {
-    Mat4x4 newMat = lhs;
+    Mat4 newMat = lhs;
     newMat.Multiply(scalar);
     return newMat;
 }
 
-Mat4x4 Mat4x4::Multiply(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 Mat4::Multiply(const Mat4& lhs, const Mat4& rhs)
 {
-    Mat4x4 newMat = lhs;
+    Mat4 newMat = lhs;
     newMat.Multiply(rhs);
     return newMat;
 }
 
-Vec4 Mat4x4::Multiply(const Mat4x4& lhs, const Vec4& rhs)
+Vec4 Mat4::Multiply(const Mat4& lhs, const Vec4& rhs)
 {
     return lhs.Multiply(rhs);
 }
 
-Mat4x4 Mat4x4::Divide(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 Mat4::Divide(const Mat4& lhs, const Mat4& rhs)
 {
     return lhs * rhs.Inverse();
 }
 
-float Mat4x4::Determinant(const Mat4x4& matrix)
+float Mat4::Determinant(const Mat4& matrix)
 {
     return matrix.Determinant();
 }
 
-Mat4x4 Mat4x4::Inverse(const Mat4x4& matrix)
+Mat4 Mat4::Inverse(const Mat4& matrix)
 {
     return matrix.Inverse();
 }
 
 // Unary Operators
 
-float& Mat4x4::operator[](const size_t& index)
+float& Mat4::operator[](const size_t& index)
 {
     assert(index < 16 &&
            "Error: trying to index into matrix with a size that's greater than matrix!");
@@ -94,47 +94,47 @@ float& Mat4x4::operator[](const size_t& index)
     return values[index];
 }
 
-bool Mat4x4::operator==(const Mat4x4& other)
+bool Mat4::operator==(const Mat4& other)
 {
     return MAT4_LOGIC_OP(==, &&, &&, MAT4_BODY_FUNC);
 }
 
-bool Mat4x4::operator!=(const Mat4x4& other)
+bool Mat4::operator!=(const Mat4& other)
 {
     return MAT4_LOGIC_OP(!=, ||, ||, MAT4_BODY_FUNC);
 }
 
-Mat4x4& Mat4x4::operator+=(const Mat4x4& other)
+Mat4& Mat4::operator+=(const Mat4& other)
 {
     Add(other);
     return *this;
 }
 
-Mat4x4& Mat4x4::operator-=(const Mat4x4& other)
+Mat4& Mat4::operator-=(const Mat4& other)
 {
     Subtract(other);
     return *this;
 }
 
-Mat4x4& Mat4x4::operator*=(const float& scalar)
+Mat4& Mat4::operator*=(const float& scalar)
 {
     Multiply(scalar);
     return *this;
 }
 
-Mat4x4& Mat4x4::operator*=(const Mat4x4& other)
+Mat4& Mat4::operator*=(const Mat4& other)
 {
     Multiply(other);
     return *this;
 }
 
-Mat4x4& Mat4x4::operator/=(const Mat4x4& other)
+Mat4& Mat4::operator/=(const Mat4& other)
 {
     Divide(other);
     return *this;
 }
 
-Mat4x4 Mat4x4::operator-()
+Mat4 Mat4::operator-()
 {
     return {{-values[0], -values[1], -values[2], -values[3]},
             {-values[4], -values[5], -values[6], -values[7]},
@@ -142,19 +142,19 @@ Mat4x4 Mat4x4::operator-()
             {-values[12], -values[13], -values[14], -values[15]}};
 }
 
-Mat4x4 Mat4x4::Transpose(const Mat4x4& matrix)
+Mat4 Mat4::Transpose(const Mat4& matrix)
 {
     return matrix.Transpose();
 }
 
 // functions
 
-const float& Mat4x4::Get(const size_t& rowIndex, const size_t& colIndex)
+const float& Mat4::Get(const size_t& rowIndex, const size_t& colIndex)
 {
     return values[(4 * rowIndex) + colIndex];
 }
 
-void Mat4x4::Add(const Mat4x4& other)
+void Mat4::Add(const Mat4& other)
 {
     // To add two matrices, we simply add each element from matrix A to the corresponding value in
     // matrix B. i.e: matA[0] += matB[0] ...
@@ -162,7 +162,7 @@ void Mat4x4::Add(const Mat4x4& other)
     MAT4_MATH_OP(+=, MAT4_BODY_FUNC);
 }
 
-void Mat4x4::Subtract(const Mat4x4& other)
+void Mat4::Subtract(const Mat4& other)
 {
     // To subtract two matrices, we simply subtract each element from matrix A to the corresponding
     // value in matrix B. i.e: matA[0] -= matB[0] ...
@@ -170,7 +170,7 @@ void Mat4x4::Subtract(const Mat4x4& other)
     MAT4_MATH_OP(-=, MAT4_BODY_FUNC);
 }
 
-void Mat4x4::Multiply(const float& scalar)
+void Mat4::Multiply(const float& scalar)
 {
     // Multiplying a matrix by a scalar involves multiplying every element in the matrix with the
     // given scalar. i.e: mat[0] *= scalar
@@ -178,7 +178,7 @@ void Mat4x4::Multiply(const float& scalar)
     MAT4_MATH_OP(*=, MAT4_BODY_SCALAR_FUNC);
 }
 
-void Mat4x4::Multiply(const Mat4x4& rhs)
+void Mat4::Multiply(const Mat4& rhs)
 {
     // Rows of lhs matrix
 
@@ -243,7 +243,7 @@ void Mat4x4::Multiply(const Mat4x4& rhs)
     values[15] = DOT4(m0x3, m0y3, m0z3, m0w3, m1cx3, m1cy3, m1cz3, m1cw3);
 }
 
-Vec4 Mat4x4::Multiply(const Vec4& vector) const
+Vec4 Mat4::Multiply(const Vec4& vector) const
 {
     return {(values[0] * vector.x) + (values[1] * vector.y) + (values[2] * vector.z) +
                 (values[3] * vector.w),
@@ -255,12 +255,12 @@ Vec4 Mat4x4::Multiply(const Vec4& vector) const
                 (values[15] * vector.w)};
 }
 
-void Mat4x4::Divide(const Mat4x4& rhs)
+void Mat4::Divide(const Mat4& rhs)
 {
-    *this = Mat4x4::Divide(*this, rhs);
+    *this = Mat4::Divide(*this, rhs);
 }
 
-float Mat4x4::Determinant() const
+float Mat4::Determinant() const
 {
     // Matrix determinants are calculated by getting the dot product of the diagonals of 2x2 a
     // 2x2 matrix. Since a 4x4 matrix is larger than 2x2, we need to get the determinants of each
@@ -314,7 +314,7 @@ float Mat4x4::Determinant() const
            values[12] * coefficient.w;
 }
 
-Mat4x4 Mat4x4::Inverse() const
+Mat4 Mat4::Inverse() const
 {
     // The inverse of a 4x4 matrix is 1/det(matrix) multiplied by the determinants of all possible
     // 2x2 combinations in the matrix. We first get all determinants of all possible 2x2 matrices
@@ -370,7 +370,7 @@ Mat4x4 Mat4x4::Inverse() const
     Vec4 signA = {+1, -1, +1, -1};
     Vec4 signB = {-1, +1, -1, +1};
 
-    Mat4x4 inverse = {inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB};
+    Mat4 inverse = {inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB};
 
     // Get the dot product of the first column of the inverse and the original matrix.
     Vec4 dot0 = Vec4(inverse[0], inverse[4], inverse[8], inverse[12]) *
@@ -382,7 +382,7 @@ Mat4x4 Mat4x4::Inverse() const
     return inverse * OneOverDeterminant;
 }
 
-Mat4x4 Mat4x4::Transpose() const
+Mat4 Mat4::Transpose() const
 {
     return {values[0],
             values[4],
@@ -402,33 +402,33 @@ Mat4x4 Mat4x4::Transpose() const
             values[15]};
 }
 
-Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 operator+(const Mat4& lhs, const Mat4& rhs)
 {
-    return Mat4x4::Add(lhs, rhs);
+    return Mat4::Add(lhs, rhs);
 }
 
-Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 operator-(const Mat4& lhs, const Mat4& rhs)
 {
-    return Mat4x4::Subtract(lhs, rhs);
+    return Mat4::Subtract(lhs, rhs);
 }
 
-Mat4x4 operator*(const Mat4x4& lhs, const float& scalar)
+Mat4 operator*(const Mat4& lhs, const float& scalar)
 {
-    return Mat4x4::Multiply(lhs, scalar);
+    return Mat4::Multiply(lhs, scalar);
 }
 
-Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 operator*(const Mat4& lhs, const Mat4& rhs)
 {
-    return Mat4x4::Multiply(lhs, rhs);
+    return Mat4::Multiply(lhs, rhs);
 }
 
-Vec4 operator*(const Mat4x4& lhs, const Vec4& rhs)
+Vec4 operator*(const Mat4& lhs, const Vec4& rhs)
 {
-    return Mat4x4::Multiply(lhs, rhs);
+    return Mat4::Multiply(lhs, rhs);
 }
 
-Mat4x4 operator/(const Mat4x4& lhs, const Mat4x4& rhs)
+Mat4 operator/(const Mat4& lhs, const Mat4& rhs)
 {
-    return Mat4x4::Divide(lhs, rhs);
+    return Mat4::Divide(lhs, rhs);
 }
 } // namespace Siege

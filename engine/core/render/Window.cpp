@@ -86,4 +86,4 @@ float Window::GetDeltaTime()
 {
     return deltaTime;
 }
-}
+} // namespace Siege

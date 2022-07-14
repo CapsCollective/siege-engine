@@ -19,7 +19,7 @@ void Camera::SetOrthographicProjection(const float& left,
                                        const float& near,
                                        const float& far)
 {
-    projectionMatrix = Siege::Mat4x4::Identity;
+    projectionMatrix = Siege::Mat4::Identity;
     projectionMatrix[0] = 2.f / (right - left);
     projectionMatrix[5] = 2.f / (bottom - top);
     projectionMatrix[10] = 1.f / (far - near);
@@ -54,7 +54,7 @@ void Camera::SetViewDirection(const Siege::Vec3& position,
     const Siege::Vec3 u {w.Cross(up).Normalise()};
     const Siege::Vec3 v {w.Cross(u)};
 
-    viewMatrix = Siege::Mat4x4::Identity;
+    viewMatrix = Siege::Mat4::Identity;
     viewMatrix[0] = u.x;
     viewMatrix[1] = u.y;
     viewMatrix[2] = u.z;
@@ -89,7 +89,7 @@ void Camera::SetViewYXZ(const Siege::Vec3& position, const Siege::Vec3& rotation
     const Siege::Vec3 u {(c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1)};
     const Siege::Vec3 v {(c3 * s1 * s2 - c1 * s3), (c2 * c3), (c1 * c3 * s2 + s1 * s3)};
     const Siege::Vec3 w {(c2 * s1), (-s2), (c1 * c2)};
-    viewMatrix = Siege::Mat4x4::Identity;
+    viewMatrix = Siege::Mat4::Identity;
     viewMatrix[0] = u.x;
     viewMatrix[4] = u.y;
     viewMatrix[8] = u.z;

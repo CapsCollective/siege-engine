@@ -70,6 +70,6 @@ private:
      */
     String nextScene;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_SCENESYSTEM_H

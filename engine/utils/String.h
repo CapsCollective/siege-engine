@@ -612,6 +612,6 @@ String operator+(const char& lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_STRING_H

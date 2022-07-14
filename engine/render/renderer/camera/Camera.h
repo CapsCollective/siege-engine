@@ -12,7 +12,7 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <utils/mat/Mat4x4.h>
+#include <utils/mat/Mat4.h>
 #include <utils/vec/Vec3.h>
 
 #include <glm/glm.hpp>
@@ -25,9 +25,9 @@ public:
 
     struct GPUCameraData
     {
-        Siege::Mat4x4 projection;
-        Siege::Mat4x4 view;
-        Siege::Mat4x4 projView;
+        Siege::Mat4 projection;
+        Siege::Mat4 view;
+        Siege::Mat4 projView;
     };
 
     void SetOrthographicProjection(const float& left,
@@ -52,15 +52,15 @@ public:
 
     void SetViewYXZ(const Siege::Vec3& position, const Siege::Vec3& rotation);
 
-    const Siege::Mat4x4& GetProjection()
+    const Siege::Mat4& GetProjection()
     {
         return projectionMatrix;
     }
-    const Siege::Mat4x4& GetView()
+    const Siege::Mat4& GetView()
     {
         return viewMatrix;
     }
-    Siege::Mat4x4 GetProjView()
+    Siege::Mat4 GetProjView()
     {
         return projectionMatrix * viewMatrix;
     }
@@ -71,7 +71,7 @@ public:
 
 private:
 
-    Siege::Mat4x4 projectionMatrix {1.f};
-    Siege::Mat4x4 viewMatrix {1.f};
+    Siege::Mat4 projectionMatrix {1.f};
+    Siege::Mat4 viewMatrix {1.f};
 };
 } // namespace Siege

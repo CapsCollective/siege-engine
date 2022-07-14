@@ -16,7 +16,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <utils/mat/Mat4x4.h>
+#include <utils/mat/Mat4.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
@@ -34,14 +34,14 @@ public:
 
     struct Transform
     {
-        Siege::Mat4x4 transform;
-        Siege::Mat4x4 normalMatrix;
+        Siege::Mat4 transform;
+        Siege::Mat4 normalMatrix;
     };
 
     // Placeholder - in case we need to add more unique 2D data
     struct Transform2D
     {
-        Siege::Mat4x4 transform;
+        Siege::Mat4 transform;
     };
 
     Model(const Mesh::MeshData& meshData);

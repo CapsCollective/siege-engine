@@ -59,4 +59,4 @@ Color FromColour(Colour color)
             (unsigned char) color.b,
             (unsigned char) color.a};
 }
-}
+} // namespace Siege

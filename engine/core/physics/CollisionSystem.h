@@ -74,6 +74,6 @@ private:
 
     std::vector<Entity*> removedEntities;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_COLLISIONSYSTEM_H

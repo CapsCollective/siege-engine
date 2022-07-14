@@ -6,21 +6,21 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MAT4X4_H
-#define SIEGE_ENGINE_MAT4X4_H
+#ifndef SIEGE_ENGINE_MAT4_H
+#define SIEGE_ENGINE_MAT4_H
 
 #include <cassert>
 
 #include "../vec/Vec4.h"
 #include "Macros.h"
-#include "Mat3x3.h"
+#include "Mat3.h"
 
 namespace Siege
 {
 /**
  * A class representing a 4x4 matrix of float values.
  */
-struct Mat4x4
+struct Mat4
 {
 public:
 
@@ -45,22 +45,22 @@ public:
      * @param z3 the z value of the fourth row matrix.
      * @param w3 the w value of the fourth row matrix.
      */
-    Mat4x4(const float& x0 = 0.f,
-           const float& y0 = 0.f,
-           const float& z0 = 0.f,
-           const float& w0 = 0.f,
-           const float& x1 = 0.f,
-           const float& y1 = 0.f,
-           const float& z1 = 0.f,
-           const float& w1 = 0.f,
-           const float& x2 = 0.f,
-           const float& y2 = 0.f,
-           const float& z2 = 0.f,
-           const float& w2 = 0.f,
-           const float& x3 = 0.f,
-           const float& y3 = 0.f,
-           const float& z3 = 0.f,
-           const float& w3 = 0.f) :
+    Mat4(const float& x0 = 0.f,
+         const float& y0 = 0.f,
+         const float& z0 = 0.f,
+         const float& w0 = 0.f,
+         const float& x1 = 0.f,
+         const float& y1 = 0.f,
+         const float& z1 = 0.f,
+         const float& w1 = 0.f,
+         const float& x2 = 0.f,
+         const float& y2 = 0.f,
+         const float& z2 = 0.f,
+         const float& w2 = 0.f,
+         const float& x3 = 0.f,
+         const float& y3 = 0.f,
+         const float& z3 = 0.f,
+         const float& w3 = 0.f) :
         values {x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3}
     {}
 
@@ -71,34 +71,34 @@ public:
      * @param row2 a Vec4 containing the third row of the matrix.
      * @param row3 a Vec4 containing the fourth row of the matrix.
      */
-    Mat4x4(const Vec4& row0, const Vec4& row1, const Vec4& row2, const Vec4& row3) :
-        Mat4x4(row0.x,
-               row0.y,
-               row0.z,
-               row0.w,
-               row1.x,
-               row1.y,
-               row1.z,
-               row1.w,
-               row2.x,
-               row2.y,
-               row2.z,
-               row2.w,
-               row3.x,
-               row3.y,
-               row3.z,
-               row3.w)
+    Mat4(const Vec4& row0, const Vec4& row1, const Vec4& row2, const Vec4& row3) :
+        Mat4(row0.x,
+             row0.y,
+             row0.z,
+             row0.w,
+             row1.x,
+             row1.y,
+             row1.z,
+             row1.w,
+             row2.x,
+             row2.y,
+             row2.z,
+             row2.w,
+             row3.x,
+             row3.y,
+             row3.z,
+             row3.w)
     {}
 
     /**
      * A 4x4 matrix constructor using a 3x3 matrix.
      * @param other a 3x3 matrix used to construct the matrix
      */
-    Mat4x4(const Mat3x3& other) :
-        Mat4x4({other[0], other[1], other[2], 0.f},
-               {other[3], other[4], other[5], 0.f},
-               {other[6], other[7], other[8], 0.f},
-               {0.f, 0.f, 0.f, 1.f})
+    Mat4(const Mat3& other) :
+        Mat4({other[0], other[1], other[2], 0.f},
+             {other[3], other[4], other[5], 0.f},
+             {other[6], other[7], other[8], 0.f},
+             {0.f, 0.f, 0.f, 1.f})
     {}
 
     // Statics
@@ -106,12 +106,12 @@ public:
     /**
      * A pre-configured matrix set to contain identity values (a 1 for every diagonal).
      */
-    static const Mat4x4 Identity;
+    static const Mat4 Identity;
 
     /**
      * A pre-configured empty matrix.
      */
-    static const Mat4x4 Zero;
+    static const Mat4 Zero;
 
     /**
      * Adds two 4x4 matrices.
@@ -119,7 +119,7 @@ public:
      * @param rhs the right hand matrix to be added by.
      * @return a new matrix containing the addition result.
      */
-    static Mat4x4 Add(const Mat4x4& lhs, const Mat4x4& rhs);
+    static Mat4 Add(const Mat4& lhs, const Mat4& rhs);
 
     /**
      * Subtracts two 4x4 matrices.
@@ -127,7 +127,7 @@ public:
      * @param rhs the right hand matrix to be subtracted by.
      * @return a new matrix containing the subtraction result.
      */
-    static Mat4x4 Subtract(const Mat4x4& lhs, const Mat4x4& rhs);
+    static Mat4 Subtract(const Mat4& lhs, const Mat4& rhs);
 
     /**
      * Multiples a 4x4 matrix by a scalar value.
@@ -135,7 +135,7 @@ public:
      * @param scalar the scalar to be used on the matrix.
      * @return a new matrix containing the scalar result.
      */
-    static Mat4x4 Multiply(const Mat4x4& lhs, const float& scalar);
+    static Mat4 Multiply(const Mat4& lhs, const float& scalar);
 
     /**
      * Multiplies a 4x4 matrix by another 3x3 matrix.
@@ -143,7 +143,7 @@ public:
      * @param rhs the right hand side matrix to be multiplied by.
      * @return the product of the two matrices.
      */
-    static Mat4x4 Multiply(const Mat4x4& lhs, const Mat4x4& rhs);
+    static Mat4 Multiply(const Mat4& lhs, const Mat4& rhs);
 
     /**
      * Multiplies a 4x4 matrix by a four dimensional vector.
@@ -151,7 +151,7 @@ public:
      * @param rhs the vector to be multiplied.
      * @return a new vector containing the product of the vector and the matrix.
      */
-    static Vec4 Multiply(const Mat4x4& lhs, const Vec4& rhs);
+    static Vec4 Multiply(const Mat4& lhs, const Vec4& rhs);
 
     /**
      * Divides two 4x4 matrices.
@@ -159,28 +159,28 @@ public:
      * @param rhs the right hand side matrix to be divided by.
      * @return a matrix containing the division result.
      */
-    static Mat4x4 Divide(const Mat4x4& lhs, const Mat4x4& rhs);
+    static Mat4 Divide(const Mat4& lhs, const Mat4& rhs);
 
     /**
      * Computes the determinant of the matrix.
      * @param mat the matrix to to be evaluated.
      * @return the determinant of the matrix.
      */
-    static float Determinant(const Mat4x4& matrix);
+    static float Determinant(const Mat4& matrix);
 
     /**
      * Computes the inverse of the matrix.
      * @param mat the matrix to be evaluated.
      * @return a new matrix with the result of the matrix inversion.
      */
-    static Mat4x4 Inverse(const Mat4x4& matrix);
+    static Mat4 Inverse(const Mat4& matrix);
 
     /**
      * Returns the transpose of the matrix.
      * @param matrix the matrix who's transpose needs to be found.
      * @return a new matrix representing the transpose of the original matrix.
      */
-    static Mat4x4 Transpose(const Mat4x4& matrix);
+    static Mat4 Transpose(const Mat4& matrix);
 
     // Operators
 
@@ -209,55 +209,55 @@ public:
      * @param other the second matrix to be evaluated.
      * @return a boolean value representing whether the matrices are equal.
      */
-    bool operator==(const Mat4x4& other);
+    bool operator==(const Mat4& other);
 
     /**
      * An inequality operator.
      * @param other the matrix to check for equality.
      * @return a boolean value representing if the matrices are unequal.
      */
-    bool operator!=(const Mat4x4& other);
+    bool operator!=(const Mat4& other);
 
     /**
      * Adds another matrix to the current matrix.
      * @param other the matrix to add.
      * @return A reference to the new evaluated matrix.
      */
-    Mat4x4& operator+=(const Mat4x4& other);
+    Mat4& operator+=(const Mat4& other);
 
     /**
      * Subtracts another matrix to the current matrix.
      * @param other the matrix to subtract.
      * @return A reference to the new evaluated matrix.
      */
-    Mat4x4& operator-=(const Mat4x4& other);
+    Mat4& operator-=(const Mat4& other);
 
     /**
      * Multiplies the matrix with a scalar.
      * @param scalar the scalar to multiply by.
      * @return A reference to the new evaluated matrix.
      */
-    Mat4x4& operator*=(const float& scalar);
+    Mat4& operator*=(const float& scalar);
 
     /**
      * Multiplies another matrix to the current matrix.
      * @param other the matrix to multiply.
      * @return A reference to the new evaluated matrix.
      */
-    Mat4x4& operator*=(const Mat4x4& other);
+    Mat4& operator*=(const Mat4& other);
 
     /**
      * Divides another matrix to the current matrix.
      * @param other the matrix to divide.
      * @return A reference to the new evaluated matrix.
      */
-    Mat4x4& operator/=(const Mat4x4& other);
+    Mat4& operator/=(const Mat4& other);
 
     /**
      * Negates all values in the matrix.
      * @return a new matrix with the negated values.
      */
-    Mat4x4 operator-();
+    Mat4 operator-();
 
     // Functions
 
@@ -273,13 +273,13 @@ public:
      * Adds a matrix to the current matrix.
      * @param other the matrix to be added.
      */
-    void Add(const Mat4x4& other);
+    void Add(const Mat4& other);
 
     /**
      * Subtracts a matrix to the current matrix.
      * @param other the matrix to be subtracted.
      */
-    void Subtract(const Mat4x4& other);
+    void Subtract(const Mat4& other);
 
     /**
      * Multiplies the matrix by a scalar.
@@ -291,7 +291,7 @@ public:
      * Multiplies the matrix by another matrix.
      * @param other the matrix to be multiplied.
      */
-    void Multiply(const Mat4x4& rhs);
+    void Multiply(const Mat4& rhs);
 
     /**
      * Multiplies a vector by the matrix.
@@ -304,7 +304,7 @@ public:
      * Divides the matrix by another matrix.
      * @param other the matrix to be divided.
      */
-    void Divide(const Mat4x4& rhs);
+    void Divide(const Mat4& rhs);
 
     /**
      * Returns the determinant of the matrix.
@@ -316,13 +316,13 @@ public:
      * Evaluates the matrix's inverse and returns a new inverse value.
      * @return a new matrix representing the matrix's inverse.
      */
-    Mat4x4 Inverse() const;
+    Mat4 Inverse() const;
 
     /**
      * Returns the matrix's transpose.
      * @return a new matrix representing the matrix's transpose.
      */
-    Mat4x4 Transpose() const;
+    Mat4 Transpose() const;
 
     float values[16];
 };
@@ -335,7 +335,7 @@ public:
  * @param rhs the right hand matrix to be added by.
  * @return a new matrix containing the addition result.
  */
-Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4 operator+(const Mat4& lhs, const Mat4& rhs);
 
 /**
  * Subtracts two 4x4 matrices.
@@ -343,7 +343,7 @@ Mat4x4 operator+(const Mat4x4& lhs, const Mat4x4& rhs);
  * @param rhs the right hand matrix to be subtracted by.
  * @return a new matrix containing the subtraction result.
  */
-Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4 operator-(const Mat4& lhs, const Mat4& rhs);
 
 /**
  * Multiples a 4x4 matrix by a scalar value.
@@ -351,7 +351,7 @@ Mat4x4 operator-(const Mat4x4& lhs, const Mat4x4& rhs);
  * @param scalar the scalar to be used on the matrix.
  * @return a new matrix containing the scalar result.
  */
-Mat4x4 operator*(const Mat4x4& lhs, const float& scalar);
+Mat4 operator*(const Mat4& lhs, const float& scalar);
 
 /**
  * Multiplies a 4x4 matrix by another 4x4 matrix.
@@ -359,7 +359,7 @@ Mat4x4 operator*(const Mat4x4& lhs, const float& scalar);
  * @param rhs the right hand side matrix to be multiplied by.
  * @return the product of the two matrices.
  */
-Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4 operator*(const Mat4& lhs, const Mat4& rhs);
 
 /**
  * Multiplies a matrix by a four dimensional vector.
@@ -367,7 +367,7 @@ Mat4x4 operator*(const Mat4x4& lhs, const Mat4x4& rhs);
  * @param rhs the vector to be multiplied.
  * @return a new matrix containing the product of the vector and the matrix.
  */
-Vec4 operator*(const Mat4x4& lhs, const Vec4& rhs);
+Vec4 operator*(const Mat4& lhs, const Vec4& rhs);
 
 /**
  * Divides two 4x4 matrices.
@@ -375,7 +375,7 @@ Vec4 operator*(const Mat4x4& lhs, const Vec4& rhs);
  * @param rhs the right hand side matrix to be divided by.
  * @return a matrix containing the division result.
  */
-Mat4x4 operator/(const Mat4x4& lhs, const Mat4x4& rhs);
+Mat4 operator/(const Mat4& lhs, const Mat4& rhs);
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_MAT4X4_H
+#endif // SIEGE_ENGINE_MAT4_H

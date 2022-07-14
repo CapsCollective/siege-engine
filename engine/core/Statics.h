@@ -29,6 +29,6 @@ public:
 
     static class EntitySystem& Tool();
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_STATICS_H

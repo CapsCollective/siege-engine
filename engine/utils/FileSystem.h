@@ -20,6 +20,6 @@ bool Exists(const String& filename);
 
 bool Save(const String& filename, const String& content);
 
-} // namespace FileSystem
+} // namespace Siege::FileSystem
 
 #endif // SIEGE_ENGINE_FILESYSTEM_H

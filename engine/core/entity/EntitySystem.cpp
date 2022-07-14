@@ -311,4 +311,4 @@ void EntitySystem::ResetGlobalRegister()
 {
     globalEntityRegister.clear();
 }
-}
+} // namespace Siege

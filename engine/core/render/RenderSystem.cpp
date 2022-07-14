@@ -71,4 +71,4 @@ void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, Co
 {
     DrawRectangle(posX, posY, width, height, FromColour(color));
 }
-}
+} // namespace Siege

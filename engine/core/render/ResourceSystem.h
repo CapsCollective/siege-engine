@@ -92,6 +92,6 @@ private:
      */
     String baseDir;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_RESOURCESYSTEM_H

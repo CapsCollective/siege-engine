@@ -65,4 +65,4 @@ void Cam::SetTarget(const Vec3& target)
 {
     GetCamera().SetTarget(FromVec3(target));
 }
-}
+} // namespace Siege

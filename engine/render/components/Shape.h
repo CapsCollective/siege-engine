@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <utils/mat/Mat3x3.h>
-#include <utils/mat/Mat4x4.h>
+#include <utils/mat/Mat3.h>
+#include <utils/mat/Mat4.h>
 #include <utils/vec/Vec3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -130,9 +130,9 @@ private:
     // Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
     // Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
     // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-    Siege::Mat4x4 CalculateTransform(Transform& transform);
+    Siege::Mat4 CalculateTransform(Transform& transform);
 
-    Siege::Mat3x3 CalculateNormalMatrix(Transform& transform);
+    Siege::Mat3 CalculateNormalMatrix(Transform& transform);
 
     Siege::Model* model;
     Transform transform {};

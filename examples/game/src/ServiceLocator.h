@@ -9,9 +9,9 @@
 #ifndef SIEGE_ENGINE_SERVICELOCATOR_H
 #define SIEGE_ENGINE_SERVICELOCATOR_H
 
-#include <utils/ServiceLocatorUtils.h>
 #include <core/render/Camera.h>
 #include <core/render/Window.h>
+#include <utils/ServiceLocatorUtils.h>
 
 class ServiceLocator
 {

@@ -19,10 +19,10 @@
 #include <vector>
 
 // Define macros
-#define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                  \
-    static Siege::SerialisationInterfaceRegisterer CONCAT_SYMBOL(_si_reg_, __LINE__)(name,\
-                                                                              serialiser, \
-                                                                              deserialiser)
+#define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                         \
+    static Siege::SerialisationInterfaceRegisterer CONCAT_SYMBOL(_si_reg_, __LINE__)(name,       \
+                                                                                     serialiser, \
+                                                                                     deserialiser)
 namespace Siege
 {
 // Define constants
@@ -204,6 +204,6 @@ inline String DefineField(const String& name, const String& content)
 {
     return name + NAME_SEP + content + SEP;
 }
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_SCENEFILE_H

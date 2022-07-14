@@ -21,7 +21,8 @@ void FreeCam::OnUpdate()
     if (Siege::Statics::Input().MouseDown(Siege::Mouse::RIGHT))
     {
         // Begin the click, hide the cursor
-        if (Siege::Statics::Input().MousePressed(Siege::Mouse::RIGHT)) Siege::Statics::Input().DisableMouseCursor();
+        if (Siege::Statics::Input().MousePressed(Siege::Mouse::RIGHT))
+            Siege::Statics::Input().DisableMouseCursor();
 
         // Calculate current mouse positional values
         Siege::Vec3 mousePosition = Siege::Statics::Input().GetMousePos();
@@ -45,9 +46,12 @@ void FreeCam::OnUpdate()
 
         // Get movement as vector
         Siege::Vec3 move = {
-            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::A) + Siege::Statics::Input().KeyDown(Siege::Key::D)),
-            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::Q) + Siege::Statics::Input().KeyDown(Siege::Key::E)),
-            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::W) + Siege::Statics::Input().KeyDown(Siege::Key::S)),
+            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::A) +
+                     Siege::Statics::Input().KeyDown(Siege::Key::D)),
+            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::Q) +
+                     Siege::Statics::Input().KeyDown(Siege::Key::E)),
+            (float) (-Siege::Statics::Input().KeyDown(Siege::Key::W) +
+                     Siege::Statics::Input().KeyDown(Siege::Key::S)),
         };
 
         // Set the new position and look rotation of the camera
@@ -57,7 +61,8 @@ void FreeCam::OnUpdate()
         camera->SetPosition(position);
         camera->SetTarget(target);
     }
-    else if (Siege::Statics::Input().MouseReleased(Siege::Mouse::RIGHT)) Siege::Statics::Input().EnableMouseCursor();
+    else if (Siege::Statics::Input().MouseReleased(Siege::Mouse::RIGHT))
+        Siege::Statics::Input().EnableMouseCursor();
 
     // TODO fix camera look issues beyond 90 degrees in either direction from origin
 }

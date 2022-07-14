@@ -6,8 +6,8 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MAT3X3_H
-#define SIEGE_ENGINE_MAT3X3_H
+#ifndef SIEGE_ENGINE_MAT3_H
+#define SIEGE_ENGINE_MAT3_H
 
 #include <cassert>
 
@@ -19,7 +19,7 @@ namespace Siege
 /**
  * A class representing a 3x3 matrix of float values.
  */
-struct Mat3x3
+struct Mat3
 {
     // 'Structors
 
@@ -35,15 +35,15 @@ struct Mat3x3
      * @param vy2 the y value of the third row matrix.
      * @param vz2 the z value of the third row matrix.
      */
-    Mat3x3(const float& vx0 = 0.f,
-           const float& vy0 = 0.f,
-           const float& vz0 = 0.f,
-           const float& vx1 = 0.f,
-           const float& vy1 = 0.f,
-           const float& vz1 = 0.f,
-           const float& vx2 = 0.f,
-           const float& vy2 = 0.f,
-           const float& vz2 = 0.f) :
+    Mat3(const float& vx0 = 0.f,
+         const float& vy0 = 0.f,
+         const float& vz0 = 0.f,
+         const float& vx1 = 0.f,
+         const float& vy1 = 0.f,
+         const float& vz1 = 0.f,
+         const float& vx2 = 0.f,
+         const float& vy2 = 0.f,
+         const float& vz2 = 0.f) :
         values {vx0, vy0, vz0, vx1, vy1, vz1, vx2, vy2, vz2}
     {}
 
@@ -53,8 +53,8 @@ struct Mat3x3
      * @param vec1 a Vec3 containing the second row of the matrix.
      * @param vec2 a Vec3 containing the third row of the matrix.
      */
-    Mat3x3(const Vec3& vec0, const Vec3& vec1, const Vec3& vec2) :
-        Mat3x3(vec0.x, vec0.y, vec0.z, vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z)
+    Mat3(const Vec3& vec0, const Vec3& vec1, const Vec3& vec2) :
+        Mat3(vec0.x, vec0.y, vec0.z, vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z)
     {}
 
     // Statics
@@ -62,12 +62,12 @@ struct Mat3x3
     /**
      * A pre-configured matrix set to contain identity values (a 1 for every diagonal).
      */
-    static const Mat3x3 Identity;
+    static const Mat3 Identity;
 
     /**
      * A pre-configured empty matrix.
      */
-    static const Mat3x3 Zero;
+    static const Mat3 Zero;
 
     /**
      * Returns a value stored within a logical index.
@@ -83,7 +83,7 @@ struct Mat3x3
      * @param rhs the right hand side matrix to be divided by.
      * @return a matrix containing the division result.
      */
-    static Mat3x3 Divide(const Mat3x3& lhs, const Mat3x3& rhs);
+    static Mat3 Divide(const Mat3& lhs, const Mat3& rhs);
 
     /**
      * Adds two 3x3 matrices.
@@ -91,7 +91,7 @@ struct Mat3x3
      * @param rhs the right hand matrix to be added by.
      * @return a new matrix containing the addition result.
      */
-    static Mat3x3 Add(const Mat3x3& lhs, const Mat3x3& rhs);
+    static Mat3 Add(const Mat3& lhs, const Mat3& rhs);
 
     /**
      * Multiplies a 3x3 matrix by another 3x3 matrix.
@@ -99,7 +99,7 @@ struct Mat3x3
      * @param rhs the right hand side matrix to be multiplied by.
      * @return the product of the two matrices.
      */
-    static Mat3x3 Multiply(const Mat3x3& lhs, const Mat3x3& rhs);
+    static Mat3 Multiply(const Mat3& lhs, const Mat3& rhs);
 
     /**
      * Subtracts two 3x3 matrices.
@@ -107,7 +107,7 @@ struct Mat3x3
      * @param rhs the right hand matrix to be subtracted by.
      * @return a new matrix containing the subtraction result.
      */
-    static Mat3x3 Subtract(const Mat3x3& lhs, const Mat3x3& rhs);
+    static Mat3 Subtract(const Mat3& lhs, const Mat3& rhs);
 
     /**
      * Multiples a 3x3 matrix by a scalar value.
@@ -115,7 +115,7 @@ struct Mat3x3
      * @param scalar the scalar to be used on the matrix.
      * @return a new matrix containing the scalar result.
      */
-    static Mat3x3 Multiply(const Mat3x3& lhs, const float& rhs);
+    static Mat3 Multiply(const Mat3& lhs, const float& rhs);
 
     /**
      * Multiplies a 3x3 matrix by a three dimensional vector.
@@ -123,21 +123,21 @@ struct Mat3x3
      * @param rhs the vector to be multiplied.
      * @return a new vector containing the product of the vector and the matrix.
      */
-    static Vec3 Multiply(const Mat3x3& lhs, const Vec3& rhs);
+    static Vec3 Multiply(const Mat3& lhs, const Vec3& rhs);
 
     /**
      * Computes the determinant of the matrix.
      * @param mat the matrix to to be evaluated.
      * @return the determinant of the matrix.
      */
-    static float Determinant(const Mat3x3& mat);
+    static float Determinant(const Mat3& mat);
 
     /**
      * Computes the inverse of the matrix.
      * @param mat the matrix to be evaluated.
      * @return a new matrix with the result of the matrix inversion.
      */
-    static Mat3x3 Inverse(const Mat3x3& mat);
+    static Mat3 Inverse(const Mat3& mat);
 
     // Operators
 
@@ -166,55 +166,55 @@ struct Mat3x3
      * @param other the matrix to add.
      * @return A reference to the new evaluated matrix.
      */
-    Mat3x3& operator+=(const Mat3x3& other);
+    Mat3& operator+=(const Mat3& other);
 
     /**
      * Subtracts another matrix to the current matrix.
      * @param other the matrix to subtract.
      * @return A reference to the new evaluated matrix.
      */
-    Mat3x3& operator-=(const Mat3x3& other);
+    Mat3& operator-=(const Mat3& other);
 
     /**
      * Multiplies the matrix with a scalar.
      * @param scalar the scalar to multiply by.
      * @return A reference to the new evaluated matrix.
      */
-    Mat3x3& operator*=(const float& scalar);
+    Mat3& operator*=(const float& scalar);
 
     /**
      * Multiplies another matrix to the current matrix.
      * @param other the matrix to multiply.
      * @return A reference to the new evaluated matrix.
      */
-    Mat3x3& operator*=(const Mat3x3& other);
+    Mat3& operator*=(const Mat3& other);
 
     /**
      * Divides another matrix to the current matrix.
      * @param other the matrix to divide.
      * @return A reference to the new evaluated matrix.
      */
-    Mat3x3& operator/=(const Mat3x3& other);
+    Mat3& operator/=(const Mat3& other);
 
     /**
      * Negates all values in the matrix.
      * @return a new matrix with the negated values.
      */
-    Mat3x3 operator-();
+    Mat3 operator-();
 
     /**
      * An equality operator.
      * @param other the second matrix to be evaluated.
      * @return a boolean value representing whether the matrices are equal.
      */
-    bool operator==(const Mat3x3& other);
+    bool operator==(const Mat3& other);
 
     /**
      * A negative equality operator.
      * @param other the matrix to check for equality.
      * @return a boolean value representing if the matrices are unequal.
      */
-    bool operator!=(const Mat3x3& other);
+    bool operator!=(const Mat3& other);
 
     // Functions
 
@@ -222,13 +222,13 @@ struct Mat3x3
      * Adds a matrix to the current matrix.
      * @param other the matrix to be added.
      */
-    void Add(const Mat3x3& other);
+    void Add(const Mat3& other);
 
     /**
      * Subtracts a matrix to the current matrix.
      * @param other the matrix to be subtracted.
      */
-    void Subtract(const Mat3x3& other);
+    void Subtract(const Mat3& other);
 
     /**
      * Multiplies the matrix by a scalar.
@@ -240,7 +240,7 @@ struct Mat3x3
      * Multiplies the matrix by another matrix.
      * @param other the matrix to be multiplied.
      */
-    void Multiply(const Mat3x3& matrix);
+    void Multiply(const Mat3& matrix);
 
     /**
      * Multiplies a vector by the matrix.
@@ -253,7 +253,7 @@ struct Mat3x3
      * Divides the matrix by another matrix.
      * @param other the matrix to be divided.
      */
-    void Divide(const Mat3x3& other);
+    void Divide(const Mat3& other);
 
     /**
      * Returns the determinant of the matrix.
@@ -265,13 +265,13 @@ struct Mat3x3
      * Evaluates the matrix's inverse and returns a new inverse value.
      * @return a new matrix representing the matrix's inverse.
      */
-    Mat3x3 Inverse() const;
+    Mat3 Inverse() const;
 
     /**
      * Returns the matrix's transpose.
      * @return a new matrix representing the matrix's transpose.
      */
-    Mat3x3 Transpose() const;
+    Mat3 Transpose() const;
 
     float values[9];
 };
@@ -283,7 +283,7 @@ struct Mat3x3
  * @param rhs the right hand matrix to be added by.
  * @return a new matrix containing the addition result.
  */
-Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3 operator+(const Mat3& lhs, const Mat3& rhs);
 
 /**
  * Subtracts two 3x3 matrices.
@@ -291,7 +291,7 @@ Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs);
  * @param rhs the right hand matrix to be subtracted by.
  * @return a new matrix containing the subtraction result.
  */
-Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3 operator-(const Mat3& lhs, const Mat3& rhs);
 
 /**
  * Multiples a 3x3 matrix by a scalar value.
@@ -299,7 +299,7 @@ Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs);
  * @param scalar the scalar to be used on the matrix.
  * @return a new matrix containing the scalar result.
  */
-Mat3x3 operator*(const Mat3x3& lhs, const float& scalar);
+Mat3 operator*(const Mat3& lhs, const float& scalar);
 
 /**
  * Multiplies a 3x3 matrix by another 3x3 matrix.
@@ -307,7 +307,7 @@ Mat3x3 operator*(const Mat3x3& lhs, const float& scalar);
  * @param rhs the right hand side matrix to be multiplied by.
  * @return the product of the two matrices.
  */
-Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3 operator*(const Mat3& lhs, const Mat3& rhs);
 
 /**
  * Multiplies a matrix by a three dimensional vector.
@@ -315,7 +315,7 @@ Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs);
  * @param rhs the vector to be multiplied.
  * @return a new matrix containing the product of the vector and the matrix.
  */
-const Vec3 operator*(const Mat3x3& lhs, const Siege::Vec3& rhs);
+const Vec3 operator*(const Mat3& lhs, const Siege::Vec3& rhs);
 
 /**
  * Divides two 3x3 matrices.
@@ -323,7 +323,7 @@ const Vec3 operator*(const Mat3x3& lhs, const Siege::Vec3& rhs);
  * @param rhs the right hand side matrix to be divided by.
  * @return a matrix containing the division result.
  */
-Mat3x3 operator/(const Mat3x3& lhs, const Mat3x3& rhs);
+Mat3 operator/(const Mat3& lhs, const Mat3& rhs);
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_MAT3X3_H
+#endif // SIEGE_ENGINE_MAT3_H
