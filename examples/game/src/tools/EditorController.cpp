@@ -30,9 +30,10 @@ void EditorController::OnStart()
 {
     // TODO temporarily disabled transform gizmo and grid
     //    Vec3 extents(3.f, 3.f, 3.f);
-    //    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Siege::Colour::Red}, gizmoPos);
-    //    gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(), Siege::Colour::Green}, gizmoPos);
-    //    gizmoRenderItem = RenderSystem::Add(this, {extents.ZComp(), Siege::Colour::Blue}, gizmoPos);
+    //    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Siege::Colour::Red},
+    //    gizmoPos); gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(),
+    //    Siege::Colour::Green}, gizmoPos); gizmoRenderItem = RenderSystem::Add(this,
+    //    {extents.ZComp(), Siege::Colour::Blue}, gizmoPos);
 
     // if (isGridActive) DrawGrid(100, 1.0f);
     // gizmoRenderItem->isEnabled = selectedEntity;
@@ -139,14 +140,16 @@ void EditorController::OnUpdate()
                 // Calculate move from input
                 Siege::Vec3 move = Siege::Vec3::Zero;
                 float precision = MOVE_LEVELS[movePrecision];
-                move.x = precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::LEFT) +
-                                              Siege::Statics::Input().KeyPressed(Siege::Key::RIGHT));
+                move.x =
+                    precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::LEFT) +
+                                         Siege::Statics::Input().KeyPressed(Siege::Key::RIGHT));
 
                 // Switch vertical move input between z and y axis based on shift key down
-                float verticalMove = precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::UP) +
-                                                          Siege::Statics::Input().KeyPressed(Siege::Key::DOWN));
+                float verticalMove =
+                    precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::UP) +
+                                         Siege::Statics::Input().KeyPressed(Siege::Key::DOWN));
                 Siege::Statics::Input().KeyDown(Siege::Key::LEFT_SHIFT) ? move.y = -verticalMove :
-                                                            move.z = verticalMove;
+                                                                          move.z = verticalMove;
 
                 // Apply the move to the position of the entity
                 Siege::Vec3 entityPosition = selectedEntity->GetPosition();
@@ -156,8 +159,9 @@ void EditorController::OnUpdate()
             case ROTATION: {
                 // Calculate rotation from input and apply it to the rotation of the entity
                 float precision = ROTATE_LEVELS[rotatePrecision];
-                float rotation = precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::LEFT) +
-                                                      Siege::Statics::Input().KeyPressed(Siege::Key::RIGHT));
+                float rotation =
+                    precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::LEFT) +
+                                         Siege::Statics::Input().KeyPressed(Siege::Key::RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
@@ -172,28 +176,32 @@ void EditorController::OnDraw2D()
     // Format display text on the selected entity
     Siege::String nameLabel = Siege::String("%s").Formatted(selectedEntity->GetName().Str());
     Siege::String posLabel = Siege::String("Position: <%.2f, %.2f, %.2f>")
-                          .Formatted(selectedEntity->GetPosition().x,
-                                     selectedEntity->GetPosition().y,
-                                     selectedEntity->GetPosition().z);
-    Siege::String rotLabel = Siege::String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
+                                 .Formatted(selectedEntity->GetPosition().x,
+                                            selectedEntity->GetPosition().y,
+                                            selectedEntity->GetPosition().z);
+    Siege::String rotLabel =
+        Siege::String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     Siege::Vec3 screenPosition = camera->GetScreenPos(selectedEntity->GetPosition());
-    Siege::Statics::Render().DrawText2D(nameLabel,
-                                 (int) screenPosition.x - Siege::Window::GetTextWidth(nameLabel, 20) / 2,
-                                 (int) screenPosition.y,
-                                 20,
-                                 Siege::Colour::Pink);
-    Siege::Statics::Render().DrawText2D(posLabel,
-                                 (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
-                                 (int) screenPosition.y + 20,
-                                 18,
-                                 currentMode == POSITION ? BRIGHT_PINK : Siege::Colour::Pink);
-    Siege::Statics::Render().DrawText2D(rotLabel,
-                                 (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
-                                 (int) screenPosition.y + 40,
-                                 18,
-                                 currentMode == ROTATION ? BRIGHT_PINK : Siege::Colour::Pink);
+    Siege::Statics::Render().DrawText2D(
+        nameLabel,
+        (int) screenPosition.x - Siege::Window::GetTextWidth(nameLabel, 20) / 2,
+        (int) screenPosition.y,
+        20,
+        Siege::Colour::Pink);
+    Siege::Statics::Render().DrawText2D(
+        posLabel,
+        (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
+        (int) screenPosition.y + 20,
+        18,
+        currentMode == POSITION ? BRIGHT_PINK : Siege::Colour::Pink);
+    Siege::Statics::Render().DrawText2D(
+        rotLabel,
+        (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
+        (int) screenPosition.y + 40,
+        18,
+        currentMode == ROTATION ? BRIGHT_PINK : Siege::Colour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)
@@ -233,8 +241,8 @@ void EditorController::AdjustPrecision(int adjustment)
             {
                 // Apply the new precision value
                 movePrecision = newPrecision;
-                messageDisplay->DisplayMessage(
-                    Siege::String("Move precision set to %.2f").Formatted(MOVE_LEVELS[movePrecision]));
+                messageDisplay->DisplayMessage(Siege::String("Move precision set to %.2f")
+                                                   .Formatted(MOVE_LEVELS[movePrecision]));
             }
             break;
         }

@@ -49,4 +49,4 @@ bool Save(const String& filename, const String& content)
     fileStream.close();
     return true;
 }
-}
+} // namespace Siege::FileSystem

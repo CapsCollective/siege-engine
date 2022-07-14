@@ -671,4 +671,4 @@ std::ostream& operator<<(std::ostream& os, const String& string)
 {
     return os.write(string.Str(), (long) string.Size());
 }
-}
+} // namespace Siege

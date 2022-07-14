@@ -29,9 +29,11 @@ void Player::OnUpdate()
 {
     // Get move axes as vector
     Siege::Vec3 move = {
-        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::LEFT) + Siege::Statics::Input().KeyDown(Siege::Key::RIGHT)),
+        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::LEFT) +
+                 Siege::Statics::Input().KeyDown(Siege::Key::RIGHT)),
         0.f,
-        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::UP) + Siege::Statics::Input().KeyDown(Siege::Key::DOWN)),
+        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::UP) +
+                 Siege::Statics::Input().KeyDown(Siege::Key::DOWN)),
     };
 
     // Normalise and apply move to velocity
@@ -68,7 +70,8 @@ Siege::Entity* Player::Clone() const
     return new Player(transform);
 }
 
-static Siege::Entity* Deserialise(const Siege::EntityData& data, const std::vector<Siege::String>& args)
+static Siege::Entity* Deserialise(const Siege::EntityData& data,
+                                  const std::vector<Siege::String>& args)
 {
     return new Player({data.position, data.rotation});
 }

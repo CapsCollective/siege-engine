@@ -127,6 +127,6 @@ private:
     std::vector<size_t> freeEntries;
 };
 
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_INDEXALLOCATOR_H

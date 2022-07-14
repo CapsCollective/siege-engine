@@ -59,6 +59,6 @@ private:
 
     std::map<EntityPtr<Entity>, RenderItem> renderItems;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_RENDERSYSTEM_H

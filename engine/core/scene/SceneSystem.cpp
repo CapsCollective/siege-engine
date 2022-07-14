@@ -82,4 +82,4 @@ void SceneSystem::ClearScene()
     // Clear out all resources
     Statics::Resource().ClearResources();
 }
-}
+} // namespace Siege

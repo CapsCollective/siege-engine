@@ -21,7 +21,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <utils/mat/Mat4x4.h>
+#include <utils/mat/Mat4.h>
 
 #include <glm/glm.hpp>
 
@@ -29,8 +29,8 @@ namespace Siege
 {
 struct CameraData
 {
-    Siege::Mat4x4 projectionMatrix;
-    Siege::Mat4x4 viewMatrix;
+    Siege::Mat4 projectionMatrix;
+    Siege::Mat4 viewMatrix;
 };
 } // namespace Siege
 

@@ -115,6 +115,6 @@ private:
      */
     GenerationalIndex index;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITYPTR_H

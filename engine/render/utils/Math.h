@@ -15,7 +15,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Math
+namespace Utils::Math
 {
 
 class Float
@@ -38,6 +38,6 @@ int Sign(T val)
 {
     return (T(0) < val) - (val < T(0));
 }
-} // namespace Math
+} // namespace Utils::Math
 
 #endif

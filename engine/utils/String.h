@@ -631,7 +631,7 @@ String operator+(char lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
-}
+} // namespace Siege
 
 // Define a hash function for the string so that it can be stored in a map or ordered set
 // TODO(Aryeh): Maybe replace this with a custom implementation when the time comes.
@@ -642,10 +642,10 @@ struct std::hash<Siege::String>
     {
         size_t seed = 0;
         Siege::Hash::HashCombine(seed,
-                           string.At(0),
-                           string.At(string.Size()),
-                           string.Size(),
-                           string.Capacity());
+                                 string.At(0),
+                                 string.At(string.Size()),
+                                 string.Size(),
+                                 string.Capacity());
         return seed;
     };
 };

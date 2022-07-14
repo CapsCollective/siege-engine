@@ -94,14 +94,13 @@ struct RayCast
 
     RayCast() : RayCast(Vec3(), Vec3()) {}
 
-    RayCast(Vec3 position, Vec3 direction) : position(position), direction(direction)
-    {}
+    RayCast(Vec3 position, Vec3 direction) : position(position), direction(direction) {}
 
     // Public members
 
     Vec3 position;
     Vec3 direction;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_MATHS_H

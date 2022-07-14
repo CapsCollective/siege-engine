@@ -60,6 +60,6 @@ uint32_t crc32(const uint8_t* data, size_t length);
 size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
-} // namespace Hash
+} // namespace Siege::Hash
 
 #endif // SIEGE_ENGINE_HASH_H

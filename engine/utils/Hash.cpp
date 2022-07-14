@@ -31,4 +31,4 @@ StringId WSID(const char* str)
     return crc32((uint8_t*) str, strlen_c(str));
 }
 
-} // namespace Hash
+} // namespace Siege::Hash

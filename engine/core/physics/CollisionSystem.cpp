@@ -80,4 +80,4 @@ bool CollisionSystem::CheckCollision(const BoundedBox& boundingBox)
     }
     return false;
 }
-}
+} // namespace Siege

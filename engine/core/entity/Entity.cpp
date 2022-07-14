@@ -106,4 +106,4 @@ void Entity::SetZIndex(int idx)
     zIndex = idx;
     EntitySystem::Resort(this, oldZIndex);
 }
-}
+} // namespace Siege

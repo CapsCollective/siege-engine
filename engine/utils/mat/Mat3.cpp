@@ -6,70 +6,70 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include "Mat3x3.h"
+#include "Mat3.h"
 
 namespace Siege
 {
 
 // Static Variables
 
-const Mat3x3 Mat3x3::Identity = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
+const Mat3 Mat3::Identity = {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}};
 
-const Mat3x3 Mat3x3::Zero = {};
+const Mat3 Mat3::Zero = {};
 
 // Static functions
 
-Mat3x3 Mat3x3::Divide(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 Mat3::Divide(const Mat3& lhs, const Mat3& rhs)
 {
     return (lhs.Inverse() * rhs);
 }
 
-Mat3x3 Mat3x3::Add(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 Mat3::Add(const Mat3& lhs, const Mat3& rhs)
 {
-    Mat3x3 newMat {lhs};
+    Mat3 newMat {lhs};
     newMat.Add(rhs);
     return newMat;
 }
 
-Mat3x3 Mat3x3::Multiply(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 Mat3::Multiply(const Mat3& lhs, const Mat3& rhs)
 {
-    Mat3x3 newMat {lhs};
+    Mat3 newMat {lhs};
     newMat.Multiply(rhs);
     return newMat;
 }
 
-Mat3x3 Mat3x3::Subtract(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 Mat3::Subtract(const Mat3& lhs, const Mat3& rhs)
 {
-    Mat3x3 newMat {lhs};
+    Mat3 newMat {lhs};
     newMat.Subtract(rhs);
     return newMat;
 }
 
-Mat3x3 Mat3x3::Multiply(const Mat3x3& lhs, const float& rhs)
+Mat3 Mat3::Multiply(const Mat3& lhs, const float& rhs)
 {
-    Mat3x3 newMat {lhs};
+    Mat3 newMat {lhs};
     newMat.Multiply(rhs);
     return newMat;
 }
 
-Vec3 Mat3x3::Multiply(const Mat3x3& lhs, const Vec3& rhs)
+Vec3 Mat3::Multiply(const Mat3& lhs, const Vec3& rhs)
 {
     return lhs.Multiply(rhs);
 }
 
-float Mat3x3::Determinant(const Mat3x3& mat)
+float Mat3::Determinant(const Mat3& mat)
 {
     return mat.Determinant();
 }
 
-Mat3x3 Mat3x3::Inverse(const Mat3x3& mat)
+Mat3 Mat3::Inverse(const Mat3& mat)
 {
     return mat.Inverse();
 }
 
 // Unary Operators
 
-float& Mat3x3::operator[](const size_t& index)
+float& Mat3::operator[](const size_t& index)
 {
     assert(index < 9 &&
            "Error: trying to index into matrix with a size that's greater than matrix!");
@@ -77,56 +77,56 @@ float& Mat3x3::operator[](const size_t& index)
     return values[index];
 }
 
-Mat3x3& Mat3x3::operator+=(const Mat3x3& other)
+Mat3& Mat3::operator+=(const Mat3& other)
 {
     Add(other);
     return *this;
 }
 
-Mat3x3& Mat3x3::operator-=(const Mat3x3& other)
+Mat3& Mat3::operator-=(const Mat3& other)
 {
     Subtract(other);
     return *this;
 }
 
-Mat3x3& Mat3x3::operator*=(const float& scalar)
+Mat3& Mat3::operator*=(const float& scalar)
 {
     Multiply(scalar);
     return *this;
 }
 
-Mat3x3& Mat3x3::operator*=(const Mat3x3& other)
+Mat3& Mat3::operator*=(const Mat3& other)
 {
     Multiply(other);
     return *this;
 }
 
-Mat3x3& Mat3x3::operator/=(const Mat3x3& other)
+Mat3& Mat3::operator/=(const Mat3& other)
 {
     Divide(other);
     return *this;
 }
 
-Mat3x3 Mat3x3::operator-()
+Mat3 Mat3::operator-()
 {
     return {{-values[0], -values[1], -values[2]},
             {-values[3], -values[4], -values[5]},
             {-values[6], -values[7], -values[8]}};
 }
 
-bool Mat3x3::operator==(const Mat3x3& other)
+bool Mat3::operator==(const Mat3& other)
 {
     return MAT3_LOGIC_OP(==, &&, &&, MAT3_BODY_FUNC);
 }
 
-bool Mat3x3::operator!=(const Mat3x3& other)
+bool Mat3::operator!=(const Mat3& other)
 {
     return MAT3_LOGIC_OP(!=, ||, ||, MAT3_BODY_FUNC);
 }
 
 // Functions
 
-void Mat3x3::Add(const Mat3x3& other)
+void Mat3::Add(const Mat3& other)
 {
     // To add two matrices, we simply add each element from matrix A to the corresponding value in
     // matrix B. i.e: matA[0] += matB[0] ...
@@ -134,7 +134,7 @@ void Mat3x3::Add(const Mat3x3& other)
     MAT3_MATH_OP(+=, MAT3_BODY_FUNC);
 }
 
-void Mat3x3::Subtract(const Mat3x3& other)
+void Mat3::Subtract(const Mat3& other)
 {
     // To subtract two matrices, we simply subtract each element from matrix A to the corresponding
     // value in matrix B. i.e: matA[0] -= matB[0] ...
@@ -142,7 +142,7 @@ void Mat3x3::Subtract(const Mat3x3& other)
     MAT3_MATH_OP(-=, MAT3_BODY_FUNC);
 }
 
-void Mat3x3::Multiply(const float& scalar)
+void Mat3::Multiply(const float& scalar)
 {
     // Multiplying a matrix by a scalar involves multiplying every element in the matrix with the
     // given scalar. i.e: mat[0] *= scalar
@@ -150,7 +150,7 @@ void Mat3x3::Multiply(const float& scalar)
     MAT3_MATH_OP(*=, MAT3_BODY_SCALAR_FUNC);
 }
 
-void Mat3x3::Multiply(const Mat3x3& matrix)
+void Mat3::Multiply(const Mat3& matrix)
 {
     // Rows of lhs matrix
 
@@ -199,19 +199,19 @@ void Mat3x3::Multiply(const Mat3x3& matrix)
     values[8] = DOT3(m0x2, m0y2, m0z2, m1cx2, m1cy2, m1cz2);
 }
 
-Vec3 Mat3x3::Multiply(const Vec3& vector) const
+Vec3 Mat3::Multiply(const Vec3& vector) const
 {
     return {(values[0] * vector.x) + (values[1] * vector.y) + (values[2] * vector.z),
             (values[3] * vector.x) + (values[4] * vector.y) + (values[5] * vector.z),
             (values[6] * vector.x) + (values[7] * vector.y) + (values[8] * vector.z)};
 }
 
-void Mat3x3::Divide(const Mat3x3& other)
+void Mat3::Divide(const Mat3& other)
 {
-    *this = Mat3x3::Divide(*this, other);
+    *this = Mat3::Divide(*this, other);
 }
 
-float Mat3x3::Determinant() const
+float Mat3::Determinant() const
 {
     // Matrix determinants are calculated by getting the dot product of the diagonals of 2x2 a
     // 2x2 matrix. Since a 3x3 matrix is larger than 2x2, we need to get the determinants of each
@@ -236,7 +236,7 @@ float Mat3x3::Determinant() const
            values[2] * (values[3] * values[7] - values[6] * values[4]);
 }
 
-Mat3x3 Mat3x3::Inverse() const
+Mat3 Mat3::Inverse() const
 {
     // The inverse of a 3x3 matrix is 1/det(matrix) multiplied by the determinants of all possible
     // 2x2 combinations in the matrix.
@@ -267,7 +267,7 @@ Mat3x3 Mat3x3::Inverse() const
             +(values[0] * values[4] - values[1] * values[3]) * oneOverDeterminant};
 }
 
-Mat3x3 Mat3x3::Transpose() const
+Mat3 Mat3::Transpose() const
 {
     // A transpose is a matrix where all rows have been converted to columns and all columns have
     // been moved to rows.
@@ -286,38 +286,38 @@ Mat3x3 Mat3x3::Transpose() const
             values[8]};
 }
 
-const float& Mat3x3::Get(const size_t& rowIndex, const size_t& colIndex)
+const float& Mat3::Get(const size_t& rowIndex, const size_t& colIndex)
 {
     return values[(3 * rowIndex) + colIndex];
 }
 
-Mat3x3 operator+(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 operator+(const Mat3& lhs, const Mat3& rhs)
 {
-    return Mat3x3::Add(lhs, rhs);
+    return Mat3::Add(lhs, rhs);
 }
 
-Mat3x3 operator-(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 operator-(const Mat3& lhs, const Mat3& rhs)
 {
-    return Mat3x3::Subtract(lhs, rhs);
+    return Mat3::Subtract(lhs, rhs);
 }
 
-Mat3x3 operator*(const Mat3x3& lhs, const float& scalar)
+Mat3 operator*(const Mat3& lhs, const float& scalar)
 {
-    return Mat3x3::Multiply(lhs, scalar);
+    return Mat3::Multiply(lhs, scalar);
 }
 
-Mat3x3 operator*(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 operator*(const Mat3& lhs, const Mat3& rhs)
 {
-    return Mat3x3::Multiply(lhs, rhs);
+    return Mat3::Multiply(lhs, rhs);
 }
 
-const Vec3 operator*(const Mat3x3& lhs, const Siege::Vec3& rhs)
+const Vec3 operator*(const Mat3& lhs, const Siege::Vec3& rhs)
 {
-    return Mat3x3::Multiply(lhs, rhs);
+    return Mat3::Multiply(lhs, rhs);
 }
 
-Mat3x3 operator/(const Mat3x3& lhs, const Mat3x3& rhs)
+Mat3 operator/(const Mat3& lhs, const Mat3& rhs)
 {
-    return Mat3x3::Divide(lhs, rhs);
+    return Mat3::Divide(lhs, rhs);
 }
 } // namespace Siege

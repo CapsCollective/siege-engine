@@ -35,6 +35,6 @@ public:
 
 private:
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_CAMERA_H

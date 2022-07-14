@@ -58,4 +58,4 @@ Siege::Vec3 InputSystem::GetMousePos()
 {
     return ToVec3(GetMousePosition());
 }
-}
+} // namespace Siege

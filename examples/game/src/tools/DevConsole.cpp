@@ -40,10 +40,12 @@ void DevConsole::OnUpdate()
     }
 
     // Remove characters on backspace
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::BACKSPACE) && !inputText.IsEmpty())
+        inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::UP) && !lastInput.IsEmpty()) inputText = lastInput;
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::UP) && !lastInput.IsEmpty())
+        inputText = lastInput;
 
     // Process the command on enter
     if (Siege::Statics::Input().KeyPressed(Siege::Key::ENTER))

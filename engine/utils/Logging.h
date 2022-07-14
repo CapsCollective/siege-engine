@@ -30,13 +30,14 @@
 #define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
 #define _CC_LOG_VRNT_ARR_SZE CONCAT_SYMBOL(_vrnt_arr_sze_, __LINE__)
 #define _CC_LOG_FMT_STR CONCAT_SYMBOL(_fmt_str_, __LINE__)
-#define _CC_LOG(log_level, colour, message, ...)                                              \
-    {                                                                                         \
-        Siege::Logging::VariantContainer _CC_LOG_VRNT_ARR[] {__VA_ARGS__};                    \
-        static size_t _CC_LOG_VRNT_ARR_SZE(sizeof(_CC_LOG_VRNT_ARR) / Siege::Logging::VARIANT_SIZE);\
-        Siege::String _CC_LOG_FMT_STR(_CC_LOG_MSG_FMT(log_level, colour, message));                  \
+#define _CC_LOG(log_level, colour, message, ...)                                                \
+    {                                                                                           \
+        Siege::Logging::VariantContainer _CC_LOG_VRNT_ARR[] {__VA_ARGS__};                      \
+        static size_t _CC_LOG_VRNT_ARR_SZE(sizeof(_CC_LOG_VRNT_ARR) /                           \
+                                           Siege::Logging::VARIANT_SIZE);                       \
+        Siege::String _CC_LOG_FMT_STR(_CC_LOG_MSG_FMT(log_level, colour, message));             \
         Siege::Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE); \
-        std::cout << _CC_LOG_FMT_STR << std::endl;                                            \
+        std::cout << _CC_LOG_FMT_STR << std::endl;                                              \
     }
 #define DEFINE_VARIANT_TYPE(type, transform) \
     VariantContainer(type) : data(transform) {}
@@ -145,7 +146,7 @@ static constexpr const char REPLACE_STRING[] = "{}";
         cursor += item.Size();
     }
 }
-} // namespace Logging
+} // namespace Siege::Logging
 #endif
 
 // Determine log level

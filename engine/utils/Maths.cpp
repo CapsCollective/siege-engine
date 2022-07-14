@@ -48,4 +48,4 @@ bool BoundedBox::Intersects(const RayCast& ray) const
 
     return !((t[7] < 0) || (t[6] > t[7]));
 }
-}
+} // namespace Siege

@@ -50,6 +50,6 @@ private:
 
     static float deltaTime;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_WINDOW_H

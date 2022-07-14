@@ -10,7 +10,7 @@
 
 namespace Components
 {
-Siege::Mat4x4 Shape::CalculateTransform(Transform& transform)
+Siege::Mat4 Shape::CalculateTransform(Transform& transform)
 {
     const float c3 = glm::cos(transform.rotation.z);
     const float s3 = glm::sin(transform.rotation.z);
@@ -40,7 +40,7 @@ Siege::Mat4x4 Shape::CalculateTransform(Transform& transform)
             {transform.position.x, transform.position.y, transform.position.z, 1.0f}};
 }
 
-Siege::Mat3x3 Shape::CalculateNormalMatrix(Transform& transform)
+Siege::Mat3 Shape::CalculateNormalMatrix(Transform& transform)
 {
     const float c3 = glm::cos(transform.rotation.z);
     const float s3 = glm::sin(transform.rotation.z);

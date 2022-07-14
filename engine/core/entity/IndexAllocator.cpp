@@ -66,4 +66,4 @@ void IndexAllocator::Reset()
     entries.clear();
     freeEntries.clear();
 }
-}
+} // namespace Siege

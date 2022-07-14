@@ -7,8 +7,8 @@
 //
 
 #include "ResourceSystem.h"
-#include <raylib/raylib-cpp.hpp>
 
+#include <raylib/raylib-cpp.hpp>
 #include <vector>
 
 static std::map<Siege::String, Model> models = std::map<Siege::String, Model>();
@@ -79,4 +79,4 @@ const String& ResourceSystem::GetBaseDirectory()
 {
     return baseDir;
 }
-}
+} // namespace Siege

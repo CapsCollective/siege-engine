@@ -57,4 +57,4 @@ class EntitySystem& Statics::Tool()
     static EntitySystem system;
     return system;
 }
-}
+} // namespace Siege

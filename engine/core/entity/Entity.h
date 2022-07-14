@@ -227,6 +227,6 @@ private:
      */
     int zIndex;
 };
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITY_H

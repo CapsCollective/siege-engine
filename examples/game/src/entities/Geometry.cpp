@@ -65,12 +65,14 @@ static Siege::String Serialise(Siege::Entity* entity)
     return fileData;
 }
 
-static Siege::Entity* Deserialise(const Siege::EntityData& data, const std::vector<Siege::String>& args)
+static Siege::Entity* Deserialise(const Siege::EntityData& data,
+                                  const std::vector<Siege::String>& args)
 {
     Siege::Vec3 dimensions;
     if (!Siege::Vec3::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
     {
-        CC_LOG_WARNING("Failed to deserialise dimensions with value {}", args[Siege::CUSTOM_FIELD_1]);
+        CC_LOG_WARNING("Failed to deserialise dimensions with value {}",
+                       args[Siege::CUSTOM_FIELD_1]);
     }
     Siege::String modelPath = args[Siege::CUSTOM_FIELD_2];
     Siege::String texturePath = args[Siege::CUSTOM_FIELD_3];

@@ -12,8 +12,8 @@
 #include <utils/String.h>
 
 using Siege::Entity;
-using Siege::String;
 using Siege::EntitySystem;
+using Siege::String;
 using Siege::Xform;
 
 UTEST(test_EntitySystem, AddEntities)
