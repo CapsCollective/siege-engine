@@ -14,48 +14,48 @@
 #include <utils/Logging.h>
 
 // Static member initialisation
-const String Geometry::ENTITY_NAME("Geometry");
+const Siege::String Geometry::ENTITY_NAME("Geometry");
 
 void Geometry::OnStart()
 {
     // Register the entity with systems
-    Statics::Collision().Add(this);
-    Statics::Render().Add(this, {modelPath, texturePath});
+    Siege::Statics::Collision().Add(this);
+    Siege::Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Statics::Render().Remove(this);
-    Statics::Collision().Remove(this);
+    Siege::Statics::Render().Remove(this);
+    Siege::Statics::Collision().Remove(this);
 }
 
-BoundedBox Geometry::GetBoundingBox() const
+Siege::BoundedBox Geometry::GetBoundingBox() const
 {
-    return BoundedBox {
+    return Siege::BoundedBox {
         GetPosition() - GetScale(),
         GetPosition() + GetScale(),
     };
 }
 
-const Vec3& Geometry::GetDimensions()
+const Siege::Vec3& Geometry::GetDimensions()
 {
     return GetScale();
 }
 
-Entity* Geometry::Clone() const
+Siege::Entity* Geometry::Clone() const
 {
     return new Geometry(transform);
 }
 
-ModelData Geometry::GetModelData()
+Siege::ModelData Geometry::GetModelData()
 {
     return {modelPath, texturePath};
 }
 
-static String Serialise(Entity* entity)
+static Siege::String Serialise(Siege::Entity* entity)
 {
-    String fileData;
+    Siege::String fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
     fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
 
@@ -65,15 +65,17 @@ static String Serialise(Entity* entity)
     return fileData;
 }
 
-static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
+static Siege::Entity* Deserialise(const Siege::EntityData& data,
+                                  const std::vector<Siege::String>& args)
 {
-    Vec3 dimensions;
-    if (!Vec3::FromString(dimensions, args[CUSTOM_FIELD_1]))
+    Siege::Vec3 dimensions;
+    if (!Siege::Vec3::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
     {
-        CC_LOG_WARNING("Failed to deserialise dimensions with value {}", args[CUSTOM_FIELD_1]);
+        CC_LOG_WARNING("Failed to deserialise dimensions with value {}",
+                       args[Siege::CUSTOM_FIELD_1]);
     }
-    String modelPath = args[CUSTOM_FIELD_2];
-    String texturePath = args[CUSTOM_FIELD_3];
+    Siege::String modelPath = args[Siege::CUSTOM_FIELD_2];
+    Siege::String texturePath = args[Siege::CUSTOM_FIELD_3];
 
     return new Geometry({data.position, data.rotation, dimensions}, modelPath, texturePath);
 }
