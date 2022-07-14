@@ -12,6 +12,8 @@
 #include <utils/Colour.h>
 #include <utils/String.h>
 
+namespace Siege
+{
 class Window
 {
 public:
@@ -48,5 +50,6 @@ private:
 
     static float deltaTime;
 };
+}
 
 #endif // SIEGE_ENGINE_WINDOW_H

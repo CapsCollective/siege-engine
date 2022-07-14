@@ -14,6 +14,8 @@
 #include "render/ResourceSystem.h"
 #include "scene/SceneSystem.h"
 
+namespace Siege
+{
 CollisionSystem& Statics::Collision()
 {
     static CollisionSystem system;
@@ -54,4 +56,5 @@ class EntitySystem& Statics::Tool()
 {
     static EntitySystem system;
     return system;
+}
 }

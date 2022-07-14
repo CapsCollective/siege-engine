@@ -24,7 +24,7 @@ enum EditorMode
     ROTATION,
 };
 
-class EditorController : public Entity
+class EditorController : public Siege::Entity
 {
 public:
 
@@ -42,7 +42,7 @@ public:
 
     // Class methods
 
-    static bool TryAddEntity(String entityName);
+    static bool TryAddEntity(Siege::String entityName);
 
     // Public methods
 
@@ -80,11 +80,11 @@ private:
 
     size_t selectedIdx;
 
-    Cam* camera;
+    Siege::Cam* camera;
 
-    EntityPtr<Entity> selectedEntity;
+    Siege::EntityPtr<Entity> selectedEntity;
 
-    EntityPtr<MessageDisplay> messageDisplay;
+    Siege::EntityPtr<MessageDisplay> messageDisplay;
 };
 
 #endif // SIEGE_ENGINE_EDITORCONTROLLER_H

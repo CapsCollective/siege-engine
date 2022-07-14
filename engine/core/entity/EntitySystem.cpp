@@ -16,6 +16,8 @@
 
 #include "./Entity.h"
 
+namespace Siege
+{
 int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
 {
     if (storage.empty()) return -1;
@@ -309,4 +311,5 @@ EntitySystem* EntitySystem::FindInGlobalRegister(Entity* entity)
 void EntitySystem::ResetGlobalRegister()
 {
     globalEntityRegister.clear();
+}
 }

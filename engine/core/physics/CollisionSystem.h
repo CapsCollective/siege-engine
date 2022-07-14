@@ -13,6 +13,8 @@
 
 #include "../entity/Entity.h"
 
+namespace Siege
+{
 class CollisionSystem
 {
 public:
@@ -52,7 +54,7 @@ public:
      * @return the resulting linear velocity after
      *         applying any collision events
      */
-    Siege::Vec3 MoveAndSlide(const BoundedBox& boundingBox, Siege::Vec3 velocity);
+    Vec3 MoveAndSlide(const BoundedBox& boundingBox, Vec3 velocity);
 
     /**
      * Checks a given bounding box for collisions against
@@ -72,5 +74,6 @@ private:
 
     std::vector<Entity*> removedEntities;
 };
+}
 
 #endif // SIEGE_ENGINE_COLLISIONSYSTEM_H

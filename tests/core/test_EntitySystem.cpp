@@ -11,11 +11,16 @@
 #include <utest.h>
 #include <utils/String.h>
 
+using Siege::Entity;
+using Siege::String;
+using Siege::EntitySystem;
+using Siege::Xform;
+
 UTEST(test_EntitySystem, AddEntities)
 {
     // The entity storage should support the adding of entities
-    EntitySystem system;
-    auto e1 = new Entity();
+    Siege::EntitySystem system;
+    auto e1 = new Siege::Entity();
     system.Add(e1);
 
     // The storage should not contain the new entity before registration
@@ -26,8 +31,8 @@ UTEST(test_EntitySystem, AddEntities)
     ASSERT_EQ(1, system.GetEntities().size());
 
     // It should then support adding further entities
-    auto e2 = new Entity();
-    auto e3 = new Entity();
+    auto e2 = new Siege::Entity();
+    auto e3 = new Siege::Entity();
     system.Add({e2, e3});
 
     // The storage should not contain the new entities before registration
@@ -52,16 +57,16 @@ UTEST(test_EntitySystem, AddEntities)
 UTEST(test_EntitySystem, FreeEntities)
 {
     // The entity storage should support the freeing of entities
-    EntitySystem system;
-    auto e1 = new Entity();
-    auto e2 = new Entity();
-    auto e3 = new Entity();
+    Siege::EntitySystem system;
+    auto e1 = new Siege::Entity();
+    auto e2 = new Siege::Entity();
+    auto e3 = new Siege::Entity();
     system.Add({e1, e2, e3});
     system.RegisterEntities();
 
-    GenerationalIndex idx1 = e1->GetIndex();
-    GenerationalIndex idx2 = e2->GetIndex();
-    GenerationalIndex idx3 = e3->GetIndex();
+    Siege::GenerationalIndex idx1 = e1->GetIndex();
+    Siege::GenerationalIndex idx2 = e2->GetIndex();
+    Siege::GenerationalIndex idx3 = e3->GetIndex();
 
     // The entities should all be live
     ASSERT_TRUE(system.IsLive(idx1));
@@ -99,9 +104,9 @@ UTEST(test_EntitySystem, FreeEntities)
     ASSERT_FALSE(system.IsLive(idx2));
     ASSERT_FALSE(system.IsLive(idx3));
 
-    auto e4 = new Entity();
+    auto e4 = new Siege::Entity();
     system.Add(e4);
-    GenerationalIndex idx4 = e4->GetIndex();
+    Siege::GenerationalIndex idx4 = e4->GetIndex();
 
     // Only the added entity should be live
     ASSERT_FALSE(system.IsLive(idx1));
@@ -160,7 +165,7 @@ UTEST(test_EntitySystem, SortEntitiesByZIndex)
     ASSERT_EQ(4, system.GetEntities().size());
 
     // Entities should be sorted from lowest to highest index
-    const std::vector<Entity*>& entities = system.GetEntities();
+    const std::vector<Siege::Entity*>& entities = system.GetEntities();
     ASSERT_EQ(e3, entities[0]);
     ASSERT_EQ(e1, entities[1]);
     ASSERT_EQ(e4, entities[2]);

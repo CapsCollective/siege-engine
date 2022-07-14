@@ -11,6 +11,8 @@
 
 #include <utils/Maths.h>
 
+namespace Siege
+{
 class Cam
 {
 public:
@@ -21,17 +23,18 @@ public:
 
     void End3D();
 
-    Siege::Vec3 GetScreenPos(const Siege::Vec3& position);
+    Vec3 GetScreenPos(const Vec3& position);
 
     RayCast GetMouseRay();
 
-    Siege::Vec3 GetPosition();
+    Vec3 GetPosition();
 
-    void SetPosition(const Siege::Vec3& position);
+    void SetPosition(const Vec3& position);
 
-    void SetTarget(const Siege::Vec3& target);
+    void SetTarget(const Vec3& target);
 
 private:
 };
+}
 
 #endif // SIEGE_ENGINE_CAMERA_H

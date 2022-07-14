@@ -15,33 +15,33 @@
 #include <core/scene/SceneFile.h>
 
 // Static member initialisation
-const String Player::ENTITY_NAME("Player");
+const Siege::String Player::ENTITY_NAME("Player");
 
 void Player::OnStart()
 {
     // Register the entity with systems
-    String modelPath = "models/cube/cube.obj";
-    String texturePath = "models/cube/cube.png";
-    Statics::Render().Add(this, {modelPath, texturePath});
+    Siege::String modelPath = "models/cube/cube.obj";
+    Siege::String texturePath = "models/cube/cube.png";
+    Siege::Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Player::OnUpdate()
 {
     // Get move axes as vector
     Siege::Vec3 move = {
-        (float) (-Statics::Input().KeyDown(Key::LEFT) + Statics::Input().KeyDown(Key::RIGHT)),
+        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::LEFT) + Siege::Statics::Input().KeyDown(Siege::Key::RIGHT)),
         0.f,
-        (float) (-Statics::Input().KeyDown(Key::UP) + Statics::Input().KeyDown(Key::DOWN)),
+        (float) (-Siege::Statics::Input().KeyDown(Siege::Key::UP) + Siege::Statics::Input().KeyDown(Siege::Key::DOWN)),
     };
 
     // Normalise and apply move to velocity
-    velocity += move.Normalise() * speed * Window::GetDeltaTime();
+    velocity += move.Normalise() * speed * Siege::Window::GetDeltaTime();
 
     // Apply force of gravity
     velocity += Siege::Vec3(0.f, -0.01f, 0.f);
 
     // Set the resulting attempted move's velocity to the object's position
-    velocity = Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);
+    velocity = Siege::Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);
     transform.SetPosition(transform.GetPosition() + velocity);
 
     // Dampen velocity
@@ -51,24 +51,24 @@ void Player::OnUpdate()
 void Player::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Statics::Render().Remove(this);
+    Siege::Statics::Render().Remove(this);
 }
 
-BoundedBox Player::GetBoundingBox() const
+Siege::BoundedBox Player::GetBoundingBox() const
 {
     Siege::Vec3 position = transform.GetPosition();
-    return BoundedBox {
+    return Siege::BoundedBox {
         position - Siege::Vec3::One,
         position + Siege::Vec3::One,
     };
 }
 
-Entity* Player::Clone() const
+Siege::Entity* Player::Clone() const
 {
     return new Player(transform);
 }
 
-static Entity* Deserialise(const EntityData& data, const std::vector<String>& args)
+static Siege::Entity* Deserialise(const Siege::EntityData& data, const std::vector<Siege::String>& args)
 {
     return new Player({data.position, data.rotation});
 }
