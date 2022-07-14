@@ -49,4 +49,4 @@ $(raylibIncludeDir):
 
 # Build the raylib static library file
 $(raylibLib):
-	@$(MAKE) -C $(vendorDir)/raylib-cpp/vendor/raylib/src PLATFORM=PLATFORM_DESKTOP
+	"$(MAKE)" -C $(vendorDir)/raylib-cpp/vendor/raylib/src PLATFORM=PLATFORM_DESKTOP

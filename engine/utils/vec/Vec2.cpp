@@ -23,6 +23,8 @@ const Vec2 Vec2::Zero = {0.f, 0.f};
 const Vec2 Vec2::One = {1.f, 1.f};
 const Vec2 Vec2::Up = {0.f, 1.f};
 
+// Unary operator implementations.
+
 bool Vec2::operator==(const Vec2& other)
 {
     return x == other.x && y == other.y;
