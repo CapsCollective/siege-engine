@@ -315,7 +315,7 @@ bool Material::HasProperty(StringId id)
     return false;
 }
 
-void Material::SetUniformData(const char* name, VkDeviceSize dataSize, const void* data)
+void Material::SetUniformData(const String& name, VkDeviceSize dataSize, const void* data)
 {
     auto id = INTERN_STR(name);
 

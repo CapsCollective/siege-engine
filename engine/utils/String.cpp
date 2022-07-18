@@ -285,6 +285,11 @@ String String::FromLong(const long& value)
     return GetFromFormat("%ld", value);
 }
 
+String String::FromSizeT(const size_t& value)
+{
+    return GetFromFormat("%lu", value);
+}
+
 bool String::OnHeap() const
 {
     return onHeap;

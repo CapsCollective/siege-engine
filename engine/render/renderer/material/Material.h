@@ -61,7 +61,7 @@ public:
 
     void SetUniformData(VkDeviceSize dataSize, const void* data);
     void SetUniformData(StringId id, VkDeviceSize dataSize, const void* data);
-    void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
+    void SetUniformData(const String& name, VkDeviceSize dataSize, const void* data);
 
     void SetVertexShader(Shader* shader);
     void SetFragmentShader(Shader* shader);

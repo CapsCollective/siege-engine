@@ -13,9 +13,20 @@
 #include <unordered_set>
 #include <vector>
 
+template<>
+struct std::hash<Siege::String>
+{
+    size_t operator()(const Siege::String& str) const
+    {
+        size_t seed = 0;
+        Siege::HashCombine(seed, str.At(0), str.At(str.Size()), str.Size(), str.Capacity());
+        return seed;
+    };
+};
+
 namespace Siege::Extensions
 {
-bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size)
+bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
 {
     // Get an array of all available validation layers.
     u32 layerCount;
@@ -26,10 +37,10 @@ bool CheckValidationLayerSupport(const char* const* validationLayers, size_t siz
 
     for (size_t i = 0; i < size; i++)
     {
-        const char* layerName = validationLayers[i];
+        const char* layerName = validationLayers[i].Str();
         bool layerFound = false;
 
-        for (size_t i = 0; i < layerCount; i++)
+        for (size_t j = 0; j < layerCount; j++)
         {
             VkLayerProperties layerProperties = availableLayers[i];
             if (strcmp(layerName, layerProperties.layerName) == 0)
@@ -47,20 +58,22 @@ bool CheckValidationLayerSupport(const char* const* validationLayers, size_t siz
     return true;
 }
 
-std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers)
+
+Array<String> GetRequiredExtensions(bool enableValidationLayers)
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    size_t size = glfwExtensionCount + (1 * enableValidationLayers);
 
-    if (enableValidationLayers)
-    {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
+    Array<String> array(size);
 
-    return extensions;
+    for(size_t i = 0; i < glfwExtensionCount; i++) array[i] = glfwExtensions[i];
+
+    if (enableValidationLayers) array[size-1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+
+    return array;
 }
 
 void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
@@ -72,7 +85,7 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, OUT extensions);
 
     std::cout << "available extensions:" << std::endl;
-    std::unordered_set<std::string> available;
+    std::unordered_set<String> available;
     for (size_t i = 0; i < extensionCount; i++)
     {
         VkExtensionProperties extension = extensions[i];

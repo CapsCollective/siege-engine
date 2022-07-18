@@ -14,7 +14,7 @@ DebugRenderer3D::DebugRenderer3D() {}
 
 DebugRenderer3D::~DebugRenderer3D() {}
 
-void DebugRenderer3D::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void DebugRenderer3D::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
 

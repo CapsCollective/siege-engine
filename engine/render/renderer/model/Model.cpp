@@ -76,7 +76,7 @@ Model::Model(const Mesh::MeshData& meshData)
     modelMesh.LoadVertices(meshData);
 }
 
-Model::Model(const char* filePath)
+Model::Model(const String& filePath)
 {
     LoadModelFromFile(filePath);
 }
@@ -91,7 +91,7 @@ void Model::DestroyModel()
     modelMesh.DestroyMesh();
 }
 
-void Model::LoadModelFromFile(const char* filePath)
+void Model::LoadModelFromFile(const String& filePath)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;

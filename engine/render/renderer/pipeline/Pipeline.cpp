@@ -10,7 +10,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
 
 namespace Siege
 {
@@ -33,12 +32,12 @@ Pipeline::~Pipeline()
     isFreed = true;
 }
 
-Array<char> Pipeline::ReadFile(const char* filePath)
+Array<char> Pipeline::ReadFile(const String& filePath)
 {
     // Read the file as binary and consume the entire file.
-    std::ifstream file {filePath, std::ios::ate | std::ios::binary};
+    std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
 
-    CC_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
+    CC_ASSERT(file.is_open(), String("Could not find file: ") + filePath);
 
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).

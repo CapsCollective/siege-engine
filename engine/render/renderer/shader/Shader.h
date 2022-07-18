@@ -60,18 +60,18 @@ public:
 
     static Shader BuildShader();
 
-    Shader& FromShader(const char* filePath);
+    Shader& FromShader(const String& filePath);
     Shader& WithStage(PipelineConfig::PipelineStage stage);
 
-    Shader& WithUniform(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+    Shader& WithUniform(u32 binding, const String& name, u64 size, size_t arraySize = 1);
     Shader& WithDynamicUniform(u32 binding,
-                               const char* name,
+                               const String& name,
                                u64 size,
                                size_t arraySize,
                                size_t count);
-    Shader& WithStorage(u32 binding, const char* name, u64 size, size_t arraySize = 1);
+    Shader& WithStorage(u32 binding, const String& name, u64 size, size_t arraySize = 1);
     Shader& WithDynamicStorage(u32 binding,
-                               const char* name,
+                               const String& name,
                                u64 size,
                                size_t arraySize,
                                size_t count);
@@ -96,7 +96,7 @@ public:
         return uniforms;
     }
 
-    const char* GetPath()
+    const String& GetPath()
     {
         return filePath;
     }
@@ -111,13 +111,13 @@ public:
     }
 
     void SetUniformType(u32 binding,
-                        const char* name,
+                        const String& name,
                         VkDescriptorType type,
                         u64 size,
                         size_t arraySize,
                         size_t count = 1);
 
-    const char* filePath;
+    String filePath;
 
     StackArray<Uniform, MAX_UNIFORMS> uniforms;
     StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;

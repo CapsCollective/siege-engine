@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <utils/String.h>
 
 namespace Siege
 {
@@ -57,4 +58,6 @@ uint32_t crc32(const uint8_t* data, size_t length);
 size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
+
+StringId WSID(const String& str);
 } // namespace Siege

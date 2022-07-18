@@ -245,6 +245,12 @@ public:
      */
     static String FromLong(const long& value);
 
+    /**
+     * Conversion method for size_t values
+     * @param value - the size_t value to convert
+     */
+    static String FromSizeT(const size_t& value);
+
     // State methods
 
     /**

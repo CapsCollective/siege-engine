@@ -13,7 +13,7 @@ namespace Siege
 BillboardRenderer::BillboardRenderer() {}
 BillboardRenderer::~BillboardRenderer() {}
 
-void BillboardRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void BillboardRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     positionsId = INTERN_STR("positions");
@@ -45,7 +45,7 @@ void BillboardRenderer::Initialise(const char* globalDataAttributeName, const u6
 void BillboardRenderer::RecreateMaterials()
 {
     billboardMaterial.RecreatePipeline();
-};
+}
 
 void BillboardRenderer::Destroy()
 {

@@ -21,7 +21,7 @@ public:
     DebugRenderer3D();
     ~DebugRenderer3D();
 
-    void Initialise(const char* globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
     void Destroy();
 
     // Wire primitives
