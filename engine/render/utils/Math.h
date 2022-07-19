@@ -9,8 +9,6 @@
 #ifndef SIEGE_ENGINE_RENDERER_UTILS_MATH_H
 #define SIEGE_ENGINE_RENDERER_UTILS_MATH_H
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <utils/vec/Vec3.h>
 
 #include <glm/glm.hpp>

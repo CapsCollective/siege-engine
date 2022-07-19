@@ -10,19 +10,13 @@
 #define SIEGE_ENGINE_MODEL_H
 
 #include <utils/Hash.h>
+#include <utils/mat/Mat4.h>
+
+#include <unordered_map>
 
 #include "../buffer/Buffer.h"
 #include "../material/Material.h"
 #include "../mesh/Mesh.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <utils/mat/Mat4.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtx/hash.hpp>
-#include <unordered_map>
 
 namespace Siege
 {

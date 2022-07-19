@@ -35,7 +35,7 @@ void LightRenderer::Initialise(const String& globalDataAttributeName,
     lightMaterial.SetFragmentShader(&pointLightFragShader);
     lightMaterial.BuildMaterial();
 
-    lightModel.SetMesh({sizeof(glm::vec2), nullptr, 0, nullptr, 0});
+    lightModel.SetMesh({sizeof(Vec2), nullptr, 0, nullptr, 0});
 
     lightModel.SetMaterial(&lightMaterial);
 }
@@ -75,7 +75,7 @@ void LightRenderer::Render(VkCommandBuffer& commandBuffer,
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lightMaterial.Bind(commandBuffer);
 
-    lightModel.UpdateMesh({sizeof(glm::vec2),
+    lightModel.UpdateMesh({sizeof(Vec2),
                            pointLightVertices.Data(),
                            static_cast<uint32_t>(pointLightVertices.Count()),
                            pointLightIndices.Data(),

@@ -9,13 +9,9 @@
 #ifndef SIEGE_ENGINE_RENDERER_MATH_H
 #define SIEGE_ENGINE_RENDERER_MATH_H
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <utils/mat/Mat2.h>
 #include <utils/mat/Mat3.h>
 #include <utils/mat/Mat4.h>
-
-#include <glm/glm.hpp>
 
 // TODO(Aryeh): Move this to utils.
 
