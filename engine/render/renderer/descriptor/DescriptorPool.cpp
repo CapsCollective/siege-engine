@@ -13,7 +13,7 @@ namespace Siege
 VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
 StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES> DescriptorPool::sizes;
 
-void DescriptorPool::AddPoolSize(const VkDescriptorType type, const u32 size)
+void DescriptorPool::AddPoolSize(const VkDescriptorType type, const uint32_t size)
 {
     sizes.Append({type, size});
 }
@@ -28,7 +28,7 @@ void DescriptorPool::BuildPool()
         poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolCreateInfo.flags = 0;
         poolCreateInfo.maxSets = MAX_DESCRIPTOR_POOL_SIZES;
-        poolCreateInfo.poolSizeCount = static_cast<u32>(sizes.Count());
+        poolCreateInfo.poolSizeCount = static_cast<uint32_t>(sizes.Count());
         poolCreateInfo.pPoolSizes = sizes.Data();
 
         CC_ASSERT(

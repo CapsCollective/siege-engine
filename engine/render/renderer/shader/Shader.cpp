@@ -32,7 +32,7 @@ Shader& Shader::WithStage(PipelineConfig::PipelineStage stage)
     return *this;
 }
 
-Shader& Shader::WithUniform(u32 binding, const String& name, u64 size, size_t arraySize)
+Shader& Shader::WithUniform(uint32_t binding, const String& name, uint64_t size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size, arraySize);
 
@@ -41,9 +41,9 @@ Shader& Shader::WithUniform(u32 binding, const String& name, u64 size, size_t ar
     return *this;
 }
 
-Shader& Shader::WithDynamicUniform(u32 binding,
+Shader& Shader::WithDynamicUniform(uint32_t binding,
                                    const String& name,
-                                   u64 size,
+                                   uint64_t size,
                                    size_t arraySize,
                                    size_t count)
 {
@@ -59,7 +59,7 @@ Shader& Shader::WithDynamicUniform(u32 binding,
     return *this;
 }
 
-Shader& Shader::WithStorage(u32 binding, const String& name, u64 size, size_t arraySize)
+Shader& Shader::WithStorage(uint32_t binding, const String& name, uint64_t size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size, arraySize);
 
@@ -68,9 +68,9 @@ Shader& Shader::WithStorage(u32 binding, const String& name, u64 size, size_t ar
     return *this;
 }
 
-Shader& Shader::WithDynamicStorage(u32 binding,
+Shader& Shader::WithDynamicStorage(uint32_t binding,
                                    const String& name,
-                                   u64 size,
+                                   uint64_t size,
                                    size_t arraySize,
                                    size_t count)
 {
@@ -86,7 +86,7 @@ Shader& Shader::WithDynamicStorage(u32 binding,
     return *this;
 }
 
-Shader& Shader::WithVertexType(u32 size)
+Shader& Shader::WithVertexType(uint32_t size)
 {
     size_t index = vertexBindings.Count();
 
@@ -100,7 +100,7 @@ Shader& Shader::WithVertexType(u32 size)
     return *this;
 }
 
-Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType type)
+Shader& Shader::WithVertexAttribute(uint32_t offset, VertexDescription::AttributeType type)
 {
     size_t index = vertexBindings.Count() - 1;
 
@@ -117,10 +117,10 @@ Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType
     return *this;
 }
 
-void Shader::SetUniformType(u32 binding,
+void Shader::SetUniformType(uint32_t binding,
                             const String& name,
                             VkDescriptorType type,
-                            u64 size,
+                            uint64_t size,
                             size_t arraySize,
                             size_t count)
 {

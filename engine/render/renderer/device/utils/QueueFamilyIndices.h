@@ -20,8 +20,8 @@ namespace Siege::QueueFamilyIndices
  **/
 struct QueueFamilyIndices
 {
-    u32 graphicsFamily;
-    u32 presentFamily;
+    uint32_t graphicsFamily;
+    uint32_t presentFamily;
     bool graphicsFamilyHasValue = false;
     bool presentFamilyHasValue = false;
 };

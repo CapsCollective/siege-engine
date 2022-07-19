@@ -34,7 +34,7 @@ SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surf
     if (presentModeCount != 0)
     {
         // populate our presentModes array
-        details.presentModes = Array<VkPresentModeKHR>(static_cast<u32>(presentModeCount));
+        details.presentModes = Array<VkPresentModeKHR>(static_cast<uint32_t>(presentModeCount));
         vkGetPhysicalDeviceSurfacePresentModesKHR(device,
                                                   surface,
                                                   &presentModeCount,

@@ -73,14 +73,14 @@ public:
          * @param targerHeight the height of the rendering space.
          * @return the current builder object.
          */
-        Config& WithImageDimensions(u32 targetWidth, u32 targerHeight);
+        Config& WithImageDimensions(uint32_t targetWidth, uint32_t targerHeight);
 
         /**
          * @brief Specifies the number of layers this framebuffer will be operating over.
          * @param targetLayers the number of layers.
          * @return the current builder object.
          */
-        Config& WithLayers(u32 targetLayers);
+        Config& WithLayers(uint32_t targetLayers);
 
         /**
          * @brief Returns the renderpass being used for the framebuffer.
@@ -113,7 +113,7 @@ public:
          * @brief Returns the number of attachments provided to the Config.
          * @return the number of attachments.
          */
-        const u32& GetAttachmentCount() const
+        const uint32_t& GetAttachmentCount() const
         {
             return attachmentCount;
         }
@@ -122,7 +122,7 @@ public:
          * @brief Returns the framebuffer's rendering area width.
          * @return the rendering area's width.
          */
-        const u32& GetWidth() const
+        const uint32_t& GetWidth() const
         {
             return width;
         }
@@ -131,7 +131,7 @@ public:
          * @brief Returns the framebuffer's rendering area height.
          * @return the rendering area's height.
          */
-        const u32& GetHeight() const
+        const uint32_t& GetHeight() const
         {
             return height;
         }
@@ -140,7 +140,7 @@ public:
          * @brief Gets the number of configured layers.
          * @return the number of layers to render to.
          */
-        const u32& GetLayers() const
+        const uint32_t& GetLayers() const
         {
             return layers;
         }
@@ -150,10 +150,10 @@ public:
         VkRenderPass renderPass {VK_NULL_HANDLE};
         FrameImages* colorAttachments {nullptr};
         FrameImages* depthAttachments {nullptr};
-        u32 attachmentCount {0};
-        u32 width {0};
-        u32 height {0};
-        u32 layers {0};
+        uint32_t attachmentCount {0};
+        uint32_t width {0};
+        uint32_t height {0};
+        uint32_t layers {0};
     };
 
     /**
@@ -161,7 +161,7 @@ public:
      * never exceeds the provided number of images.
      * @param imageCount the number of images available to the swapchain.
      */
-    static void SetImageCount(const u32& imageCount)
+    static void SetImageCount(const uint32_t& imageCount)
     {
         IMAGE_COUNT = imageCount;
     }
@@ -198,7 +198,7 @@ public:
      * @param index the frame index for the framebuffer.
      * @return the corresponding VkFramebuffer.
      */
-    VkFramebuffer GetFramebuffer(const u32& index)
+    VkFramebuffer GetFramebuffer(const uint32_t& index)
     {
         return framebuffers[index];
     }
@@ -212,7 +212,7 @@ public:
 private:
 
     // A static count of allowed images.
-    static u32 IMAGE_COUNT;
+    static uint32_t IMAGE_COUNT;
     Array<VkFramebuffer> framebuffers;
 };
 

@@ -91,22 +91,22 @@ private:
         uint32_t binding = 0;
         Hash::StringId id = 0;
         VkShaderStageFlags stage;
-        u64 offset = 0;
-        u64 size = 0;
+        uint64_t offset = 0;
+        uint64_t size = 0;
         size_t count = 0;
         DescriptorBinding descriptorBinding;
     };
 
-    Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
+    Material(Shader* vertexShader, Shader* fragmentShader, uint32_t shaderCount);
 
     Property& GetProperty(Hash::StringId id);
     void AddShader(Shader* shader);
-    void SetShaderProperties(Shader* shader, u64& offset);
+    void SetShaderProperties(Shader* shader, uint64_t& offset);
 
     void CreateLayout(VkDescriptorSetLayout* layouts = nullptr,
-                      u32 layoutCount = 0,
+                      uint32_t layoutCount = 0,
                       VkPushConstantRange* pushConstants = nullptr,
-                      u32 pushConstantCount = 0);
+                      uint32_t pushConstantCount = 0);
 
     struct
     {
@@ -115,7 +115,7 @@ private:
     } shaderSettings;
 
     size_t vertexCount = 0;
-    u32 shaderCount = 0;
+    uint32_t shaderCount = 0;
 
     Shader* vertexShader {nullptr};
     Shader* fragmentShader {nullptr};
@@ -123,10 +123,10 @@ private:
     StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
     Buffer::Buffer buffer;
-    u64 bufferSize = 0;
+    uint64_t bufferSize = 0;
 
     StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
-    StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
+    StackArray<uint32_t, MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
     StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
 

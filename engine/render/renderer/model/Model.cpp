@@ -105,8 +105,8 @@ void Model::LoadModelFromFile(const String& filePath)
               (warn + err).c_str())
 
     std::vector<Vertex> objVertices;
-    std::vector<u32> objIndices;
-    std::unordered_map<Vertex, u32> uniqueVertices {};
+    std::vector<uint32_t> objIndices;
+    std::unordered_map<Vertex, uint32_t> uniqueVertices {};
 
     for (const auto& shape : shapes)
     {
@@ -140,7 +140,7 @@ void Model::LoadModelFromFile(const String& filePath)
 
             if (uniqueVertices.count(vertex) == 0)
             {
-                uniqueVertices[vertex] = static_cast<u32>(objVertices.size());
+                uniqueVertices[vertex] = static_cast<uint32_t>(objVertices.size());
                 objVertices.push_back(vertex);
             }
             objIndices.push_back(uniqueVertices[vertex]);
@@ -149,9 +149,9 @@ void Model::LoadModelFromFile(const String& filePath)
 
     modelMesh.LoadVertices({sizeof(Vertex),
                             objVertices.data(),
-                            static_cast<u32>(objVertices.size()),
+                            static_cast<uint32_t>(objVertices.size()),
                             objIndices.data(),
-                            static_cast<u32>(objIndices.size())});
+                            static_cast<uint32_t>(objIndices.size())});
 }
 
 void Model::UpdateMesh(const Mesh::MeshData& meshData)
@@ -169,7 +169,7 @@ void Model::Bind(VkCommandBuffer commandBuffer)
     modelMesh.Bind(commandBuffer);
 }
 
-void Model::Draw(VkCommandBuffer commandBuffer, u32 instance)
+void Model::Draw(VkCommandBuffer commandBuffer, const uint32_t& instance)
 {
     if (modelMesh.HasIndexBuffer())
         vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, instance);

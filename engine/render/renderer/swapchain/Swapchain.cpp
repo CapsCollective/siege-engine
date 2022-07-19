@@ -37,7 +37,8 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    // TODO(Aryeh): Change the swapchain re-creation to work with destructors.
+    uint32_t imageCount = FrameImages::GetImageCount();
+
     swapchainImages.DestroyFrameImages();
 
     if (!isRecreated && swapChain != nullptr)
@@ -101,11 +102,13 @@ void SwapChain::CreateSwapChain()
 
     // Get our supported color format
     VkSurfaceFormatKHR surfaceFormat =
-        ChooseSwapSurfaceFormat(details.formats.Data(), static_cast<u32>(details.formats.Size()));
+        ChooseSwapSurfaceFormat(details.formats.Data(),
+                                static_cast<uint32_t>(details.formats.Size()));
 
     // Choose our presentation mode (the form of image buffering)
-    VkPresentModeKHR presentMode = ChoosePresentMode(details.presentModes.Data(),
-                                                     static_cast<u32>(details.presentModes.Size()));
+    VkPresentModeKHR presentMode =
+        ChoosePresentMode(details.presentModes.Data(),
+                          static_cast<uint32_t>(details.presentModes.Size()));
 
     // The size of our images.
     VkExtent2D extent = ChooseSwapExtent(details.capabilities);
@@ -113,7 +116,7 @@ void SwapChain::CreateSwapChain()
     std::cout << "Extent: " << extent.width << "x" << extent.height << std::endl;
 
     // Get the image count we can support
-    u32 imageCount = details.capabilities.minImageCount + 1;
+    uint32_t imageCount = details.capabilities.minImageCount + 1;
 
     // Make sure we aren't exceeding the GPU's image count maximums
     if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.maxImageCount)
@@ -136,7 +139,7 @@ void SwapChain::CreateSwapChain()
 
     // Get our image queue information for rendering
     QueueFamilyIndices::QueueFamilyIndices indices = device.FindPhysicalQueueFamilies();
-    u32 queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+    uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
     // Sometimes the graphics and presentation queues are the same. We want to check for this
     // eventuality.
@@ -243,7 +246,7 @@ void SwapChain::CreateFrameBuffers()
 // TODO(Aryeh): See if this logic can be encapsulated in an object/s
 void SwapChain::CreateSyncObjects()
 {
-    u32 imageCount = FrameImages::GetImageCount();
+    uint32_t imageCount = FrameImages::GetImageCount();
 
     if (imageAvailableSemaphores == nullptr)
         imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
@@ -281,27 +284,27 @@ void SwapChain::CreateSyncObjects()
     }
 }
 
-VkResult SwapChain::AcquireNextImage(u32* imageIndex)
+VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex)
 {
     // Wait for the image of the current frame to become available
     vkWaitForFences(device.Device(),
                     1,
                     &inFlightFences[currentFrame],
                     VK_TRUE,
-                    std::numeric_limits<u64>::max());
+                    std::numeric_limits<uint64_t>::max());
 
     // Once available, Add it to our available images semaphor for usage
     return vkAcquireNextImageKHR(device.Device(),
                                  swapChain,
-                                 std::numeric_limits<u64>::max(),
+                                 std::numeric_limits<uint64_t>::max(),
                                  imageAvailableSemaphores[currentFrame],
                                  VK_NULL_HANDLE,
                                  imageIndex);
 }
 
-VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex)
+VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
 {
-    u32 index = *imageIndex;
+    uint32_t index = *imageIndex;
 
     // If the image being asked for is being used, we wait for it to become available
     if (imagesInFlight[index] != VK_NULL_HANDLE)
@@ -414,7 +417,7 @@ VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
 VkExtent2D SwapChain::ChooseSwapExtent(VkSurfaceCapabilitiesKHR& capabilities)
 {
     // We want to make sure that the extents provided are within a reasonable range.
-    if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         return capabilities.currentExtent;
     else
     {

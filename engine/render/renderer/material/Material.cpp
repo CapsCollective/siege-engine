@@ -35,7 +35,7 @@ Material::Material(Shader* vertexShader, Shader* fragmentShader) :
                    Buffer::PadUniformBufferSize(fragmentShader->GetUniformSize()));
 }
 
-Material::Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount) :
+Material::Material(Shader* vertexShader, Shader* fragmentShader, uint32_t shaderCount) :
     shaderCount(shaderCount),
     vertexShader(vertexShader),
     fragmentShader(fragmentShader)
@@ -63,9 +63,9 @@ Material::~Material()
 }
 
 void Material::CreateLayout(VkDescriptorSetLayout* layouts,
-                            u32 layoutCount,
+                            uint32_t layoutCount,
                             VkPushConstantRange* pushConstants,
-                            u32 pushConstantCount)
+                            uint32_t pushConstantCount)
 {
     auto device = VulkanDevice::GetDeviceInstance();
 
@@ -182,7 +182,7 @@ void Material::CreateDescriptors()
         CC_ASSERT(Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
                   "Failed to create descriptor set!");
 
-        u64 offset = property.offset;
+        uint64_t offset = property.offset;
 
         bufferInfos[i] =
             Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
@@ -233,7 +233,7 @@ void Material::AddShader(Shader* shader)
     }
 }
 
-void Material::SetShaderProperties(Shader* shader, u64& offset)
+void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
 {
     auto uniforms = shader->GetUniforms();
 
@@ -353,7 +353,7 @@ void Material::BuildMaterial()
                          OUT buffer.buffer,
                          OUT buffer.bufferMemory);
 
-    u64 offset = 0;
+    uint64_t offset = 0;
 
     if (vertexShader)
     {

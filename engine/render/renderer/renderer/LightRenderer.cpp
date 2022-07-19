@@ -13,7 +13,8 @@ namespace Siege
 LightRenderer::LightRenderer() {}
 LightRenderer::~LightRenderer() {}
 
-void LightRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
+void LightRenderer::Initialise(const String& globalDataAttributeName,
+                               const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     lightDataId = INTERN_STR("lightUBO");
@@ -66,7 +67,7 @@ void LightRenderer::DrawPointLight(const glm::vec3& position,
 }
 
 void LightRenderer::Render(VkCommandBuffer& commandBuffer,
-                           const u64& globalDataSize,
+                           const uint64_t& globalDataSize,
                            const void* globalData)
 {
     if (pointLightVertices.Count() == 0) return;
@@ -76,9 +77,9 @@ void LightRenderer::Render(VkCommandBuffer& commandBuffer,
 
     lightModel.UpdateMesh({sizeof(glm::vec2),
                            pointLightVertices.Data(),
-                           static_cast<u32>(pointLightVertices.Count()),
+                           static_cast<uint32_t>(pointLightVertices.Count()),
                            pointLightIndices.Data(),
-                           static_cast<u32>(pointLightIndices.Count())});
+                           static_cast<uint32_t>(pointLightIndices.Count())});
 
     lightModel.Bind(commandBuffer);
     lightModel.Draw(commandBuffer, 0);

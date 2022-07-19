@@ -59,17 +59,17 @@ public:
         /**
          * @brief Specifies the maximum number of attachments that can be configured.
          */
-        static constexpr u32 MAX_ATTACHMENTS = 2;
+        static constexpr uint32_t MAX_ATTACHMENTS = 2;
 
         /**
          * @brief Specifies the maximum number of subpasses that can be configured.
          */
-        static constexpr u32 MAX_SUBPASSES = 1;
+        static constexpr uint32_t MAX_SUBPASSES = 1;
 
         /**
          * @brief Specifies the maximum number of subpass dependencies that can be configured.
          */
-        static constexpr u32 MAX_DEPENDENCIES = 1;
+        static constexpr uint32_t MAX_DEPENDENCIES = 1;
 
         /**
          * @brief Adds a render pass attachment to the Config class. The number of attachments
@@ -192,7 +192,7 @@ public:
                       VkOffset2D offset,
                       VkExtent2D extent,
                       VkClearValue* clearValues,
-                      u32 clearValueCount);
+                      uint32_t clearValueCount);
 
     /**
      * @brief Ends the RenderPass. Calling this will consolidate all the rendering data into the

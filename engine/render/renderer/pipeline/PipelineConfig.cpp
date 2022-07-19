@@ -10,17 +10,17 @@
 
 namespace Siege
 {
-VkVertexInputBindingDescription VertexDescription::CreateBinding(u32 binding,
-                                                                 u32 stride,
+VkVertexInputBindingDescription VertexDescription::CreateBinding(uint32_t binding,
+                                                                 uint32_t stride,
                                                                  VkVertexInputRate inputRate)
 {
     return {binding, stride, inputRate};
 }
 
-VkVertexInputAttributeDescription VertexDescription::CreateAttribute(u32 location,
-                                                                     u32 binding,
+VkVertexInputAttributeDescription VertexDescription::CreateAttribute(uint32_t location,
+                                                                     uint32_t binding,
                                                                      VkFormat format,
-                                                                     u32 offset)
+                                                                     uint32_t offset)
 {
     return {location, binding, format, offset};
 }
@@ -46,7 +46,7 @@ VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCoun
         vertexData.bindings[i] =
             CreateBinding(i, binding.stride, (VkVertexInputRate) binding.inputRate);
 
-        for (u32 j = 0; j < binding.attributeCount; j++)
+        for (uint32_t j = 0; j < binding.attributeCount; j++)
         {
             auto attribute = binding.attributes[j];
             size_t attributeIndex = j + processedAttributes;
@@ -60,11 +60,11 @@ VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCoun
     return vertexData;
 }
 
-VertexDescription::Binding VertexDescription::CreateBinding(u32 binding,
-                                                            u32 stride,
+VertexDescription::Binding VertexDescription::CreateBinding(uint32_t binding,
+                                                            uint32_t stride,
                                                             InputRate inputRate,
                                                             Attribute* attributes,
-                                                            u32 attibuteCount)
+                                                            uint32_t attibuteCount)
 {
     return {binding, stride, inputRate, attibuteCount, attributes};
 }
@@ -81,9 +81,9 @@ VkPipelineInputAssemblyStateCreateInfo PipelineConfig::InitInputAssemblyStateCre
 }
 
 VkPipelineViewportStateCreateInfo PipelineConfig::InitViewPortCreateInfo(
-    u32 viewportCount,
+    uint32_t viewportCount,
     const VkViewport* pViewports,
-    u32 scissorCount,
+    uint32_t scissorCount,
     const VkRect2D* pScissors,
     VkPipelineViewportStateCreateFlags flags,
     const void* pNext)
@@ -167,7 +167,7 @@ VkPipelineColorBlendAttachmentState PipelineConfig::InitColorBlendAttachment(
 VkPipelineColorBlendStateCreateInfo PipelineConfig::InitColorBlendCreateInfo(
     VkBool32 logicOpEnable,
     VkLogicOp logicOp,
-    u32 attachmentCount,
+    uint32_t attachmentCount,
     const VkPipelineColorBlendAttachmentState* pAttachments,
     float blendConstantR,
     float blendConstantG,
@@ -224,7 +224,7 @@ VkPipelineDepthStencilStateCreateInfo PipelineConfig::InitDepthStencilCreateInfo
 }
 
 VkPipelineDynamicStateCreateInfo PipelineConfig::InitDynamicStateCreateInfo(
-    u32 dynamicStateCount,
+    uint32_t dynamicStateCount,
     const VkDynamicState* pDynamicStates,
     VkPipelineDynamicStateCreateFlags flags,
     const void* pNext)
@@ -234,17 +234,17 @@ VkPipelineDynamicStateCreateInfo PipelineConfig::InitDynamicStateCreateInfo(
 }
 
 VkPushConstantRange PipelineConfig::CreatePushConstantRange(VkShaderStageFlags stageflags,
-                                                            u32 offset,
-                                                            u32 size)
+                                                            uint32_t offset,
+                                                            uint32_t size)
 {
     return {stageflags, offset, size};
 }
 
 VkPipelineLayoutCreateInfo PipelineConfig::CreatePipelineLayoutCreateInfo(
     VkDescriptorSetLayout* layouts,
-    u32 layoutCount,
+    uint32_t layoutCount,
     VkPushConstantRange* pushConstants,
-    u32 pushConstantCount)
+    uint32_t pushConstantCount)
 {
     auto sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
@@ -254,9 +254,9 @@ VkPipelineLayoutCreateInfo PipelineConfig::CreatePipelineLayoutCreateInfo(
 void PipelineConfig::CreatePipelineLayout(VkDevice device,
                                           VkPipelineLayout* pipelineLayout,
                                           VkDescriptorSetLayout* layouts,
-                                          u32 layoutCount,
+                                          uint32_t layoutCount,
                                           VkPushConstantRange* pushConstants,
-                                          u32 pushConstantCount)
+                                          uint32_t pushConstantCount)
 {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo =
         CreatePipelineLayoutCreateInfo(layouts, layoutCount, pushConstants, pushConstantCount);
@@ -282,7 +282,7 @@ void PipelineConfig::CreateDefaultPipelineStages(
     VkPipelineShaderStageCreateInfo* pShaderStageCreateInfos,
     PipelineStage* stages,
     VkShaderModule* modules,
-    u32 stageCount)
+    uint32_t stageCount)
 {
     for (size_t i = 0; i < stageCount; i++)
     {

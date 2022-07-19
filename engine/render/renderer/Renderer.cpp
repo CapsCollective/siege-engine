@@ -48,7 +48,7 @@ void Renderer::CreateCommandBuffers()
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandPool = device.GetCommandPool();
-    allocInfo.commandBufferCount = static_cast<u32>(commandBuffers.Size());
+    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.Size());
 
     CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) ==
                   VK_SUCCESS,
@@ -168,7 +168,7 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
               "Can't begin a render pass on a command buffer from another frame!");
 
-    u32 clearValueCount = 2;
+    uint32_t clearValueCount = 2;
     VkClearValue clearValues[clearValueCount];
     clearValues[0].color = clearValue;
     clearValues[1].depthStencil = {1.0f, 0};

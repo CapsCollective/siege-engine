@@ -21,7 +21,7 @@ public:
     LightRenderer();
     ~LightRenderer();
 
-    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
 
     void Destroy();
 
@@ -30,7 +30,9 @@ public:
                         const glm::vec4& colour,
                         const glm::vec4& ambientColor);
 
-    void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
+    void Render(VkCommandBuffer& commandBuffer,
+                const uint64_t& globalDataSize,
+                const void* globalData);
 
     void Flush();
 
@@ -58,7 +60,7 @@ private:
     Hash::StringId lightDataId;
 
     StackArray<glm::vec2, Mesh::MAX_VERTICES> pointLightVertices;
-    StackArray<u32, Mesh::MAX_INDICES> pointLightIndices;
+    StackArray<uint32_t, Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege
 

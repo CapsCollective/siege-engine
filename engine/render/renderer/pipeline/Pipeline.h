@@ -49,7 +49,7 @@ struct PipelineConfigInfo
 
     VkPipelineLayout pipelineLayout {nullptr}; // needs descriptor sets & push constants
     VkRenderPass renderPass {nullptr};
-    u32 subPass {0};
+    uint32_t subPass {0};
 
     VertexDescription::Data vertexData;
 };
@@ -65,7 +65,7 @@ public:
              const PipelineConfigInfo& configInfo);
 
     Pipeline(const PipelineConfig::ShaderConfig* shaders,
-             u32 shaderCount,
+             uint32_t shaderCount,
              const PipelineConfigInfo& configInfo);
 
     Pipeline();
@@ -100,7 +100,7 @@ public:
                           const PipelineConfigInfo& configInfo);
 
     void RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
-                          u32 shaderCount,
+                          uint32_t shaderCount,
                           const PipelineConfigInfo& configInfo);
 
     // TODO: document this
@@ -120,7 +120,7 @@ private:
     static Array<char> ReadFile(const String& filePath);
 
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
-                                u32 shaderCount,
+                                uint32_t shaderCount,
                                 const PipelineConfigInfo& configInfo);
 
     /**
