@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_CORE_H
 
 #include <utils/Hash.h>
+#include <utils/Logging.h>
 #include <volk/volk.h>
 
 #include <cstdint>
@@ -28,19 +29,6 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 typedef int32_t i32;
 typedef size_t size;
-
-#define EXIT_APP abort()
-#define REPORT_ASSERT_FAILURE(expr, file, line, message)                                        \
-    std::cout << "ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: " << line \
-              << "\n                        Message: " << message << std::endl
-
-#define CC_ASSERT(expr, msg)                                                \
-    expr || (REPORT_ASSERT_FAILURE(expr, __FILE__, __LINE__, msg) && []() { \
-        EXIT_APP;                                                           \
-        return true;                                                        \
-    }())
-
-#define OUT
 
 namespace Siege
 {

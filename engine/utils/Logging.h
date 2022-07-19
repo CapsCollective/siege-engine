@@ -41,6 +41,20 @@
 #define DEFINE_VARIANT_TYPE(type, transform) \
     VariantContainer(type) : data(transform) {}
 
+// Assert macros
+#define REPORT_ASSERT_FAILURE(expr, file, line, message)  \
+    CC_LOG_ERROR("ASSERTION FAILURE: {} IN FILE: {} ON LINE: {} WIH MESSAGE: {}", #expr, file, line, message)
+
+// Custom assert macro
+#define CC_ASSERT(expr, message)                                   \
+    if (expr)                                                      \
+    {}                                                             \
+    else                                                           \
+    {                                                              \
+        REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \
+        EXIT_APP                                                   \
+    }
+
 // Don't compile logging if unused
 #ifdef CC_LOG_LEVEL
 #ifndef CC_ENABLE_LOGGING
