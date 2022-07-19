@@ -8,6 +8,8 @@
 
 #include "Input.h"
 
+#include <glm/glm.hpp>
+
 Siege::Window* Input::windowPtr = nullptr;
 Input::MouseCoordinates Input::currentMouseCoordinates;
 

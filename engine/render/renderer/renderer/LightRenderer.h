@@ -41,14 +41,14 @@ private:
 
     struct PointLightVertex
     {
-        alignas(16) glm::vec2 position;
+        alignas(16) Vec2 position;
     };
 
     struct LightUBO
     {
-        glm::vec4 lightColor = glm::vec4(1.f, 1.f, 1.f, 0.2f);
-        alignas(16) glm::vec4 ambientLightColor = glm::vec4(1.f, 1.f, 1.f, .02f);
-        alignas(16) glm::vec3 position = glm::vec3(0.f);
+        Vec4 lightColor {1.f, 1.f, 1.f, 0.2f};
+        alignas(16) Vec4 ambientLightColor {1.f, 1.f, 1.f, .02f};
+        alignas(16) Vec3 position = {0.f};
         alignas(16) float radius = .05f;
     };
 
@@ -58,7 +58,7 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId lightDataId;
 
-    StackArray<glm::vec2, Mesh::MAX_VERTICES> pointLightVertices;
+    StackArray<Vec2, Mesh::MAX_VERTICES> pointLightVertices;
     StackArray<uint32_t, Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege

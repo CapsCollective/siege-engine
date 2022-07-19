@@ -12,8 +12,6 @@
 #include <utils/mat/Mat4.h>
 #include <utils/vec/Vec3.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "../renderer/Renderer.h"
 
 namespace Components

@@ -8,6 +8,8 @@
 
 #include "Math.h"
 
+#include <glm/glm.hpp>
+
 namespace Siege
 {
 Siege::Mat4 Math::CalculateTransform3D(const Siege::Vec3& position,

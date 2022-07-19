@@ -576,6 +576,27 @@ UTEST(test_String, FromLong)
     ASSERT_STREQ("90000000000000", Siege::String::FromLong(90000000000000l).Str());
 }
 
+UTEST(test_String, FromSizeT)
+{
+    // The string can be converted from size_t
+    ASSERT_STREQ("2", Siege::String::FromSizeT(2).Str());
+    ASSERT_STREQ("9", Siege::String::FromSizeT(9l).Str());
+}
+
+UTEST(test_String, FromU32)
+{
+    // The string can be converted from uint32_t
+    ASSERT_STREQ("2", Siege::String::FromU32(2).Str());
+    ASSERT_STREQ("9", Siege::String::FromU32(9).Str());
+}
+
+UTEST(test_String, FromU64)
+{
+    // The string can be converted from uint64_t
+    ASSERT_STREQ("2", Siege::String::FromU64(2).Str());
+    ASSERT_STREQ("9", Siege::String::FromU64(9).Str());
+}
+
 UTEST(test_String, OnHeap)
 {
     // The string should make use of small string allocation

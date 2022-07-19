@@ -8,6 +8,8 @@
 
 #include "Shape.h"
 
+#include <glm/glm.hpp>
+
 namespace Components
 {
 Siege::Mat4 Shape::CalculateTransform(Transform& transform)

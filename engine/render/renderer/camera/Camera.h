@@ -8,14 +8,10 @@
 
 #pragma once
 
-#include "../Core.h"
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <utils/mat/Mat4.h>
 #include <utils/vec/Vec3.h>
 
-#include <glm/glm.hpp>
+#include "../Core.h"
 
 namespace Siege
 {

@@ -10,13 +10,13 @@
 
 #include <utils/Hash.h>
 #include <utils/Logging.h>
+#include <utils/mat/Mat4.h>
 #include <volk/volk.h>
 
 #include <cstdint>
 
 #include "utils/Array.h"
 #include "utils/StackArray.h"
-#include <utils/mat/Mat4.h>
 
 namespace Siege
 {

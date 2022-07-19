@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <glm/gtx/hash.hpp>
 #include <vector>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)

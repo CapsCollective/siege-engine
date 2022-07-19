@@ -87,9 +87,9 @@ public:
     DEFINE_VARIANT_TYPE(const float& data, String::FromFloat(data));
     DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
     DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));
-    DEFINE_VARIANT_TYPE(const size_t& data, String::FromSizeT(data));
-    DEFINE_VARIANT_TYPE(const uint32_t& data, String::FromU32(data));
-    DEFINE_VARIANT_TYPE(const uint64_t& data, String::FromU64(data));
+    DEFINE_VARIANT_TYPE(const unsigned int& data, String::FromU32(data));
+    DEFINE_VARIANT_TYPE(const unsigned long& data, String::FromSizeT(data));
+    DEFINE_VARIANT_TYPE(const unsigned long long int& data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
     DEFINE_VARIANT_TYPE(const Siege::Vec2& data, "Vector2(" + data.ToString() + ")");
     DEFINE_VARIANT_TYPE(const Siege::Vec3& data, "Vector3(" + data.ToString() + ")");

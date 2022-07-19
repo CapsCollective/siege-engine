@@ -297,7 +297,7 @@ String String::FromU32(const uint32_t& value)
 
 String String::FromU64(const uint64_t& value)
 {
-    return GetFromFormat("%lu", value);
+    return GetFromFormat("%llu", value);
 }
 
 Hash::StringId String::WSID(const String& str)

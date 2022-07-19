@@ -12,12 +12,6 @@
 #include "../buffer/Buffer.h"
 #include "../pipeline/PipelineConfig.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <array>
-#include <glm/glm.hpp>
-
 namespace Siege
 {
 struct Vertex
