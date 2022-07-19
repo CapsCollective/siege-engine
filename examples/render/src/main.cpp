@@ -55,7 +55,7 @@ Siege::Vertex2D squareVerts[] = {
     {{-1.f, 1.f}, {1.f, 0.f, 0.f}}, // top left
 };
 
-u32 squareIndices[] = {0, 1, 3, 1, 2, 3};
+uint32_t squareIndices[] = {0, 1, 3, 1, 2, 3};
 
 Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
 

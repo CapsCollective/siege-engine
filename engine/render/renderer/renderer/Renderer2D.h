@@ -50,7 +50,7 @@ private:
     static StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
     static StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
-    static u64 transformSize;
+    static uint64_t transformSize;
 
     static Hash::StringId transformId;
     static Hash::StringId globalDataId;

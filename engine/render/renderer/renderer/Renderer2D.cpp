@@ -13,7 +13,7 @@ namespace Siege
 Hash::StringId Renderer2D::transformId;
 Hash::StringId Renderer2D::globalDataId;
 
-u64 Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
+uint64_t Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
 
 StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
 StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;

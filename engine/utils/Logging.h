@@ -43,8 +43,12 @@
     VariantContainer(type) : data(transform) {}
 
 // Assert macros
-#define REPORT_ASSERT_FAILURE(expr, file, line, message)  \
-    CC_LOG_ERROR("ASSERTION FAILURE: {} IN FILE: {} ON LINE: {} WIH MESSAGE: {}", #expr, file, line, message)
+#define REPORT_ASSERT_FAILURE(expr, file, line, message)                          \
+    CC_LOG_ERROR("ASSERTION FAILURE: {} IN FILE: {} ON LINE: {} WIH MESSAGE: {}", \
+                 #expr,                                                           \
+                 file,                                                            \
+                 line,                                                            \
+                 message)
 
 // Custom assert macro
 #define CC_ASSERT(expr, message)                                   \
@@ -120,7 +124,9 @@ static constexpr const char REPLACE_STRING[] = "{}";
  *                       the text with
  * @param size - the size of variantItems
  */
-static void VariantFormat(String& text, const VariantContainer* variantItems, const size_t& size)
+[[maybe_unused]] static void VariantFormat(String& text,
+                                           const VariantContainer* variantItems,
+                                           const size_t& size)
 {
     size_t cursor(0);
     for (size_t i(0); i < size; i++)

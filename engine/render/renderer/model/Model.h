@@ -63,7 +63,7 @@ public:
      *
      * @param commandBuffer The command buffer being used to draw the image
      */
-    void Draw(VkCommandBuffer commandBuffer, const u32& instance = 0);
+    void Draw(VkCommandBuffer commandBuffer, const uint32_t& instance = 0);
 
     Material* GetMaterial()
     {

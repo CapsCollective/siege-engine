@@ -21,14 +21,16 @@ public:
     BillboardRenderer();
     ~BillboardRenderer();
 
-    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
     void DrawBillboard(const Siege::Vec3& position,
                        const Siege::Vec2& scale,
                        const Siege::Vec4& colour);
 
-    void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
+    void Render(VkCommandBuffer& commandBuffer,
+                const uint64_t& globalDataSize,
+                const void* globalData);
 
     void Flush();
 
@@ -55,7 +57,7 @@ private:
     Hash::StringId positionsId;
 
     StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
-    StackArray<u32, Mesh::MAX_INDICES> indices;
+    StackArray<uint32_t, Mesh::MAX_INDICES> indices;
     StackArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege

@@ -103,7 +103,7 @@ private:
     VulkanDevice device;
     SwapChain swapChain;
 
-    u32 currentImageIndex;
+    uint32_t currentImageIndex;
     bool isFrameStarted {false};
     int currentFrameIndex {0};
 

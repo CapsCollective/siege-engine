@@ -85,7 +85,7 @@ void Renderer3D::DrawPointLight(const Siege::Vec3& position,
 void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& cameraData)
 {
     global3DData.cameraData = cameraData;
-    u64 globalDataSize = sizeof(global3DData);
+    uint64_t globalDataSize = sizeof(global3DData);
 
     modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
     lightRenderer.Render(commandBuffer, globalDataSize, &global3DData);

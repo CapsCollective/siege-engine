@@ -18,7 +18,7 @@ namespace Siege::Extensions
 bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
 {
     // Get an array of all available validation layers.
-    u32 layerCount;
+    uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(OUT & layerCount, nullptr);
 
     VkLayerProperties availableLayers[layerCount];

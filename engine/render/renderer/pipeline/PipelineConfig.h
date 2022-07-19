@@ -32,16 +32,16 @@ public:
 
     struct Attribute
     {
-        u32 offset = 0;
+        uint32_t offset = 0;
         AttributeType type;
     };
 
     struct Binding
     {
-        u32 binding;
-        u32 stride;
+        uint32_t binding;
+        uint32_t stride;
         InputRate inputRate;
-        u32 attributeCount;
+        uint32_t attributeCount;
         Attribute* attributes;
     };
 
@@ -53,20 +53,20 @@ public:
 
     static Data CreateDescriptions(size_t bindingCount, Binding* bindings);
 
-    static Binding CreateBinding(u32 binding,
-                                 u32 stride,
+    static Binding CreateBinding(uint32_t binding,
+                                 uint32_t stride,
                                  InputRate inputRate,
                                  Attribute* attributes,
-                                 u32 attibuteCount);
+                                 uint32_t attibuteCount);
 
-    static VkVertexInputBindingDescription CreateBinding(u32 binding,
-                                                         u32 stride,
+    static VkVertexInputBindingDescription CreateBinding(uint32_t binding,
+                                                         uint32_t stride,
                                                          VkVertexInputRate inputRate);
 
-    static VkVertexInputAttributeDescription CreateAttribute(u32 location,
-                                                             u32 binding,
+    static VkVertexInputAttributeDescription CreateAttribute(uint32_t location,
+                                                             uint32_t binding,
                                                              VkFormat format,
-                                                             u32 offset);
+                                                             uint32_t offset);
 };
 
 class PipelineConfig
@@ -109,9 +109,9 @@ public:
      * @returns a VkPipelineViewportStateCreateInfo struct with the inputted fields.
      **/
     static VkPipelineViewportStateCreateInfo InitViewPortCreateInfo(
-        u32 viewportCount,
+        uint32_t viewportCount,
         const VkViewport* pViewports,
-        u32 scissorCount,
+        uint32_t scissorCount,
         const VkRect2D* pScissors,
         VkPipelineViewportStateCreateFlags flags = 0,
         const void* pNext = nullptr);
@@ -216,7 +216,7 @@ public:
     static VkPipelineColorBlendStateCreateInfo InitColorBlendCreateInfo(
         VkBool32 logicOpEnable,
         VkLogicOp logicOp,
-        u32 attachmentCount,
+        uint32_t attachmentCount,
         const VkPipelineColorBlendAttachmentState* pAttachments,
         float blendConstantR = 0.0f,
         float blendConstantG = 0.0f,
@@ -239,27 +239,27 @@ public:
         const void* pNext = nullptr);
 
     static VkPipelineDynamicStateCreateInfo InitDynamicStateCreateInfo(
-        u32 dynamicStateCount,
+        uint32_t dynamicStateCount,
         const VkDynamicState* pDynamicStates,
         VkPipelineDynamicStateCreateFlags flags = 0,
         const void* pNext = nullptr);
 
     static VkPushConstantRange CreatePushConstantRange(VkShaderStageFlags stageflags,
-                                                       u32 offset,
-                                                       u32 size);
+                                                       uint32_t offset,
+                                                       uint32_t size);
 
     static VkPipelineLayoutCreateInfo CreatePipelineLayoutCreateInfo(
         VkDescriptorSetLayout* layouts,
-        u32 layoutCount,
+        uint32_t layoutCount,
         VkPushConstantRange* pushConstants,
-        u32 pushConstantCount);
+        uint32_t pushConstantCount);
 
     static void CreatePipelineLayout(VkDevice device,
                                      VkPipelineLayout* pipelineLayout,
                                      VkDescriptorSetLayout* layouts = nullptr,
-                                     u32 layoutCount = 0,
+                                     uint32_t layoutCount = 0,
                                      VkPushConstantRange* pushConstants = nullptr,
-                                     u32 pushConstantCount = 0);
+                                     uint32_t pushConstantCount = 0);
 
     static VkPipelineShaderStageCreateInfo CreateShaderStage(
         VkShaderStageFlagBits stage,
@@ -273,7 +273,7 @@ public:
         VkPipelineShaderStageCreateInfo* pShaderStageCreateInfos,
         PipelineStage* stages,
         VkShaderModule* modules,
-        u32 stageCount);
+        uint32_t stageCount);
 
 private:
 };

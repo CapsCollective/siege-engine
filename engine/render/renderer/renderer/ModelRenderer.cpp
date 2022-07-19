@@ -13,7 +13,8 @@ namespace Siege
 ModelRenderer::ModelRenderer() {}
 ModelRenderer::~ModelRenderer() {}
 
-void ModelRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
+void ModelRenderer::Initialise(const String& globalDataAttributeName,
+                               const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     transformId = INTERN_STR("objectBuffer");
@@ -34,7 +35,7 @@ void ModelRenderer::DrawModel(Model* model,
 }
 
 void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
-                           const u64& globalDataSize,
+                           const uint64_t& globalDataSize,
                            const void* globalData)
 {
     if (models.Count() == 0) return;

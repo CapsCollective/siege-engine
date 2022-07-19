@@ -101,7 +101,7 @@ void Mesh::CreateVertexBuffers(const void* vertices)
     Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, bufferSize);
 }
 
-void Mesh::CreateIndexBuffer(const u32* indices)
+void Mesh::CreateIndexBuffer(const uint32_t* indices)
 {
     VkDeviceSize bufferSize = indexSize * MAX_INDICES;
 
@@ -156,7 +156,7 @@ void Mesh::UpdateVertexBuffer(const void* vertices)
     Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, vertexSize * vertexCount);
 }
 
-void Mesh::UpdateIndexBuffer(u32* indices)
+void Mesh::UpdateIndexBuffer(uint32_t* indices)
 {
     if (indexCount == 0) return;
 
@@ -167,7 +167,7 @@ void Mesh::UpdateIndexBuffer(u32* indices)
         return;
     }
 
-    VkDeviceSize size = sizeof(u32) * indexCount;
+    VkDeviceSize size = sizeof(uint32_t) * indexCount;
 
     Buffer::CopyData(globalIndexStagingBuffer, size, indices);
     Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, size);

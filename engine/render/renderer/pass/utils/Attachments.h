@@ -36,7 +36,7 @@ public:
     {
     public:
 
-        static constexpr u32 MAX_COLOR_REFERENCES = 2;
+        static constexpr uint32_t MAX_COLOR_REFERENCES = 2;
 
         /**
          * @brief A default constructor for the SubPassBuilder.
@@ -117,7 +117,7 @@ public:
          * @param subpass the index of the subpass we depend on.
          * @return the current builder object.
          */
-        DependencyBuilder& WithSrcSubPass(u32 subpass);
+        DependencyBuilder& WithSrcSubPass(uint32_t subpass);
 
         /**
          * @brief Specifies the index of the current subpass. This will pick the appropriate subpass
@@ -125,7 +125,7 @@ public:
          * @param subpass the index of the current subpass.
          * @return the current builder object.
          */
-        DependencyBuilder& WithDstSubPass(u32 subpass);
+        DependencyBuilder& WithDstSubPass(uint32_t subpass);
 
         /**
          * @brief Specifies which rendering processes need to be complete before moving onto the
@@ -168,8 +168,8 @@ public:
 
     private:
 
-        u32 srcSubpass;
-        u32 dstSubpass;
+        uint32_t srcSubpass;
+        uint32_t dstSubpass;
         VkPipelineStageFlags srcStageMask;
         VkPipelineStageFlags dstStageMask;
         VkAccessFlags srcAccessMask;
@@ -247,7 +247,7 @@ public:
      * @param imageLayout The layout the attachment will be using during our subpass
      * @return A VkAttachmentReference struct
      */
-    static VkAttachmentReference CreateAttachmentReference(u32 attachment,
+    static VkAttachmentReference CreateAttachmentReference(uint32_t attachment,
                                                            VkImageLayout imageLayout);
 
     /**
@@ -256,7 +256,7 @@ public:
      * @param attachment the index of the attachment being referenced
      * @return a VkAttachmentReference struct configured for depth stencils
      */
-    static VkAttachmentReference CreateDepthStencilAttachmentReference(u32 attachment);
+    static VkAttachmentReference CreateDepthStencilAttachmentReference(uint32_t attachment);
 
     /**
      * @brief Creates an attachment reference specifically configured for rendering colors.
@@ -264,7 +264,7 @@ public:
      * @param attachment the index of the attachment being referenced
      * @return a VkAttachmentReference struct configured for colors
      */
-    static VkAttachmentReference CreateColorAttachmentReference(u32 attachment);
+    static VkAttachmentReference CreateColorAttachmentReference(uint32_t attachment);
 
     /**
      * @brief Creates a subpass for a binding with the configured attachments.
@@ -285,13 +285,13 @@ public:
      */
     static VkSubpassDescription CreateSubpass(
         VkPipelineBindPoint bindPoint,
-        u32 colorAttachmentCount = 0,
+        uint32_t colorAttachmentCount = 0,
         const VkAttachmentReference* colorAttachments = VK_NULL_HANDLE,
         const VkAttachmentReference* depthStencilAttachment = VK_NULL_HANDLE,
         const VkAttachmentReference* resolveAttachments = VK_NULL_HANDLE,
-        u32 preserveAttachmentCount = 0,
-        const u32* preserveAttachments = VK_NULL_HANDLE,
-        u32 inputAttachmentCount = 0,
+        uint32_t preserveAttachmentCount = 0,
+        const uint32_t* preserveAttachments = VK_NULL_HANDLE,
+        uint32_t inputAttachmentCount = 0,
         const VkAttachmentReference* inputAttachments = VK_NULL_HANDLE,
         VkSubpassDescriptionFlags flags = 0);
 
@@ -311,13 +311,13 @@ public:
      * @return A VkSubpassDescription description configured for graphics processes
      */
     static VkSubpassDescription CreateGraphicsSubpass(
-        u32 colorAttachmentCount = 0,
+        uint32_t colorAttachmentCount = 0,
         const VkAttachmentReference* colorAttachments = VK_NULL_HANDLE,
         const VkAttachmentReference* depthStencilAttachment = VK_NULL_HANDLE,
         const VkAttachmentReference* resolveAttachments = VK_NULL_HANDLE,
-        u32 preserveAttachmentCount = 0,
-        const u32* preserveAttachments = VK_NULL_HANDLE,
-        u32 inputAttachmentCount = 0,
+        uint32_t preserveAttachmentCount = 0,
+        const uint32_t* preserveAttachments = VK_NULL_HANDLE,
+        uint32_t inputAttachmentCount = 0,
         const VkAttachmentReference* inputAttachments = VK_NULL_HANDLE,
         VkSubpassDescriptionFlags flags = 0);
 
@@ -333,8 +333,8 @@ public:
      *
      * @return A VkSubpassDependency struct
      */
-    static VkSubpassDependency CreateDependency(u32 srcSubpass,
-                                                u32 dstSubpass,
+    static VkSubpassDependency CreateDependency(uint32_t srcSubpass,
+                                                uint32_t dstSubpass,
                                                 VkPipelineStageFlags srcStageMask,
                                                 VkPipelineStageFlags dstStageMask,
                                                 VkAccessFlags srcAccessMask,

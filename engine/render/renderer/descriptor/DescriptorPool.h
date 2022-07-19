@@ -17,7 +17,7 @@ class DescriptorPool
 {
 public:
 
-    static void AddPoolSize(const VkDescriptorType type, const u32 size);
+    static void AddPoolSize(const VkDescriptorType type, const uint32_t size);
     static VkDescriptorPool& GetDescriptorPool()
     {
         return descriptorPool;
