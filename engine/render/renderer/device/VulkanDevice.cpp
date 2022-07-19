@@ -109,7 +109,8 @@ void VulkanDevice::CreateInstance()
     {
         const char* rawLayers[VALIDATION_LAYERS_COUNT];
 
-        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++) rawLayers[i] = validationLayers[i].Str();
+        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++)
+            rawLayers[i] = validationLayers[i].Str();
 
         // Only add the ability to report on validation layers if the feature is enabled.
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -151,15 +152,13 @@ void VulkanDevice::PickPhysicalDevice()
 
     const char* rawExtensions[deviceExtensions.size()];
 
-    for (size_t i = 0; i < deviceExtensions.size(); i++) rawExtensions[i] = deviceExtensions[i].Str();
+    for (size_t i = 0; i < deviceExtensions.size(); i++)
+        rawExtensions[i] = deviceExtensions[i].Str();
 
     for (size_t i = 0; i < deviceCount; i++)
     {
         VkPhysicalDevice device = devices[i];
-        if (PhysicalDevice::IsSuitable(device,
-                                       surface,
-                                       rawExtensions,
-                                       deviceExtensions.size()))
+        if (PhysicalDevice::IsSuitable(device, surface, rawExtensions, deviceExtensions.size()))
         {
             physicalDevice = device;
             break;
@@ -209,7 +208,8 @@ void VulkanDevice::CreateLogicalDevice()
 
     const char* rawExtensions[deviceExtensions.size()];
 
-    for (size_t i = 0; i < deviceExtensions.size(); i++) rawExtensions[i] = deviceExtensions[i].Str();
+    for (size_t i = 0; i < deviceExtensions.size(); i++)
+        rawExtensions[i] = deviceExtensions[i].Str();
 
     createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = rawExtensions;
@@ -220,7 +220,8 @@ void VulkanDevice::CreateLogicalDevice()
     {
         const char* rawLayers[VALIDATION_LAYERS_COUNT];
 
-        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++) rawLayers[i] = validationLayers[i].Str();
+        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++)
+            rawLayers[i] = validationLayers[i].Str();
 
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = rawLayers;

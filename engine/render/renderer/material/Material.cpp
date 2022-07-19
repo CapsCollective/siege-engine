@@ -291,7 +291,7 @@ void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     Buffer::CopyData(buffer, dataSize, data);
 }
 
-void Material::SetUniformData(StringId id, VkDeviceSize dataSize, const void* data)
+void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data)
 {
     for (auto& property : propertiesArray)
     {
@@ -303,7 +303,7 @@ void Material::SetUniformData(StringId id, VkDeviceSize dataSize, const void* da
     }
 }
 
-bool Material::HasProperty(StringId id)
+bool Material::HasProperty(Hash::StringId id)
 {
     for (auto& property : propertiesArray)
     {
@@ -334,7 +334,7 @@ void Material::BuildMaterials(std::initializer_list<Material*> materials)
     for (auto material : materials) material->BuildMaterial();
 }
 
-Material::Property& Material::GetProperty(StringId id)
+Material::Property& Material::GetProperty(Hash::StringId id)
 {
     for (auto& property : propertiesArray)
     {

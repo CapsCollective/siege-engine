@@ -19,7 +19,7 @@ struct hash<Siege::Vertex>
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Siege::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
         return seed;
     };
 };
@@ -30,7 +30,7 @@ struct hash<Siege::Vec3>
     size_t operator()(const Siege::Vec3& vertex) const
     {
         size_t seed = 0;
-        Siege::HashCombine(seed, vertex.x, vertex.y, vertex.z);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z);
         return seed;
     };
 };
@@ -41,7 +41,7 @@ struct hash<Siege::Vec2>
     size_t operator()(const Siege::Vec2& vertex) const
     {
         size_t seed = 0;
-        Siege::HashCombine(seed, vertex.x, vertex.y);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y);
         return seed;
     };
 };
@@ -52,7 +52,7 @@ struct hash<Siege::Vec4>
     size_t operator()(const Siege::Vec4& vertex) const
     {
         size_t seed = 0;
-        Siege::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
         return seed;
     };
 };
@@ -63,7 +63,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Siege::HashCombine(seed, vertex.position, vertex.color);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.color);
         return seed;
     };
 };

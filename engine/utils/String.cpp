@@ -290,6 +290,11 @@ String String::FromSizeT(const size_t& value)
     return GetFromFormat("%lu", value);
 }
 
+Hash::StringId String::WSID(const String& str)
+{
+    return Hash::WSID(str.Str());
+}
+
 bool String::OnHeap() const
 {
     return onHeap;

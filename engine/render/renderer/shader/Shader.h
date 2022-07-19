@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include <utils/Hash.h>
+
 #include <map>
 
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "../pipeline/Pipeline.h"
-#include "../utils/Hash.h"
 
 namespace Siege
 {
@@ -40,7 +41,7 @@ public:
 
     struct Uniform
     {
-        StringId id;
+        Hash::StringId id;
         u32 binding = 0;
         u64 size = 0;
         size_t arraySize = 0;

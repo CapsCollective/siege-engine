@@ -53,8 +53,8 @@ private:
     Model lightModel;
     Material lightMaterial;
 
-    StringId globalDataId;
-    StringId lightDataId;
+    Hash::StringId globalDataId;
+    Hash::StringId lightDataId;
 
     StackArray<glm::vec2, Mesh::MAX_VERTICES> pointLightVertices;
     StackArray<u32, Mesh::MAX_INDICES> pointLightIndices;

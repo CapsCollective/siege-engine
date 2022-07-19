@@ -52,8 +52,8 @@ private:
 
     static u64 transformSize;
 
-    static StringId transformId;
-    static StringId globalDataId;
+    static Hash::StringId transformId;
+    static Hash::StringId globalDataId;
 
     static Material* currentMaterial;
     static Model* currentModel;

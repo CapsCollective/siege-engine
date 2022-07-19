@@ -1,14 +1,14 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-// This code is released under an unmodified zlib license.
-// For conditions of distribution and use, please see:
-//     https://opensource.org/licenses/Zlib
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
 //
 
 #include "Hash.h"
 
-namespace Siege
+namespace Siege::Hash
 {
 // Constexpr implementation and helpers
 uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc)
@@ -30,11 +30,4 @@ StringId WSID(const char* str)
 {
     return crc32((uint8_t*) str, strlen_c(str));
 }
-
-StringId WSID(const String& str)
-{
-    const char* rawStr = str.Str();
-    return crc32((uint8_t*) rawStr, strlen_c(rawStr));
-}
-
-} // namespace Siege
+} // namespace Siege::Hash

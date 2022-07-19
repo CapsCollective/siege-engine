@@ -8,13 +8,13 @@
 
 #pragma once
 
+#include <utils/Hash.h>
 #include <volk/volk.h>
 
 #include <cstdint>
 #include <iostream>
 
 #include "utils/Array.h"
-#include "utils/Hash.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -48,8 +48,6 @@ typedef size_t size;
     }
 
 #define OUT
-
-#define INTERN_STR(str) WSID(str)
 
 namespace Siege
 {

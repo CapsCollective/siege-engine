@@ -59,7 +59,7 @@ private:
     Material rectMaterial;
     Model rectModel;
 
-    StringId globalDataId;
+    Hash::StringId globalDataId;
 
     StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
     StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;

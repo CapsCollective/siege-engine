@@ -60,13 +60,13 @@ public:
     void BuildMaterial();
 
     void SetUniformData(VkDeviceSize dataSize, const void* data);
-    void SetUniformData(StringId id, VkDeviceSize dataSize, const void* data);
+    void SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data);
     void SetUniformData(const String& name, VkDeviceSize dataSize, const void* data);
 
     void SetVertexShader(Shader* shader);
     void SetFragmentShader(Shader* shader);
 
-    bool HasProperty(StringId id);
+    bool HasProperty(Hash::StringId id);
 
     void Bind(VkCommandBuffer commandBuffer);
     void CreatePipeline();
@@ -88,7 +88,7 @@ private:
     struct Property
     {
         uint32_t binding = 0;
-        StringId id = 0;
+        Hash::StringId id = 0;
         VkShaderStageFlags stage;
         u64 offset = 0;
         u64 size = 0;
@@ -98,7 +98,7 @@ private:
 
     Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
-    Property& GetProperty(StringId id);
+    Property& GetProperty(Hash::StringId id);
     void AddShader(Shader* shader);
     void SetShaderProperties(Shader* shader, u64& offset);
 

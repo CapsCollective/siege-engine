@@ -314,8 +314,8 @@ private:
     /**
      * An array storing all required validation layers (if enabled).
      **/
-    const std::array<const String, VALIDATION_LAYERS_COUNT> validationLayers =
-        {"VK_LAYER_KHRONOS_validation"};
+    const std::array<const String, VALIDATION_LAYERS_COUNT> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"};
 
     /**
      * An array storing all required extensions. All of these must be present for the renderer to

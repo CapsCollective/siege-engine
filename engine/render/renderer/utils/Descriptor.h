@@ -12,6 +12,8 @@
 
 #include <cstdint>
 
+// TODO: Move this to a separate area - maybe a vulkan-API specific directory.
+
 namespace Siege
 {
 // TODO document this

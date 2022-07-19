@@ -40,8 +40,8 @@ private:
     // TODO(Aryeh): Make this configurable via macros
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    StringId globalDataId;
-    StringId transformId;
+    Hash::StringId globalDataId;
+    Hash::StringId transformId;
 
     StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
     StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;

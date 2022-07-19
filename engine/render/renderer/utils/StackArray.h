@@ -8,14 +8,17 @@
 
 #pragma once
 
+#include <utils/String.h>
+
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <memory>
-#include <utils/String.h>
 
 #include "Array.h"
+
+// TODO(Aryeh): Move this to Utils.
 
 namespace Siege
 {
@@ -80,12 +83,10 @@ public:
 
     void Append(T value)
     {
-        assert(count < S && (String("Too many elements added to array. Max is ")
-                             + String::FromSizeT(S)).Str());
+        assert(count < S &&
+               (String("Too many elements added to array. Max is ") + String::FromSizeT(S)).Str());
         Activate(count);
         Set(count - 1, value);
-
-
     }
 
     void Remove(size_t index)

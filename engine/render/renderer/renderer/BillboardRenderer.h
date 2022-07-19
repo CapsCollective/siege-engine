@@ -51,8 +51,8 @@ private:
     Material billboardMaterial;
     Model billboardModel;
 
-    StringId globalDataId;
-    StringId positionsId;
+    Hash::StringId globalDataId;
+    Hash::StringId positionsId;
 
     StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
     StackArray<u32, Mesh::MAX_INDICES> indices;

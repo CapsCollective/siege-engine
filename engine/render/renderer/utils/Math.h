@@ -16,6 +16,8 @@
 
 #include <glm/glm.hpp>
 
+// TODO(Aryeh): Move this to utils.
+
 namespace Siege
 {
 class Math

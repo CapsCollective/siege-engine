@@ -10,8 +10,8 @@
 
 namespace Siege
 {
-StringId Renderer2D::transformId;
-StringId Renderer2D::globalDataId;
+Hash::StringId Renderer2D::transformId;
+Hash::StringId Renderer2D::globalDataId;
 
 u64 Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
 
