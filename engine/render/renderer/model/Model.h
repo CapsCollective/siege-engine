@@ -8,14 +8,17 @@
 
 #pragma once
 
+#include <utils/Hash.h>
+
 #include "../buffer/Buffer.h"
 #include "../material/Material.h"
 #include "../mesh/Mesh.h"
-#include "../utils/Hash.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <utils/mat/Mat4.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 #include <unordered_map>
@@ -32,18 +35,18 @@ public:
 
     struct Transform
     {
-        glm::mat4 transform;
-        glm::mat4 normalMatrix;
+        Siege::Mat4 transform;
+        Siege::Mat4 normalMatrix;
     };
 
     // Placeholder - in case we need to add more unique 2D data
     struct Transform2D
     {
-        glm::mat4 transform;
+        Siege::Mat4 transform;
     };
 
     Model(const Mesh::MeshData& meshData);
-    Model(const char* filePath);
+    Model(const String& filePath);
     Model();
     ~Model();
 
@@ -60,7 +63,7 @@ public:
      *
      * @param commandBuffer The command buffer being used to draw the image
      */
-    void Draw(VkCommandBuffer commandBuffer, u32 instance = 0);
+    void Draw(VkCommandBuffer commandBuffer, const u32& instance = 0);
 
     Material* GetMaterial()
     {
@@ -80,7 +83,7 @@ public:
 
 private:
 
-    void LoadModelFromFile(const char* filePath);
+    void LoadModelFromFile(const String& filePath);
 
     Mesh modelMesh;
     Material* material {nullptr};

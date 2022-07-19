@@ -13,6 +13,8 @@
 #include <ostream>
 #include <stdexcept>
 
+namespace Siege
+{
 static inline char* Allocate(size_t len)
 {
     return static_cast<char*>(malloc(len + 1));
@@ -281,6 +283,16 @@ String String::FromDouble(const double& value)
 String String::FromLong(const long& value)
 {
     return GetFromFormat("%ld", value);
+}
+
+String String::FromSizeT(const size_t& value)
+{
+    return GetFromFormat("%lu", value);
+}
+
+Hash::StringId String::WSID(const String& str)
+{
+    return Hash::WSID(str.Str());
 }
 
 bool String::OnHeap() const
@@ -659,3 +671,4 @@ std::ostream& operator<<(std::ostream& os, const String& string)
 {
     return os.write(string.Str(), (long) string.Size());
 }
+} // namespace Siege

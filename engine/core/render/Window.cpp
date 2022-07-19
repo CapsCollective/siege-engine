@@ -13,6 +13,8 @@
 
 #include "../TransitionAdapter.h"
 
+namespace Siege
+{
 static String windowTitle;
 static int windowWidth;
 static int windowHeight;
@@ -84,3 +86,4 @@ float Window::GetDeltaTime()
 {
     return deltaTime;
 }
+} // namespace Siege

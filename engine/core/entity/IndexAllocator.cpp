@@ -8,6 +8,8 @@
 
 #include "IndexAllocator.h"
 
+namespace Siege
+{
 bool GenerationalIndex::operator==(GenerationalIndex& rhs) const
 {
     return this->index == rhs.index && this->generation == rhs.generation;
@@ -64,3 +66,4 @@ void IndexAllocator::Reset()
     entries.clear();
     freeEntries.clear();
 }
+} // namespace Siege

@@ -20,7 +20,7 @@ float Lerp(float origin, float destination, float time)
     return origin * (1.0f - time) + destination * time;
 }
 
-glm::vec3 Lerp(glm::vec3 origin, glm::vec3 destination, float time)
+Siege::Vec3 Lerp(Siege::Vec3 origin, Siege::Vec3 destination, float time)
 {
     return {Lerp(origin.x, destination.x, time),
             Lerp(origin.y, destination.y, time),

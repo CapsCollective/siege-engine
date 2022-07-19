@@ -11,6 +11,8 @@
 
 #include <utils/String.h>
 
+namespace Siege
+{
 class SceneSystem
 {
 public:
@@ -68,5 +70,6 @@ private:
      */
     String nextScene;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_SCENESYSTEM_H

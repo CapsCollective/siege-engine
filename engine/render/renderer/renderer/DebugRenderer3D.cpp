@@ -14,7 +14,7 @@ DebugRenderer3D::DebugRenderer3D() {}
 
 DebugRenderer3D::~DebugRenderer3D() {}
 
-void DebugRenderer3D::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void DebugRenderer3D::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
 
@@ -59,17 +59,17 @@ void DebugRenderer3D::RecreateMaterials()
 }
 
 // Wire primitives
-void DebugRenderer3D::DrawLine(const glm::vec3& origin,
-                               const glm::vec3& destination,
-                               const glm::vec3& colour)
+void DebugRenderer3D::DrawLine(const Siege::Vec3& origin,
+                               const Siege::Vec3& destination,
+                               const Siege::Vec4& colour)
 {
     lines.Append({origin, colour});
     lines.Append({destination, colour});
 }
 
-void DebugRenderer3D::DrawCube(const glm::vec3& position,
-                               const glm::vec3& rotation,
-                               const glm::vec3& scale)
+void DebugRenderer3D::DrawCube(const Siege::Vec3& position,
+                               const Siege::Vec3& rotation,
+                               const Siege::Vec3& scale)
 {}
 
 void DebugRenderer3D::Flush()

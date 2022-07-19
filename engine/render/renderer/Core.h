@@ -8,18 +8,20 @@
 
 #pragma once
 
+#include <utils/Hash.h>
 #include <volk/volk.h>
 
 #include <cstdint>
 #include <iostream>
 
 #include "utils/Array.h"
-#include "utils/Hash.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <utils/mat/Mat4.h>
+
 #include <glm/glm.hpp>
 
 // Custom type declarations
@@ -47,13 +49,11 @@ typedef size_t size;
 
 #define OUT
 
-#define INTERN_STR(str) Utils::WSID(str)
-
 namespace Siege
 {
 struct CameraData
 {
-    glm::mat4 projectionMatrix;
-    glm::mat4 viewMatrix;
+    Siege::Mat4 projectionMatrix;
+    Siege::Mat4 viewMatrix;
 };
 } // namespace Siege

@@ -13,7 +13,11 @@
 #include <utility>
 #include <vector>
 
+#include "Hash.h"
 #include "Macros.h"
+
+namespace Siege
+{
 
 /**
  * The String class provides an alternative to standard strings, bundling in greater manipulation
@@ -242,6 +246,18 @@ public:
      * @param value - the long value to convert
      */
     static String FromLong(const long& value);
+
+    /**
+     * Conversion method for size_t values
+     * @param value - the size_t value to convert
+     */
+    static String FromSizeT(const size_t& value);
+
+    /**
+     * Returns a hash for a given string.
+     * @param str - the string to get a hash for.
+     */
+    static Hash::StringId WSID(const String& str);
 
     // State methods
 
@@ -610,5 +626,19 @@ String operator+(const char& lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
+} // namespace Siege
+
+// Define a hash function for the string so that it can be stored in a map or ordered set
+// TODO(Aryeh): Maybe replace this with a custom implementation when the time comes.
+template<>
+struct std::hash<Siege::String>
+{
+    size_t operator()(const Siege::String& str) const
+    {
+        size_t seed = 0;
+        Siege::Hash::HashCombine(seed, str.At(0), str.At(str.Size()), str.Size(), str.Capacity());
+        return seed;
+    };
+};
 
 #endif // SIEGE_ENGINE_STRING_H
