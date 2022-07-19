@@ -35,7 +35,7 @@ Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(devic
 
 Renderer::~Renderer()
 {
-    std::cout << "Destroying renderer" << std::endl;
+    CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
 }

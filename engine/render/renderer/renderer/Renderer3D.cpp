@@ -8,8 +8,6 @@
 
 #include "Renderer3D.h"
 
-#include <iostream>
-
 namespace Siege
 {
 // static initialisation

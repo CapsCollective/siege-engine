@@ -158,8 +158,6 @@ void Material::CreateDescriptors()
     VkWriteDescriptorSet writeDescriptorSets[propertiesCount];
     VkDescriptorBufferInfo bufferInfos[propertiesCount];
 
-    std::cout << "Allocating descriptor set storage of " << propertiesCount << std::endl;
-
     for (size_t i = 0; i < propertiesCount; i++)
     {
         auto& property = propertiesArray.Get(i);
@@ -174,9 +172,6 @@ void Material::CreateDescriptors()
                      property.stage == VK_SHADER_STAGE_FRAGMENT_BIT ? "fragment" :
                                                                       "unknown";
 
-        std::cout << "Creating a layout binding for binding " << property.binding
-                  << " at stage: " << stage << std::endl;
-
         // Create all layouts
 
         CC_ASSERT(Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
@@ -187,9 +182,6 @@ void Material::CreateDescriptors()
         bufferInfos[i] =
             Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
 
-        std::cout << "Property Size: " << property.size * property.count << std::endl;
-
-        std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
         Descriptor::AllocateSets(device->Device(),
                                  &binding.descriptorSet,
                                  descriptorPool,
@@ -203,11 +195,19 @@ void Material::CreateDescriptors()
                                                             1,
                                                             (VkDescriptorType) binding.type,
                                                             bufferInfos[i]);
+
+        CC_LOG_INFO("Property[{}/{}] - Created a property for pipeline stage [{}] with a size of "
+                    "[{} bytes] for binding [{}]",
+                    static_cast<uint64_t>(i + 1),
+                    static_cast<uint64_t>(propertiesCount),
+                    stage,
+                    property.size * property.count,
+                    property.binding)
     }
 
-    std::cout << "Successfully created all required layouts!" << std::endl;
-
-    std::cout << "Total descriptor sets: " << descriptorSets.Count() << std::endl;
+    CC_LOG_INFO("Successfully created {}/{} descriptor sets",
+                static_cast<uint64_t>(descriptorSets.Count()),
+                static_cast<uint64_t>(propertiesCount))
 
     Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
 }
@@ -241,7 +241,6 @@ void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
     {
         if (HasProperty(uniform.id))
         {
-            std::cout << "Property already exists!" << std::endl;
             auto& property = GetProperty(uniform.id);
             property.stage = property.stage | (VkShaderStageFlags) shader->GetStage();
             continue;
@@ -259,10 +258,11 @@ void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
                                       (Shader::DescriptorType) uniform.type};
         propertiesArray.Append(property);
 
-        std::cout << "Added new uniform to binding: " << uniform.binding << std::endl;
-
-        std::cout << "Added new property of size: " << uniform.size
-                  << " with buffer offset: " << offset << std::endl;
+        CC_LOG_INFO(
+            "Binding[{}] - Added new uniform with size [{} bytes] and an offset of [{} bytes]",
+            uniform.binding,
+            uniform.size,
+            offset)
 
         offset += (uniform.size * uniform.arraySize) * uniform.dynamicCount;
     }
@@ -367,12 +367,12 @@ void Material::BuildMaterial()
         SetShaderProperties(fragmentShader, OUT offset);
     }
 
-    std::cout << "Total properties: " << propertiesArray.Count() << std::endl;
-
     CreateDescriptors();
 
     CreatePipeline();
 
-    std::cout << "Built material with size: " << bufferSize << std::endl;
+    CC_LOG_INFO("Build Material with {} properties and a total size of [{} bytes]",
+                static_cast<uint64_t>(propertiesArray.Count()),
+                bufferSize)
 }
 } // namespace Siege

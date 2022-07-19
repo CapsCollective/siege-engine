@@ -43,7 +43,7 @@ void SwapChain::ClearSwapChain(bool isRecreated)
 
     if (!isRecreated && swapChain != nullptr)
     {
-        std::cout << "Clearing Swapchain" << std::endl;
+        CC_LOG_INFO("Clearing Swapchain")
         vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
         swapChain = nullptr;
     }
@@ -79,7 +79,7 @@ void SwapChain::ClearMemory()
 
 void SwapChain::RecreateSwapchain()
 {
-    std::cout << "Re-creating Swapchain" << std::endl;
+    CC_LOG_INFO("Re-creating Swapchain")
     // Destroy all Vulkan structs
     ClearSwapChain(true);
 
@@ -123,7 +123,7 @@ void SwapChain::CreateSwapChain()
     // The size of our images.
     VkExtent2D extent = ChooseSwapExtent(details.capabilities);
 
-    std::cout << "Extent: " << extent.width << "x" << extent.height << std::endl;
+    CC_LOG_INFO("Swapchain created with image extents: [{}x{}]", extent.width, extent.height)
 
     // Get the image count we can support
     uint32_t imageCount = details.capabilities.minImageCount + 1;
@@ -133,7 +133,8 @@ void SwapChain::CreateSwapChain()
     {
         imageCount = details.capabilities.maxImageCount;
     }
-    std::cout << "FrameImages Count: " << imageCount << std::endl;
+
+    CC_LOG_INFO("Images supported by swapchain: {}", imageCount)
 
     // Now we populate the base swapchain creation struct
     VkSwapchainCreateInfoKHR createInfo {};
@@ -437,13 +438,13 @@ VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
         // balance between performance and image quality
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
         {
-            std::cout << "Present Mode: Mailbox" << std::endl;
+            CC_LOG_INFO("Present Mode: Mailbox")
             return availablePresentMode;
         }
     }
 
     // If triple buffering is not available then use v-sync
-    std::cout << "Present Mode: V-Sync" << std::endl;
+    CC_LOG_INFO("Present Mode: V-Sync")
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 

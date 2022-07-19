@@ -13,7 +13,6 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
-#include <iostream>
 #include <memory>
 
 #include "Array.h"

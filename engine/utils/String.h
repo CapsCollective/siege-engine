@@ -254,6 +254,18 @@ public:
     static String FromSizeT(const size_t& value);
 
     /**
+     * Conversion method for 32-bit unsigned integer values
+     * @param value - the uint32_t value to convert
+     */
+    static String FromU32(const uint32_t& value);
+
+    /**
+     * Conversion method for 64-bit unsigned integer values
+     * @param value - the uint64_t value to convert
+     */
+    static String FromU64(const uint64_t& value);
+
+    /**
      * Returns a hash for a given string.
      * @param str - the string to get a hash for.
      */

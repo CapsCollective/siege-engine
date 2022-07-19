@@ -290,6 +290,16 @@ String String::FromSizeT(const size_t& value)
     return GetFromFormat("%lu", value);
 }
 
+String String::FromU32(const uint32_t& value)
+{
+    return GetFromFormat("%lu", value);
+}
+
+String String::FromU64(const uint64_t& value)
+{
+    return GetFromFormat("%lu", value);
+}
+
 Hash::StringId String::WSID(const String& str)
 {
     return Hash::WSID(str.Str());
