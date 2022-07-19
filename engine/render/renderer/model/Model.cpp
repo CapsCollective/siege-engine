@@ -98,7 +98,8 @@ void Model::LoadModelFromFile(const String& filePath)
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath), warn + err)
+    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
+              (warn + err).c_str())
 
     std::vector<Vertex> objVertices;
     std::vector<u32> objIndices;

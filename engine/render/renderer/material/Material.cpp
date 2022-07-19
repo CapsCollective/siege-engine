@@ -341,7 +341,7 @@ Material::Property& Material::GetProperty(Hash::StringId id)
         if (id == property.id) return property;
     }
 
-    CC_ASSERT(false, "No property with ID: " << id << " exists!");
+    CC_ASSERT(false, String("No property with ID: %lu exists!").Formatted(id));
 }
 
 void Material::BuildMaterial()
