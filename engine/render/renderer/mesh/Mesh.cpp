@@ -167,8 +167,6 @@ void Mesh::UpdateIndexBuffer(uint32_t* indices)
         return;
     }
 
-    VkDeviceSize size = sizeof(uint32_t) * indexCount;
-
     Buffer::CopyData(globalIndexStagingBuffer, indexSize, indices);
     Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, indexSize);
 }

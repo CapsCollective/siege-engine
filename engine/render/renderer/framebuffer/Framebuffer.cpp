@@ -78,7 +78,8 @@ Framebuffer::Config& Framebuffer::Config::WithRenderPass(VkRenderPass targetRend
     return *this;
 }
 
-Framebuffer::Config& Framebuffer::Config::WithImageDimensions(uint32_t targetWidth, uint32_t targetHeight)
+Framebuffer::Config& Framebuffer::Config::WithImageDimensions(uint32_t targetWidth,
+                                                              uint32_t targetHeight)
 {
     width = targetWidth;
     height = targetHeight;

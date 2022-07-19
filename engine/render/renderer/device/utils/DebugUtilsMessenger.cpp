@@ -17,7 +17,39 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
               void* pUserData)
 {
-    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    String type;
+
+    if ((messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) ==
+        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
+    {
+        type = "[VALIDATION]";
+    }
+    else if ((messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) ==
+             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
+    {
+        type = "[PERFORMANCE]";
+    }
+    else
+    {
+        type = "[GENERAL]";
+    }
+
+    String message = String(type) + String(" ") + String(pCallbackData->pMessage);
+
+    if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) ==
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+    {
+        CC_LOG_WARNING("{}", message.Str())
+    }
+    else if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) ==
+             VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+    {
+        CC_LOG_ERROR("{}", message.Str())
+    }
+    else
+    {
+        CC_LOG_INFO("{}", message.Str())
+    }
 
     return VK_FALSE;
 }
