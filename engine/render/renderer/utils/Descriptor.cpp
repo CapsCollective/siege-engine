@@ -8,8 +8,6 @@
 
 #include "Descriptor.h"
 
-#include <iostream>
-
 namespace Siege
 {
 VkDescriptorSetLayoutBinding Descriptor::CreateLayoutBinding(uint32_t binding,

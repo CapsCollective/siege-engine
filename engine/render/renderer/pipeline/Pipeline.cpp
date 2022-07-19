@@ -9,7 +9,6 @@
 #include "Pipeline.h"
 
 #include <fstream>
-#include <iostream>
 
 namespace Siege
 {

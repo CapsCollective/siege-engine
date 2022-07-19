@@ -36,7 +36,7 @@ Shader& Shader::WithUniform(uint32_t binding, const String& name, uint64_t size,
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size, arraySize);
 
-    std::cout << "Added uniform " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added uniform [{}] for binding [{}]", filePath, name, binding)
 
     return *this;
 }
@@ -54,7 +54,10 @@ Shader& Shader::WithDynamicUniform(uint32_t binding,
                    arraySize,
                    count);
 
-    std::cout << "Added dynamic uniform " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added dynamic uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
@@ -63,7 +66,10 @@ Shader& Shader::WithStorage(uint32_t binding, const String& name, uint64_t size,
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size, arraySize);
 
-    std::cout << "Added storage " << name << "for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added storage uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
@@ -81,7 +87,10 @@ Shader& Shader::WithDynamicStorage(uint32_t binding,
                    arraySize,
                    count);
 
-    std::cout << "Added dynamic storage " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added dynamic storage uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
@@ -94,8 +103,11 @@ Shader& Shader::WithVertexType(uint32_t size)
     auto& binding = vertexBindings.Get(index);
     binding.vertexStride = size;
 
-    std::cout << "Added new vertex type of size " << size << std::endl;
-    std::cout << "There are now " << vertexBindings.Count() << " bindings" << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
+                filePath,
+                vertexBindings.Count(),
+                MAX_UNIFORMS,
+                size)
 
     return *this;
 }
@@ -111,8 +123,11 @@ Shader& Shader::WithVertexAttribute(uint32_t offset, VertexDescription::Attribut
 
     attributes.Append({offset, type});
 
-    std::cout << "Added new vertex attribute for binding " << index << std::endl;
-    std::cout << "Binding now has " << binding.attributes.Count() << " attributes" << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Vertex attribute [{}/{}] added for binding [{}]",
+                filePath,
+                binding.attributes.Count(),
+                binding.MAX_VERTEX_ATTRIBUTES,
+                index)
 
     return *this;
 }

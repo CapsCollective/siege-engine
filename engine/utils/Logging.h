@@ -86,6 +86,8 @@ public:
     DEFINE_VARIANT_TYPE(const float& data, String::FromFloat(data));
     DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
     DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));
+    DEFINE_VARIANT_TYPE(const uint32_t& data, String::FromU32(data));
+    DEFINE_VARIANT_TYPE(const uint64_t& data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
     DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
 

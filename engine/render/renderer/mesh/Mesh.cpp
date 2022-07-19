@@ -31,7 +31,7 @@ Mesh::Mesh(const MeshData& meshData)
 Mesh::~Mesh()
 {
     if (isFreed) return;
-    std::cout << "Destroying Mesh" << std::endl;
+    CC_LOG_INFO("Destroying Mesh")
     DestroyMesh();
 }
 

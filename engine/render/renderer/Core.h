@@ -14,7 +14,6 @@
 #include <volk/volk.h>
 
 #include <cstdint>
-#include <iostream>
 
 #include "utils/Array.h"
 #include "utils/StackArray.h"
