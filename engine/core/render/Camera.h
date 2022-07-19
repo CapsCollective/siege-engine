@@ -11,6 +11,8 @@
 
 #include <utils/Maths.h>
 
+namespace Siege
+{
 class Cam
 {
 public:
@@ -33,5 +35,6 @@ public:
 
 private:
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_CAMERA_H

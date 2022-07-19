@@ -30,16 +30,35 @@
 #define _CC_LOG_VRNT_ARR CONCAT_SYMBOL(_vrnt_arr_, __LINE__)
 #define _CC_LOG_VRNT_ARR_SZE CONCAT_SYMBOL(_vrnt_arr_sze_, __LINE__)
 #define _CC_LOG_FMT_STR CONCAT_SYMBOL(_fmt_str_, __LINE__)
-#define _CC_LOG(log_level, colour, message, ...)                                              \
-    {                                                                                         \
-        Logging::VariantContainer _CC_LOG_VRNT_ARR[] {__VA_ARGS__};                           \
-        static size_t _CC_LOG_VRNT_ARR_SZE(sizeof(_CC_LOG_VRNT_ARR) / Logging::VARIANT_SIZE); \
-        String _CC_LOG_FMT_STR(_CC_LOG_MSG_FMT(log_level, colour, message));                  \
-        Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE);      \
-        std::cout << _CC_LOG_FMT_STR << std::endl;                                            \
+#define _CC_LOG(log_level, colour, message, ...)                                                \
+    {                                                                                           \
+        Siege::Logging::VariantContainer _CC_LOG_VRNT_ARR[] {__VA_ARGS__};                      \
+        static size_t _CC_LOG_VRNT_ARR_SZE(sizeof(_CC_LOG_VRNT_ARR) /                           \
+                                           Siege::Logging::VARIANT_SIZE);                       \
+        Siege::String _CC_LOG_FMT_STR(_CC_LOG_MSG_FMT(log_level, colour, message));             \
+        Siege::Logging::VariantFormat(_CC_LOG_FMT_STR, _CC_LOG_VRNT_ARR, _CC_LOG_VRNT_ARR_SZE); \
+        std::cout << _CC_LOG_FMT_STR << std::endl;                                              \
     }
 #define DEFINE_VARIANT_TYPE(type, transform) \
     VariantContainer(type) : data(transform) {}
+
+// Assert macros
+#define REPORT_ASSERT_FAILURE(expr, file, line, message)                          \
+    CC_LOG_ERROR("ASSERTION FAILURE: {} IN FILE: {} ON LINE: {} WIH MESSAGE: {}", \
+                 #expr,                                                           \
+                 file,                                                            \
+                 line,                                                            \
+                 message)
+
+// Custom assert macro
+#define CC_ASSERT(expr, message)                                   \
+    if (expr)                                                      \
+    {}                                                             \
+    else                                                           \
+    {                                                              \
+        REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \
+        EXIT_APP                                                   \
+    }
 
 // Don't compile logging if unused
 #ifdef CC_LOG_LEVEL
@@ -49,7 +68,7 @@
 #endif
 
 #ifdef CC_ENABLE_LOGGING
-namespace Logging
+namespace Siege::Logging
 {
 
 /**
@@ -68,8 +87,13 @@ public:
     DEFINE_VARIANT_TYPE(const float& data, String::FromFloat(data));
     DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
     DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));
+    DEFINE_VARIANT_TYPE(const unsigned int& data, String::FromU32(data));
+    DEFINE_VARIANT_TYPE(const unsigned long& data, String::FromSizeT(data));
+    DEFINE_VARIANT_TYPE(const unsigned long long int& data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec2& data, "Vector2(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec3& data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Siege::Vec4& data, "Vector4(" + data.ToString() + ")");
 
     /**
      * Returns the data held by the variant container
@@ -103,7 +127,9 @@ static constexpr const char REPLACE_STRING[] = "{}";
  *                       the text with
  * @param size - the size of variantItems
  */
-static void VariantFormat(String& text, const VariantContainer* variantItems, const size_t& size)
+[[maybe_unused]] static void VariantFormat(String& text,
+                                           const VariantContainer* variantItems,
+                                           const size_t& size)
 {
     size_t cursor(0);
     for (size_t i(0); i < size; i++)
@@ -120,7 +146,7 @@ static void VariantFormat(String& text, const VariantContainer* variantItems, co
         cursor += item.Size();
     }
 }
-} // namespace Logging
+} // namespace Siege::Logging
 #endif
 
 // Determine log level

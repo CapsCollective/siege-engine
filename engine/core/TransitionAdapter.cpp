@@ -8,6 +8,8 @@
 
 #include "TransitionAdapter.h"
 
+namespace Siege
+{
 // Raylib conversions
 
 Vec3 ToVec3(raylib::Vector3 vector)
@@ -57,3 +59,4 @@ Color FromColour(Colour color)
             (unsigned char) color.b,
             (unsigned char) color.a};
 }
+} // namespace Siege

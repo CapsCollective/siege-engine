@@ -8,11 +8,10 @@
 
 #include "Input.h"
 
-#include <iostream>
+#include <glm/glm.hpp>
 
 Siege::Window* Input::windowPtr = nullptr;
 Input::MouseCoordinates Input::currentMouseCoordinates;
-bool Input::movedLastFrame {false};
 
 std::map<int, int> Input::keyMap;
 

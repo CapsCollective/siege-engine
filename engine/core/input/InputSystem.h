@@ -11,6 +11,8 @@
 
 #include <utils/Maths.h>
 
+namespace Siege
+{
 namespace Key
 {
 typedef enum
@@ -142,7 +144,8 @@ public:
 
     void DisableMouseCursor();
 
-    Vec3 GetMousePos();
+    Siege::Vec3 GetMousePos();
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_INPUTSYSTEM_H

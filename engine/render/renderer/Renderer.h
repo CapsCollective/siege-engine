@@ -84,17 +84,14 @@ public:
 
 private:
 
-    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-
     static VulkanDevice* deviceInstance;
-    static Utils::Array<VkCommandBuffer> commandBuffers;
+    static Array<VkCommandBuffer> commandBuffers;
 
     VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 
     void CreateCommandBuffers();
 
     void RecreateSwapChain();
-    void FreeCommandBuffers();
 
     void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
@@ -106,7 +103,7 @@ private:
     VulkanDevice device;
     SwapChain swapChain;
 
-    u32 currentImageIndex;
+    uint32_t currentImageIndex;
     bool isFrameStarted {false};
     int currentFrameIndex {0};
 

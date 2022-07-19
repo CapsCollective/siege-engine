@@ -13,7 +13,8 @@ namespace Siege
 LightRenderer::LightRenderer() {}
 LightRenderer::~LightRenderer() {}
 
-void LightRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void LightRenderer::Initialise(const String& globalDataAttributeName,
+                               const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     lightDataId = INTERN_STR("lightUBO");
@@ -21,7 +22,7 @@ void LightRenderer::Initialise(const char* globalDataAttributeName, const u64& g
     auto pointLightVertShader = Siege::Shader::BuildShader()
                                     .FromShader("assets/shaders/pointLight.vert.spv")
                                     .WithStage(Siege::PipelineConfig::VERTEX)
-                                    .WithVertexType(sizeof(glm::vec2))
+                                    .WithVertexType(sizeof(Vec2))
                                     .WithVertexAttribute(0, Siege::VertexDescription::VEC2)
                                     .WithUniform(0, globalDataAttributeName, globalDataSize);
 
@@ -34,7 +35,7 @@ void LightRenderer::Initialise(const char* globalDataAttributeName, const u64& g
     lightMaterial.SetFragmentShader(&pointLightFragShader);
     lightMaterial.BuildMaterial();
 
-    lightModel.SetMesh({sizeof(glm::vec2), nullptr, 0, nullptr, 0});
+    lightModel.SetMesh({sizeof(Vec2), nullptr, 0, nullptr, 0});
 
     lightModel.SetMaterial(&lightMaterial);
 }
@@ -45,10 +46,10 @@ void LightRenderer::Destroy()
     lightModel.DestroyModel();
 }
 
-void LightRenderer::DrawPointLight(const glm::vec3& position,
+void LightRenderer::DrawPointLight(const Siege::Vec3& position,
                                    const float& radius,
-                                   const glm::vec4& colour,
-                                   const glm::vec4& ambientColor)
+                                   const Siege::Vec4& colour,
+                                   const Siege::Vec4& ambientColor)
 {
     pointLightVertices.Append({1.f, 1.f});
     pointLightVertices.Append({1.f, -1.f});
@@ -66,7 +67,7 @@ void LightRenderer::DrawPointLight(const glm::vec3& position,
 }
 
 void LightRenderer::Render(VkCommandBuffer& commandBuffer,
-                           const u64& globalDataSize,
+                           const uint64_t& globalDataSize,
                            const void* globalData)
 {
     if (pointLightVertices.Count() == 0) return;
@@ -74,11 +75,11 @@ void LightRenderer::Render(VkCommandBuffer& commandBuffer,
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lightMaterial.Bind(commandBuffer);
 
-    lightModel.UpdateMesh({sizeof(glm::vec2),
+    lightModel.UpdateMesh({sizeof(Vec2),
                            pointLightVertices.Data(),
-                           static_cast<u32>(pointLightVertices.Count()),
+                           static_cast<uint32_t>(pointLightVertices.Count()),
                            pointLightIndices.Data(),
-                           static_cast<u32>(pointLightIndices.Count())});
+                           static_cast<uint32_t>(pointLightIndices.Count())});
 
     lightModel.Bind(commandBuffer);
     lightModel.Draw(commandBuffer, 0);

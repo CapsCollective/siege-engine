@@ -12,11 +12,13 @@
 
 #include <utility>
 
+using namespace Siege;
+
 class TestEntity1 : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const Siege::String ENTITY_NAME;
 
     TestEntity1() : Entity(ENTITY_NAME) {};
 
