@@ -10,6 +10,8 @@
 
 #include "Common.h"
 
+#include "../math/Float.h"
+
 namespace Siege
 {
 
@@ -25,7 +27,13 @@ const Vec2 Vec2::Zero = {0.f, 0.f};
 const Vec2 Vec2::One = {1.f, 1.f};
 const Vec2 Vec2::Up = {0.f, 1.f};
 
-// Unary Operators
+Vec2 Vec2::Lerp(Vec2 origin, Vec2 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time)};
+}
+
+// Unary operator implementations.
 
 Vec2& Vec2::operator=(const Vec3& rhs)
 {

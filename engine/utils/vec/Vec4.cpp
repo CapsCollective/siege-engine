@@ -6,6 +6,7 @@
 //      https://opensource.org/licenses/Zlib
 
 #include "Vec4.h"
+#include "../math/Float.h"
 
 #include "Common.h"
 
@@ -56,6 +57,14 @@ Vec4::operator Vec3() const
 }
 
 // Static Methods
+
+Vec4 Vec4::Lerp(Vec4 origin, Vec4 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time),
+            Float::Lerp(origin.w, destination.w, time)};
+}
 
 bool Vec4::FromString(OUT Vec4& vec, const String& string)
 {

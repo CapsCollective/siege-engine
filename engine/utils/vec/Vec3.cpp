@@ -7,6 +7,7 @@
 //
 
 #include "Vec3.h"
+#include "../math/Float.h"
 
 #include "Common.h"
 
@@ -18,13 +19,12 @@ const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
 const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
 
-// 'Structors
-
-Vec3::Vec3(const Vec2& other) : x {other.x}, y {other.y} {}
-
-Vec3::Vec3(const Vec4& other) : x {other.x}, y {other.y}, z {other.z} {}
-
-// Unary Operators
+Vec3 Vec3::Lerp(Vec3 origin, Vec3 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time)};
+}
 
 Vec3& Vec3::operator=(const Vec2& rhs)
 {

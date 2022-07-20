@@ -8,6 +8,10 @@
 
 #include "Input.h"
 
+#include <utils/math/Float.h>
+
+#include <glm/glm.hpp>
+
 namespace Siege
 {
 Window* Input::windowPtr = nullptr;
@@ -68,11 +72,11 @@ const Input::MouseCoordinates& Input::GetCursorPosition()
 Input::MouseCoordinates Input::GetNormalisedMousePosition()
 {
     return {glm::clamp<float>(
-                Utils::Math::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
+                Siege::Float::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
                 -1.f,
                 1.f),
             glm::clamp<float>(
-                Utils::Math::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight()),
+                Siege::Float::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight()),
                 -1.f,
                 1.f)};
 }

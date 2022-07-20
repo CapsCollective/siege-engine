@@ -53,7 +53,7 @@ struct Vec4
      * A constructor from a 3D vector.
      * @param other the 3D vector to copy elements from.
      */
-    explicit Vec4(const struct Vec3& other);
+     explicit Vec4(const struct Vec3& other);
 
     /**
      * An assignment operator from a 2D vector
@@ -119,6 +119,8 @@ struct Vec4
      * @return the dot product of both vectors
      */
     static float Dot(const Vec4& lhs, const Vec4& rhs);
+
+    static Vec4 Lerp(Vec4 origin, Vec4 destination, float time);
 
     // Public Methods
 
