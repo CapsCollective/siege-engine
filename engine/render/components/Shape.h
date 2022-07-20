@@ -9,9 +9,10 @@
 #ifndef SIEGE_ENGINE_SHAPE_H
 #define SIEGE_ENGINE_SHAPE_H
 
-#include <utils/mat/Mat3.h>
-#include <utils/mat/Mat4.h>
-#include <utils/vec/Vec3.h>
+#include <utils/math/Xform.h>
+#include <utils/math/mat/Mat3.h>
+#include <utils/math/mat/Mat4.h>
+#include <utils/math/vec/Vec3.h>
 
 #include "../renderer/Renderer.h"
 
@@ -33,82 +34,66 @@ public:
 
     ~Shape();
 
-    Siege::Model::Transform GetTransform()
-    {
-        return {CalculateTransform(transform), CalculateNormalMatrix(transform)};
-    };
-    Siege::Model::Transform2D GetTransform2D()
-    {
-        return {CalculateTransform(transform)};
-    };
-
     Siege::Vec3& GetColor()
     {
         return fillColor;
     }
+
     Siege::Model* GetModel()
     {
         return model;
     }
 
-    Siege::Vec3& GetRotation()
+    Siege::Vec3 GetRotation()
     {
-        return transform.rotation;
+        return transform.GetRotation();
     }
-    Siege::Vec3& GetPosition()
+
+    Siege::Vec3 GetPosition()
     {
-        return transform.position;
+        return transform.GetPosition();
     }
-    Siege::Vec3& GetScale()
+
+    Siege::Vec3 GetScale()
     {
-        return transform.scale;
+        return transform.GetScale();
     }
 
     Siege::Vec2 GetPosition2D()
     {
-        return transform.position;
+        return transform.GetPosition();
     }
+
     Siege::Vec2 GetScale2D()
     {
-        return transform.scale;
+        return transform.GetScale();
     }
+
     float GetRotation2D()
     {
-        return transform.rotation.z;
+        return transform.GetRotation().z;
     }
     float GetZIndex()
     {
-        return transform.position.z;
+        return transform.GetPosition().z;
     }
 
-    const Siege::Vec3& GetRotation() const
-    {
-        return transform.rotation;
-    }
-    const Siege::Vec3& GetPosition() const
-    {
-        return transform.position;
-    }
-    const Siege::Vec3& GetScale() const
-    {
-        return transform.scale;
-    }
     const float GetZIndex() const
     {
-        return transform.position.z;
+        return transform.GetPosition().z;
     }
 
     const Siege::Vec2 GetPosition2D() const
     {
-        return transform.position;
+        return transform.GetPosition();
     }
     const Siege::Vec2 GetScale2D() const
     {
-        return transform.scale;
+        return transform.GetScale();
     }
     const float GetRotation2D() const
     {
-        return transform.rotation.z;
+        return transform.GetRotation().z;
     }
 
     void SetColor(const Siege::Vec3& newColor);
@@ -126,15 +111,8 @@ public:
 
 private:
 
-    // Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
-    // Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
-    // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-    Siege::Mat4 CalculateTransform(Transform& transform);
-
-    Siege::Mat3 CalculateNormalMatrix(Transform& transform);
-
+    Siege::Xform transform {};
     Siege::Model* model;
-    Transform transform {};
     Siege::Vec3 fillColor {};
 };
 } // namespace Components

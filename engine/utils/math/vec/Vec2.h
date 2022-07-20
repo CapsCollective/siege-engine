@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_VEC2_H
 #define SIEGE_ENGINE_VEC2_H
 
-#include "../String.h"
+#include "../../String.h"
 #include "Operators.h"
 
 namespace Siege
@@ -66,6 +66,13 @@ struct Vec2
 
     // Static functions
 
+    /**
+     * Lerps between two vectors
+     * @param origin the start vector.
+     * @param destination the end result
+     * @param time the interpolation point.
+     * @return an interpolated vector between origin and destination.
+     */
     static Vec2 Lerp(Vec2 origin, Vec2 destination, float time);
 
     // Operator overloads

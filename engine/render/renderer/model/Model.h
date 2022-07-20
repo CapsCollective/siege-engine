@@ -10,7 +10,7 @@
 #define SIEGE_ENGINE_MODEL_H
 
 #include <utils/Hash.h>
-#include <utils/mat/Mat4.h>
+#include <utils/math/mat/Mat4.h>
 
 #include <unordered_map>
 

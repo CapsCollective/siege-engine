@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_INPUTSYSTEM_H
 #define SIEGE_ENGINE_INPUTSYSTEM_H
 
-#include <utils/Maths.h>
+#include "utils/math/Maths.h"
 
 namespace Siege
 {

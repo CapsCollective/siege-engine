@@ -10,10 +10,10 @@
 #include <cmath>
 #include <limits>
 
-#include "utest.h"
-#include "utils/vec/Vec2.h"
-#include "utils/vec/Vec3.h"
-#include "utils/vec/Vec4.h"
+#include <utest.h>
+#include <utils/math/vec/Vec2.h>
+#include <utils/math/vec/Vec3.h>
+#include <utils/math/vec/Vec4.h>
 
 using namespace Siege;
 
