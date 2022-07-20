@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <utils/mat/Mat4.h>
-#include <utils/vec/Vec3.h>
+#include <utils/math/mat/Mat4.h>
+#include <utils/math/vec/Vec3.h>
 
 #include "../Core.h"
 

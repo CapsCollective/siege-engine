@@ -7,7 +7,7 @@
 //
 
 #include <utest.h>
-#include <utils/mat/Mat4.h>
+#include <utils/math/mat/Mat4.h>
 
 UTEST(test_Matrix4x4, CreateEmptyMatrix)
 {

@@ -15,11 +15,11 @@
 #include <render/renderer/model/Model.h>
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
-
 #include <utils/math/Float.h>
 
 #include <chrono>
 #include <cmath>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 #include <vector>
 
@@ -174,7 +174,6 @@ int main()
     Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     Siege::Material spriteMat(&spriteShader, &fragShader); // 2D sprite material
 
-    // Siege::Material pointLightMat(&pointLightVertShader, &pointLightFragShader); // point light
     // shader
 
     Siege::Material::BuildMaterials({&diffuseMat, &spriteMat});

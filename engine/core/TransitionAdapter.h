@@ -12,7 +12,7 @@
 #include <raylib/Vector3.hpp>
 
 #include "../utils/Colour.h"
-#include "../utils/Maths.h"
+#include "utils/math/Maths.h"
 
 namespace Siege
 {

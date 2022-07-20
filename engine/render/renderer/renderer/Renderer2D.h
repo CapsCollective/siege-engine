@@ -12,7 +12,6 @@
 #include "../camera/Camera.h"
 #include "../material/Material.h"
 #include "../model/Model.h"
-#include "../utils/Math.h"
 
 namespace Siege
 {

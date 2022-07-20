@@ -7,7 +7,8 @@
 //
 
 #include "Vec3.h"
-#include "../math/Float.h"
+
+#include "../Float.h"
 
 namespace Siege
 {

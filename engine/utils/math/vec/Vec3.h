@@ -52,6 +52,13 @@ struct Vec3
 
     // Static functions:
 
+    /**
+     * Lerps between two vectors
+     * @param origin the start vector.
+     * @param destination the end result
+     * @param time the interpolation point.
+     * @return an interpolated vector between origin and destination.
+     */
     static Vec3 Lerp(Vec3 origin, Vec3 destination, float time);
 
     // Operator overloads

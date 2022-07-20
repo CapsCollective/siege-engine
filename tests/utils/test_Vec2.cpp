@@ -8,9 +8,9 @@
 //
 
 #include "utest.h"
-#include "utils/vec/Vec2.h"
-#include "utils/vec/Vec3.h"
-#include "utils/vec/Vec4.h"
+#include "utils/math/vec/Vec2.h"
+#include "utils/math/vec/Vec3.h"
+#include "utils/math/vec/Vec4.h"
 
 UTEST(test_Vec2, CreateEmptyVec2)
 {
@@ -45,6 +45,14 @@ UTEST(test_Vec2, CreateUpVector)
     Siege::Vec2 vec = Siege::Vec2::Up;
     ASSERT_EQ(0.f, vec.x);
     ASSERT_EQ(1.f, vec.y);
+}
+
+UTEST(test_Vec2, LerpVector)
+{
+    Siege::Vec2 expected = {1.5f, 1.5f};
+    Siege::Vec2 vec = Siege::Vec2::One;
+
+    ASSERT_TRUE(expected == Siege::Vec2::Lerp(vec, {2.f, 2.f}, .5f));
 }
 
 UTEST(test_Vec2, CreateVec2FromString)

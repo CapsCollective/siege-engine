@@ -44,13 +44,13 @@ void RenderSystem::DrawFrame()
         DrawModelEx(model,
                     FromVec3(item.transform.GetPosition()),
                     FromVec3(Vec3::Up),
-                    item.transform.GetRotation(),
+                    item.transform.GetRotation().y,
                     FromVec3(item.transform.GetScale()),
                     WHITE);
         DrawModelWiresEx(model,
                          FromVec3(item.transform.GetPosition()),
                          FromVec3(Vec3::Up),
-                         item.transform.GetRotation(),
+                         item.transform.GetRotation().y,
                          FromVec3(item.transform.GetScale()),
                          PINK);
     }

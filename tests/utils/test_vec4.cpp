@@ -8,7 +8,7 @@
 //
 
 #include "utest.h"
-#include "utils/vec/Vec4.h"
+#include "utils/math/vec/Vec4.h"
 
 UTEST(test_Vec4, CreateEmptyVec4)
 {
@@ -53,6 +53,14 @@ UTEST(test_Vec4, CreateUpVector)
     ASSERT_EQ(1.f, vec.y);
     ASSERT_EQ(0.f, vec.z);
     ASSERT_EQ(0.f, vec.w);
+}
+
+UTEST(test_Vec4, LerpVector)
+{
+    Siege::Vec4 expected = {1.5f, 1.5f, 1.5f, 1.5f};
+    Siege::Vec4 vec = Siege::Vec4::One;
+
+    ASSERT_TRUE(expected == Siege::Vec4::Lerp(vec, {2.f, 2.f, 2.f, 2.f}, .5f));
 }
 
 UTEST(test_Vec4, CreateVec4FromString)

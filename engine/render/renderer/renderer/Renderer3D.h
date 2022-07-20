@@ -13,7 +13,6 @@
 #include "../lights/PointLight.h"
 #include "../material/Material.h"
 #include "../model/Model.h"
-#include "../utils/Math.h"
 #include "BillboardRenderer.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"

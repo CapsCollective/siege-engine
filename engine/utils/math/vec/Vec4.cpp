@@ -6,7 +6,8 @@
 //      https://opensource.org/licenses/Zlib
 
 #include "Vec4.h"
-#include "../math/Float.h"
+
+#include "../Float.h"
 
 namespace Siege
 {

@@ -73,6 +73,13 @@ struct Vec4
 
     // Static functions
 
+    /**
+     * Lerps between two vectors
+     * @param origin the start vector.
+     * @param destination the end result
+     * @param time the interpolation point.
+     * @return an interpolated vector between origin and destination.
+     */
     static Vec4 Lerp(Vec4 origin, Vec4 destination, float time);
 
     // Operator overloads
