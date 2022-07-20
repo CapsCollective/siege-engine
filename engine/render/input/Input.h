@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "../utils/Math.h"
 #include "../window/Window.h"
 
 #define KEY_W GLFW_KEY_W

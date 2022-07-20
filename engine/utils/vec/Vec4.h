@@ -71,6 +71,10 @@ struct Vec4
      */
     Vec4(const Vec3& other);
 
+    // Static functions
+
+    static Vec4 Lerp(Vec4 origin, Vec4 destination, float time);
+
     // Operator overloads
 
     /**

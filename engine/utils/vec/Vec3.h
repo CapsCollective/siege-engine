@@ -50,6 +50,10 @@ struct Vec3
      */
     Vec3(float x = 0.f, float y = 0.f, float z = 0.f) : x(x), y(y), z(z) {}
 
+    // Static functions:
+
+    static Vec3 Lerp(Vec3 origin, Vec3 destination, float time);
+
     // Operator overloads
 
     /**

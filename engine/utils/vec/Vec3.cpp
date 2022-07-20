@@ -7,6 +7,7 @@
 //
 
 #include "Vec3.h"
+#include "../math/Float.h"
 
 namespace Siege
 {
@@ -14,6 +15,13 @@ namespace Siege
 const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
 const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
+
+Vec3 Vec3::Lerp(Vec3 origin, Vec3 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time)};
+}
 
 Vec3 Vec3::Normalise() const
 {

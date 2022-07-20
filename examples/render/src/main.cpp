@@ -14,8 +14,9 @@
 #include <render/renderer/material/Material.h>
 #include <render/renderer/model/Model.h>
 #include <render/renderer/shader/Shader.h>
-#include <render/utils/Math.h>
 #include <render/window/Window.h>
+
+#include <utils/math/Float.h>
 
 #include <chrono>
 #include <cmath>
@@ -74,11 +75,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     rotate.y += float(differenceX);
     rotate.x += float(differenceY);
 
-    if (rotate.Dot(rotate) > Utils::Math::Float::Epsilon())
+    if (rotate.Dot(rotate) > Siege::Float::Epsilon())
     {
         Siege::Vec3 newRotation = viewerObject.GetRotation() + lookSpeed * rotate.Normalise();
         viewerObject.SetRotation(
-            Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+            Siege::Vec3::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -101,10 +102,10 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 
     float moveSpeed = 2.f;
 
-    if (moveDir.Dot(moveDir) > Utils::Math::Float::Epsilon())
+    if (moveDir.Dot(moveDir) > Siege::Float::Epsilon())
     {
         Siege::Vec3 newMove = viewerObject.GetPosition() + moveSpeed * moveDir.Normalise();
-        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
+        viewerObject.SetPosition(Siege::Vec3::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;

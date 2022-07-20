@@ -6,6 +6,7 @@
 //      https://opensource.org/licenses/Zlib
 
 #include "Vec4.h"
+#include "../math/Float.h"
 
 namespace Siege
 {
@@ -16,6 +17,14 @@ const Vec4 Vec4::Up = {0.f, 1.f, 0.f, 0.f};
 
 Vec4::Vec4(const Vec2& other) : x {other.x}, y {other.y}, z {0.f}, w {0.f} {}
 Vec4::Vec4(const Vec3& other) : x {other.x}, y {other.y}, z {other.z}, w {0.f} {}
+
+Vec4 Vec4::Lerp(Vec4 origin, Vec4 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time),
+            Float::Lerp(origin.w, destination.w, time)};
+}
 
 bool Vec4::FromString(OUT Vec4& vec, const String& string)
 {
