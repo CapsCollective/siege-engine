@@ -8,7 +8,6 @@
 
 #define VOLK_IMPLEMENTATION
 
-#include <render/components/Shape.h>
 #include <render/input/Input.h>
 #include <render/renderer/Renderer.h>
 #include <render/renderer/material/Material.h>
@@ -16,12 +15,13 @@
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
+#include <utils/math/Graphics.h>
 
 #include <chrono>
-#include <cmath>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
 #include <vector>
+
+#include "Camera.h"
+#include "GameObject.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -61,56 +61,6 @@ uint32_t squareIndices[] = {0, 1, 3, 1, 2, 3};
 
 Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
 
-void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
-{
-    static auto oldMousePos = Input::GetCursorPosition();
-    auto mousePos = Input::GetCursorPosition();
-
-    Siege::Vec3 rotate {};
-    float lookSpeed = 4.0f;
-
-    double differenceX = mousePos.x - oldMousePos.x;
-    double differenceY = oldMousePos.y - mousePos.y;
-
-    rotate.y += float(differenceX);
-    rotate.x += float(differenceY);
-
-    if (rotate.Dot(rotate) > Siege::Float::Epsilon())
-    {
-        Siege::Vec3 newRotation = viewerObject.GetRotation() + lookSpeed * rotate.Normalise();
-        viewerObject.SetRotation(
-            Siege::Vec3::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
-    }
-
-    // Limit the pitch values to avoid objects rotating upside-down.
-    viewerObject.SetRotationX(glm::clamp(viewerObject.GetRotation().x, -1.5f, 1.5f));
-    viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
-
-    float yaw = viewerObject.GetRotation().y;
-    const Siege::Vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
-    const Siege::Vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
-    const Siege::Vec3 upDir {0.f, -1.f, 0.f};
-
-    Siege::Vec3 moveDir {0.f};
-    if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
-    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
-    if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
-    if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
-
-    if (Input::IsKeyDown(KEY_E)) moveDir += upDir;
-    if (Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
-
-    float moveSpeed = 2.f;
-
-    if (moveDir.Dot(moveDir) > Siege::Float::Epsilon())
-    {
-        Siege::Vec3 newMove = viewerObject.GetPosition() + moveSpeed * moveDir.Normalise();
-        viewerObject.SetPosition(Siege::Vec3::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
-    }
-
-    oldMousePos = mousePos;
-}
-
 int main()
 {
     WINDOWS_ATTACH_CONSOLE
@@ -123,9 +73,7 @@ int main()
 
     Siege::Renderer renderer(window);
 
-    Siege::Camera camera;
-
-    Components::Shape cameraObject;
+    Camera camera;
 
     // Shader Declaration
 
@@ -199,13 +147,12 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    std::vector<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
-                                             Components::Shape(&cubeObjModel),
-                                             Components::Shape(&vaseObjModel)};
+    std::vector<GameObject> shapes = {GameObject(&cubeObjModel),
+                                      GameObject(&cubeObjModel),
+                                      GameObject(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    std::vector<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
-                                               Components::Shape(&squareModel)};
+    std::vector<GameObject> shapes2D = {GameObject(&triangleModel), GameObject(&squareModel)};
 
     shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
@@ -228,13 +175,11 @@ int main()
     shapes2D[1].SetScale2D({.5f, 0.5f});
     shapes2D[1].SetZIndex(0.f);
 
-    cameraObject.SetPosition({0.f, -1.f, -2.5f});
+    camera.SetPosition({0.f, -1.f, -2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
-
-    renderer.SetMainCamera(&camera);
 
     while (!window.WindowShouldClose())
     {
@@ -256,15 +201,18 @@ int main()
 
         float aspect = renderer.GetAspectRatio();
 
-        camera.SetPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+        camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
 
         if (inputEnabled)
         {
-            MoveCameraXZ(frameTime, cameraObject);
-            camera.SetViewYXZ(cameraObject.GetPosition(), cameraObject.GetRotation());
+            camera.MoveCamera(frameTime);
         }
 
+        renderer.SetProjection(camera.GetProjection(), camera.GetView());
+
         if (!renderer.StartFrame()) continue;
+
+        camera.Update();
 
         for (auto& shape : shapes)
         {

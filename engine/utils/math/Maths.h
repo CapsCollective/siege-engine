@@ -7,20 +7,16 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MATHS_Hs
+#ifndef SIEGE_ENGINE_MATHS_H
 #define SIEGE_ENGINE_MATHS_H
 
 #include "Float.h"
-
 #include "mat/Mat2.h"
 #include "mat/Mat3.h"
 #include "mat/Mat4.h"
-
 #include "vec/Vec2.h"
 #include "vec/Vec3.h"
 #include "vec/Vec4.h"
-
-#define PI Float::Pi
 
 namespace Siege
 {

@@ -6,68 +6,64 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include "Shape.h"
+#include "GameObject.h"
 
-namespace Components
-{
+GameObject::GameObject() {}
 
-Shape::Shape() {}
+GameObject::GameObject(Siege::Model* model) : model {model} {}
 
-Shape::Shape(Siege::Model* model) : model {model} {}
+GameObject::~GameObject() {}
 
-Shape::~Shape() {}
-
-void Shape::SetColor(const Siege::Vec3& newColor)
+void GameObject::SetColor(const Siege::Vec3& newColor)
 {
     fillColor = newColor;
 }
-void Shape::SetPosition(const Siege::Vec3& newPos)
+void GameObject::SetPosition(const Siege::Vec3& newPos)
 {
     transform.SetPosition(newPos);
 }
 
-void Shape::SetScale(const Siege::Vec3& newScale)
+void GameObject::SetScale(const Siege::Vec3& newScale)
 {
     transform.SetScale(newScale);
 }
 
-void Shape::SetRotation(const Siege::Vec3& rotation)
+void GameObject::SetRotation(const Siege::Vec3& rotation)
 {
     transform.SetRotation(rotation);
 }
 
-void Shape::SetRotationX(float rotation)
+void GameObject::SetRotationX(float rotation)
 {
     transform.SetRotationX(rotation);
 }
 
-void Shape::SetRotationY(float rotation)
+void GameObject::SetRotationY(float rotation)
 {
     transform.SetRotationY(rotation);
 }
 
-void Shape::SetRotationZ(float rotation)
+void GameObject::SetRotationZ(float rotation)
 {
     transform.SetRotationZ(rotation);
 }
 
-void Shape::SetZIndex(float zIndex)
+void GameObject::SetZIndex(float zIndex)
 {
     transform.SetPositionZ(zIndex);
 }
 
-void Shape::SetRotation2D(float rotation)
+void GameObject::SetRotation2D(float rotation)
 {
     transform.SetRotationZ(rotation);
 }
 
-void Shape::SetPosition2D(const Siege::Vec2& newPos)
+void GameObject::SetPosition2D(const Siege::Vec2& newPos)
 {
     transform.SetPosition({newPos.x, newPos.y, transform.GetPosition().z});
 }
 
-void Shape::SetScale2D(const Siege::Vec2& newScale)
+void GameObject::SetScale2D(const Siege::Vec2& newScale)
 {
     transform.SetScale(newScale);
 }
-} // namespace Components

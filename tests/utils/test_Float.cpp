@@ -17,27 +17,27 @@ UTEST(test_Float, Epsilon)
 
 UTEST(test_Float, Cos)
 {
-    ASSERT_EQ(0.98480775f, Siege::Float::Cos(Siege::Float::DegreesToRadians(10.f)));
+    ASSERT_EQ(0.98480775f, Siege::Float::Cos(Siege::Float::Radians(10.f)));
 }
 
 UTEST(test_Float, Sin)
 {
-    ASSERT_EQ(0.17364818f, Siege::Float::Sin(Siege::Float::DegreesToRadians(10.f)));
+    ASSERT_EQ(0.17364818f, Siege::Float::Sin(Siege::Float::Radians(10.f)));
 }
 
 UTEST(test_Float, Tan)
 {
-    ASSERT_EQ(0.17632698f, Siege::Float::Tan(Siege::Float::DegreesToRadians(10.f)));
+    ASSERT_EQ(0.17632698f, Siege::Float::Tan(Siege::Float::Radians(10.f)));
 }
 
 UTEST(test_Float, DegreestoRadians)
 {
-    ASSERT_TRUE((1.570796f - Siege::Float::DegreesToRadians(90.f)) < Siege::Float::Epsilon());
+    ASSERT_TRUE((1.570796f - Siege::Float::Radians(90.f)) < Siege::Float::Epsilon());
 }
 
 UTEST(test_Float, RadiansToDegrees)
 {
-    ASSERT_TRUE((Siege::Float::RadiansToDegrees(1.570796f) - 90.f) < Siege::Float::Epsilon());
+    ASSERT_TRUE((Siege::Float::Degrees(1.570796f) - 90.f) < Siege::Float::Epsilon());
 }
 
 UTEST(test_Float, Sign)

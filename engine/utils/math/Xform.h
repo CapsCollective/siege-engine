@@ -32,14 +32,6 @@ public:
         scale(scale)
     {}
 
-    // Static functions
-
-    static Mat4 Xform3D(const Vec3& position, const Vec3& rotation, const Vec3& scale);
-
-    static Mat2 Xform2D(const Vec2& position, const float& rotation, const Vec2& scale);
-
-    static Mat3 XformNormalMat(const Vec3& rotation, const Vec3& scale);
-
     const Vec3& GetPosition() const
     {
         return position;

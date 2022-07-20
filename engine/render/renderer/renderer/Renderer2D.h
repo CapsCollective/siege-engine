@@ -9,7 +9,6 @@
 #pragma once
 
 #include "../Core.h"
-#include "../camera/Camera.h"
 #include "../material/Material.h"
 #include "../model/Model.h"
 

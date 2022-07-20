@@ -8,15 +8,12 @@
 
 #pragma once
 
+#include <render/renderer/model/Model.h>
 #include <utils/math/Xform.h>
 #include <utils/math/mat/Mat3.h>
 #include <utils/math/mat/Mat4.h>
 #include <utils/math/vec/Vec3.h>
 
-#include "../renderer/Renderer.h"
-
-namespace Components
-{
 struct Transform
 {
     Siege::Vec3 position {0.0f};
@@ -24,14 +21,14 @@ struct Transform
     Siege::Vec3 rotation {};
 };
 
-class Shape
+class GameObject
 {
 public:
 
-    Shape();
-    explicit Shape(Siege::Model* model);
+    GameObject();
+    explicit GameObject(Siege::Model* model);
 
-    ~Shape();
+    ~GameObject();
 
     Siege::Vec3& GetColor()
     {
@@ -114,4 +111,3 @@ private:
     Siege::Model* model;
     Siege::Vec3 fillColor {};
 };
-} // namespace Components
