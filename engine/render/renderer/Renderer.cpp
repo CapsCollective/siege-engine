@@ -59,11 +59,9 @@ void Renderer::DrawFrame()
 {
     auto commandBuffer = GetCurrentCommandBuffer();
 
-    CameraData cameraData = {mainCamera->GetProjection(), mainCamera->GetView()};
+    Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer2D::GlobalData global2DData = {{cameraData}};
-
-    Renderer3D::Render(commandBuffer, cameraData);
+    Renderer3D::Render(commandBuffer, projection);
     Renderer2D::Render(commandBuffer, global2DData);
 }
 

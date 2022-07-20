@@ -8,6 +8,8 @@
 
 #include "Mat4.h"
 
+#include "../Float.h"
+
 namespace Siege
 {
 

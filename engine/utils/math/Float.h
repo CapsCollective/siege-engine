@@ -20,10 +20,16 @@ namespace Siege
 class Float
 {
 public:
+
     /**
      * A const value representing Pi.
      */
     static inline constexpr float Pi {M_PI};
+
+    /**
+     * A const value representing Pi * 2.
+     */
+    static inline constexpr float TwoPi {Pi * 2};
 
     /**
      * Returns the Epsilon of a C++ float value. Useful for float comparisons.
@@ -41,7 +47,7 @@ public:
      */
     static inline float Sin(float val) noexcept
     {
-        return std::sinf(val);
+        return sinf(val);
     }
 
     /**
@@ -51,7 +57,7 @@ public:
      */
     static inline float Cos(float val) noexcept
     {
-        return std::cosf(val);
+        return cosf(val);
     }
 
     /**
@@ -61,7 +67,7 @@ public:
      */
     static inline float Tan(float val) noexcept
     {
-        return std::tanf(val);
+        return tanf(val);
     }
 
     /**
@@ -69,7 +75,7 @@ public:
      * @param degrees the angle in degrees.
      * @return the radian value of the angle.
      */
-    static inline float DegreesToRadians(float degrees)
+    static inline float Radians(float degrees)
     {
         return degrees * (Pi / 180.f);
     }
@@ -79,7 +85,7 @@ public:
      * @param degrees the angle in radians.
      * @return the degree value of the angle.
      */
-    static inline float RadiansToDegrees(float radians)
+    static inline float Degrees(float radians)
     {
         return radians * (180 / Pi);
     }
@@ -174,6 +180,17 @@ public:
     static inline float Clamp(const float& value, const float& min, const float& max)
     {
         return Min(Max(value, min), max);
+    }
+
+    /**
+     * Computes the modulus of two values.
+     * @param lhs the left hand side.
+     * @param rhs the right hand side value.
+     * @return the modulus of lhs and rhs.
+     */
+    static inline float Mod(const float& lhs, const float& rhs)
+    {
+        return lhs - rhs * floor(lhs / rhs);
     }
 };
 } // namespace Siege

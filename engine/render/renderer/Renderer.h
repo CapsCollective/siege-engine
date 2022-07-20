@@ -9,7 +9,6 @@
 #ifndef SIEGE_ENGINE_RENDERER_H
 #define SIEGE_ENGINE_RENDERER_H
 
-#include "camera/Camera.h"
 #include "descriptor/DescriptorPool.h"
 #include "device/VulkanDevice.h"
 #include "lights/PointLight.h"
@@ -54,9 +53,9 @@ public:
         return swapChain.ExtentAspectRatio();
     }
 
-    void SetMainCamera(Camera* camera)
+    void SetProjection(const Mat4& projectionMat, const Mat4& viewMat)
     {
-        mainCamera = camera;
+        projection = {projectionMat, viewMat};
     }
 
     bool IsFrameStarted() const
@@ -108,7 +107,7 @@ private:
     bool isFrameStarted {false};
     int currentFrameIndex {0};
 
-    Camera* mainCamera;
+    CameraData projection;
 };
 } // namespace Siege
 

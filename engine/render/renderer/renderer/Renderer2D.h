@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_RENDERER2D_H
 
 #include "../Core.h"
-#include "../camera/Camera.h"
 #include "../material/Material.h"
 #include "../model/Model.h"
 
