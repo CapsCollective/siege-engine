@@ -9,5 +9,4 @@
 #include "Xform.h"
 
 namespace Siege
-{
-} // namespace Siege
+{} // namespace Siege

@@ -6,8 +6,6 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#define VOLK_IMPLEMENTATION
-
 #include <render/input/Input.h>
 #include <render/renderer/Renderer.h>
 #include <render/renderer/material/Material.h>
@@ -15,7 +13,6 @@
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
-#include <utils/math/Graphics.h>
 
 #include <chrono>
 #include <vector>
