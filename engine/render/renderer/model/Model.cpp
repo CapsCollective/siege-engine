@@ -19,40 +19,7 @@ struct hash<Siege::Vertex>
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-        return seed;
-    };
-};
-
-template<>
-struct hash<Siege::Vec3>
-{
-    size_t operator()(const Siege::Vec3& vertex) const
-    {
-        size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z);
-        return seed;
-    };
-};
-
-template<>
-struct hash<Siege::Vec2>
-{
-    size_t operator()(const Siege::Vec2& vertex) const
-    {
-        size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.x, vertex.y);
-        return seed;
-    };
-};
-
-template<>
-struct hash<Siege::Vec4>
-{
-    size_t operator()(const Siege::Vec4& vertex) const
-    {
-        size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.colour, vertex.normal, vertex.uv);
         return seed;
     };
 };
@@ -63,7 +30,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.position, vertex.color);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.colour);
         return seed;
     };
 };
@@ -117,9 +84,9 @@ void Model::LoadModelFromFile(const String& filePath)
                                    attrib.vertices[3 * index.vertex_index + 1],
                                    attrib.vertices[3 * index.vertex_index + 2]};
 
-                vertex.color = {attrib.colors[3 * index.vertex_index + 0],
-                                attrib.colors[3 * index.vertex_index + 1],
-                                attrib.colors[3 * index.vertex_index + 2]};
+                vertex.colour = {attrib.colors[3 * index.vertex_index + 0],
+                                 attrib.colors[3 * index.vertex_index + 1],
+                                 attrib.colors[3 * index.vertex_index + 2]};
             }
 
             if (index.normal_index >= 0)

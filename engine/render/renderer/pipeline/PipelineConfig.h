@@ -175,7 +175,7 @@ public:
 
     /**
      * A config struct which specifies how colors are blended by the pipeline.
-     * @param blendEnable specifies if color blending is enabled.
+     * @param blendEnable specifies if colour blending is enabled.
      * @param srcColorBlendFactor specifies the blend factor used for the source.
      * @param dstColorBlendFactor specifies the blend factor used for the destination.
      * @param colorBlendOp selects which blend operation to use to calculate RGB values.
@@ -184,7 +184,7 @@ public:
      * @param dstAlphaBlendFactor specifies the blend factor to be used for alpha values on the
      *destination.
      * @param alphaBlendOp selects which operation to use to calculate alpha values.
-     * @param colorWriteMask a bitmask which specifies which color channels to expect. Defaults to
+     * @param colorWriteMask a bitmask which specifies which colour channels to expect. Defaults to
      *RGBA.
      * @returns a configured VkPipelineColorBlendAttachmentState struct
      **/
@@ -200,15 +200,15 @@ public:
                                                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
 
     /**
-     * Creates an info struct for configuring the pipeline's color blend state.
+     * Creates an info struct for configuring the pipeline's colour blend state.
      * @param logicOpEnable controls whether logical operations are applied to colors.
      * @param logicOp selects which logical opeartion to apply
-     * @param attachmentCount specifies the number of color blend attachments applied
-     * @param pAttachments a pointer to an array of color blend attachments
-     * @param blendConstantR the R value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantG the G value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantB the B value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantA the A value to be used for color blending. Defaults to 0.0f.
+     * @param attachmentCount specifies the number of colour blend attachments applied
+     * @param pAttachments a pointer to an array of colour blend attachments
+     * @param blendConstantR the R value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantG the G value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantB the B value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantA the A value to be used for colour blending. Defaults to 0.0f.
      * @param flags configuration flags. Defaults to 0
      * @param pNext and structs which extend this struct. Defaults to nullptr.
      * @returns a VkPipelineColorBlendStateCreateInfo struct.

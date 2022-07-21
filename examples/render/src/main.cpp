@@ -82,7 +82,7 @@ int main()
             .WithStage(Siege::PipelineConfig::VERTEX)
             .WithVertexType(sizeof(Siege::Vertex))
             .WithVertexAttribute(offsetof(Siege::Vertex, position), Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(Siege::Vertex, color), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(Siege::Vertex, colour), Siege::VertexDescription::VEC3)
             .WithVertexAttribute(offsetof(Siege::Vertex, normal), Siege::VertexDescription::VEC3)
             .WithVertexAttribute(offsetof(Siege::Vertex, uv), Siege::VertexDescription::VEC2)
             .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform), 1000)
@@ -95,7 +95,7 @@ int main()
             .WithVertexType(sizeof(Siege::Vertex2D))
             .WithVertexAttribute(offsetof(Siege::Vertex2D, position),
                                  Siege::VertexDescription::VEC2)
-            .WithVertexAttribute(offsetof(Siege::Vertex2D, color), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(Siege::Vertex2D, colour), Siege::VertexDescription::VEC3)
             .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
             .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
 
@@ -153,16 +153,16 @@ int main()
 
     shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
-    shapes[0].SetColor({.5f, 0.f, 0.f});
+    shapes[0].SetColour({.5f, 0.f, 0.f});
 
     shapes[1].SetPosition({0.f, 0.f, 0.f});
     shapes[1].SetScale({3.f, 3.f, 0.01f});
-    shapes[1].SetColor({.5f, 0.f, 0.f});
+    shapes[1].SetColour({.5f, 0.f, 0.f});
     shapes[1].SetRotationX(1.570796f);
 
     shapes[2].SetPosition({0.f, -1.f, 0.f});
     shapes[2].SetScale({2.f, 2.f, 2.f});
-    shapes[2].SetColor({.5f, 0.f, 0.f});
+    shapes[2].SetColour({.5f, 0.f, 0.f});
 
     shapes2D[0].SetPosition2D({1.5f, -1.f});
     shapes2D[0].SetScale2D({.5f, 0.5f});

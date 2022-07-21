@@ -110,7 +110,7 @@ void SwapChain::CreateSwapChain()
     // Get our swapchain details
     SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
 
-    // Get our supported color format
+    // Get our supported colour format
     VkSurfaceFormatKHR surfaceFormat =
         ChooseSwapSurfaceFormat(details.formats.Data(),
                                 static_cast<uint32_t>(details.formats.Size()));
@@ -359,7 +359,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
     // Specify the semaphores we want to wait for (the one for our current frame)
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
 
-    // Set a stage that you need to wait for. In this case we wait until the color stage of the
+    // Set a stage that you need to wait for. In this case we wait until the colour stage of the
     // pipeline is done (fragment stage)
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
@@ -415,7 +415,8 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
 VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats,
                                                       size_t formatCount)
 {
-    // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB color space.
+    // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB colour
+    // space.
     for (size_t i = 0; i < formatCount; i++)
     {
         VkSurfaceFormatKHR& availableFormat = formats[i];

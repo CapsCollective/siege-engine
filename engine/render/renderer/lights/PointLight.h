@@ -26,7 +26,7 @@ public:
     };
 
     PointLight();
-    PointLight(Siege::Vec3 position, Siege::Vec4 color, Siege::Vec4 ambientColor);
+    PointLight(Siege::Vec3 position, Siege::Vec4 colour, Siege::Vec4 ambientColor);
     ~PointLight();
 
     Data& GetLightData()
@@ -41,9 +41,9 @@ public:
     {
         lightData.position = position;
     }
-    void SetColor(Siege::Vec4 color)
+    void SetColor(Siege::Vec4 colour)
     {
-        lightData.lightColor = color;
+        lightData.lightColor = colour;
     }
     void SetAmbientColor(Siege::Vec4 ambientColor)
     {

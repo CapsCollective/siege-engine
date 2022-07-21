@@ -86,7 +86,8 @@ private:
     static VulkanDevice* deviceInstance;
     static Array<VkCommandBuffer> commandBuffers;
 
-    VkClearColorValue clearValue {{0, 0, 0, 1.f}};
+    // Make this adjustable in the window, not the renderer.
+    VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
     void CreateCommandBuffers();
 

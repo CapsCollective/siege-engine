@@ -298,4 +298,15 @@ inline bool operator==(const Vec3& lhs, const Vec3& rhs)
 
 } // namespace Siege
 
+template<>
+struct std::hash<Siege::Vec3>
+{
+    size_t operator()(const Siege::Vec3& vec) const
+    {
+        size_t seed = 0;
+        Siege::Hash::HashCombine(seed, vec.x, vec.y, vec.z);
+        return seed;
+    };
+};
+
 #endif // SIEGE_ENGINE_VEC3_H

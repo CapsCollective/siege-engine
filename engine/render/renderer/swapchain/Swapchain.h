@@ -233,8 +233,8 @@ private:
     void CreateSyncObjects();
 
     /**
-     * @brief Specifies which color format we want images to be written to. Accepts a set of formats
-     * and populates them with requisite data.
+     * @brief Specifies which colour format we want images to be written to. Accepts a set of
+     * formats and populates them with requisite data.
      *
      * @param formats - an array of possible formats.
      * @param formatCount - the number of formats provided.

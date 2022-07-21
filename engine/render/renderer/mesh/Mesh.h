@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "../pipeline/PipelineConfig.h"
@@ -17,7 +19,7 @@ namespace Siege
 struct Vertex
 {
     Siege::Vec3 position;
-    Siege::Vec3 color;
+    Siege::Colour colour;
     Siege::Vec3 normal;
     Siege::Vec2 uv;
 };
@@ -25,7 +27,7 @@ struct Vertex
 struct Vertex2D
 {
     Siege::Vec2 position;
-    Siege::Vec3 color;
+    Siege::Colour colour;
 };
 
 struct BillboardVertex

@@ -48,7 +48,9 @@ public:
                          const Siege::Vec3& destination,
                          const Siege::Vec4& colour);
 
-    static void DrawRect(const Siege::Vec3& position, const Siege::Vec2& scale, Siege::Vec4& color);
+    static void DrawRect(const Siege::Vec3& position,
+                         const Siege::Vec2& scale,
+                         Siege::Vec4& colour);
     static void DrawPointLight(const Siege::Vec3& position,
                                const float& radius,
                                const Siege::Vec4& colour,

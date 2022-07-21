@@ -25,7 +25,7 @@ namespace Siege
  * 3) input assembly - how vertices are submitted to the shader
  * 4) resterization - how vertices are represented
  * 5) multisampling - how we handle multi-sampling to avoid aliasing.
- * 6) color blending - how colors are blended together in the shader.
+ * 6) colour blending - how colors are blended together in the shader.
  * 7) depth stencil - how depth is represented within the shader.
  * 8) A pipeline layout representing how data is laid out in the shader.
  * 9) Our render pass.

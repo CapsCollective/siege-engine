@@ -419,4 +419,15 @@ inline bool operator==(const Vec4& lhs, const Vec4& rhs)
 }
 } // namespace Siege
 
+template<>
+struct std::hash<Siege::Vec4>
+{
+    size_t operator()(const Siege::Vec4& vec) const
+    {
+        size_t seed = 0;
+        Siege::Hash::HashCombine(seed, vec.x, vec.y, vec.z, vec.w);
+        return seed;
+    };
+};
+
 #endif // SIEGE_ENGINE_VEC4_H

@@ -49,9 +49,9 @@ public:
         ~SubPassBuilder() = default;
 
         /**
-         * @brief Adds a color reference. A VkAttachmentReference is a struct in which the index of
+         * @brief Adds a colour reference. A VkAttachmentReference is a struct in which the index of
          * a needed attachment is specified, along with the desired image layout when the attachment
-         * is complete. The maximum number of color references is equal to the MAX_COLOR_REFERENCES
+         * is complete. The maximum number of colour references is equal to the MAX_COLOR_REFERENCES
          * static variable.
          * @param reference the VkAttachmentReference being added.
          * @return the current builder object.
@@ -73,7 +73,7 @@ public:
 
     private:
 
-        // A subpass can contain multiple color references
+        // A subpass can contain multiple colour references
         StackArray<VkAttachmentReference, MAX_COLOR_REFERENCES> colorReferences;
 
         // A subpass can only contain a single depth reference.
@@ -199,7 +199,7 @@ public:
      *
      * @param format The image format. This will be the standard image format that our swapchain
      * supports
-     * @return A VkAttachmentDescription with default color attachment settings
+     * @return A VkAttachmentDescription with default colour attachment settings
      */
     static VkAttachmentDescription CreateColorAttachment(VkFormat format);
 
@@ -271,8 +271,8 @@ public:
      *
      * @param bindPoint The type of instruction being referenced, for example a compute or graphics
      * bind point
-     * @param colorAttachmentCount The number of color attachments
-     * @param colorAttachments An array of the color attachments being used
+     * @param colorAttachmentCount The number of colour attachments
+     * @param colorAttachments An array of the colour attachments being used
      * @param depthStencilAttachment The depth stencil attachment being used
      * @param resolveAttachments The resolve attachments being used
      * @param preserveAttachmentCount The amount of preserve attachments
@@ -298,8 +298,8 @@ public:
     /**
      * @brief Creates a subpass which binds to a graphics process
      *
-     * @param colorAttachmentCount The number of color attachments
-     * @param colorAttachments An array of the color attachments being used
+     * @param colorAttachmentCount The number of colour attachments
+     * @param colorAttachments An array of the colour attachments being used
      * @param depthStencilAttachment The depth stencil attachment being used
      * @param resolveAttachments The resolve attachments being used
      * @param preserveAttachmentCount The amount of preserve attachments

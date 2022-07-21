@@ -220,7 +220,7 @@ PipelineConfigInfo Pipeline::DefaultPipelineConfig()
                                                  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
                                                  VK_BLEND_OP_ADD);
 
-    // Specifies further configurations for color blending
+    // Specifies further configurations for colour blending
     configInfo.colorBlendInfo =
         PipelineConfig::InitColorBlendCreateInfo(VK_FALSE,
                                                  VK_LOGIC_OP_COPY,

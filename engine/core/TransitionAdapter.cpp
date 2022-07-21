@@ -54,9 +54,9 @@ Colour ToColour(Color color)
 
 Color FromColour(Colour color)
 {
-    return {(unsigned char) color.r,
-            (unsigned char) color.g,
-            (unsigned char) color.b,
-            (unsigned char) color.a};
+    return {(unsigned char) color.r8,
+            (unsigned char) color.g8,
+            (unsigned char) color.b8,
+            (unsigned char) color.a8};
 }
 } // namespace Siege

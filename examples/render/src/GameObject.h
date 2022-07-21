@@ -30,9 +30,9 @@ public:
 
     ~GameObject();
 
-    Siege::Vec3& GetColor()
+    Siege::Colour& GetColour()
     {
-        return fillColor;
+        return fillColour;
     }
 
     Siege::Model* GetModel()
@@ -92,7 +92,7 @@ public:
         return transform.GetRotation().z;
     }
 
-    void SetColor(const Siege::Vec3& newColor);
+    void SetColour(const Siege::Colour& newColour);
     void SetScale(const Siege::Vec3& newScale);
     void SetPosition(const Siege::Vec3& newPos);
     void SetRotation(const Siege::Vec3& rotation);
@@ -109,5 +109,5 @@ private:
 
     Siege::Xform transform {};
     Siege::Model* model;
-    Siege::Vec3 fillColor {};
+    Siege::Colour fillColour {};
 };

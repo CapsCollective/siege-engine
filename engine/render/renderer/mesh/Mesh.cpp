@@ -12,13 +12,13 @@ namespace Siege
 {
 bool operator==(const Vertex& left, const Vertex& right)
 {
-    return left.position == right.position && left.color == right.color &&
+    return left.position == right.position && left.colour == right.colour &&
            left.normal == right.normal && left.uv == right.uv;
 }
 
 bool operator==(const Vertex2D& left, const Vertex2D& right)
 {
-    return left.color == right.color && left.position == right.position;
+    return left.colour == right.colour && left.position == right.position;
 }
 
 Mesh::Mesh() {}
