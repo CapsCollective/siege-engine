@@ -31,7 +31,7 @@ bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
 
         for (size_t j = 0; j < layerCount; j++)
         {
-            VkLayerProperties layerProperties = availableLayers[i];
+            VkLayerProperties layerProperties = availableLayers[j];
             if (strcmp(layerName, layerProperties.layerName) == 0)
             {
                 layerFound = true;

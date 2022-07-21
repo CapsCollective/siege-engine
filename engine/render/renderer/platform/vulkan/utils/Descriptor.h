@@ -1,18 +1,16 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-// This code is released under an unmodified zlib license.
-// For conditions of distribution and use, please see:
-//     https://opensource.org/licenses/Zlib
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
 //
 
 #pragma once
 
-#include <volk/volk.h>
-
 #include <cstdint>
 
-// TODO: Move this to a separate area - maybe a vulkan-API specific directory.
+#include "volk/volk.h"
 
 namespace Siege
 {

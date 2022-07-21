@@ -19,10 +19,41 @@
 // std lib headers
 #include <array>
 
+#define GET_RAW(collection, name, count)                                    \
+    const char* raw##name[count];                                           \
+                                                                            \
+    for (size_t i = 0; i < count; i++) raw##name[i] = collection[i].Str();
+
 #if ENABLE_VALIDATION_LAYERS == 1
+
 #define VALIDATION_LAYERS_ENABLED true
+
+#define CREATE_DEBUG(debugInfo)                                                     \
+    DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);                       \
+    auto pDebugCreateInfo = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers)               \
+    GET_RAW(extensions, Extensions, extensions.Size())                                        \
+    GET_RAW(validationLayers, ValidationLayers, VALIDATION_LAYERS_COUNT)                      \
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                       \
+    CREATE_DEBUG(debugCreateInfo)                                                             \
+    VkInstanceCreateInfo createInfo = {};                                                     \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo,                                       \
+                                              extensionSize,                                  \
+                                              rawExtensions,                                  \
+                                              static_cast<uint32_t>(validationLayers.size()), \
+                                              rawValidationLayers,                            \
+                                              0,                                              \
+                                              pDebugCreateInfo);                              \
+    Vulkan::Instance::Create(&createInfo, nullptr, &instance);
+
 #else
 #define VALIDATION_LAYERS_ENABLED false
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers)             \
+    GET_RAW(extensions, Extensions, extensions.Size())                                      \
+    VkInstanceCreateInfo createInfo = {};                                                   \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo, extensionSize, rawExtensions);      \
+    Vulkan::Instance::Create(&createInfo, nullptr, &instance);
 #endif
 
 namespace Siege
