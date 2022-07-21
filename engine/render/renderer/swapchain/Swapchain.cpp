@@ -47,7 +47,6 @@ void SwapChain::ClearSwapChain(bool isRecreated)
         swapChain = nullptr;
     }
 
-    renderPass.DestroyRenderPass();
     depthImages.DestroyFrameImages();
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -194,12 +193,10 @@ void SwapChain::CreateRenderPass()
 {
     swapChainImageFormat = GetSwapChainImageFormat();
     swapChainDepthFormat = FindDepthFormat();
-    RenderPass::Initialise(
-        &device,
-        OUT renderPass,
+    renderPass = RenderPass(
         RenderPass::CreateConfig()
-            .WithAttachment(Attachments::CreateColorAttachment(swapChainImageFormat))
-            .WithAttachment(Attachments::CreateDepthAttachment(swapChainDepthFormat))
+            .WithAttachment(Attachments::CreateColorAttachment(GetSwapChainImageFormat()))
+            .WithAttachment(Attachments::CreateDepthAttachment(FindDepthFormat()))
             .WithSubPass(
                 Attachments::CreateSubPass()
                     .WithColorReference(Attachments::CreateColorAttachmentReference(0))
