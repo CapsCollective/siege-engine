@@ -24,13 +24,13 @@
 int main(int argc, char* argv[])
 {
     // Check for editor flag
-    bool isEditorMode = argc > 1 && String(argv[1]) == "--editor";
+    bool isEditorMode = argc > 1 && Siege::String(argv[1]) == "--editor";
 
     // Create a window and main camera
-    Window window("Game Example", 800, 450);
+    Siege::Window window("Game Example", 800, 450);
     ServiceLocator::Provide(&window);
 
-    Cam camera;
+    Siege::Cam camera;
     ServiceLocator::Provide(&camera);
 
     // Initialise the message display
@@ -41,11 +41,11 @@ int main(int argc, char* argv[])
     auto devConsole = DevConsole(isEditorMode);
 
     // Batch register all initialised tools (including the dev console)
-    Statics::Tool().SetAllowDeregistration(false);
-    Statics::Tool().Add({&display, &devConsole});
+    Siege::Statics::Tool().SetAllowDeregistration(false);
+    Siege::Statics::Tool().Add({&display, &devConsole});
 
     // Set the default directories
-    Statics::Resource().SetBaseDirectory("assets/");
+    Siege::Statics::Resource().SetBaseDirectory("assets/");
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -55,54 +55,54 @@ int main(int argc, char* argv[])
         ServiceLocator::Provide(editor);
 
         // Batch register the editor and freeCam
-        Statics::Tool().Add({editor, new FreeCam()});
+        Siege::Statics::Tool().Add({editor, new FreeCam()});
     }
     else
     {
         // Load the game entrypoint
-        Statics::Scene().QueueNextScene("scenes/main");
+        Siege::Statics::Scene().QueueNextScene("scenes/main");
     }
 
     // Run main game loop until close button or ESC key
     while (!window.ShouldClose())
     {
         // Update time-step
-        Window::UpdateTime();
+        Siege::Window::UpdateTime();
 
         // Update game entities
         if (!isEditorMode)
         {
-            for (auto& entity : Statics::Entity().GetEntities()) entity->OnUpdate();
+            for (auto& entity : Siege::Statics::Entity().GetEntities()) entity->OnUpdate();
         }
 
         // Update tool entities
-        for (auto& entity : Statics::Tool().GetEntities()) entity->OnUpdate();
+        for (auto& entity : Siege::Statics::Tool().GetEntities()) entity->OnUpdate();
 
         // Entity creation is deferred until after the update loop
-        Statics::Tool().RegisterEntities();
-        Statics::Entity().RegisterEntities();
-        Statics::Collision().RegisterEntities();
+        Siege::Statics::Tool().RegisterEntities();
+        Siege::Statics::Entity().RegisterEntities();
+        Siege::Statics::Collision().RegisterEntities();
 
         // Begin drawing to screen
         window.BeginDraw();
         camera.Begin3D();
 
         // Draw entities
-        Statics::Render().DrawFrame();
+        Siege::Statics::Render().DrawFrame();
 
         camera.End3D();
 
         // UI Draw entities
-        for (auto& entity : Statics::Tool().GetEntities()) entity->OnDraw2D();
+        for (auto& entity : Siege::Statics::Tool().GetEntities()) entity->OnDraw2D();
 
         window.EndDraw();
 
         // Remove all entities at the end of the frame
-        Statics::Resource().FreeResources();
-        Statics::Collision().FreeEntities();
-        Statics::Entity().FreeEntities();
-        Statics::Tool().FreeEntities();
-        Statics::Scene().LoadNextScene();
+        Siege::Statics::Resource().FreeResources();
+        Siege::Statics::Collision().FreeEntities();
+        Siege::Statics::Entity().FreeEntities();
+        Siege::Statics::Tool().FreeEntities();
+        Siege::Statics::Scene().LoadNextScene();
     }
 
     return 0;

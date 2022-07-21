@@ -2,7 +2,7 @@
 
 // 'in' keyword specifies that position gets data from a buffer
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 color;
+layout(location = 1) in vec3 colour;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec2 uv;
 
@@ -49,5 +49,5 @@ void main() {
     gl_Position = camera.projectionMatrix * camera.viewMatrix * positionWorld;
     fragNormalWorld = normalize(mat3(object.normalMatrix) * normal);
     fragPosWorld = positionWorld.xyz;
-    fragColor = color;
+    fragColor = colour;
 }

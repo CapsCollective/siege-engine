@@ -17,7 +17,7 @@ struct Buffer
 {
     VkBuffer buffer {VK_NULL_HANDLE};
     VkDeviceMemory bufferMemory {VK_NULL_HANDLE};
-    u64 size = 0;
+    uint64_t size = 0;
 };
 
 /**

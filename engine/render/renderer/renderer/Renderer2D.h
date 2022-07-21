@@ -9,10 +9,8 @@
 #pragma once
 
 #include "../Core.h"
-#include "../camera/Camera.h"
 #include "../material/Material.h"
 #include "../model/Model.h"
-#include "../utils/Math.h"
 
 namespace Siege
 {
@@ -28,15 +26,15 @@ public:
     static void Initialise();
 
     static void DrawModel(Model* model,
-                          const glm::vec2& position,
-                          const glm::vec2& scale,
+                          const Siege::Vec2& position,
+                          const Siege::Vec2& scale,
                           const float& rotation,
                           const float& zIndex);
     static void DrawModel(Model* model,
-                          const glm::vec2& position,
-                          const glm::vec2& scale,
+                          const Siege::Vec2& position,
+                          const Siege::Vec2& scale,
                           const float& zIndex);
-    static void DrawModel(Model* model, const glm::vec2& position);
+    static void DrawModel(Model* model, const Siege::Vec2& position);
 
     static void RecreateMaterials();
 
@@ -47,13 +45,13 @@ private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    static Utils::StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static Utils::StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    static StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
-    static u64 transformSize;
+    static uint64_t transformSize;
 
-    static Utils::StringId transformId;
-    static Utils::StringId globalDataId;
+    static Hash::StringId transformId;
+    static Hash::StringId globalDataId;
 
     static Material* currentMaterial;
     static Model* currentModel;

@@ -10,7 +10,7 @@
 
 namespace Siege
 {
-u32 FrameImages::imageCount = 0;
+uint32_t FrameImages::imageCount = 0;
 
 FrameImages::FrameImages() = default;
 
@@ -21,7 +21,9 @@ FrameImages::FrameImages(VulkanDevice* vulkanDevice, VkFormat format) :
 
 FrameImages::~FrameImages() = default;
 
-void FrameImages::InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imageDepth)
+void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
+                                       uint32_t imageHeight,
+                                       uint32_t imageDepth)
 {
     for (size_t i = 0; i < GetImageCount(); i++)
     {

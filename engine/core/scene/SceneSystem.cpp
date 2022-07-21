@@ -17,6 +17,8 @@
 #include "../render/ResourceSystem.h"
 #include "SceneFile.h"
 
+namespace Siege
+{
 // Define constants
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
@@ -80,3 +82,4 @@ void SceneSystem::ClearScene()
     // Clear out all resources
     Statics::Resource().ClearResources();
 }
+} // namespace Siege

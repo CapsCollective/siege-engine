@@ -8,35 +8,31 @@
 
 #pragma once
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "../pipeline/PipelineConfig.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <array>
-#include <glm/glm.hpp>
 
 namespace Siege
 {
 struct Vertex
 {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec3 normal;
-    glm::vec2 uv;
+    Siege::Vec3 position;
+    Siege::Colour colour;
+    Siege::Vec3 normal;
+    Siege::Vec2 uv;
 };
 
 struct Vertex2D
 {
-    glm::vec2 position;
-    glm::vec3 color;
+    Siege::Vec2 position;
+    Siege::Colour colour;
 };
 
 struct BillboardVertex
 {
-    glm::vec2 position;
+    Siege::Vec2 position;
 };
 
 bool operator==(const Vertex& left, const Vertex& right);
@@ -51,11 +47,11 @@ public:
 
     struct MeshData
     {
-        u64 vertexSize {0};
+        uint64_t vertexSize {0};
         const void* vertices {nullptr};
-        u32 vertexCount {0};
-        u32* indices {nullptr};
-        u32 indexCount {0};
+        uint32_t vertexCount {0};
+        uint32_t* indices {nullptr};
+        uint32_t indexCount {0};
     };
 
     Mesh();
@@ -69,7 +65,7 @@ public:
     void UpdateVertices(const Mesh::MeshData& meshData);
 
     void UpdateVertexBuffer(const void* vertices);
-    void UpdateIndexBuffer(u32* indices);
+    void UpdateIndexBuffer(uint32_t* indices);
 
     void Bind(VkCommandBuffer commandBuffer);
     void DestroyMesh();
@@ -79,11 +75,11 @@ public:
         return hasIndexBuffer;
     }
 
-    u32 GetVertexCount()
+    uint32_t GetVertexCount()
     {
         return vertexCount;
     }
-    u32 GetIndexCount()
+    uint32_t GetIndexCount()
     {
         return indexCount;
     }
@@ -96,7 +92,7 @@ private:
     // of a single, large vertex and index buffer.
 
     void CreateVertexBuffers(const void* vertices);
-    void CreateIndexBuffer(const u32* indices);
+    void CreateIndexBuffer(const uint32_t* indices);
 
     Buffer::Buffer globalStagingBuffer;
     Buffer::Buffer globalIndexStagingBuffer;
@@ -107,11 +103,11 @@ private:
     bool hasIndexBuffer = false;
     bool hasVertexBuffer = false;
 
-    u32 indexCount = 0;
-    u32 vertexCount = 0;
+    uint32_t indexCount = 0;
+    uint32_t vertexCount = 0;
 
-    u64 indexSize {sizeof(u32)};
-    u64 vertexSize = 0;
+    uint64_t indexSize {sizeof(uint32_t)};
+    uint64_t vertexSize = 0;
 
     bool isFreed = false;
 };

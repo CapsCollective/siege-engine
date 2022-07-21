@@ -22,12 +22,12 @@ vec4 grid(vec3 fragPos3D, float scale) {
     float minimumZ = min(derivative.y, 1);
     float minimumX = min(derivative.x, 1);
 
-    vec4 color = vec4(0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
+    vec4 colour = vec4(0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
 
-    color.z += (float(((fragPos3D.x > -1.0 * minimumX) && (fragPos3D.x < 1.0 * minimumX))) * 0.8);
-    color.x += (float(((fragPos3D.z > -1.0 * minimumZ) && (fragPos3D.z < 1.0 * minimumZ))) * 0.8);
+    colour.z += (float(((fragPos3D.x > -1.0 * minimumX) && (fragPos3D.x < 1.0 * minimumX))) * 0.8);
+    colour.x += (float(((fragPos3D.z > -1.0 * minimumZ) && (fragPos3D.z < 1.0 * minimumZ))) * 0.8);
 
-    return color;
+    return colour;
 }
 
 float computeDepth(vec3 pos) {

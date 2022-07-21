@@ -12,6 +12,8 @@
 
 #include "../TransitionAdapter.h"
 
+namespace Siege
+{
 static Vec3 pos(0.f, 10.f, 10.f);
 
 static raylib::Camera3D& GetCamera()
@@ -63,3 +65,4 @@ void Cam::SetTarget(const Vec3& target)
 {
     GetCamera().SetTarget(FromVec3(target));
 }
+} // namespace Siege

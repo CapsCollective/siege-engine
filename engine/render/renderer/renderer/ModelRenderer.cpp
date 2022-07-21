@@ -8,12 +8,15 @@
 
 #include "ModelRenderer.h"
 
+#include <utils/math/Graphics.h>
+
 namespace Siege
 {
 ModelRenderer::ModelRenderer() {}
 ModelRenderer::~ModelRenderer() {}
 
-void ModelRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void ModelRenderer::Initialise(const String& globalDataAttributeName,
+                               const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     transformId = INTERN_STR("objectBuffer");
@@ -22,19 +25,19 @@ void ModelRenderer::Initialise(const char* globalDataAttributeName, const u64& g
 void ModelRenderer::Destroy() {}
 
 void ModelRenderer::DrawModel(Model* model,
-                              const glm::vec3& position,
-                              const glm::vec3& scale,
-                              const glm::vec3& rotation)
+                              const Siege::Vec3& position,
+                              const Siege::Vec3& scale,
+                              const Siege::Vec3& rotation)
 {
     models.Append(model);
 
-    auto transform = Utils::Math::CalculateTransform3D(position, rotation, scale);
-    auto normal = Utils::Math::CalculateNormalMatrix(rotation, scale);
+    auto transform = Graphics::CalculateTransform3D(position, rotation, scale);
+    auto normal = Graphics::CalculateNormal(rotation, scale);
     transforms.Append({transform, normal});
 }
 
 void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
-                           const u64& globalDataSize,
+                           const uint64_t& globalDataSize,
                            const void* globalData)
 {
     if (models.Count() == 0) return;

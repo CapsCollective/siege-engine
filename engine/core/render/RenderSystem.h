@@ -10,14 +10,16 @@
 #define SIEGE_ENGINE_RENDERSYSTEM_H
 
 #include <utils/Colour.h>
-#include <utils/Maths.h>
 
 #include <map>
 #include <utility>
 #include <variant>
 
 #include "../entity/EntityPtr.h"
+#include "utils/math/Maths.h"
 
+namespace Siege
+{
 struct ModelData
 {
     String modelPath;
@@ -57,5 +59,6 @@ private:
 
     std::map<EntityPtr<Entity>, RenderItem> renderItems;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_RENDERSYSTEM_H

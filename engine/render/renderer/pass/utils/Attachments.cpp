@@ -61,8 +61,8 @@ VkAttachmentDescription Attachments::CreateAttachment(VkFormat format,
             finalLayout};
 }
 
-VkSubpassDependency Attachments::CreateDependency(u32 srcSubpass,
-                                                  u32 dstSubpass,
+VkSubpassDependency Attachments::CreateDependency(uint32_t srcSubpass,
+                                                  uint32_t dstSubpass,
                                                   VkPipelineStageFlags srcStageMask,
                                                   VkPipelineStageFlags dstStageMask,
                                                   VkAccessFlags srcAccessMask,
@@ -71,20 +71,20 @@ VkSubpassDependency Attachments::CreateDependency(u32 srcSubpass,
     return {srcSubpass, dstSubpass, srcStageMask, dstStageMask, srcAccessMask, dstAccessMask};
 }
 
-VkAttachmentReference Attachments::CreateAttachmentReference(u32 attachment,
+VkAttachmentReference Attachments::CreateAttachmentReference(uint32_t attachment,
                                                              VkImageLayout imageLayout)
 {
     return {attachment, imageLayout};
 }
 
 VkSubpassDescription Attachments::CreateSubpass(VkPipelineBindPoint bindPoint,
-                                                u32 colorAttachmentCount,
+                                                uint32_t colorAttachmentCount,
                                                 const VkAttachmentReference* colorAttachments,
                                                 const VkAttachmentReference* depthStencilAttachment,
                                                 const VkAttachmentReference* resolveAttachments,
-                                                u32 preserveAttachmentCount,
-                                                const u32* preserveAttachments,
-                                                u32 inputAttachmentCount,
+                                                uint32_t preserveAttachmentCount,
+                                                const uint32_t* preserveAttachments,
+                                                uint32_t inputAttachmentCount,
                                                 const VkAttachmentReference* inputAttachments,
                                                 VkSubpassDescriptionFlags flags)
 {
@@ -101,13 +101,13 @@ VkSubpassDescription Attachments::CreateSubpass(VkPipelineBindPoint bindPoint,
 }
 
 VkSubpassDescription Attachments::CreateGraphicsSubpass(
-    u32 colorAttachmentCount,
+    uint32_t colorAttachmentCount,
     const VkAttachmentReference* colorAttachments,
     const VkAttachmentReference* depthStencilAttachment,
     const VkAttachmentReference* resolveAttachments,
-    u32 preserveAttachmentCount,
-    const u32* preserveAttachments,
-    u32 inputAttachmentCount,
+    uint32_t preserveAttachmentCount,
+    const uint32_t* preserveAttachments,
+    uint32_t inputAttachmentCount,
     const VkAttachmentReference* inputAttachments,
     VkSubpassDescriptionFlags flags)
 {
@@ -123,12 +123,12 @@ VkSubpassDescription Attachments::CreateGraphicsSubpass(
                          flags);
 }
 
-VkAttachmentReference Attachments::CreateDepthStencilAttachmentReference(u32 attachment)
+VkAttachmentReference Attachments::CreateDepthStencilAttachmentReference(uint32_t attachment)
 {
     return CreateAttachmentReference(attachment, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
-VkAttachmentReference Attachments::CreateColorAttachmentReference(u32 attachment)
+VkAttachmentReference Attachments::CreateColorAttachmentReference(uint32_t attachment)
 {
     return CreateAttachmentReference(attachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 }
@@ -156,13 +156,13 @@ VkSubpassDescription Attachments::SubPassBuilder::BuildGraphicsSubPass()
 
 // DependencyBuilder Functions
 
-Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcSubPass(u32 subpass)
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithSrcSubPass(uint32_t subpass)
 {
     srcSubpass = subpass;
     return *this;
 }
 
-Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstSubPass(u32 subpass)
+Attachments::DependencyBuilder& Attachments::DependencyBuilder::WithDstSubPass(uint32_t subpass)
 {
     dstSubpass = subpass;
     return *this;

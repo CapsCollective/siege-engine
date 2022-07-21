@@ -32,41 +32,41 @@ public:
 
     struct Attribute
     {
-        u32 offset = 0;
+        uint32_t offset = 0;
         AttributeType type;
     };
 
     struct Binding
     {
-        u32 binding;
-        u32 stride;
+        uint32_t binding;
+        uint32_t stride;
         InputRate inputRate;
-        u32 attributeCount;
+        uint32_t attributeCount;
         Attribute* attributes;
     };
 
     struct Data
     {
-        Utils::Array<VkVertexInputBindingDescription> bindings;
-        Utils::Array<VkVertexInputAttributeDescription> attributes;
+        Array<VkVertexInputBindingDescription> bindings;
+        Array<VkVertexInputAttributeDescription> attributes;
     };
 
     static Data CreateDescriptions(size_t bindingCount, Binding* bindings);
 
-    static Binding CreateBinding(u32 binding,
-                                 u32 stride,
+    static Binding CreateBinding(uint32_t binding,
+                                 uint32_t stride,
                                  InputRate inputRate,
                                  Attribute* attributes,
-                                 u32 attibuteCount);
+                                 uint32_t attibuteCount);
 
-    static VkVertexInputBindingDescription CreateBinding(u32 binding,
-                                                         u32 stride,
+    static VkVertexInputBindingDescription CreateBinding(uint32_t binding,
+                                                         uint32_t stride,
                                                          VkVertexInputRate inputRate);
 
-    static VkVertexInputAttributeDescription CreateAttribute(u32 location,
-                                                             u32 binding,
+    static VkVertexInputAttributeDescription CreateAttribute(uint32_t location,
+                                                             uint32_t binding,
                                                              VkFormat format,
-                                                             u32 offset);
+                                                             uint32_t offset);
 };
 
 class PipelineConfig
@@ -109,9 +109,9 @@ public:
      * @returns a VkPipelineViewportStateCreateInfo struct with the inputted fields.
      **/
     static VkPipelineViewportStateCreateInfo InitViewPortCreateInfo(
-        u32 viewportCount,
+        uint32_t viewportCount,
         const VkViewport* pViewports,
-        u32 scissorCount,
+        uint32_t scissorCount,
         const VkRect2D* pScissors,
         VkPipelineViewportStateCreateFlags flags = 0,
         const void* pNext = nullptr);
@@ -175,7 +175,7 @@ public:
 
     /**
      * A config struct which specifies how colors are blended by the pipeline.
-     * @param blendEnable specifies if color blending is enabled.
+     * @param blendEnable specifies if colour blending is enabled.
      * @param srcColorBlendFactor specifies the blend factor used for the source.
      * @param dstColorBlendFactor specifies the blend factor used for the destination.
      * @param colorBlendOp selects which blend operation to use to calculate RGB values.
@@ -184,7 +184,7 @@ public:
      * @param dstAlphaBlendFactor specifies the blend factor to be used for alpha values on the
      *destination.
      * @param alphaBlendOp selects which operation to use to calculate alpha values.
-     * @param colorWriteMask a bitmask which specifies which color channels to expect. Defaults to
+     * @param colorWriteMask a bitmask which specifies which colour channels to expect. Defaults to
      *RGBA.
      * @returns a configured VkPipelineColorBlendAttachmentState struct
      **/
@@ -200,15 +200,15 @@ public:
                                                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
 
     /**
-     * Creates an info struct for configuring the pipeline's color blend state.
+     * Creates an info struct for configuring the pipeline's colour blend state.
      * @param logicOpEnable controls whether logical operations are applied to colors.
      * @param logicOp selects which logical opeartion to apply
-     * @param attachmentCount specifies the number of color blend attachments applied
-     * @param pAttachments a pointer to an array of color blend attachments
-     * @param blendConstantR the R value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantG the G value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantB the B value to be used for color blending. Defaults to 0.0f.
-     * @param blendConstantA the A value to be used for color blending. Defaults to 0.0f.
+     * @param attachmentCount specifies the number of colour blend attachments applied
+     * @param pAttachments a pointer to an array of colour blend attachments
+     * @param blendConstantR the R value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantG the G value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantB the B value to be used for colour blending. Defaults to 0.0f.
+     * @param blendConstantA the A value to be used for colour blending. Defaults to 0.0f.
      * @param flags configuration flags. Defaults to 0
      * @param pNext and structs which extend this struct. Defaults to nullptr.
      * @returns a VkPipelineColorBlendStateCreateInfo struct.
@@ -216,7 +216,7 @@ public:
     static VkPipelineColorBlendStateCreateInfo InitColorBlendCreateInfo(
         VkBool32 logicOpEnable,
         VkLogicOp logicOp,
-        u32 attachmentCount,
+        uint32_t attachmentCount,
         const VkPipelineColorBlendAttachmentState* pAttachments,
         float blendConstantR = 0.0f,
         float blendConstantG = 0.0f,
@@ -239,27 +239,27 @@ public:
         const void* pNext = nullptr);
 
     static VkPipelineDynamicStateCreateInfo InitDynamicStateCreateInfo(
-        u32 dynamicStateCount,
+        uint32_t dynamicStateCount,
         const VkDynamicState* pDynamicStates,
         VkPipelineDynamicStateCreateFlags flags = 0,
         const void* pNext = nullptr);
 
     static VkPushConstantRange CreatePushConstantRange(VkShaderStageFlags stageflags,
-                                                       u32 offset,
-                                                       u32 size);
+                                                       uint32_t offset,
+                                                       uint32_t size);
 
     static VkPipelineLayoutCreateInfo CreatePipelineLayoutCreateInfo(
         VkDescriptorSetLayout* layouts,
-        u32 layoutCount,
+        uint32_t layoutCount,
         VkPushConstantRange* pushConstants,
-        u32 pushConstantCount);
+        uint32_t pushConstantCount);
 
     static void CreatePipelineLayout(VkDevice device,
                                      VkPipelineLayout* pipelineLayout,
                                      VkDescriptorSetLayout* layouts = nullptr,
-                                     u32 layoutCount = 0,
+                                     uint32_t layoutCount = 0,
                                      VkPushConstantRange* pushConstants = nullptr,
-                                     u32 pushConstantCount = 0);
+                                     uint32_t pushConstantCount = 0);
 
     static VkPipelineShaderStageCreateInfo CreateShaderStage(
         VkShaderStageFlagBits stage,
@@ -273,7 +273,7 @@ public:
         VkPipelineShaderStageCreateInfo* pShaderStageCreateInfos,
         PipelineStage* stages,
         VkShaderModule* modules,
-        u32 stageCount);
+        uint32_t stageCount);
 
 private:
 };
