@@ -98,7 +98,9 @@ public:
      * @param scale the scale of the object.
      * @return the transform matrix of the object's spatial positioning.
      */
-    static Mat2 CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale);
+    static Mat2 CalculateTransform2D(const Vec2& position,
+                                     const float& rotation,
+                                     const Vec2& scale);
 
     /**
      * Calculates the normal matrix of a 3D object.
