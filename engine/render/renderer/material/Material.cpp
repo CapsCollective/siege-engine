@@ -12,7 +12,7 @@
 
 #include "../mesh/Mesh.h"
 #include "../swapchain/Swapchain.h"
-#include "../utils/Descriptor.h"
+#include "render/renderer/platform/vulkan/utils/Descriptor.h"
 
 namespace Siege
 {

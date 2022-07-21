@@ -103,7 +103,7 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     String requiredExtensionsMsg;
 
     auto requiredExtensions = GetRequiredExtensions(enableValidationLayers);
-    for (auto it = requiredExtensions.Iterator(); it; ++it)
+    for (auto it = requiredExtensions.CreateIterator(); it; ++it)
     {
         auto required = *it;
         requiredExtensionsMsg += String("\n\t %s").Formatted(required.Str());

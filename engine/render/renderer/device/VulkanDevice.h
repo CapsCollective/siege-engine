@@ -20,6 +20,11 @@
 // std lib headers
 #include "utils/collections/StackArray.h"
 
+#define GET_RAW(collection, name, count)                                    \
+    const char* raw##name[count];                                           \
+                                                                            \
+    for (size_t i = 0; i < count; i++) raw##name[i] = collection[i].Str();
+
 #if ENABLE_VALIDATION_LAYERS == 1
 #define VALIDATION_LAYERS_ENABLED true
 #else

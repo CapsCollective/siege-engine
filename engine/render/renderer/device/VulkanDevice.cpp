@@ -7,17 +7,50 @@
 //
 
 #include "VulkanDevice.h"
+#include "../platform/vulkan/utils/Instance.h"
 
 #include <utils/Logging.h>
 
 // std headers
-#include <cstring>
 #include <set>
 
 #ifdef __APPLE__
 #define ADD_PORTABILITY_BIT(info) info.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #else
 #define ADD_PORTABILITY_BIT(...)
+#endif
+
+#if ENABLE_VALIDATION_LAYERS == 1
+#define VALIDATION_LAYERS_ENABLED true
+
+#define CREATE_DEBUG(debugInfo)                                                     \
+    DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);                       \
+    auto pDebugCreateInfo = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers)               \
+    GET_RAW(extensions, Extensions, extensions.Size())                                        \
+    GET_RAW(validationLayers, ValidationLayers, VALIDATION_LAYERS_COUNT)                      \
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                       \
+    CREATE_DEBUG(debugCreateInfo)                                                             \
+    VkInstanceCreateInfo createInfo = {};                                                     \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo,                                       \
+                                              extensionSize,                                  \
+                                              rawExtensions,                                  \
+                                              static_cast<uint32_t>(validationLayers.Size()), \
+                                              rawValidationLayers,                            \
+                                              0,                                              \
+                                              pDebugCreateInfo);                              \
+    ADD_PORTABILITY_BIT(createInfo)                                                           \
+    Vulkan::Instance::Create(&createInfo, nullptr, &instance);
+
+#else
+#define VALIDATION_LAYERS_ENABLED false
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers)             \
+    GET_RAW(extensions, Extensions, extensions.Size())                                      \
+    VkInstanceCreateInfo createInfo = {};                                                   \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo, extensionSize, rawExtensions);      \
+    ADD_PORTABILITY_BIT(createInfo)                                                         \
+    Vulkan::Instance::Create(&createInfo, nullptr, &instance);
 #endif
 
 namespace Siege
@@ -89,53 +122,18 @@ void VulkanDevice::CreateInstance()
     }
 
     // Specify general app information.
-    VkApplicationInfo appInfo {};
-    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Render Example";
-    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_2;
-
-    VkInstanceCreateInfo createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pApplicationInfo = &appInfo;
+    auto appInfo = Vulkan::Instance::AppInfo("Siege Renderer",
+                                             VK_MAKE_VERSION(1, 0, 0),
+                                             "No Engine",
+                                             VK_MAKE_VERSION(1, 0, 0),
+                                             VK_API_VERSION_1_2);
 
     // Get all extensions required by our windowing system.
     auto extensions = Extensions::GetRequiredExtensions(enableValidationLayers);
 
-    const char* rawExtensions[extensions.Size()];
+    uint32_t extensionSize = static_cast<uint32_t>(extensions.Size());
 
-    for (size_t i = 0; i < extensions.Size(); i++) rawExtensions[i] = extensions[i].Str();
-
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.Size());
-    createInfo.ppEnabledExtensionNames = rawExtensions;
-
-    ADD_PORTABILITY_BIT(createInfo)
-
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-    if (enableValidationLayers)
-    {
-        const char* rawLayers[VALIDATION_LAYERS_COUNT];
-
-        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++)
-            rawLayers[i] = validationLayers[i].Str();
-
-        // Only add the ability to report on validation layers if the feature is enabled.
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.Size());
-        createInfo.ppEnabledLayerNames = rawLayers;
-
-        DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-    }
-    else
-    {
-        createInfo.enabledLayerCount = 0;
-        createInfo.pNext = nullptr;
-    }
-
-    CC_ASSERT(vkCreateInstance(&createInfo, nullptr, OUT & instance) == VK_SUCCESS,
-              "Unable to create Vulkan Instance!");
+    CREATE_INSTANCE(appInfo, extensionSize, extensions, validationLayers.Size(), validationLayers)
 
     Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
 
