@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_COLOUR_H
 #define SIEGE_ENGINE_COLOUR_H
 
+namespace Siege
+{
 struct Colour
 {
     // Public constants
@@ -40,5 +42,6 @@ struct Colour
     int b;
     int a;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_COLOUR_H

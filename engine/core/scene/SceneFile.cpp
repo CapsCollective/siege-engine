@@ -16,6 +16,8 @@
 #include "../entity/Entity.h"
 #include "../render/ResourceSystem.h"
 
+namespace Siege
+{
 void SceneFile::RegisterSerialisable(const String& name,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
@@ -98,3 +100,4 @@ String SceneFile::MakeScenePath(const String& sceneName)
 {
     return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
 }
+} // namespace Siege

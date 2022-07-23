@@ -15,6 +15,8 @@
 #include <utils/FileSystem.h>
 #include <utils/String.h>
 
+using namespace Siege;
+
 // Const declarations
 static constexpr const char* SCENE_DIR = "data/";
 static constexpr const char* TEST_FILE = "test.scene";
@@ -22,9 +24,9 @@ static constexpr const char* UNTITLED_FILE = "untitled.scene";
 
 // Helper methods
 
-String Filepath(const char* filename)
+Siege::String Filepath(const char* filename)
 {
-    return String(SCENE_DIR) + filename;
+    return Siege::String(SCENE_DIR) + filename;
 }
 
 // Test entity
@@ -32,20 +34,20 @@ class TestEntity : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const Siege::String ENTITY_NAME;
 
     TestEntity() : Entity(ENTITY_NAME) {}
 
-    explicit TestEntity(Xform transform) : Entity(ENTITY_NAME, transform) {}
+    explicit TestEntity(Siege::Xform transform) : Entity(ENTITY_NAME, transform) {}
 };
 
-const String TestEntity::ENTITY_NAME("TestEntity");
+const Siege::String TestEntity::ENTITY_NAME("TestEntity");
 
 REGISTER_SERIALISATION_INTERFACE(
     TestEntity::ENTITY_NAME,
-    [](Entity* entity) -> String { return ""; },
-    [](const EntityData& data, const std::vector<String>& args) -> Entity* {
-        return new TestEntity(Xform(data.position, data.rotation));
+    [](Entity* entity) -> Siege::String { return ""; },
+    [](const EntityData& data, const std::vector<Siege::String>& args) -> Entity* {
+        return new TestEntity(Siege::Xform(data.position, data.rotation));
     });
 
 // Define test fixture
@@ -69,8 +71,8 @@ UTEST_F(test_SceneSystem, SaveEmptyScene)
     // When an empty scene is saved, it should create a file in the correct directory
     Statics::Scene().SaveScene("test");
 
-    ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
-    String content = FileSystem::Read(Filepath(TEST_FILE));
+    ASSERT_TRUE(Siege::FileSystem::Exists(Filepath(TEST_FILE)));
+    Siege::String content = Siege::FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_FALSE(content);
 }
 
@@ -81,8 +83,8 @@ UTEST_F(test_SceneSystem, SaveNonEmptyScene)
     Statics::Entity().RegisterEntities();
     Statics::Scene().SaveScene("test");
 
-    ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
-    String content = FileSystem::Read(Filepath(TEST_FILE));
+    ASSERT_TRUE(Siege::FileSystem::Exists(Filepath(TEST_FILE)));
+    Siege::String content = Siege::FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_FALSE(content.IsEmpty());
     ASSERT_NE(-1, content.Find("TestEntity"));
 }
@@ -95,8 +97,8 @@ UTEST_F(test_SceneSystem, SaveClearedScene)
     Statics::Entity().Reset();
     Statics::Scene().SaveScene("test");
 
-    ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
-    String content = FileSystem::Read(Filepath(TEST_FILE));
+    ASSERT_TRUE(Siege::FileSystem::Exists(Filepath(TEST_FILE)));
+    Siege::String content = Siege::FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_TRUE(content.IsEmpty());
     ASSERT_EQ(-1, content.Find("TestEntity"));
 }
@@ -107,8 +109,8 @@ UTEST_F(test_SceneSystem, SaveNonSerialisableEntity)
     Statics::Entity().Add(new Entity());
     Statics::Scene().SaveScene("test");
 
-    ASSERT_TRUE(FileSystem::Exists(Filepath(TEST_FILE)));
-    String content = FileSystem::Read(Filepath(TEST_FILE));
+    ASSERT_TRUE(Siege::FileSystem::Exists(Filepath(TEST_FILE)));
+    Siege::String content = Siege::FileSystem::Read(Filepath(TEST_FILE));
     ASSERT_TRUE(content.IsEmpty());
 }
 
@@ -116,9 +118,9 @@ UTEST_F(test_SceneSystem, SaveUnnamedScene)
 {
     // When an empty string is passed into SaveScene, it should create "untitled.scene"
     Statics::Scene().SaveScene("");
-    String filepath = Filepath(UNTITLED_FILE);
+    Siege::String filepath = Filepath(UNTITLED_FILE);
 
-    ASSERT_TRUE(FileSystem::Exists(filepath));
+    ASSERT_TRUE(Siege::FileSystem::Exists(filepath));
     remove(filepath);
 }
 

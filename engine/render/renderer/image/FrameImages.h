@@ -18,14 +18,14 @@ class FrameImages
 {
 public:
 
-    static constexpr u32 MAX_IMAGES = 5;
+    static constexpr uint32_t MAX_IMAGES = 5;
 
     FrameImages();
     FrameImages(VulkanDevice* vulkanDevice, VkFormat format);
     ~FrameImages();
 
     void InitColorImageView2D();
-    void InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imageDepth);
+    void InitDepthImageView2D(uint32_t imageWidth, uint32_t imageHeight, uint32_t imageDepth);
 
     void DestroyFrameImages();
 
@@ -65,11 +65,11 @@ public:
         return imageViews[index];
     }
 
-    static void SetImageCount(u32 count)
+    static void SetImageCount(uint32_t count)
     {
         imageCount = count;
     }
-    static u32 GetImageCount()
+    static uint32_t GetImageCount()
     {
         return imageCount;
     }
@@ -86,6 +86,6 @@ private:
 
     bool hasInfo {false};
 
-    static u32 imageCount;
+    static uint32_t imageCount;
 };
 } // namespace Siege

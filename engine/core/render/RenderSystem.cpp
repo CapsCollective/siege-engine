@@ -13,6 +13,8 @@
 #include "../TransitionAdapter.h"
 #include "ResourceSystem.h"
 
+namespace Siege
+{
 void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {
     Add(entity, modelData, entity->GetTransform());
@@ -42,13 +44,13 @@ void RenderSystem::DrawFrame()
         DrawModelEx(model,
                     FromVec3(item.transform.GetPosition()),
                     FromVec3(Vec3::Up),
-                    item.transform.GetRotation(),
+                    item.transform.GetRotation().y,
                     FromVec3(item.transform.GetScale()),
                     WHITE);
         DrawModelWiresEx(model,
                          FromVec3(item.transform.GetPosition()),
                          FromVec3(Vec3::Up),
-                         item.transform.GetRotation(),
+                         item.transform.GetRotation().y,
                          FromVec3(item.transform.GetScale()),
                          PINK);
     }
@@ -69,3 +71,4 @@ void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, Co
 {
     DrawRectangle(posX, posY, width, height, FromColour(color));
 }
+} // namespace Siege

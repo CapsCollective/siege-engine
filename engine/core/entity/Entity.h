@@ -9,12 +9,15 @@
 #ifndef SIEGE_ENGINE_ENTITY_H
 #define SIEGE_ENGINE_ENTITY_H
 
-#include <utils/Maths.h>
 #include <utils/String.h>
+#include <utils/math/Maths.h>
+#include <utils/math/Xform.h>
 
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
 
+namespace Siege
+{
 /**
  * The base entity class for game objects and tool
  */
@@ -202,7 +205,7 @@ protected:
     // Protected fields
 
     /**
-     * The transform of the entity as an Xform
+     * The transform of the entity as a Xform
      */
     Xform transform;
 
@@ -225,5 +228,6 @@ private:
      */
     int zIndex;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITY_H

@@ -11,7 +11,7 @@
 
 #include <core/entity/Entity.h>
 
-class MessageDisplay : public Entity
+class MessageDisplay : public Siege::Entity
 {
 public:
 
@@ -21,7 +21,7 @@ public:
 
     // Public methods
 
-    void DisplayMessage(const String& message, float time = 10.f);
+    void DisplayMessage(const Siege::String& message, float time = 10.f);
 
 protected:
 
@@ -35,7 +35,7 @@ private:
 
     float displayTime;
 
-    String displayMessage;
+    Siege::String displayMessage;
 };
 
 #endif // SIEGE_ENGINE_MESSAGEDISPLAY_H

@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "../../Core.h"
 
 namespace Siege::DebugUtilsMessenger
