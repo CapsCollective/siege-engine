@@ -20,11 +20,6 @@
 // std lib headers
 #include "utils/collections/StackArray.h"
 
-#define GET_RAW(collection, name, count)                                    \
-    const char* raw##name[count];                                           \
-                                                                            \
-    for (size_t i = 0; i < count; i++) raw##name[i] = collection[i].Str();
-
 #if ENABLE_VALIDATION_LAYERS == 1
 #define VALIDATION_LAYERS_ENABLED true
 #else
@@ -326,7 +321,7 @@ private:
      * An array storing all required extensions. All of these must be present for the renderer to
      *start.
      **/
-    const Utils::SArray<const char*, 2> deviceExtensions = {
+    const Utils::SArray<String, 2> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };

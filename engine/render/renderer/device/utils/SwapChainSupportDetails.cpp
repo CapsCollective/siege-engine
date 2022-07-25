@@ -8,37 +8,42 @@
 
 #include "SwapChainSupportDetails.h"
 
+#include "../../platform/vulkan/utils/Device.h"
+
 namespace Siege::SwapChainSupportDetails
 {
 SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surface)
 {
+    using Utils::MHArray;
+
     SwapChainSupportDetails details;
     // Populate the surface capabilities value
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, OUT & details.capabilities);
+    details.capabilities = Vulkan::Device::Physical::GetSurfaceCapabilities(device, surface);
 
     uint32_t formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT & formatCount, nullptr);
+    Vulkan::Device::Physical::GetSurfaceFormatCount(device, surface, formatCount);
 
-    if (formatCount != 0)
+    if (Vulkan::Device::Physical::HasFormats(device, surface))
     {
         // Populate our format array
-        details.formats = Utils::MHArray<VkSurfaceFormatKHR>(static_cast<size_t>(formatCount));
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.Data());
+        details.formats = MHArray<VkSurfaceFormatKHR>(static_cast<size_t>(formatCount));
+        Vulkan::Device::Physical::GetSurfaceFormats(device,
+                                                    surface,
+                                                    formatCount,
+                                                    details.formats.Data());
 
         details.hasFormats = true;
     }
 
-    uint32_t presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, OUT & presentModeCount, nullptr);
+    uint32_t presentModeCount = Vulkan::Device::Physical::GetPresentModeCount(device, surface);
 
-    if (presentModeCount != 0)
+    if (Vulkan::Device::Physical::HasPresentModes(device, surface))
     {
         // populate our presentModes array
-        details.presentModes =
-            Utils::MHArray<VkPresentModeKHR>(static_cast<uint32_t>(presentModeCount));
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+        details.presentModes = MHArray<VkPresentModeKHR>(static_cast<uint32_t>(presentModeCount));
+        Vulkan::Device::Physical::GetPresentModes(device,
                                                   surface,
-                                                  &presentModeCount,
+                                                  presentModeCount,
                                                   details.presentModes.Data());
 
         details.hasPresentModes = true;

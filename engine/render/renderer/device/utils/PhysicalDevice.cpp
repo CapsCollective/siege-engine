@@ -10,6 +10,8 @@
 
 #include <set>
 
+#include "../../platform/vulkan/utils/Device.h"
+
 namespace Siege::PhysicalDevice
 {
 bool CheckExtensionSupport(VkPhysicalDevice device,
@@ -44,31 +46,24 @@ bool IsSuitable(VkPhysicalDevice device,
                 const char* const* deviceExtensions,
                 size_t deviceExtensionCount)
 {
-    QueueFamilyIndices::QueueFamilyIndices indices =
-        QueueFamilyIndices::FindQueueFamilies(device, surface);
+    bool indicesSupported = Vulkan::Device::Physical::HasRequiredQueues(device, surface);
 
-    bool extensionsSupported =
-        CheckExtensionSupport(device, deviceExtensions, deviceExtensionCount);
+    bool extensionsSupported = Vulkan::Device::Physical::SupportsExtensions(device,
+                                                                            deviceExtensions,
+                                                                            deviceExtensionCount);
 
-    bool swapChainAdequate = false;
-    if (extensionsSupported)
-    {
-        // Check if the device supports the image formats and present modes needed to render to the
-        // screen.
-        SwapChainSupportDetails::SwapChainSupportDetails swapChainSupport =
-            SwapChainSupportDetails::QuerySupport(device, surface);
-        swapChainAdequate = swapChainSupport.hasFormats && swapChainSupport.hasPresentModes;
-    }
+    bool swapChainAdequate = Vulkan::Device::Physical::HasFormats(device, surface) &&
+                             Vulkan::Device::Physical::HasPresentModes(device, surface);
 
-    VkPhysicalDeviceFeatures supportedFeatures;
-    vkGetPhysicalDeviceFeatures(device, OUT & supportedFeatures);
+    VkPhysicalDeviceFeatures supportedFeatures =
+        Vulkan::Device::Physical::GetDeviceFeatures(device);
 
     // A device is only suitable if it ticks the following boxes:
     // 1) All extensions are supported.
     // 2) It has the supported formats and present modes.
     // 3) It has a graphics and present queues.
     // 4) It supports sampler anistropy.
-    return QueueFamilyIndices::IsComplete(indices) && extensionsSupported && swapChainAdequate &&
+    return indicesSupported && extensionsSupported && swapChainAdequate &&
            supportedFeatures.samplerAnisotropy;
 }
 } // namespace Siege::PhysicalDevice

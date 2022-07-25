@@ -11,6 +11,19 @@
 
 #include "../../Core.h"
 
+#if ENABLE_VALIDATION_LAYERS == 1
+#define CREATE_DEBUG_MESSENGER(debugInfo) DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);
+#define DESTROY_DEBUG_MESSENGER(debugMessenger) \
+    DebugUtilsMessenger::DestroyMessenger(instance, debugMessenger, nullptr);
+#define ASSERT_LAYERS_EXIST(pLayers, layerCount)                            \
+    CC_ASSERT(Extensions::CheckValidationLayerSupport(pLayers, layerCount), \
+              "Validation Layers are not supported!");
+#else
+#define CREATE_DEBUG_MESSENGER(...)
+#define DESTROY_DEBUG_MESSENGER(...)
+#define ASSERT_LAYERS_EXIST(...)
+#endif
+
 namespace Siege::DebugUtilsMessenger
 {
 /**
