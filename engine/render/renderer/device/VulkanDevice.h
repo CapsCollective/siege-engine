@@ -16,6 +16,8 @@
 #include "utils/QueueFamilyIndices.h"
 #include "utils/SwapChainSupportDetails.h"
 
+#include "../platform/vulkan/PhysicalDevice.h"
+
 // std lib headers
 #include <array>
 
@@ -138,7 +140,7 @@ public:
 
     size_t GetDeviceAlignment()
     {
-        return properties.limits.minUniformBufferOffsetAlignment;
+        return physicalDevice.GetProperties().limits.minUniformBufferOffsetAlignment;
     }
 
     /**
@@ -146,7 +148,7 @@ public:
      **/
     SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
     {
-        return SwapChainSupportDetails::QuerySupport(physicalDevice, surface);
+        return SwapChainSupportDetails::QuerySupport(physicalDevice.GetDevice(), surface);
     }
 
     /**
@@ -168,7 +170,7 @@ public:
      **/
     QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
     {
-        return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface);
+        return QueueFamilyIndices::FindQueueFamilies(physicalDevice.GetDevice(), surface);
     }
 
     /**
@@ -237,11 +239,6 @@ public:
                              VkMemoryPropertyFlags properties,
                              VkImage& image,
                              VkDeviceMemory& imageMemory);
-
-    /**
-     * A struct containing all our GPU information (such as it's name)
-     **/
-    VkPhysicalDeviceProperties properties;
 
 private:
 
@@ -324,7 +321,7 @@ private:
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
 
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    Vulkan::PhysicalDevice physicalDevice;
 
     Window* window {nullptr};
     VkCommandPool commandPool;

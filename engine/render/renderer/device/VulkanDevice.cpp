@@ -8,7 +8,6 @@
 
 #include "VulkanDevice.h"
 
-#include "../platform/vulkan/utils/Device.h"
 #include "../platform/vulkan/utils/Instance.h"
 #include "../platform/vulkan/utils/CommandPool.h"
 
@@ -157,27 +156,20 @@ void VulkanDevice::CreateSurface()
 
 void VulkanDevice::PickPhysicalDevice()
 {
-    const char* rawExtensions[deviceExtensions.size()];
-    GET_RAW(deviceExtensions.data(), rawExtensions, deviceExtensions.size())
+    uint32_t extensions = deviceExtensions.size();
 
-    physicalDevice = Vulkan::Device::Physical::FindSuitableDevice(instance,
-                                                                  surface,
-                                                                  rawExtensions,
-                                                                  deviceExtensions.size());
+    const char* rawExtensions[extensions];
+    GET_RAW(deviceExtensions.data(), rawExtensions, extensions)
 
-    CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
-
-    properties = Vulkan::Device::Physical::GetDeviceProperties(physicalDevice);
-
-    CC_LOG_INFO("Physical device found: {} with minumum buffer alignment of {}",
-                properties.deviceName,
-                properties.limits.minUniformBufferOffsetAlignment)
+    physicalDevice = Vulkan::PhysicalDevice(instance, surface, rawExtensions, extensions);
 }
 
 void VulkanDevice::CreateLogicalDevice()
 {
-    uint32_t graphicsIdx = Vulkan::Device::Physical::GetGraphicsQueue(physicalDevice);
-    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(physicalDevice, surface);
+    auto vkPhysicalDevice = physicalDevice.GetDevice();
+
+    uint32_t graphicsIdx = Vulkan::Device::Physical::GetGraphicsQueue(vkPhysicalDevice);
+    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(vkPhysicalDevice, surface);
 
     const uint32_t maxQueues = 2;
     uint32_t count = maxQueues - (graphicsIdx == presentIdx);
@@ -192,7 +184,7 @@ void VulkanDevice::CreateLogicalDevice()
     GET_RAW(validationLayers, rawLayers, validationLayers.size())
 
     CREATE_LOGICAL_DEVICE(
-        physicalDevice,
+        vkPhysicalDevice,
         device,
         static_cast<uint32_t>(uniqueQueueFamilies.size()),
         queueCreateInfos,
@@ -210,8 +202,9 @@ void VulkanDevice::CreateLogicalDevice()
 
 void VulkanDevice::CreateCommandPool()
 {
+    auto vkPhysicalDevice = physicalDevice.GetDevice();
     commandPool = Vulkan::CommandPool::Builder()
-                      .WithQueueFamily(Vulkan::Device::Physical::GetGraphicsQueue(physicalDevice))
+                      .WithQueueFamily(Vulkan::Device::Physical::GetGraphicsQueue(vkPhysicalDevice))
                       .WithFlag(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT)
                       .WithFlag(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                       .Build(device);
@@ -234,11 +227,12 @@ VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,
                                            VkImageTiling tiling,
                                            VkFormatFeatureFlags features)
 {
+    auto vkPhysicalDevice = physicalDevice.GetDevice();
     for (size_t i = 0; i < formatCount; i++)
     {
         VkFormat format = candidates[i];
 
-        VkFormatProperties props = Vulkan::Device::Physical::GetProperties(physicalDevice, format);
+        VkFormatProperties props = Vulkan::Device::Physical::GetProperties(vkPhysicalDevice, format);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
         {
@@ -255,8 +249,10 @@ VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,
 
 uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags newProperties)
 {
+    auto vkPhysicalDevice = physicalDevice.GetDevice();
+
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(vkPhysicalDevice, &memProperties);
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
     {
         if ((typeFilter & (1 << i)) &&
