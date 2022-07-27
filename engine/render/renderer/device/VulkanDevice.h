@@ -10,9 +10,9 @@
 
 #include "../../window/Window.h"
 #include "../Core.h"
-#include "../platform/vulkan/Instance.h"
 #include "../platform/vulkan/LogicalDevice.h"
 #include "../platform/vulkan/PhysicalDevice.h"
+#include "../platform/vulkan/VulkanInstance.h"
 #include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
 #include "utils/Extensions.h"
 #include "utils/PhysicalDevice.h"
@@ -112,7 +112,7 @@ public:
      **/
     VkSurfaceKHR Surface()
     {
-        return surface;
+        return instance.Surface();
     }
 
     /**
@@ -147,7 +147,7 @@ public:
      **/
     SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
     {
-        return SwapChainSupportDetails::QuerySupport(physicalDevice.GetDevice(), surface);
+        return SwapChainSupportDetails::QuerySupport(physicalDevice.GetDevice(), instance.Surface());
     }
 
     /**
@@ -169,7 +169,7 @@ public:
      **/
     QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
     {
-        return QueueFamilyIndices::FindQueueFamilies(physicalDevice.GetDevice(), surface);
+        return QueueFamilyIndices::FindQueueFamilies(physicalDevice.GetDevice(), instance.Surface());
     }
 
     /**
@@ -255,17 +255,7 @@ private:
      * 3) Populates a debug callback for validation layer reporting (if enabled)
      * 4) Creates a Vulkan instance and stores it in the 'instance' variable.
      **/
-    void CreateInstance();
-
-    /**
-     * Queries the window for a vulkan-ready surface for rendering. The result is stored
-     * in the 'surface' instane variable.
-     *
-     * Vulkan is not always guaranteed to be compatible with every window system.
-     * For example, glfw must be configured in a way that a surface is returned
-     * that vulkan can actually render to.
-     **/
-    void CreateSurface();
+    void CreateInstance(Window* window);
 
     /**
      * Searches for and configures a physical device to be used for rendering. A
@@ -300,9 +290,6 @@ private:
 
     Vulkan::PhysicalDevice physicalDevice;
     Vulkan::LogicalDevice logicalDevice;
-
-    Window* window {nullptr};
-    VkSurfaceKHR surface;
 
     /**
      * An array storing all required validation layers (if enabled).

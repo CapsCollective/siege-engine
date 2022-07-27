@@ -8,19 +8,17 @@
 
 #include "VulkanDevice.h"
 
-// std headers
-#include <set>
-
 namespace Siege
 {
 
+// TODO: Finish cleaning this up.
+
 VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
 
-VulkanDevice::VulkanDevice(Window* window) : window {window}
+VulkanDevice::VulkanDevice(Window* window)
 {
-    CreateInstance();
+    CreateInstance(window);
 
-    CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
 
@@ -38,11 +36,8 @@ void VulkanDevice::SetWindow(Window* newWindow)
 
     CC_ASSERT(newWindow != nullptr, "Must provide a valid pointer to a window!")
 
-    window = newWindow;
+    CreateInstance(newWindow);
 
-    CreateInstance();
-
-    CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
 
@@ -50,21 +45,14 @@ void VulkanDevice::SetWindow(Window* newWindow)
 }
 
 VulkanDevice::~VulkanDevice()
-{
-    // When the device goes out of scope, all vulkan structs must be
-    // de-allocated in reverse order of how they were created.
+{}
 
-    vkDestroySurfaceKHR(instance.VkInstance(), surface, nullptr);
-}
-
-void VulkanDevice::CreateInstance()
+void VulkanDevice::CreateInstance(Window* window)
 {
-    instance = Vulkan::VulkanInstance();
-}
-
-void VulkanDevice::CreateSurface()
-{
-    window->CreateWindowSurface(instance.VkInstance(), OUT & surface);
+    auto surfaceExtensions = window->GetRequiredExtensions();
+    instance = Vulkan::VulkanInstance(Window::CreateWindowSurface,
+                                      surfaceExtensions.Data(),
+                                      surfaceExtensions.Size());
 }
 
 void VulkanDevice::PickPhysicalDevice()
@@ -74,7 +62,7 @@ void VulkanDevice::PickPhysicalDevice()
     const char* rawExtensions[extensions];
     GET_RAW(deviceExtensions.data(), rawExtensions, extensions)
 
-    physicalDevice = Vulkan::PhysicalDevice(instance.VkInstance(), surface, rawExtensions, extensions);
+    physicalDevice = Vulkan::PhysicalDevice(instance.VkInstance(), instance.Surface(), rawExtensions, extensions);
 }
 
 void VulkanDevice::CreateLogicalDevice()
@@ -89,7 +77,7 @@ void VulkanDevice::CreateLogicalDevice()
     GET_RAW(validationLayers, rawLayers, layerSize)
 
     logicalDevice = Vulkan::LogicalDevice(physicalDevice,
-                                          surface,
+                                          instance.Surface(),
                                           rawExtensions,
                                           extensionSize,
                                           rawLayers,

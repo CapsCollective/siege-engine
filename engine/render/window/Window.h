@@ -15,6 +15,8 @@
 // Include Vulkan headers through GLFW
 #include <GLFW/glfw3.h>
 
+#include "../renderer/utils/Array.h"
+
 namespace Siege
 {
 class Window
@@ -66,6 +68,8 @@ public:
         return width;
     }
 
+    Array<const char*> GetRequiredExtensions();
+
     VkExtent2D GetExtent() const
     {
         return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
@@ -82,7 +86,7 @@ public:
 
     bool WindowShouldClose();
 
-    bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+    static bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
     bool WasResized() const
     {
@@ -122,10 +126,9 @@ private:
 
     static bool glfwInitialised;
     static size_t glfwWindows;
+    static GLFWwindow* window;
 
     // Private variables
-
-    GLFWwindow* window;
 
     int width;
     int height;

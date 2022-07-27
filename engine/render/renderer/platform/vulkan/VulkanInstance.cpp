@@ -6,15 +6,12 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include "Instance.h"
-
-#include <GLFW/glfw3.h>
-
-#include <unordered_set>
-
+#include "VulkanInstance.h"
 #include "Config.h"
 #include "Macros.h"
 #include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
+
+#include <unordered_set>
 
 #if ENABLE_VALIDATION_LAYERS == 1
 
@@ -35,7 +32,7 @@
                     reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo))
 
 #define REQUIRED_EXT_COUNT(count) count + 1;
-#define SET_DEBUG_EXT(count, arr) array[size - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+#define SET_DEBUG_EXT(count, arr) arr[count - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 #define SETUP_UTILS_MESSENGER SetupDebugMessenger();
 #else
 #define ASSERT_LAYERS_EXIST
@@ -48,9 +45,11 @@
 
 namespace Siege::Vulkan
 {
-VulkanInstance::VulkanInstance()
+VulkanInstance::VulkanInstance(SurfaceFunc surfaceCreationCallback,
+                               const char** requiredExtensions,
+                               const size_t& count)
 {
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!");
+    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
     ASSERT_LAYERS_EXIST
 
@@ -61,8 +60,7 @@ VulkanInstance::VulkanInstance()
                                        VK_MAKE_VERSION(1, 0, 0),
                                        VK_API_VERSION_1_2);
 
-    // Get all extensions required by our windowing system.
-    auto extensions = GetRequiredExtensions();
+    auto extensions = GetRequiredExtensions(requiredExtensions, count);
 
     CREATE_VULKAN_INSTANCE(appInfo,
                            extensions.Data(),
@@ -71,27 +69,36 @@ VulkanInstance::VulkanInstance()
                            static_cast<uint32_t>(Config::validationLayers.size()),
                            0)
 
-    HasRequiredGLFWInstanceExtensions();
+    HasRequiredGLFWInstanceExtensions(requiredExtensions, count);
 
     volkLoadInstance(instance);
 
     SETUP_UTILS_MESSENGER
+
+    surfaceCreationCallback(instance, OUT &surface);
 }
 
 VulkanInstance::VulkanInstance(VulkanInstance&& other)
 {
     instance = other.instance;
     debugMessenger = other.debugMessenger;
+    surface = other.surface;
 
     other.instance = VK_NULL_HANDLE;
     other.debugMessenger = VK_NULL_HANDLE;
+    other.surface = VK_NULL_HANDLE;
 }
 
 VulkanInstance::~VulkanInstance()
 {
     DESTROY_DEBUG_MESSENGER(debugMessenger)
-    debugMessenger = VK_NULL_HANDLE;
+
+    if (instance) vkDestroySurfaceKHR(instance, surface, nullptr);
+
     vkDestroyInstance(instance, nullptr);
+
+    surface = VK_NULL_HANDLE;
+    debugMessenger = VK_NULL_HANDLE;
     instance = VK_NULL_HANDLE;
 }
 
@@ -99,39 +106,36 @@ VulkanInstance& VulkanInstance::operator=(VulkanInstance&& other)
 {
     instance = other.instance;
     debugMessenger = other.debugMessenger;
+    surface = other.surface;
 
     other.instance = VK_NULL_HANDLE;
     other.debugMessenger = VK_NULL_HANDLE;
+    other.surface = VK_NULL_HANDLE;
     return *this;
 }
 
-Array<const char*> VulkanInstance::GetRequiredExtensions()
+Array<const char*> VulkanInstance::GetRequiredExtensions(const char** requiredExtensions,
+                                                         const size_t& count)
 {
-    uint32_t glfwExtensionCount = 0;
-    const char** glfwExtensions;
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    size_t requiredCount = REQUIRED_EXT_COUNT(count);
+    const char* extensions[requiredCount];
+    memcpy(extensions, requiredExtensions, sizeof(const char**) * count);
+    SET_DEBUG_EXT(requiredCount, extensions)
 
-    size_t size = REQUIRED_EXT_COUNT(glfwExtensionCount);
-
-    Array<const char*> array(size);
-
-    for (size_t i = 0; i < glfwExtensionCount; i++) array[i] = glfwExtensions[i];
-
-    SET_DEBUG_EXT(size, array)
-
-    return array;
+    return Array<const char*>(extensions, requiredCount);
 }
 
-void VulkanInstance::HasRequiredGLFWInstanceExtensions()
+void VulkanInstance::HasRequiredGLFWInstanceExtensions(const char** requiredExtensions,
+                                                       const size_t& count)
 {
-    auto count = Instance::GetInstanceExtensionCount();
-    VkExtensionProperties extensions[count];
-    Instance::GetInstanceExtensionProperties(count, extensions);
+    auto instanceCount = Instance::GetInstanceExtensionCount();
+    VkExtensionProperties extensions[instanceCount];
+    Instance::GetInstanceExtensionProperties(instanceCount, extensions);
 
     String availableExtensions;
 
     std::unordered_set<String> available;
-    for (size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < instanceCount; i++)
     {
         VkExtensionProperties extension = extensions[i];
         availableExtensions += String("\n\t %s").Formatted(extension.extensionName);
@@ -142,11 +146,11 @@ void VulkanInstance::HasRequiredGLFWInstanceExtensions()
 
     String requiredExtensionsMsg;
 
-    auto requiredExtensions = GetRequiredExtensions();
-    for (const auto& required : requiredExtensions)
+    auto reqExtensions = GetRequiredExtensions(requiredExtensions, count);
+    for (const auto& required : reqExtensions)
     {
         requiredExtensionsMsg += String("\n\t %s").Formatted(required);
-        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!");
+        CC_ASSERT(available.find(required) != available.end(), "Failed to find surface Extensions!")
     }
 
     CC_LOG_INFO("Required Extensions: {}", requiredExtensionsMsg)

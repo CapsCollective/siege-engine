@@ -123,6 +123,15 @@ public:
         size = values.size();
     }
 
+    Array(T* values, size_t valuesCount)
+    {
+        data = new T[valuesCount];
+
+        memcpy(data, values, sizeof(T) * valuesCount);
+
+        size = valuesCount;
+    }
+
     Array(const Array<T>& other)
     {
         if (data) delete[] data;
