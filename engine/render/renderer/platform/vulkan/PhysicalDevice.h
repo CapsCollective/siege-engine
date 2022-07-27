@@ -23,6 +23,9 @@ public:
                    const char* const* extensions,
                    uint32_t extensionCount);
 
+    PhysicalDevice(const PhysicalDevice& other);
+    PhysicalDevice(PhysicalDevice&& other);
+
     void operator=(PhysicalDevice&& other);
     void operator=(const PhysicalDevice& other);
 

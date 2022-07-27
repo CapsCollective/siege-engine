@@ -1,0 +1,56 @@
+//
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
+//
+
+#ifndef SIEGE_ENGINE_LOGICALDEVICE_H
+#define SIEGE_ENGINE_LOGICALDEVICE_H
+
+#include "PhysicalDevice.h"
+
+typedef VkDevice VkDevice;
+
+namespace Siege::Vulkan
+{
+
+class LogicalDevice
+{
+public:
+    LogicalDevice() = default;
+
+    LogicalDevice(const PhysicalDevice& physDevice,
+                  VkSurfaceKHR surface,
+                  const char* const* extensions,
+                  uint32_t extensionCount,
+                  const char* const* layers,
+                  uint32_t layerCount);
+
+    LogicalDevice(LogicalDevice&& other);
+
+    LogicalDevice& operator=(LogicalDevice&& other);
+
+    ~LogicalDevice();
+
+    VkDevice Device() { return device; }
+    VkQueue GraphicsQueue() { return graphicsQueue; }
+    VkQueue PresentQueue() { return presentQueue; }
+    VkCommandPool CommandPool() { return commandPool; }
+private:
+    void CreateCommandPool(VkPhysicalDevice vkPhysicalDevice);
+
+    VkCommandPool commandPool {VK_NULL_HANDLE};
+
+    VkDevice device {VK_NULL_HANDLE};
+
+    VkQueue graphicsQueue {VK_NULL_HANDLE};
+    VkQueue presentQueue {VK_NULL_HANDLE};
+
+    PhysicalDevice physicalDevice;
+};
+
+} // namespace Siege
+
+#endif // SIEGE_ENGINE_LOGICALDEVICE_H

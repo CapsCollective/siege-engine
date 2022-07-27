@@ -27,6 +27,19 @@ PhysicalDevice::PhysicalDevice(VkInstance instance,
                 properties.limits.minUniformBufferOffsetAlignment)
 }
 
+PhysicalDevice::PhysicalDevice(const PhysicalDevice& other)
+{
+    device = other.device;
+    properties = other.properties;
+}
+
+PhysicalDevice::PhysicalDevice(PhysicalDevice&& other)
+{
+    device = other.device;
+    properties = other.properties;
+    other.device = VK_NULL_HANDLE;
+}
+
 void PhysicalDevice::operator=(PhysicalDevice&& other)
 {
     device = other.device;

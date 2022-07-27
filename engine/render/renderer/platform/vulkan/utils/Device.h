@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_DEVICE_H
 #define SIEGE_ENGINE_DEVICE_H
 
-#include "volk/volk.h"
+#include <volk/volk.h>
 #include <utils/Logging.h>
 
 #if ENABLE_VALIDATION_LAYERS == 1

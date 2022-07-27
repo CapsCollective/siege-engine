@@ -6,8 +6,6 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#define VOLK_IMPLEMENTATION
-
 #include "Renderer.h"
 
 namespace Siege

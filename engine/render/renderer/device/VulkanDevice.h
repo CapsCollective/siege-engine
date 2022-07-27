@@ -10,13 +10,14 @@
 
 #include "../../window/Window.h"
 #include "../Core.h"
-#include "utils/DebugUtilsMessenger.h"
+#include "../platform/vulkan/Instance.h"
+#include "../platform/vulkan/LogicalDevice.h"
+#include "../platform/vulkan/PhysicalDevice.h"
+#include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
 #include "utils/Extensions.h"
 #include "utils/PhysicalDevice.h"
 #include "utils/QueueFamilyIndices.h"
 #include "utils/SwapChainSupportDetails.h"
-
-#include "../platform/vulkan/PhysicalDevice.h"
 
 // std lib headers
 #include <array>
@@ -27,8 +28,6 @@
 #if ENABLE_VALIDATION_LAYERS == 1
 
 #define VALIDATION_LAYERS_ENABLED true
-
-#define SETUP_UTILS_MESSENGER SetupDebugMessenger();
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
@@ -92,7 +91,7 @@ public:
      **/
     VkCommandPool GetCommandPool()
     {
-        return commandPool;
+        return logicalDevice.CommandPool();
     }
 
     /**
@@ -103,7 +102,7 @@ public:
      **/
     VkDevice Device()
     {
-        return device;
+        return logicalDevice.Device();
     }
 
     /**
@@ -125,7 +124,7 @@ public:
      **/
     VkQueue GraphicsQueue()
     {
-        return graphicsQueue;
+        return logicalDevice.GraphicsQueue();
     }
 
     /**
@@ -135,7 +134,7 @@ public:
      **/
     VkQueue PresentQueue()
     {
-        return presentQueue;
+        return logicalDevice.PresentQueue();
     }
 
     size_t GetDeviceAlignment()
@@ -259,16 +258,6 @@ private:
     void CreateInstance();
 
     /**
-     * Instantiates a DebugUtilsMessenger struct and stores it in the 'debugMessenger'
-     * instance variable.
-     *
-     * Since Vulkan does not automatically handle errors, it's necessary to manually
-     * configure it to do so if needed. A DebugUtilsMessenger stores a callback which
-     * which is then called when an error or warning is issued.
-     **/
-    void SetupDebugMessenger();
-
-    /**
      * Queries the window for a vulkan-ready surface for rendering. The result is stored
      * in the 'surface' instane variable.
      *
@@ -300,17 +289,6 @@ private:
      **/
     void CreateLogicalDevice();
 
-    /**
-     * Creates a command pool for storing allocating command buffer memory without dynamic
-     * allocation. Stores the result in the 'commandPool' instance variable.
-     *
-     * The command pool in question is build specifically for graphics operation and
-     * therefore uses the graphics queue for allocation. Specifies that all command
-     * buffers allocated by this pool are short lived. Also specifies that all
-     * buffers allocated by the pool can be reset.
-     **/
-    void CreateCommandPool();
-
     static void SetVulkanDeviceInstance(VulkanDevice* device)
     {
         vulkanDeviceInstance = device;
@@ -318,18 +296,13 @@ private:
 
     static VulkanDevice* vulkanDeviceInstance;
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
+    Vulkan::VulkanInstance instance;
 
     Vulkan::PhysicalDevice physicalDevice;
+    Vulkan::LogicalDevice logicalDevice;
 
     Window* window {nullptr};
-    VkCommandPool commandPool;
-
-    VkDevice device;
     VkSurfaceKHR surface;
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
 
     /**
      * An array storing all required validation layers (if enabled).

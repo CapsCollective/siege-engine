@@ -8,56 +8,8 @@
 
 #include "VulkanDevice.h"
 
-#include "../platform/vulkan/utils/Instance.h"
-#include "../platform/vulkan/utils/CommandPool.h"
-
 // std headers
 #include <set>
-
-#define GET_UNIQUE_QUEUES(createInfos, ...)                                                       \
-    std::set<uint32_t> uniqueQueueFamilies = {__VA_ARGS__};                                       \
-    float queuePriority = 1.0f;                                                                   \
-    size_t index = 0;                                                                             \
-    for (uint32_t queueFamily : uniqueQueueFamilies)                                              \
-    {                                                                                             \
-        createInfos[index] = Vulkan::Device::QueueCreateInfo(queueFamily, 1, &queuePriority);     \
-        index++;                                                                                  \
-    }
-
-#if ENABLE_VALIDATION_LAYERS == 1
-#define CREATE_LOGICAL_DEVICE(physicalDevice,                                                     \
-                              logicalDevice,                                                      \
-                              queueCount,                                                         \
-                              queueCreateInfos,                                                   \
-                              extensionCount,                                                     \
-                              extensions,                                                         \
-                              features,                                                           \
-                              ...)                                                                \
-    CREATE_DEVICE(physicalDevice,                                                                 \
-                  logicalDevice,                                                                  \
-                  queueCount,                                                                     \
-                  queueCreateInfos,                                                               \
-                  extensionCount,                                                                 \
-                  extensions,                                                                     \
-                  features,                                                                       \
-                  __VA_ARGS__)
-#else
-#define CREATE_LOGICAL_DEVICE(physicalDevice,                                                     \
-                              logicalDevice,                                                      \
-                              queueCount,                                                         \
-                              queueCreateInfos,                                                   \
-                              extensionCount,                                                     \
-                              extensions,                                                         \
-                              features,                                                           \
-                              ...)                                                                \
-    CREATE_DEVICE(physicalDevice,                                                                 \
-                  logicalDevice,                                                                  \
-                  queueCount,                                                                     \
-                  queueCreateInfos,                                                               \
-                  extensionCount,                                                                 \
-                  extensions,                                                                     \
-                  features)
-#endif
 
 namespace Siege
 {
@@ -66,16 +18,11 @@ VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
 
 VulkanDevice::VulkanDevice(Window* window) : window {window}
 {
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
-
     CreateInstance();
-
-    SETUP_UTILS_MESSENGER
 
     CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
-    CreateCommandPool();
 
     SetVulkanDeviceInstance(this);
 }
@@ -95,12 +42,9 @@ void VulkanDevice::SetWindow(Window* newWindow)
 
     CreateInstance();
 
-    SETUP_UTILS_MESSENGER
-
     CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
-    CreateCommandPool();
 
     SetVulkanDeviceInstance(this);
 }
@@ -110,48 +54,17 @@ VulkanDevice::~VulkanDevice()
     // When the device goes out of scope, all vulkan structs must be
     // de-allocated in reverse order of how they were created.
 
-    vkDestroyCommandPool(device, commandPool, nullptr);
-    vkDestroyDevice(device, nullptr);
-
-    DESTROY_DEBUG_MESSENGER(debugMessenger)
-
-    vkDestroySurfaceKHR(instance, surface, nullptr);
-    vkDestroyInstance(instance, nullptr);
+    vkDestroySurfaceKHR(instance.VkInstance(), surface, nullptr);
 }
 
 void VulkanDevice::CreateInstance()
 {
-    ASSERT_LAYERS_EXIST(validationLayers.data(), static_cast<uint32_t>(validationLayers.size()))
-
-    // Specify general app information.
-    auto appInfo = Vulkan::Instance::AppInfo("Siege Renderer",
-                                             VK_MAKE_VERSION(1, 0, 0),
-                                             "No Engine",
-                                             VK_MAKE_VERSION(1, 0, 0),
-                                             VK_API_VERSION_1_2);
-
-    // Get all extensions required by our windowing system.
-    auto extensions = Extensions::GetRequiredExtensions(enableValidationLayers);
-
-    uint32_t extensionSize = static_cast<uint32_t>(extensions.Size());
-    uint32_t layerSize = static_cast<uint32_t>(validationLayers.size());
-
-    const char* rawExtensions[extensionSize];
-    const char* rawLayers[layerSize];
-
-    GET_RAW(extensions, rawExtensions, extensions.Size())
-    GET_RAW(validationLayers, rawLayers, VALIDATION_LAYERS_COUNT)
-
-    CREATE_VULKAN_INSTANCE(appInfo, extensionSize, rawExtensions, layerSize, rawLayers, 0)
-
-    Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
-
-    volkLoadInstance(instance);
+    instance = Vulkan::VulkanInstance();
 }
 
 void VulkanDevice::CreateSurface()
 {
-    window->CreateWindowSurface(instance, OUT & surface);
+    window->CreateWindowSurface(instance.VkInstance(), OUT & surface);
 }
 
 void VulkanDevice::PickPhysicalDevice()
@@ -161,65 +74,26 @@ void VulkanDevice::PickPhysicalDevice()
     const char* rawExtensions[extensions];
     GET_RAW(deviceExtensions.data(), rawExtensions, extensions)
 
-    physicalDevice = Vulkan::PhysicalDevice(instance, surface, rawExtensions, extensions);
+    physicalDevice = Vulkan::PhysicalDevice(instance.VkInstance(), surface, rawExtensions, extensions);
 }
 
 void VulkanDevice::CreateLogicalDevice()
 {
-    auto vkPhysicalDevice = physicalDevice.GetDevice();
+    const size_t extensionSize = deviceExtensions.size();
+    const size_t layerSize = VALIDATION_LAYERS_COUNT;
 
-    uint32_t graphicsIdx = Vulkan::Device::Physical::GetGraphicsQueue(vkPhysicalDevice);
-    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(vkPhysicalDevice, surface);
+    const char* rawExtensions[extensionSize];
+    const char* rawLayers[layerSize];
 
-    const uint32_t maxQueues = 2;
-    uint32_t count = maxQueues - (graphicsIdx == presentIdx);
-    VkDeviceQueueCreateInfo queueCreateInfos[count];
+    GET_RAW(deviceExtensions, rawExtensions, extensionSize)
+    GET_RAW(validationLayers, rawLayers, layerSize)
 
-    GET_UNIQUE_QUEUES(queueCreateInfos, graphicsIdx, presentIdx)
-
-    const char* rawExtensions[deviceExtensions.size()];
-    const char* rawLayers[VALIDATION_LAYERS_COUNT];
-
-    GET_RAW(deviceExtensions, rawExtensions, deviceExtensions.size())
-    GET_RAW(validationLayers, rawLayers, validationLayers.size())
-
-    CREATE_LOGICAL_DEVICE(
-        vkPhysicalDevice,
-        device,
-        static_cast<uint32_t>(uniqueQueueFamilies.size()),
-        queueCreateInfos,
-        static_cast<uint32_t>(deviceExtensions.size()),
-        rawExtensions,
-        Vulkan::Device::Physical::DeviceFeaturesBuilder().WithSamplerAnistropy(VK_TRUE).Build(),
-        static_cast<uint32_t>(validationLayers.size()),
-        rawLayers)
-
-    graphicsQueue = Vulkan::Device::GetQueue(device, graphicsIdx, 0);
-    presentQueue = Vulkan::Device::GetQueue(device, presentIdx, 0);
-
-    volkLoadDevice(device);
-}
-
-void VulkanDevice::CreateCommandPool()
-{
-    auto vkPhysicalDevice = physicalDevice.GetDevice();
-    commandPool = Vulkan::CommandPool::Builder()
-                      .WithQueueFamily(Vulkan::Device::Physical::GetGraphicsQueue(vkPhysicalDevice))
-                      .WithFlag(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT)
-                      .WithFlag(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-                      .Build(device);
-}
-
-void VulkanDevice::SetupDebugMessenger()
-{
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    DebugUtilsMessenger::PopulateCreateInfo(OUT createInfo);
-
-    CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance,
-                                                   &createInfo,
-                                                   nullptr,
-                                                   OUT &debugMessenger) == VK_SUCCESS,
-              "Failed to create DebugUtilsMessenger!")
+    logicalDevice = Vulkan::LogicalDevice(physicalDevice,
+                                          surface,
+                                          rawExtensions,
+                                          extensionSize,
+                                          rawLayers,
+                                          layerSize);
 }
 
 VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,
@@ -270,11 +144,11 @@ VkCommandBuffer VulkanDevice::BeginSingleTimeCommands()
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
+    allocInfo.commandPool = logicalDevice.CommandPool();
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(device, &allocInfo, OUT & commandBuffer);
+    vkAllocateCommandBuffers(logicalDevice.Device(), &allocInfo, OUT & commandBuffer);
 
     VkCommandBufferBeginInfo beginInfo {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -293,10 +167,10 @@ void VulkanDevice::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(graphicsQueue);
+    vkQueueSubmit(logicalDevice.GraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(logicalDevice.GraphicsQueue());
 
-    vkFreeCommandBuffers(device, commandPool, 1, OUT & commandBuffer);
+    vkFreeCommandBuffers(logicalDevice.Device(), logicalDevice.CommandPool(), 1, OUT & commandBuffer);
 }
 
 void VulkanDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -347,21 +221,21 @@ void VulkanDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
                                        VkImage& image,
                                        VkDeviceMemory& imageMemory)
 {
-    CC_ASSERT(vkCreateImage(device, &imageInfo, nullptr, OUT & image) == VK_SUCCESS,
+    CC_ASSERT(vkCreateImage(logicalDevice.Device(), &imageInfo, nullptr, OUT & image) == VK_SUCCESS,
               "Failed to create FrameImages!")
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(device, image, OUT & memRequirements);
+    vkGetImageMemoryRequirements(logicalDevice.Device(), image, OUT & memRequirements);
 
     VkMemoryAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, targetProperties);
 
-    CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & imageMemory) == VK_SUCCESS,
+    CC_ASSERT(vkAllocateMemory(logicalDevice.Device(), &allocInfo, nullptr, OUT & imageMemory) == VK_SUCCESS,
               "Failed to allocate image memory!")
 
-    CC_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, 0) == VK_SUCCESS,
+    CC_ASSERT(vkBindImageMemory(logicalDevice.Device(), OUT image, imageMemory, 0) == VK_SUCCESS,
               "Failed to bind image memory!")
 }
 } // namespace Siege

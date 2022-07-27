@@ -1,14 +1,15 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-// This code is released under an unmodified zlib license.
-// For conditions of distribution and use, please see:
-//     https://opensource.org/licenses/Zlib
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
 //
 
 #include "DebugUtilsMessenger.h"
 
-namespace Siege::DebugUtilsMessenger
+namespace Siege::Vulkan::DebugUtilsMessenger
 {
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL
