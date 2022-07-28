@@ -38,7 +38,7 @@ Utils::Array<char> Pipeline::ReadFile(const char* filePath)
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath, std::ios::ate | std::ios::binary};
 
-    CC_ASSERT(file.is_open(), std::string("Could not find file: ") + filePath);
+    CC_ASSERT(file.is_open(), (std::string("Could not find file: ") + filePath).c_str());
 
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).
@@ -138,7 +138,7 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
                                         &pipelineCreateInfo,
                                         nullptr,
                                         OUT & graphicsPipeline) == VK_SUCCESS,
-              "Failed to create graphics pipeline!")
+              "Failed to create graphics pipeline!");
 }
 
 void Pipeline::RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,

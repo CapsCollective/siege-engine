@@ -69,7 +69,7 @@ void RenderPass::Initialise(const RenderPass::Config& config)
 
     CC_ASSERT(
         vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, OUT & renderPass) == VK_SUCCESS,
-        "Failed to create render pass!")
+        "Failed to create render pass!");
 }
 
 void RenderPass::Initialise(RenderPass& renderpass, const RenderPass::Config& config)

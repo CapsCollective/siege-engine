@@ -166,7 +166,7 @@ void SwapChain::CreateSwapChain()
 
     CC_ASSERT(
         vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!")
+        "Failed to create Swapchain!");
 
     swapchainImages = FrameImages(&device, surfaceFormat.format);
 
@@ -277,7 +277,7 @@ void SwapChain::CreateSyncObjects()
                                   OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
                 vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
                     VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!")
+            "Failed to create synchronization objects fora  frame!");
     }
 }
 

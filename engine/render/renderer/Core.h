@@ -29,22 +29,16 @@ typedef uint64_t u64;
 typedef int32_t i32;
 typedef size_t size;
 
-#define EXIT_APP abort();
-
+#define EXIT_APP abort()
 #define REPORT_ASSERT_FAILURE(expr, file, line, message)                                        \
     std::cout << "ASSERTION FAILURE: " << #expr << " in file: " << file << " on line: " << line \
-              << std::endl;                                                                     \
-    std::cout << "                        Message: " << message << std::endl;
+              << "\n                        Message: " << message << std::endl
 
-// Custom assert macro
-#define CC_ASSERT(expr, message)                                   \
-    if (expr)                                                      \
-    {}                                                             \
-    else                                                           \
-    {                                                              \
-        REPORT_ASSERT_FAILURE(#expr, __FILE__, __LINE__, message); \
-        EXIT_APP                                                   \
-    }
+#define CC_ASSERT(expr, msg)                                                \
+    expr || (REPORT_ASSERT_FAILURE(expr, __FILE__, __LINE__, msg) && []() { \
+        EXIT_APP;                                                           \
+        return true;                                                        \
+    }())
 
 #define OUT
 

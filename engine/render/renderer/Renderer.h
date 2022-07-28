@@ -45,7 +45,7 @@ public:
 
     int GetCurrentFrameIndex() const
     {
-        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!");
         return currentFrameIndex;
     }
 
