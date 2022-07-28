@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_QUEUE_FAMILY_INDICES_H
+#define SIEGE_ENGINE_QUEUE_FAMILY_INDICES_H
 
 #include "../../Core.h"
 
@@ -40,3 +41,5 @@ bool IsComplete(QueueFamilyIndices& indices);
  **/
 QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR& surface);
 } // namespace Siege::QueueFamilyIndices
+
+#endif

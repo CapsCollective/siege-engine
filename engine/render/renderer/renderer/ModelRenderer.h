@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_MODEL_RENDERER_H
+#define SIEGE_ENGINE_MODEL_RENDERER_H
 
 #include "../Core.h"
 #include "../model/Model.h"
@@ -50,3 +51,5 @@ private:
     Model* currentModel {nullptr};
 };
 } // namespace Siege
+
+#endif

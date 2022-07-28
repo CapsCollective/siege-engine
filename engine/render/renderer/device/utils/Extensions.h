@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_EXTENSIONS_H
+#define SIEGE_ENGINE_EXTENSIONS_H
 
 #include <cstring>
 #include <unordered_set>
@@ -41,3 +42,5 @@ std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers);
  **/
 void HasGflwRequiredInstanceExtensions(bool enableValidationLayers);
 } // namespace Siege::Extensions
+
+#endif

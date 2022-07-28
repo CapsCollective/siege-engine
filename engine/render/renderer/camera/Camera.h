@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDER_CAMERA_H
+#define SIEGE_ENGINE_RENDER_CAMERA_H
 
 #include "../Core.h"
 
@@ -69,3 +70,5 @@ private:
     glm::mat4 viewMatrix {1.f};
 };
 } // namespace Siege
+
+#endif

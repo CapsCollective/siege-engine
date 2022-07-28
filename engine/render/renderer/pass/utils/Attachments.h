@@ -6,6 +6,9 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#ifndef SIEGE_ENGINE_ATTACHMENTS_H
+#define SIEGE_ENGINE_ATTACHMENTS_H
+
 #pragma once
 
 #include "../../Core.h"
@@ -341,3 +344,5 @@ public:
                                                 VkAccessFlags dstAccessMask);
 };
 } // namespace Siege
+
+#endif // SIEGE_ENGINE_ATTACHMENTS_H

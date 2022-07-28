@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_PHYSICAL_DEVICE_H
+#define SIEGE_ENGINE_PHYSICAL_DEVICE_H
 
 #include "../../Core.h"
 #include "QueueFamilyIndices.h"
@@ -42,3 +43,5 @@ bool IsSuitable(VkPhysicalDevice device,
                 const char* const* deviceExtensions,
                 size_t deviceExtensionCount);
 } // namespace Siege::PhysicalDevice
+
+#endif

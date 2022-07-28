@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_LIGHT_RENDERER_H
+#define SIEGE_ENGINE_LIGHT_RENDERER_H
 
 #include "../Core.h"
 #include "../model/Model.h"
@@ -60,3 +61,5 @@ private:
     Utils::StackArray<u32, Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege
+
+#endif

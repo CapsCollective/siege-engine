@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_PIPELINE_CONFIG_H
+#define SIEGE_ENGINE_PIPELINE_CONFIG_H
 
 #include "../Core.h"
 
@@ -278,3 +279,5 @@ public:
 private:
 };
 } // namespace Siege
+
+#endif

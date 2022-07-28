@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_DESCRIPTOR_H
+#define SIEGE_ENGINE_DESCRIPTOR_H
 
 #include <volk/volk.h>
 
@@ -80,3 +81,5 @@ public:
 private:
 };
 } // namespace Siege::Utils
+
+#endif

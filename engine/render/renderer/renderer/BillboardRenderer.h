@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_BILLBOARD_RENDERER_H
+#define SIEGE_ENGINE_BILLBOARD_RENDERER_H
 
 #include "../Core.h"
 #include "../material/Material.h"
@@ -57,3 +58,5 @@ private:
     Utils::StackArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege
+
+#endif

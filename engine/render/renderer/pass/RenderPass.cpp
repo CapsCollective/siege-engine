@@ -18,7 +18,7 @@ RenderPass::~RenderPass()
 
 void RenderPass::DestroyRenderPass()
 {
-    vkDestroyRenderPass(device->Device(), renderPass, nullptr);
+    vkDestroyRenderPass(VulkanDevice::GetDeviceInstance()->Device(), renderPass, nullptr);
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
@@ -50,9 +50,9 @@ void RenderPass::End(VkCommandBuffer commandBuffer)
 
 RenderPass::RenderPass() = default;
 
-void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config& config)
+void RenderPass::Initialise(const RenderPass::Config& config)
 {
-    device = vulkanDevice;
+    auto device = VulkanDevice::GetDeviceInstance()->Device();
 
     auto& attachments = config.GetAttachments();
     auto& subPasses = config.GetSubPasses();
@@ -68,16 +68,23 @@ void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config
     renderPassCreateInfo.pDependencies = dependencies.Data();
 
     CC_ASSERT(
-        vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT & renderPass) ==
-            VK_SUCCESS,
+        vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, OUT & renderPass) == VK_SUCCESS,
         "Failed to create render pass!");
 }
 
-void RenderPass::Initialise(VulkanDevice* device,
-                            RenderPass& renderpass,
-                            const RenderPass::Config& config)
+void RenderPass::Initialise(RenderPass& renderpass, const RenderPass::Config& config)
 {
-    renderpass.Initialise(device, config);
+    renderpass.Initialise(config);
+}
+
+RenderPass& RenderPass::operator=(RenderPass&& other) noexcept
+{
+    if (renderPass != VK_NULL_HANDLE) DestroyRenderPass();
+
+    renderPass = std::move(other.renderPass);
+    other.renderPass = VK_NULL_HANDLE;
+
+    return *this;
 }
 
 // Config functions.

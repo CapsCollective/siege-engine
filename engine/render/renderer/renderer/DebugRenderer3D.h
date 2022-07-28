@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_DEBUG_RENDERER3D_H
+#define SIEGE_ENGINE_DEBUG_RENDERER3D_H
 
 #include "../Core.h"
 #include "../material/Material.h"
@@ -61,3 +62,5 @@ private:
     Utils::StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
 };
 } // namespace Siege
+
+#endif

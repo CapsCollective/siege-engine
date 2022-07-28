@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDER_PASS_H
+#define SIEGE_ENGINE_RENDER_PASS_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -138,11 +139,20 @@ public:
      * @brief Initialises the RenderPass. Creating a RenderPass requires us to explicitly state what
      * operations the RenderPass will be responsible for, along with any graphics stages the
      * renderpass may rely on.
+     */
+    RenderPass(const Config& config)
+    {
+        Initialise(config);
+    }
+
+    /**
+     * @brief Initialises the RenderPass. Creating a RenderPass requires us to explicitly state what
+     * operations the RenderPass will be responsible for, along with any graphics stages the
+     * renderpass may rely on.
      *
-     * @param vulkanDevice The device instance being used to crete the render pass
      * @param config Config variables used to create the renderpass
      */
-    void Initialise(VulkanDevice* vulkanDevice, const Config& config);
+    void Initialise(const Config& config);
 
     /**
      * @brief A shorthand function for creating an empty Config.
@@ -156,11 +166,10 @@ public:
     /**
      * @brief A static function for creating a renderpass. Does the same thing as the renderpass'
      * Initialise function.
-     * @param device the VulkanDevice being used.
      * @param renderpass the RenderPass to be configured.
      * @param config the RenderPass' configuration options.
      */
-    static void Initialise(VulkanDevice* device, RenderPass& renderpass, const Config& config);
+    static void Initialise(RenderPass& renderpass, const Config& config);
 
     /**
      * @brief Begins a RenderPass. Any rendering operations that occur will utilise the attachments
@@ -193,6 +202,8 @@ public:
      */
     static void End(VkCommandBuffer commandBuffer);
 
+    RenderPass& operator=(RenderPass&& other) noexcept;
+
     /**
      * @brief Returns the Vulkan RenderPass object.
      *
@@ -217,6 +228,7 @@ public:
 private:
 
     VkRenderPass renderPass {VK_NULL_HANDLE};
-    VulkanDevice* device {nullptr};
 };
 } // namespace Siege
+
+#endif // SIEGE_ENGINE_RENDER_PASS_H

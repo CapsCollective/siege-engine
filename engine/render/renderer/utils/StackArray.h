@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_STACK_ARRAY_H
+#define SIEGE_ENGINE_STACK_ARRAY_H
 
 #include <cassert>
 #include <cstdint>
@@ -185,3 +186,5 @@ private:
     size_t count {0};
 };
 } // namespace Siege::Utils
+
+#endif

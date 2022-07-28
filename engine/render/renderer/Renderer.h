@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER_H
+#define SIEGE_ENGINE_RENDERER_H
 
 #include "camera/Camera.h"
 #include "descriptor/DescriptorPool.h"
@@ -44,7 +45,7 @@ public:
 
     int GetCurrentFrameIndex() const
     {
-        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!")
+        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!");
         return currentFrameIndex;
     }
 
@@ -113,3 +114,5 @@ private:
     Camera* mainCamera;
 };
 } // namespace Siege
+
+#endif

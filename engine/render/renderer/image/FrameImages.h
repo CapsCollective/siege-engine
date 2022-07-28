@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_FRAME_IMAGES_H
+#define SIEGE_ENGINE_FRAME_IMAGES_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -65,6 +66,15 @@ public:
         return imageViews[index];
     }
 
+    const VkImage& GetImage(size_t index) const
+    {
+        return images[index];
+    }
+    const VkImageView& GetImageView(size_t index) const
+    {
+        return imageViews[index];
+    }
+
     static void SetImageCount(u32 count)
     {
         imageCount = count;
@@ -89,3 +99,5 @@ private:
     static u32 imageCount;
 };
 } // namespace Siege
+
+#endif // SIEGE_ENGINE_FRAME_IMAGES_H

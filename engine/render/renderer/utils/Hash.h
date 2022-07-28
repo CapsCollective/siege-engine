@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_HASH_H
+#define SIEGE_ENGINE_HASH_H
 
 #include <cstdint>
 #include <cstring>
@@ -58,3 +59,5 @@ size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
 } // namespace Siege::Utils
+
+#endif

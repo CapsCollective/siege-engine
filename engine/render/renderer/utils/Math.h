@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER_MATH_H
+#define SIEGE_ENGINE_RENDERER_MATH_H
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -28,3 +29,5 @@ public:
     static glm::mat3 CalculateNormalMatrix(const glm::vec3& rotation, const glm::vec3& scale);
 };
 } // namespace Siege::Utils
+
+#endif

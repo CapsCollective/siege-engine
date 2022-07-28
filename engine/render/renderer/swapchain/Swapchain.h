@@ -6,9 +6,11 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_SWAPCHAIN_H
+#define SIEGE_ENGINE_SWAPCHAIN_H
 
 #include "../device/VulkanDevice.h"
+#include "../framebuffer/Framebuffer.h"
 #include "../image/FrameImages.h"
 #include "../pass/RenderPass.h"
 
@@ -53,7 +55,7 @@ public:
      * usually must follow the extents of the window.
      */
     SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    SwapChain(VulkanDevice& device);
+    explicit SwapChain(VulkanDevice& device);
     ~SwapChain();
 
     // Delete copy constructors.
@@ -95,7 +97,7 @@ public:
      */
     VkFramebuffer GetFrameBuffer(u32 i)
     {
-        return swapChainFrameBuffers[i];
+        return framebuffers.GetFramebuffer(i);
     }
 
     /**
@@ -276,9 +278,8 @@ private:
     static SwapChain* instance;
 
     // frame buffers and renderpasses
-    // TODO: Refactor this into a HeapArray
-    VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
     RenderPass renderPass;
+    Framebuffer framebuffers;
 
     VkFormat swapChainImageFormat;
     VkFormat swapChainDepthFormat;
@@ -302,3 +303,5 @@ private:
     size_t currentFrame = 0;
 };
 } // namespace Siege
+
+#endif // SIEGE_ENGINE_SWAPCHAIN_H

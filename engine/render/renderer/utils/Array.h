@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_ARRAY_H
+#define SIEGE_ENGINE_ARRAY_H
 
 #include <cstdint>
 #include <iostream>
@@ -171,6 +172,12 @@ public:
         return data[index];
     }
 
+    void Reset()
+    {
+        size = 0;
+        data = nullptr;
+    }
+
     T* Data()
     {
         return data;
@@ -213,3 +220,5 @@ private:
     }
 };
 } // namespace Siege::Utils
+
+#endif

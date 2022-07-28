@@ -347,7 +347,9 @@ Material::Property& Material::GetProperty(Utils::StringId id)
         if (id == property.id) return property;
     }
 
-    CC_ASSERT(false, "No property with ID: " << id << " exists!");
+    CC_ASSERT(false,
+              (std::string("No property with ID: ") + std::to_string(id) + std::string(" exists!"))
+                  .c_str());
 }
 
 void Material::BuildMaterial()

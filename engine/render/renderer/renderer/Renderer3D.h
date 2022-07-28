@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_RENDERER3D_H
+#define SIEGE_ENGINE_RENDERER3D_H
 
 #include "../Core.h"
 #include "../camera/Camera.h"
@@ -81,3 +82,5 @@ private:
     static GlobalData global3DData;
 };
 } // namespace Siege
+
+#endif

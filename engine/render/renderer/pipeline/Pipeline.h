@@ -6,7 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#pragma once
+#ifndef SIEGE_ENGINE_PIPELINE_H
+#define SIEGE_ENGINE_PIPELINE_H
 
 #include "../Core.h"
 #include "../device/VulkanDevice.h"
@@ -142,3 +143,5 @@ private:
     bool isFreed = false;
 };
 } // namespace Siege
+
+#endif
