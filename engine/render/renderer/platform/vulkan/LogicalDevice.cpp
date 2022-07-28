@@ -11,6 +11,7 @@
 #include <set>
 
 #include "Config.h"
+#include "utils/Buffer.h"
 #include "utils/CommandBuffer.h"
 #include "utils/CommandPool.h"
 
@@ -168,5 +169,53 @@ void LogicalDevice::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
     VulkanDevice::SubmitToQueue(graphicsQueue, 1, &commandBuffer);
 
     CommandBuffer::DestroyCommandBuffer(device, commandPool, 1, commandBuffer);
+}
+
+VkMemoryRequirements LogicalDevice::GetImageMemoryRequirements(VkImage image)
+{
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(device, image, OUT & memRequirements);
+    return memRequirements;
+}
+
+void LogicalDevice::CreateImage(const VkImageCreateInfo& imageInfo,
+                                VkImage& image,
+                                VkAllocationCallbacks* callbacks)
+{
+    CC_ASSERT(vkCreateImage(device, &imageInfo, callbacks, OUT & image) == VK_SUCCESS,
+              "Failed to create FrameImages!")
+}
+
+void LogicalDevice::AllocateMemory(VkMemoryAllocateInfo allocInfo,
+                                   VkDeviceMemory& memory,
+                                   VkAllocationCallbacks* callbacks)
+{
+    CC_ASSERT(vkAllocateMemory(device, &allocInfo, callbacks, OUT & memory) == VK_SUCCESS,
+              "Failed to allocate image memory!")
+}
+
+void LogicalDevice::BindImageMemory(VkImage image, VkDeviceMemory memory, VkDeviceSize offset)
+{
+    CC_ASSERT(vkBindImageMemory(device, OUT image, memory, offset) == VK_SUCCESS,
+              "Failed to bind image memory!")
+}
+
+void LogicalDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
+                                        VkMemoryPropertyFlags targetProperties,
+                                        VkImage& image,
+                                        VkDeviceMemory& imageMemory)
+{
+    CreateImage(imageInfo, image);
+
+    VkMemoryRequirements memRequirements = GetImageMemoryRequirements(image);
+
+    auto memoryType =
+        physicalDevice.FindMemoryType(memRequirements.memoryTypeBits, targetProperties);
+
+    VkMemoryAllocateInfo allocInfo = Buffer::AllocateInfo(memRequirements.size, memoryType);
+
+    AllocateMemory(allocInfo, imageMemory);
+
+    BindImageMemory(image, imageMemory);
 }
 } // namespace Siege::Vulkan

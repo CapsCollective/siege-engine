@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "../device/VulkanDevice.h"
 #include "../image/FrameImages.h"
 #include "../pass/RenderPass.h"
+#include "render/renderer/platform/vulkan/Device.h"
 
 namespace Siege
 {
@@ -52,8 +52,8 @@ public:
      * @param windowExtent the window resolution. Images need to be scaled to an extent, this
      * usually must follow the extents of the window.
      */
-    SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    SwapChain(VulkanDevice& device);
+    SwapChain(Device& device, VkExtent2D windowExtent);
+    SwapChain(Device& device);
     ~SwapChain();
 
     // Delete copy constructors.
@@ -270,7 +270,7 @@ private:
     void ClearMemory();
 
     // Device and window data
-    VulkanDevice& device;
+    Device& device;
     VkExtent2D windowExtent;
 
     static SwapChain* instance;

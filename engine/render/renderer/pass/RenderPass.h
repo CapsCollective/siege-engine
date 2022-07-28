@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
+#include "render/renderer/platform/vulkan/Device.h"
 #include "utils/Attachments.h"
 
 namespace Siege
@@ -142,7 +142,7 @@ public:
      * @param vulkanDevice The device instance being used to crete the render pass
      * @param config Config variables used to create the renderpass
      */
-    void Initialise(VulkanDevice* vulkanDevice, const Config& config);
+    void Initialise(Device* vulkanDevice, const Config& config);
 
     /**
      * @brief A shorthand function for creating an empty Config.
@@ -160,7 +160,7 @@ public:
      * @param renderpass the RenderPass to be configured.
      * @param config the RenderPass' configuration options.
      */
-    static void Initialise(VulkanDevice* device, RenderPass& renderpass, const Config& config);
+    static void Initialise(Device* device, RenderPass& renderpass, const Config& config);
 
     /**
      * @brief Begins a RenderPass. Any rendering operations that occur will utilise the attachments
@@ -217,6 +217,6 @@ public:
 private:
 
     VkRenderPass renderPass {VK_NULL_HANDLE};
-    VulkanDevice* device {nullptr};
+    Device* device {nullptr};
 };
 } // namespace Siege

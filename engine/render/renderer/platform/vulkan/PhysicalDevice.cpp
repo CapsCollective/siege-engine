@@ -17,7 +17,7 @@ PhysicalDevice::PhysicalDevice(VulkanInstance& instance)
 {
     auto extensions = Config::deviceExtensions;
 
-    device = VulkanDevice::Physical::FindSuitableDevice(instance.VkInstance(),
+    device = VulkanDevice::Physical::FindSuitableDevice(instance.Instance(),
                                                         instance.Surface(),
                                                         extensions.data(),
                                                         extensions.size());

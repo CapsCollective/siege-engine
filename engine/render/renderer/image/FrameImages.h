@@ -9,7 +9,7 @@
 #pragma once
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
+#include "render/renderer/platform/vulkan/Device.h"
 #include "utils/Image.h"
 
 namespace Siege
@@ -21,7 +21,7 @@ public:
     static constexpr uint32_t MAX_IMAGES = 5;
 
     FrameImages();
-    FrameImages(VulkanDevice* vulkanDevice, VkFormat format);
+    FrameImages(Device* vulkanDevice, VkFormat format);
     ~FrameImages();
 
     void InitColorImageView2D();
@@ -76,7 +76,7 @@ public:
 
 private:
 
-    VulkanDevice* device {nullptr};
+    Device* device {nullptr};
 
     VkImage images[MAX_IMAGES] {VK_NULL_HANDLE};
     VkImageView imageViews[MAX_IMAGES] {VK_NULL_HANDLE};

@@ -18,7 +18,7 @@ RenderPass::~RenderPass()
 
 void RenderPass::DestroyRenderPass()
 {
-    vkDestroyRenderPass(device->Device(), renderPass, nullptr);
+    vkDestroyRenderPass(device->LogicalDevice(), renderPass, nullptr);
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
@@ -50,7 +50,7 @@ void RenderPass::End(VkCommandBuffer commandBuffer)
 
 RenderPass::RenderPass() = default;
 
-void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config& config)
+void RenderPass::Initialise(Device* vulkanDevice, const RenderPass::Config& config)
 {
     device = vulkanDevice;
 
@@ -67,13 +67,14 @@ void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config
     renderPassCreateInfo.dependencyCount = dependencies.Count();
     renderPassCreateInfo.pDependencies = dependencies.Data();
 
-    CC_ASSERT(
-        vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT & renderPass) ==
-            VK_SUCCESS,
-        "Failed to create render pass!");
+    CC_ASSERT(vkCreateRenderPass(device->LogicalDevice(),
+                                 &renderPassCreateInfo,
+                                 nullptr,
+                                 OUT & renderPass) == VK_SUCCESS,
+              "Failed to create render pass!");
 }
 
-void RenderPass::Initialise(VulkanDevice* device,
+void RenderPass::Initialise(Device* device,
                             RenderPass& renderpass,
                             const RenderPass::Config& config)
 {

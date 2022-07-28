@@ -31,10 +31,11 @@ public:
 
     VulkanInstance& operator=(VulkanInstance&& other);
 
-    VkInstance& VkInstance()
+    VkInstance& Instance()
     {
         return instance;
     }
+
     VkSurfaceKHR& Surface()
     {
         return surface;

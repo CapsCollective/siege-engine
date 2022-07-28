@@ -128,9 +128,9 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = -1;
 
-    auto device = VulkanDevice::GetDeviceInstance();
+    auto device = Device::GetDeviceInstance();
 
-    CC_ASSERT(vkCreateGraphicsPipelines(device->Device(),
+    CC_ASSERT(vkCreateGraphicsPipelines(device->LogicalDevice(),
                                         VK_NULL_HANDLE,
                                         1,
                                         &pipelineCreateInfo,
@@ -148,15 +148,15 @@ void Pipeline::RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
 
 void Pipeline::ClearPipeline()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
+    auto device = Device::GetDeviceInstance();
     // TODO: Maybe we can get away without destroying the shader modules when
     // re-creating the pipeline?
     for (size_t i = 0; i < shaderModuleCount; i++)
     {
-        vkDestroyShaderModule(device->Device(), shaderModules[i], nullptr);
+        vkDestroyShaderModule(device->LogicalDevice(), shaderModules[i], nullptr);
     }
 
-    vkDestroyPipeline(device->Device(), graphicsPipeline, nullptr);
+    vkDestroyPipeline(device->LogicalDevice(), graphicsPipeline, nullptr);
 }
 
 void Pipeline::DestroyPipeline()
@@ -174,11 +174,12 @@ void Pipeline::CreateShaderModule(Array<char>& fileData, VkShaderModule* shaderM
     // array to 32-bit unsigned integers.
     createInfo.pCode = reinterpret_cast<const uint32_t*>(fileData.Data());
 
-    auto device = VulkanDevice::GetDeviceInstance();
+    auto device = Device::GetDeviceInstance();
 
-    CC_ASSERT(vkCreateShaderModule(device->Device(), &createInfo, nullptr, OUT shaderModule) ==
-                  VK_SUCCESS,
-              "Failed to create shader module!");
+    CC_ASSERT(
+        vkCreateShaderModule(device->LogicalDevice(), &createInfo, nullptr, OUT shaderModule) ==
+            VK_SUCCESS,
+        "Failed to create shader module!");
 }
 
 void Pipeline::Bind(VkCommandBuffer commandBuffer)

@@ -15,14 +15,14 @@ namespace Siege
 // TODO: Fix the warnings
 SwapChain* SwapChain::instance = nullptr;
 
-SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) :
+SwapChain::SwapChain(Device& device, VkExtent2D windowExtent) :
     device {device},
     windowExtent {windowExtent}
 {
     Init();
 }
 
-SwapChain::SwapChain(VulkanDevice& device) : device {device} {}
+SwapChain::SwapChain(Device& device) : device {device} {}
 
 SwapChain::~SwapChain()
 {
@@ -46,7 +46,7 @@ void SwapChain::ClearSwapChain(bool isRecreated)
     if (!isRecreated && swapChain != nullptr)
     {
         CC_LOG_INFO("Clearing Swapchain")
-        vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
+        vkDestroySwapchainKHR(device.LogicalDevice(), GetSwapChain(), nullptr);
         swapChain = nullptr;
     }
 
@@ -54,14 +54,14 @@ void SwapChain::ClearSwapChain(bool isRecreated)
 
     for (size_t i = 0; i < imageCount; i++)
     {
-        vkDestroyFramebuffer(device.Device(), swapChainFrameBuffers[i], nullptr);
+        vkDestroyFramebuffer(device.LogicalDevice(), swapChainFrameBuffers[i], nullptr);
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        vkDestroySemaphore(device.Device(), renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(device.Device(), imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(device.Device(), inFlightFences[i], nullptr);
+        vkDestroySemaphore(device.LogicalDevice(), renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(device.LogicalDevice(), imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(device.LogicalDevice(), inFlightFences[i], nullptr);
     }
 }
 
@@ -154,9 +154,10 @@ void SwapChain::CreateSwapChain()
 
     // Get our image queue information for rendering
     auto graphicsFamily =
-        Vulkan::VulkanDevice::Physical::GetGraphicsQueue(device.VkPhysicalDevice());
-    auto presentFamily = Vulkan::VulkanDevice::Physical::GetPresentQueue(device.VkPhysicalDevice(),
-                                                                         device.Surface());
+        Vulkan::VulkanDevice::Physical::GetGraphicsQueue(device.VulkanPhysicalDevice());
+    auto presentFamily =
+        Vulkan::VulkanDevice::Physical::GetPresentQueue(device.VulkanPhysicalDevice(),
+                                                        device.Surface());
 
     uint32_t queueFamilyIndices[] = {graphicsFamily, presentFamily};
 
@@ -186,18 +187,18 @@ void SwapChain::CreateSwapChain()
 
     createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
-    CC_ASSERT(
-        vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!");
+    CC_ASSERT(vkCreateSwapchainKHR(device.LogicalDevice(), &createInfo, nullptr, OUT & swapChain) ==
+                  VK_SUCCESS,
+              "Failed to create Swapchain!");
 
     swapchainImages = FrameImages(&device, surfaceFormat.format);
 
     // Once the swapchain has been created, get the number of images supported.
-    vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT & imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device.LogicalDevice(), swapChain, OUT & imageCount, nullptr);
 
     FrameImages::SetImageCount(imageCount);
 
-    vkGetSwapchainImagesKHR(device.Device(),
+    vkGetSwapchainImagesKHR(device.LogicalDevice(),
                             swapChain,
                             &imageCount,
                             OUT swapchainImages.GetImages());
@@ -278,7 +279,7 @@ void SwapChain::CreateFrameBuffers()
         frameBufferInfo.height = swapChainExtent.height;
         frameBufferInfo.layers = 1;
 
-        CC_ASSERT(vkCreateFramebuffer(device.Device(),
+        CC_ASSERT(vkCreateFramebuffer(device.LogicalDevice(),
                                       &frameBufferInfo,
                                       nullptr,
                                       OUT & swapChainFrameBuffers[i]) == VK_SUCCESS,
@@ -311,32 +312,33 @@ void SwapChain::CreateSyncObjects()
     // Create the synchronisation objects
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        CC_ASSERT(
-            vkCreateSemaphore(device.Device(),
-                              &semaphoreInfo,
-                              nullptr,
-                              OUT & imageAvailableSemaphores[i]) == VK_SUCCESS &&
-                vkCreateSemaphore(device.Device(),
-                                  &semaphoreInfo,
-                                  nullptr,
-                                  OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
-                vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
-                    VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!");
+        CC_ASSERT(vkCreateSemaphore(device.LogicalDevice(),
+                                    &semaphoreInfo,
+                                    nullptr,
+                                    OUT & imageAvailableSemaphores[i]) == VK_SUCCESS &&
+                      vkCreateSemaphore(device.LogicalDevice(),
+                                        &semaphoreInfo,
+                                        nullptr,
+                                        OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
+                      vkCreateFence(device.LogicalDevice(),
+                                    &fenceInfo,
+                                    nullptr,
+                                    OUT & inFlightFences[i]) == VK_SUCCESS,
+                  "Failed to create synchronization objects fora  frame!");
     }
 }
 
 VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex)
 {
     // Wait for the image of the current frame to become available
-    vkWaitForFences(device.Device(),
+    vkWaitForFences(device.LogicalDevice(),
                     1,
                     &inFlightFences[currentFrame],
                     VK_TRUE,
                     std::numeric_limits<uint64_t>::max());
 
     // Once available, Add it to our available images semaphor for usage
-    return vkAcquireNextImageKHR(device.Device(),
+    return vkAcquireNextImageKHR(device.LogicalDevice(),
                                  swapChain,
                                  std::numeric_limits<uint64_t>::max(),
                                  imageAvailableSemaphores[currentFrame],
@@ -351,7 +353,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
     // If the image being asked for is being used, we wait for it to become available
     if (imagesInFlight[index] != VK_NULL_HANDLE)
     {
-        vkWaitForFences(device.Device(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
+        vkWaitForFences(device.LogicalDevice(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
     }
 
     // Get the frame's image and move it to our images in flight
@@ -384,7 +386,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Reset the fence of this frame
-    vkResetFences(device.Device(), 1, OUT & inFlightFences[currentFrame]);
+    vkResetFences(device.LogicalDevice(), 1, OUT & inFlightFences[currentFrame]);
 
     // Submit the command buffer to the graphics queue
     CC_ASSERT(

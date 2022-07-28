@@ -11,11 +11,11 @@
 namespace Siege
 {
 Array<VkCommandBuffer> Renderer::commandBuffers;
-VulkanDevice* Renderer::deviceInstance = nullptr;
+Device* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
 {
-    device = VulkanDevice(&window);
+    device = Device(&window);
     swapChain.SetWindowExtents(window.GetExtent());
 
     if (deviceInstance == nullptr) deviceInstance = &device;
@@ -50,9 +50,10 @@ void Renderer::CreateCommandBuffers()
     allocInfo.commandPool = device.GetCommandPool();
     allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.Size());
 
-    CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) ==
-                  VK_SUCCESS,
-              "Failed to allocate command buffer");
+    CC_ASSERT(
+        vkAllocateCommandBuffers(device.LogicalDevice(), &allocInfo, OUT commandBuffers.Data()) ==
+            VK_SUCCESS,
+        "Failed to allocate command buffer");
 }
 
 void Renderer::DrawFrame()

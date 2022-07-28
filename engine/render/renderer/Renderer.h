@@ -9,11 +9,11 @@
 #pragma once
 
 #include "descriptor/DescriptorPool.h"
-#include "device/VulkanDevice.h"
 #include "lights/PointLight.h"
 #include "material/Material.h"
 #include "model/Model.h"
 #include "pipeline/Pipeline.h"
+#include "render/renderer/platform/vulkan/Device.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 #include "swapchain/Swapchain.h"
@@ -28,7 +28,7 @@ public:
 
     ~Renderer();
 
-    VulkanDevice& GetDevice()
+    Device& GetDevice()
     {
         return device;
     }
@@ -73,7 +73,7 @@ public:
 
     void ClearDeviceQueue()
     {
-        vkDeviceWaitIdle(device.Device());
+        vkDeviceWaitIdle(device.LogicalDevice());
     }
 
     void SetClearValue(float r, float g, float b, float a)
@@ -83,7 +83,7 @@ public:
 
 private:
 
-    static VulkanDevice* deviceInstance;
+    static Device* deviceInstance;
     static Array<VkCommandBuffer> commandBuffers;
 
     // Make this adjustable in the window, not the renderer.
@@ -100,7 +100,7 @@ private:
 
     Siege::Window& window;
 
-    VulkanDevice device;
+    Device device;
     SwapChain swapChain;
 
     uint32_t currentImageIndex;

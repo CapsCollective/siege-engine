@@ -49,6 +49,22 @@ public:
     VkCommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
+    VkMemoryRequirements GetImageMemoryRequirements(VkImage image);
+    void AllocateMemory(VkMemoryAllocateInfo allocInfo,
+                        VkDeviceMemory& memory,
+                        VkAllocationCallbacks* callbacks = nullptr);
+
+    void CreateImage(const VkImageCreateInfo& imageInfo,
+                     VkImage& image,
+                     VkAllocationCallbacks* callbacks = nullptr);
+
+    void BindImageMemory(VkImage image, VkDeviceMemory memory, VkDeviceSize offset = 0);
+
+    void CreateImageWithInfo(const VkImageCreateInfo& imageInfo,
+                             VkMemoryPropertyFlags targetProperties,
+                             VkImage& image,
+                             VkDeviceMemory& imageMemory);
+
 private:
 
     void CreateCommandPool(VkPhysicalDevice vkPhysicalDevice);
