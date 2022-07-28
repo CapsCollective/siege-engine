@@ -75,4 +75,4 @@ void DestroyMessenger(VkInstance instance,
  * @param createInfo an empty DebugUtilsMessengerCreateInfoEXT struct to be populated.
  **/
 void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-} // namespace Siege::DebugUtilsMessenger
+} // namespace Siege::Vulkan::DebugUtilsMessenger

@@ -8,6 +8,8 @@
 
 #include "Swapchain.h"
 
+#include "../platform/vulkan/utils/Device.h"
+
 namespace Siege
 {
 // TODO: Fix the warnings
@@ -107,31 +109,33 @@ void SwapChain::Init()
 // TODO: Clean this function
 void SwapChain::CreateSwapChain()
 {
-    // Get our swapchain details
-    SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
+    Vulkan::PhysicalDevice physicalDevice = device.PhysicalDevice();
+
+    auto surfaceFormats = physicalDevice.GetSurfaceFormats(device.Surface());
+    auto presentModes = physicalDevice.GetPresentModes(device.Surface());
+    auto capabilities = physicalDevice.GetCapabilities(device.Surface());
 
     // Get our supported colour format
     VkSurfaceFormatKHR surfaceFormat =
-        ChooseSwapSurfaceFormat(details.formats.Data(),
-                                static_cast<uint32_t>(details.formats.Size()));
+        ChooseSwapSurfaceFormat(surfaceFormats.Data(),
+                                static_cast<uint32_t>(surfaceFormats.Size()));
 
     // Choose our presentation mode (the form of image buffering)
     VkPresentModeKHR presentMode =
-        ChoosePresentMode(details.presentModes.Data(),
-                          static_cast<uint32_t>(details.presentModes.Size()));
+        ChoosePresentMode(presentModes.Data(), static_cast<uint32_t>(presentModes.Size()));
 
     // The size of our images.
-    VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+    VkExtent2D extent = ChooseSwapExtent(capabilities);
 
     CC_LOG_INFO("Swapchain created with image extents: [{}x{}]", extent.width, extent.height)
 
     // Get the image count we can support
-    uint32_t imageCount = details.capabilities.minImageCount + 1;
+    uint32_t imageCount = capabilities.minImageCount + 1;
 
     // Make sure we aren't exceeding the GPU's image count maximums
-    if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.maxImageCount)
+    if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
     {
-        imageCount = details.capabilities.maxImageCount;
+        imageCount = capabilities.maxImageCount;
     }
 
     CC_LOG_INFO("Images supported by swapchain: {}", imageCount)
@@ -149,12 +153,16 @@ void SwapChain::CreateSwapChain()
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     // Get our image queue information for rendering
-    QueueFamilyIndices::QueueFamilyIndices indices = device.FindPhysicalQueueFamilies();
-    uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+    auto graphicsFamily =
+        Vulkan::VulkanDevice::Physical::GetGraphicsQueue(device.VkPhysicalDevice());
+    auto presentFamily = Vulkan::VulkanDevice::Physical::GetPresentQueue(device.VkPhysicalDevice(),
+                                                                         device.Surface());
+
+    uint32_t queueFamilyIndices[] = {graphicsFamily, presentFamily};
 
     // Sometimes the graphics and presentation queues are the same. We want to check for this
     // eventuality.
-    if (indices.graphicsFamily != indices.presentFamily)
+    if (graphicsFamily != presentFamily)
     {
         // We specify that there are two distinct queues that need to be used
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -170,7 +178,7 @@ void SwapChain::CreateSwapChain()
     }
 
     // Indicates any pre-transforms that need to occur to images (default is none)
-    createInfo.preTransform = details.capabilities.currentTransform;
+    createInfo.preTransform = capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
     createInfo.presentMode = presentMode;

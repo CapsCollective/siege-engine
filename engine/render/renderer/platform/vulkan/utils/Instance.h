@@ -11,23 +11,22 @@
 #define SIEGE_ENGINE_VULKAN_INSTANCE_H
 
 #include <utils/Logging.h>
-
 #include <volk/volk.h>
 
 #if ENABLE_VALIDATION_LAYERS == 1
-#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, ...)    \
-    VkInstanceCreateInfo createInfo = {};                                               \
-    createInfo = Vulkan::Instance::CreateInfo(&appInfo,                               \
-                                              extensionSize,                            \
-                                              extensions,                               \
-                                              layerCount,                               \
-                                              layers,                                   \
-                                              __VA_ARGS__);                             \
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, ...) \
+    VkInstanceCreateInfo createInfo = {};                                            \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo,                              \
+                                              extensionSize,                         \
+                                              extensions,                            \
+                                              layerCount,                            \
+                                              layers,                                \
+                                              __VA_ARGS__);                          \
     Vulkan::Instance::Create(&createInfo, nullptr, &instance);
 #else
-#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, ...)        \
-    VkInstanceCreateInfo createInfo = {};                                                   \
-    createInfo = Vulkan::Instance::CreateInfo(&appInfo, extensionSize, extensions);       \
+#define CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, ...) \
+    VkInstanceCreateInfo createInfo = {};                                            \
+    createInfo = Vulkan::Instance::CreateInfo(&appInfo, extensionSize, extensions);  \
     Vulkan::Instance::Create(&createInfo, nullptr, &instance);
 #endif
 
@@ -62,6 +61,6 @@ inline void Create(const VkInstanceCreateInfo* createInfo,
     CC_ASSERT(vkCreateInstance(createInfo, callbacks, OUT instance) == VK_SUCCESS,
               "Unable to create Vulkan Instance!")
 }
-} // namespace Siege::Vulkan
+} // namespace Siege::Vulkan::Instance
 
 #endif // SIEGE_ENGINE_INSTANCE_H

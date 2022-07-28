@@ -61,7 +61,7 @@ void GetInstanceExtensionProperties(uint32_t count, VkExtensionProperties* prope
 uint32_t GetInstanceLayerCount()
 {
     uint32_t count = 0;
-    vkEnumerateInstanceLayerProperties(OUT &count, nullptr);
+    vkEnumerateInstanceLayerProperties(OUT & count, nullptr);
     return count;
 }
 
@@ -70,4 +70,4 @@ void GetInstanceLayerProperties(uint32_t count, VkLayerProperties* properties)
     vkEnumerateInstanceLayerProperties(&count, OUT properties);
 }
 
-} // namespace Siege::Vulkan
+} // namespace Siege::Vulkan::Instance

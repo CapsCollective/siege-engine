@@ -10,29 +10,30 @@
 #define SIEGE_ENGINE_VULKAN_CONFIG_H
 
 #include <volk/volk.h>
+
 #include <array>
 
 namespace Siege::Vulkan
 {
-    class Config {
+class Config
+{
+public:
 
-    public:
-
-    static constexpr size_t  VALIDATION_LAYERS_COUNT = 1;
+    static constexpr size_t VALIDATION_LAYERS_COUNT = 1;
     /**
      * An array storing all required validation layers (if enabled).
      **/
     static constexpr std::array<const char*, VALIDATION_LAYERS_COUNT> validationLayers = {
-            "VK_LAYER_KHRONOS_validation"};
+        "VK_LAYER_KHRONOS_validation"};
 
-        /**
+    /**
      * An array storing all required extensions. All of these must be present for the renderer to
      *start.
      **/
     static constexpr std::array<const char*, 2> deviceExtensions = {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
-    };
-}
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
+};
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_CONFIG_H

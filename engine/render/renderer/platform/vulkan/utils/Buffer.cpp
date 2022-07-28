@@ -6,19 +6,9 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include "CommandBuffer.h"
+#include "Buffer.h"
 
-namespace Siege::Vulkan
+namespace Siege::Vulkan::Buffer
 {
-
-CommandBuffer::Pool::Pool()
-{
-
-}
-
-CommandBuffer::Pool::~Pool()
-{
-
-}
 
 } // namespace Siege

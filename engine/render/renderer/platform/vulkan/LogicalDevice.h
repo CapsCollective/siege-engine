@@ -15,18 +15,13 @@ typedef VkDevice VkDevice;
 
 namespace Siege::Vulkan
 {
-
 class LogicalDevice
 {
 public:
+
     LogicalDevice() = default;
 
-    LogicalDevice(const PhysicalDevice& physDevice,
-                  VkSurfaceKHR surface,
-                  const char* const* extensions,
-                  uint32_t extensionCount,
-                  const char* const* layers,
-                  uint32_t layerCount);
+    LogicalDevice(const PhysicalDevice& physDevice, VkSurfaceKHR surface);
 
     LogicalDevice(LogicalDevice&& other);
 
@@ -34,11 +29,28 @@ public:
 
     ~LogicalDevice();
 
-    VkDevice Device() { return device; }
-    VkQueue GraphicsQueue() { return graphicsQueue; }
-    VkQueue PresentQueue() { return presentQueue; }
-    VkCommandPool CommandPool() { return commandPool; }
+    VkDevice Device()
+    {
+        return device;
+    }
+    VkQueue GraphicsQueue()
+    {
+        return graphicsQueue;
+    }
+    VkQueue PresentQueue()
+    {
+        return presentQueue;
+    }
+    VkCommandPool CommandPool()
+    {
+        return commandPool;
+    }
+
+    VkCommandBuffer BeginSingleTimeCommands();
+    void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+
 private:
+
     void CreateCommandPool(VkPhysicalDevice vkPhysicalDevice);
 
     VkCommandPool commandPool {VK_NULL_HANDLE};
@@ -51,6 +63,6 @@ private:
     PhysicalDevice physicalDevice;
 };
 
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_LOGICALDEVICE_H

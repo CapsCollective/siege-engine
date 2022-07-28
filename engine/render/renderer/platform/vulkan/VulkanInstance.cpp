@@ -7,26 +7,27 @@
 //
 
 #include "VulkanInstance.h"
+
+#include <unordered_set>
+
 #include "Config.h"
 #include "Macros.h"
 #include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
 
-#include <unordered_set>
-
 #if ENABLE_VALIDATION_LAYERS == 1
 
-
-#define ASSERT_LAYERS_EXIST CC_ASSERT(Siege::Vulkan::VulkanInstance::ValidationLayersSupported(), \
-                                      "Validation Layers are not supported!");
+#define ASSERT_LAYERS_EXIST                                               \
+    CC_ASSERT(Siege::Vulkan::VulkanInstance::ValidationLayersSupported(), \
+              "Validation Layers are not supported!");
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
                                                                                                \
     CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                    \
     CREATE_INSTANCE(appInfo,                                                                   \
-                    extensionCount,                                                             \
+                    extensionCount,                                                            \
                     extensions,                                                                \
-                    layerCount,                                                                 \
+                    layerCount,                                                                \
                     layers,                                                                    \
                     0,                                                                         \
                     reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo))
@@ -55,10 +56,10 @@ VulkanInstance::VulkanInstance(SurfaceFunc surfaceCreationCallback,
 
     // Specify general app information.
     auto appInfo = Instance::AppInfo("Siege Renderer",
-                                       VK_MAKE_VERSION(1, 0, 0),
-                                       "No Engine",
-                                       VK_MAKE_VERSION(1, 0, 0),
-                                       VK_API_VERSION_1_2);
+                                     VK_MAKE_VERSION(1, 0, 0),
+                                     "No Engine",
+                                     VK_MAKE_VERSION(1, 0, 0),
+                                     VK_API_VERSION_1_2);
 
     auto extensions = GetRequiredExtensions(requiredExtensions, count);
 
@@ -75,7 +76,7 @@ VulkanInstance::VulkanInstance(SurfaceFunc surfaceCreationCallback,
 
     SETUP_UTILS_MESSENGER
 
-    surfaceCreationCallback(instance, OUT &surface);
+    surfaceCreationCallback(instance, OUT & surface);
 }
 
 VulkanInstance::VulkanInstance(VulkanInstance&& other)
@@ -196,8 +197,8 @@ void VulkanInstance::SetupDebugMessenger()
     CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance,
                                                    &createInfo,
                                                    nullptr,
-                                                   OUT &debugMessenger) == VK_SUCCESS,
+                                                   OUT & debugMessenger) == VK_SUCCESS,
               "Failed to create DebugUtilsMessenger!")
 }
 
-} // namespace Siege
+} // namespace Siege::Vulkan

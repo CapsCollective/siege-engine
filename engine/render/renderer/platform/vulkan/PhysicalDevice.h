@@ -9,19 +9,20 @@
 #ifndef SIEGE_ENGINE_PHYSICALDEVICE_H
 #define SIEGE_ENGINE_PHYSICALDEVICE_H
 
+#include "../../utils/Array.h"
+#include "VulkanInstance.h"
 #include "utils/Device.h"
 
 namespace Siege::Vulkan
 {
+
 class PhysicalDevice
 {
 public:
+
     PhysicalDevice() = default;
 
-    PhysicalDevice(VkInstance instance,
-                   VkSurfaceKHR surface,
-                   const char* const* extensions,
-                   uint32_t extensionCount);
+    PhysicalDevice(VulkanInstance& instance);
 
     PhysicalDevice(const PhysicalDevice& other);
     PhysicalDevice(PhysicalDevice&& other);
@@ -29,16 +30,33 @@ public:
     void operator=(PhysicalDevice&& other);
     void operator=(const PhysicalDevice& other);
 
+    Array<VkSurfaceFormatKHR> GetSurfaceFormats(VkSurfaceKHR surface);
+    Array<VkPresentModeKHR> GetPresentModes(VkSurfaceKHR surface);
+    VkSurfaceCapabilitiesKHR GetCapabilities(VkSurfaceKHR surface);
+
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags newProperties);
+    VkFormat FindSupportedFormat(const VkFormat* candidates,
+                                 size_t formatCount,
+                                 VkImageTiling tiling,
+                                 VkFormatFeatureFlags features);
+
     ~PhysicalDevice() = default;
 
-    VkPhysicalDevice GetDevice() { return device; }
-    VkPhysicalDeviceProperties GetProperties() { return properties; }
+    VkPhysicalDevice Device()
+    {
+        return device;
+    }
+    VkPhysicalDeviceProperties Properties()
+    {
+        return properties;
+    }
 
 private:
+
     VkPhysicalDevice device {VK_NULL_HANDLE};
     VkPhysicalDeviceProperties properties {};
 };
 
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_PHYSICALDEVICE_H

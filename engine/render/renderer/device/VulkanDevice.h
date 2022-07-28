@@ -14,54 +14,12 @@
 #include "../platform/vulkan/PhysicalDevice.h"
 #include "../platform/vulkan/VulkanInstance.h"
 #include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
-#include "utils/Extensions.h"
-#include "utils/PhysicalDevice.h"
-#include "utils/QueueFamilyIndices.h"
-#include "utils/SwapChainSupportDetails.h"
-
-// std lib headers
-#include <array>
-
-#define GET_RAW(collection, name, count) \
-    for (size_t i = 0; i < count; i++) name[i] = collection[i].Str();
-
-#if ENABLE_VALIDATION_LAYERS == 1
-
-#define VALIDATION_LAYERS_ENABLED true
-
-#define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
-                                                                                               \
-    CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                    \
-    CREATE_INSTANCE(appInfo,                                                                   \
-                    extensionSize,                                                             \
-                    rawExtensions,                                                             \
-                    layerSize,                                                                 \
-                    rawLayers,                                                                 \
-                    0,                                                                         \
-                    reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo))
-
-#else
-#define VALIDATION_LAYERS_ENABLED false
-
-#define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
-    CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, flags)
-#define SETUP_UTILS_MESSENGER
-#endif
 
 namespace Siege
 {
 
 class VulkanDevice
 {
-    /**
-     * Tracks whether Vulkan is using validation layers, and whether we should include
-     * them on instantiation. Vulkan does not do any error validation by default, and
-     * will typically fail silently if no validation layers are active. We must enable
-     * validation layers manualy if we wish to have any errors or suggestions enabled.
-     **/
-    static const bool enableValidationLayers = VALIDATION_LAYERS_ENABLED;
-
 public:
 
     // 'Structors
@@ -69,20 +27,19 @@ public:
     VulkanDevice(Siege::Window* window);
     VulkanDevice();
 
-    ~VulkanDevice();
+    ~VulkanDevice() = default;
 
     // Deleting move and copy constructors
     VulkanDevice(const VulkanDevice&) = delete;
     VulkanDevice& operator=(const VulkanDevice&) = delete;
-    VulkanDevice(VulkanDevice&&) = delete;
-    VulkanDevice& operator=(VulkanDevice&&) = delete;
+
+    VulkanDevice(VulkanDevice&&);
+    VulkanDevice& operator=(VulkanDevice&&);
 
     static VulkanDevice* GetDeviceInstance()
     {
         return vulkanDeviceInstance;
     }
-
-    void SetWindow(Window* window);
 
     /**
      * Returns a copy of the command pool held by the device.
@@ -103,6 +60,16 @@ public:
     VkDevice Device()
     {
         return logicalDevice.Device();
+    }
+
+    Vulkan::PhysicalDevice PhysicalDevice()
+    {
+        return physicalDevice;
+    }
+
+    VkPhysicalDevice VkPhysicalDevice()
+    {
+        return physicalDevice.Device();
     }
 
     /**
@@ -139,15 +106,7 @@ public:
 
     size_t GetDeviceAlignment()
     {
-        return physicalDevice.GetProperties().limits.minUniformBufferOffsetAlignment;
-    }
-
-    /**
-     * Returns a struct containing all relevant swapChain support information.
-     **/
-    SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
-    {
-        return SwapChainSupportDetails::QuerySupport(physicalDevice.GetDevice(), instance.Surface());
+        return physicalDevice.Properties().limits.minUniformBufferOffsetAlignment;
     }
 
     /**
@@ -159,17 +118,9 @@ public:
      * @param properties - The available device memory properties. Used to query for available
      *memory.
      **/
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-    /**
-     * Returns a struct containing the indices for our graphics and present queues.
-     * Queues are stored in an array, each of which are differentiated by a specific index.
-     * These indices act as identifiers which allow Vulkan to know which queue to submit something
-     *to.
-     **/
-    QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
+    inline uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
     {
-        return QueueFamilyIndices::FindQueueFamilies(physicalDevice.GetDevice(), instance.Surface());
+        return physicalDevice.FindMemoryType(typeFilter, properties);
     }
 
     /**
@@ -181,10 +132,13 @@ public:
      * @param features - a bitmask of required format features. Each format has different features
      *associated with it. This ensures that we only get the features we want.
      **/
-    VkFormat FindSupportedFormat(const VkFormat* candidates,
-                                 size_t formatCount,
-                                 VkImageTiling tiling,
-                                 VkFormatFeatureFlags features);
+    inline VkFormat FindSupportedFormat(const VkFormat* candidates,
+                                        size_t formatCount,
+                                        VkImageTiling tiling,
+                                        VkFormatFeatureFlags features)
+    {
+        return physicalDevice.FindSupportedFormat(candidates, formatCount, tiling, features);
+    }
 
     // Buffer Helper Functions
 
@@ -192,14 +146,20 @@ public:
      * Prepares a command buffer for writing.
      * @returns - a command buffer that's been activated.
      **/
-    VkCommandBuffer BeginSingleTimeCommands();
+    inline VkCommandBuffer BeginSingleTimeCommands()
+    {
+        return logicalDevice.BeginSingleTimeCommands();
+    }
 
     /**
      * Stops a command buffer from beign written to (after having been written to already).
      * Submits the resulting command buffer to the graphics queue after all writing is
      * complete.
      **/
-    void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+    inline void EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+    {
+        logicalDevice.EndSingleTimeCommands(commandBuffer);
+    }
 
     /**
      * Copies a buffer. This is generally used when copying the values within a buffer into
@@ -241,43 +201,7 @@ public:
 
 private:
 
-    static constexpr size_t VALIDATION_LAYERS_COUNT = 1;
-
-    /**
-     * Instantiates a Vulkan instance for the use of this renderer.
-     *
-     * A Vulkan instance pulls in relevant Vulkan code and synchronises that code with
-     * the GPU for usage.
-     * This function specifically runs the following operations:
-     * 1) Checks if validation layers are enabled. Ensures that validation layers are
-     * 	  available for usage if any are specified.
-     * 2) Checks if all required extensions are available (including those from glfw).
-     * 3) Populates a debug callback for validation layer reporting (if enabled)
-     * 4) Creates a Vulkan instance and stores it in the 'instance' variable.
-     **/
-    void CreateInstance(Window* window);
-
-    /**
-     * Searches for and configures a physical device to be used for rendering. A
-     * physical device refers to a piece of hardware (a GPU). This is then stored
-     * in the 'physicalDevice' instance variable.
-     *
-     * This function searches over all available devices, iterates over them, and
-     * consequently returns the one that matches our criteria.
-     * The device in question MUST support both graphics and present queues, must
-     * have our required present modes and formats, and finally must support the
-     * 'samplerAnistropy' feature.
-     **/
-    void PickPhysicalDevice();
-
-    /**
-     * Creates a logical device struct and stores it in the 'device' instance variable.
-     * It also extracts the 'graphicsQueue' and 'presentQueue' Vulkan structs.
-     *
-     * This function will create the relevant queues for rendering, create a logical
-     * device using our physical device, and then extract the graphics and present queues.
-     **/
-    void CreateLogicalDevice();
+    void Move(VulkanDevice& other);
 
     static void SetVulkanDeviceInstance(VulkanDevice* device)
     {
@@ -287,23 +211,8 @@ private:
     static VulkanDevice* vulkanDeviceInstance;
 
     Vulkan::VulkanInstance instance;
-
     Vulkan::PhysicalDevice physicalDevice;
     Vulkan::LogicalDevice logicalDevice;
-
-    /**
-     * An array storing all required validation layers (if enabled).
-     **/
-    const std::array<const String, VALIDATION_LAYERS_COUNT> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"};
-
-    /**
-     * An array storing all required extensions. All of these must be present for the renderer to
-     *start.
-     **/
-    const std::array<const String, 2> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };
 
 } // namespace Siege

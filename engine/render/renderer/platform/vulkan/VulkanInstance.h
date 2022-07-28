@@ -17,6 +17,7 @@ namespace Siege::Vulkan
 class VulkanInstance
 {
 public:
+
     typedef bool (*SurfaceFunc)(VkInstance, VkSurfaceKHR*);
 
     VulkanInstance() = default;
@@ -30,14 +31,20 @@ public:
 
     VulkanInstance& operator=(VulkanInstance&& other);
 
-    VkInstance& VkInstance() { return instance; }
-    VkSurfaceKHR& Surface() { return surface; }
+    VkInstance& VkInstance()
+    {
+        return instance;
+    }
+    VkSurfaceKHR& Surface()
+    {
+        return surface;
+    }
 
 private:
+
     Array<const char*> GetRequiredExtensions(const char** requiredExtensions = nullptr,
                                              const size_t& count = 0);
-    void HasRequiredGLFWInstanceExtensions(const char** requiredExtensions,
-                                           const size_t& count);
+    void HasRequiredGLFWInstanceExtensions(const char** requiredExtensions, const size_t& count);
     bool ValidationLayersSupported();
 
     void SetupDebugMessenger();
@@ -47,6 +54,6 @@ private:
     ::VkInstance instance {VK_NULL_HANDLE};
 };
 
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_VULKANINSTANCE_H

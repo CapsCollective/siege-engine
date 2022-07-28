@@ -109,4 +109,4 @@ void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
     createInfo.pfnUserCallback = debugCallback;
     createInfo.pUserData = nullptr; // Optional
 }
-} // namespace Siege::DebugUtilsMessenger
+} // namespace Siege::Vulkan::DebugUtilsMessenger
