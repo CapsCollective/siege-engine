@@ -10,18 +10,20 @@
 
 namespace Siege
 {
-u32 FrameImages::imageCount = 0;
+uint32_t FrameImages::imageCount = 0;
 
 FrameImages::FrameImages() = default;
 
-FrameImages::FrameImages(VulkanDevice* vulkanDevice, VkFormat format) :
+FrameImages::FrameImages(Device* vulkanDevice, VkFormat format) :
     device {vulkanDevice},
     imageFormat {format}
 {}
 
 FrameImages::~FrameImages() = default;
 
-void FrameImages::InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imageDepth)
+void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
+                                       uint32_t imageHeight,
+                                       uint32_t imageDepth)
 {
     for (size_t i = 0; i < GetImageCount(); i++)
     {
@@ -45,7 +47,7 @@ void FrameImages::InitDepthImageView2D(u32 imageWidth, u32 imageHeight, u32 imag
                                     OUT imageMemorys[i]);
 
         // Set up the view image creation struct
-        imageViews[i] = Image::CreateImageView(device->Device(),
+        imageViews[i] = Image::CreateImageView(device->LogicalDevice(),
                                                images[i],
                                                VK_IMAGE_VIEW_TYPE_2D,
                                                imageFormat,
@@ -60,7 +62,7 @@ void FrameImages::InitColorImageView2D()
 {
     for (size_t i = 0; i < GetImageCount(); i++)
     {
-        SetImageView(Image::CreateImageView(device->Device(),
+        SetImageView(Image::CreateImageView(device->LogicalDevice(),
                                             GetImage(i),
                                             VK_IMAGE_VIEW_TYPE_2D,
                                             imageFormat,
@@ -74,12 +76,12 @@ void FrameImages::DestroyFrameImages()
 {
     for (size_t i = 0; i < GetImageCount(); i++)
     {
-        vkDestroyImageView(device->Device(), imageViews[i], nullptr);
+        vkDestroyImageView(device->LogicalDevice(), imageViews[i], nullptr);
 
         if (hasInfo)
         {
-            vkDestroyImage(device->Device(), images[i], nullptr);
-            vkFreeMemory(device->Device(), imageMemorys[i], nullptr);
+            vkDestroyImage(device->LogicalDevice(), images[i], nullptr);
+            vkFreeMemory(device->LogicalDevice(), imageMemorys[i], nullptr);
         }
     }
 }

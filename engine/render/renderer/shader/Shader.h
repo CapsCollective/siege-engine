@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include <utils/Hash.h>
+
 #include <map>
 
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "../pipeline/Pipeline.h"
-#include "../utils/Hash.h"
 
 namespace Siege
 {
@@ -40,9 +41,9 @@ public:
 
     struct Uniform
     {
-        Utils::StringId id;
-        u32 binding = 0;
-        u64 size = 0;
+        Hash::StringId id;
+        uint32_t binding = 0;
+        uint64_t size = 0;
         size_t arraySize = 0;
         size_t dynamicCount = 1;
         VkDescriptorType type;
@@ -51,8 +52,8 @@ public:
     struct VertexBinding
     {
         static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-        Utils::StackArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
-        u32 vertexStride = 0;
+        StackArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        uint32_t vertexStride = 0;
     };
 
     Shader();
@@ -60,43 +61,43 @@ public:
 
     static Shader BuildShader();
 
-    Shader& FromShader(const char* filePath);
+    Shader& FromShader(const String& filePath);
     Shader& WithStage(PipelineConfig::PipelineStage stage);
 
-    Shader& WithUniform(u32 binding, const char* name, u64 size, size_t arraySize = 1);
-    Shader& WithDynamicUniform(u32 binding,
-                               const char* name,
-                               u64 size,
+    Shader& WithUniform(uint32_t binding, const String& name, uint64_t size, size_t arraySize = 1);
+    Shader& WithDynamicUniform(uint32_t binding,
+                               const String& name,
+                               uint64_t size,
                                size_t arraySize,
                                size_t count);
-    Shader& WithStorage(u32 binding, const char* name, u64 size, size_t arraySize = 1);
-    Shader& WithDynamicStorage(u32 binding,
-                               const char* name,
-                               u64 size,
+    Shader& WithStorage(uint32_t binding, const String& name, uint64_t size, size_t arraySize = 1);
+    Shader& WithDynamicStorage(uint32_t binding,
+                               const String& name,
+                               uint64_t size,
                                size_t arraySize,
                                size_t count);
 
-    Shader& WithVertexType(u32 size);
-    Shader& WithVertexAttribute(u32 offset, VertexDescription::AttributeType type);
+    Shader& WithVertexType(uint32_t size);
+    Shader& WithVertexAttribute(uint32_t offset, VertexDescription::AttributeType type);
 
-    const Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
+    const StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
     {
         return vertexBindings;
     }
-    const Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
+    const StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
     {
         return uniforms;
     }
-    Utils::StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
+    StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
     {
         return vertexBindings;
     }
-    Utils::StackArray<Uniform, MAX_UNIFORMS>& GetUniforms()
+    StackArray<Uniform, MAX_UNIFORMS>& GetUniforms()
     {
         return uniforms;
     }
 
-    const char* GetPath()
+    const String& GetPath()
     {
         return filePath;
     }
@@ -105,24 +106,24 @@ public:
         return stage;
     }
 
-    u64 GetUniformSize()
+    uint64_t GetUniformSize()
     {
         return sizeOfUniforms;
     }
 
-    void SetUniformType(u32 binding,
-                        const char* name,
+    void SetUniformType(uint32_t binding,
+                        const String& name,
                         VkDescriptorType type,
-                        u64 size,
+                        uint64_t size,
                         size_t arraySize,
                         size_t count = 1);
 
-    const char* filePath;
+    String filePath;
 
-    Utils::StackArray<Uniform, MAX_UNIFORMS> uniforms;
-    Utils::StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
+    StackArray<Uniform, MAX_UNIFORMS> uniforms;
+    StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
 
     PipelineConfig::PipelineStage stage;
-    u64 sizeOfUniforms = 0;
+    uint64_t sizeOfUniforms = 0;
 };
 } // namespace Siege

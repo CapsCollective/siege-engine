@@ -8,13 +8,12 @@
 
 #pragma once
 
-#include "camera/Camera.h"
 #include "descriptor/DescriptorPool.h"
-#include "device/VulkanDevice.h"
 #include "lights/PointLight.h"
 #include "material/Material.h"
 #include "model/Model.h"
 #include "pipeline/Pipeline.h"
+#include "render/renderer/platform/vulkan/Device.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 #include "swapchain/Swapchain.h"
@@ -29,7 +28,7 @@ public:
 
     ~Renderer();
 
-    VulkanDevice& GetDevice()
+    Device& GetDevice()
     {
         return device;
     }
@@ -53,9 +52,9 @@ public:
         return swapChain.ExtentAspectRatio();
     }
 
-    void SetMainCamera(Camera* camera)
+    void SetProjection(const Mat4& projectionMat, const Mat4& viewMat)
     {
-        mainCamera = camera;
+        projection = {projectionMat, viewMat};
     }
 
     bool IsFrameStarted() const
@@ -74,7 +73,7 @@ public:
 
     void ClearDeviceQueue()
     {
-        vkDeviceWaitIdle(device.Device());
+        vkDeviceWaitIdle(device.LogicalDevice());
     }
 
     void SetClearValue(float r, float g, float b, float a)
@@ -84,17 +83,15 @@ public:
 
 private:
 
-    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
+    static Device* deviceInstance;
+    static Array<VkCommandBuffer> commandBuffers;
 
-    static VulkanDevice* deviceInstance;
-    static Utils::Array<VkCommandBuffer> commandBuffers;
-
-    VkClearColorValue clearValue {{0, 0, 0, 1.f}};
+    // Make this adjustable in the window, not the renderer.
+    VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
     void CreateCommandBuffers();
 
     void RecreateSwapChain();
-    void FreeCommandBuffers();
 
     void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
@@ -103,13 +100,13 @@ private:
 
     Siege::Window& window;
 
-    VulkanDevice device;
+    Device device;
     SwapChain swapChain;
 
-    u32 currentImageIndex;
+    uint32_t currentImageIndex;
     bool isFrameStarted {false};
     int currentFrameIndex {0};
 
-    Camera* mainCamera;
+    CameraData projection;
 };
 } // namespace Siege

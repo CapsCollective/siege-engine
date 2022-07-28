@@ -8,19 +8,21 @@
 
 #include "Swapchain.h"
 
+#include "../platform/vulkan/utils/Device.h"
+
 namespace Siege
 {
 // TODO: Fix the warnings
 SwapChain* SwapChain::instance = nullptr;
 
-SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) :
+SwapChain::SwapChain(Device& device, VkExtent2D windowExtent) :
     device {device},
     windowExtent {windowExtent}
 {
     Init();
 }
 
-SwapChain::SwapChain(VulkanDevice& device) : device {device} {}
+SwapChain::SwapChain(Device& device) : device {device} {}
 
 SwapChain::~SwapChain()
 {
@@ -37,14 +39,14 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    u32 imageCount = FrameImages::GetImageCount();
+    uint32_t imageCount = FrameImages::GetImageCount();
 
     swapchainImages.DestroyFrameImages();
 
     if (!isRecreated && swapChain != nullptr)
     {
-        std::cout << "Clearing Swapchain" << std::endl;
-        vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
+        CC_LOG_INFO("Clearing Swapchain")
+        vkDestroySwapchainKHR(device.LogicalDevice(), GetSwapChain(), nullptr);
         swapChain = nullptr;
     }
 
@@ -52,14 +54,14 @@ void SwapChain::ClearSwapChain(bool isRecreated)
 
     for (size_t i = 0; i < imageCount; i++)
     {
-        vkDestroyFramebuffer(device.Device(), swapChainFrameBuffers[i], nullptr);
+        vkDestroyFramebuffer(device.LogicalDevice(), swapChainFrameBuffers[i], nullptr);
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        vkDestroySemaphore(device.Device(), renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(device.Device(), imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(device.Device(), inFlightFences[i], nullptr);
+        vkDestroySemaphore(device.LogicalDevice(), renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(device.LogicalDevice(), imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(device.LogicalDevice(), inFlightFences[i], nullptr);
     }
 }
 
@@ -79,7 +81,7 @@ void SwapChain::ClearMemory()
 
 void SwapChain::RecreateSwapchain()
 {
-    std::cout << "Re-creating Swapchain" << std::endl;
+    CC_LOG_INFO("Re-creating Swapchain")
     // Destroy all Vulkan structs
     ClearSwapChain(true);
 
@@ -107,31 +109,36 @@ void SwapChain::Init()
 // TODO: Clean this function
 void SwapChain::CreateSwapChain()
 {
-    // Get our swapchain details
-    SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
+    Vulkan::PhysicalDevice physicalDevice = device.PhysicalDevice();
 
-    // Get our supported color format
+    auto surfaceFormats = physicalDevice.GetSurfaceFormats(device.Surface());
+    auto presentModes = physicalDevice.GetPresentModes(device.Surface());
+    auto capabilities = physicalDevice.GetCapabilities(device.Surface());
+
+    // Get our supported colour format
     VkSurfaceFormatKHR surfaceFormat =
-        ChooseSwapSurfaceFormat(details.formats.Data(), static_cast<u32>(details.formats.Size()));
+        ChooseSwapSurfaceFormat(surfaceFormats.Data(),
+                                static_cast<uint32_t>(surfaceFormats.Size()));
 
     // Choose our presentation mode (the form of image buffering)
-    VkPresentModeKHR presentMode = ChoosePresentMode(details.presentModes.Data(),
-                                                     static_cast<u32>(details.presentModes.Size()));
+    VkPresentModeKHR presentMode =
+        ChoosePresentMode(presentModes.Data(), static_cast<uint32_t>(presentModes.Size()));
 
     // The size of our images.
-    VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+    VkExtent2D extent = ChooseSwapExtent(capabilities);
 
-    std::cout << "Extent: " << extent.width << "x" << extent.height << std::endl;
+    CC_LOG_INFO("Swapchain created with image extents: [{}x{}]", extent.width, extent.height)
 
     // Get the image count we can support
-    u32 imageCount = details.capabilities.minImageCount + 1;
+    uint32_t imageCount = capabilities.minImageCount + 1;
 
     // Make sure we aren't exceeding the GPU's image count maximums
-    if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.maxImageCount)
+    if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
     {
-        imageCount = details.capabilities.maxImageCount;
+        imageCount = capabilities.maxImageCount;
     }
-    std::cout << "FrameImages Count: " << imageCount << std::endl;
+
+    CC_LOG_INFO("Images supported by swapchain: {}", imageCount)
 
     // Now we populate the base swapchain creation struct
     VkSwapchainCreateInfoKHR createInfo {};
@@ -146,12 +153,17 @@ void SwapChain::CreateSwapChain()
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     // Get our image queue information for rendering
-    QueueFamilyIndices::QueueFamilyIndices indices = device.FindPhysicalQueueFamilies();
-    u32 queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+    auto graphicsFamily =
+        Vulkan::VulkanDevice::Physical::GetGraphicsQueue(device.VulkanPhysicalDevice());
+    auto presentFamily =
+        Vulkan::VulkanDevice::Physical::GetPresentQueue(device.VulkanPhysicalDevice(),
+                                                        device.Surface());
+
+    uint32_t queueFamilyIndices[] = {graphicsFamily, presentFamily};
 
     // Sometimes the graphics and presentation queues are the same. We want to check for this
     // eventuality.
-    if (indices.graphicsFamily != indices.presentFamily)
+    if (graphicsFamily != presentFamily)
     {
         // We specify that there are two distinct queues that need to be used
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -167,7 +179,7 @@ void SwapChain::CreateSwapChain()
     }
 
     // Indicates any pre-transforms that need to occur to images (default is none)
-    createInfo.preTransform = details.capabilities.currentTransform;
+    createInfo.preTransform = capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
     createInfo.presentMode = presentMode;
@@ -175,18 +187,18 @@ void SwapChain::CreateSwapChain()
 
     createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
-    CC_ASSERT(
-        vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!");
+    CC_ASSERT(vkCreateSwapchainKHR(device.LogicalDevice(), &createInfo, nullptr, OUT & swapChain) ==
+                  VK_SUCCESS,
+              "Failed to create Swapchain!");
 
     swapchainImages = FrameImages(&device, surfaceFormat.format);
 
     // Once the swapchain has been created, get the number of images supported.
-    vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT & imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device.LogicalDevice(), swapChain, OUT & imageCount, nullptr);
 
     FrameImages::SetImageCount(imageCount);
 
-    vkGetSwapchainImagesKHR(device.Device(),
+    vkGetSwapchainImagesKHR(device.LogicalDevice(),
                             swapChain,
                             &imageCount,
                             OUT swapchainImages.GetImages());
@@ -241,7 +253,7 @@ void SwapChain::CreateDepthResources()
 // TODO: Refactor this
 void SwapChain::CreateFrameBuffers()
 {
-    u32 imageCount = FrameImages::GetImageCount();
+    uint32_t imageCount = FrameImages::GetImageCount();
 
     // Initialise the framebuffers storage
     if (swapChainFrameBuffers == nullptr) swapChainFrameBuffers = new VkFramebuffer[imageCount];
@@ -250,7 +262,7 @@ void SwapChain::CreateFrameBuffers()
     for (size_t i = 0; i < imageCount; i++)
     {
         // We have two sets of image views we need to render images with
-        u32 attachmentCount = 2;
+        uint32_t attachmentCount = 2;
 
         VkImageView attachments[] {swapchainImages.GetImageView(i), depthImages.GetImageView(i)};
 
@@ -267,7 +279,7 @@ void SwapChain::CreateFrameBuffers()
         frameBufferInfo.height = swapChainExtent.height;
         frameBufferInfo.layers = 1;
 
-        CC_ASSERT(vkCreateFramebuffer(device.Device(),
+        CC_ASSERT(vkCreateFramebuffer(device.LogicalDevice(),
                                       &frameBufferInfo,
                                       nullptr,
                                       OUT & swapChainFrameBuffers[i]) == VK_SUCCESS,
@@ -277,7 +289,7 @@ void SwapChain::CreateFrameBuffers()
 
 void SwapChain::CreateSyncObjects()
 {
-    u32 imageCount = FrameImages::GetImageCount();
+    uint32_t imageCount = FrameImages::GetImageCount();
 
     if (imageAvailableSemaphores == nullptr)
         imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
@@ -300,47 +312,48 @@ void SwapChain::CreateSyncObjects()
     // Create the synchronisation objects
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        CC_ASSERT(
-            vkCreateSemaphore(device.Device(),
-                              &semaphoreInfo,
-                              nullptr,
-                              OUT & imageAvailableSemaphores[i]) == VK_SUCCESS &&
-                vkCreateSemaphore(device.Device(),
-                                  &semaphoreInfo,
-                                  nullptr,
-                                  OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
-                vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
-                    VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!");
+        CC_ASSERT(vkCreateSemaphore(device.LogicalDevice(),
+                                    &semaphoreInfo,
+                                    nullptr,
+                                    OUT & imageAvailableSemaphores[i]) == VK_SUCCESS &&
+                      vkCreateSemaphore(device.LogicalDevice(),
+                                        &semaphoreInfo,
+                                        nullptr,
+                                        OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
+                      vkCreateFence(device.LogicalDevice(),
+                                    &fenceInfo,
+                                    nullptr,
+                                    OUT & inFlightFences[i]) == VK_SUCCESS,
+                  "Failed to create synchronization objects fora  frame!");
     }
 }
 
-VkResult SwapChain::AcquireNextImage(u32* imageIndex)
+VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex)
 {
     // Wait for the image of the current frame to become available
-    vkWaitForFences(device.Device(),
+    vkWaitForFences(device.LogicalDevice(),
                     1,
                     &inFlightFences[currentFrame],
                     VK_TRUE,
-                    std::numeric_limits<u64>::max());
+                    std::numeric_limits<uint64_t>::max());
 
     // Once available, Add it to our available images semaphor for usage
-    return vkAcquireNextImageKHR(device.Device(),
+    return vkAcquireNextImageKHR(device.LogicalDevice(),
                                  swapChain,
-                                 std::numeric_limits<u64>::max(),
+                                 std::numeric_limits<uint64_t>::max(),
                                  imageAvailableSemaphores[currentFrame],
                                  VK_NULL_HANDLE,
                                  imageIndex);
 }
 
-VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex)
+VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
 {
-    u32 index = *imageIndex;
+    uint32_t index = *imageIndex;
 
     // If the image being asked for is being used, we wait for it to become available
     if (imagesInFlight[index] != VK_NULL_HANDLE)
     {
-        vkWaitForFences(device.Device(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
+        vkWaitForFences(device.LogicalDevice(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
     }
 
     // Get the frame's image and move it to our images in flight
@@ -356,7 +369,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* im
     // Specify the semaphores we want to wait for (the one for our current frame)
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
 
-    // Set a stage that you need to wait for. In this case we wait until the color stage of the
+    // Set a stage that you need to wait for. In this case we wait until the colour stage of the
     // pipeline is done (fragment stage)
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
@@ -373,7 +386,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* im
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Reset the fence of this frame
-    vkResetFences(device.Device(), 1, OUT & inFlightFences[currentFrame]);
+    vkResetFences(device.LogicalDevice(), 1, OUT & inFlightFences[currentFrame]);
 
     // Submit the command buffer to the graphics queue
     CC_ASSERT(
@@ -412,7 +425,8 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* im
 VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* formats,
                                                       size_t formatCount)
 {
-    // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB color space.
+    // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB colour
+    // space.
     for (size_t i = 0; i < formatCount; i++)
     {
         VkSurfaceFormatKHR& availableFormat = formats[i];
@@ -435,20 +449,20 @@ VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
         // balance between performance and image quality
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
         {
-            std::cout << "Present Mode: Mailbox" << std::endl;
+            CC_LOG_INFO("Present Mode: Mailbox")
             return availablePresentMode;
         }
     }
 
     // If triple buffering is not available then use v-sync
-    std::cout << "Present Mode: V-Sync" << std::endl;
+    CC_LOG_INFO("Present Mode: V-Sync")
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
 VkExtent2D SwapChain::ChooseSwapExtent(VkSurfaceCapabilitiesKHR& capabilities)
 {
     // We want to make sure that the extents provided are within a reasonable range.
-    if (capabilities.currentExtent.width != std::numeric_limits<u32>::max())
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         return capabilities.currentExtent;
     else
     {

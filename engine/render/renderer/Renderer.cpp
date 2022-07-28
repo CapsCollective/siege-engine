@@ -10,12 +10,12 @@
 
 namespace Siege
 {
-Utils::Array<VkCommandBuffer> Renderer::commandBuffers;
-VulkanDevice* Renderer::deviceInstance = nullptr;
+Array<VkCommandBuffer> Renderer::commandBuffers;
+Device* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
 {
-    device.SetWindow(&window);
+    device = Device(&window);
     swapChain.SetWindowExtents(window.GetExtent());
 
     if (deviceInstance == nullptr) deviceInstance = &device;
@@ -35,35 +35,34 @@ Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(devic
 
 Renderer::~Renderer()
 {
-    std::cout << "Destroying renderer" << std::endl;
+    CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
 }
 
 void Renderer::CreateCommandBuffers()
 {
-    commandBuffers = Utils::Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers = Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandPool = device.GetCommandPool();
-    allocInfo.commandBufferCount = static_cast<u32>(commandBuffers.Size());
+    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.Size());
 
-    CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) ==
-                  VK_SUCCESS,
-              "Failed to allocate command buffer");
+    CC_ASSERT(
+        vkAllocateCommandBuffers(device.LogicalDevice(), &allocInfo, OUT commandBuffers.Data()) ==
+            VK_SUCCESS,
+        "Failed to allocate command buffer");
 }
 
 void Renderer::DrawFrame()
 {
     auto commandBuffer = GetCurrentCommandBuffer();
 
-    CameraData cameraData = {mainCamera->GetProjection(), mainCamera->GetView()};
+    Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer2D::GlobalData global2DData = {{cameraData}};
-
-    Renderer3D::Render(commandBuffer, cameraData);
+    Renderer3D::Render(commandBuffer, projection);
     Renderer2D::Render(commandBuffer, global2DData);
 }
 
@@ -90,14 +89,6 @@ void Renderer::RecreateSwapChain()
         Renderer3D::RecreateMaterials();
         Renderer2D::RecreateMaterials();
     }
-}
-
-void Renderer::FreeCommandBuffers()
-{
-    vkFreeCommandBuffers(device.Device(),
-                         device.GetCommandPool(),
-                         swapChain.GetImageCount(),
-                         commandBuffers.Data());
 }
 
 bool Renderer::StartFrame()
@@ -168,7 +159,7 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
               "Can't begin a render pass on a command buffer from another frame!");
 
-    u32 clearValueCount = 2;
+    uint32_t clearValueCount = 2;
     VkClearValue clearValues[clearValueCount];
     clearValues[0].color = clearValue;
     clearValues[1].depthStencil = {1.0f, 0};

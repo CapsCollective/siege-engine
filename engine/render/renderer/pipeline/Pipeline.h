@@ -9,8 +9,8 @@
 #pragma once
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 #include "PipelineConfig.h"
+#include "render/renderer/platform/vulkan/Device.h"
 
 namespace Siege
 {
@@ -25,7 +25,7 @@ namespace Siege
  * 3) input assembly - how vertices are submitted to the shader
  * 4) resterization - how vertices are represented
  * 5) multisampling - how we handle multi-sampling to avoid aliasing.
- * 6) color blending - how colors are blended together in the shader.
+ * 6) colour blending - how colors are blended together in the shader.
  * 7) depth stencil - how depth is represented within the shader.
  * 8) A pipeline layout representing how data is laid out in the shader.
  * 9) Our render pass.
@@ -41,14 +41,14 @@ struct PipelineConfigInfo
     VkPipelineColorBlendStateCreateInfo colorBlendInfo {};
     VkPipelineDepthStencilStateCreateInfo depthStencilInfo {};
 
-    Utils::Array<VkDynamicState> dynamicStateEnables;
+    Array<VkDynamicState> dynamicStateEnables;
     VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 
     // Dependent structs on other data.
 
     VkPipelineLayout pipelineLayout {nullptr}; // needs descriptor sets & push constants
     VkRenderPass renderPass {nullptr};
-    u32 subPass {0};
+    uint32_t subPass {0};
 
     VertexDescription::Data vertexData;
 };
@@ -59,12 +59,12 @@ public:
 
     // 'Structors
 
-    Pipeline(const char* vertFilePath,
-             const char* fragFilePath,
+    Pipeline(const String& vertFilePath,
+             const String& fragFilePath,
              const PipelineConfigInfo& configInfo);
 
     Pipeline(const PipelineConfig::ShaderConfig* shaders,
-             u32 shaderCount,
+             uint32_t shaderCount,
              const PipelineConfigInfo& configInfo);
 
     Pipeline();
@@ -94,12 +94,12 @@ public:
     void Bind(VkCommandBuffer commandBuffer);
 
     // TODO: document this
-    void RecreatePipeline(const char* vertFilePath,
-                          const char* fragFilePath,
+    void RecreatePipeline(const String& vertFilePath,
+                          const String& fragFilePath,
                           const PipelineConfigInfo& configInfo);
 
     void RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
-                          u32 shaderCount,
+                          uint32_t shaderCount,
                           const PipelineConfigInfo& configInfo);
 
     // TODO: document this
@@ -116,10 +116,10 @@ private:
      * @param filePath a raw c string specifying the file path.
      * @returns a heap-allocated array containing the file contents.
      **/
-    static Utils::Array<char> ReadFile(const char* filePath);
+    static Array<char> ReadFile(const String& filePath);
 
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
-                                u32 shaderCount,
+                                uint32_t shaderCount,
                                 const PipelineConfigInfo& configInfo);
 
     /**
@@ -129,7 +129,7 @@ private:
      * @param fileData an array containing our binary shader data.
      * @param shaderModule a pointer to a shaderModule that we want to populate.
      **/
-    void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
+    void CreateShaderModule(Array<char>& fileData, VkShaderModule* shaderModule);
 
     /**
      * The vulkan representation of a graphics pipeline.

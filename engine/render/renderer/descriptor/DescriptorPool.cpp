@@ -11,17 +11,16 @@
 namespace Siege
 {
 VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
-Utils::StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES>
-    DescriptorPool::sizes;
+StackArray<VkDescriptorPoolSize, DescriptorPool::MAX_DESCRIPTOR_POOL_SIZES> DescriptorPool::sizes;
 
-void DescriptorPool::AddPoolSize(const VkDescriptorType type, const u32 size)
+void DescriptorPool::AddPoolSize(const VkDescriptorType type, const uint32_t size)
 {
     sizes.Append({type, size});
 }
 
 void DescriptorPool::BuildPool()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
+    auto device = Device::GetDeviceInstance();
 
     if (descriptorPool == VK_NULL_HANDLE)
     {
@@ -29,13 +28,14 @@ void DescriptorPool::BuildPool()
         poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolCreateInfo.flags = 0;
         poolCreateInfo.maxSets = MAX_DESCRIPTOR_POOL_SIZES;
-        poolCreateInfo.poolSizeCount = static_cast<u32>(sizes.Count());
+        poolCreateInfo.poolSizeCount = static_cast<uint32_t>(sizes.Count());
         poolCreateInfo.pPoolSizes = sizes.Data();
 
-        CC_ASSERT(
-            vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) ==
-                VK_SUCCESS,
-            "Unable to create descriptor pool!");
+        CC_ASSERT(vkCreateDescriptorPool(device->LogicalDevice(),
+                                         &poolCreateInfo,
+                                         nullptr,
+                                         &descriptorPool) == VK_SUCCESS,
+                  "Unable to create descriptor pool!");
     }
 }
 
@@ -43,7 +43,7 @@ void DescriptorPool::DestroyPool()
 {
     if (descriptorPool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(),
+        vkDestroyDescriptorPool(Device::GetDeviceInstance()->LogicalDevice(),
                                 descriptorPool,
                                 nullptr);
     }

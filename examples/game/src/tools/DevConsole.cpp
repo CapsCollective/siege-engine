@@ -22,7 +22,7 @@ void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Statics::Input().KeyPressed(Key::GRAVE))
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::GRAVE))
     {
         // Toggle the console
         isActive = !isActive;
@@ -34,24 +34,26 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) Statics::Input().GetKeyChar()) > 0)
+    while ((key = (char) Siege::Statics::Input().GetKeyChar()) > 0)
     {
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
-    if (Statics::Input().KeyPressed(Key::BACKSPACE) && !inputText.IsEmpty()) inputText.PopBack();
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::BACKSPACE) && !inputText.IsEmpty())
+        inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Statics::Input().KeyPressed(Key::UP) && !lastInput.IsEmpty()) inputText = lastInput;
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::UP) && !lastInput.IsEmpty())
+        inputText = lastInput;
 
     // Process the command on enter
-    if (Statics::Input().KeyPressed(Key::ENTER))
+    if (Siege::Statics::Input().KeyPressed(Siege::Key::ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
-        String command(!args.empty() ? args[0] : nullptr);
-        String argument(args.size() > 1 ? args[1] : nullptr);
+        Siege::String command(!args.empty() ? args[0] : nullptr);
+        Siege::String argument(args.size() > 1 ? args[1] : nullptr);
 
         // Run the appropriate instructions for specified command
         if (command == "load")
@@ -62,7 +64,7 @@ void DevConsole::OnUpdate()
                 if (isEditorMode) ServiceLocator::GetEditorController()->SelectEntity(nullptr);
 
                 // Try load the scene specified
-                Statics::Scene().QueueNextScene(argument);
+                Siege::Statics::Scene().QueueNextScene(argument);
             }
         }
         else if (command == "save")
@@ -70,7 +72,7 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode())
             {
                 // Save the scene as the current scene name (or untitled if argument blank)
-                Statics::Scene().SaveScene(argument);
+                Siege::Statics::Scene().SaveScene(argument);
                 messageDisplay->DisplayMessage("Scene saved");
             }
         }
@@ -78,7 +80,7 @@ void DevConsole::OnUpdate()
         {
             // Deselect all entities and open a new, untitled scene
             ServiceLocator::GetEditorController()->SelectEntity(nullptr);
-            Statics::Scene().NewScene();
+            Siege::Statics::Scene().NewScene();
             messageDisplay->DisplayMessage("Created new scene");
         }
         else if (command == "add")
@@ -101,8 +103,8 @@ void DevConsole::OnUpdate()
             if (CheckEditorMode() && CheckArgs("setpos", argument))
             {
                 // Try to convert the argument to a Vector3, and set the entity's position
-                Vec3 position;
-                if (Vec3::FromString(position, argument))
+                Siege::Vec3 position;
+                if (Siege::Vec3::FromString(position, argument))
                 {
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {
@@ -147,11 +149,11 @@ void DevConsole::OnDraw2D()
 {
     if (!isActive) return;
 
-    Window* window = ServiceLocator::GetWindow();
+    Siege::Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Colour::Black);
-    Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Colour::White);
+    Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::Colour::Black);
+    Siege::Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Siege::Colour::White);
 }
 
 bool DevConsole::CheckEditorMode()
@@ -160,7 +162,7 @@ bool DevConsole::CheckEditorMode()
     return isEditorMode;
 }
 
-bool DevConsole::CheckArgs(const String& command, const String& args)
+bool DevConsole::CheckArgs(const Siege::String& command, const Siege::String& args)
 {
     if (args.IsEmpty())
     {

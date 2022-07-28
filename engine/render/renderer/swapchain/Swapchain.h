@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "../device/VulkanDevice.h"
 #include "../image/FrameImages.h"
 #include "../pass/RenderPass.h"
+#include "render/renderer/platform/vulkan/Device.h"
 
 namespace Siege
 {
@@ -52,8 +52,8 @@ public:
      * @param windowExtent the window resolution. Images need to be scaled to an extent, this
      * usually must follow the extents of the window.
      */
-    SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    SwapChain(VulkanDevice& device);
+    SwapChain(Device& device, VkExtent2D windowExtent);
+    SwapChain(Device& device);
     ~SwapChain();
 
     // Delete copy constructors.
@@ -93,7 +93,7 @@ public:
      * swapchain's max image count.
      * @return VkFramebuffer the framebuffer in index i
      */
-    VkFramebuffer GetFrameBuffer(u32 i)
+    VkFramebuffer GetFrameBuffer(uint32_t i)
     {
         return swapChainFrameBuffers[i];
     }
@@ -103,7 +103,7 @@ public:
      *
      * @return u32 representing the number of possible active simultaneous images.
      */
-    static u32 GetImageCount()
+    static uint32_t GetImageCount()
     {
         return FrameImages::GetImageCount();
     }
@@ -123,7 +123,7 @@ public:
      *
      * @return u32 representing the width of the image.
      */
-    u32 GetWidth() const
+    uint32_t GetWidth() const
     {
         return swapChainExtent.width;
     }
@@ -133,7 +133,7 @@ public:
      *
      * @return u32 representing the image height.
      */
-    u32 GetHeight() const
+    uint32_t GetHeight() const
     {
         return swapChainExtent.height;
     }
@@ -161,7 +161,7 @@ public:
      * @param imageIndex - the index of the next image.
      * @return VkResult - the result of acquiring the next image.
      */
-    VkResult AcquireNextImage(u32* imageIndex);
+    VkResult AcquireNextImage(uint32_t* imageIndex);
 
     /**
      * @brief Submits a command buffer for drawing.
@@ -170,7 +170,7 @@ public:
      * @param imageIndex - the index of the image being drawn.
      * @return VkResult - the result of submitting the buffer.
      */
-    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
+    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
     void RecreateSwapchain();
 
@@ -233,8 +233,8 @@ private:
     void CreateSyncObjects();
 
     /**
-     * @brief Specifies which color format we want images to be written to. Accepts a set of formats
-     * and populates them with requisite data.
+     * @brief Specifies which colour format we want images to be written to. Accepts a set of
+     * formats and populates them with requisite data.
      *
      * @param formats - an array of possible formats.
      * @param formatCount - the number of formats provided.
@@ -270,7 +270,7 @@ private:
     void ClearMemory();
 
     // Device and window data
-    VulkanDevice& device;
+    Device& device;
     VkExtent2D windowExtent;
 
     static SwapChain* instance;

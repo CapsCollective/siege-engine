@@ -12,28 +12,28 @@
 #include <core/entity/Entity.h>
 #include <core/render/RenderSystem.h>
 
-class Player : public Entity
+class Player : public Siege::Entity
 {
 public:
 
     // Public constants
 
-    static const String ENTITY_NAME;
+    static const Siege::String ENTITY_NAME;
 
     // 'Structors
 
-    Player() : Player({Vec3::Zero, 0.f}) {};
+    Player() : Player({Siege::Vec3::Zero, 0.f}) {};
 
-    explicit Player(const Xform& transform) :
+    explicit Player(const Siege::Xform& transform) :
         Entity(ENTITY_NAME, transform),
         speed(1.5f),
-        velocity(Vec3::Zero) {};
+        velocity(Siege::Vec3::Zero) {};
 
     // Public overrides
 
     Entity* Clone() const override;
 
-    BoundedBox GetBoundingBox() const override;
+    Siege::BoundedBox GetBoundingBox() const override;
 
 protected:
 
@@ -51,7 +51,7 @@ private:
 
     float speed;
 
-    Vec3 velocity;
+    Siege::Vec3 velocity;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H

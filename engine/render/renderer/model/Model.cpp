@@ -11,8 +11,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include <cstring>
-
 namespace std
 {
 template<>
@@ -21,7 +19,7 @@ struct hash<Siege::Vertex>
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Siege::Utils::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.colour, vertex.normal, vertex.uv);
         return seed;
     };
 };
@@ -32,7 +30,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Siege::Utils::HashCombine(seed, vertex.position, vertex.color);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.colour);
         return seed;
     };
 };
@@ -45,7 +43,7 @@ Model::Model(const Mesh::MeshData& meshData)
     modelMesh.LoadVertices(meshData);
 }
 
-Model::Model(const char* filePath)
+Model::Model(const String& filePath)
 {
     LoadModelFromFile(filePath);
 }
@@ -60,18 +58,19 @@ void Model::DestroyModel()
     modelMesh.DestroyMesh();
 }
 
-void Model::LoadModelFromFile(const char* filePath)
+void Model::LoadModelFromFile(const String& filePath)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath), warn + err);
+    CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
+              (warn + err).c_str())
 
     std::vector<Vertex> objVertices;
-    std::vector<u32> objIndices;
-    std::unordered_map<Vertex, u32> uniqueVertices {};
+    std::vector<uint32_t> objIndices;
+    std::unordered_map<Vertex, uint32_t> uniqueVertices {};
 
     for (const auto& shape : shapes)
     {
@@ -85,9 +84,9 @@ void Model::LoadModelFromFile(const char* filePath)
                                    attrib.vertices[3 * index.vertex_index + 1],
                                    attrib.vertices[3 * index.vertex_index + 2]};
 
-                vertex.color = {attrib.colors[3 * index.vertex_index + 0],
-                                attrib.colors[3 * index.vertex_index + 1],
-                                attrib.colors[3 * index.vertex_index + 2]};
+                vertex.colour = {attrib.colors[3 * index.vertex_index + 0],
+                                 attrib.colors[3 * index.vertex_index + 1],
+                                 attrib.colors[3 * index.vertex_index + 2]};
             }
 
             if (index.normal_index >= 0)
@@ -105,7 +104,7 @@ void Model::LoadModelFromFile(const char* filePath)
 
             if (uniqueVertices.count(vertex) == 0)
             {
-                uniqueVertices[vertex] = static_cast<u32>(objVertices.size());
+                uniqueVertices[vertex] = static_cast<uint32_t>(objVertices.size());
                 objVertices.push_back(vertex);
             }
             objIndices.push_back(uniqueVertices[vertex]);
@@ -114,9 +113,9 @@ void Model::LoadModelFromFile(const char* filePath)
 
     modelMesh.LoadVertices({sizeof(Vertex),
                             objVertices.data(),
-                            static_cast<u32>(objVertices.size()),
+                            static_cast<uint32_t>(objVertices.size()),
                             objIndices.data(),
-                            static_cast<u32>(objIndices.size())});
+                            static_cast<uint32_t>(objIndices.size())});
 }
 
 void Model::UpdateMesh(const Mesh::MeshData& meshData)
@@ -134,7 +133,7 @@ void Model::Bind(VkCommandBuffer commandBuffer)
     modelMesh.Bind(commandBuffer);
 }
 
-void Model::Draw(VkCommandBuffer commandBuffer, u32 instance)
+void Model::Draw(VkCommandBuffer commandBuffer, const uint32_t& instance)
 {
     if (modelMesh.HasIndexBuffer())
         vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, instance);

@@ -13,6 +13,8 @@
 #include "Entity.h"
 #include "EntitySystem.h"
 
+namespace Siege
+{
 template<class E>
 class EntityPtr
 {
@@ -113,5 +115,6 @@ private:
      */
     GenerationalIndex index;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITYPTR_H
