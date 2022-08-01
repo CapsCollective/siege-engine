@@ -32,7 +32,7 @@ public:
      * @brief CreateIterator constructor
      * @param arrPtr the pointer to the Array
      */
-    inline constexpr Iter(A* arrPtr) : ptr {arrPtr}
+    inline constexpr Iter(A* arrPtr)
     {
         ptr = arrPtr->Data() && arrPtr->Size() > 0 ? arrPtr : nullptr;
     }
@@ -54,7 +54,7 @@ public:
      * @brief The dereference operator
      * @return the de-referenced pointer value
      */
-    inline constexpr T& operator*()
+    inline constexpr const T& operator*() const
     {
         return *(ptr->Data() + index);
     }

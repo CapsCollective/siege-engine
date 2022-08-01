@@ -17,7 +17,6 @@ VulkanDevice* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
 {
-    device.SetWindow(&window);
     swapChain.SetWindowExtents(window.GetExtent());
 
     if (deviceInstance == nullptr) deviceInstance = &device;

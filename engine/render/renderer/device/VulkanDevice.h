@@ -16,34 +16,15 @@
 #include "utils/PhysicalDevice.h"
 #include "utils/QueueFamilyIndices.h"
 #include "utils/SwapChainSupportDetails.h"
-
-// std lib headers
-#include "utils/collections/StackArray.h"
-
-#if ENABLE_VALIDATION_LAYERS == 1
-#define VALIDATION_LAYERS_ENABLED true
-#else
-#define VALIDATION_LAYERS_ENABLED false
-#endif
+#include "../platform/vulkan/Context.h"
 
 namespace Siege
 {
-
 class VulkanDevice
 {
-    /**
-     * Tracks whether Vulkan is using validation layers, and whether we should include
-     * them on instantiation. Vulkan does not do any error validation by default, and
-     * will typically fail silently if no validation layers are active. We must enable
-     * validation layers manualy if we wish to have any errors or suggestions enabled.
-     **/
-    static const bool enableValidationLayers = VALIDATION_LAYERS_ENABLED;
-
 public:
-
     // 'Structors
 
-    VulkanDevice(Window* window);
     VulkanDevice();
 
     ~VulkanDevice();
@@ -58,8 +39,6 @@ public:
     {
         return vulkanDeviceInstance;
     }
-
-    void SetWindow(Window* window);
 
     /**
      * Returns a copy of the command pool held by the device.
@@ -89,7 +68,7 @@ public:
      **/
     VkSurfaceKHR Surface()
     {
-        return surface;
+        return Vulkan::Context::GetInstance().GetSurface();
     }
 
     /**
@@ -124,6 +103,7 @@ public:
      **/
     SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
     {
+        auto surface = Surface();
         return SwapChainSupportDetails::QuerySupport(physicalDevice, surface);
     }
 
@@ -146,6 +126,7 @@ public:
      **/
     QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
     {
+        auto surface = Surface();
         return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface);
     }
 
@@ -299,33 +280,14 @@ private:
 
     static VulkanDevice* vulkanDeviceInstance;
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
-    Window* window {nullptr};
     VkCommandPool commandPool;
 
     VkDevice device;
-    VkSurfaceKHR surface;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
-
-    /**
-     * An array storing all required validation layers (if enabled).
-     **/
-    const Utils::SArray<String, 1> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-
-    /**
-     * An array storing all required extensions. All of these must be present for the renderer to
-     *start.
-     **/
-    const Utils::SArray<String, 2> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };
-
 } // namespace Siege
 
 #endif

@@ -110,40 +110,11 @@ namespace Siege
 
 VulkanDevice* VulkanDevice::vulkanDeviceInstance = nullptr;
 
-VulkanDevice::VulkanDevice(Window* window) : window {window}
-{
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
-
-    CreateInstance();
-
-    SETUP_UTILS_MESSENGER
-
-    CreateSurface();
-    PickPhysicalDevice();
-    CreateLogicalDevice();
-    CreateCommandPool();
-
-    SetVulkanDeviceInstance(this);
-}
-
 VulkanDevice::VulkanDevice()
 {
-    SetVulkanDeviceInstance(this);
-}
+    Siege::Vulkan::Context::Init(Siege::Window::GetRequiredExtensions,
+                                 Siege::Window::CreateWindowSurface);
 
-void VulkanDevice::SetWindow(Window* newWindow)
-{
-    CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
-
-    CC_ASSERT(newWindow != nullptr, "Must provide a valid pointer to a window!")
-
-    window = newWindow;
-
-    CreateInstance();
-
-    SETUP_UTILS_MESSENGER
-
-    CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
     CreateCommandPool();
@@ -159,61 +130,19 @@ VulkanDevice::~VulkanDevice()
     vkDestroyCommandPool(device, commandPool, nullptr);
     vkDestroyDevice(device, nullptr);
 
-    DESTROY_DEBUG_MESSENGER(debugMessenger)
-
-    vkDestroySurfaceKHR(instance, surface, nullptr);
-    vkDestroyInstance(instance, nullptr);
-}
-
-void VulkanDevice::CreateInstance()
-{
-    ASSERT_LAYERS_EXIST(validationLayers.Data(), static_cast<uint32_t>(validationLayers.Size()))
-
-    // Specify general app information.
-    auto appInfo = Vulkan::Instance::AppInfo("Siege Renderer",
-                                             VK_MAKE_VERSION(1, 0, 0),
-                                             "No Engine",
-                                             VK_MAKE_VERSION(1, 0, 0),
-                                             VK_API_VERSION_1_2);
-
-    // Get all extensions required by our windowing system.
-    auto extensions = Extensions::GetRequiredExtensions(enableValidationLayers);
-
-    uint32_t extensionSize = static_cast<uint32_t>(extensions.Size());
-    uint32_t layerSize = static_cast<uint32_t>(validationLayers.Size());
-
-    const char* rawExtensions[extensionSize];
-    const char* rawLayers[layerSize];
-
-    GET_RAW(extensions, rawExtensions, extensions.Size())
-    GET_RAW(validationLayers, rawLayers, VALIDATION_LAYERS_COUNT)
-
-    CREATE_VULKAN_INSTANCE(instance,
-                           appInfo,
-                           rawExtensions,
-                           extensionSize,
-                           rawLayers,
-                           layerSize,
-                           0);
-
-    Extensions::HasGflwRequiredInstanceExtensions(enableValidationLayers);
-
-    volkLoadInstance(instance);
-}
-
-void VulkanDevice::CreateSurface()
-{
-    window->CreateWindowSurface(instance, OUT & surface);
+    Vulkan::Context::Destroy();
 }
 
 void VulkanDevice::PickPhysicalDevice()
 {
-    const char* rawExtensions[deviceExtensions.Size()];
-    GET_RAW(deviceExtensions.Data(), rawExtensions, deviceExtensions.Size())
+    auto deviceExtensions = Vulkan::Config::deviceExtensions;
+
+    auto instance = Vulkan::Context::GetVkInstance();
+    auto surface = Vulkan::Context::GetInstance().GetSurface();
 
     physicalDevice = Vulkan::Device::Physical::FindSuitableDevice(instance,
                                                                   surface,
-                                                                  rawExtensions,
+                                                                  deviceExtensions.Data(),
                                                                   deviceExtensions.Size());
 
     CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
@@ -228,7 +157,7 @@ void VulkanDevice::PickPhysicalDevice()
 void VulkanDevice::CreateLogicalDevice()
 {
     uint32_t graphicsIdx = Vulkan::Device::Physical::GetGraphicsQueue(physicalDevice);
-    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(physicalDevice, surface);
+    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(physicalDevice, Surface());
 
     const uint32_t maxQueues = 2;
     uint32_t count = maxQueues - (graphicsIdx == presentIdx);
@@ -236,11 +165,8 @@ void VulkanDevice::CreateLogicalDevice()
 
     GET_UNIQUE_QUEUES(queueCreateInfos, graphicsIdx, presentIdx)
 
-    const char* rawExtensions[deviceExtensions.Size()];
-    const char* rawLayers[VALIDATION_LAYERS_COUNT];
-
-    GET_RAW(deviceExtensions.Data(), rawExtensions, deviceExtensions.Size())
-    GET_RAW(validationLayers.Data(), rawLayers, validationLayers.Size())
+    auto deviceExtensions = Vulkan::Config::deviceExtensions;
+    auto layers = Vulkan::Config::validationLayers;
 
     CREATE_LOGICAL_DEVICE(
         physicalDevice,
@@ -248,10 +174,10 @@ void VulkanDevice::CreateLogicalDevice()
         static_cast<uint32_t>(uniqueQueueFamilies.size()),
         queueCreateInfos,
         static_cast<uint32_t>(deviceExtensions.Size()),
-        rawExtensions,
+        deviceExtensions.Data(),
         Vulkan::Device::Physical::DeviceFeaturesBuilder().WithSamplerAnistropy(VK_TRUE).Build(),
-        static_cast<uint32_t>(validationLayers.Size()),
-        rawLayers)
+        static_cast<uint32_t>(layers.Size()),
+        layers.Data())
 
     graphicsQueue = Vulkan::Device::GetQueue(device, graphicsIdx, 0);
     presentQueue = Vulkan::Device::GetQueue(device, presentIdx, 0);
@@ -266,18 +192,6 @@ void VulkanDevice::CreateCommandPool()
                       .WithFlag(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT)
                       .WithFlag(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                       .Build(device);
-}
-
-void VulkanDevice::SetupDebugMessenger()
-{
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    DebugUtilsMessenger::PopulateCreateInfo(OUT createInfo);
-
-    CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance,
-                                                   &createInfo,
-                                                   nullptr,
-                                                   OUT & debugMessenger) == VK_SUCCESS,
-              "Failed to create DebugUtilsMessenger!")
 }
 
 VkFormat VulkanDevice::FindSupportedFormat(const VkFormat* candidates,

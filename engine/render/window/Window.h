@@ -15,6 +15,7 @@
 
 // Include Vulkan headers through GLFW
 #include <GLFW/glfw3.h>
+#include <utils/collections/HeapArray.h>
 
 namespace Siege
 {
@@ -35,7 +36,7 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+        if (!window) window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 
         if (glfwRawMouseMotionSupported())
         {
@@ -83,7 +84,7 @@ public:
 
     bool WindowShouldClose();
 
-    bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+    static bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
     bool WasResized() const
     {
@@ -104,6 +105,8 @@ public:
     {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
+
+    static Utils::MHArray<const char*> GetRequiredExtensions();
 
     void ToggleCursor(bool state)
     {
@@ -126,7 +129,7 @@ private:
 
     // Private variables
 
-    GLFWwindow* window;
+    static GLFWwindow* window;
 
     int width;
     int height;

@@ -329,12 +329,34 @@ public:
     }
 
     /**
+     * Creates a base managed iterator for the array. This iterator will ignore elements which
+     * have not been previously assigned. This method is slower than the CreateFIterator but ensures
+     * no garbage data is accessed
+     * @return a MIter to iterate over the array
+     */
+    Utils::MIter<const MHArray<T>, T> CreateIterator() const
+    {
+        return {this};
+    }
+
+    /**
      * Creates a fast iterator type. The fast iterator iterates over every single element in an
      * array, regardless of whether they have been assigned to. This method is faster than the
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
     Utils::Iter<MHArray<T>, T> CreateFIterator()
+    {
+        return {this};
+    }
+
+    /**
+     * Creates a fast iterator type. The fast iterator iterates over every single element in an
+     * array, regardless of whether they have been assigned to. This method is faster than the
+     * default iterator but is less safe
+     * @return an Iter instance to iterate over the array
+     */
+    Utils::Iter<const MHArray<T>, T> CreateFIterator() const
     {
         return {this};
     }
