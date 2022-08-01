@@ -123,6 +123,13 @@ public:
         size = values.size();
     }
 
+    Array(T* values, size_t amount) : size {amount}
+    {
+        data = new T[this->size];
+
+        memcpy(data, values, sizeof(T) * amount);
+    }
+
     Array(const Array<T>& other)
     {
         if (data) delete[] data;
@@ -130,14 +137,16 @@ public:
         Copy(other);
     }
 
-    void operator=(const Array<T>& other)
+    Array<T>& operator=(const Array<T>& other)
     {
         if (data) delete[] data;
 
         Copy(other);
+
+        return *this;
     }
 
-    void operator=(Array<T>&& other)
+    Array<T>& operator=(Array<T>&& other)
     {
         if (data) delete[] data;
 
@@ -145,6 +154,8 @@ public:
         other.data = nullptr;
 
         size = std::move(other.Size());
+
+        return *this;
     }
 
     ~Array()
@@ -171,6 +182,11 @@ public:
     }
 
     T* Data()
+    {
+        return data;
+    }
+
+    T* Data() const
     {
         return data;
     }

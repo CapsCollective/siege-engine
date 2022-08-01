@@ -15,57 +15,15 @@
 #include "utils/PhysicalDevice.h"
 #include "utils/QueueFamilyIndices.h"
 #include "utils/SwapChainSupportDetails.h"
-
-// std lib headers
-#include <array>
-
-#define GET_RAW(collection, name, count) \
-    for (size_t i = 0; i < count; i++) name[i] = collection[i].Str();
-
-#if ENABLE_VALIDATION_LAYERS == 1
-
-#define VALIDATION_LAYERS_ENABLED true
-
-#define SETUP_UTILS_MESSENGER SetupDebugMessenger();
-
-#define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
-                                                                                               \
-    CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                    \
-    CREATE_INSTANCE(appInfo,                                                                   \
-                    extensionSize,                                                             \
-                    rawExtensions,                                                             \
-                    layerSize,                                                                 \
-                    rawLayers,                                                                 \
-                    0,                                                                         \
-                    reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo))
-
-#else
-#define VALIDATION_LAYERS_ENABLED false
-
-#define CREATE_VULKAN_INSTANCE(appInfo, extensions, extensionCount, layers, layerCount, flags) \
-    CREATE_INSTANCE(appInfo, extensionSize, extensions, layerCount, layers, flags)
-#define SETUP_UTILS_MESSENGER
-#endif
+#include "../platform/vulkan/Context.h"
 
 namespace Siege
 {
-
 class VulkanDevice
 {
-    /**
-     * Tracks whether Vulkan is using validation layers, and whether we should include
-     * them on instantiation. Vulkan does not do any error validation by default, and
-     * will typically fail silently if no validation layers are active. We must enable
-     * validation layers manualy if we wish to have any errors or suggestions enabled.
-     **/
-    static const bool enableValidationLayers = VALIDATION_LAYERS_ENABLED;
-
 public:
-
     // 'Structors
 
-    VulkanDevice(Siege::Window* window);
     VulkanDevice();
 
     ~VulkanDevice();
@@ -80,8 +38,6 @@ public:
     {
         return vulkanDeviceInstance;
     }
-
-    void SetWindow(Window* window);
 
     /**
      * Returns a copy of the command pool held by the device.
@@ -111,7 +67,7 @@ public:
      **/
     VkSurfaceKHR Surface()
     {
-        return surface;
+        return Vulkan::Context::GetInstance().GetSurface();
     }
 
     /**
@@ -146,6 +102,7 @@ public:
      **/
     SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
     {
+        auto surface = Surface();
         return SwapChainSupportDetails::QuerySupport(physicalDevice, surface);
     }
 
@@ -168,6 +125,7 @@ public:
      **/
     QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
     {
+        auto surface = Surface();
         return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface);
     }
 
@@ -321,32 +279,12 @@ private:
 
     static VulkanDevice* vulkanDeviceInstance;
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
-    Window* window {nullptr};
     VkCommandPool commandPool;
 
     VkDevice device;
-    VkSurfaceKHR surface;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
-
-    /**
-     * An array storing all required validation layers (if enabled).
-     **/
-    const std::array<const String, VALIDATION_LAYERS_COUNT> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"};
-
-    /**
-     * An array storing all required extensions. All of these must be present for the renderer to
-     *start.
-     **/
-    const std::array<const String, 2> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };
-
 } // namespace Siege
