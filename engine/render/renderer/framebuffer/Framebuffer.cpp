@@ -8,6 +8,8 @@
 
 #include "Framebuffer.h"
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 #include <utils/Logging.h>
 
 namespace Siege
@@ -56,9 +58,7 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 {
-    auto device = VulkanDevice::GetDeviceInstance()->Device();
-
-    if (framebuffers.Size() > 0) DestroyFramebuffer(device);
+    if (framebuffers.Size() > 0) DestroyFramebuffer(Vulkan::Context::GetVkLogicalDevice());
 
     framebuffers = std::move(other.framebuffers);
 
@@ -67,8 +67,7 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 
 Framebuffer::~Framebuffer()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-    DestroyFramebuffer(device->Device());
+    DestroyFramebuffer(Vulkan::Context::GetVkLogicalDevice());
     framebuffers.Clear();
 }
 

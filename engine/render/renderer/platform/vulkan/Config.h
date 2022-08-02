@@ -18,6 +18,7 @@ namespace Siege::Vulkan
 class Config
 {
 public:
+
     static constexpr uint32_t VALIDATION_LAYERS_COUNT = 1;
     static constexpr uint32_t EXTENSIONS_COUNT = 2;
 
@@ -33,9 +34,8 @@ public:
     **/
     static constexpr Utils::SArray<const char*, EXTENSIONS_COUNT> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME
-    };
+        VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };
-}
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_CONFIG_H

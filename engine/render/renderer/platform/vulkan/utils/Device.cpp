@@ -207,11 +207,11 @@ bool Device::Physical::SupportsExtensions(VkPhysicalDevice device,
     return requiredExtensions.empty();
 }
 
-void Device::Physical::GetSurfaceFormatCount(VkPhysicalDevice device,
-                                             VkSurfaceKHR surface,
-                                             uint32_t& count)
+uint32_t Device::Physical::GetSurfaceFormatCount(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
+    uint32_t count;
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT & count, nullptr);
+    return count;
 }
 
 void Device::Physical::GetSurfaceFormats(VkPhysicalDevice device,
@@ -232,9 +232,7 @@ VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevi
 
 bool Device::Physical::HasFormats(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
-    uint32_t formatCount = 0;
-    GetSurfaceFormatCount(device, surface, formatCount);
-    return formatCount > 0;
+    return GetSurfaceFormatCount(device, surface) > 0;
 }
 
 bool Device::Physical::HasPresentModes(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -269,6 +267,32 @@ VkPhysicalDeviceProperties Device::Physical::GetDeviceProperties(VkPhysicalDevic
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(device, OUT & properties);
     return properties;
+}
+
+Utils::MHArray<VkQueueFamilyProperties> Device::Physical::GetDeviceQueueFamilyIndices(
+    VkPhysicalDevice device)
+{
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, OUT & queueFamilyCount, nullptr);
+
+    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, OUT queueFamilies);
+
+    return Utils::MHArray<VkQueueFamilyProperties>(queueFamilies, queueFamilyCount);
+}
+
+int32_t Device::Physical::GetMatchingQueueFamilyIndex(VkPhysicalDevice device,
+                                                      VkSurfaceKHR surface,
+                                                      QueueCallback condition)
+{
+    auto indices = GetDeviceQueueFamilyIndices(device);
+
+    for (size_t i = 0; i < indices.Size(); i++)
+    {
+        if (condition(device, indices[i], i, surface) == i) return i;
+    }
+
+    return 0;
 }
 
 VkFormatProperties Device::Physical::GetProperties(VkPhysicalDevice device, VkFormat format)

@@ -17,6 +17,7 @@ namespace Siege::Vulkan
 class PhysicalDevice
 {
 public:
+
     PhysicalDevice() = default;
     ~PhysicalDevice() = default;
 
@@ -25,14 +26,39 @@ public:
 
     PhysicalDevice& operator=(PhysicalDevice&& other);
 
-    VkPhysicalDeviceProperties GetProperties() const { return properties; }
-    VkPhysicalDevice GetDevice() const { return device; }
+    VkPhysicalDeviceProperties GetProperties() const
+    {
+        return properties;
+    }
+    VkPhysicalDevice GetDevice() const
+    {
+        return device;
+    }
+
+    size_t GetMinDeviceAlignment()
+    {
+        return properties.limits.minUniformBufferOffsetAlignment;
+    }
+    VkFormat FindSupportedFormat(const VkFormat* candidates,
+                                 size_t formatCount,
+                                 VkImageTiling tiling,
+                                 VkFormatFeatureFlags features);
+    VkSurfaceCapabilitiesKHR GetCapabilities();
+    Utils::MHArray<VkSurfaceFormatKHR> GetSurfaceFormats();
+    Utils::MHArray<VkPresentModeKHR> GetPresentModes();
+
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+    uint32_t GetGraphicsFamilyQueueIndex();
+    uint32_t GetPresentFamilyQueueIndex();
+
 private:
+
     void Move(PhysicalDevice& other);
 
     VkPhysicalDevice device {VK_NULL_HANDLE};
     VkPhysicalDeviceProperties properties {};
 };
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_PHYSICALDEVICE_H

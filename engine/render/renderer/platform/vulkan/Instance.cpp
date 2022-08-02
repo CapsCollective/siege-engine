@@ -7,11 +7,13 @@
 //
 
 #include "Instance.h"
-#include "utils/Instance.h"
-#include "../../device/utils/DebugUtilsMessenger.h"
 
 #include <utils/Logging.h>
+
 #include <unordered_set>
+
+#include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
+#include "utils/Instance.h"
 
 // TODO: Maybe define all platform-specific macros in another file to avoid clutter?
 
@@ -25,6 +27,7 @@
 #define REQUIRES_PORTABILITY_EXTENSION 0
 #define GET_MACOS_REQUIRED_EXTENSIONS(...)
 #endif
+
 
 #if ENABLE_VALIDATION_LAYERS == 1
 
@@ -133,7 +136,7 @@ void Instance::SetupDebugMessenger()
     CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance,
                                                    &createInfo,
                                                    nullptr,
-                                                   OUT &debugMessenger) == VK_SUCCESS,
+                                                   OUT & debugMessenger) == VK_SUCCESS,
               "Failed to create DebugUtilsMessenger!")
 }
 
@@ -195,6 +198,6 @@ void Instance::CheckInstanceExtensionsExist(const Utils::MHArray<const char*>& r
 void Instance::DestroyDependentObjects()
 {
     DESTROY_DEBUG_MESSENGER(debugMessenger)
-    vkDestroySurfaceKHR(instance, windowSurface,  nullptr);
+    vkDestroySurfaceKHR(instance, windowSurface, nullptr);
 }
-} // namespace Siege
+} // namespace Siege::Vulkan

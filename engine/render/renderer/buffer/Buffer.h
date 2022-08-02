@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_BUFFER_H
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 
 namespace Siege::Buffer
 {

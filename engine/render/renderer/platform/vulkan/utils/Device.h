@@ -13,6 +13,8 @@
 
 #include "volk/volk.h"
 
+#include <utils/collections/HeapArray.h>
+
 #if ENABLE_VALIDATION_LAYERS == 1
 #define CREATE_DEVICE(physicalDevice,                                              \
                       logicalDevice,                                               \
@@ -53,6 +55,11 @@ namespace Siege::Vulkan
 class Device
 {
 public:
+
+    typedef int32_t (*QueueCallback)(VkPhysicalDevice,
+                                     VkQueueFamilyProperties,
+                                     size_t,
+                                     VkSurfaceKHR);
 
     static VkDeviceQueueCreateInfo QueueCreateInfo(const uint32_t& familyIndex,
                                                    const uint32_t count,
@@ -111,9 +118,7 @@ public:
                                        const char* const* deviceExtensions,
                                        size_t deviceExtensionCount);
 
-        static void GetSurfaceFormatCount(VkPhysicalDevice device,
-                                          VkSurfaceKHR surface,
-                                          uint32_t& count);
+        static uint32_t GetSurfaceFormatCount(VkPhysicalDevice device, VkSurfaceKHR surface);
 
         static void GetSurfaceFormats(VkPhysicalDevice device,
                                       VkSurfaceKHR surface,
@@ -137,6 +142,12 @@ public:
         static VkPhysicalDeviceFeatures GetDeviceFeatures(VkPhysicalDevice device);
 
         static VkPhysicalDeviceProperties GetDeviceProperties(VkPhysicalDevice device);
+
+        static Utils::MHArray<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(VkPhysicalDevice device);
+
+        static int32_t GetMatchingQueueFamilyIndex(VkPhysicalDevice device,
+                                                   VkSurfaceKHR surface,
+                                                   QueueCallback condition);
 
         struct DeviceFeaturesBuilder
         {

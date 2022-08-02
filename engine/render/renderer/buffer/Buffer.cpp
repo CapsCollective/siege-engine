@@ -8,6 +8,8 @@
 
 #include "Buffer.h"
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 #include <utils/Logging.h>
 
 namespace Siege::Buffer
@@ -27,11 +29,10 @@ void CreateBuffer(VkDeviceSize size,
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    auto deviceInstance = VulkanDevice::GetDeviceInstance();
-    VkDevice device = deviceInstance->Device();
+    VkDevice device = Vulkan::Context::GetVkLogicalDevice();
 
     CC_ASSERT(vkCreateBuffer(device, &bufferInfo, nullptr, OUT & buffer) == VK_SUCCESS,
-              "failed to create vertex buffer!");
+              "failed to create vertex buffer!")
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
@@ -40,7 +41,8 @@ void CreateBuffer(VkDeviceSize size,
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex =
-        deviceInstance->FindMemoryType(memRequirements.memoryTypeBits, properties);
+        Vulkan::Context::GetPhysicalDevice()->FindMemoryType(memRequirements.memoryTypeBits,
+                                                             properties);
 
     CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & bufferMemory) == VK_SUCCESS,
               "failed to allocate vertex buffer memory!");
@@ -50,7 +52,7 @@ void CreateBuffer(VkDeviceSize size,
 
 void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset)
 {
-    auto device = VulkanDevice::GetDeviceInstance()->Device();
+    auto device = Vulkan::Context::GetVkLogicalDevice();
 
     void* data;
     vkMapMemory(device, dstBuffer.bufferMemory, offset, size, 0, &data);
@@ -60,7 +62,7 @@ void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDe
 
 void AppendData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData)
 {
-    auto device = VulkanDevice::GetDeviceInstance()->Device();
+    auto device = Vulkan::Context::GetVkLogicalDevice();
 
     void* data;
     vkMapMemory(device, dstBuffer.bufferMemory, dstBuffer.size, size, 0, &data);
@@ -72,12 +74,12 @@ void AppendData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData)
 
 void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
 {
-    VulkanDevice::GetDeviceInstance()->CopyBuffer(srcBuffer, dstBuffer, size);
+    Vulkan::Context::GetCurrentDevice()->CopyBuffer(srcBuffer, dstBuffer, size);
 }
 
 void DestroyBuffer(Buffer& buffer)
 {
-    VkDevice device = VulkanDevice::GetDeviceInstance()->Device();
+    VkDevice device = Vulkan::Context::GetVkLogicalDevice();
     if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
     if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
 }
@@ -85,7 +87,7 @@ void DestroyBuffer(Buffer& buffer)
 size_t PadUniformBufferSize(size_t originalSize)
 {
     // Calculate required alignment based on minimum device offset alignment
-    size_t minUboAlignment = VulkanDevice::GetDeviceInstance()->GetDeviceAlignment();
+    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinDeviceAlignment();
     size_t alignedSize = originalSize;
     if (minUboAlignment > 0)
     {

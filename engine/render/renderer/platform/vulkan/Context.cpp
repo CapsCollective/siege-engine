@@ -8,7 +8,10 @@
 //
 
 #include "Context.h"
+
 #include <utils/Logging.h>
+
+#include "render/renderer/Renderer.h"
 
 namespace Siege::Vulkan
 {
@@ -19,7 +22,7 @@ Context::~Context()
 }
 
 void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-                 Instance::GetWindowSurfaceCallBack windowSurfaceCallback)
+                   Instance::GetWindowSurfaceCallBack windowSurfaceCallback)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
@@ -30,13 +33,8 @@ void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallb
     logicalDevice = LogicalDevice(vulkanInstance, physicalDevice);
 }
 
-PhysicalDevice& Context::GetPhysicalDevice()
+Context& Context::Get()
 {
-    return physicalDevice;
+    return Renderer::Context();
 }
-
-LogicalDevice& Context::GetLogicalDevice()
-{
-    return logicalDevice;
-}
-}
+} // namespace Siege::Vulkan

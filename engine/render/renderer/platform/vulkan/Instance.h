@@ -21,18 +21,26 @@ public:
     typedef Utils::MHArray<const char*> (*surfaceCallback) (void);
     typedef surfaceCallback GetSurfaceExtensionsCallback;
 
-    typedef bool (*getSurfaceCallback) (VkInstance, VkSurfaceKHR*);
+    typedef bool (*getSurfaceCallback)(VkInstance, VkSurfaceKHR*);
     typedef getSurfaceCallback GetWindowSurfaceCallBack;
 
     Instance() = default;
-    Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback, GetWindowSurfaceCallBack windowSurfaceCallback);
+    Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback,
+             GetWindowSurfaceCallBack windowSurfaceCallback);
     Instance(Instance&& other);
     ~Instance();
 
     Instance& operator=(Instance&& other);
 
-    VkInstance GetInstance() const { return instance; }
-    VkSurfaceKHR GetSurface() const { return windowSurface; }
+    VkInstance GetInstance() const
+    {
+        return instance;
+    }
+    VkSurfaceKHR GetSurface() const
+    {
+        return windowSurface;
+    }
+
 private:
     void CreateInstance(const Utils::MHArray<const char*>& requiredSurfaceExtensions);
     void SetupDebugMessenger();
@@ -47,6 +55,6 @@ private:
     VkSurfaceKHR windowSurface {VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT debugMessenger {VK_NULL_HANDLE};
 };
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_INSTANCE_H

@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_FRAME_IMAGES_H
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 #include "utils/Image.h"
 
 namespace Siege
@@ -22,7 +21,7 @@ public:
     static constexpr uint32_t MAX_IMAGES = 5;
 
     FrameImages();
-    FrameImages(VulkanDevice* vulkanDevice, VkFormat format);
+    FrameImages(VkFormat format);
     ~FrameImages();
 
     void InitColorImageView2D();
@@ -76,8 +75,6 @@ public:
     }
 
 private:
-
-    VulkanDevice* device {nullptr};
 
     VkImage images[MAX_IMAGES] {VK_NULL_HANDLE};
     VkImageView imageViews[MAX_IMAGES] {VK_NULL_HANDLE};
