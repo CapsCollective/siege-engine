@@ -8,6 +8,8 @@
 
 #include "RenderPass.h"
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 namespace Siege
 {
 
@@ -18,7 +20,7 @@ RenderPass::~RenderPass()
 
 void RenderPass::DestroyRenderPass()
 {
-    vkDestroyRenderPass(device->Device(), renderPass, nullptr);
+    vkDestroyRenderPass(Vulkan::Context::GetVkLogicalDevice(), renderPass, nullptr);
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
@@ -50,10 +52,8 @@ void RenderPass::End(VkCommandBuffer commandBuffer)
 
 RenderPass::RenderPass() = default;
 
-void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config& config)
+void RenderPass::Initialise(const RenderPass::Config& config)
 {
-    device = vulkanDevice;
-
     auto& attachments = config.GetAttachments();
     auto& subPasses = config.GetSubPasses();
     auto& dependencies = config.GetDependencies();
@@ -67,17 +67,16 @@ void RenderPass::Initialise(VulkanDevice* vulkanDevice, const RenderPass::Config
     renderPassCreateInfo.dependencyCount = dependencies.Count();
     renderPassCreateInfo.pDependencies = dependencies.Data();
 
-    CC_ASSERT(
-        vkCreateRenderPass(device->Device(), &renderPassCreateInfo, nullptr, OUT & renderPass) ==
-            VK_SUCCESS,
-        "Failed to create render pass!");
+    CC_ASSERT(vkCreateRenderPass(Vulkan::Context::GetVkLogicalDevice(),
+                                 &renderPassCreateInfo,
+                                 nullptr,
+                                 OUT & renderPass) == VK_SUCCESS,
+              "Failed to create render pass!");
 }
 
-void RenderPass::Initialise(VulkanDevice* device,
-                            RenderPass& renderpass,
-                            const RenderPass::Config& config)
+void RenderPass::Initialise(RenderPass& renderpass, const RenderPass::Config& config)
 {
-    renderpass.Initialise(device, config);
+    renderpass.Initialise(config);
 }
 
 // Config functions.

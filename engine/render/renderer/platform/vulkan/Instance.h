@@ -10,29 +10,39 @@
 #define SIEGE_ENGINE_INSTANCE_H
 
 #include "Config.h"
-#include "../../utils/Array.h"
+#include "render/renderer/utils/Array.h"
 
 namespace Siege::Vulkan
 {
 class Instance
 {
 public:
-    typedef Array<const char*> (*surfaceCallback) (void);
+
+    typedef Array<const char*> (*surfaceCallback)(void);
     typedef surfaceCallback GetSurfaceExtensionsCallback;
 
-    typedef bool (*getSurfaceCallback) (VkInstance, VkSurfaceKHR*);
+    typedef bool (*getSurfaceCallback)(VkInstance, VkSurfaceKHR*);
     typedef getSurfaceCallback GetWindowSurfaceCallBack;
 
     Instance() = default;
-    Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback, GetWindowSurfaceCallBack windowSurfaceCallback);
+    Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback,
+             GetWindowSurfaceCallBack windowSurfaceCallback);
     Instance(Instance&& other);
     ~Instance();
 
     Instance& operator=(Instance&& other);
 
-    VkInstance GetInstance() const { return instance; }
-    VkSurfaceKHR GetSurface() const { return windowSurface; }
+    VkInstance GetInstance() const
+    {
+        return instance;
+    }
+    VkSurfaceKHR GetSurface() const
+    {
+        return windowSurface;
+    }
+
 private:
+
     void CreateInstance(const Array<const char*>& requiredSurfaceExtensions);
     void SetupDebugMessenger();
 
@@ -46,6 +56,6 @@ private:
     VkSurfaceKHR windowSurface {VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT debugMessenger {VK_NULL_HANDLE};
 };
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_INSTANCE_H

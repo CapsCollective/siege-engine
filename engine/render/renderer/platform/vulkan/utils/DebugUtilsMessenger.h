@@ -1,14 +1,15 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-// This code is released under an unmodified zlib license.
-// For conditions of distribution and use, please see:
-//     https://opensource.org/licenses/Zlib
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
 //
 
 #pragma once
 
-#include "../../Core.h"
+#include "render/renderer/Core.h"
 
 #if ENABLE_VALIDATION_LAYERS == 1
 #define CREATE_DEBUG_MESSENGER(debugInfo) DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);

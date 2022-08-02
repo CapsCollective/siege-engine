@@ -8,16 +8,15 @@
 
 #include "FrameImages.h"
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 namespace Siege
 {
 uint32_t FrameImages::imageCount = 0;
 
 FrameImages::FrameImages() = default;
 
-FrameImages::FrameImages(VulkanDevice* vulkanDevice, VkFormat format) :
-    device {vulkanDevice},
-    imageFormat {format}
-{}
+FrameImages::FrameImages(VkFormat format) : imageFormat {format} {}
 
 FrameImages::~FrameImages() = default;
 
@@ -25,6 +24,7 @@ void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
                                        uint32_t imageHeight,
                                        uint32_t imageDepth)
 {
+    auto device = Vulkan::Context::GetCurrentDevice();
     for (size_t i = 0; i < GetImageCount(); i++)
     {
         VkImageCreateInfo imageInfo =
@@ -41,13 +41,10 @@ void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
                                          VK_SHARING_MODE_EXCLUSIVE);
 
         // Create the depth images using the device
-        device->CreateImageWithInfo(imageInfo,
-                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                    OUT images[i],
-                                    OUT imageMemorys[i]);
+        device->CreateImageWithInfo(imageInfo, OUT images[i], OUT imageMemorys[i]);
 
         // Set up the view image creation struct
-        imageViews[i] = Image::CreateImageView(device->Device(),
+        imageViews[i] = Image::CreateImageView(device->GetDevice(),
                                                images[i],
                                                VK_IMAGE_VIEW_TYPE_2D,
                                                imageFormat,
@@ -60,9 +57,10 @@ void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
 
 void FrameImages::InitColorImageView2D()
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
     for (size_t i = 0; i < GetImageCount(); i++)
     {
-        SetImageView(Image::CreateImageView(device->Device(),
+        SetImageView(Image::CreateImageView(device,
                                             GetImage(i),
                                             VK_IMAGE_VIEW_TYPE_2D,
                                             imageFormat,
@@ -74,14 +72,15 @@ void FrameImages::InitColorImageView2D()
 
 void FrameImages::DestroyFrameImages()
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
     for (size_t i = 0; i < GetImageCount(); i++)
     {
-        vkDestroyImageView(device->Device(), imageViews[i], nullptr);
+        vkDestroyImageView(device, imageViews[i], nullptr);
 
         if (hasInfo)
         {
-            vkDestroyImage(device->Device(), images[i], nullptr);
-            vkFreeMemory(device->Device(), imageMemorys[i], nullptr);
+            vkDestroyImage(device, images[i], nullptr);
+            vkFreeMemory(device, imageMemorys[i], nullptr);
         }
     }
 }

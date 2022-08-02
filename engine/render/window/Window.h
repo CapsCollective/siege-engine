@@ -14,6 +14,7 @@
 
 // Include Vulkan headers through GLFW
 #include <GLFW/glfw3.h>
+
 #include "../renderer/utils/Array.h"
 
 namespace Siege

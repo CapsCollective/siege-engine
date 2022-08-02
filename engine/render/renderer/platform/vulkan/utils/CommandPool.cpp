@@ -11,29 +11,27 @@
 namespace Siege::Vulkan
 {
 VkCommandPoolCreateInfo CommandPool::CreateInfo(uint32_t queueFamilyIndex,
-                                   VkCommandPoolCreateFlags flags,
-                                   const void* pNext)
+                                                VkCommandPoolCreateFlags flags,
+                                                const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, pNext, flags, queueFamilyIndex};
 }
 
 void CommandPool::Create(VkDevice device,
-            VkCommandPoolCreateInfo info,
-            VkAllocationCallbacks* callbacks,
-            VkCommandPool* pool)
-{
+                         VkCommandPoolCreateInfo info,
+                         VkAllocationCallbacks* callbacks,
+                         VkCommandPool* pool) {
     CC_ASSERT(vkCreateCommandPool(device, &info, callbacks, OUT pool) == VK_SUCCESS,
-              "Failed to create command pool!")
-}
+              "Failed to create command pool!")}
 
 // Builder
 
 VkCommandPool CommandPool::Builder::Build(VkDevice device)
 {
-        VkCommandPoolCreateInfo info = CreateInfo(queueFamilyIndex, flags, pNext);
-        VkCommandPool pool {};
-        Create(device, info, callbacks, &pool);
-        return pool;
+    VkCommandPoolCreateInfo info = CreateInfo(queueFamilyIndex, flags, pNext);
+    VkCommandPool pool {};
+    Create(device, info, callbacks, &pool);
+    return pool;
 }
 
 CommandPool::Builder& CommandPool::Builder::WithQueueFamily(const uint32_t index)
@@ -42,7 +40,8 @@ CommandPool::Builder& CommandPool::Builder::WithQueueFamily(const uint32_t index
     return *this;
 }
 
-CommandPool::Builder& CommandPool::Builder::WithCallbacks(VkAllocationCallbacks* allocationCallbacks)
+CommandPool::Builder& CommandPool::Builder::WithCallbacks(
+    VkAllocationCallbacks* allocationCallbacks)
 {
     callbacks = allocationCallbacks;
     return *this;
@@ -59,4 +58,4 @@ CommandPool::Builder& CommandPool::Builder::WithExtension(const void* next)
     pNext = next;
     return *this;
 }
-} // namespace Siege
+} // namespace Siege::Vulkan

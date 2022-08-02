@@ -12,11 +12,11 @@ namespace Siege::Vulkan::VulkanInstance
 {
 
 VkApplicationInfo AppInfo(const char* appName,
-                                 uint32_t version,
-                                 const char* engineName,
-                                 uint32_t engineVersion,
-                                 uint32_t apiVersion,
-                                 const void* pNext)
+                          uint32_t version,
+                          const char* engineName,
+                          uint32_t engineVersion,
+                          uint32_t apiVersion,
+                          const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_APPLICATION_INFO,
             pNext,
@@ -28,12 +28,12 @@ VkApplicationInfo AppInfo(const char* appName,
 }
 
 VkInstanceCreateInfo CreateInfo(const VkApplicationInfo* appInfo,
-                              uint32_t enabledExtensionCount,
-                              const char* const* enabledExtensions,
-                              uint32_t enabledLayerCount,
-                              const char* const* enabledLayers,
-                              VkInstanceCreateFlags flags,
-                              const void* pNext)
+                                uint32_t enabledExtensionCount,
+                                const char* const* enabledExtensions,
+                                uint32_t enabledLayerCount,
+                                const char* const* enabledLayers,
+                                VkInstanceCreateFlags flags,
+                                const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             pNext,
@@ -67,4 +67,4 @@ Array<VkExtensionProperties> GetInstanceExtensionProperties()
     return Array<VkExtensionProperties>(extensions, extensionCount);
 }
 
-} // namespace Siege::Vulkan
+} // namespace Siege::Vulkan::VulkanInstance

@@ -8,6 +8,8 @@
 
 #include "DescriptorPool.h"
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 namespace Siege
 {
 VkDescriptorPool DescriptorPool::descriptorPool {VK_NULL_HANDLE};
@@ -20,8 +22,6 @@ void DescriptorPool::AddPoolSize(const VkDescriptorType type, const uint32_t siz
 
 void DescriptorPool::BuildPool()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-
     if (descriptorPool == VK_NULL_HANDLE)
     {
         VkDescriptorPoolCreateInfo poolCreateInfo {};
@@ -31,10 +31,11 @@ void DescriptorPool::BuildPool()
         poolCreateInfo.poolSizeCount = static_cast<uint32_t>(sizes.Count());
         poolCreateInfo.pPoolSizes = sizes.Data();
 
-        CC_ASSERT(
-            vkCreateDescriptorPool(device->Device(), &poolCreateInfo, nullptr, &descriptorPool) ==
-                VK_SUCCESS,
-            "Unable to create descriptor pool!");
+        CC_ASSERT(vkCreateDescriptorPool(Vulkan::Context::GetVkLogicalDevice(),
+                                         &poolCreateInfo,
+                                         nullptr,
+                                         &descriptorPool) == VK_SUCCESS,
+                  "Unable to create descriptor pool!");
     }
 }
 
@@ -42,9 +43,7 @@ void DescriptorPool::DestroyPool()
 {
     if (descriptorPool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(VulkanDevice::GetDeviceInstance()->Device(),
-                                descriptorPool,
-                                nullptr);
+        vkDestroyDescriptorPool(Vulkan::Context::GetVkLogicalDevice(), descriptorPool, nullptr);
     }
 }
 } // namespace Siege

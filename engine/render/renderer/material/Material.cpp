@@ -10,6 +10,7 @@
 
 #include "../mesh/Mesh.h"
 #include "../swapchain/Swapchain.h"
+#include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 
 namespace Siege
@@ -67,9 +68,7 @@ void Material::CreateLayout(VkDescriptorSetLayout* layouts,
                             VkPushConstantRange* pushConstants,
                             uint32_t pushConstantCount)
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-
-    PipelineConfig::CreatePipelineLayout(device->Device(),
+    PipelineConfig::CreatePipelineLayout(Vulkan::Context::GetVkLogicalDevice(),
                                          OUT & pipelineLayout,
                                          layouts,
                                          layoutCount,
@@ -143,8 +142,6 @@ void Material::CreatePipeline()
 // uniforms in the same dynamic uniform or storage buffer.
 void Material::CreateDescriptors()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-
     auto descriptorPool = DescriptorPool::GetDescriptorPool();
 
     // Create a descriptor set for our object transforms.
@@ -174,7 +171,10 @@ void Material::CreateDescriptors()
 
         // Create all layouts
 
-        CC_ASSERT(Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
+        CC_ASSERT(Descriptor::CreateLayout(Vulkan::Context::GetVkLogicalDevice(),
+                                           OUT binding.layout,
+                                           &layoutBinding,
+                                           1),
                   "Failed to create descriptor set!");
 
         uint64_t offset = property.offset;
@@ -182,7 +182,7 @@ void Material::CreateDescriptors()
         bufferInfos[i] =
             Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
 
-        Descriptor::AllocateSets(device->Device(),
+        Descriptor::AllocateSets(Vulkan::Context::GetVkLogicalDevice(),
                                  &binding.descriptorSet,
                                  descriptorPool,
                                  1,
@@ -209,7 +209,9 @@ void Material::CreateDescriptors()
                 static_cast<uint64_t>(descriptorSets.Count()),
                 static_cast<uint64_t>(propertiesCount))
 
-    Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
+    Descriptor::WriteSets(Vulkan::Context::GetVkLogicalDevice(),
+                          writeDescriptorSets,
+                          propertiesCount);
 }
 
 void Material::AddShader(Shader* shader)
@@ -270,16 +272,16 @@ void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
 
 void Material::DestroyMaterial()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-
     for (auto& property : propertiesArray)
     {
-        vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
+        vkDestroyDescriptorSetLayout(Vulkan::Context::GetVkLogicalDevice(),
+                                     property.descriptorBinding.layout,
+                                     nullptr);
     }
 
     pipeline.DestroyPipeline();
 
-    vkDestroyPipelineLayout(device->Device(), pipelineLayout, nullptr);
+    vkDestroyPipelineLayout(Vulkan::Context::GetVkLogicalDevice(), pipelineLayout, nullptr);
 
     Buffer::DestroyBuffer(buffer);
 

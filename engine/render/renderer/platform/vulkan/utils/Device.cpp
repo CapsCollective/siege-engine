@@ -26,7 +26,7 @@ VkDeviceQueueCreateInfo Device::QueueCreateInfo(const uint32_t& familyIndex,
 VkQueue Device::GetQueue(VkDevice device, uint32_t id, uint32_t queueIndex)
 {
     VkQueue queue;
-    vkGetDeviceQueue(device, id, queueIndex, OUT &queue);
+    vkGetDeviceQueue(device, id, queueIndex, OUT & queue);
     return queue;
 }
 
@@ -36,7 +36,6 @@ uint32_t Device::Physical::deviceCount = 0;
 
 uint32_t Device::Physical::GetGraphicsQueue(VkPhysicalDevice device)
 {
-
     uint32_t queueFamilyCount = 0;
     GetQueueCount(device, OUT queueFamilyCount);
     VkQueueFamilyProperties queueFamilies[queueFamilyCount];
@@ -103,9 +102,9 @@ VkPhysicalDevice Device::Physical::FindSuitableDevice(VkInstance instance,
 }
 
 bool Device::Physical::IsSuitable(VkPhysicalDevice device,
-                VkSurfaceKHR surface,
-                const char* const* deviceExtensions,
-                size_t deviceExtensionCount)
+                                  VkSurfaceKHR surface,
+                                  const char* const* deviceExtensions,
+                                  size_t deviceExtensionCount)
 {
     return HasRequiredQueues(device, surface) &&
            SupportsExtensions(device, deviceExtensions, deviceExtensionCount) &&
@@ -134,16 +133,15 @@ bool Device::Physical::HasRequiredQueues(VkPhysicalDevice device,
     {
         auto queueFamily = queueFamilies[i];
 
-        graphicsQueuePresent =
-            static_cast<bool>(graphicsRequired *
-                              (graphicsQueuePresent + GraphicsQueuePresent(queueFamily)));
+        graphicsQueuePresent = static_cast<bool>(
+            graphicsRequired * (graphicsQueuePresent + GraphicsQueuePresent(queueFamily)));
 
         presentQueuePresent =
             static_cast<bool>((presentRequired * IsSurfaceSupported(device, surface, i)) *
-                           (presentQueuePresent + PresentQueuePresent(queueFamily)));
+                              (presentQueuePresent + PresentQueuePresent(queueFamily)));
 
-        queuesExist = (graphicsQueuePresent == presentRequired) &&
-                      (presentQueuePresent == presentRequired);
+        queuesExist =
+            (graphicsQueuePresent == presentRequired) && (presentQueuePresent == presentRequired);
 
         if (queuesExist) break;
     }
@@ -166,12 +164,11 @@ void Device::Physical::GetQueueFamilies(VkPhysicalDevice device,
                                         VkQueueFamilyProperties* queueFamilies)
 {
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, OUT queueFamilies);
-
 }
 
 void Device::Physical::GetQueueCount(VkPhysicalDevice device, uint32_t& count)
 {
-    vkGetPhysicalDeviceQueueFamilyProperties(device, OUT &count, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, OUT & count, nullptr);
 }
 
 bool Device::Physical::IsSurfaceSupported(VkPhysicalDevice device,
@@ -210,33 +207,32 @@ bool Device::Physical::SupportsExtensions(VkPhysicalDevice device,
     return requiredExtensions.empty();
 }
 
-void Device::Physical::GetSurfaceFormatCount(VkPhysicalDevice device,
-                                                 VkSurfaceKHR surface,
-                                                 uint32_t& count)
+uint32_t Device::Physical::GetSurfaceFormatCount(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT &count, nullptr);
+    uint32_t count;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT & count, nullptr);
+    return count;
 }
 
 void Device::Physical::GetSurfaceFormats(VkPhysicalDevice device,
-                                  VkSurfaceKHR surface,
-                                  uint32_t& count,
-                                  VkSurfaceFormatKHR* formats)
+                                         VkSurfaceKHR surface,
+                                         uint32_t& count,
+                                         VkSurfaceFormatKHR* formats)
 {
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT &count, formats);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, OUT & count, formats);
 }
 
-VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevice device, VkSurfaceKHR surface)
+VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevice device,
+                                                                  VkSurfaceKHR surface)
 {
     VkSurfaceCapabilitiesKHR capabilities;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, OUT &capabilities);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, OUT & capabilities);
     return capabilities;
 }
 
 bool Device::Physical::HasFormats(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
-    uint32_t formatCount = 0;
-    GetSurfaceFormatCount(device, surface, formatCount);
-    return formatCount > 0;
+    return GetSurfaceFormatCount(device, surface) > 0;
 }
 
 bool Device::Physical::HasPresentModes(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -256,10 +252,7 @@ void Device::Physical::GetPresentModes(VkPhysicalDevice device,
                                        uint32_t& count,
                                        VkPresentModeKHR* presentModes)
 {
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device,
-                                              surface,
-                                              &count,
-                                              presentModes);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &count, presentModes);
 }
 
 VkPhysicalDeviceFeatures Device::Physical::GetDeviceFeatures(VkPhysicalDevice device)
@@ -272,14 +265,40 @@ VkPhysicalDeviceFeatures Device::Physical::GetDeviceFeatures(VkPhysicalDevice de
 VkPhysicalDeviceProperties Device::Physical::GetDeviceProperties(VkPhysicalDevice device)
 {
     VkPhysicalDeviceProperties properties;
-    vkGetPhysicalDeviceProperties(device, OUT &properties);
+    vkGetPhysicalDeviceProperties(device, OUT & properties);
     return properties;
+}
+
+Array<VkQueueFamilyProperties> Device::Physical::GetDeviceQueueFamilyIndices(
+    VkPhysicalDevice device)
+{
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, OUT & queueFamilyCount, nullptr);
+
+    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, OUT queueFamilies);
+
+    return Array<VkQueueFamilyProperties>(queueFamilies, queueFamilyCount);
+}
+
+int32_t Device::Physical::GetMatchingQueueFamilyIndex(VkPhysicalDevice device,
+                                                      VkSurfaceKHR surface,
+                                                      QueueCallback condition)
+{
+    auto indices = GetDeviceQueueFamilyIndices(device);
+
+    for (size_t i = 0; i < indices.Size(); i++)
+    {
+        if (condition(device, indices[i], i, surface) == i) return i;
+    }
+
+    return 0;
 }
 
 VkFormatProperties Device::Physical::GetProperties(VkPhysicalDevice device, VkFormat format)
 {
     VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(device, format, OUT &props);
+    vkGetPhysicalDeviceFormatProperties(device, format, OUT & props);
     return props;
 }
 
@@ -295,9 +314,7 @@ VkDeviceCreateInfo Device::Logical::CreateInfo(uint32_t queueCreateInfoCount,
                                                VkDeviceCreateFlags flags,
                                                const void* pNext)
 {
-    return
-    {
-        VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+    return {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
             pNext,
             flags,
             queueCreateInfoCount,
@@ -306,8 +323,7 @@ VkDeviceCreateInfo Device::Logical::CreateInfo(uint32_t queueCreateInfoCount,
             ppEnabledLayerNames,
             enabledExtensionCount,
             ppEnabledExtensionNames,
-            pEnabledFeatures
-    };
+            pEnabledFeatures};
 }
 
 } // namespace Siege::Vulkan

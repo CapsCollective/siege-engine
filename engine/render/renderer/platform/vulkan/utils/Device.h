@@ -9,50 +9,56 @@
 #ifndef SIEGE_ENGINE_DEVICE_H
 #define SIEGE_ENGINE_DEVICE_H
 
-#include "volk/volk.h"
 #include <utils/Logging.h>
 
+#include "render/renderer/utils/Array.h"
+#include "volk/volk.h"
+
 #if ENABLE_VALIDATION_LAYERS == 1
-#define CREATE_DEVICE(physicalDevice,                                                       \
-                      logicalDevice,                                                        \
-                      queueCount,                                                           \
-                      queueCreateInfos,                                                     \
-                      extensionCount,                                                       \
-                      extensions,                                                           \
-                      features,                                                             \
-                      ...)                                                                  \
-    auto deviceFeatures = features;                                                         \
-    auto createInfo = Siege::Vulkan::Device::Logical::CreateInfo(queueCount,                \
-                                               queueCreateInfos,                            \
-                                               extensionCount,                              \
-                                               extensions,                                  \
-                                               &deviceFeatures,                             \
-                                               __VA_ARGS__);                                \
+#define CREATE_DEVICE(physicalDevice,                                              \
+                      logicalDevice,                                               \
+                      queueCount,                                                  \
+                      queueCreateInfos,                                            \
+                      extensionCount,                                              \
+                      extensions,                                                  \
+                      features,                                                    \
+                      ...)                                                         \
+    auto deviceFeatures = features;                                                \
+    auto createInfo = Siege::Vulkan::Device::Logical::CreateInfo(queueCount,       \
+                                                                 queueCreateInfos, \
+                                                                 extensionCount,   \
+                                                                 extensions,       \
+                                                                 &deviceFeatures,  \
+                                                                 __VA_ARGS__);     \
     Siege::Vulkan::Device::Logical::Create(physicalDevice, &createInfo, &logicalDevice);
 #else
-#define CREATE_DEVICE(physicalDevice,                                                       \
-                      logicalDevice,                                                        \
-                      queueCount,                                                           \
-                      queueCreateInfos,                                                     \
-                      extensionCount,                                                       \
-                      extensions,                                                           \
-                      features,                                                             \
-                      ...)                                                                  \
-    auto deviceFeatures = features;                                                         \
-    auto createInfo = Siege::Vulkan::Device::Logical::CreateInfo(queueCount,                \
-                                                                 queueCreateInfos,          \
-                                                                 extensionCount,            \
-                                                                 extensions,                \
-                                                                 &deviceFeatures);          \
+#define CREATE_DEVICE(physicalDevice,                                              \
+                      logicalDevice,                                               \
+                      queueCount,                                                  \
+                      queueCreateInfos,                                            \
+                      extensionCount,                                              \
+                      extensions,                                                  \
+                      features,                                                    \
+                      ...)                                                         \
+    auto deviceFeatures = features;                                                \
+    auto createInfo = Siege::Vulkan::Device::Logical::CreateInfo(queueCount,       \
+                                                                 queueCreateInfos, \
+                                                                 extensionCount,   \
+                                                                 extensions,       \
+                                                                 &deviceFeatures); \
     Siege::Vulkan::Device::Logical::Create(physicalDevice, &createInfo, &logicalDevice);
 #endif
-
 
 namespace Siege::Vulkan
 {
 class Device
 {
 public:
+
+    typedef int32_t (*QueueCallback)(VkPhysicalDevice,
+                                     VkQueueFamilyProperties,
+                                     size_t,
+                                     VkSurfaceKHR);
 
     static VkDeviceQueueCreateInfo QueueCreateInfo(const uint32_t& familyIndex,
                                                    const uint32_t count,
@@ -97,8 +103,7 @@ public:
                                      uint32_t& count,
                                      VkQueueFamilyProperties* queueFamilies);
 
-        static void GetQueueCount(VkPhysicalDevice device,
-                                  uint32_t& count);
+        static void GetQueueCount(VkPhysicalDevice device, uint32_t& count);
 
         static bool HasRequiredQueues(VkPhysicalDevice device,
                                       VkSurfaceKHR surface,
@@ -112,16 +117,15 @@ public:
                                        const char* const* deviceExtensions,
                                        size_t deviceExtensionCount);
 
-        static void GetSurfaceFormatCount(VkPhysicalDevice device,
-                                          VkSurfaceKHR surface,
-                                          uint32_t& count);
+        static uint32_t GetSurfaceFormatCount(VkPhysicalDevice device, VkSurfaceKHR surface);
 
         static void GetSurfaceFormats(VkPhysicalDevice device,
                                       VkSurfaceKHR surface,
                                       uint32_t& count,
                                       VkSurfaceFormatKHR* formats);
 
-        static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkPhysicalDevice device, VkSurfaceKHR surface);
+        static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkPhysicalDevice device,
+                                                               VkSurfaceKHR surface);
 
         static bool HasFormats(VkPhysicalDevice device, VkSurfaceKHR surface);
 
@@ -137,6 +141,12 @@ public:
         static VkPhysicalDeviceFeatures GetDeviceFeatures(VkPhysicalDevice device);
 
         static VkPhysicalDeviceProperties GetDeviceProperties(VkPhysicalDevice device);
+
+        static Array<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(VkPhysicalDevice device);
+
+        static int32_t GetMatchingQueueFamilyIndex(VkPhysicalDevice device,
+                                                   VkSurfaceKHR surface,
+                                                   QueueCallback condition);
 
         struct DeviceFeaturesBuilder
         {
@@ -162,6 +172,7 @@ public:
     class Logical
     {
     public:
+
         static VkDeviceCreateInfo CreateInfo(uint32_t queueCreateInfoCount,
                                              const VkDeviceQueueCreateInfo* pQueueCreateInfos,
                                              uint32_t enabledExtensionCount,
@@ -177,10 +188,10 @@ public:
                                   VkDevice* device,
                                   VkAllocationCallbacks* callbacks = nullptr)
         {
-            CC_ASSERT(vkCreateDevice(physicalDevice, createInfo, callbacks, OUT device)
-                          == VK_SUCCESS, "failed to create logical device!")
+            CC_ASSERT(
+                vkCreateDevice(physicalDevice, createInfo, callbacks, OUT device) == VK_SUCCESS,
+                "failed to create logical device!")
         }
-
     };
 };
 

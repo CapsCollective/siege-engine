@@ -9,7 +9,6 @@
 #pragma once
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 
 namespace Siege::Buffer
 {

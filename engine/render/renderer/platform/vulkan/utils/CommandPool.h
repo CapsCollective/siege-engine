@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_COMMANDPOOL_H
 
 #include <utils/Logging.h>
+
 #include "volk/volk.h"
 
 namespace Siege::Vulkan
@@ -17,6 +18,7 @@ namespace Siege::Vulkan
 class CommandPool
 {
 public:
+
     struct Builder
     {
         VkCommandPool Build(VkDevice device);
@@ -40,6 +42,6 @@ public:
                        VkAllocationCallbacks* callbacks,
                        VkCommandPool* pool);
 };
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_COMMANDPOOL_H

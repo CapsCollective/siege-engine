@@ -7,11 +7,13 @@
 //
 
 #include "Instance.h"
-#include "utils/Instance.h"
-#include "../../device/utils/DebugUtilsMessenger.h"
 
 #include <utils/Logging.h>
+
 #include <unordered_set>
+
+#include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
+#include "utils/Instance.h"
 
 #if ENABLE_VALIDATION_LAYERS == 1
 
@@ -19,20 +21,20 @@
 
 #define SETUP_UTILS_MESSENGER SetupDebugMessenger();
 
-#define DEBUG_EXTENSIONS(name, extensions)                                            \
-    name = Array<const char*>(extensions.Data(), extensions.Size() + 1);  \
-    name[name.Size()-1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+#define DEBUG_EXTENSIONS(name, extensions)                               \
+    name = Array<const char*>(extensions.Data(), extensions.Size() + 1); \
+    name[name.Size() - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags) \
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
                                                                                                \
     CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                    \
     CREATE_INSTANCE(appInfo,                                                                   \
-                    extensionCount,                                                             \
-                    extensions,                                                             \
-                    layerCount,                                                                 \
-                    layers,                                                                 \
-                    flags,                                                                         \
+                    extensionCount,                                                            \
+                    extensions,                                                                \
+                    layerCount,                                                                \
+                    layers,                                                                    \
+                    flags,                                                                     \
                     reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo))
 #else
 
@@ -99,7 +101,8 @@ void Instance::CreateInstance(const Array<const char*>& requiredSurfaceExtension
                            extensions.Size(),
                            extensions.Data(),
                            Config::validationLayers.size(),
-                           Config::validationLayers.data(), 0)
+                           Config::validationLayers.data(),
+                           0)
 
     CheckInstanceExtensionsExist(extensions);
 
@@ -125,7 +128,7 @@ void Instance::SetupDebugMessenger()
     CC_ASSERT(DebugUtilsMessenger::CreateMessenger(instance,
                                                    &createInfo,
                                                    nullptr,
-                                                   OUT &debugMessenger) == VK_SUCCESS,
+                                                   OUT & debugMessenger) == VK_SUCCESS,
               "Failed to create DebugUtilsMessenger!")
 }
 
@@ -163,7 +166,7 @@ void Instance::CheckInstanceExtensionsExist(const Array<const char*>& requiredSu
     String availableExtensions;
 
     std::unordered_set<String> available(requiredSurfaceExtensions.Size());
-    for (auto& extension: extensions)
+    for (auto& extension : extensions)
     {
         availableExtensions += String("\n\t %s").Formatted(extension.extensionName);
         available.insert(extension.extensionName);
@@ -173,7 +176,7 @@ void Instance::CheckInstanceExtensionsExist(const Array<const char*>& requiredSu
 
     String requiredExtensionsMsg;
 
-    for (auto& required: requiredSurfaceExtensions)
+    for (auto& required : requiredSurfaceExtensions)
     {
         requiredExtensionsMsg += String("\n\t %s").Formatted(required);
         CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!")
@@ -185,6 +188,6 @@ void Instance::CheckInstanceExtensionsExist(const Array<const char*>& requiredSu
 void Instance::DestroyDependentObjects()
 {
     DESTROY_DEBUG_MESSENGER(debugMessenger)
-    vkDestroySurfaceKHR(instance, windowSurface,  nullptr);
+    vkDestroySurfaceKHR(instance, windowSurface, nullptr);
 }
-} // namespace Siege
+} // namespace Siege::Vulkan
