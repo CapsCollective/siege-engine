@@ -10,7 +10,8 @@
 #define SIEGE_ENGINE_CONTEXT_H
 
 #include "Instance.h"
-#include <array>
+#include "PhysicalDevice.h"
+#include "LogicalDevice.h"
 
 namespace Siege::Vulkan
 {
@@ -18,20 +19,23 @@ class Context
 {
 public:
     Context() = default;
-    ~Context() = default;
+    ~Context();
 
-    static void Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
+    void Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
                      Instance::GetWindowSurfaceCallBack windowSurfaceCallback);
 
-    static inline Instance& GetInstance() { return instance; }
-    static inline VkInstance GetVkInstance() { return instance.GetInstance(); }
-
-    static void Destroy();
+    static inline Instance& GetInstance() { return vulkanInstance; }
+    static inline VkInstance GetVkInstance() { return vulkanInstance.GetInstance(); }
+    PhysicalDevice& GetPhysicalDevice();
+    LogicalDevice& GetLogicalDevice();
 
 private:
-    static Instance instance;
-};
+    static inline Instance vulkanInstance;
+    static inline Context* instance;
 
+    PhysicalDevice physicalDevice;
+    LogicalDevice logicalDevice;
+};
 }
 
 #endif // SIEGE_ENGINE_CONTEXT_H

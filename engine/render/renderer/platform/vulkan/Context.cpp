@@ -12,19 +12,31 @@
 
 namespace Siege::Vulkan
 {
-
-Instance Context::instance = {};
+Context::~Context()
+{
+    logicalDevice.~LogicalDevice();
+    vulkanInstance.~Instance();
+}
 
 void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
                  Instance::GetWindowSurfaceCallBack windowSurfaceCallback)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
-    instance = Instance(surfaceExtensionsCallback, windowSurfaceCallback);
+    vulkanInstance = Instance(surfaceExtensionsCallback, windowSurfaceCallback);
+
+    physicalDevice = PhysicalDevice(vulkanInstance);
+
+    logicalDevice = LogicalDevice(vulkanInstance, physicalDevice);
 }
 
-void Context::Destroy()
+PhysicalDevice& Context::GetPhysicalDevice()
 {
-    instance.~Instance();
+    return physicalDevice;
+}
+
+LogicalDevice& Context::GetLogicalDevice()
+{
+    return logicalDevice;
 }
 }

@@ -79,7 +79,7 @@ public:
         static void GetDevices(VkInstance instance, VkPhysicalDevice* devices);
 
         static VkPhysicalDevice FindSuitableDevice(VkInstance instance,
-                                                   VkSurfaceKHR& surface,
+                                                   VkSurfaceKHR surface,
                                                    const char* const* deviceExtensions,
                                                    size_t deviceExtensionCount);
         static bool IsSuitable(VkPhysicalDevice device,
