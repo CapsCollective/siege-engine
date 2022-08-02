@@ -73,7 +73,7 @@ void Device::Physical::GetDevices(VkInstance instance, VkPhysicalDevice* devices
 }
 
 VkPhysicalDevice Device::Physical::FindSuitableDevice(VkInstance instance,
-                                                      VkSurfaceKHR& surface,
+                                                      VkSurfaceKHR surface,
                                                       const char* const* deviceExtensions,
                                                       size_t deviceExtensionCount)
 {

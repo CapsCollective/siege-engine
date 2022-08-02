@@ -31,8 +31,8 @@ public:
 
     Instance& operator=(Instance&& other);
 
-    VkInstance GetInstance() { return instance; }
-    VkSurfaceKHR GetSurface() { return windowSurface; }
+    VkInstance GetInstance() const { return instance; }
+    VkSurfaceKHR GetSurface() const { return windowSurface; }
 private:
     void CreateInstance(const Utils::MHArray<const char*>& requiredSurfaceExtensions);
     void SetupDebugMessenger();

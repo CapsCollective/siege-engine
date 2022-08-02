@@ -47,7 +47,7 @@ public:
      **/
     VkCommandPool GetCommandPool()
     {
-        return commandPool;
+        return context.GetLogicalDevice().GetCommandPool();
     }
 
     /**
@@ -58,7 +58,7 @@ public:
      **/
     VkDevice Device()
     {
-        return device;
+        return context.GetLogicalDevice().GetDevice();
     }
 
     /**
@@ -80,7 +80,7 @@ public:
      **/
     VkQueue GraphicsQueue()
     {
-        return graphicsQueue;
+        return context.GetLogicalDevice().GetGraphicsQueue();
     }
 
     /**
@@ -90,22 +90,15 @@ public:
      **/
     VkQueue PresentQueue()
     {
-        return presentQueue;
+        return context.GetLogicalDevice().GetPresentQueue();
     }
 
-    size_t GetDeviceAlignment()
-    {
-        return properties.limits.minUniformBufferOffsetAlignment;
-    }
+    size_t GetDeviceAlignment();
 
     /**
      * Returns a struct containing all relevant swapChain support information.
      **/
-    SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport()
-    {
-        auto surface = Surface();
-        return SwapChainSupportDetails::QuerySupport(physicalDevice, surface);
-    }
+    SwapChainSupportDetails::SwapChainSupportDetails GetSwapChainSupport();
 
     /**
      * Returns a bitmask value representing the memory typre required to allocate GPU memory.
@@ -124,11 +117,7 @@ public:
      * These indices act as identifiers which allow Vulkan to know which queue to submit something
      *to.
      **/
-    QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies()
-    {
-        auto surface = Surface();
-        return QueueFamilyIndices::FindQueueFamilies(physicalDevice, surface);
-    }
+    QueueFamilyIndices::QueueFamilyIndices FindPhysicalQueueFamilies();
 
     /**
      * Returns a valid Vulkan image format from a list of formats. Returns the first format that's
@@ -196,83 +185,7 @@ public:
                              VkMemoryPropertyFlags properties,
                              VkImage& image,
                              VkDeviceMemory& imageMemory);
-
-    /**
-     * A struct containing all our GPU information (such as it's name)
-     **/
-    VkPhysicalDeviceProperties properties;
-
 private:
-
-    static constexpr size_t VALIDATION_LAYERS_COUNT = 1;
-
-    /**
-     * Instantiates a Vulkan instance for the use of this renderer.
-     *
-     * A Vulkan instance pulls in relevant Vulkan code and synchronises that code with
-     * the GPU for usage.
-     * This function specifically runs the following operations:
-     * 1) Checks if validation layers are enabled. Ensures that validation layers are
-     * 	  available for usage if any are specified.
-     * 2) Checks if all required extensions are available (including those from glfw).
-     * 3) Populates a debug callback for validation layer reporting (if enabled)
-     * 4) Creates a Vulkan instance and stores it in the 'instance' variable.
-     **/
-    void CreateInstance();
-
-    /**
-     * Instantiates a DebugUtilsMessenger struct and stores it in the 'debugMessenger'
-     * instance variable.
-     *
-     * Since Vulkan does not automatically handle errors, it's necessary to manually
-     * configure it to do so if needed. A DebugUtilsMessenger stores a callback which
-     * which is then called when an error or warning is issued.
-     **/
-    void SetupDebugMessenger();
-
-    /**
-     * Queries the window for a vulkan-ready surface for rendering. The result is stored
-     * in the 'surface' instane variable.
-     *
-     * Vulkan is not always guaranteed to be compatible with every window system.
-     * For example, glfw must be configured in a way that a surface is returned
-     * that vulkan can actually render to.
-     **/
-    void CreateSurface();
-
-    /**
-     * Searches for and configures a physical device to be used for rendering. A
-     * physical device refers to a piece of hardware (a GPU). This is then stored
-     * in the 'physicalDevice' instance variable.
-     *
-     * This function searches over all available devices, iterates over them, and
-     * consequently returns the one that matches our criteria.
-     * The device in question MUST support both graphics and present queues, must
-     * have our required present modes and formats, and finally must support the
-     * 'samplerAnistropy' feature.
-     **/
-    void PickPhysicalDevice();
-
-    /**
-     * Creates a logical device struct and stores it in the 'device' instance variable.
-     * It also extracts the 'graphicsQueue' and 'presentQueue' Vulkan structs.
-     *
-     * This function will create the relevant queues for rendering, create a logical
-     * device using our physical device, and then extract the graphics and present queues.
-     **/
-    void CreateLogicalDevice();
-
-    /**
-     * Creates a command pool for storing allocating command buffer memory without dynamic
-     * allocation. Stores the result in the 'commandPool' instance variable.
-     *
-     * The command pool in question is build specifically for graphics operation and
-     * therefore uses the graphics queue for allocation. Specifies that all command
-     * buffers allocated by this pool are short lived. Also specifies that all
-     * buffers allocated by the pool can be reset.
-     **/
-    void CreateCommandPool();
-
     static void SetVulkanDeviceInstance(VulkanDevice* device)
     {
         vulkanDeviceInstance = device;
@@ -280,13 +193,7 @@ private:
 
     static VulkanDevice* vulkanDeviceInstance;
 
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-
-    VkCommandPool commandPool;
-
-    VkDevice device;
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
+    Vulkan::Context context;
 };
 } // namespace Siege
 
