@@ -230,6 +230,71 @@ VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevi
     return capabilities;
 }
 
+Siege::Utils::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(VkPhysicalDevice device,
+                                                              VkSurfaceKHR surface)
+{
+    uint32_t formatCount = GetSurfaceFormatCount(device, surface);
+
+    Siege::Utils::MHArray<VkSurfaceFormatKHR> formats(formatCount);
+
+    Vulkan::Device::Physical::GetSurfaceFormats(device, surface, formatCount, formats.Data());
+
+    return formats;
+}
+
+Siege::Utils::MHArray<VkPresentModeKHR> Device::Physical::GetPresentModes(VkPhysicalDevice device,
+                                                          VkSurfaceKHR surface)
+{
+    uint32_t presentModeCount = Vulkan::Device::Physical::GetPresentModeCount(device, surface);
+
+    Siege::Utils::MHArray<VkPresentModeKHR> modes(presentModeCount);
+
+    Vulkan::Device::Physical::GetPresentModes(device, surface, presentModeCount, modes.Data());
+
+    return modes;
+}
+
+uint32_t Device::Physical::FindMemoryType(VkPhysicalDevice device, uint32_t typeFilter, VkMemoryPropertyFlags flags)
+{
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(device, &memProperties);
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+    {
+        if ((typeFilter & (1 << i)) &&
+            (memProperties.memoryTypes[i].propertyFlags & flags) == flags)
+        {
+            return i;
+        }
+    }
+
+    CC_ASSERT(false, "Failed to find suitable memory type!")
+}
+
+VkFormat Device::Physical::FindSupportedFormat(VkPhysicalDevice device,
+                                               const VkFormat* candidates,
+                                               size_t formatCount,
+                                               VkImageTiling tiling,
+                                               VkFormatFeatureFlagBits features)
+{
+    for (size_t i = 0; i < formatCount; i++)
+    {
+        VkFormat format = candidates[i];
+
+        VkFormatProperties props =
+            Vulkan::Device::Physical::GetProperties(device, format);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+        {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+        {
+            return format;
+        }
+    }
+    CC_ASSERT(false, "Failed to find a supported format!")
+}
+
 bool Device::Physical::HasFormats(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     return GetSurfaceFormatCount(device, surface) > 0;

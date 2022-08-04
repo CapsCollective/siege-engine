@@ -9,8 +9,7 @@
 #ifndef SIEGE_ENGINE_INSTANCE_H
 #define SIEGE_ENGINE_INSTANCE_H
 
-#include "Config.h"
-
+#include "utils/Types.h"
 #include <utils/collections/HeapArray.h>
 
 namespace Siege::Vulkan
@@ -18,7 +17,7 @@ namespace Siege::Vulkan
 class Instance
 {
 public:
-    typedef Utils::MHArray<const char*> (*surfaceCallback) (void);
+    typedef Siege::Utils::MHArray<const char*> (*surfaceCallback) (void);
     typedef surfaceCallback GetSurfaceExtensionsCallback;
 
     typedef bool (*getSurfaceCallback)(VkInstance, VkSurfaceKHR*);
@@ -42,18 +41,18 @@ public:
     }
 
 private:
-    void CreateInstance(const Utils::MHArray<const char*>& requiredSurfaceExtensions);
+    void CreateInstance(const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions);
     void SetupDebugMessenger();
 
     bool ValidateLayersExist();
-    void CheckInstanceExtensionsExist(const Utils::MHArray<const char*>& requiredSurfaceExtensions);
+    void CheckInstanceExtensionsExist(const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions);
 
     void Move(Instance& other);
     void DestroyDependentObjects();
 
-    VkInstance instance {VK_NULL_HANDLE};
-    VkSurfaceKHR windowSurface {VK_NULL_HANDLE};
-    VkDebugUtilsMessengerEXT debugMessenger {VK_NULL_HANDLE};
+    VkInstance instance {nullptr};
+    VkSurfaceKHR windowSurface {nullptr};
+    VkDebugUtilsMessengerEXT debugMessenger {nullptr};
 };
 } // namespace Siege::Vulkan
 

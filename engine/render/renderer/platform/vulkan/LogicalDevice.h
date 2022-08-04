@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_LOGICALDEVICE_H
 #define SIEGE_ENGINE_LOGICALDEVICE_H
 
+#include <volk/volk.h>
+
 #include "PhysicalDevice.h"
 
 namespace Siege::Vulkan
@@ -83,6 +85,10 @@ public:
 private:
 
     void Move(LogicalDevice& other);
+
+    // TODO: Replace the following:
+    // VkDevice, VkQueue, VkCommandPool, VkCommandBuffer, VkDeviceMemory, VkBuffer <-- pointers
+    // VkImageCreateInfo, VkDeviceSize <-- structs
 
     VkDevice device;
 

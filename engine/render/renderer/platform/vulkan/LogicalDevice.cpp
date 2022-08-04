@@ -8,6 +8,7 @@
 
 #include "LogicalDevice.h"
 
+#include "Config.h"
 #include "utils/CommandPool.h"
 #include "utils/Device.h"
 
@@ -215,8 +216,9 @@ void LogicalDevice::AllocateMemory(VkMemoryRequirements& memRequirements,
     VkMemoryAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex =
-        physicalDevice->FindMemoryType(memRequirements.memoryTypeBits, targetProperties);
+    allocInfo.memoryTypeIndex = Device::Physical::FindMemoryType(physicalDevice->GetDevice(),
+                                                                 memRequirements.memoryTypeBits,
+                                                                 targetProperties);
 
     CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & memory) == VK_SUCCESS,
               "Failed to allocate image memory!")

@@ -25,14 +25,14 @@ public:
     /**
     * An array storing all required validation layers (if enabled).
     **/
-    static constexpr Utils::SArray<const char*, VALIDATION_LAYERS_COUNT> validationLayers =
+    static constexpr Siege::Utils::SArray<const char*, VALIDATION_LAYERS_COUNT> validationLayers =
         { "VK_LAYER_KHRONOS_validation"};
 
     /**
     * An array storing all required extensions. All of these must be present for the renderer to
     *start.
     **/
-    static constexpr Utils::SArray<const char*, EXTENSIONS_COUNT> deviceExtensions = {
+    static constexpr Siege::Utils::SArray<const char*, EXTENSIONS_COUNT> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };

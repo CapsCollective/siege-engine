@@ -9,6 +9,8 @@
 #include "Swapchain.h"
 
 #include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
+#include "render/renderer/platform/vulkan/utils/Device.h"
 
 #include <utils/Logging.h>
 
@@ -100,19 +102,25 @@ void SwapChain::Init()
 void SwapChain::CreateSwapChain()
 {
     auto physicalDevice = Vulkan::Context::GetPhysicalDevice();
+    auto surface = Vulkan::Context::GetInstance().GetSurface();
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
     // Get our swapchain details
-    auto formats = physicalDevice->GetSurfaceFormats();
-    auto presentModes = physicalDevice->GetPresentModes();
-    auto capabilities = physicalDevice->GetCapabilities();
+    auto formats = Vulkan::Device::Physical::GetSurfaceFormats(physicalDevice->GetDevice(),
+                                                               surface);
 
-    // Get our supported color format
-    VkSurfaceFormatKHR surfaceFormat =
+    auto presentModes = Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(),
+                                                                  surface);
+
+    auto capabilities =
+        Vulkan::Device::Physical::GetSurfaceCapabilities(physicalDevice->GetDevice(), surface);
+
+    // Get our supported colour format
+    auto surfaceFormat =
         ChooseSwapSurfaceFormat(formats.Data(), static_cast<uint32_t>(formats.Size()));
 
     // Choose our presentation mode (the form of image buffering)
-    VkPresentModeKHR presentMode =
+    auto presentMode =
         ChoosePresentMode(presentModes.Data(), static_cast<uint32_t>(presentModes.Size()));
 
     // The size of our images.
@@ -392,10 +400,10 @@ VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* format
     // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB color space.
     for (size_t i = 0; i < formatCount; i++)
     {
-        VkSurfaceFormatKHR& availableFormat = formats[i];
+        VkSurfaceFormatKHR availableFormat = formats[i];
         if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
             availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-            return availableFormat;
+            return formats[i];
     }
     // If we can't find what we want then we use whatever is available on the GPU.
     return formats[0];
@@ -406,14 +414,14 @@ VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
 {
     for (size_t i = 0; i < presentModeCount; i++)
     {
-        VkPresentModeKHR& availablePresentMode = presentModes[i];
+        VkPresentModeKHR availablePresentMode = presentModes[i];
 
         // Ideally, we want to support triple buffering since it has the best
         // balance between performance and image quality
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
         {
             CC_LOG_INFO("Present Mode: Mailbox")
-            return availablePresentMode;
+            return presentModes[i];
         }
     }
 
@@ -444,19 +452,6 @@ VkExtent2D SwapChain::ChooseSwapExtent(VkSurfaceCapabilitiesKHR& capabilities)
 
 VkFormat SwapChain::FindDepthFormat()
 {
-    // The formats we want to search for:
-    // 1. A 32 bit floating point
-    // 2. A 32 bit floating point for storing depth information and 8 bits for stencil data.
-    // 3. A 32 bit component with 8 unsigned bits for stencil data and 24 unsigned normalised bits
-    // for depth.
-    VkFormat formats[] = {VK_FORMAT_D32_SFLOAT,
-                          VK_FORMAT_D32_SFLOAT_S8_UINT,
-                          VK_FORMAT_D24_UNORM_S8_UINT};
-    return Vulkan::Context::GetPhysicalDevice()->FindSupportedFormat(
-        formats,
-        3,
-        VK_IMAGE_TILING_OPTIMAL, // specify we want texels to be laid out optimally
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT); // specifies that we can use image views to
-    // specify depth information
+    return Vulkan::Utils::ToVkFormat(Vulkan::Context::Get().GetPhysicalDevice()->GetDepthFormat());
 }
 } // namespace Siege

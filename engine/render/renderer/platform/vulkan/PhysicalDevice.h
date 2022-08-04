@@ -9,14 +9,22 @@
 #ifndef SIEGE_ENGINE_PHYSICALDEVICE_H
 #define SIEGE_ENGINE_PHYSICALDEVICE_H
 
-#include "Config.h"
 #include "Instance.h"
+#include "utils/Types.h"
 
 namespace Siege::Vulkan
 {
 class PhysicalDevice
 {
 public:
+
+    struct DeviceProperties
+    {
+        // TODO: Add new properties as new needs are discovered.
+        const char* deviceName;
+        uint64_t minUniformBufferOffsetAlignment {0};
+        Utils::DepthFormat depthFormat {Utils::DEPTH_NONE};
+    };
 
     PhysicalDevice() = default;
     ~PhysicalDevice() = default;
@@ -26,28 +34,27 @@ public:
 
     PhysicalDevice& operator=(PhysicalDevice&& other);
 
-    VkPhysicalDeviceProperties GetProperties() const
+    DeviceProperties GetProperties() const
     {
         return properties;
     }
+
     VkPhysicalDevice GetDevice() const
     {
         return device;
     }
 
-    size_t GetMinDeviceAlignment()
+    inline constexpr size_t GetMinDeviceAlignment() const
     {
-        return properties.limits.minUniformBufferOffsetAlignment;
+        return properties.minUniformBufferOffsetAlignment;
     }
-    VkFormat FindSupportedFormat(const VkFormat* candidates,
-                                 size_t formatCount,
-                                 VkImageTiling tiling,
-                                 VkFormatFeatureFlags features);
-    VkSurfaceCapabilitiesKHR GetCapabilities();
-    Utils::MHArray<VkSurfaceFormatKHR> GetSurfaceFormats();
-    Utils::MHArray<VkPresentModeKHR> GetPresentModes();
 
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    inline constexpr Utils::DepthFormat GetDepthFormat() const
+    {
+        return properties.depthFormat;
+    }
+
+    Utils::DepthFormat FindDepthFormat();
 
     uint32_t GetGraphicsFamilyQueueIndex();
     uint32_t GetPresentFamilyQueueIndex();
@@ -56,8 +63,8 @@ private:
 
     void Move(PhysicalDevice& other);
 
-    VkPhysicalDevice device {VK_NULL_HANDLE};
-    VkPhysicalDeviceProperties properties {};
+    VkPhysicalDevice device {nullptr};
+    DeviceProperties properties {};
 };
 } // namespace Siege::Vulkan
 

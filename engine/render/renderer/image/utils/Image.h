@@ -14,7 +14,6 @@
 class Image
 {
 public:
-
     static VkImageView CreateImageView(VkDevice device,
                                        VkImage image,
                                        VkImageViewType viewType,

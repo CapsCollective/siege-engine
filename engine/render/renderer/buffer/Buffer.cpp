@@ -9,6 +9,7 @@
 #include "Buffer.h"
 
 #include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/utils/Device.h"
 
 #include <utils/Logging.h>
 
@@ -41,8 +42,9 @@ void CreateBuffer(VkDeviceSize size,
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex =
-        Vulkan::Context::GetPhysicalDevice()->FindMemoryType(memRequirements.memoryTypeBits,
-                                                             properties);
+        Vulkan::Device::Physical::FindMemoryType(Vulkan::Context::GetPhysicalDevice()->GetDevice(),
+                                                 memRequirements.memoryTypeBits,
+                                                 properties);
 
     CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & bufferMemory) == VK_SUCCESS,
               "failed to allocate vertex buffer memory!");

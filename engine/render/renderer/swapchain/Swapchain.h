@@ -12,6 +12,7 @@
 #include "../framebuffer/Framebuffer.h"
 #include "../image/FrameImages.h"
 #include "../pass/RenderPass.h"
+#include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege
 {
