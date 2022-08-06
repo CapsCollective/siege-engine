@@ -11,6 +11,7 @@
 
 #include "../Core.h"
 #include "utils/Image.h"
+#include "render/renderer/platform/vulkan/Image.h"
 
 namespace Siege
 {

@@ -19,6 +19,8 @@ public:
 
     static VkCommandBuffer AllocateCommandBuffer(VkDevice device, VkCommandPool pool);
     static void BeginSingleTimeCommand(VkCommandBuffer buffer);
+    static void EndSingleTimeCommand(VkCommandBuffer buffer);
+    static void EndCommandBuffer(VkCommandBuffer commandBuffer);
 };
 } // namespace Siege::Vulkan::Utils
 

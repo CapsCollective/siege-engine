@@ -11,6 +11,8 @@
 #include "Config.h"
 #include "utils/CommandPool.h"
 #include "utils/Device.h"
+#include "utils/CommandBuffer.h"
+#include "utils/Buffer.h"
 
 // std headers
 #include <set>
@@ -125,28 +127,12 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
 
 VkCommandBuffer LogicalDevice::GetCommandBuffer()
 {
-    VkCommandBufferAllocateInfo allocInfo {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer;
-
-    CC_ASSERT(vkAllocateCommandBuffers(device, &allocInfo, OUT & commandBuffer) == VK_SUCCESS,
-              "Failed to allocate command buffer!")
-
-    return commandBuffer;
+    return Utils::CommandBuffer::AllocateCommandBuffer(device, commandPool);
 }
 
 VkCommandBuffer LogicalDevice::BeginSingleTimeCommand(VkCommandBuffer commandBuffer)
 {
-    VkCommandBufferBeginInfo beginInfo {};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    CC_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
-              "Failed to begin recording command buffer!")
+    Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
 
     return commandBuffer;
 }
@@ -180,6 +166,7 @@ void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
     VkFenceCreateInfo fenceCreateInfo = {};
     fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceCreateInfo.flags = 0;
+
     VkFence fence;
 
     CC_ASSERT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence) == VK_SUCCESS,
@@ -213,12 +200,15 @@ void LogicalDevice::AllocateMemory(VkMemoryRequirements& memRequirements,
                                    VkDeviceMemory& memory,
                                    VkMemoryPropertyFlags targetProperties)
 {
-    VkMemoryAllocateInfo allocInfo {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Device::Physical::FindMemoryType(physicalDevice->GetDevice(),
-                                                                 memRequirements.memoryTypeBits,
-                                                                 targetProperties);
+    VkMemoryAllocateInfo allocInfo
+    {
+        VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+        nullptr,
+        memRequirements.size,
+        Device::Physical::FindMemoryType(physicalDevice->GetDevice(),
+                                         memRequirements.memoryTypeBits,
+                                         targetProperties)
+    };
 
     CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & memory) == VK_SUCCESS,
               "Failed to allocate image memory!")
@@ -252,11 +242,8 @@ void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceS
 {
     auto commandBuffer = BeginSingleTimeCommand(GetCommandBuffer());
 
-    VkBufferCopy copyRegion {};
-    copyRegion.srcOffset = 0; // Optional
-    copyRegion.dstOffset = 0; // Optional
-    copyRegion.size = size;
-    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+    auto copyRegion = Utils::Buffer::CopyRegion(size);
+    Utils::Buffer::CopyBuffer(commandBuffer, srcBuffer, dstBuffer, copyRegion, 1);
 
     EndSingleTimeCommand(commandBuffer);
 }

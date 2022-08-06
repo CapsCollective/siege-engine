@@ -19,12 +19,16 @@ struct VkPhysicalDevice_T;
 struct VkSurfaceKHR_T;
 struct VkDebugUtilsMessengerEXT_T;
 struct VkImage_T;
+struct VkDeviceMemory_T;
+struct VkImageView_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* VkSurfaceKHR;
 typedef VkPhysicalDevice_T* VkPhysicalDevice;
 typedef VkDebugUtilsMessengerEXT_T* VkDebugUtilsMessengerEXT;
 typedef VkImage_T* VkImage;
+typedef VkDeviceMemory_T* VkDeviceMemory;
+typedef VkImageView_T* VkImageView;
 
 namespace Siege::Vulkan::Utils
 {
@@ -58,6 +62,14 @@ enum ImageFormat
     DEPTH32FSTENCIL8UINT = 130,
     DEPTH32F = 126,
     DEPTH24STENCIL8
+};
+
+enum ImageUsage
+{
+    USAGE_NONE = 0,
+    USAGE_TEXTURE,
+    USAGE_ATTACHMENT,
+    USAGE_STORAGE
 };
 
 //----------------------------------------- Structs -----------------------------------------------

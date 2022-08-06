@@ -37,4 +37,11 @@ void CommandBuffer::BeginSingleTimeCommand(VkCommandBuffer buffer)
     CC_ASSERT(vkBeginCommandBuffer(OUT buffer, &beginInfo) == VK_SUCCESS,
               "Failed to begin recording command buffer!")
 }
+
+void CommandBuffer::EndCommandBuffer(VkCommandBuffer commandBuffer)
+{
+    CC_ASSERT(commandBuffer != VK_NULL_HANDLE, "commandBuffer must be a valid value!")
+
+    vkEndCommandBuffer(commandBuffer);
+}
 } // namespace Siege::Vulkan::Utils

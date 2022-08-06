@@ -28,19 +28,18 @@ void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
     auto device = Vulkan::Context::GetCurrentDevice();
     for (size_t i = 0; i < GetImageCount(); i++)
     {
-        Siege::Vulkan::Image::Config config =
-            Vulkan::Image::Config()
-                .WithType(VK_IMAGE_TYPE_2D)
-                .WithFormat(imageFormat)
-                .WithExtent(imageWidth, imageHeight, imageDepth)
-                .WithMipLevels(1)
-                .WithArrayLayers(1)
-                .WithSampleFlags(VK_SAMPLE_COUNT_1_BIT)
-                .WithImageTiling(VK_IMAGE_TILING_OPTIMAL)
-                .WithImageUsage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
-                .WithSharingMode(VK_SHARING_MODE_EXCLUSIVE);
-
-        VkImageCreateInfo imageInfo = TO_VK_CREATE_INFO(config);
+        VkImageCreateInfo imageInfo =
+            Image::CreateImageCreateInfo(VK_IMAGE_TYPE_2D,
+                                         imageFormat,
+                                         imageWidth,
+                                         imageHeight,
+                                         imageDepth,
+                                         1,
+                                         1,
+                                         VK_SAMPLE_COUNT_1_BIT,
+                                         VK_IMAGE_TILING_OPTIMAL,
+                                         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                                         VK_SHARING_MODE_EXCLUSIVE);
 
         // Create the depth images using the device
         device->CreateImageWithInfo(imageInfo, OUT images[i], OUT imageMemorys[i]);
