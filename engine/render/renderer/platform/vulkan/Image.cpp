@@ -7,44 +7,34 @@
 //
 
 #include "Image.h"
-#include "render/renderer/platform/vulkan/Context.h"
-#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
-#include "render/renderer/platform/vulkan/utils/Device.h"
 
-#include <volk/volk.h>
 #include <utils/Logging.h>
+
+#include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/utils/Image.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
 
 namespace Siege::Vulkan
 {
 Image::Image(const Config& config)
 {
-    VkImageUsageFlags usage = 0;
-
-    bool isDepthFormat = IsDepthFormat(config.imageFormat);
     auto device = Context::GetCurrentDevice()->GetDevice();
-    auto physicalDevice = Context::GetPhysicalDevice()->GetDevice();
 
-    switch(config.usage)
-    {
-        case Utils::USAGE_ATTACHMENT:
-            usage |= ((isDepthFormat * VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) +
-                     (!isDepthFormat * VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
-            break;
-        case Utils::USAGE_TEXTURE:
-            usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-            break;
-        case Utils::USAGE_STORAGE:
-            usage |= VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-            break;
-        default:
-            usage |= VK_IMAGE_USAGE_SAMPLED_BIT; break;
-    }
+    CreateImage(config);
+    AllocateMemory();
+    BindImageMemory(device);
 
-    VkImageCreateInfo createInfo =
-    {
-        VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-        nullptr,
-        0,
+    CreateImageView(config);
+}
+
+Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}
+{
+    CreateImageView(config);
+}
+
+void Image::CreateImage(const Config& config)
+{
+    image = Utils::Image::CreateImage(
         VK_IMAGE_TYPE_2D,
         Utils::ToVkFormat(config.imageFormat),
         Utils::ToVkExtent3D(config.imageExtent),
@@ -52,78 +42,38 @@ Image::Image(const Config& config)
         config.layers,
         VK_SAMPLE_COUNT_1_BIT,
         VK_IMAGE_TILING_OPTIMAL,
-        usage
-    };
-
-    CC_ASSERT(vkCreateImage(device, &createInfo, nullptr, OUT & image) == VK_SUCCESS,
-              "Failed to create FrameImages!")
-
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(device, image, OUT & memRequirements);
-
-    VkMemoryAllocateInfo allocInfo
-        {
-            VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-            nullptr,
-            memRequirements.size,
-            Device::Physical::FindMemoryType(physicalDevice,
-                                             memRequirements.memoryTypeBits,
-                                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-        };
-
-    CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & memory) == VK_SUCCESS,
-              "Failed to allocate image memory!")
-
-    CC_ASSERT(vkBindImageMemory(device, OUT image, memory, 0) == VK_SUCCESS,
-              "Failed to bind image memory!")
-
-    VkImageAspectFlags aspectMask = (isDepthFormat * VK_IMAGE_ASPECT_DEPTH_BIT) +
-                                    ((!isDepthFormat * VK_IMAGE_ASPECT_COLOR_BIT));
-
-    aspectMask |= ((config.imageFormat == Utils::DEPTH24STENCIL8) * VK_IMAGE_ASPECT_STENCIL_BIT);
-
-    VkImageViewCreateInfo viewCreateInfo =
-    {
-        VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        nullptr,
-        0,
-        image,
-        static_cast<VkImageViewType>(((config.layers > 1) * VK_IMAGE_VIEW_TYPE_2D_ARRAY) +
-                                     ((config.layers == 1) * VK_IMAGE_VIEW_TYPE_2D)),
-        Utils::ToVkFormat(config.imageFormat),
-        {},
-        {aspectMask, 0, config.mipLevels, 0, config.layers}
-        };
-
-    CC_ASSERT(vkCreateImageView(device, &viewCreateInfo, nullptr, OUT & imageView) == VK_SUCCESS,
-              "Failed to create texture image view!")
+        static_cast<VkImageUsageFlagBits>(GetVkUsageFlag(config.usage, config.imageFormat)));
 }
 
-Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}
+void Image::AllocateMemory()
+{
+    Utils::Image::AllocateImageMemory(image, memory);
+}
+
+void Image::BindImageMemory(VkDevice device)
+{
+    CC_ASSERT(vkBindImageMemory(device, OUT image, memory, 0) == VK_SUCCESS,
+              "Failed to bind image memory!")
+}
+
+void Image::CreateImageView(const Config& config)
 {
     bool isDepthFormat = IsDepthFormat(config.imageFormat);
-    auto device = Context::GetCurrentDevice()->GetDevice();
 
     VkImageAspectFlags aspectMask = (isDepthFormat * VK_IMAGE_ASPECT_DEPTH_BIT) +
                                     ((!isDepthFormat * VK_IMAGE_ASPECT_COLOR_BIT));
 
     aspectMask |= ((config.imageFormat == Utils::DEPTH24STENCIL8) * VK_IMAGE_ASPECT_STENCIL_BIT);
 
-    VkImageViewCreateInfo viewCreateInfo =
-        {
-            VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            nullptr,
-            0,
-            image,
-            static_cast<VkImageViewType>(((config.layers > 1) * VK_IMAGE_VIEW_TYPE_2D_ARRAY) +
-                                         ((config.layers == 1) * VK_IMAGE_VIEW_TYPE_2D)),
-            Utils::ToVkFormat(config.imageFormat),
-            {},
-            {aspectMask, 0, config.mipLevels, 0, config.layers}
-        };
+    VkImageViewType viewType =
+        static_cast<VkImageViewType>(((config.layers > 1) * VK_IMAGE_VIEW_TYPE_2D_ARRAY) +
+                                     ((config.layers == 1) * VK_IMAGE_VIEW_TYPE_2D));
 
-    CC_ASSERT(vkCreateImageView(device, &viewCreateInfo, nullptr, OUT & imageView) == VK_SUCCESS,
-              "Failed to create texture image view!")
+    imageView = Utils::Image::CreateImageView(image,
+                                              viewType,
+                                              Utils::ToVkFormat(config.imageFormat),
+                                              {},
+                                              {aspectMask, 0, config.mipLevels, 0, config.layers});
 }
 
 Image::Image(Image&& other)
@@ -133,7 +83,7 @@ Image::Image(Image&& other)
 
 Image::~Image()
 {
-    if (!IsValid() && !image) return;
+    if (!IsValid()) return;
 
     CC_LOG_INFO("Destroying Image")
     Free();
@@ -176,7 +126,7 @@ bool Image::HasInfo()
 
 bool Image::IsValid()
 {
-    return imageView;
+    return imageView && image;
 }
 
 void Image::Move(Image& other)
@@ -192,8 +142,25 @@ void Image::Move(Image& other)
 
 bool Image::IsDepthFormat(Utils::ImageFormat format)
 {
-    return format == Utils::DEPTH24STENCIL8 ||
-           format == Utils::DEPTH32F ||
+    return format == Utils::DEPTH24STENCIL8 || format == Utils::DEPTH32F ||
            format == Utils::DEPTH32FSTENCIL8UINT;
+}
+
+uint32_t Image::GetVkUsageFlag(Utils::ImageUsage usage, Utils::ImageFormat format)
+{
+    bool isDepthFormat = IsDepthFormat(format);
+
+    switch (usage)
+    {
+        case Utils::USAGE_ATTACHMENT:
+            return ((isDepthFormat * VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) +
+                    (!isDepthFormat * VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
+        case Utils::USAGE_TEXTURE:
+            return VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        case Utils::USAGE_STORAGE:
+            return VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        default:
+            return VK_IMAGE_USAGE_SAMPLED_BIT;
+    }
 }
 } // namespace Siege::Vulkan

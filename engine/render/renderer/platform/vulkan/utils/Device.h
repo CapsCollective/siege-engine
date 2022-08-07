@@ -10,10 +10,9 @@
 #define SIEGE_ENGINE_DEVICE_H
 
 #include <utils/Logging.h>
+#include <utils/collections/HeapArray.h>
 
 #include "volk/volk.h"
-
-#include <utils/collections/HeapArray.h>
 
 #if ENABLE_VALIDATION_LAYERS == 1
 #define CREATE_DEVICE(physicalDevice,                                              \
@@ -129,12 +128,14 @@ public:
                                                                VkSurfaceKHR surface);
 
         static Siege::Utils::MHArray<VkSurfaceFormatKHR> GetSurfaceFormats(VkPhysicalDevice device,
-                                                           VkSurfaceKHR surface);
+                                                                           VkSurfaceKHR surface);
 
         static Siege::Utils::MHArray<VkPresentModeKHR> GetPresentModes(VkPhysicalDevice device,
-                                                       VkSurfaceKHR surface);
+                                                                       VkSurfaceKHR surface);
 
-        static uint32_t FindMemoryType(VkPhysicalDevice device, uint32_t typeFilter, VkMemoryPropertyFlags flags);
+        static uint32_t FindMemoryType(VkPhysicalDevice device,
+                                       uint32_t typeFilter,
+                                       VkMemoryPropertyFlags flags);
 
         static VkFormat FindSupportedFormat(VkPhysicalDevice device,
                                             const VkFormat* candidates,
@@ -157,7 +158,8 @@ public:
 
         static VkPhysicalDeviceProperties GetDeviceProperties(VkPhysicalDevice device);
 
-        static Siege::Utils::MHArray<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(VkPhysicalDevice device);
+        static Siege::Utils::MHArray<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(
+            VkPhysicalDevice device);
 
         static int32_t GetMatchingQueueFamilyIndex(VkPhysicalDevice device,
                                                    VkSurfaceKHR surface,

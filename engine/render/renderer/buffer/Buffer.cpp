@@ -8,10 +8,10 @@
 
 #include "Buffer.h"
 
+#include <utils/Logging.h>
+
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/utils/Device.h"
-
-#include <utils/Logging.h>
 
 namespace Siege::Buffer
 {

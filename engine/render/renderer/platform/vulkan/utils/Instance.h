@@ -1,10 +1,9 @@
 //
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
-//
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #ifndef SIEGE_ENGINE_VULKAN_INSTANCE_H
@@ -12,7 +11,6 @@
 
 #include <utils/Logging.h>
 #include <utils/collections/HeapArray.h>
-
 #include <volk/volk.h>
 
 namespace Siege::Vulkan::VulkanInstance

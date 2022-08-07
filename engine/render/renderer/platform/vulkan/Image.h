@@ -18,6 +18,7 @@ namespace Siege::Vulkan
 class Image
 {
 public:
+
     struct Config
     {
         Utils::ImageFormat imageFormat;
@@ -35,13 +36,23 @@ public:
 
     Image& operator=(Image&& other);
 
-    VkImage& GetImage() { return image; }
-    VkDeviceMemory& GetMemory() { return memory; }
-    VkImageView GetView() { return imageView; }
+    VkImageView GetView()
+    {
+        return imageView;
+    }
 
-    const VkImage& GetImage() const { return image; }
-    const VkDeviceMemory& GetMemory() const { return memory; }
-    const VkImageView GetView() const { return imageView; }
+    const VkImage& GetImage() const
+    {
+        return image;
+    }
+    const VkDeviceMemory& GetMemory() const
+    {
+        return memory;
+    }
+    const VkImageView GetView() const
+    {
+        return imageView;
+    }
 
     void Free();
     void Invalidate();
@@ -50,8 +61,16 @@ public:
     bool HasInfo();
 
 private:
+
+    static bool IsDepthFormat(Utils::ImageFormat format);
+    static uint32_t GetVkUsageFlag(Utils::ImageUsage usage, Utils::ImageFormat format);
+
     void Move(Image& other);
-    bool IsDepthFormat(Utils::ImageFormat);
+
+    void CreateImage(const Config& config);
+    void AllocateMemory();
+    void BindImageMemory(VkDevice);
+    void CreateImageView(const Config& config);
 
     VkImage image {nullptr};
     VkDeviceMemory memory {nullptr};

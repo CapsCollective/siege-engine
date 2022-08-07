@@ -39,11 +39,11 @@ Utils::MHArray<const char*> Window::GetRequiredExtensions()
 
 void Window::ResizeCallback(GLFWwindow* windowPtr, int width, int height)
 {
-    auto windowPointer = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
+    auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
 
-    windowPointer->wasResized = true;
+    windowContext->wasResized = true;
 
-    windowPointer->width = width;
-    windowPointer->height = height;
+    windowContext->width = width;
+    windowContext->height = height;
 }
 } // namespace Siege

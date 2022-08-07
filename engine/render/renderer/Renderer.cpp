@@ -12,6 +12,7 @@
 
 namespace Siege
 {
+Renderer* Renderer::instance {nullptr};
 Utils::MHArray<VkCommandBuffer> Renderer::commandBuffers;
 
 Renderer::Renderer(Window& window) : window {window}

@@ -18,17 +18,14 @@ uint32_t FrameImages::imageCount = 0;
 
 FrameImages::FrameImages() = default;
 
-FrameImages::FrameImages(Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format)
-    : imageFormat {format}
+FrameImages::FrameImages(Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format) :
+    imageFormat {format}
 {
-    Siege::Vulkan::Image::Config config =
-    {
-        imageFormat,
-        imageExtent,
-        Vulkan::Utils::USAGE_ATTACHMENT,
-        1,
-        1
-    };
+    Siege::Vulkan::Image::Config config = {imageFormat,
+                                           imageExtent,
+                                           Vulkan::Utils::USAGE_ATTACHMENT,
+                                           1,
+                                           1};
 
     for (size_t i = 0; i < GetImageCount(); i++) vkImages[i] = Vulkan::Image(config);
 }
@@ -38,8 +35,10 @@ FrameImages::FrameImages(FrameImages&& other)
     Move(other);
 }
 
-FrameImages::FrameImages(VkSwapchainKHR swapchain, Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format)
-    : FrameImages(imageExtent, format)
+FrameImages::FrameImages(VkSwapchainKHR swapchain,
+                         Vulkan::Utils::Extent3D imageExtent,
+                         Vulkan::Utils::ImageFormat format) :
+    FrameImages(imageExtent, format)
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -51,14 +50,11 @@ FrameImages::FrameImages(VkSwapchainKHR swapchain, Vulkan::Utils::Extent3D image
 
     vkGetSwapchainImagesKHR(device, swapchain, &imageCount, OUT swapchainImages);
 
-    Siege::Vulkan::Image::Config config =
-    {
-        imageFormat,
-        imageExtent,
-        Vulkan::Utils::USAGE_ATTACHMENT,
-        1,
-        1
-    };
+    Siege::Vulkan::Image::Config config = {imageFormat,
+                                           imageExtent,
+                                           Vulkan::Utils::USAGE_ATTACHMENT,
+                                           1,
+                                           1};
 
     for (size_t i = 0; i < imageCount; i++) vkImages[i] = Vulkan::Image(swapchainImages[i], config);
 }
@@ -75,17 +71,13 @@ void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
                                        uint32_t imageHeight,
                                        uint32_t imageDepth)
 {
-    Siege::Vulkan::Image::Config config =
-    {
-        imageFormat,
-        {imageWidth, imageHeight, imageDepth},
-        Vulkan::Utils::USAGE_ATTACHMENT,
-        1,
-        1
-    };
+    Siege::Vulkan::Image::Config config = {imageFormat,
+                                           {imageWidth, imageHeight, imageDepth},
+                                           Vulkan::Utils::USAGE_ATTACHMENT,
+                                           1,
+                                           1};
 
     for (size_t i = 0; i < GetImageCount(); i++) vkImages[i] = Vulkan::Image(config);
-
 }
 
 void FrameImages::Move(FrameImages& other)

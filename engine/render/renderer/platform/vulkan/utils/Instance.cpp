@@ -22,13 +22,14 @@
 #if ENABLE_VALIDATION_LAYERS == 1
 #define CREATE_INSTANCE(instance, appInfo, extensionSize, extensions, layerCount, layers, ...) \
     VkInstanceCreateInfo createInfo = {};                                                      \
-    createInfo = CreateInfo(&appInfo, extensionSize, extensions, layerCount, layers, 0, __VA_ARGS__); \
+    createInfo =                                                                               \
+        CreateInfo(&appInfo, extensionSize, extensions, layerCount, layers, 0, __VA_ARGS__);   \
     ADD_PORTABILITY_BIT(createInfo)                                                            \
     Create(&createInfo, nullptr, &instance);
 #else
 #define CREATE_INSTANCE(instance, appInfo, extensionSize, extensions, layerCount, layers, ...) \
     VkInstanceCreateInfo createInfo = {};                                                      \
-    createInfo = CreateInfo(&appInfo, extensionSize, extensions);            \
+    createInfo = CreateInfo(&appInfo, extensionSize, extensions);                              \
     ADD_PORTABILITY_BIT(createInfo)                                                            \
     Create(&createInfo, nullptr, &instance);
 #endif
@@ -93,19 +94,18 @@ Utils::MHArray<VkExtensionProperties> GetInstanceExtensionProperties()
 }
 
 void Create(const VkInstanceCreateInfo* createInfo,
-                      const VkAllocationCallbacks* callbacks,
-                      VkInstance* instance) {
+            const VkAllocationCallbacks* callbacks,
+            VkInstance* instance) {
 
     CC_ASSERT(vkCreateInstance(createInfo, callbacks, OUT instance) == VK_SUCCESS,
-              "Unable to create Vulkan Instance!")
-}
+              "Unable to create Vulkan Instance!")}
 
 VkInstance CreateInstance(VkApplicationInfo appInfo,
-                                    uint32_t extensionSize,
-                                    const char* const* extensions,
-                                    uint32_t layerSize,
-                                    const char* const* layers,
-                                    VkDebugUtilsMessengerCreateInfoEXT* debugUils)
+                          uint32_t extensionSize,
+                          const char* const* extensions,
+                          uint32_t layerSize,
+                          const char* const* layers,
+                          VkDebugUtilsMessengerCreateInfoEXT* debugUils)
 {
     VkInstance instance;
     CREATE_INSTANCE(instance, appInfo, extensionSize, extensions, layerSize, layers, debugUils)

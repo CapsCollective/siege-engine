@@ -9,10 +9,10 @@
 #include "LogicalDevice.h"
 
 #include "Config.h"
+#include "utils/Buffer.h"
+#include "utils/CommandBuffer.h"
 #include "utils/CommandPool.h"
 #include "utils/Device.h"
-#include "utils/CommandBuffer.h"
-#include "utils/Buffer.h"
 
 // std headers
 #include <set>
@@ -64,14 +64,13 @@
 
 namespace Siege::Vulkan
 {
-LogicalDevice::LogicalDevice(const Instance& instance, PhysicalDevice& physDevice)
+LogicalDevice::LogicalDevice(const Surface& surface, PhysicalDevice& physDevice)
 {
     physicalDevice = &physDevice;
     auto vkPhysicalDevice = physDevice.GetDevice();
 
     uint32_t graphicsIdx = Vulkan::Device::Physical::GetGraphicsQueue(vkPhysicalDevice);
-    uint32_t presentIdx =
-        Vulkan::Device::Physical::GetPresentQueue(vkPhysicalDevice, instance.GetSurface());
+    uint32_t presentIdx = Vulkan::Device::Physical::GetPresentQueue(vkPhysicalDevice, surface);
 
     const uint32_t maxQueues = 2;
     uint32_t count = maxQueues - (graphicsIdx == presentIdx);
@@ -125,38 +124,38 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
     return *this;
 }
 
-VkCommandBuffer LogicalDevice::GetCommandBuffer()
+CommandBuffer LogicalDevice::GetCommandBuffer()
 {
     return Utils::CommandBuffer::AllocateCommandBuffer(device, commandPool);
 }
 
-VkCommandBuffer LogicalDevice::BeginSingleTimeCommand(VkCommandBuffer commandBuffer)
+CommandBuffer LogicalDevice::BeginSingleTimeCommand(CommandBuffer commandBuffer)
 {
     Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
 
     return commandBuffer;
 }
 
-void LogicalDevice::EndSingleTimeCommand(VkCommandBuffer commandBuffer)
+void LogicalDevice::EndSingleTimeCommand(CommandBuffer commandBuffer)
 {
     FlushCommandBuffer(commandBuffer);
     SubmitToGraphicsQueue(commandBuffer);
     FreeCommandBuffer(commandBuffer);
 }
 
-void LogicalDevice::FlushCommandBuffer(VkCommandBuffer commandBuffer)
+void LogicalDevice::FlushCommandBuffer(CommandBuffer commandBuffer)
 {
     CC_ASSERT(commandBuffer != VK_NULL_HANDLE, "commandBuffer must be a valid value!")
 
     vkEndCommandBuffer(commandBuffer);
 }
 
-void LogicalDevice::SubmitToGraphicsQueue(VkCommandBuffer commandBuffer)
+void LogicalDevice::SubmitToGraphicsQueue(CommandBuffer commandBuffer)
 {
     SubmitToQueue(commandBuffer, graphicsQueue);
 }
 
-void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
+void LogicalDevice::SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue)
 {
     VkSubmitInfo submitInfo {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -170,7 +169,7 @@ void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
     VkFence fence;
 
     CC_ASSERT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence) == VK_SUCCESS,
-              "Failed to create Fence!");
+              "Failed to create Fence!")
 
     CC_ASSERT(vkQueueSubmit(queue, 1, &submitInfo, fence) == VK_SUCCESS,
               "Failed to submit to queue!")
@@ -181,7 +180,7 @@ void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
     vkDestroyFence(device, fence, nullptr);
 }
 
-void LogicalDevice::FreeCommandBuffer(VkCommandBuffer commandBuffer)
+void LogicalDevice::FreeCommandBuffer(CommandBuffer commandBuffer)
 {
     vkFreeCommandBuffers(device, GetCommandPool(), 1, OUT & commandBuffer);
 }

@@ -13,7 +13,7 @@
 #include <cstdio>
 
 // --------------------------- Pointer Type Forward Declarations ----------------------------------
-//VkBuffer <-- pointers
+// VkBuffer <-- pointers
 
 struct VkInstance_T;
 struct VkPhysicalDevice_T;
@@ -30,7 +30,7 @@ struct VkDeviceMemory_T;
 struct VkBuffer_T;
 
 typedef VkInstance_T* VkInstance;
-typedef VkSurfaceKHR_T* VkSurfaceKHR;
+typedef VkSurfaceKHR_T* Surface;
 typedef VkPhysicalDevice_T* VkPhysicalDevice;
 typedef VkDebugUtilsMessengerEXT_T* VkDebugUtilsMessengerEXT;
 typedef VkImage_T* VkImage;
@@ -39,7 +39,7 @@ typedef VkImageView_T* VkImageView;
 typedef VkDevice_T* VkDevice;
 typedef VkQueue_T* VkQueue;
 typedef VkCommandPool_T* VkCommandPool;
-typedef VkCommandBuffer_T* VkCommandBuffer;
+typedef VkCommandBuffer_T* CommandBuffer;
 typedef VkDeviceMemory_T* VkDeviceMemory;
 typedef VkBuffer_T* VkBuffer;
 

@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_CONFIG_H
 
 #include <utils/collections/StackArray.h>
-
 #include <volk/volk.h>
 
 namespace Siege::Vulkan
@@ -23,15 +22,15 @@ public:
     static constexpr uint32_t EXTENSIONS_COUNT = 2;
 
     /**
-    * An array storing all required validation layers (if enabled).
-    **/
-    static constexpr Siege::Utils::SArray<const char*, VALIDATION_LAYERS_COUNT> validationLayers =
-        { "VK_LAYER_KHRONOS_validation"};
+     * An array storing all required validation layers (if enabled).
+     **/
+    static constexpr Siege::Utils::SArray<const char*, VALIDATION_LAYERS_COUNT> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"};
 
     /**
-    * An array storing all required extensions. All of these must be present for the renderer to
-    *start.
-    **/
+     * An array storing all required extensions. All of these must be present for the renderer to
+     *start.
+     **/
     static constexpr Siege::Utils::SArray<const char*, EXTENSIONS_COUNT> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};

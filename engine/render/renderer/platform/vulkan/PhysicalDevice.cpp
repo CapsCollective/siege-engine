@@ -15,12 +15,12 @@
 
 namespace Siege::Vulkan
 {
-PhysicalDevice::PhysicalDevice(const Instance& vulkanInstance)
+PhysicalDevice::PhysicalDevice(Surface surface, const Instance& vulkanInstance)
 {
     auto deviceExtensions = Vulkan::Config::deviceExtensions;
 
     device = Vulkan::Device::Physical::FindSuitableDevice(vulkanInstance.GetInstance(),
-                                                          vulkanInstance.GetSurface(),
+                                                          surface,
                                                           deviceExtensions.Data(),
                                                           deviceExtensions.Size());
 
@@ -28,12 +28,9 @@ PhysicalDevice::PhysicalDevice(const Instance& vulkanInstance)
 
     auto vkProperties = Vulkan::Device::Physical::GetDeviceProperties(device);
 
-    properties =
-    {
-        vkProperties.deviceName,
-        vkProperties.limits.minUniformBufferOffsetAlignment,
-        FindDepthFormat()
-    };
+    properties = {vkProperties.deviceName,
+                  vkProperties.limits.minUniformBufferOffsetAlignment,
+                  FindDepthFormat()};
 
     CC_LOG_INFO("Physical device found: {} with minumum buffer alignment of {}",
                 properties.deviceName,
@@ -54,13 +51,11 @@ PhysicalDevice& PhysicalDevice::operator=(PhysicalDevice&& other)
 Utils::DepthFormat PhysicalDevice::FindDepthFormat()
 {
     const size_t formatCount = 5;
-    VkFormat depthFormats[] = {
-        VK_FORMAT_D32_SFLOAT_S8_UINT,
-        VK_FORMAT_D32_SFLOAT,
-        VK_FORMAT_D24_UNORM_S8_UINT,
-        VK_FORMAT_D16_UNORM_S8_UINT,
-        VK_FORMAT_D16_UNORM
-    };
+    VkFormat depthFormats[] = {VK_FORMAT_D32_SFLOAT_S8_UINT,
+                               VK_FORMAT_D32_SFLOAT,
+                               VK_FORMAT_D24_UNORM_S8_UINT,
+                               VK_FORMAT_D16_UNORM_S8_UINT,
+                               VK_FORMAT_D16_UNORM};
 
     return Utils::ToDepthFormat(
         Device::Physical::FindSupportedFormat(device,
@@ -74,12 +69,12 @@ uint32_t PhysicalDevice::GetGraphicsFamilyQueueIndex()
 {
     return Device::Physical::GetMatchingQueueFamilyIndex(
         device,
-        Vulkan::Context::GetInstance().GetSurface(),
+        Vulkan::Context::GetSurface(),
         [](VkPhysicalDevice physicalDevice,
            VkQueueFamilyProperties props,
            size_t index,
            VkSurfaceKHR surface) -> int32_t {
-                return (props.queueCount > 0 && props.queueFlags & VK_QUEUE_GRAPHICS_BIT) * index;
+            return (props.queueCount > 0 && props.queueFlags & VK_QUEUE_GRAPHICS_BIT) * index;
         });
 }
 
@@ -87,17 +82,17 @@ uint32_t PhysicalDevice::GetPresentFamilyQueueIndex()
 {
     return Device::Physical::GetMatchingQueueFamilyIndex(
         device,
-        Vulkan::Context::GetInstance().GetSurface(),
+        Vulkan::Context::GetSurface(),
         [](VkPhysicalDevice physicalDevice,
            VkQueueFamilyProperties props,
            size_t index,
            VkSurfaceKHR surface) -> int32_t {
-                VkBool32 presentSupport = false;
-                vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
-                                                     index,
-                                                     surface,
-                                                     OUT & presentSupport);
-                return (props.queueCount > 0 && presentSupport) * index;
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
+                                                 index,
+                                                 surface,
+                                                 OUT & presentSupport);
+            return (props.queueCount > 0 && presentSupport) * index;
         });
 }
 

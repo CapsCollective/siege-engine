@@ -10,8 +10,8 @@
 #define SIEGE_ENGINE_FRAME_IMAGES_H
 
 #include "../Core.h"
-#include "utils/Image.h"
 #include "render/renderer/platform/vulkan/Image.h"
+#include "render/renderer/platform/vulkan/utils/Image.h"
 
 namespace Siege
 {
@@ -23,7 +23,9 @@ public:
 
     FrameImages();
     FrameImages(Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format);
-    FrameImages(VkSwapchainKHR swapchain, Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format);
+    FrameImages(VkSwapchainKHR swapchain,
+                Vulkan::Utils::Extent3D imageExtent,
+                Vulkan::Utils::ImageFormat format);
     FrameImages(FrameImages&& other);
     ~FrameImages();
 

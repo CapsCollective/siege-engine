@@ -28,15 +28,10 @@ public:
     PhysicalDevice() = default;
     ~PhysicalDevice() = default;
 
-    PhysicalDevice(const Instance& vulkanInstance);
+    PhysicalDevice(Surface surface, const Instance& vulkanInstance);
     PhysicalDevice(PhysicalDevice&& other);
 
     PhysicalDevice& operator=(PhysicalDevice&& other);
-
-    DeviceProperties GetProperties() const
-    {
-        return properties;
-    }
 
     VkPhysicalDevice GetDevice() const
     {

@@ -18,7 +18,7 @@ class LogicalDevice
 public:
 
     LogicalDevice() = default;
-    LogicalDevice(const Instance& instance, PhysicalDevice& physicalDevice);
+    LogicalDevice(const Surface& surface, PhysicalDevice& physDevice);
     LogicalDevice(LogicalDevice&& other);
     ~LogicalDevice();
 
@@ -43,16 +43,16 @@ public:
         return device;
     }
 
-    VkCommandBuffer GetCommandBuffer();
+    CommandBuffer GetCommandBuffer();
 
-    VkCommandBuffer BeginSingleTimeCommand(VkCommandBuffer commandBuffer);
-    void EndSingleTimeCommand(VkCommandBuffer commandBuffer);
+    CommandBuffer BeginSingleTimeCommand(CommandBuffer commandBuffer);
+    void EndSingleTimeCommand(CommandBuffer commandBuffer);
 
-    void FlushCommandBuffer(VkCommandBuffer commandBuffer);
+    void FlushCommandBuffer(CommandBuffer commandBuffer);
 
-    void SubmitToGraphicsQueue(VkCommandBuffer commandBuffer);
-    void SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue);
-    void FreeCommandBuffer(VkCommandBuffer commandBuffer);
+    void SubmitToGraphicsQueue(CommandBuffer commandBuffer);
+    void SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue);
+    void FreeCommandBuffer(CommandBuffer commandBuffer);
 
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size);
     void CopyBufferToImage(VkBuffer buffer,

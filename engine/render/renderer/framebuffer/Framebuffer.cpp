@@ -8,9 +8,9 @@
 
 #include "Framebuffer.h"
 
-#include "render/renderer/platform/vulkan/Context.h"
-
 #include <utils/Logging.h>
+
+#include "render/renderer/platform/vulkan/Context.h"
 
 namespace Siege
 {

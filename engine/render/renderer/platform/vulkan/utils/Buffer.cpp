@@ -8,6 +8,8 @@
 
 #include "Buffer.h"
 
+#include "../Context.h"
+
 namespace Siege::Vulkan::Utils
 {
 VkBufferCopy Buffer::CopyRegion(VkDeviceSize size, VkDeviceSize srcOffset, VkDeviceSize dstOffset)

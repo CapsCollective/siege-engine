@@ -94,7 +94,7 @@ public:
 
 private:
 
-    static inline Renderer* instance {nullptr};
+    static Renderer* instance;
     static Utils::MHArray<VkCommandBuffer> commandBuffers;
 
     Vulkan::Context context;

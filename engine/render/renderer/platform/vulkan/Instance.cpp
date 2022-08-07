@@ -1,19 +1,18 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #include "Instance.h"
-#include "Config.h"
-#include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
-#include "utils/Instance.h"
 
 #include <utils/Logging.h>
+
 #include <unordered_set>
 
+#include "Config.h"
 #include "render/renderer/platform/vulkan/utils/DebugUtilsMessenger.h"
 #include "utils/Instance.h"
 
@@ -22,7 +21,7 @@
 #ifdef __APPLE__
 #define REQUIRES_PORTABILITY_EXTENSION 1
 
-#define GET_MACOS_REQUIRED_EXTENSIONS(collection)                         \
+#define GET_MACOS_REQUIRED_EXTENSIONS(collection)                                              \
     collection = Siege::Utils::MHArray<const char*>(collection.Data(), collection.Size() + 1); \
     collection[collection.Size() - 1] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #else
@@ -30,22 +29,26 @@
 #define GET_MACOS_REQUIRED_EXTENSIONS(...)
 #endif
 
-
 #if ENABLE_VALIDATION_LAYERS == 1
 
 #define ASSERT_LAYERS_EXIST(func) CC_ASSERT(func(), "Validation Layers are not supported!")
 
 #define SETUP_UTILS_MESSENGER SetupDebugMessenger();
 
-#define DEBUG_EXTENSIONS(name, extensions)                                              \
-    name = Siege::Utils::MHArray<const char*>(extensions.Data(), extensions.Size() + 1);       \
-    name[name.Size()-1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+#define DEBUG_EXTENSIONS(name, extensions)                                               \
+    name = Siege::Utils::MHArray<const char*>(extensions.Data(), extensions.Size() + 1); \
+    name[name.Size() - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
-#define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags)  \
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                         \
-                                                                                                \
-    CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                     \
-    instance = VulkanInstance::CreateInstance(appInfo, extensionCount, extensions, layerCount, layers, &debugCreateInfo)
+#define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags) \
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;                                        \
+                                                                                               \
+    CREATE_DEBUG_MESSENGER(debugCreateInfo)                                                    \
+    instance = VulkanInstance::CreateInstance(appInfo,                                         \
+                                              extensionCount,                                  \
+                                              extensions,                                      \
+                                              layerCount,                                      \
+                                              layers,                                          \
+                                              &debugCreateInfo)
 #else
 
 #define ASSERT_LAYERS_EXIST(...)
@@ -53,19 +56,17 @@
 #define SETUP_UTILS_MESSENGER
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags) \
-    instance = VulkanInstance::CreateInstance(appInfo, extensionCount, extensions, layerCount, layers)
+    instance =                                                                                 \
+        VulkanInstance::CreateInstance(appInfo, extensionCount, extensions, layerCount, layers)
 #endif
 
 namespace Siege::Vulkan
 {
-Instance::Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-                   GetWindowSurfaceCallBack windowSurfaceCallback)
+Instance::Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback)
 {
     CreateInstance(surfaceExtensionsCallback());
 
     SETUP_UTILS_MESSENGER
-
-    CC_ASSERT(windowSurfaceCallback(instance, &windowSurface), "Unable to create window surface!")
 }
 
 Instance::Instance(Instance&& other)
@@ -75,14 +76,13 @@ Instance::Instance(Instance&& other)
 
 Instance::~Instance()
 {
-    if (!instance && !windowSurface && !debugMessenger) return;
+    if (!instance && !debugMessenger) return;
 
     if (instance) DestroyDependentObjects();
 
     vkDestroyInstance(instance, nullptr);
 
     instance = VK_NULL_HANDLE;
-    windowSurface = VK_NULL_HANDLE;
     debugMessenger = VK_NULL_HANDLE;
 
     CC_LOG_INFO("Vulkan Instance has been destroyed.")
@@ -124,11 +124,9 @@ void Instance::CreateInstance(const Siege::Utils::MHArray<const char*>& required
 void Instance::Move(Instance& other)
 {
     instance = other.instance;
-    windowSurface = other.windowSurface;
     debugMessenger = other.debugMessenger;
 
     other.instance = VK_NULL_HANDLE;
-    other.windowSurface = VK_NULL_HANDLE;
     other.debugMessenger = VK_NULL_HANDLE;
 }
 
@@ -171,7 +169,8 @@ bool Instance::ValidateLayersExist()
     return true;
 }
 
-void Instance::CheckInstanceExtensionsExist(const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions)
+void Instance::CheckInstanceExtensionsExist(
+    const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions)
 {
     auto extensions = VulkanInstance::GetInstanceExtensionProperties();
 
@@ -202,6 +201,5 @@ void Instance::CheckInstanceExtensionsExist(const Siege::Utils::MHArray<const ch
 void Instance::DestroyDependentObjects()
 {
     DESTROY_DEBUG_MESSENGER(debugMessenger)
-    vkDestroySurfaceKHR(instance, windowSurface, nullptr);
 }
 } // namespace Siege::Vulkan

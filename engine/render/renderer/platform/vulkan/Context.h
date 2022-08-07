@@ -19,20 +19,14 @@ class Context
 {
 public:
 
+    typedef bool (*getSurfaceCallback)(VkInstance, Surface*);
+    typedef getSurfaceCallback GetWindowSurfaceCallBack;
+
     Context() = default;
     ~Context();
 
     void Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-              Instance::GetWindowSurfaceCallBack windowSurfaceCallback);
-
-    static inline Instance& GetInstance()
-    {
-        return vulkanInstance;
-    }
-    static inline VkInstance GetVkInstance()
-    {
-        return vulkanInstance.GetInstance();
-    }
+              GetWindowSurfaceCallBack windowSurfaceCallback);
 
     static Context& Get();
 
@@ -45,13 +39,14 @@ public:
         return &Get().physicalDevice;
     }
 
+    static Surface GetSurface()
+    {
+        return Get().surface;
+    }
+
     static VkDevice GetVkLogicalDevice()
     {
         return Get().logicalDevice.GetDevice();
-    }
-    static VkPhysicalDevice GetVkPhysicalDevice()
-    {
-        return Get().physicalDevice.GetDevice();
     }
 
 private:
@@ -59,6 +54,7 @@ private:
     static inline Instance vulkanInstance;
 
     PhysicalDevice physicalDevice;
+    Surface surface;
     LogicalDevice logicalDevice;
 };
 } // namespace Siege::Vulkan

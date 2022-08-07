@@ -230,8 +230,9 @@ VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevi
     return capabilities;
 }
 
-Siege::Utils::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(VkPhysicalDevice device,
-                                                              VkSurfaceKHR surface)
+Siege::Utils::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface)
 {
     uint32_t formatCount = GetSurfaceFormatCount(device, surface);
 
@@ -243,7 +244,7 @@ Siege::Utils::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(Vk
 }
 
 Siege::Utils::MHArray<VkPresentModeKHR> Device::Physical::GetPresentModes(VkPhysicalDevice device,
-                                                          VkSurfaceKHR surface)
+                                                                          VkSurfaceKHR surface)
 {
     uint32_t presentModeCount = Vulkan::Device::Physical::GetPresentModeCount(device, surface);
 
@@ -254,7 +255,9 @@ Siege::Utils::MHArray<VkPresentModeKHR> Device::Physical::GetPresentModes(VkPhys
     return modes;
 }
 
-uint32_t Device::Physical::FindMemoryType(VkPhysicalDevice device, uint32_t typeFilter, VkMemoryPropertyFlags flags)
+uint32_t Device::Physical::FindMemoryType(VkPhysicalDevice device,
+                                          uint32_t typeFilter,
+                                          VkMemoryPropertyFlags flags)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(device, &memProperties);
@@ -280,14 +283,14 @@ VkFormat Device::Physical::FindSupportedFormat(VkPhysicalDevice device,
     {
         VkFormat format = candidates[i];
 
-        VkFormatProperties props =
-            Vulkan::Device::Physical::GetProperties(device, format);
+        VkFormatProperties props = Vulkan::Device::Physical::GetProperties(device, format);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
         {
             return format;
         }
-        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
+                 (props.optimalTilingFeatures & features) == features)
         {
             return format;
         }

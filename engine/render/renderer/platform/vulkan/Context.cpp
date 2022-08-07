@@ -18,19 +18,23 @@ namespace Siege::Vulkan
 Context::~Context()
 {
     logicalDevice.~LogicalDevice();
+    vkDestroySurfaceKHR(vulkanInstance.GetInstance(), surface, nullptr);
     vulkanInstance.~Instance();
 }
 
 void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-                   Instance::GetWindowSurfaceCallBack windowSurfaceCallback)
+                   GetWindowSurfaceCallBack windowSurfaceCallback)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
-    vulkanInstance = Instance(surfaceExtensionsCallback, windowSurfaceCallback);
+    vulkanInstance = Instance(surfaceExtensionsCallback);
 
-    physicalDevice = PhysicalDevice(vulkanInstance);
+    CC_ASSERT(windowSurfaceCallback(vulkanInstance.GetInstance(), &surface),
+              "Unable to create window surface!")
 
-    logicalDevice = LogicalDevice(vulkanInstance, physicalDevice);
+    physicalDevice = PhysicalDevice(surface, vulkanInstance);
+
+    logicalDevice = LogicalDevice(surface, physicalDevice);
 }
 
 Context& Context::Get()

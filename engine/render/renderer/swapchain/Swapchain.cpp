@@ -8,11 +8,11 @@
 
 #include "Swapchain.h"
 
-#include "render/renderer/platform/vulkan/Context.h"
-#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
-#include "render/renderer/platform/vulkan/utils/Device.h"
-
 #include <utils/Logging.h>
+
+#include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/utils/Device.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
 
 namespace Siege
 {
@@ -105,15 +105,15 @@ void SwapChain::Init()
 void SwapChain::CreateSwapChain()
 {
     auto physicalDevice = Vulkan::Context::GetPhysicalDevice();
-    auto surface = Vulkan::Context::GetInstance().GetSurface();
+    auto surface = Vulkan::Context::GetSurface();
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
     // Get our swapchain details
-    auto formats = Vulkan::Device::Physical::GetSurfaceFormats(physicalDevice->GetDevice(),
-                                                               surface);
+    auto formats =
+        Vulkan::Device::Physical::GetSurfaceFormats(physicalDevice->GetDevice(), surface);
 
-    auto presentModes = Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(),
-                                                                  surface);
+    auto presentModes =
+        Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(), surface);
 
     auto capabilities =
         Vulkan::Device::Physical::GetSurfaceCapabilities(physicalDevice->GetDevice(), surface);
@@ -145,7 +145,7 @@ void SwapChain::CreateSwapChain()
     // Now we populate the base swapchain creation struct
     VkSwapchainCreateInfoKHR createInfo {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = Vulkan::Context::GetInstance().GetSurface();
+    createInfo.surface = Vulkan::Context::GetSurface();
 
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
@@ -195,8 +195,7 @@ void SwapChain::CreateSwapChain()
     swapChainExtent = extent;
 }
 
-void SwapChain::CreateImageViews()
-{}
+void SwapChain::CreateImageViews() {}
 
 void SwapChain::CreateRenderPass()
 {
@@ -230,7 +229,8 @@ void SwapChain::CreateDepthResources()
     VkExtent2D extent = GetSwapChainExtent();
 
     // Initialise our depth image information.
-    depthImages = FrameImages({extent.width, extent.height, 1}, Vulkan::Utils::ToImageFormat(swapChainDepthFormat));
+    depthImages = FrameImages({extent.width, extent.height, 1},
+                              Vulkan::Utils::ToImageFormat(swapChainDepthFormat));
 }
 
 void SwapChain::CreateFrameBuffers()
