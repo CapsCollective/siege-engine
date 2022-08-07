@@ -186,59 +186,7 @@ void LogicalDevice::FreeCommandBuffer(VkCommandBuffer commandBuffer)
     vkFreeCommandBuffers(device, GetCommandPool(), 1, OUT & commandBuffer);
 }
 
-void LogicalDevice::AllocateImageMemory(VkImage& image,
-                                        VkDeviceMemory& imageMemory,
-                                        VkMemoryPropertyFlags targetProperties)
-{
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(device, image, OUT & memRequirements);
-
-    AllocateMemory(memRequirements, imageMemory, targetProperties);
-}
-
-void LogicalDevice::AllocateMemory(VkMemoryRequirements& memRequirements,
-                                   VkDeviceMemory& memory,
-                                   VkMemoryPropertyFlags targetProperties)
-{
-    VkMemoryAllocateInfo allocInfo
-    {
-        VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-        nullptr,
-        memRequirements.size,
-        Device::Physical::FindMemoryType(physicalDevice->GetDevice(),
-                                         memRequirements.memoryTypeBits,
-                                         targetProperties)
-    };
-
-    CC_ASSERT(vkAllocateMemory(device, &allocInfo, nullptr, OUT & memory) == VK_SUCCESS,
-              "Failed to allocate image memory!")
-}
-
-void LogicalDevice::CreateImage(const VkImageCreateInfo& createInfo, VkImage& image)
-{
-    CC_ASSERT(vkCreateImage(device, &createInfo, nullptr, OUT & image) == VK_SUCCESS,
-              "Failed to create FrameImages!")
-}
-
-void LogicalDevice::BindImageMemory(VkImage& image,
-                                    VkDeviceMemory& imageMemory,
-                                    const VkDeviceSize& offset)
-{
-    CC_ASSERT(vkBindImageMemory(device, OUT image, imageMemory, offset) == VK_SUCCESS,
-              "Failed to bind image memory!")
-}
-
-void LogicalDevice::CreateImageWithInfo(const VkImageCreateInfo& createInfo,
-                                        VkImage& image,
-                                        VkDeviceMemory& imageMemory,
-                                        VkMemoryPropertyFlags targetProperties)
-{
-    CreateImage(createInfo, image);
-    AllocateImageMemory(image, imageMemory, targetProperties);
-    BindImageMemory(image, imageMemory);
-}
-
-void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size)
 {
     auto commandBuffer = BeginSingleTimeCommand(GetCommandBuffer());
 

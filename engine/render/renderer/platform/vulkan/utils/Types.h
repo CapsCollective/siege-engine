@@ -13,6 +13,7 @@
 #include <cstdio>
 
 // --------------------------- Pointer Type Forward Declarations ----------------------------------
+//VkBuffer <-- pointers
 
 struct VkInstance_T;
 struct VkPhysicalDevice_T;
@@ -21,6 +22,12 @@ struct VkDebugUtilsMessengerEXT_T;
 struct VkImage_T;
 struct VkDeviceMemory_T;
 struct VkImageView_T;
+struct VkDevice_T;
+struct VkQueue_T;
+struct VkCommandPool_T;
+struct VkCommandBuffer_T;
+struct VkDeviceMemory_T;
+struct VkBuffer_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* VkSurfaceKHR;
@@ -29,6 +36,12 @@ typedef VkDebugUtilsMessengerEXT_T* VkDebugUtilsMessengerEXT;
 typedef VkImage_T* VkImage;
 typedef VkDeviceMemory_T* VkDeviceMemory;
 typedef VkImageView_T* VkImageView;
+typedef VkDevice_T* VkDevice;
+typedef VkQueue_T* VkQueue;
+typedef VkCommandPool_T* VkCommandPool;
+typedef VkCommandBuffer_T* VkCommandBuffer;
+typedef VkDeviceMemory_T* VkDeviceMemory;
+typedef VkBuffer_T* VkBuffer;
 
 namespace Siege::Vulkan::Utils
 {
@@ -51,6 +64,7 @@ enum ImageFormat
     RED8UI = 13,
     RG8 = 16,
     RGBA = 44,
+    BGRA = 50,
     RED16UI = 74,
     RG16F = 83,
     RED32UI = 98,

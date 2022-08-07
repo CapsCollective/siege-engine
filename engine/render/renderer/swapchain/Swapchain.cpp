@@ -41,7 +41,7 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    swapchainImages.DestroyFrameImages();
+    uint32_t imageCount = FrameImages::GetImageCount();
 
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -52,14 +52,17 @@ void SwapChain::ClearSwapChain(bool isRecreated)
         swapChain = nullptr;
     }
 
-    depthImages.DestroyFrameImages();
-
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
         vkDestroyFence(device, inFlightFences[i], nullptr);
     }
+}
+
+VkFormat SwapChain::GetSwapChainImageFormat()
+{
+    return Vulkan::Utils::ToVkFormat(swapchainImages.GetFormat());
 }
 
 void SwapChain::ClearMemory()
@@ -185,23 +188,15 @@ void SwapChain::CreateSwapChain()
     CC_ASSERT(vkCreateSwapchainKHR(device, &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
               "Failed to create Swapchain!");
 
-    swapchainImages = FrameImages(surfaceFormat.format);
-
-    // Once the swapchain has been created, get the number of images supported.
-    vkGetSwapchainImagesKHR(device, swapChain, OUT & imageCount, nullptr);
-
-    FrameImages::SetImageCount(imageCount);
-    Framebuffer::SetImageCount(imageCount);
-
-    vkGetSwapchainImagesKHR(device, swapChain, &imageCount, OUT swapchainImages.GetImages());
+    swapchainImages = FrameImages(swapChain,
+                                  {extent.width, extent.height, 1},
+                                  Vulkan::Utils::ToImageFormat(surfaceFormat.format));
 
     swapChainExtent = extent;
 }
 
 void SwapChain::CreateImageViews()
-{
-    swapchainImages.InitColorImageView2D();
-}
+{}
 
 void SwapChain::CreateRenderPass()
 {
@@ -235,14 +230,14 @@ void SwapChain::CreateDepthResources()
     VkExtent2D extent = GetSwapChainExtent();
 
     // Initialise our depth image information.
-    depthImages = FrameImages(swapChainDepthFormat);
-
-    depthImages.InitDepthImageView2D(extent.width, extent.height, 1);
+    depthImages = FrameImages({extent.width, extent.height, 1}, Vulkan::Utils::ToImageFormat(swapChainDepthFormat));
 }
 
 void SwapChain::CreateFrameBuffers()
 {
     VkExtent2D extent = GetSwapChainExtent();
+
+    Framebuffer::SetImageCount(FrameImages::GetImageCount());
 
     // Create a set of frame buffers to begin with.
     framebuffers = Framebuffer(Framebuffer::Config()

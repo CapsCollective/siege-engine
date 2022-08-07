@@ -211,6 +211,8 @@ public:
 
 private:
 
+    void Swap(Framebuffer& other);
+
     // A static count of allowed images.
     static uint32_t IMAGE_COUNT;
     Utils::MHArray<VkFramebuffer> framebuffers;

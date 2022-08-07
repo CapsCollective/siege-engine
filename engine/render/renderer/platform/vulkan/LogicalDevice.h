@@ -9,8 +9,6 @@
 #ifndef SIEGE_ENGINE_LOGICALDEVICE_H
 #define SIEGE_ENGINE_LOGICALDEVICE_H
 
-#include <volk/volk.h>
-
 #include "PhysicalDevice.h"
 
 namespace Siege::Vulkan
@@ -56,26 +54,7 @@ public:
     void SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue);
     void FreeCommandBuffer(VkCommandBuffer commandBuffer);
 
-    void AllocateImageMemory(VkImage& image,
-                             VkDeviceMemory& imageMemory,
-                             VkMemoryPropertyFlags targetProperties);
-
-    void AllocateMemory(VkMemoryRequirements& memRequirements,
-                        VkDeviceMemory& memory,
-                        VkMemoryPropertyFlags targetProperties);
-
-    void CreateImage(const VkImageCreateInfo& createInfo, VkImage& image);
-    void BindImageMemory(VkImage& image,
-                         VkDeviceMemory& imageMemory,
-                         const VkDeviceSize& offset = 0);
-
-    void CreateImageWithInfo(
-        const VkImageCreateInfo& createInfo,
-        VkImage& image,
-        VkDeviceMemory& imageMemory,
-        VkMemoryPropertyFlags targetProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size);
     void CopyBufferToImage(VkBuffer buffer,
                            VkImage image,
                            uint32_t width,
@@ -86,16 +65,12 @@ private:
 
     void Move(LogicalDevice& other);
 
-    // TODO: Replace the following:
-    // VkDevice, VkQueue, VkCommandPool, VkCommandBuffer, VkDeviceMemory, VkBuffer <-- pointers
-    // VkImageCreateInfo, VkDeviceSize <-- structs
-
     VkDevice device;
 
     PhysicalDevice* physicalDevice;
 
-    VkQueue graphicsQueue {VK_NULL_HANDLE};
-    VkQueue presentQueue {VK_NULL_HANDLE};
+    VkQueue graphicsQueue {nullptr};
+    VkQueue presentQueue {nullptr};
 
     VkCommandPool commandPool;
 };

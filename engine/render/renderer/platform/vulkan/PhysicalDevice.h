@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_PHYSICALDEVICE_H
 
 #include "Instance.h"
-#include "utils/Types.h"
 
 namespace Siege::Vulkan
 {

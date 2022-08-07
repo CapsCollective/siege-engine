@@ -29,16 +29,25 @@ public:
 
     Image() = default;
     Image(const Config& config);
+    Image(VkImage swapchainImage, const Config& config);
     Image(Image&& other);
     ~Image();
 
     Image& operator=(Image&& other);
 
-    VkImage GetImage() { return image; }
-    VkDeviceMemory GetMemory() { return memory; }
+    VkImage& GetImage() { return image; }
+    VkDeviceMemory& GetMemory() { return memory; }
     VkImageView GetView() { return imageView; }
 
+    const VkImage& GetImage() const { return image; }
+    const VkDeviceMemory& GetMemory() const { return memory; }
+    const VkImageView GetView() const { return imageView; }
+
+    void Free();
+    void Invalidate();
+
     bool IsValid();
+    bool HasInfo();
 
 private:
     void Move(Image& other);

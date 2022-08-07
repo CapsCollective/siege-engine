@@ -10,6 +10,7 @@
 
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/Image.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
 
 namespace Siege
 {
@@ -17,72 +18,83 @@ uint32_t FrameImages::imageCount = 0;
 
 FrameImages::FrameImages() = default;
 
-FrameImages::FrameImages(VkFormat format) : imageFormat {format} {}
+FrameImages::FrameImages(Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format)
+    : imageFormat {format}
+{
+    Siege::Vulkan::Image::Config config =
+    {
+        imageFormat,
+        imageExtent,
+        Vulkan::Utils::USAGE_ATTACHMENT,
+        1,
+        1
+    };
+
+    for (size_t i = 0; i < GetImageCount(); i++) vkImages[i] = Vulkan::Image(config);
+}
+
+FrameImages::FrameImages(FrameImages&& other)
+{
+    Move(other);
+}
+
+FrameImages::FrameImages(VkSwapchainKHR swapchain, Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format)
+    : FrameImages(imageExtent, format)
+{
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+
+    vkGetSwapchainImagesKHR(device, swapchain, OUT & imageCount, nullptr);
+
+    FrameImages::SetImageCount(imageCount);
+
+    VkImage swapchainImages[imageCount];
+
+    vkGetSwapchainImagesKHR(device, swapchain, &imageCount, OUT swapchainImages);
+
+    Siege::Vulkan::Image::Config config =
+    {
+        imageFormat,
+        imageExtent,
+        Vulkan::Utils::USAGE_ATTACHMENT,
+        1,
+        1
+    };
+
+    for (size_t i = 0; i < imageCount; i++) vkImages[i] = Vulkan::Image(swapchainImages[i], config);
+}
 
 FrameImages::~FrameImages() = default;
+
+FrameImages& FrameImages::operator=(FrameImages&& other)
+{
+    Move(other);
+    return *this;
+}
 
 void FrameImages::InitDepthImageView2D(uint32_t imageWidth,
                                        uint32_t imageHeight,
                                        uint32_t imageDepth)
 {
-    auto device = Vulkan::Context::GetCurrentDevice();
-    for (size_t i = 0; i < GetImageCount(); i++)
+    Siege::Vulkan::Image::Config config =
     {
-        VkImageCreateInfo imageInfo =
-            Image::CreateImageCreateInfo(VK_IMAGE_TYPE_2D,
-                                         imageFormat,
-                                         imageWidth,
-                                         imageHeight,
-                                         imageDepth,
-                                         1,
-                                         1,
-                                         VK_SAMPLE_COUNT_1_BIT,
-                                         VK_IMAGE_TILING_OPTIMAL,
-                                         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                                         VK_SHARING_MODE_EXCLUSIVE);
+        imageFormat,
+        {imageWidth, imageHeight, imageDepth},
+        Vulkan::Utils::USAGE_ATTACHMENT,
+        1,
+        1
+    };
 
-        // Create the depth images using the device
-        device->CreateImageWithInfo(imageInfo, OUT images[i], OUT imageMemorys[i]);
+    for (size_t i = 0; i < GetImageCount(); i++) vkImages[i] = Vulkan::Image(config);
 
-        // Set up the view image creation struct
-        imageViews[i] = Image::CreateImageView(device->GetDevice(),
-                                               images[i],
-                                               VK_IMAGE_VIEW_TYPE_2D,
-                                               imageFormat,
-                                               {},
-                                               {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1});
-    }
-
-    hasInfo = true;
 }
 
-void FrameImages::InitColorImageView2D()
+void FrameImages::Move(FrameImages& other)
 {
-    auto device = Vulkan::Context::GetVkLogicalDevice();
-    for (size_t i = 0; i < GetImageCount(); i++)
-    {
-        SetImageView(Image::CreateImageView(device,
-                                            GetImage(i),
-                                            VK_IMAGE_VIEW_TYPE_2D,
-                                            imageFormat,
-                                            {},
-                                            {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}),
-                     i);
-    }
-}
+    imageFormat = other.imageFormat;
 
-void FrameImages::DestroyFrameImages()
-{
-    auto device = Vulkan::Context::GetVkLogicalDevice();
-    for (size_t i = 0; i < GetImageCount(); i++)
+    for (size_t i = 0; i < imageCount; i++)
     {
-        vkDestroyImageView(device, imageViews[i], nullptr);
-
-        if (hasInfo)
-        {
-            vkDestroyImage(device, images[i], nullptr);
-            vkFreeMemory(device, imageMemorys[i], nullptr);
-        }
+        vkImages[i] = std::move(other.vkImages[i]);
     }
 }
 } // namespace Siege

@@ -75,6 +75,8 @@ Instance::Instance(Instance&& other)
 
 Instance::~Instance()
 {
+    if (!instance && !windowSurface && !debugMessenger) return;
+
     if (instance) DestroyDependentObjects();
 
     vkDestroyInstance(instance, nullptr);

@@ -19,6 +19,7 @@ namespace Siege::Vulkan
 Image::Image(const Config& config)
 {
     VkImageUsageFlags usage = 0;
+
     bool isDepthFormat = IsDepthFormat(config.imageFormat);
     auto device = Context::GetCurrentDevice()->GetDevice();
     auto physicalDevice = Context::GetPhysicalDevice()->GetDevice();
@@ -98,6 +99,33 @@ Image::Image(const Config& config)
               "Failed to create texture image view!")
 }
 
+Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}
+{
+    bool isDepthFormat = IsDepthFormat(config.imageFormat);
+    auto device = Context::GetCurrentDevice()->GetDevice();
+
+    VkImageAspectFlags aspectMask = (isDepthFormat * VK_IMAGE_ASPECT_DEPTH_BIT) +
+                                    ((!isDepthFormat * VK_IMAGE_ASPECT_COLOR_BIT));
+
+    aspectMask |= ((config.imageFormat == Utils::DEPTH24STENCIL8) * VK_IMAGE_ASPECT_STENCIL_BIT);
+
+    VkImageViewCreateInfo viewCreateInfo =
+        {
+            VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            nullptr,
+            0,
+            image,
+            static_cast<VkImageViewType>(((config.layers > 1) * VK_IMAGE_VIEW_TYPE_2D_ARRAY) +
+                                         ((config.layers == 1) * VK_IMAGE_VIEW_TYPE_2D)),
+            Utils::ToVkFormat(config.imageFormat),
+            {},
+            {aspectMask, 0, config.mipLevels, 0, config.layers}
+        };
+
+    CC_ASSERT(vkCreateImageView(device, &viewCreateInfo, nullptr, OUT & imageView) == VK_SUCCESS,
+              "Failed to create texture image view!")
+}
+
 Image::Image(Image&& other)
 {
     Move(other);
@@ -105,21 +133,45 @@ Image::Image(Image&& other)
 
 Image::~Image()
 {
+    if (!IsValid() && !image) return;
+
+    CC_LOG_INFO("Destroying Image")
+    Free();
+}
+
+Image& Image::operator=(Image&& other)
+{
+    if (imageView) Free();
+
+    Move(other);
+    return *this;
+}
+
+void Image::Free()
+{
     auto device = Context::GetCurrentDevice()->GetDevice();
 
     vkDestroyImageView(device, imageView, nullptr);
-    vkDestroyImage(device, image, nullptr);
-    vkFreeMemory(device, memory, nullptr);
 
+    if (HasInfo())
+    {
+        vkDestroyImage(device, image, nullptr);
+        vkFreeMemory(device, memory, nullptr);
+    }
+
+    Invalidate();
+}
+
+void Image::Invalidate()
+{
     image = nullptr;
     imageView = nullptr;
     memory = nullptr;
 }
 
-Image& Image::operator=(Image&& other)
+bool Image::HasInfo()
 {
-    Move(other);
-    return *this;
+    return memory;
 }
 
 bool Image::IsValid()

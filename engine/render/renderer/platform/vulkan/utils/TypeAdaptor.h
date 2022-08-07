@@ -12,6 +12,7 @@
 #include <volk/volk.h>
 
 #include "Types.h"
+#include "../Context.h"
 
 #define DECL_CONVERSION_FUN(to, from, ...)      \
     inline constexpr to To##to(const from& val) \
@@ -66,6 +67,7 @@ DECL_VULKAN_SWITCH_FUN(VkFormat,
                        SWITCH_MEM(ImageFormat, RG16F, VK_FORMAT_R16G16_SFLOAT)
                        SWITCH_MEM(ImageFormat, RG32F, VK_FORMAT_R32G32_SFLOAT)
                        SWITCH_MEM(ImageFormat, RGBA, VK_FORMAT_R8G8B8A8_UNORM)
+                       SWITCH_MEM(ImageFormat, BGRA, VK_FORMAT_B8G8R8A8_SRGB)
                        SWITCH_MEM(ImageFormat, RGBA16F, VK_FORMAT_R16G16B16A16_SFLOAT)
                        SWITCH_MEM(ImageFormat, RGBA32F, VK_FORMAT_R32G32B32A32_SFLOAT)
                        SWITCH_MEM(ImageFormat, B10R11G11UF, VK_FORMAT_B10G11R11_UFLOAT_PACK32)
@@ -73,7 +75,24 @@ DECL_VULKAN_SWITCH_FUN(VkFormat,
                        SWITCH_MEM(ImageFormat, DEPTH24STENCIL8, VK_FORMAT_R32G32_SFLOAT)
                        SWITCH_DEFAULT(VK_FORMAT_UNDEFINED))
 
-//DECL_CONVERSION_FUN(VkFormat, ImageFormat, VulkanImageFormat(val))
+DECL_VULKAN_SWITCH_FUN(ImageFormat,
+                       VkFormat ,
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R8_UNORM, RED8UN)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R8_UINT, RED8UI)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R16_UINT, RED16UI)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32_UINT, RED32UI)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32_SFLOAT, RED32F)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R8G8_UNORM, RG8)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R16G16_SFLOAT, RG16F)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, RG32F)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R8G8B8A8_UNORM, RGBA)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_B8G8R8A8_SRGB, BGRA)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R16G16B16A16_SFLOAT, RGBA16F)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32A32_SFLOAT, RGBA32F)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_B10G11R11_UFLOAT_PACK32, B10R11G11UF)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_D32_SFLOAT_S8_UINT, DEPTH32FSTENCIL8UINT)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_D24_UNORM_S8_UINT, DEPTH24STENCIL8)
+                       SWITCH_DEFAULT(NONE))
 
 //----------------------------------------- Structs -----------------------------------------------
 

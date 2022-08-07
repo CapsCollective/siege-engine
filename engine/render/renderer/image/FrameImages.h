@@ -22,48 +22,33 @@ public:
     static constexpr uint32_t MAX_IMAGES = 5;
 
     FrameImages();
-    FrameImages(VkFormat format);
+    FrameImages(Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format);
+    FrameImages(VkSwapchainKHR swapchain, Vulkan::Utils::Extent3D imageExtent, Vulkan::Utils::ImageFormat format);
+    FrameImages(FrameImages&& other);
     ~FrameImages();
 
-    void InitColorImageView2D();
+    FrameImages& operator=(FrameImages&& other);
+
     void InitDepthImageView2D(uint32_t imageWidth, uint32_t imageHeight, uint32_t imageDepth);
 
-    void DestroyFrameImages();
-
-    void SetFormat(VkFormat format)
-    {
-        imageFormat = format;
-    }
-    void SetImageView(VkImageView imageView, size_t index)
-    {
-        imageViews[index] = imageView;
-    }
-
-    VkFormat GetFormat()
+    Vulkan::Utils::ImageFormat GetFormat()
     {
         return imageFormat;
     }
 
-    VkImage* GetImages()
+    Vulkan::Image& GetVkImage(size_t index)
     {
-        return images;
-    }
-    VkImageView* GetImageViews()
-    {
-        return imageViews;
-    }
-    VkDeviceMemory* GetImageMemorys()
-    {
-        return imageMemorys;
+        return vkImages[index];
     }
 
-    VkImage GetImage(size_t index) const
+    const Vulkan::Utils::ImageFormat GetFormat() const
     {
-        return images[index];
+        return imageFormat;
     }
-    VkImageView GetImageView(size_t index) const
+
+    const Vulkan::Image& GetVkImage(size_t index) const
     {
-        return imageViews[index];
+        return vkImages[index];
     }
 
     static void SetImageCount(uint32_t count)
@@ -77,13 +62,11 @@ public:
 
 private:
 
-    VkImage images[MAX_IMAGES] {VK_NULL_HANDLE};
-    VkImageView imageViews[MAX_IMAGES] {VK_NULL_HANDLE};
-    VkDeviceMemory imageMemorys[MAX_IMAGES] {VK_NULL_HANDLE};
+    void Move(FrameImages& other);
 
-    VkFormat imageFormat {VK_FORMAT_UNDEFINED};
+    Vulkan::Image vkImages[MAX_IMAGES];
 
-    bool hasInfo {false};
+    Vulkan::Utils::ImageFormat imageFormat {Vulkan::Utils::NONE};
 
     static uint32_t imageCount;
 };

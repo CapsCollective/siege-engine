@@ -38,8 +38,8 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
     {
         VkImageView attachments[config.GetAttachmentCount()];
 
-        if (colorAttachments != nullptr) attachments[0] = colorAttachments->GetImageView(i);
-        if (depthAttachments != nullptr) attachments[1] = depthAttachments->GetImageView(i);
+        if (colorAttachments != nullptr) attachments[0] = colorAttachments->GetVkImage(i).GetView();
+        if (depthAttachments != nullptr) attachments[1] = depthAttachments->GetVkImage(i).GetView();
 
         VkFramebufferCreateInfo frameBufferInfo {};
         frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -58,10 +58,7 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 {
-    if (framebuffers.Size() > 0) DestroyFramebuffer(Vulkan::Context::GetVkLogicalDevice());
-
-    framebuffers = std::move(other.framebuffers);
-
+    Swap(other);
     return *this;
 }
 
@@ -105,6 +102,15 @@ Framebuffer::Config& Framebuffer::Config::WithColorAttachments(FrameImages* targ
     colorAttachments = targetAttachments;
     attachmentCount += 1;
     return *this;
+}
+
+void Framebuffer::Swap(Framebuffer& other)
+{
+    auto tmpFrameBuffers = framebuffers;
+
+    framebuffers = other.framebuffers;
+
+    other.framebuffers = tmpFrameBuffers;
 }
 
 } // namespace Siege

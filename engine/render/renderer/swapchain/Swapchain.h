@@ -71,10 +71,7 @@ public:
      *
      * @return VkFormat the format being used by the renderer.
      */
-    VkFormat GetSwapChainImageFormat()
-    {
-        return swapchainImages.GetFormat();
-    }
+    VkFormat GetSwapChainImageFormat();
 
     /**
      * @brief Returns the image width and height that images are being rendered to.
