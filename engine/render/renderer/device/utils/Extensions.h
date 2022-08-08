@@ -21,7 +21,7 @@ namespace Siege::Extensions
  * Searches for available validation layers and checks that all required layers exist.
  * Required layers are provided by the user as a char array.
  *
- * @param validationLayers a const char** array containing all required valiation layers.
+ * @param validationLayers a const char** array containing all required validation layers.
  * @param size - the size of the array.
  **/
 bool CheckValidationLayerSupport(const String* validationLayers, size_t size);
