@@ -12,7 +12,8 @@
 #include <cstdint>
 #include <initializer_list>
 #include <utility>
-#include <algorithm>
+
+#include "MArray.h"
 
 namespace Siege::Utils
 {
@@ -31,6 +32,7 @@ template<typename T, size_t S>
 struct SArray
 {
 public:
+
     /**
      * The iterator class for the SArray.
      */
@@ -40,7 +42,7 @@ public:
          * The constructor for the StackArray iterator.
          * @param valuePointer a pointer to location of memory which the iterator is pointing to.
          */
-        explicit Iterator(T* valuePointer) : pointer{valuePointer} {}
+        explicit Iterator(T* valuePointer) : pointer {valuePointer} {}
 
         /**
          * @brief The iterator prefix increment operator. This operator will increment the pointer
@@ -70,50 +72,72 @@ public:
          * @brief The dereference operator.
          * @return the de-referenced pointer value.
          */
-        inline T& operator*() { return *pointer; }
+        inline T& operator*()
+        {
+            return *pointer;
+        }
         /**
          * @brief An equal operator, checks with equality.
          * @param other the other iterator to compare to.
          * @return `true` if the pointers stored by both iterators are the same.
          */
-        inline bool operator==(const Iterator& other) const { return pointer == other.pointer; }
+        inline bool operator==(const Iterator& other) const
+        {
+            return pointer == other.pointer;
+        }
 
         /**
          * @brief A non equality operator. Checks that twio iterators are not equal.
          * @param other the iterator to compare to.
          * @return `true` if the pointer addresses stored by both iterators are not the same.
          */
-        inline bool operator!=(const Iterator& other) const { return pointer != other.pointer; }
+        inline bool operator!=(const Iterator& other) const
+        {
+            return pointer != other.pointer;
+        }
 
         T* pointer;
     };
 
     /**
-     * A const overload to the subscript operator. Retrieves the element stored in the provided index.
+     * A const overload to the subscript operator. Retrieves the element stored in the provided
+     * index.
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline const T& operator[](const size_t& index) const { return Get(index); }
+    constexpr inline const T& operator[](const size_t& index) const
+    {
+        return Get(index);
+    }
     /**
      * An overload to the subscript operator. Retrieves the element stored in the provided index.
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline T& operator[](const size_t& index) { return Get(index); }
+    constexpr inline T& operator[](const size_t& index)
+    {
+        return Get(index);
+    }
 
     /**
      * Checks if a given index is in bounds of the array.
      * @param index the index to check.
      * @return true if the index is in bounds, false if the index is not in bounds.
      */
-    constexpr inline bool IsInBounds(const size_t& index) { return index < S; }
+    constexpr inline bool IsInBounds(const size_t& index)
+    {
+        return index < S;
+    }
 
     /**
      * Checks if a given index is in bounds of the array.
      * @param index the index to check.
      * @return true if the index is in bounds, false if the index is not in bounds.
      */
-    constexpr inline const bool IsInBounds(const size_t& index) const { return index < S; }
+    constexpr inline const bool IsInBounds(const size_t& index) const
+    {
+        return index < S;
+    }
 
     /**
      * Retrieves the element stored in the provided index as a const reference.
@@ -152,46 +176,70 @@ public:
      * Returns the static capacity of the array.
      * @return the static capacity of the array.
      */
-    constexpr inline const size_t Size() const { return S; }
+    constexpr inline const size_t Size() const
+    {
+        return S;
+    }
 
     /**
      * Returns the static capacity of the array.
      * @return the static capacity of the array.
      */
-    constexpr inline size_t Size() { return S; }
+    constexpr inline size_t Size()
+    {
+        return S;
+    }
 
     /**
      * Returns the raw array value as a const value.
      * @return the raw array value.
      */
-    constexpr inline const T* Data() const { return data; }
+    constexpr inline const T* Data() const
+    {
+        return data;
+    }
     /**
      * Returns the raw array value.
      * @return the raw array value.
      */
-    constexpr inline T* Data() { return data; }
+    constexpr inline T* Data()
+    {
+        return data;
+    }
 
     /**
      * Returns an iterator pointing to the start of the array.
      * @return an iterator pointing to the start of the array.
      */
-    constexpr inline Iterator begin() { return Iterator(data); }
+    constexpr inline Iterator begin()
+    {
+        return Iterator(data);
+    }
     /**
      * Returns an iterator pointing to the end of the array.
      * @return an iterator pointing to the end of the array.
      */
-    constexpr inline Iterator end() { return Iterator(data+S); }
+    constexpr inline Iterator end()
+    {
+        return Iterator(data + S);
+    }
 
     /**
      * Returns an iterator pointing to the end of the array.
      * @return an iterator pointing to the end of the array.
      */
-    constexpr inline const Iterator begin() const { return Iterator(data); }
+    constexpr inline const Iterator begin() const
+    {
+        return Iterator(data);
+    }
     /**
      * Returns a const iterator pointing to the end of the array.
      * @return an iterator pointing to the end of the array.
      */
-    constexpr inline const Iterator end() const { return Iterator(data+S); }
+    constexpr inline const Iterator end() const
+    {
+        return Iterator(data + S);
+    }
 
     T data[S];
 };
@@ -216,14 +264,16 @@ template<typename T, size_t S>
 class MSArray
 {
 public:
+
     /**
-     * @brief A base iterator for the Managed Stack Array (MSArray) class. This iterator moves through all active
-     * elements in the array and returns them. As such, all data points not explicitly inserted
-     * into the array will be ignored.
+     * @brief A base iterator for the Managed Stack Array (MSArray) class. This iterator moves
+     * through all active elements in the array and returns them. As such, all data points not
+     * explicitly inserted into the array will be ignored.
      */
     class Iterator
     {
     public:
+
         // TODO(Aryeh): Add more operators as needed (--, ->, etc).
         /**
          * @brief Iterator constructor.
@@ -232,10 +282,10 @@ public:
          * @param newIndex the starting index.
          * @param newSize the array size.
          */
-        explicit Iterator(T* valuePointer,
-                          uint8_t* newMaskPointer,
-                          const size_t& newIndex)
-            : pointer {valuePointer}, maskPointer {newMaskPointer}, index {newIndex}
+        explicit Iterator(T* valuePointer, uint8_t* newMaskPointer, const size_t& newIndex) :
+            pointer {valuePointer},
+            maskPointer {newMaskPointer},
+            index {newIndex}
         {}
 
         /**
@@ -318,36 +368,40 @@ public:
          * @param other the other iterator to compare to.
          * @return `true` if the pointers stored by both iterators are the same.
          */
-        bool operator==(const Iterator& other) const {return pointer == other.pointer;}
+        bool operator==(const Iterator& other) const
+        {
+            return pointer == other.pointer;
+        }
 
         /**
          * @brief A non equality operator. Checks that twio iterators are not equal.
          * @param other the iterator to compare to.
          * @return `true` if the pointer addresses stored by both iterators are not the same.
          */
-        bool operator!=(const Iterator& other) const { return pointer != other.pointer; }
+        bool operator!=(const Iterator& other) const
+        {
+            return pointer != other.pointer;
+        }
 
     private:
+
         T* pointer;
         uint8_t* maskPointer;
         size_t index;
     };
+
     MSArray() = default;
 
-    MSArray(std::initializer_list<T> list) : count{list.size()}
+    MSArray(std::initializer_list<T> list) : MSArray(list.size())
     {
-        CopyData(std::data(list), list.size()); // 0000 1111
-        SetBitsToOne(list.size());
-
-        count = list.size();
+        MArrayUtils::CopyData(data, std::data(list), sizeof(T) * list.size()); // 0000 1111
+        MArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
     }
 
-    MSArray(const T* ptr, const size_t& ptrSize)
+    MSArray(const T* ptr, const size_t& ptrSize) : MSArray(ptrSize)
     {
-        CopyData(ptr, ptrSize);
-        SetBitsToOne(ptrSize);
-
-        count = ptrSize;
+        MArrayUtils::CopyData(data, ptr, sizeof(T) * ptrSize);
+        MArrayUtils::SetBitsToOne(stateMaskBitfield, ptrSize);
     }
 
     MSArray(MSArray& other)
@@ -358,15 +412,19 @@ public:
     MSArray(MSArray&& other)
     {
         Copy(other);
-        other.count = 0;
+        other.Clear();
     }
 
     // Operator Overloads
 
-    inline const T& operator[](const size_t& index) const { return Get(index); }
+    inline const T& operator[](const size_t& index) const
+    {
+        return Get(index);
+    }
 
-    inline T& operator[](const size_t& index) {
-        VerifyIndex(index);
+    inline T& operator[](const size_t& index)
+    {
+        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
         return Get(index);
     }
 
@@ -379,7 +437,7 @@ public:
     inline MSArray& operator=(MSArray&& other)
     {
         Copy(other);
-        other.count = 0;
+        other.Clear();
         return *this;
     }
 
@@ -387,128 +445,109 @@ public:
 
     inline const T& Get(const size_t& index) const
     {
-        AssertIsInBoundsAndActive(index);
+        MArrayUtils::AssertIsInBoundsAndActive(stateMaskBitfield, index, S);
         return data[index];
     }
 
-    inline T& Get(const size_t& index) { return data[index]; }
+    inline T& Get(const size_t& index)
+    {
+        return data[index];
+    }
 
-    inline const T* Data() const { return data; }
-    inline T* Data() { return data; }
-    inline constexpr const size_t Size() const { return S; }
-    inline const size_t Count() const { return count; }
+    inline const T* Data() const
+    {
+        return data;
+    }
+    inline T* Data()
+    {
+        return data;
+    }
+    inline constexpr const size_t Size() const
+    {
+        return S;
+    }
+    inline const size_t Count() const
+    {
+        return count;
+    }
 
     // Setters
 
     inline void Insert(const size_t& index, const T& element)
     {
-        VerifyIndex(index);
+        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
         Set(index, element);
     }
 
-    inline bool IsInBounds(const size_t& index) const { return index < S; }
-    inline bool Empty() const { return count == 0; }
+    inline bool Empty() const
+    {
+        return count == 0;
+    }
 
     inline bool Active(const size_t& index) const
     {
-        auto byteMask = stateMaskBitfield[index / BYTE_SIZE_IN_BITS];
-        return (byteMask & (1 << (index % BYTE_SIZE_IN_BITS))) != 0;
+        return MArrayUtils::Active(stateMaskBitfield, index);
     }
 
     inline void Remove(const size_t& index)
     {
-        AssertIsInBoundsAndActive(index);
-        stateMaskBitfield[index / BYTE_SIZE_IN_BITS] &= ~(1 << (index % BYTE_SIZE_IN_BITS));
+        MArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, S);
         count--;
     }
 
     inline void Clear()
     {
-        memset(stateMaskBitfield, 0, (BYTE_MASK_SIZE * GetBitMaskSize()));
+        MArrayUtils::ResetStateMask(stateMaskBitfield, GetBitMaskSize());
         count = 0;
     }
 
-    inline const Iterator begin() const {return Iterator(data, stateMaskBitfield, 0);}
-    inline const Iterator end() const {return Iterator(data + S, stateMaskBitfield, S);}
-
-    inline Iterator begin() {return Iterator(data, stateMaskBitfield, 0);}
-    inline Iterator end() {return Iterator(data + S, stateMaskBitfield, S);}
-private:
-    // TODO: Move this to a third intermediate file
-    // The number of states we can fit per segment (1 byte = 8 states)
-    static inline constexpr uint8_t BYTE_SIZE_IN_BITS = 8;
-    // The default object size for each segment (1 byte)
-    static inline constexpr uint8_t BYTE_MASK_SIZE = sizeof(uint8_t);
-    // Each position represents a byte where all bits before the index are 1.
-    // i.e: index 2 = 0000 00111
-    static inline constexpr uint8_t MAX_BIT_VALUES[BYTE_SIZE_IN_BITS] = {1, 3, 7, 15, 31, 63, 127, 255};
-
-    constexpr inline size_t GetBitMaskSize() { return (S / BYTE_SIZE_IN_BITS) + 1; }
-
-    inline void Set(const size_t& index, const T& element) { data[index] = element; }
-
-    inline void VerifyIndex(const size_t& index)
+    inline const Iterator begin() const
     {
-        AssertIsInBounds(index);
-        count += !Active(index);
-        stateMaskBitfield[index / BYTE_SIZE_IN_BITS] |= (1 << (index % BYTE_SIZE_IN_BITS));
+        return Iterator(data, stateMaskBitfield, 0);
+    }
+
+    inline const Iterator end() const
+    {
+        return Iterator(data + S, stateMaskBitfield, S);
+    }
+
+    inline Iterator begin()
+    {
+        return Iterator(data, stateMaskBitfield, 0);
+    }
+
+    inline Iterator end()
+    {
+        return Iterator(data + S, stateMaskBitfield, S);
+    }
+
+private:
+
+    MSArray(const size_t& arrSize) : count {arrSize} {}
+
+    constexpr inline size_t GetBitMaskSize()
+    {
+        return MArrayUtils::CalculateBitFieldSize(S);
+    }
+
+    inline void Set(const size_t& index, const T& element)
+    {
+        data[index] = element;
     }
 
     inline void Copy(const MSArray& other)
     {
-        CopyData(other.Data(), other.Size());
-        CopyMask(other.stateMaskBitfield, GetBitMaskSize());
+        MArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
+        MArrayUtils::CopyData(stateMaskBitfield,
+                              other.stateMaskBitfield,
+                              BYTE_MASK_SIZE * GetBitMaskSize());
         count = other.count;
-    }
-
-    inline void AssertIsInBoundsAndActive(const size_t& index) const
-    {
-        AssertIsInBounds(index);
-        AssertIsActive(index);
-    }
-
-    inline void AssertIsInBounds(const size_t& index) const
-    {
-        assert(IsInBounds(index) && "The provided index was not in bounds!");
-    }
-
-    inline void AssertIsActive(const size_t& index) const
-    {
-        assert(Active(index) && "Element does not exist in the array!");
-    }
-
-    inline void CopyData(const T* src, const size_t& srcSize)
-    {
-        memcpy(data, src, sizeof(T) * srcSize);
-    }
-
-    inline void CopyMask(const uint8_t* source, const size_t maskSize)
-    {
-        memcpy(stateMaskBitfield, source, BYTE_MASK_SIZE * maskSize);
-    }
-
-    inline void SetBitsToOne(const size_t& bits)
-    {
-        uint8_t bitsToProcess = bits;
-        size_t newByteCount = (bitsToProcess / BYTE_SIZE_IN_BITS) + 1;
-
-        for (size_t i = 0; i < newByteCount; i++)
-        {
-            bool isFullByte = (bitsToProcess - BYTE_SIZE_IN_BITS) >= 0;
-
-            uint8_t maskBits = (bitsToProcess * !isFullByte) + (BYTE_SIZE_IN_BITS * isFullByte);
-
-            stateMaskBitfield[i] =
-                MAX_BIT_VALUES[std::clamp<size_t>(maskBits - 1, 0, BYTE_SIZE_IN_BITS)];
-
-            bitsToProcess -= BYTE_SIZE_IN_BITS;
-        }
     }
 
     T data[S];
     uint8_t stateMaskBitfield[(S / BYTE_SIZE_IN_BITS) + 1] {0};
     size_t count {0};
 };
-}
+} // namespace Siege::Utils
 
 #endif // SIEGE_ENGINE_STACKARRAY_H

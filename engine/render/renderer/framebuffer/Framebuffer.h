@@ -213,7 +213,7 @@ private:
 
     // A static count of allowed images.
     static uint32_t IMAGE_COUNT;
-    HeapArray<VkFramebuffer> framebuffers;
+    Utils::HeapArray<VkFramebuffer> framebuffers;
 };
 
 } // namespace Siege

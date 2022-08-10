@@ -23,7 +23,7 @@ UTEST(test_SArray, CreateEmptySMSArray)
 
 UTEST(test_SArray, CreateSMSArrayWithInitialiserList)
 {
-    Siege::Utils::SArray<uint32_t, 3> array = { 1, 2, 3 };
+    Siege::Utils::SArray<uint32_t, 3> array = {1, 2, 3};
 
     ASSERT_TRUE(array.Size() == 3);
     ASSERT_TRUE(array.Data() != nullptr);
@@ -157,7 +157,7 @@ UTEST(test_SArray, CopySArray)
 
 UTEST(test_SArray, CopyEmptySArray)
 {
-    Siege::Utils::SArray<uint32_t, 0> arrayA{};
+    Siege::Utils::SArray<uint32_t, 0> arrayA {};
     Siege::Utils::SArray<uint32_t, 0> arrayB(arrayA);
 
     arrayA = arrayB;
@@ -205,7 +205,7 @@ UTEST(test_SArray, IterateUsingIterator)
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
     size_t index = 0;
-    for(auto& element : array)
+    for (auto& element : array)
     {
         ASSERT_EQ(expectedResults[index++], element);
     }
@@ -213,7 +213,7 @@ UTEST(test_SArray, IterateUsingIterator)
 
 UTEST(test_SArray, IterateOverSingleElementSArray)
 {
-    Siege::Utils::SArray<uint32_t ,1> array = {1};
+    Siege::Utils::SArray<uint32_t, 1> array = {1};
 
     uint32_t expectedResults[] = {1};
 
@@ -363,14 +363,6 @@ UTEST(test_MSArray, TestIsEmpty)
     ASSERT_TRUE(array.Empty());
 }
 
-UTEST(test_MSArray, CheckIndexInBounds)
-{
-    Siege::Utils::MSArray<uint32_t, 1> array;
-
-    ASSERT_TRUE(array.IsInBounds(0));
-    ASSERT_FALSE(array.IsInBounds(1));
-}
-
 UTEST(test_MSArray, InsertElementUsingFunction)
 {
     Siege::Utils::MSArray<uint32_t, 2> array;
@@ -504,7 +496,7 @@ UTEST(test_MSArray, CopyEmptyArrayToFullArray)
 {
     Siege::Utils::MSArray<uint32_t, 4> arrayA;
 
-    Siege::Utils::MSArray<uint32_t, 4> arrayB = { 1, 2, 3, 4 };
+    Siege::Utils::MSArray<uint32_t, 4> arrayB = {1, 2, 3, 4};
 
     arrayB = arrayA;
 
@@ -595,11 +587,11 @@ UTEST(test_MSArray, IterateOverSingleElementArray)
 
 UTEST(test_MSArray, IterateOverLargeArray)
 {
-    Siege::Utils::MSArray<uint32_t, 20> array =
-        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    Siege::Utils::MSArray<uint32_t, 20> array = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 
-    uint32_t expectedResults[]
-        = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    uint32_t expectedResults[] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                  11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 
     size_t index = 0;
     for (auto& element : array)

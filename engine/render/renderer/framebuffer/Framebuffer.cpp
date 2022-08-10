@@ -25,7 +25,7 @@ void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
 {
-    framebuffers = HeapArray<VkFramebuffer>(IMAGE_COUNT);
+    framebuffers = Utils::HeapArray<VkFramebuffer>(IMAGE_COUNT);
 
     auto* colorAttachments = config.GetColorAttachments();
     auto* depthAttachments = config.GetDepthAttachments();

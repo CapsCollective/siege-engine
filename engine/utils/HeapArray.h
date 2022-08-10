@@ -18,7 +18,9 @@
 #include <iterator>
 #include <utility>
 
-namespace Siege
+#include "MArray.h"
+
+namespace Siege::Utils
 {
 namespace Memory
 {
@@ -173,7 +175,7 @@ public:
      * @param arraySize the size of the array
      */
     explicit HeapArray(const size_t& arraySize) :
-        HeapArray(arraySize, 0, CalculateByteMaskCount(arraySize))
+        HeapArray(arraySize, 0, MArrayUtils::CalculateBitFieldSize(arraySize))
     {}
 
     /**
@@ -186,27 +188,15 @@ public:
 
         data = Memory::Allocate<T>(sizeof(T) * size);
 
-        size_t newByteCount = CalculateByteMaskCount(size);
+        size_t newByteCount = MArrayUtils::CalculateBitFieldSize(size);
 
-        stateMaskBitfield = Memory::Allocate<uint8_t>(BITMASK_SIZE * newByteCount);
+        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
 
-        memset(stateMaskBitfield, 0, (BITMASK_SIZE * newByteCount));
+        MArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
 
-        CopyData(std::data(list), sizeof(T) * size);
+        MArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
 
-        uint8_t bitsToProcess = size;
-
-        for (size_t i = 0; i < newByteCount; i++)
-        {
-            bool isFullByte = (bitsToProcess - BYTE_SIZE_IN_BITS) >= 0;
-
-            uint8_t maskBits = (bitsToProcess * !isFullByte) + (BYTE_SIZE_IN_BITS * isFullByte);
-
-            stateMaskBitfield[i] =
-                MAX_BIT_VALUES[std::clamp<size_t>(maskBits - 1, 0, BYTE_SIZE_IN_BITS)];
-
-            bitsToProcess -= BYTE_SIZE_IN_BITS;
-        }
+        MArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
 
         count = size;
     }
@@ -219,12 +209,14 @@ public:
     {
         if (other.data == nullptr && other.size == 0) return;
 
-        auto stateMaskCount = CalculateByteMaskCount(other.size);
+        auto stateMaskCount = MArrayUtils::CalculateBitFieldSize(other.size);
 
         AllocateMemory(size, stateMaskCount);
 
-        CopyData(other.data, sizeof(T) * size);
-        CopyMasks(other.stateMaskBitfield, BITMASK_SIZE * stateMaskCount);
+        MArrayUtils::CopyData(data, other.data, sizeof(T) * size);
+        MArrayUtils::CopyData(stateMaskBitfield,
+                              other.stateMaskBitfield,
+                              BYTE_MASK_SIZE * stateMaskCount);
 
         count = other.Count();
     }
@@ -274,7 +266,7 @@ public:
      */
     T& operator[](const size_t& index)
     {
-        VerifyIndex(index);
+        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
         return Get(index);
     }
 
@@ -319,7 +311,7 @@ public:
      */
     const T& Get(const size_t& index) const
     {
-        CheckIfActive(index);
+        MArrayUtils::AssertIsActive(stateMaskBitfield, size);
 
         return data[index];
     }
@@ -331,7 +323,6 @@ public:
      */
     T& Get(const size_t& index)
     {
-        CheckIfActive(index);
         return data[index];
     }
 
@@ -342,7 +333,7 @@ public:
      */
     void Insert(const size_t index, const T& element)
     {
-        VerifyIndex(index);
+        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
         Set(index, element);
     }
 
@@ -353,19 +344,8 @@ public:
      */
     void Remove(const size_t& index)
     {
-        CheckIfIndexInBounds(index);
-        stateMaskBitfield[index / BYTE_SIZE_IN_BITS] &= ~(1 << (index % BYTE_SIZE_IN_BITS));
+        MArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, size);
         count--;
-    }
-
-    /**
-     * @brief Checks if the index is in bounds of the array size
-     * @param index the index we want to check
-     * @return a boolean specifying if the index is in bounds
-     */
-    bool IsInBounds(const size_t& index)
-    {
-        return index < size;
     }
 
     /**
@@ -407,18 +387,7 @@ public:
      */
     bool Active(const size_t& index)
     {
-        // Get the byte chunk that our index falls into
-        auto byteMask = stateMaskBitfield[index / BYTE_SIZE_IN_BITS];
-
-        /**
-         * Get a bit representation of the position we want to search for.
-         * For example, given a bit position in index 1, we create a bit mask with a value of
-         * 1 left shifted by 1 position (0000 0010). Finally, since our bytes contain 8 bits,
-         * we want to make sure that we just check the index we get is relative to our byte.
-         * i.e: 2 % 8 = 2 or 9 % 8 = 1. No matter how large the index, we'll always get its
-         * position in 8s
-         */
-        return (byteMask & (1 << (index % BYTE_SIZE_IN_BITS))) != 0;
+        return MArrayUtils::Active(stateMaskBitfield, index);
     }
 
     /**
@@ -427,10 +396,7 @@ public:
     void Clear()
     {
         count = 0;
-        if (stateMaskBitfield)
-        {
-            memset(stateMaskBitfield, 0, (BITMASK_SIZE * CalculateByteMaskCount(size)));
-        }
+        MArrayUtils::ResetStateMask(stateMaskBitfield, MArrayUtils::CalculateBitFieldSize(size));
     }
 
     /**
@@ -476,16 +442,6 @@ public:
 
 private:
 
-    // Class constants
-
-    // The number of states we can fit per segment (1 byte = 8 states)
-    static constexpr uint8_t BYTE_SIZE_IN_BITS = 8;
-    // The default object size for each segment (1 byte)
-    static constexpr uint8_t BITMASK_SIZE = sizeof(uint8_t);
-    // Each position represents a byte where all bits before the index are 1
-    // i.e: index 2 = 0000 00111
-    static constexpr uint8_t MAX_BIT_VALUES[BYTE_SIZE_IN_BITS] = {1, 3, 7, 15, 31, 63, 127, 255};
-
     // Private Constructors
 
     /**
@@ -517,10 +473,10 @@ private:
         HeapArray(newSize,
                   newCount,
                   masksSize,
-                  Memory::Allocate<uint8_t>(BITMASK_SIZE * masksSize),
+                  Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * masksSize),
                   Memory::Allocate<T>(sizeof(T) * newSize))
     {
-        memset(stateMaskBitfield, 0, (BITMASK_SIZE * masksSize));
+        memset(stateMaskBitfield, 0, (BYTE_MASK_SIZE * masksSize));
     }
 
     // Functions
@@ -536,51 +492,14 @@ private:
     }
 
     /**
-     * @brief Verifies the index is active. If it is not active, increment our count and set it to
-     * active
-     * @param index the index to search for
-     */
-    void VerifyIndex(const size_t& index)
-    {
-        CheckIfIndexInBounds(index);
-        count += !Active(index);
-        stateMaskBitfield[index / BYTE_SIZE_IN_BITS] |= (1 << (index % BYTE_SIZE_IN_BITS));
-    }
-
-    /**
-     * @brief Checks if the index is within bounds of the array. If it is not, an assertion failure
-     * will be triggered
-     * @param index the index to evaluate
-     */
-    void CheckIfIndexInBounds(const size_t& index)
-    {
-        assert(IsInBounds(index) && "The index provided is larger than the size of the array!");
-    }
-
-    /**
-     * @brief Checks if an array element is active. If it is not active, an assertion failure will
-     * be triggered
-     * @param index the index to evaluate
-     */
-    void CheckIfActive(const size_t& index)
-    {
-        assert(Active(index) && "Element does not exist in the array!");
-    }
-
-    size_t CalculateByteMaskCount(const size_t& arraySize)
-    {
-        return (arraySize / BYTE_SIZE_IN_BITS) + 1;
-    }
-
-    /**
-     * @brief Allocates our raw pointers to the specified values
-     * @param arraySize the size to allocate `data` to
-     * @param bytesCount the number of bytes to assign for states
+     * @brief Allocates our raw pointers to the specified values.
+     * @param arraySize the size to allocate `data` to.
+     * @param bytesCount the number of bytes to assign for states.
      */
     void AllocateMemory(const size_t& arraySize, const size_t& bytesCount)
     {
         data = Memory::Allocate<T>(sizeof(T) * arraySize);
-        stateMaskBitfield = Memory::Allocate<uint8_t>(BITMASK_SIZE * bytesCount);
+        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * bytesCount);
     }
 
     /**
@@ -592,33 +511,13 @@ private:
     {
         data = Memory::Reallocate<T>(data, sizeof(T) * arraySize);
         stateMaskBitfield =
-            Memory::Reallocate<uint8_t>(stateMaskBitfield, BITMASK_SIZE * bytesCount);
+            Memory::Reallocate<uint8_t>(stateMaskBitfield, BYTE_MASK_SIZE * bytesCount);
     }
 
     /**
-     * @brief Copies data into the `data` pointer
-     * @param source the pointer to copy data from
-     * @param dataSize the amount of data to be copied
-     */
-    void CopyData(const T* source, const size_t& dataSize)
-    {
-        memcpy(data, source, dataSize);
-    }
-
-    /**
-     * @brief Copies the byte masks from one pointer to another
-     * @param source the pointer to copy data from
-     * @param size the size of the memory to be copied
-     */
-    void CopyMasks(const uint8_t* source, const size_t& byteSize)
-    {
-        memcpy(stateMaskBitfield, source, byteSize);
-    }
-
-    /**
-     * @brief Resizes the state mask in accordance to the new array size
-     * @param newSize the new array size
-     * @param newByteCount the new number of byte masks
+     * @brief Resizes the state mask in accordance to the new array size.
+     * @param newSize the new array size.
+     * @param newByteCount the new number of byte masks.
      */
     void ResizeStateMask(const size_t& newSize, const size_t& newByteCount)
     {
@@ -631,8 +530,9 @@ private:
         // to make sure that we reset all bits EXCEPT for the first four bits
         size_t bitIndex = std::clamp<size_t>(bitsToProcess - 1, 0, bitsToProcess);
 
-        // Use an AND operation to reset the byte mask to the position that we want
-        stateMaskBitfield[CalculateByteMaskCount(newSize) - 1] &= MAX_BIT_VALUES[bitIndex];
+        // Use an AND operation to reset the byte mask to the position that we want.
+        stateMaskBitfield[MArrayUtils::CalculateBitFieldSize(newSize) - 1] &=
+            MAX_BIT_VALUES[bitIndex];
     }
 
     /**
@@ -673,9 +573,7 @@ private:
     void ResetValues()
     {
         data = nullptr;
-
         stateMaskBitfield = nullptr;
-
         size = count = 0;
     }
 
@@ -690,12 +588,14 @@ private:
         count = other.count;
         size = other.size;
 
-        auto byteCount = CalculateByteMaskCount(other.size);
+        auto byteCount = MArrayUtils::CalculateBitFieldSize(other.size);
 
         ReallocateMemory(size, byteCount);
 
-        CopyData(other.data, sizeof(T) * size);
-        CopyMasks(other.stateMaskBitfield, BITMASK_SIZE * byteCount);
+        MArrayUtils::CopyData(data, other.data, sizeof(T) * size);
+        MArrayUtils::CopyData(stateMaskBitfield,
+                              other.stateMaskBitfield,
+                              BYTE_MASK_SIZE * byteCount);
     }
 
     // Tracker Variables
@@ -707,6 +607,6 @@ private:
     T* data {nullptr};
 };
 
-} // namespace Siege
+} // namespace Siege::Utils
 
 #endif // SIEGE_ENGINE_HEAP_ARRAY_H
