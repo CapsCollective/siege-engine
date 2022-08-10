@@ -13,7 +13,7 @@
 #include <initializer_list>
 #include <utility>
 
-#include "MArray.h"
+#include "ArrayUtils.h"
 
 namespace Siege::Utils
 {
@@ -389,26 +389,52 @@ public:
         uint8_t* maskPointer;
         size_t index;
     };
-
+    /**
+     * Default constructor.
+     */
     MSArray() = default;
 
+    /**
+     * Initializer list constructor. this constructor allows a MSArray to be constructed using a
+     * list format. For example: `MSArray<int, 2> arr = {1, 2};`. If more parameters are passed
+     * into the initalizer list thant the static size of the array, only the number of elements
+     * equal to the static size will be copied.
+     * @param list the parameter list to be added to the MSArray.
+     */
     MSArray(std::initializer_list<T> list) : MSArray(list.size())
     {
-        MArrayUtils::CopyData(data, std::data(list), sizeof(T) * list.size()); // 0000 1111
-        MArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
+        count = CLAMP(list.size(), 0, S);
+        ArrayUtils::CopyData(data, std::data(list), CLAMP_T(list.size(), 0, S, T));
+        ArrayUtils::SetBitsToOne(stateMaskBitfield, count);
     }
 
+    /**
+     * Initializes a MSArray with a raw pointer. NOTE: if the size provided is larger than the size
+     * provided to MSArray, then it will copy data up to the static size of MSArray.
+     * @param ptr
+     * @param ptrSize
+     */
     MSArray(const T* ptr, const size_t& ptrSize) : MSArray(ptrSize)
     {
-        MArrayUtils::CopyData(data, ptr, sizeof(T) * ptrSize);
-        MArrayUtils::SetBitsToOne(stateMaskBitfield, ptrSize);
+        count = CLAMP(ptrSize, static_cast<size_t>(0), S);
+        ArrayUtils::CopyData(data, ptr, CLAMP_T(ptrSize, static_cast<size_t>(0), S, T));
+        ArrayUtils::SetBitsToOne(stateMaskBitfield, count);
     }
 
+    /**
+     * Copies two equally sized SMArrays.
+     * @param other the other array to be copied.
+     */
     MSArray(MSArray& other)
     {
         Copy(other);
     }
 
+    /**
+     * Moves the contents of one array to another.
+     * @param other The array to be moved. The array being moved will be reset after its contents
+     * have been moved.
+     */
     MSArray(MSArray&& other)
     {
         Copy(other);
@@ -417,23 +443,47 @@ public:
 
     // Operator Overloads
 
+    /**
+     * A constant subscript operator. This operator returns the value stored in the provided index
+     * as long as the index position is valid and the element is active.
+     * @param index the index position to search.
+     * @return a constant reference to the value stored in the index.
+     */
     inline const T& operator[](const size_t& index) const
     {
         return Get(index);
     }
 
+    /**
+     * A subscript operator. This operator returns the value stored in the provided index
+     * as long as the index position is valid and the element is active.
+     * @param index the index position to search.
+     * @return a mutable reference to the value stored in the index.
+     */
     inline T& operator[](const size_t& index)
     {
-        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
+        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
         return Get(index);
     }
 
+    /**
+     * A copy assignment operator for the MSArray. This operator only allows the copying of data
+     * between MSArrays with the same size and type.
+     * @param other the array to be copied.
+     * @return a reference to the current array in which data was copied.
+     */
     inline MSArray& operator=(const MSArray& other)
     {
         Copy(other);
         return *this;
     }
 
+    /**
+     * A move assignment operator for the MSArray. This operator only allows the moving of data
+     * between MSArrays with the same size and type.
+     * @param other the array to be moved.
+     * @return a reference to the current array in which data was moved.
+     */
     inline MSArray& operator=(MSArray&& other)
     {
         Copy(other);
@@ -443,29 +493,59 @@ public:
 
     // Getters
 
+    /**
+     * Gets a constant reference to a value stored in the specified index as long as the index
+     * position is valid and the element is active.
+     * @param index the index position to search.
+     * @return a constant reference to the value stored in the index.
+     */
     inline const T& Get(const size_t& index) const
     {
-        MArrayUtils::AssertIsInBoundsAndActive(stateMaskBitfield, index, S);
+        ArrayUtils::AssertIsInBoundsAndActive(stateMaskBitfield, index, S);
         return data[index];
     }
 
+    /**
+     * Gets a mutable reference to a value stored in the specified index.
+     * @param index the index position to search.
+     * @return a constant reference to the value stored in the index.
+     */
     inline T& Get(const size_t& index)
     {
         return data[index];
     }
 
+    /**
+     * @brief Returns the const raw pointer stored by the array.
+     * @return the raw pointer stored by the array.
+     */
     inline const T* Data() const
     {
         return data;
     }
+
+    /**
+     * @brief Returns the raw pointer stored by the array.
+     * @return the raw pointer stored by the array.
+     */
     inline T* Data()
     {
         return data;
     }
+
+    /**
+     * @brief Returns the size of the array in bytes.
+     * @return the size of the array in bytes.
+     */
     inline constexpr const size_t Size() const
     {
         return S;
     }
+
+    /**
+     * @brief Returns the size of the array in bytes.
+     * @return the size of the array in bytes.
+     */
     inline const size_t Count() const
     {
         return count;
@@ -473,49 +553,90 @@ public:
 
     // Setters
 
+    /**
+     * @brief Inserts a given element into the position specified by `index`. If the provided index
+     * is larger than the array's size, an exception will be thrown.
+     * @param index the position in the array we want to insert the element into.
+     * @param element the element we want to store in the array.
+     */
     inline void Insert(const size_t& index, const T& element)
     {
-        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
+        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
         Set(index, element);
     }
 
+    /**
+     * Checks if the MSArray is empty.
+     * @return true if the MSArray has had no allocations made, false if at least one element was
+     * added.
+     */
     inline bool Empty() const
     {
         return count == 0;
     }
 
+    /**
+     * Checks if a specified index has been assigned to. If the provided index
+     * is larger than the array's size, an exception will be thrown.
+     * @param index the index of the element being searched for.
+     * @return true if the index has been previously assigned to.
+     */
     inline bool Active(const size_t& index) const
     {
-        return MArrayUtils::Active(stateMaskBitfield, index);
+        return ArrayUtils::Active(stateMaskBitfield, index);
     }
 
+    /**
+     * @brief Removes the element at the specified position from the array. If the provided index
+     * is larger than the array's size, an exception will be thrown.
+     * @param index the index of the element we want to remove.
+     */
     inline void Remove(const size_t& index)
     {
-        MArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, S);
+        ArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, S);
         count--;
     }
 
+    /**
+     * @brief Clears the MSArray.
+     */
     inline void Clear()
     {
-        MArrayUtils::ResetStateMask(stateMaskBitfield, GetBitMaskSize());
+        ArrayUtils::ResetStateMask(stateMaskBitfield, GetBitMaskSize());
         count = 0;
     }
 
+    /**
+     * @brief Creates a const iterator pointing to the start of the MSArray.
+     * @return an Iterator set to the start of the array.
+     */
     inline const Iterator begin() const
     {
         return Iterator(data, stateMaskBitfield, 0);
     }
 
+    /**
+     * @brief Creates a const iterator pointing to the end of the MSArray.
+     * @return an Iterator set to the end of the array.
+     */
     inline const Iterator end() const
     {
         return Iterator(data + S, stateMaskBitfield, S);
     }
 
+    /**
+     * @brief Creates an iterator pointing to the start of the HeapArray.
+     * @return an Iterator set to the end of the array.
+     */
     inline Iterator begin()
     {
         return Iterator(data, stateMaskBitfield, 0);
     }
 
+    /**
+     * @brief Creates an iterator pointing to the end of the HeapArray.
+     * @return an Iterator set to the end of the array.
+     */
     inline Iterator end()
     {
         return Iterator(data + S, stateMaskBitfield, S);
@@ -523,22 +644,40 @@ public:
 
 private:
 
+    /**
+     * A private constructor for the MSArray. Simply initialises the count value of the array.
+     * @param arrSize the amount to set the count to.
+     */
     MSArray(const size_t& arrSize) : count {arrSize} {}
 
+    /**
+     * Returns the number of bytes in the state masks flags.
+     * @return the number of bytes in the state masks,
+     */
     constexpr inline size_t GetBitMaskSize()
     {
-        return MArrayUtils::CalculateBitFieldSize(S);
+        return ArrayUtils::CalculateBitFieldSize(S);
     }
 
+    /**
+     * Sets the value of a given index. This function does no error checking and is susceptible to
+     * indexing errors.
+     * @param index the index of the value to set.
+     * @param element the element that you want to set the array position to.
+     */
     inline void Set(const size_t& index, const T& element)
     {
         data[index] = element;
     }
 
+    /**
+     * A function encapsulating the logic of copying two equally sized MSArrays.
+     * @param other the array to copy.
+     */
     inline void Copy(const MSArray& other)
     {
-        MArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
-        MArrayUtils::CopyData(stateMaskBitfield,
+        ArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
+        ArrayUtils::CopyData(stateMaskBitfield,
                               other.stateMaskBitfield,
                               BYTE_MASK_SIZE * GetBitMaskSize());
         count = other.count;

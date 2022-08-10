@@ -18,7 +18,7 @@
 #include <iterator>
 #include <utility>
 
-#include "MArray.h"
+#include "ArrayUtils.h"
 
 namespace Siege::Utils
 {
@@ -175,7 +175,7 @@ public:
      * @param arraySize the size of the array
      */
     explicit HeapArray(const size_t& arraySize) :
-        HeapArray(arraySize, 0, MArrayUtils::CalculateBitFieldSize(arraySize))
+        HeapArray(arraySize, 0, ArrayUtils::CalculateBitFieldSize(arraySize))
     {}
 
     /**
@@ -188,15 +188,15 @@ public:
 
         data = Memory::Allocate<T>(sizeof(T) * size);
 
-        size_t newByteCount = MArrayUtils::CalculateBitFieldSize(size);
+        size_t newByteCount = ArrayUtils::CalculateBitFieldSize(size);
 
         stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
 
-        MArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
+        ArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
 
-        MArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
+        ArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
 
-        MArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
+        ArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
 
         count = size;
     }
@@ -209,12 +209,12 @@ public:
     {
         if (other.data == nullptr && other.size == 0) return;
 
-        auto stateMaskCount = MArrayUtils::CalculateBitFieldSize(other.size);
+        auto stateMaskCount = ArrayUtils::CalculateBitFieldSize(other.size);
 
         AllocateMemory(size, stateMaskCount);
 
-        MArrayUtils::CopyData(data, other.data, sizeof(T) * size);
-        MArrayUtils::CopyData(stateMaskBitfield,
+        ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
+        ArrayUtils::CopyData(stateMaskBitfield,
                               other.stateMaskBitfield,
                               BYTE_MASK_SIZE * stateMaskCount);
 
@@ -266,7 +266,7 @@ public:
      */
     T& operator[](const size_t& index)
     {
-        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
+        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
         return Get(index);
     }
 
@@ -311,7 +311,7 @@ public:
      */
     const T& Get(const size_t& index) const
     {
-        MArrayUtils::AssertIsActive(stateMaskBitfield, size);
+        ArrayUtils::AssertIsActive(stateMaskBitfield, size);
 
         return data[index];
     }
@@ -327,13 +327,13 @@ public:
     }
 
     /**
-     * @brief Inserts a given element into the position specified by `index`
-     * @param index the position in the array we want to insert the element into
-     * @param element the element we want to store in the array
+     * @brief Inserts a given element into the position specified by `index`.
+     * @param index the position in the array we want to insert the element into.
+     * @param element the element we want to store in the array.
      */
     void Insert(const size_t index, const T& element)
     {
-        count += MArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
+        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
         Set(index, element);
     }
 
@@ -344,7 +344,7 @@ public:
      */
     void Remove(const size_t& index)
     {
-        MArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, size);
+        ArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, size);
         count--;
     }
 
@@ -387,7 +387,7 @@ public:
      */
     bool Active(const size_t& index)
     {
-        return MArrayUtils::Active(stateMaskBitfield, index);
+        return ArrayUtils::Active(stateMaskBitfield, index);
     }
 
     /**
@@ -396,7 +396,7 @@ public:
     void Clear()
     {
         count = 0;
-        MArrayUtils::ResetStateMask(stateMaskBitfield, MArrayUtils::CalculateBitFieldSize(size));
+        ArrayUtils::ResetStateMask(stateMaskBitfield, ArrayUtils::CalculateBitFieldSize(size));
     }
 
     /**
@@ -531,7 +531,7 @@ private:
         size_t bitIndex = std::clamp<size_t>(bitsToProcess - 1, 0, bitsToProcess);
 
         // Use an AND operation to reset the byte mask to the position that we want.
-        stateMaskBitfield[MArrayUtils::CalculateBitFieldSize(newSize) - 1] &=
+        stateMaskBitfield[ArrayUtils::CalculateBitFieldSize(newSize) - 1] &=
             MAX_BIT_VALUES[bitIndex];
     }
 
@@ -588,12 +588,12 @@ private:
         count = other.count;
         size = other.size;
 
-        auto byteCount = MArrayUtils::CalculateBitFieldSize(other.size);
+        auto byteCount = ArrayUtils::CalculateBitFieldSize(other.size);
 
         ReallocateMemory(size, byteCount);
 
-        MArrayUtils::CopyData(data, other.data, sizeof(T) * size);
-        MArrayUtils::CopyData(stateMaskBitfield,
+        ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
+        ArrayUtils::CopyData(stateMaskBitfield,
                               other.stateMaskBitfield,
                               BYTE_MASK_SIZE * byteCount);
     }

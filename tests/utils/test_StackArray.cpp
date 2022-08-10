@@ -13,7 +13,7 @@
 
 //---------------------------------------- SArray --------------------------------------------------
 
-UTEST(test_SArray, CreateEmptySMSArray)
+UTEST(test_SArray, CreateEmptySArray)
 {
     Siege::Utils::SArray<uint32_t, 1> array = {};
 
@@ -21,7 +21,7 @@ UTEST(test_SArray, CreateEmptySMSArray)
     ASSERT_TRUE(array.Data() != nullptr);
 }
 
-UTEST(test_SArray, CreateSMSArrayWithInitialiserList)
+UTEST(test_SArray, CreateSArrayWithInitialiserList)
 {
     Siege::Utils::SArray<uint32_t, 3> array = {1, 2, 3};
 
@@ -33,7 +33,7 @@ UTEST(test_SArray, CreateSMSArrayWithInitialiserList)
     ASSERT_EQ(3, array[2]);
 }
 
-UTEST(test_SArray, CreateConstexprSMSArray)
+UTEST(test_SArray, CreateConstexprSArray)
 {
     constexpr Siege::Utils::SArray<uint32_t, 3> array = {1, 2, 3};
 
@@ -45,7 +45,7 @@ UTEST(test_SArray, CreateConstexprSMSArray)
     ASSERT_EQ(3, array[2]);
 }
 
-UTEST(test_SArray, CreateMSSArrayWithCopyConstructor)
+UTEST(test_SArray, CreateSArrayWithCopyConstructor)
 {
     Siege::Utils::SArray<uint32_t, 3> arrayA = {2, 3, 4};
 
@@ -59,7 +59,7 @@ UTEST(test_SArray, CreateMSSArrayWithCopyConstructor)
     ASSERT_EQ(arrayA[2], arrayB[2]);
 }
 
-UTEST(test_SArray, CreateSSArrayFromMoveConstructor)
+UTEST(test_SArray, CreateSArrayFromMoveConstructor)
 {
     Siege::Utils::SArray<uint32_t, 4> arrayA = {1, 2, 3, 4};
 
@@ -258,6 +258,37 @@ UTEST(test_MSArray, CreateMSArrayWithInitializerList)
     ASSERT_EQ(2, array.Count());
 }
 
+UTEST(test_MSArray, CreateMSArrayWithLargerInitializerList)
+{
+    Siege::Utils::MSArray<uint32_t, 2> array = {0, 1, 2, 3, 4, 5};
+
+    ASSERT_TRUE(array.Size() == 2);
+    ASSERT_TRUE(array.Count() == 2);
+    ASSERT_FALSE(array.Data() == nullptr);
+
+    ASSERT_EQ(array[0], 0);
+    ASSERT_EQ(array[1], 1);
+
+    ASSERT_EQ(2, array.Count());
+}
+
+UTEST(test_MSArray, CreateMSArrayWithSmallerInitializerList)
+{
+    Siege::Utils::MSArray<uint32_t, 4> array = {0, 1};
+
+    ASSERT_TRUE(array.Size() == 4);
+    ASSERT_TRUE(array.Count() == 2);
+    ASSERT_FALSE(array.Data() == nullptr);
+
+    ASSERT_EQ(array[0], 0);
+    ASSERT_EQ(array[1], 1);
+
+    ASSERT_EQ(2, array.Count());
+
+    ASSERT_FALSE(array.Active(2));
+    ASSERT_FALSE(array.Active(3));
+}
+
 UTEST(test_MSArray, CreateMSArrayFromCopyConstructor)
 {
     Siege::Utils::MSArray<uint32_t, 2> arrayA = {0, 1};
@@ -324,6 +355,44 @@ UTEST(test_MSArray, CreateMSArrayFromRawArray)
     ASSERT_EQ(array[1], 2);
     ASSERT_EQ(array[2], 3);
     ASSERT_EQ(array[3], 4);
+}
+
+UTEST(test_MSArray, CreateMSArrayFromLargerRawArray)
+{
+    uint32_t values[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    Siege::Utils::MSArray<uint32_t, 4> array(values, 9);
+
+    ASSERT_EQ(array.Count(), 4);
+    ASSERT_EQ(array.Size(), 4);
+    ASSERT_NE(array.Data(), nullptr);
+
+    ASSERT_TRUE(array.Active(0));
+    ASSERT_TRUE(array.Active(1));
+    ASSERT_TRUE(array.Active(2));
+    ASSERT_TRUE(array.Active(3));
+
+    ASSERT_EQ(array[0], 1);
+    ASSERT_EQ(array[1], 2);
+    ASSERT_EQ(array[2], 3);
+    ASSERT_EQ(array[3], 4);
+}
+
+UTEST(test_MSArray, CreateMSArrayFromSmallerRawArray)
+{
+    uint32_t values[] = {1, 2};
+    Siege::Utils::MSArray<uint32_t, 4> array(values, 2);
+
+    ASSERT_EQ(array.Count(), 2);
+    ASSERT_EQ(array.Size(), 4);
+    ASSERT_NE(array.Data(), nullptr);
+
+    ASSERT_TRUE(array.Active(0));
+    ASSERT_TRUE(array.Active(1));
+    ASSERT_FALSE(array.Active(2));
+    ASSERT_FALSE(array.Active(3));
+
+    ASSERT_EQ(array[0], 1);
+    ASSERT_EQ(array[1], 2);
 }
 
 UTEST(test_MSArray, ClearArray)

@@ -6,25 +6,25 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include "MArray.h"
+#include "ArrayUtils.h"
 
 #include <cassert>
 
 namespace Siege::Utils
 {
-void MArrayUtils::AssertIsInBounds(const size_t& index, const size_t& size)
+void ArrayUtils::AssertIsInBounds(const size_t& index, const size_t& size)
 {
     // TODO: Change this to CC_ASSERT once the logging integration is complete
     assert(IsInBounds(index, size) && "The provided index is out of bounds!");
 }
 
-void MArrayUtils::AssertIsActive(const uint8_t* bitField, const size_t& index)
+void ArrayUtils::AssertIsActive(const uint8_t* bitField, const size_t& index)
 {
     // TODO: Change this to CC_ASSERT once the logging integration is complete
     assert(Active(bitField, index) && "Cannot index into element that hasn't been assigned!");
 }
 
-void MArrayUtils::AssertIsInBoundsAndActive(const uint8_t* bitField,
+void ArrayUtils::AssertIsInBoundsAndActive(const uint8_t* bitField,
                                             const size_t& index,
                                             const size_t& size)
 {
