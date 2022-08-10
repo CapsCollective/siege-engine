@@ -9,15 +9,6 @@
 #ifndef SIEGE_ENGINE_HEAP_ARRAY_H
 #define SIEGE_ENGINE_HEAP_ARRAY_H
 
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <initializer_list>
-#include <iterator>
-#include <utility>
-
 #include "ArrayUtils.h"
 
 namespace Siege::Utils
@@ -185,7 +176,6 @@ public:
     HeapArray(const std::initializer_list<T>& list)
     {
         size = list.size();
-
         data = Memory::Allocate<T>(sizeof(T) * size);
 
         size_t newByteCount = ArrayUtils::CalculateBitFieldSize(size);
@@ -193,10 +183,24 @@ public:
         stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
 
         ArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
-
         ArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
-
         ArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
+
+        count = size;
+    }
+
+    HeapArray(const T* rawPtr, const size_t ptrSize)
+    {
+        size = ptrSize;
+        data = Memory::Allocate<T>(sizeof(T) * size);
+
+        size_t newByteCount = ArrayUtils::CalculateBitFieldSize(size);
+
+        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
+
+        ArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
+        ArrayUtils::CopyData(data, rawPtr, sizeof(T) * size);
+        ArrayUtils::SetBitsToOne(stateMaskBitfield, size);
 
         count = size;
     }
@@ -215,8 +219,8 @@ public:
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
         ArrayUtils::CopyData(stateMaskBitfield,
-                              other.stateMaskBitfield,
-                              BYTE_MASK_SIZE * stateMaskCount);
+                             other.stateMaskBitfield,
+                             BYTE_MASK_SIZE * stateMaskCount);
 
         count = other.Count();
     }
@@ -594,8 +598,8 @@ private:
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
         ArrayUtils::CopyData(stateMaskBitfield,
-                              other.stateMaskBitfield,
-                              BYTE_MASK_SIZE * byteCount);
+                             other.stateMaskBitfield,
+                             BYTE_MASK_SIZE * byteCount);
     }
 
     // Tracker Variables

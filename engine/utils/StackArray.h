@@ -9,10 +9,6 @@
 #ifndef SIEGE_ENGINE_STACKARRAY_H
 #define SIEGE_ENGINE_STACKARRAY_H
 
-#include <cstdint>
-#include <initializer_list>
-#include <utility>
-
 #include "ArrayUtils.h"
 
 namespace Siege::Utils
@@ -678,8 +674,8 @@ private:
     {
         ArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
         ArrayUtils::CopyData(stateMaskBitfield,
-                              other.stateMaskBitfield,
-                              BYTE_MASK_SIZE * GetBitMaskSize());
+                             other.stateMaskBitfield,
+                             BYTE_MASK_SIZE * GetBitMaskSize());
         count = other.count;
     }
 

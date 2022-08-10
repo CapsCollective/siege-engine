@@ -10,11 +10,16 @@
 #define SIEGE_ENGINE_ARRAYUTILS_H
 
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <initializer_list>
+#include <utility>
 
 #define CLAMP_T(val, min, max, type) std::clamp<size_t>(sizeof(type) * val, min, sizeof(type) * max)
 
 #define CLAMP(val, min, max) std::clamp<size_t>(val, min, max)
-
 
 namespace Siege::Utils
 {
@@ -130,9 +135,9 @@ public:
      * @param index the index to set to 0.
      * @param size the size of the array.
      */
-    static inline constexpr void RemoveFromStateMask(uint8_t* bitField,
-                                                     const size_t& index,
-                                                     const size_t& size)
+    static inline void RemoveFromStateMask(uint8_t* bitField,
+                                           const size_t& index,
+                                           const size_t& size)
     {
         AssertIsInBoundsAndActive(bitField, index, size);
         bitField[index / BYTE_SIZE_IN_BITS] &= ~(1 << (index % BYTE_SIZE_IN_BITS));
@@ -155,9 +160,7 @@ public:
      * @param size the size of the array.
      * @return returns true if the element was not previously active, false if it was.
      */
-    static inline constexpr bool AddToBitMask(uint8_t* bitField,
-                                                const size_t& index,
-                                                const size_t& size)
+    static inline bool AddToBitMask(uint8_t* bitField, const size_t& index, const size_t& size)
     {
         AssertIsInBounds(index, size);
         bool exists = ArrayUtils::Active(bitField, index);

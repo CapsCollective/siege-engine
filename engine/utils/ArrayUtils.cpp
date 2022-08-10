@@ -25,8 +25,8 @@ void ArrayUtils::AssertIsActive(const uint8_t* bitField, const size_t& index)
 }
 
 void ArrayUtils::AssertIsInBoundsAndActive(const uint8_t* bitField,
-                                            const size_t& index,
-                                            const size_t& size)
+                                           const size_t& index,
+                                           const size_t& size)
 {
     AssertIsInBounds(index, size);
     AssertIsActive(bitField, index);
