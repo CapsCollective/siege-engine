@@ -400,7 +400,11 @@ public:
     void Clear()
     {
         count = 0;
-        ArrayUtils::ResetStateMask(stateMaskBitfield, ArrayUtils::CalculateBitFieldSize(size));
+
+        if (stateMaskBitfield)
+        {
+            ArrayUtils::ResetStateMask(stateMaskBitfield, ArrayUtils::CalculateBitFieldSize(size));
+        }
     }
 
     /**

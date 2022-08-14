@@ -292,9 +292,8 @@ public:
          */
         Iterator& operator++()
         {
-            // If the next element in the array is invalid, keep incrementing until we find one that
-            // is.
-            while (IsNextIndexInvalid()) Increment();
+            // As long as we're within the range of bits, we continue to increment the pointer.
+
 
             Increment();
 
@@ -331,14 +330,10 @@ public:
             index++;
         }
 
-        /**
-         * @brief Checks the next index to see if it's active.
-         * @return `true` if the next index is inactive, `false` if it is.
-         */
-        bool IsNextIndexInvalid()
+        bool IsInvalid(const size_t& indexToEvaluate)
         {
             // Get the chunk of bytes we want to use to search for states.
-            uint8_t byteMask = maskPointer[(index + 1) / BYTE_SIZE_IN_BITS];
+            uint8_t byteMask = maskPointer[(indexToEvaluate) / BYTE_SIZE_IN_BITS];
 
             /**
              * Get a bit representation of the position we want to search for.
@@ -348,7 +343,7 @@ public:
              * i.e: 2 % 8 = 2 or 9 % 8 = 1. No matter how large the index, we'll always get its
              * position in 8s.
              */
-            auto bitPosition = (1 << ((index + 1) % BYTE_SIZE_IN_BITS));
+            auto bitPosition = (1 << ((indexToEvaluate) % BYTE_SIZE_IN_BITS));
 
             /**
              * Run a bitwise AND operation to check if the corresponding byte exists in the original
@@ -356,7 +351,7 @@ public:
              *
              * Finally, we also want to make sure the next index is in bounds.
              */
-            return (byteMask & bitPosition) == 0 && (index + 1) < S;
+            return (byteMask & bitPosition) == 0 && (indexToEvaluate) < S;
         }
 
         /**
@@ -561,6 +556,13 @@ public:
         Set(index, element);
     }
 
+    inline void Append(const T& element)
+    {
+        ArrayUtils::AssertIsInBounds(count, S);
+        Set(count, element);
+        count += ArrayUtils::AddToBitMask(stateMaskBitfield, count, S);
+    }
+
     /**
      * Checks if the MSArray is empty.
      * @return true if the MSArray has had no allocations made, false if at least one element was
@@ -608,6 +610,9 @@ public:
      */
     inline const Iterator begin() const
     {
+        // 0000 1010
+        // count = 2
+        //
         return Iterator(data, stateMaskBitfield, 0);
     }
 
@@ -617,7 +622,7 @@ public:
      */
     inline const Iterator end() const
     {
-        return Iterator(data + S, stateMaskBitfield, S);
+        return Iterator(data + count, stateMaskBitfield, count);
     }
 
     /**
@@ -635,7 +640,7 @@ public:
      */
     inline Iterator end()
     {
-        return Iterator(data + S, stateMaskBitfield, S);
+        return Iterator(data + count, stateMaskBitfield, count);
     }
 
 private:

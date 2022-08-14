@@ -11,8 +11,7 @@
 
 #include <utils/Hash.h>
 #include <utils/HeapArray.h>
-#include <utils/Logging.h>
-#include <utils/math/mat/Mat4.h>
+#include <utils/StackArray.h>
 #include <volk/volk.h>
 
 #include <cstdint>

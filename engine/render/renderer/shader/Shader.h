@@ -53,8 +53,8 @@ public:
     struct VertexBinding
     {
         static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-        StackArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
-        uint32_t vertexStride = 0;
+        Utils::MSArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        u32 vertexStride = 0;
     };
 
     Shader();
@@ -81,19 +81,19 @@ public:
     Shader& WithVertexType(uint32_t size);
     Shader& WithVertexAttribute(uint32_t offset, VertexDescription::AttributeType type);
 
-    const StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
+    const Utils::MSArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
     {
         return vertexBindings;
     }
-    const StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
+    const Utils::MSArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
     {
         return uniforms;
     }
-    StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
+    Utils::MSArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
     {
         return vertexBindings;
     }
-    StackArray<Uniform, MAX_UNIFORMS>& GetUniforms()
+    Utils::MSArray<Uniform, MAX_UNIFORMS>& GetUniforms()
     {
         return uniforms;
     }
@@ -121,8 +121,8 @@ public:
 
     String filePath;
 
-    StackArray<Uniform, MAX_UNIFORMS> uniforms;
-    StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
+    Utils::MSArray<Uniform, MAX_UNIFORMS> uniforms;
+    Utils::MSArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
 
     PipelineConfig::PipelineStage stage;
     uint64_t sizeOfUniforms = 0;

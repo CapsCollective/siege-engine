@@ -10,6 +10,7 @@
 #include <utils/StackArray.h>
 
 #include <utility>
+#include <cmath>
 
 //---------------------------------------- SArray --------------------------------------------------
 
@@ -470,6 +471,26 @@ UTEST(test_MSArray, InsertElementUsingBrackets)
     ASSERT_EQ(2, array[1]);
 }
 
+UTEST(test_MSArray, AppendValuesToArray)
+{
+    Siege::Utils::MSArray<uint32_t, 2> array;
+
+    array.Append(1);
+
+    ASSERT_EQ(1, array.Count());
+    ASSERT_TRUE(array.Active(0));
+    ASSERT_EQ(2, array.Size());
+
+    array.Append(2);
+
+    ASSERT_EQ(2, array.Count());
+    ASSERT_TRUE(array.Active(1));
+    ASSERT_EQ(2, array.Size());
+
+    ASSERT_EQ(1, array[0]);
+    ASSERT_EQ(2, array[1]);
+}
+
 UTEST(test_MSArray, GetElementUsingFunction)
 {
     Siege::Utils::MSArray<uint32_t, 2> array;
@@ -617,10 +638,18 @@ UTEST(test_MSArray, IterateUsingRangedForLoop)
 
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
+    const size_t ARR_COUNT = 4;
+    uint32_t actualResults[ARR_COUNT];
+
     size_t index = 0;
     for (auto& element : array)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
 }
 
@@ -632,12 +661,20 @@ UTEST(test_MSArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
     array[1] = 2;
     array[3] = 4;
 
-    uint32_t expectedResults[] = {1, 2, 4, 5};
+    uint32_t expectedResults[] = {1, 2, 4};
+
+    const size_t ARR_COUNT = 3;
+    uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
     for (auto& element : array)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
 }
 
@@ -647,10 +684,18 @@ UTEST(test_MSArray, IterateOverSingleElementArray)
 
     uint32_t expectedResults[] = {1};
 
+    const size_t ARR_COUNT = 1;
+    uint32_t actualResults[ARR_COUNT];
+
     size_t index = 0;
     for (auto& element : array)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
 }
 
@@ -662,9 +707,76 @@ UTEST(test_MSArray, IterateOverLargeArray)
     uint32_t expectedResults[] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
                                   11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 
+    const size_t ARR_COUNT = 20;
+    uint32_t actualResults[ARR_COUNT];
+
     size_t index = 0;
     for (auto& element : array)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expectedResults[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MSArray, IterateOverEmptyArray)
+{
+    Siege::Utils::MSArray<uint32_t, 20> array;
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        index++;
+    }
+
+    ASSERT_EQ(0, index);
+}
+
+UTEST(test_MSArray, IterateOverPartiallyFilledArray)
+{
+    Siege::Utils::MSArray<uint32_t, 20> array;
+    int expected[] = {2, 1};
+
+    array[1] = 2;
+    array[3] = 1;
+
+    const size_t ARR_COUNT = 2;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MSArray, IterateOverArrayWithMissingFrontAndEnd)
+{
+    Siege::Utils::MSArray<uint32_t, 4> array;
+    int expected[] = {2, 1};
+
+    array[1] = 2;
+    array[2] = 1;
+
+    const size_t ARR_COUNT = 2;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
     }
 }

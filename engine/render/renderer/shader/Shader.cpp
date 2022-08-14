@@ -99,9 +99,8 @@ Shader& Shader::WithVertexType(uint32_t size)
 {
     size_t index = vertexBindings.Count();
 
-    vertexBindings.Activate(index);
-    auto& binding = vertexBindings.Get(index);
-    binding.vertexStride = size;
+    vertexBindings[index] = {};
+    vertexBindings[index].vertexStride = size;
 
     CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
                 filePath,
