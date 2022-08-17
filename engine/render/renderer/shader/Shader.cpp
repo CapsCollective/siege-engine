@@ -8,6 +8,8 @@
 
 #include "Shader.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 Shader::Shader() {}
@@ -99,8 +101,9 @@ Shader& Shader::WithVertexType(uint32_t size)
 {
     size_t index = vertexBindings.Count();
 
-    vertexBindings[index] = {};
-    vertexBindings[index].vertexStride = size;
+    vertexBindings.Activate(index);
+    auto& binding = vertexBindings.Get(index);
+    binding.vertexStride = size;
 
     CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
                 filePath,

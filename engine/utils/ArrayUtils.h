@@ -98,9 +98,9 @@ public:
             leftMostBit = IF(bit > leftMostBit THEN bit ELSE leftMostBit);
         }
 
-        bool IsSet(const size_t& bit)
+        bool IsSet(const size_t& bit) const
         {
-            auto indexedBit = bit-1;
+            auto indexedBit = bit - (bit > 0);
             // Get the byte chunk that our index falls into
             auto  byteMask = bitfield[Byte(indexedBit)];
             /**
@@ -131,7 +131,14 @@ public:
             leftMostBit = bits;
         }
 
-        const size_t& LeftMostBit() { return leftMostBit; }
+        inline const size_t& LeftMostBit() { return leftMostBit; }
+
+        inline constexpr void Clear()
+        {
+            memset(bitfield, 0, CalculateBitFieldSize(S));
+            leftMostBit = 0;
+        }
+
         static inline constexpr size_t Byte(const size_t& index) {return index / BYTE_SIZE_IN_BITS;}
         static inline constexpr size_t CalculateLeftMostBit(const uint8_t& byte)
         {
@@ -147,12 +154,13 @@ public:
             return GetBitPosIndex(r &-r);
         }
 
+        inline const uint8_t* BitField() const { return bitfield; }
+        inline uint8_t* BitField() { return bitfield; }
     private:
         static inline constexpr size_t GetBitPosIndex(const size_t& bit)
         {
             switch(bit)
             {
-                case 0: return 0;
                 case 1: return GET_BIT_POS(1);
                 case 2: return GET_BIT_POS(2);
                 case 4: return GET_BIT_POS(4);
@@ -161,9 +169,11 @@ public:
                 case 32: return GET_BIT_POS(32);
                 case 64: return GET_BIT_POS(64);
                 case 128: return GET_BIT_POS(128);
+                default: return 0;
             }
         }
-        const uint8_t BitAtIndex(const size_t& index) { return 1 << (index % BYTE_SIZE_IN_BITS); }
+
+        const uint8_t BitAtIndex(const size_t& index) const { return 1 << (index % BYTE_SIZE_IN_BITS); }
 
         uint8_t bitfield[S] {0};
         size_t leftMostBit {0};

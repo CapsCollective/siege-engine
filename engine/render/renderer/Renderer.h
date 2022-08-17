@@ -19,6 +19,8 @@
 #include "renderer/Renderer3D.h"
 #include "swapchain/Swapchain.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 class Renderer

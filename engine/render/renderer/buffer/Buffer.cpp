@@ -8,6 +8,8 @@
 
 #include "Buffer.h"
 
+#include <utils/Logging.h>
+
 namespace Siege::Buffer
 {
 // TODO: Wrap this in a static class 'BufferAllocator' so that we

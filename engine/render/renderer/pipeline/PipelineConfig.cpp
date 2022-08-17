@@ -8,6 +8,8 @@
 
 #include "PipelineConfig.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 VkVertexInputBindingDescription VertexDescription::CreateBinding(uint32_t binding,

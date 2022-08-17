@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include <unordered_set>
+#include <utils/Logging.h>
 #include <vector>
 
 #ifdef __APPLE__

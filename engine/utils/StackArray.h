@@ -278,10 +278,11 @@ public:
          * @param newIndex the starting index.
          * @param newSize the array size.
          */
-        explicit Iterator(T* valuePointer, uint8_t* newMaskPointer, const size_t& newIndex) :
+        explicit Iterator(T* valuePointer, uint8_t* newMaskPointer, const size_t& newIndex, const size_t& newLeftBit) :
             pointer {valuePointer},
             maskPointer {newMaskPointer},
-            index {newIndex}
+            index {newIndex},
+            leftMostBit{newLeftBit}
         {}
 
         /**
@@ -293,7 +294,6 @@ public:
         Iterator& operator++()
         {
             // As long as we're within the range of bits, we continue to increment the pointer.
-
 
             Increment();
 
@@ -318,6 +318,8 @@ public:
          */
         T& operator*()
         {
+            while(IsInvalid(index) && index < leftMostBit) Increment();
+
             return *pointer;
         }
 
@@ -376,9 +378,10 @@ public:
 
     private:
 
-        T* pointer;
-        uint8_t* maskPointer;
-        size_t index;
+        T* pointer {nullptr};
+        uint8_t* maskPointer {nullptr};
+        size_t index {0};
+        size_t leftMostBit {0};
     };
     /**
      * Default constructor.
@@ -396,7 +399,7 @@ public:
     {
         count = CLAMP(list.size(), 0, S);
         ArrayUtils::CopyData(data, std::data(list), CLAMP_T(list.size(), 0, S, T));
-        ArrayUtils::SetBitsToOne(stateMaskBitfield, count);
+        bitField.SetBitsToOne(count);
     }
 
     /**
@@ -409,7 +412,7 @@ public:
     {
         count = CLAMP(ptrSize, static_cast<size_t>(0), S);
         ArrayUtils::CopyData(data, ptr, CLAMP_T(ptrSize, static_cast<size_t>(0), S, T));
-        ArrayUtils::SetBitsToOne(stateMaskBitfield, count);
+        bitField.SetBitsToOne(count);
     }
 
     /**
@@ -453,7 +456,8 @@ public:
      */
     inline T& operator[](const size_t& index)
     {
-        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
+        count += !bitField.IsSet(index+1);
+        bitField.SetBit(index+1);
         return Get(index);
     }
 
@@ -492,7 +496,7 @@ public:
      */
     inline const T& Get(const size_t& index) const
     {
-        ArrayUtils::AssertIsInBoundsAndActive(stateMaskBitfield, index, S);
+        ArrayUtils::AssertIsInBoundsAndActive(bitField.BitField(), index, S);
         return data[index];
     }
 
@@ -552,7 +556,8 @@ public:
      */
     inline void Insert(const size_t& index, const T& element)
     {
-        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, S);
+        count += !bitField.IsSet(index+1);
+        bitField.SetBit(index+1);
         Set(index, element);
     }
 
@@ -560,7 +565,8 @@ public:
     {
         ArrayUtils::AssertIsInBounds(count, S);
         Set(count, element);
-        count += ArrayUtils::AddToBitMask(stateMaskBitfield, count, S);
+        count += !bitField.IsSet(count+1);
+        bitField.SetBit(count);
     }
 
     /**
@@ -581,7 +587,7 @@ public:
      */
     inline bool Active(const size_t& index) const
     {
-        return ArrayUtils::Active(stateMaskBitfield, index);
+        return bitField.IsSet(index+1);
     }
 
     /**
@@ -591,7 +597,7 @@ public:
      */
     inline void Remove(const size_t& index)
     {
-        ArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, S);
+        bitField.UnsetBit(index+1);
         count--;
     }
 
@@ -600,7 +606,7 @@ public:
      */
     inline void Clear()
     {
-        ArrayUtils::ResetStateMask(stateMaskBitfield, GetBitMaskSize());
+        bitField.Clear();
         count = 0;
     }
 
@@ -610,10 +616,7 @@ public:
      */
     inline const Iterator begin() const
     {
-        // 0000 1010
-        // count = 2
-        //
-        return Iterator(data, stateMaskBitfield, 0);
+        return Iterator(data, bitField.BitField(), 0, bitField.LeftMostBit());
     }
 
     /**
@@ -622,7 +625,7 @@ public:
      */
     inline const Iterator end() const
     {
-        return Iterator(data + count, stateMaskBitfield, count);
+        return Iterator(data + bitField.LeftMostBit(), bitField.BitField(), bitField.LeftMostBit(), bitField.LeftMostBit());
     }
 
     /**
@@ -631,7 +634,7 @@ public:
      */
     inline Iterator begin()
     {
-        return Iterator(data, stateMaskBitfield, 0);
+        return Iterator(data, bitField.BitField(), 0, bitField.LeftMostBit());
     }
 
     /**
@@ -640,7 +643,7 @@ public:
      */
     inline Iterator end()
     {
-        return Iterator(data + count, stateMaskBitfield, count);
+        return Iterator(data + bitField.LeftMostBit(), bitField.BitField(), bitField.LeftMostBit(), bitField.LeftMostBit());
     }
 
 private:
@@ -678,14 +681,11 @@ private:
     inline void Copy(const MSArray& other)
     {
         ArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
-        ArrayUtils::CopyData(stateMaskBitfield,
-                             other.stateMaskBitfield,
-                             BYTE_MASK_SIZE * GetBitMaskSize());
         count = other.count;
     }
 
     T data[S];
-    uint8_t stateMaskBitfield[(S / BYTE_SIZE_IN_BITS) + 1] {0};
+    ArrayUtils::SBitMaskField<(S / BYTE_SIZE_IN_BITS) + 1> bitField;
     size_t count {0};
 };
 } // namespace Siege::Utils

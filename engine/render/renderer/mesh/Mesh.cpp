@@ -8,6 +8,8 @@
 
 #include "Mesh.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 bool operator==(const Vertex& left, const Vertex& right)

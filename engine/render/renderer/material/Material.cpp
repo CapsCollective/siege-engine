@@ -12,6 +12,8 @@
 #include "../swapchain/Swapchain.h"
 #include "../utils/Descriptor.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 Material::Material() : Material(nullptr, nullptr, 0) {}

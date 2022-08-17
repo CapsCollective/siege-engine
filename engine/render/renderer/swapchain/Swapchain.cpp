@@ -8,6 +8,8 @@
 
 #include "Swapchain.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 // TODO: Fix the warnings

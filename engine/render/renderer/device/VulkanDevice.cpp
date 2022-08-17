@@ -8,6 +8,8 @@
 
 #include "VulkanDevice.h"
 
+#include <utils/Logging.h>
+
 // std headers
 #include <cstring>
 #include <set>

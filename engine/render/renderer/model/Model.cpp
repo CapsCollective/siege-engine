@@ -11,6 +11,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+#include <utils/Logging.h>
+
 namespace std
 {
 // We need to use the Siege namespace here since the Hash functions only operate in the std

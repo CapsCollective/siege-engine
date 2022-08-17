@@ -8,6 +8,8 @@
 
 #include "Framebuffer.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 uint32_t Framebuffer::IMAGE_COUNT = 0;
@@ -48,7 +50,7 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
         CC_ASSERT(vkCreateFramebuffer(device, &frameBufferInfo, nullptr, OUT & framebuffers[i]) ==
                       VK_SUCCESS,
-                  "Failed to create framebuffer");
+                  "Failed to create framebuffer")
     }
 }
 

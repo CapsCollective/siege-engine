@@ -729,6 +729,7 @@ UTEST(test_MSArray, IterateOverEmptyArray)
     size_t index = 0;
     for (auto& element : array)
     {
+        element = element+1;
         index++;
     }
 
@@ -767,6 +768,31 @@ UTEST(test_MSArray, IterateOverArrayWithMissingFrontAndEnd)
     array[2] = 1;
 
     const size_t ARR_COUNT = 2;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto& element : array)
+    {
+        actualResults[index++] = element;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+
+UTEST(test_MSArray, IterateOverArrayWithLargeGaps)
+{
+    Siege::Utils::MSArray<uint32_t, 10> array;
+    int expected[] = {2, 1, 3};
+
+    array[1] = 2;
+    array[5] = 1;
+    array[8] = 3;
+
+    const size_t ARR_COUNT = 3;
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
