@@ -43,8 +43,8 @@ private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    static StackArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    static Utils::MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     static uint64_t transformSize;
 

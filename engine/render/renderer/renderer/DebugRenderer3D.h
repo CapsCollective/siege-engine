@@ -60,8 +60,8 @@ private:
 
     Hash::StringId globalDataId;
 
-    StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
-    StackArray<Vec3, Mesh::MAX_VERTICES> rects;
+    Utils::MSArray<LineVertex, Mesh::MAX_VERTICES> lines;
+    Utils::MSArray<Vec3, Mesh::MAX_VERTICES> rects;
 };
 } // namespace Siege
 

@@ -16,7 +16,6 @@
 #include <volk/volk.h>
 #include <cstdint>
 
-#include "utils/StackArray.h"
 
 namespace Siege
 {

@@ -42,18 +42,18 @@ public:
 
     struct Uniform
     {
-        Hash::StringId id;
+        Hash::StringId id {0};
         uint32_t binding = 0;
         uint64_t size = 0;
         size_t arraySize = 0;
         size_t dynamicCount = 1;
-        VkDescriptorType type;
+        VkDescriptorType type {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
     };
 
     struct VertexBinding
     {
         static constexpr size_t MAX_VERTEX_ATTRIBUTES = 10;
-        StackArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        Utils::MSArray<VertexDescription::Attribute, MAX_VERTEX_ATTRIBUTES> attributes;
         uint32_t vertexStride = 0;
     };
 
@@ -81,21 +81,23 @@ public:
     Shader& WithVertexType(uint32_t size);
     Shader& WithVertexAttribute(uint32_t offset, VertexDescription::AttributeType type);
 
-    const StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
+    const Utils::MSArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings() const
     {
         return vertexBindings;
     }
-    const StackArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
+    const Utils::MSArray<Uniform, MAX_UNIFORMS>& GetUniforms() const
     {
         return uniforms;
     }
-    StackArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
+
+    Utils::MSArray<Uniform, MAX_UNIFORMS>& GetUniforms()
+    {
+        return uniforms;
+    }
+
+    Utils::MSArray<VertexBinding, MAX_UNIFORMS>& GetVertexBindings()
     {
         return vertexBindings;
-    }
-    StackArray<Uniform, MAX_UNIFORMS>& GetUniforms()
-    {
-        return uniforms;
     }
 
     const String& GetPath()
@@ -121,8 +123,8 @@ public:
 
     String filePath;
 
-    StackArray<Uniform, MAX_UNIFORMS> uniforms;
-    StackArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
+    Utils::MSArray<Uniform, MAX_UNIFORMS> uniforms;
+    Utils::MSArray<VertexBinding, MAX_UNIFORMS> vertexBindings;
 
     PipelineConfig::PipelineStage stage;
     uint64_t sizeOfUniforms = 0;

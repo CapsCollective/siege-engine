@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_STACKARRAY_H
 
 #include "ArrayUtils.h"
+#include "BitSet.h"
 
 namespace Siege::Utils
 {
@@ -681,11 +682,12 @@ private:
     inline void Copy(const MSArray& other)
     {
         ArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
+        bitField = other.bitField;
         count = other.count;
     }
 
     T data[S];
-    ArrayUtils::SBitMaskField<(S / BYTE_SIZE_IN_BITS) + 1> bitField;
+    BitUtils::SBitSet<(S / BYTE_SIZE_IN_BITS) + 1> bitField;
     size_t count {0};
 };
 } // namespace Siege::Utils

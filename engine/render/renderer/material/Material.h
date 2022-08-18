@@ -120,15 +120,15 @@ private:
     Shader* vertexShader {nullptr};
     Shader* fragmentShader {nullptr};
 
-    StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
+    Utils::MSArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
     Buffer::Buffer buffer;
     uint64_t bufferSize = 0;
 
-    StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
-    StackArray<uint32_t, MAX_MATERIAL_BINDINGS> descriptorOffsets;
+    Utils::MSArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
+    Utils::MSArray<uint32_t , MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
-    StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
+    Utils::MSArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
 
     Pipeline pipeline;
     VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

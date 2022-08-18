@@ -16,7 +16,8 @@
 
 #include "Macros.h"
 #include "String.h"
-#include "utils/math/Maths.h"
+
+#include "math/Maths.h"
 
 // Define terminal colour wrapping macros
 #define _CC_LOG_COLOUR_RED "31"
