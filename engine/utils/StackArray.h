@@ -336,7 +336,7 @@ public:
         bool IsInvalid(const size_t& indexToEvaluate)
         {
             // Get the chunk of bytes we want to use to search for states.
-            uint8_t byteMask = maskPointer[(indexToEvaluate) / BYTE_SIZE_IN_BITS];
+            uint8_t byteMask = maskPointer[(indexToEvaluate) / BitUtils::BYTE_SIZE_IN_BITS];
 
             /**
              * Get a bit representation of the position we want to search for.
@@ -346,7 +346,7 @@ public:
              * i.e: 2 % 8 = 2 or 9 % 8 = 1. No matter how large the index, we'll always get its
              * position in 8s.
              */
-            auto bitPosition = (1 << ((indexToEvaluate) % BYTE_SIZE_IN_BITS));
+            auto bitPosition = (1 << ((indexToEvaluate) % BitUtils::BYTE_SIZE_IN_BITS));
 
             /**
              * Run a bitwise AND operation to check if the corresponding byte exists in the original
@@ -497,7 +497,8 @@ public:
      */
     inline const T& Get(const size_t& index) const
     {
-        ArrayUtils::AssertIsInBoundsAndActive(bitField.BitField(), index, S);
+        BitUtils::AssertIsSet(bitField.BitField(), index);
+        ArrayUtils::AssertIsInBounds(index, S);
         return data[index];
     }
 
@@ -661,7 +662,7 @@ private:
      */
     constexpr inline size_t GetBitMaskSize()
     {
-        return ArrayUtils::CalculateBitFieldSize(S);
+        return BitUtils::CalculateBitFieldSize(S);
     }
 
     /**
@@ -687,7 +688,7 @@ private:
     }
 
     T data[S];
-    BitUtils::SBitSet<(S / BYTE_SIZE_IN_BITS) + 1> bitField;
+    BitUtils::SBitSet<(S / BitUtils::BYTE_SIZE_IN_BITS) + 1> bitField;
     size_t count {0};
 };
 } // namespace Siege::Utils

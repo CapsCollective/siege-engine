@@ -22,8 +22,6 @@
 #define THEN ,
 #define ELSE THEN
 
-#define GET_BIT_POS(pos) static_cast<size_t>(BitUtils::BIT_POSITION_##pos)
-
 namespace Siege::Utils
 {
 class BitUtils
@@ -41,51 +39,37 @@ public:
         BIT_POSITION_128 = 8,
     };
 
-    static inline constexpr uint8_t BitAtIndex(const size_t& index) {return 1 << (index % BYTE_SIZE_IN_BITS);}
-    static inline constexpr size_t Byte(const size_t& index) {return index / BYTE_SIZE_IN_BITS;}
-    static inline constexpr size_t CalculateBitFieldSize(const size_t& arraySize)
+    // The number of states we can fit per segment (1 byte = 8 states)
+    static inline constexpr unsigned char BYTE_SIZE_IN_BITS = 8;
+    // The default object size for each segment (1 byte)
+    static inline constexpr unsigned char BYTE_MASK_SIZE = sizeof(unsigned char);
+    // Each position represents a byte where all bits before the index are 1.
+    // i.e: index 2 = 0000 0111
+    static inline constexpr unsigned char MAX_BIT_VALUES[BYTE_SIZE_IN_BITS] =
+        {1, 3, 7, 15, 31, 63, 127, 255};
+
+    static inline constexpr unsigned char BitAtIndex(const unsigned long& index)
+    {
+        return 1 << (index % BYTE_SIZE_IN_BITS);
+    }
+    static inline constexpr unsigned long Byte(const unsigned long& index)
+    {
+        return index / BYTE_SIZE_IN_BITS;
+    }
+    static inline constexpr unsigned long CalculateBitFieldSize(const unsigned long& arraySize)
     {
         return (arraySize / BYTE_SIZE_IN_BITS) + 1;
     }
 
-    static inline constexpr size_t CalculateLeftMostBit(const uint8_t& byte)
-    {
-        size_t r = byte;
-        // Active all bits after leftmost bit
-        r = r | (r >> 1);
-        r = r | (r >> 2);
-        r = r | (r >> 4);
-        r = r | (r >> 8);
-        r = r | (r >> 16);
-        // Get the value of leftmost bit
-        r = r ^ (r >> 1);
-        return GetBitPosIndex(r &-r);
-    }
+    static unsigned long CalculateLeftMostBit(const unsigned char& byte);
 
-    static inline constexpr size_t GetBitPosIndex(const size_t& bit)
-    {
-        switch(bit)
-        {
-            case 1: return GET_BIT_POS(1);
-            case 2: return GET_BIT_POS(2);
-            case 4: return GET_BIT_POS(4);
-            case 8: return GET_BIT_POS(8);
-            case 16: return GET_BIT_POS(16);
-            case 32: return GET_BIT_POS(32);
-            case 64: return GET_BIT_POS(64);
-            case 128: return GET_BIT_POS(128);
-            default: return 0;
-        }
-    }
+    static unsigned long GetBitPosIndex(const unsigned long& bit);
 
-    static inline constexpr size_t SetBit(uint8_t* bitfield, const size_t& bit, const size_t& leftMostBit)
-    {
-        auto indexedBit = bit-1;
-        bitfield[Byte(indexedBit)] |= BitAtIndex(indexedBit);
-        return IF(bit > leftMostBit THEN bit ELSE leftMostBit);
-    }
+    static unsigned long SetBit(unsigned char* bitfield,
+                                const unsigned long& bit,
+                                const unsigned long& leftMostBit);
 
-    static inline constexpr bool IsSet(const uint8_t* bitfield, const size_t& bit)
+    static constexpr inline bool IsSet(const unsigned char* bitfield, const unsigned long& bit)
     {
         auto indexedBit = bit - (bit > 0);
         // Get the byte chunk that our index falls into
@@ -101,35 +85,10 @@ public:
         return (byteMask & BitAtIndex(indexedBit)) != 0;
     }
 
-    static inline constexpr size_t UnsetBit(uint8_t* bitfield,
-                                            const size_t& bit,
-                                            const size_t& leftMostBit,
-                                            const size_t& size)
-    {
-        AssertIsInBounds(bit - (bit > 0), size * BYTE_SIZE_IN_BITS);
-
-        auto indexedBit = bit-1;
-        auto byteIndex = Byte(indexedBit);
-
-        bitfield[byteIndex] &= ~BitAtIndex(indexedBit);
-
-        byteIndex = IF(bit < leftMostBit THEN -1 ELSE byteIndex);
-
-        size_t newLeftMostBit = leftMostBit;
-
-        for(int32_t i = byteIndex; i >= 0; i--)
-        {
-            auto leftBit = CalculateLeftMostBit(bitfield[i]);
-            auto bitsLeft = leftBit + ((leftBit > 0) * (BYTE_SIZE_IN_BITS * i));
-
-            newLeftMostBit = IF(bitsLeft > 0 THEN bitsLeft
-                                                ELSE newLeftMostBit * (i != 0 || bitsLeft != 0));
-
-            i = IF(bitsLeft > 0 THEN -1 ELSE i);
-        }
-
-        return newLeftMostBit;
-    }
+    static unsigned long UnsetBit(unsigned char* bitfield,
+                                  const unsigned long& bit,
+                                  const unsigned long& leftMostBit,
+                                  const unsigned long& size);
 
     /**
      * Sets all bits up to a specified count to 1. For example, if the function is invoked with
@@ -137,81 +96,30 @@ public:
      * @param bitfield an array of 8-bit unsigned integers.
      * @param bits the bits to set to 1.
      */
-    static inline constexpr void SetBitsToOne(uint8_t* bitfield, const size_t& bits)
-    {
-        size_t bitsToProcess = bits;
-        size_t newByteCount = (bitsToProcess / BYTE_SIZE_IN_BITS);
+    static void SetBitsToOne(unsigned char* bitfield, const unsigned long& bits);
 
-        auto bitsLeft = bits - (newByteCount * BYTE_SIZE_IN_BITS);
-        memset(bitfield, 255, newByteCount);
-        bitfield[newByteCount] = MAX_BIT_VALUES[bitsLeft-1];
-    }
-
-    static inline constexpr void Clear(uint8_t* bitfield, const size_t& size)
-    {
-        memset(bitfield, 0, CalculateBitFieldSize(size));
-    }
+    static void Clear(unsigned char* bitfield, const unsigned long& size);
 
     class BitSet
     {
     public:
         BitSet() : leftMostBit{0}, size{0} {}
 
-        BitSet(const size_t& bytes) : leftMostBit{0}, size{bytes}
-        {
-            bitfield = static_cast<uint8_t*>(malloc(BYTE_MASK_SIZE * bytes));
-        }
+        BitSet(const unsigned long& bytes);
 
-        BitSet(const BitSet& other) : leftMostBit{other.leftMostBit}, size{other.size}
-        {
-            bitfield = static_cast<uint8_t*>(malloc(BYTE_MASK_SIZE * other.size));
-            memcpy(bitfield, other.bitfield, BYTE_MASK_SIZE * other.size);
-        }
+        BitSet(const BitSet& other);
 
-        BitSet(BitSet&& other) : leftMostBit{other.leftMostBit}, size{other.size}
-        {
-            bitfield = std::move(other.bitfield);
-            leftMostBit = std::move(other.leftMostBit);
-            size = std::move(other.size);
+        BitSet(BitSet&& other);
 
-            other.ResetValues();
-        }
+        ~BitSet();
 
-        ~BitSet()
-        {
-            free(bitfield);
-            bitfield = nullptr;
-        }
+        const uint8_t& operator[](const size_t& index);
 
-        inline constexpr const uint8_t& operator[](const size_t& index)
-        {
-            AssertIsInBounds(index, size);
-            return bitfield[index];
-        }
+        BitSet& operator=(const BitSet& other);
 
-        inline BitSet& operator=(const BitSet& other)
-        {
-            if (this == &other) return *this;
+        BitSet& operator=(BitSet&& other);
 
-            bitfield = static_cast<uint8_t*>(realloc(bitfield, BYTE_MASK_SIZE * other.size));
-            memcpy(bitfield, other.bitfield, BYTE_MASK_SIZE * other.size);
-
-            leftMostBit = other.leftMostBit;
-            size = other.size;
-
-            return *this;
-        }
-
-        inline BitSet& operator=(BitSet&& other)
-        {
-            bitfield = std::move(other.bitfield);
-            leftMostBit = std::move(other.leftMostBit);
-            size = std::move(other.size);
-
-            other.ResetValues();
-
-            return *this;
-        }
+        // TODO: Finish cleaning this up.
 
         inline constexpr void SetBit(const size_t& bit)
         {
@@ -243,7 +151,59 @@ public:
             size = 0;
         }
 
-    private:
+        inline void UnsetPostBits(const size_t& bit)
+        {
+            auto byteIndex = Byte(bit);
+
+            bitfield[byteIndex] &= MAX_BIT_VALUES[(bit % BYTE_SIZE_IN_BITS) - 1];
+
+            memset(bitfield + (byteIndex + 1), 0, size - (byteIndex + (byteIndex == 0)));
+
+            leftMostBit =
+                CalculateLeftMostBit(bitfield[byteIndex]) + (byteIndex * BYTE_SIZE_IN_BITS);
+        }
+
+        /**
+         * Calculates the number of bytes in a bitfield.
+         * @param arraySize the size of the array.
+         * @return the number of bytes comprising the array.
+         */
+        static inline size_t CalculateBitFieldSize(const size_t& arraySize)
+        {
+            return (arraySize / BYTE_SIZE_IN_BITS) + 1;
+        }
+
+        inline const uint8_t* BitField() const
+        {
+            return bitfield;
+        }
+        inline uint8_t* BitField()
+        {
+            return bitfield;
+        }
+
+        /**
+         * @brief Resizes the state mask in accordance to the new array size.
+         * @param newSize the new array size.
+         * @param newByteCount the new number of byte masks.
+         */
+        inline void Resize(const size_t& newSize)
+        {
+            // 0000 0000 0000 0001 | 0010 0000 | 0000 1010
+            bitfield = static_cast<uint8_t*>(realloc(bitfield, BYTE_MASK_SIZE * newSize));
+
+            auto bitIndex = CalculateLeftMostBit(bitfield[newSize - 1]);
+
+            // Use an AND operation to reset the byte mask to the position that we want.
+            bitfield[newSize - 1] &= MAX_BIT_VALUES[bitIndex];
+
+            leftMostBit = IF(newSize > size THEN leftMostBit ELSE(
+                                           bitIndex + ((newSize - 1) * BYTE_SIZE_IN_BITS)));
+
+            size = newSize;
+
+            UnsetPostBits(leftMostBit);
+        }
 
         inline void ResetValues()
         {
@@ -251,6 +211,8 @@ public:
             leftMostBit = 0;
             size = 0;
         }
+
+    private:
 
         uint8_t* bitfield {nullptr};
         size_t leftMostBit {0};
@@ -313,14 +275,16 @@ public:
         uint8_t bitfield[S] {0};
         size_t leftMostBit {0};
     };
+
+    /**
+     * @brief Checks if the index is Active (has been assigned to). If it is not, an assertion
+     * failure will be triggered.
+     * @param index the index to evaluate.
+     * @param size the size of the array
+     */
+    static void AssertIsSet(const uint8_t* bitField, const size_t& index);
+
 private:
-    // The number of states we can fit per segment (1 byte = 8 states)
-    static inline constexpr uint8_t BYTE_SIZE_IN_BITS = 8;
-    // The default object size for each segment (1 byte)
-    static inline constexpr uint8_t BYTE_MASK_SIZE = sizeof(uint8_t);
-    // Each position represents a byte where all bits before the index are 1.
-    // i.e: index 2 = 0000 0111
-    static inline constexpr uint8_t MAX_BIT_VALUES[BYTE_SIZE_IN_BITS] = {1, 3, 7, 15, 31, 63, 127, 255};
 
     /**
      * Checks for a 1 value in a position in a bitfield. For example, given a bitfield: 00010101,
@@ -362,26 +326,6 @@ private:
      * @param size the size of the array
      */
     static void AssertIsInBounds(const size_t& index, const size_t& size);
-
-    /**
-     * @brief Checks if the index is Active (has been assigned to). If it is not, an assertion
-     * failure will be triggered.
-     * @param index the index to evaluate.
-     * @param size the size of the array
-     */
-    static void AssertIsActive(const uint8_t* bitField, const size_t& index);
-
-    /**
-     * Checks if an index is both active AND is ini bounds. If either condition is false, an
-     * assertion failure will be thrown.
-     * @param bitField the array of bytes to process.
-     * @param index the index being checked.
-     * @param size the total size of the array.
-     */
-    static void AssertIsInBoundsAndActive(const uint8_t* bitField,
-                                          const size_t& index,
-                                          const size_t& size);
-
 };
 } // namespace Siege
 

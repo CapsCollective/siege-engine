@@ -10,10 +10,9 @@
 #define SIEGE_ENGINE_HEAP_ARRAY_H
 
 #include "ArrayUtils.h"
+#include "BitSet.h"
 
 namespace Siege::Utils
-{
-namespace Memory
 {
 // Static methods
 
@@ -41,7 +40,6 @@ static inline T* Reallocate(T* ptr, const size_t& dataSize)
 {
     return static_cast<T*>(realloc(ptr, dataSize));
 }
-} // namespace Memory
 
 // HeapArray
 
@@ -159,14 +157,14 @@ public:
      * heap. Constructing an array this way requires either an explicit resizing or a new creation
      * to add a size. Any usage of the Get() or subscript operator will cause an error
      */
-    HeapArray() : HeapArray(0, 0, 0, nullptr, nullptr) {}
+    HeapArray() = default;
 
     /**
      * @brief Initialises the HeapArray with the given size
      * @param arraySize the size of the array
      */
     explicit HeapArray(const size_t& arraySize) :
-        HeapArray(arraySize, 0, ArrayUtils::CalculateBitFieldSize(arraySize))
+        HeapArray(arraySize, 0, BitUtils::CalculateBitFieldSize(arraySize))
     {}
 
     /**
@@ -176,15 +174,12 @@ public:
     HeapArray(const std::initializer_list<T>& list)
     {
         size = list.size();
-        data = Memory::Allocate<T>(sizeof(T) * size);
+        data = Allocate<T>(sizeof(T) * size);
 
-        size_t newByteCount = ArrayUtils::CalculateBitFieldSize(size);
+        bitField = BitUtils::BitSet(BitUtils::CalculateBitFieldSize(size));
+        bitField.SetBitsToOne(list.size());
 
-        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
-
-        ArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
         ArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
-        ArrayUtils::SetBitsToOne(stateMaskBitfield, list.size());
 
         count = size;
     }
@@ -192,15 +187,14 @@ public:
     HeapArray(const T* rawPtr, const size_t ptrSize)
     {
         size = ptrSize;
-        data = Memory::Allocate<T>(sizeof(T) * size);
+        data = Allocate<T>(sizeof(T) * size);
 
-        size_t newByteCount = ArrayUtils::CalculateBitFieldSize(size);
+        size_t newByteCount = BitUtils::CalculateBitFieldSize(size);
 
-        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * newByteCount);
+        bitField = BitUtils::BitSet(newByteCount);
+        bitField.SetBitsToOne(size);
 
-        ArrayUtils::ResetStateMask(stateMaskBitfield, newByteCount);
         ArrayUtils::CopyData(data, rawPtr, sizeof(T) * size);
-        ArrayUtils::SetBitsToOne(stateMaskBitfield, size);
 
         count = size;
     }
@@ -211,18 +205,19 @@ public:
      */
     HeapArray(const HeapArray<T>& other) : size {other.size}, count {other.count}
     {
+        size = other.size;
+
         if (other.data == nullptr && other.size == 0) return;
 
-        auto stateMaskCount = ArrayUtils::CalculateBitFieldSize(other.size);
+        auto stateMaskCount = BitUtils::CalculateBitFieldSize(other.size);
 
         AllocateMemory(size, stateMaskCount);
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
-        ArrayUtils::CopyData(stateMaskBitfield,
-                             other.stateMaskBitfield,
-                             BYTE_MASK_SIZE * stateMaskCount);
 
-        count = other.Count();
+        bitField = other.bitField;
+
+        count = other.count;
     }
 
     /**
@@ -270,7 +265,9 @@ public:
      */
     T& operator[](const size_t& index)
     {
-        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
+        count += !bitField.IsSet(index + 1);
+        bitField.SetBit(index + 1);
+
         return Get(index);
     }
 
@@ -315,7 +312,7 @@ public:
      */
     const T& Get(const size_t& index) const
     {
-        ArrayUtils::AssertIsActive(stateMaskBitfield, size);
+        BitUtils::AssertIsSet(bitField.BitField(), size);
 
         return data[index];
     }
@@ -337,7 +334,9 @@ public:
      */
     void Insert(const size_t index, const T& element)
     {
-        count += ArrayUtils::AddToBitMask(stateMaskBitfield, index, size);
+        count += !bitField.IsSet(index + 1);
+        bitField.SetBit(index + 1);
+
         Set(index, element);
     }
 
@@ -348,7 +347,7 @@ public:
      */
     void Remove(const size_t& index)
     {
-        ArrayUtils::RemoveFromStateMask(stateMaskBitfield, index, size);
+        bitField.UnsetBit(index + 1);
         count--;
     }
 
@@ -366,9 +365,9 @@ public:
             return;
         }
 
-        // Every 8 positions are represented with one 8-bit unsigned integer. As such, every 8
-        // elements in the array represents one to the size of our collection of byte masks
-        size_t newByteCount = ((newSize / BYTE_SIZE_IN_BITS) + 1);
+        // Every 8 positions are represented with one 8 bit unsigned integer. As such, every 8
+        // elements in the array represents one to the size of our collection of byte masks.
+        size_t newByteCount = ((newSize / BitUtils::BYTE_SIZE_IN_BITS) + 1);
 
         // Reallocate the two pointers
         ReallocateMemory(newSize, newByteCount);
@@ -391,7 +390,7 @@ public:
      */
     bool Active(const size_t& index)
     {
-        return ArrayUtils::Active(stateMaskBitfield, index);
+        return bitField.IsSet(index + 1);
     }
 
     /**
@@ -400,11 +399,14 @@ public:
     void Clear()
     {
         count = 0;
+        bitField.Clear();
+    }
 
-        if (stateMaskBitfield)
-        {
-            ArrayUtils::ResetStateMask(stateMaskBitfield, ArrayUtils::CalculateBitFieldSize(size));
-        }
+    void Invalidate()
+    {
+        count = 0;
+        data = nullptr;
+        bitField.ResetValues();
     }
 
     /**
@@ -453,39 +455,29 @@ private:
     // Private Constructors
 
     /**
-     * @brief The primary constructor for the HeapArray
-     * @param newSize the size we want to allocate for the array
-     * @param newCount the number of objects in the array
-     * @param newBytes the number of bytes to allocate for tracking state
-     * @param masks a raw pointer to a set of 8-bit unsigned integers
-     * @param data a raw pointer to the data stored in the array
+     * @brief The primary constructor for the HeapArray.
+     * @param newSize the size we want to allocate for the array.
+     * @param newCount the number of objects in the array.
+     * @param newBytes the number of bytes to allocate for tracking state.
+     * @param masks a raw pointer to a set of 8-bit unsigned integers.
+     * @param data a raw pointer to the data stored in the array.
      */
-    HeapArray(const size_t& newSize,
-              const size_t& newCount,
-              const size_t& newBytes,
-              uint8_t* masks,
-              T* data) :
+    HeapArray(const size_t& newSize, const size_t& newCount, const size_t& newBytes, T* data) :
         size {newSize},
         count {newCount},
-        stateMaskBitfield {masks},
+        bitField {BitUtils::BitSet(newBytes)},
         data {data}
     {}
 
     /**
-     * @brief A constructor for creating a HeapArray with a number of sizes
-     * @param newSize the size of the array
-     * @param newCount the number of elements in the array
-     * @param masksSize the number of bytes to allocate for storing our states
+     * @brief A constructor for creating a HeapArray with a number of sizes.
+     * @param newSize the size of the array.
+     * @param newCount the number of elements in the array.
+     * @param masksSize the number of bytes to allocate for storing our states.
      */
     HeapArray(const size_t& newSize, const size_t& newCount, const size_t& masksSize) :
-        HeapArray(newSize,
-                  newCount,
-                  masksSize,
-                  Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * masksSize),
-                  Memory::Allocate<T>(sizeof(T) * newSize))
-    {
-        memset(stateMaskBitfield, 0, (BYTE_MASK_SIZE * masksSize));
-    }
+        HeapArray(newSize, newCount, masksSize, Allocate<T>(sizeof(T) * newSize))
+    {}
 
     // Functions
 
@@ -506,20 +498,17 @@ private:
      */
     void AllocateMemory(const size_t& arraySize, const size_t& bytesCount)
     {
-        data = Memory::Allocate<T>(sizeof(T) * arraySize);
-        stateMaskBitfield = Memory::Allocate<uint8_t>(BYTE_MASK_SIZE * bytesCount);
+        data = Allocate<T>(sizeof(T) * arraySize);
     }
 
     /**
-     * Reallocates the memory for both the bitmasks and the arrays
-     * @param arraySize the number of elements in the array
-     * @param bytesCount the number of bytes to allocate
+     * Reallocates the memory for both the bitmasks and the arrays.
+     * @param arraySize the number of elements in the array.
+     * @param bytesCount the number of bytes to allocate.
      */
     void ReallocateMemory(const size_t& arraySize, const size_t& bytesCount)
     {
-        data = Memory::Reallocate<T>(data, sizeof(T) * arraySize);
-        stateMaskBitfield =
-            Memory::Reallocate<uint8_t>(stateMaskBitfield, BYTE_MASK_SIZE * bytesCount);
+        data = Reallocate<T>(data, sizeof(T) * arraySize);
     }
 
     /**
@@ -539,8 +528,7 @@ private:
         size_t bitIndex = std::clamp<size_t>(bitsToProcess - 1, 0, bitsToProcess);
 
         // Use an AND operation to reset the byte mask to the position that we want.
-        stateMaskBitfield[ArrayUtils::CalculateBitFieldSize(newSize) - 1] &=
-            MAX_BIT_VALUES[bitIndex];
+        bitField.UnsetPostBits(newSize);
     }
 
     /**
@@ -552,16 +540,15 @@ private:
         auto tmpSize = size;
         auto tmpCount = count;
         auto tmpData = data;
-        auto tmpMask = stateMaskBitfield;
+        auto tmpMask = bitField;
 
         size = other.size;
         count = other.count;
-
         data = other.data;
-        other.data = tmpData;
-        stateMaskBitfield = other.stateMaskBitfield;
-        other.stateMaskBitfield = tmpMask;
+        bitField = other.bitField;
 
+        other.data = tmpData;
+        other.bitField = tmpMask;
         other.size = tmpSize;
         other.count = tmpCount;
     }
@@ -572,7 +559,7 @@ private:
     void DeallocateMemory()
     {
         free(data);
-        free(stateMaskBitfield);
+        bitField.Clear();
     }
 
     /**
@@ -581,7 +568,7 @@ private:
     void ResetValues()
     {
         data = nullptr;
-        stateMaskBitfield = nullptr;
+        bitField.Clear();
         size = count = 0;
     }
 
@@ -596,14 +583,12 @@ private:
         count = other.count;
         size = other.size;
 
-        auto byteCount = ArrayUtils::CalculateBitFieldSize(other.size);
+        auto byteCount = BitUtils::CalculateBitFieldSize(other.size);
 
         ReallocateMemory(size, byteCount);
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
-        ArrayUtils::CopyData(stateMaskBitfield,
-                             other.stateMaskBitfield,
-                             BYTE_MASK_SIZE * byteCount);
+        bitField = other.bitField;
     }
 
     // Tracker Variables
@@ -611,7 +596,7 @@ private:
     size_t count {0};
 
     // Pointers
-    uint8_t* stateMaskBitfield {nullptr};
+    BitUtils::BitSet bitField;
     T* data {nullptr};
 };
 
