@@ -9,6 +9,8 @@
 #include <utest.h>
 #include <utils/BitSet.h>
 
+#include <utility>
+
 UTEST(test_BitSet, CreateBitSet)
 {
     Siege::Utils::BitUtils::BitSet bitMask;

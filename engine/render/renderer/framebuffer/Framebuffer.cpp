@@ -61,7 +61,6 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
     if (framebuffers.Size() > 0) DestroyFramebuffer(device);
 
     framebuffers = std::move(other.framebuffers);
-    other.framebuffers.Clear();
 
     return *this;
 }

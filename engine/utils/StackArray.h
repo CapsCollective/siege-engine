@@ -398,8 +398,8 @@ public:
      */
     MSArray(std::initializer_list<T> list) : MSArray(list.size())
     {
-        count = CLAMP(list.size(), 0, S);
-        ArrayUtils::CopyData(data, std::data(list), CLAMP_T(list.size(), 0, S, T));
+        count = ArrayUtils::SetCount(list.size(), 0, S);
+        ArrayUtils::CopyData(data, std::data(list), sizeof(T) * count);
         bitField.SetBitsToOne(count);
     }
 
@@ -411,8 +411,8 @@ public:
      */
     MSArray(const T* ptr, const size_t& ptrSize) : MSArray(ptrSize)
     {
-        count = CLAMP(ptrSize, static_cast<size_t>(0), S);
-        ArrayUtils::CopyData(data, ptr, CLAMP_T(ptrSize, static_cast<size_t>(0), S, T));
+        count = ArrayUtils::SetCount(ptrSize, 0, S);
+        ArrayUtils::CopyData(data, ptr, sizeof(T) * count);
         bitField.SetBitsToOne(count);
     }
 
@@ -655,15 +655,6 @@ private:
      * @param arrSize the amount to set the count to.
      */
     MSArray(const size_t& arrSize) : count {arrSize} {}
-
-    /**
-     * Returns the number of bytes in the state masks flags.
-     * @return the number of bytes in the state masks,
-     */
-    constexpr inline size_t GetBitMaskSize()
-    {
-        return BitUtils::CalculateBitFieldSize(S);
-    }
 
     /**
      * Sets the value of a given index. This function does no error checking and is susceptible to

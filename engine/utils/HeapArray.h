@@ -14,35 +14,6 @@
 
 namespace Siege::Utils
 {
-// Static methods
-
-/**
- * @brief Allocates a chunk of memory and returns it as a pointer to a type
- * @tparam T the type of the pointer to allocate
- * @param dataSize the size of the memory we want to allocate
- * @return the pointer we allocated
- */
-template<typename T>
-static inline T* Allocate(const size_t& dataSize)
-{
-    return static_cast<T*>(malloc(dataSize));
-}
-
-/**
- * @brief Reallocate a chunk of memory to a new size
- * @tparam T the type of the pointer
- * @param ptr the pointer to be reallocated
- * @param dataSize the size of the new memory chunk
- * @return the new reallocated pointer
- */
-template<typename T>
-static inline T* Reallocate(T* ptr, const size_t& dataSize)
-{
-    return static_cast<T*>(realloc(ptr, dataSize));
-}
-
-// HeapArray
-
 /**
  * @brief The HeapArray is a managed heap-allocated array type. The HeapArray is intended to be
  * used when a container is needed who's size is not known at compile time, but is required to be
@@ -164,7 +135,7 @@ public:
      * @param arraySize the size of the array
      */
     explicit HeapArray(const size_t& arraySize) :
-        HeapArray(arraySize, 0, BitUtils::CalculateBitFieldSize(arraySize))
+        HeapArray(arraySize, 0, BitUtils::CalculateBitSetSize(arraySize))
     {}
 
     /**
@@ -174,9 +145,11 @@ public:
     HeapArray(const std::initializer_list<T>& list)
     {
         size = list.size();
-        data = Allocate<T>(sizeof(T) * size);
+        data = ArrayUtils::Allocate<T>(sizeof(T) * size);
 
-        bitField = BitUtils::BitSet(BitUtils::CalculateBitFieldSize(size));
+        size_t newByteCount = BitUtils::CalculateBitSetSize(size);
+
+        bitField = BitUtils::BitSet(newByteCount);
         bitField.SetBitsToOne(list.size());
 
         ArrayUtils::CopyData(data, std::data(list), sizeof(T) * size);
@@ -187,9 +160,9 @@ public:
     HeapArray(const T* rawPtr, const size_t ptrSize)
     {
         size = ptrSize;
-        data = Allocate<T>(sizeof(T) * size);
+        data = ArrayUtils::Allocate<T>(sizeof(T) * size);
 
-        size_t newByteCount = BitUtils::CalculateBitFieldSize(size);
+        size_t newByteCount = BitUtils::CalculateBitSetSize(size);
 
         bitField = BitUtils::BitSet(newByteCount);
         bitField.SetBitsToOne(size);
@@ -209,7 +182,7 @@ public:
 
         if (other.data == nullptr && other.size == 0) return;
 
-        auto stateMaskCount = BitUtils::CalculateBitFieldSize(other.size);
+        auto stateMaskCount = BitUtils::CalculateBitSetSize(other.size);
 
         AllocateMemory(size, stateMaskCount);
 
@@ -358,7 +331,7 @@ public:
      */
     void Resize(const size_t& newSize)
     {
-        // Setting the array to 0 is the equivalent of destroying the array
+        // Setting the array to 0 is the equivalent of destroying the array.
         if (newSize == 0)
         {
             Destroy();
@@ -374,13 +347,14 @@ public:
 
         // Resize our state mask. Reallocating the states simply changes the number of bytes.
         // We need to change the last byte available to us to represent the new number of possible
-        // states
-        ResizeStateMask(newSize, newByteCount);
+        // states.
+        bitField.Resize(newByteCount);
+        bitField.UnsetPostBits(newSize);
 
         size = newSize;
 
-        // Adjust the count to be within the range of our new size
-        count = std::clamp<size_t>(count, 0, newSize);
+        // Adjust the count to be within the range of our new size.
+        count = ArrayUtils::SetCount(count, 0, newSize);
     }
 
     /**
@@ -400,13 +374,6 @@ public:
     {
         count = 0;
         bitField.Clear();
-    }
-
-    void Invalidate()
-    {
-        count = 0;
-        data = nullptr;
-        bitField.ResetValues();
     }
 
     /**
@@ -476,7 +443,7 @@ private:
      * @param masksSize the number of bytes to allocate for storing our states.
      */
     HeapArray(const size_t& newSize, const size_t& newCount, const size_t& masksSize) :
-        HeapArray(newSize, newCount, masksSize, Allocate<T>(sizeof(T) * newSize))
+        HeapArray(newSize, newCount, masksSize, ArrayUtils::Allocate<T>(sizeof(T) * newSize))
     {}
 
     // Functions
@@ -498,7 +465,7 @@ private:
      */
     void AllocateMemory(const size_t& arraySize, const size_t& bytesCount)
     {
-        data = Allocate<T>(sizeof(T) * arraySize);
+        data = ArrayUtils::Allocate<T>(sizeof(T) * arraySize);
     }
 
     /**
@@ -508,27 +475,7 @@ private:
      */
     void ReallocateMemory(const size_t& arraySize, const size_t& bytesCount)
     {
-        data = Reallocate<T>(data, sizeof(T) * arraySize);
-    }
-
-    /**
-     * @brief Resizes the state mask in accordance to the new array size.
-     * @param newSize the new array size.
-     * @param newByteCount the new number of byte masks.
-     */
-    void ResizeStateMask(const size_t& newSize, const size_t& newByteCount)
-    {
-        // Get the last byte mask since it is the only one needed to change
-        size_t bitsToProcess = newSize - ((newByteCount - 1) * 8);
-
-        // Get the number of bits that need to be checked for equality
-        // i.e: if we have a mask: 0001 0101 in an array of size 5, and we resize it to only have 4
-        // elements, we want to make sure that the fifth bit in the mask is reset. As such, we want
-        // to make sure that we reset all bits EXCEPT for the first four bits
-        size_t bitIndex = std::clamp<size_t>(bitsToProcess - 1, 0, bitsToProcess);
-
-        // Use an AND operation to reset the byte mask to the position that we want.
-        bitField.UnsetPostBits(newSize);
+        data = ArrayUtils::Reallocate<T>(data, sizeof(T) * arraySize);
     }
 
     /**
@@ -583,7 +530,7 @@ private:
         count = other.count;
         size = other.size;
 
-        auto byteCount = BitUtils::CalculateBitFieldSize(other.size);
+        auto byteCount = BitUtils::CalculateBitSetSize(other.size);
 
         ReallocateMemory(size, byteCount);
 

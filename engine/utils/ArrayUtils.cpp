@@ -10,6 +10,8 @@
 
 #include <cassert>
 
+#include "Branchless.h"
+
 namespace Siege::Utils
 {
 void ArrayUtils::AssertIsInBounds(const size_t& index, const size_t& size)
@@ -17,4 +19,12 @@ void ArrayUtils::AssertIsInBounds(const size_t& index, const size_t& size)
     // TODO: Change this to CC_ASSERT once the logging integration is complete
     assert(IsInBounds(index, size) && "The provided index is out of bounds!");
 }
+
+unsigned long ArrayUtils::SetCount(const unsigned long& size,
+                                   const unsigned long& min,
+                                   const unsigned long& max)
+{
+    return IF(size <= max THEN IF(size > 0 THEN size ELSE 0) ELSE max);
+}
+
 } // namespace Siege::Utils

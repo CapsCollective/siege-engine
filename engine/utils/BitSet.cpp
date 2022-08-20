@@ -10,7 +10,13 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <utility>
 
+#include "Branchless.h"
+
+// Macro for translating a byte value into an index position.
 #define GET_BIT_POS(pos) static_cast<size_t>(BitUtils::BIT_POSITION_##pos)
 
 namespace Siege::Utils
@@ -29,8 +35,9 @@ unsigned long BitUtils::UnsetBit(unsigned char* bitfield,
     auto indexedBit = bit - 1;
     auto byteIndex = Byte(indexedBit);
 
-    bitfield[byteIndex] &= ~BitAtIndex(indexedBit);
+    BitUtils::SetBitToZero(bitfield[byteIndex], indexedBit);
 
+    // Skip the loop below if the bit being processed is not the leftMostBit
     byteIndex = IF(bit < leftMostBit THEN - 1 ELSE byteIndex);
 
     size_t newLeftMostBit = leftMostBit;
@@ -120,7 +127,8 @@ void BitUtils::AssertIsInBounds(const size_t& index, const size_t& size)
 void BitUtils::AssertIsSet(const uint8_t* bitField, const size_t& index)
 {
     // TODO: Change this to CC_ASSERT once the logging integration is complete
-    assert(Active(bitField, index) && "Cannot index into element that hasn't been assigned!");
+    assert(BitUtils::IsSet(bitField, index) &&
+           "Cannot index into element that hasn't been assigned!");
 }
 
 // +----------------------------------------------------------------------------------------------+
@@ -184,4 +192,64 @@ BitUtils::BitSet& BitUtils::BitSet::operator=(BitSet&& other)
     return *this;
 }
 
+void BitUtils::BitSet::SetBit(const size_t& bit)
+{
+    leftMostBit = BitUtils::SetBit(bitfield, bit, leftMostBit);
+}
+
+bool BitUtils::BitSet::IsSet(const size_t& bit)
+{
+    return BitUtils::IsSet(bitfield, bit);
+}
+
+void BitUtils::BitSet::UnsetBit(const size_t& bit)
+{
+    leftMostBit = BitUtils::UnsetBit(bitfield, bit, leftMostBit, size);
+}
+
+void BitUtils::BitSet::SetBitsToOne(const size_t& bits)
+{
+    BitUtils::SetBitsToOne(bitfield, bits);
+    leftMostBit = bits;
+}
+
+void BitUtils::BitSet::Clear()
+{
+    BitUtils::Clear(bitfield, size);
+    leftMostBit = size = 0;
+}
+
+void BitUtils::BitSet::UnsetPostBits(const size_t& bit)
+{
+    auto byteIndex = Byte(bit);
+
+    bitfield[byteIndex] &= MAX_BIT_VALUES[(bit % BYTE_SIZE_IN_BITS) - 1];
+
+    memset(bitfield + (byteIndex + 1), 0, size - (byteIndex + (byteIndex == 0)));
+
+    leftMostBit = CalculateLeftMostBit(bitfield[byteIndex]) + (byteIndex * BYTE_SIZE_IN_BITS);
+}
+
+void BitUtils::BitSet::Resize(const size_t& newSize)
+{
+    bitfield = static_cast<uint8_t*>(realloc(bitfield, BYTE_MASK_SIZE * newSize));
+
+    auto bitIndex = CalculateLeftMostBit(bitfield[newSize - 1]);
+
+    // Use an AND operation to reset the byte mask to the position that we want.
+    bitfield[newSize - 1] &= MAX_BIT_VALUES[bitIndex];
+
+    leftMostBit =
+        IF(newSize > size THEN leftMostBit ELSE(bitIndex + ((newSize - 1) * BYTE_SIZE_IN_BITS)));
+
+    size = newSize;
+
+    UnsetPostBits(leftMostBit);
+}
+
+void BitUtils::BitSet::ResetValues()
+{
+    bitfield = nullptr;
+    leftMostBit = size = 0;
+}
 } // namespace Siege::Utils
