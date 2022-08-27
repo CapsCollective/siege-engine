@@ -1,4 +1,6 @@
 # Siege Engine
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 ![macOS Status](../../workflows/macOS/badge.svg)
 ![Linux Status](../../workflows/Ubuntu/badge.svg)
 ![Windows Status](../../workflows/Windows/badge.svg)
@@ -7,21 +9,25 @@
 
 A lightweight, cross-platform game engine
 
+### Current Compatability
+| OS          | Default Compiler |  Last Manual Build  |                   Compile Status                     |
+| ----------- | ---------------- | ------------------- | ---------------------------------------------------- |
+| **macOS**   | Clang++          | `Monterey 12.3.1`   | ![macOS Status](../../workflows/macOS/badge.svg)     |
+| **Linux**   | G++              | `Ubuntu-20.04.2.0`  | ![Linux Status](../../workflows/Ubuntu/badge.svg)    |
+| **Windows** | MinGW (G++)      | `Windows 10 19041`  | ![Windows Status](../../workflows/Windows/badge.svg) |
+
 ## Contents
 
-- [Siege Engine](#siege-engine)
-    - [Contents](#contents)
-    - [Getting Started](#getting-started)
-        - [Dependencies](#dependencies)
-        - [Environment Setup](#environment-setup)
-            - [Using the Vulkan SDK](#using-the-vulkan-sdk)
-            - [Setup without the Vulkan SDK](#setup-without-the-vulkan-sdk)
-        - [Building the Project](#building-the-project)
-    - [Project Structure](#project-structure)
-    - [Contributing](#contributing)
-        - [How do I contribute?](#how-do-i-contribute)
-        - [Contributors](#contributors)
-    - [Licence](#licence)
+- [Getting Started](#getting-started)
+    - [Dependencies](#dependencies)
+    - [Setup](#setup)
+        - [Building validation layers](#building-with-validation-layers)
+    - [Building the Project](#building-the-project)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+    - [How do I contribute?](#how-do-i-contribute)
+    - [Contributors](#contributors)
+- [Licence](#licence)
 
 ## Getting Started
 
@@ -29,30 +35,32 @@ A lightweight, cross-platform game engine
 
 The following are dependencies for building and running the project:
 
-- [Cmake](https://cmake.org/) (all platforms)
-- [GNU Make](https://www.gnu.org/software/make/) (Linux & macOS)
-- [MingW32-make](https://www.mingw-w64.org/) (Windows)
-- [Python](https://www.python.org/) (all platforms)
-- [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) (Windows)
+- **All platforms**
+    - [CMake](https://cmake.org/)
+    - [Python](https://www.python.org/)
+- **macOS**
+    - [GNU Make](https://www.gnu.org/software/make/)
+- **Windows**
+    - [MinGW32 Make](https://www.mingw-w64.org/)
+    - [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+- **Linux**
+    - For linux environments the following packages are required for building the dependencies:
+        - `libx11-xcb-dev`
+        - `libxkbcommon-dev`
+        - `libwayland-dev`
+        - `libxrandr-dev`
+        - `libasound2-dev`
+        - `mesa-common-dev`
+        - `libx11-dev`
+        - `libxrandr-dev`
+        - `libxi-dev`
+        - `xorg-dev`
+        - `libgl1-mesa-dev`
+        - `libglu1-mesa-dev`
 
-**Linux:** For linux environments the following packages are required for building the dependencies.
+These can be installed using `apt-get` or an equivalent package manager for your Linux distribution:
 
-- `libx11-xcb-dev`
-- `libxkbcommon-dev`
-- `libwayland-dev`
-- `libxrandr-dev`
-- `libasound2-dev`
-- `mesa-common-dev`
-- `libx11-dev`
-- `libxrandr-dev`
-- `libxi-dev`
-- `xorg-dev`
-- `libgl1-mesa-dev`
-- `libglu1-mesa-dev`
-
-These can be installed using `apt-get` or an equivalent package manager for your OS distribution:
-
-```
+```console
 // Only required if not building with the Vulkan SDK
 $ sudo apt-get update
 $ sudo apt-get install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
@@ -63,27 +71,29 @@ $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi
 
 ### Setup
 
-1. Navigate to the project root.
+1. Navigate to the project root
 2. Run the setup script for your platform:
-
-   ```bash
-   // Linux & macos
-   $ ./scripts/setup.sh
-
-   // Windows
-   > ./scripts/setup.bat
-   ```
+    
+    ```console
+    // Linux & macOS
+    $ ./scripts/setup.sh
+    ```
+    ```console
+    // Windows
+    > ./scripts/setup.bat
+    ```
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
 
-**Building validation layers**
+#### Building With Validation Layers
 
-If you want to build validation layers then the setup scripts should be run by passing the `--include-validation-layers` flag:
+If you want to build with validation layers then the setup scripts should be run by passing the `--include-validation-layers` flag:
 
-```
-// Linux & macos
+```console
+// Linux & macOS
 $ ./scripts/install.sh --include-validation-layers
-
+```
+```console
 // Windows
 > ./scripts/setup.bat --include-validation-layers
 ```
@@ -92,19 +102,20 @@ $ ./scripts/install.sh --include-validation-layers
 
 ### Building the Project
 
-Once all dependencies have been set up, the project can be build and run using the following command:
+Assuming all dependencies have been satisfied, the project can be build and run using the following command:
 
-```
-// linux and macos
+```console
+// Linux and macOS
 $ make
 
-// linux and macos (with validation layers)
+// Linux and macOS (with validation layers)
 $ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
-
-// windows
+```
+```console
+// Windows
 > mingw32-make
 
-// windows - DEBUG
+// Windows (with validation layers)
 > mingw32-make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
 ```
 
