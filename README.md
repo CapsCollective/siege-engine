@@ -1,20 +1,20 @@
 # Siege Engine
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
-![macOS Status](../../workflows/macOS/badge.svg)
-![Linux Status](../../workflows/Ubuntu/badge.svg)
-![Windows Status](../../workflows/Windows/badge.svg)
-![Tests Status](../../workflows/Tests/badge.svg)
-![Formatting Status](../../workflows/Formatting/badge.svg)
+[![macOS Status](../../workflows/macOS/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/macOS.yml)
+[![Linux Status](../../workflows/Ubuntu/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/ubuntu.yml)
+[![Windows Status](../../workflows/Windows/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/windows.yml)
+[![Tests Status](../../workflows/Tests/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/tests.yml)
+[![Formatting Status](../../workflows/Formatting/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/formatting.yml)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 A lightweight, cross-platform game engine
 
 ### Current Compatability
 | OS          | Default Compiler |  Last Manual Build  |                   Compile Status                     |
 | ----------- | ---------------- | ------------------- | ---------------------------------------------------- |
-| **macOS**   | Clang++          | `Monterey 12.3.1`   | ![macOS Status](../../workflows/macOS/badge.svg)     |
-| **Linux**   | G++              | `Ubuntu-20.04.2.0`  | ![Linux Status](../../workflows/Ubuntu/badge.svg)    |
-| **Windows** | MinGW (G++)      | `Windows 10 19041`  | ![Windows Status](../../workflows/Windows/badge.svg) |
+| **macOS**   | Clang++          | `Monterey 12.3.1`   | [![macOS Status](../../workflows/macOS/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/macOS.yml)     |
+| **Linux**   | G++              | `Ubuntu-20.04.2.0`  | [![Linux Status](../../workflows/Ubuntu/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/ubuntu.yml)    |
+| **Windows** | MinGW (G++)      | `Windows 10 19041`  | [![Windows Status](../../workflows/Windows/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/windows.yml)   |
 
 ## Contents
 
@@ -153,6 +153,10 @@ It's pretty simple actually:
 3. Commit your changes (`git commit -m "Added some feature"`)
 4. Push to the branch (`git push origin cool-new-feature`)
 5. Create a new pull request for it!
+
+If you want to contribute to the project, be sure to review the **contribution guidelines**. This project adheres to the [Contributor Covenant code of conduct](CODE_OF_CONDUCT.md), and by contributing, interacting, or otherwise participating in it, you are expected to uphold this code.
+
+We use GitHub issues for tracking requests and bugs where possible, please use the GitHub discussions forum for help, general questions and other discourse.
 
 ### Contributors
 
