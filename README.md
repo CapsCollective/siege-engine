@@ -24,6 +24,8 @@ A lightweight, cross-platform game engine
     - [Setup](#setup)
         - [Building With Validation Layers](#building-with-validation-layers)
     - [Building the Project](#building-the-project)
+    - [Working With Siege](#working-with-siege)
+        - [Compile Options](#building-the-project)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
     - [How do I contribute?](#how-do-i-contribute)
@@ -123,6 +125,22 @@ $ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
 These commands should build the project and immediately run executable.
 
 Once these are done the project should be built and ready to go. Enjoy!
+
+### Working With Siege
+
+Now that you have the project setup and compiling on your system, it's time to start programming! We first of all should note that Siege is a lightweight game engine made by and for programmers. This is to say that it doesn't have a nice and comfy GUI to do everything in, or even one way of defining its runtime. The engine is split into a number of static libraries that are linked into a final executable so that you can pick and choose what functionality you need. While it can be treated like a framework, each piece is fundamentally written to work with each other in the context of the engine as a whole. 
+
+You can see examples of this in any of the application targets under `examples`. After running Make, you should find a newly generated `output` directory, populated with packaged executables for all example projects.
+
+#### Compile Options
+
+| Option                         | Default Value    | Description                                                                      |
+| ------------------------------ | ---------------- | -------------------------------------------------------------------------------- |
+| **DEBUG**                      | `1`              | When set to `1`, will compile in debug mode, and default **CC_LOG_LEVEL** to `2` |
+| **CC_LOG_LEVEL**               | `2`              | Sets the logging verbosity to `info` (`2`), `warning` (`1`), and `error` (`0`)   |
+| **ENABLE_VALIDATION_LAYERS**   | `0`              | When set to `1`, will enable Vulkan validation layers for the executable         |
+| **CXX**                        | `g++`/`clang++`  | Sets the compiler to use during build steps (default differs per-platform)       |
+| **CXXFLAGS**                   | N/A              | Allows for the specification of compile directives, such as macro definitions    |
 
 ## Project Structure
 
