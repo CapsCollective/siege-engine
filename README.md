@@ -5,6 +5,7 @@
 [![Windows Status](../../workflows/Windows/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/windows.yml)
 [![Tests Status](../../workflows/Tests/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/tests.yml)
 [![Formatting Status](../../workflows/Formatting/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/formatting.yml)
+[![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 A lightweight, cross-platform game engine
@@ -21,7 +22,7 @@ A lightweight, cross-platform game engine
 - [Getting Started](#getting-started)
     - [Dependencies](#dependencies)
     - [Setup](#setup)
-        - [Building validation layers](#building-with-validation-layers)
+        - [Building With Validation Layers](#building-with-validation-layers)
     - [Building the Project](#building-the-project)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
@@ -128,18 +129,18 @@ Once these are done the project should be built and ready to go. Enjoy!
 ```
 [root]
      ├─[engine]
-     │        ├─[core]
-     │        ├─[render]
-     │        ├─[utils]
+     │        ├─[core] <- the engine's core library
+     │        ├─[render] <- the engine's renderer
+     │        ├─[utils] <- the engine's utils library
      │
      ├─[examples]
-     │          ├─[game]
-     │          ├─[render]
+     │          ├─[game] <- an example app utilising all of the engine's libraries
+     │          ├─[render] <- an example app demonstrating the renderer
      │
-     ├─[make]
-     ├─[scripts]
-     ├─[tests]
-     ├─[vendor]
+     ├─[make] <- additional Make file utilities for the build system
+     ├─[scripts] <- additional scripts for the build system and user convenience
+     ├─[tests] <- a unit test app covering all of the engine's libraries
+     ├─[vendor] <- all third-party libraries used by the project
 ```
 
 ## Contributing
@@ -154,7 +155,7 @@ It's pretty simple actually:
 4. Push to the branch (`git push origin cool-new-feature`)
 5. Create a new pull request for it!
 
-If you want to contribute to the project, be sure to review the **contribution guidelines**. This project adheres to the [Contributor Covenant code of conduct](CODE_OF_CONDUCT.md), and by contributing, interacting, or otherwise participating in it, you are expected to uphold this code.
+If you want to contribute to the project, be sure to review the [contribution guidelines](CONTRIBUTING.md) for more info on adhering to the project's standards. This project adheres to the [Contributor Covenant code of conduct](CODE_OF_CONDUCT.md), and by contributing, interacting, or otherwise participating in it, you are expected to uphold this code.
 
 We use GitHub issues for tracking requests and bugs where possible, please use the GitHub discussions forum for help, general questions and other discourse.
 
