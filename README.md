@@ -8,9 +8,14 @@
 [![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-A lightweight, cross-platform game engine
+Sometimes game development can feel like a bit of a slog; an endless battle in which the developer is set against an overwhelming bulwark of required knowledge to create a functional game. On one hand, one must understand _linear algebra, calculus, and the intricacies of the rasterised rendering pipeline_ whilst also expecting a mastery of _memory mangement, build systems, algorithms, and coherent software architecture_.
+
+The reality is that making games is hard, and making games can be even harder when one does not fully understand the underlying foundations below the many layers of abstraction present in many commercial and general game engines. Using them can often feel disempowering as they discourage deeper learning through sheer size and complexity.
+
+The ultimate purpose of this project is to act as the metaphorical siege engine to break down the barriers to game engine development. To this end, Siege aims to be a **light-weight, cross platform, 3D game engine**. In doing so, we hope to create an engine for game developers, by game developers.
 
 ### Current Compatability
+
 | OS          | Default Compiler |  Last Manual Build  |                   Compile Status                     |
 | ----------- | ---------------- | ------------------- | ---------------------------------------------------- |
 | **macOS**   | Clang++          | `Monterey 12.3.1`   | [![macOS Status](../../workflows/macOS/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/macOS.yml)     |
@@ -25,7 +30,7 @@ A lightweight, cross-platform game engine
         - [Building With Validation Layers](#building-with-validation-layers)
     - [Building the Project](#building-the-project)
     - [Working With Siege](#working-with-siege)
-        - [Compile Options](#building-the-project)
+        - [Compile Options](#compile-options)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
     - [How do I contribute?](#how-do-i-contribute)
