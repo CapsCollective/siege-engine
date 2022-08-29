@@ -3,9 +3,13 @@ name: "CodeQL"
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      -'vendor/*'
     
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      -'vendor/*'
   
   workflow_dispatch:
 
