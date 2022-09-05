@@ -9,6 +9,7 @@
 #ifndef SIEGE_ENGINE_CORE_H
 #define SIEGE_ENGINE_CORE_H
 
+#include <utils/HeapArray.h>
 #include <volk/volk.h>
 
 #include <cstdint>

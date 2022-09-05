@@ -16,10 +16,10 @@
 #include <render/renderer/shader/Shader.h>
 #include <render/utils/Math.h>
 #include <render/window/Window.h>
+#include <utils/HeapArray.h>
 
 #include <chrono>
 #include <cmath>
-#include <vector>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -171,6 +171,8 @@ int main()
 
     Components::Shape cameraObject;
 
+    Siege::Utils::HeapArray<u32> array;
+
     // Shader Declaration
 
     // Vertex shaders
@@ -244,13 +246,13 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    std::vector<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
-                                             Components::Shape(&cubeObjModel),
-                                             Components::Shape(&vaseObjModel)};
+    Siege::Utils::HeapArray<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
+                                                         Components::Shape(&cubeObjModel),
+                                                         Components::Shape(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    std::vector<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
-                                               Components::Shape(&squareModel)};
+    Siege::Utils::HeapArray<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
+                                                           Components::Shape(&squareModel)};
 
     shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
@@ -311,8 +313,9 @@ int main()
 
         if (!renderer.StartFrame()) continue;
 
-        for (auto& shape : shapes)
+        for (auto it = shapes.CreateIterator(); it; ++it)
         {
+            Components::Shape shape = *it;
             Siege::Renderer3D::DrawModel(shape.GetModel(),
                                          shape.GetPosition(),
                                          shape.GetScale(),
@@ -330,8 +333,9 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
 
-        for (auto& shape : shapes2D)
+        for (auto it = shapes2D.CreateIterator(); it; ++it)
         {
+            Components::Shape shape = *it;
             Siege::Renderer2D::DrawModel(shape.GetModel(),
                                          shape.GetPosition2D(),
                                          shape.GetScale2D(),
