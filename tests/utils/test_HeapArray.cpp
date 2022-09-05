@@ -291,9 +291,9 @@ UTEST(test_HeapArray, IterateUsingRangedForLoop)
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        ASSERT_EQ(expectedResults[index++], *it);
     }
 }
 
@@ -309,9 +309,9 @@ UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
     uint32_t expectedResults[] = {1, 2, 4, 5};
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        ASSERT_EQ(expectedResults[index++], *it);
     }
 }
 
@@ -322,10 +322,25 @@ UTEST(test_HeapArray, IterateOverSingleElementArray)
     uint32_t expectedResults[] = {1};
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        ASSERT_EQ(expectedResults[index++], element);
+        ASSERT_EQ(expectedResults[index++], *it);
     }
+}
+
+UTEST(test_HeapArray, IterateOverEmptyArray)
+{
+    Siege::Utils::HeapArray<uint32_t> array;
+
+    uint32_t expectedIndex {0};
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        index++;
+    }
+
+    ASSERT_EQ(expectedIndex, index);
 }
 
 UTEST(test_HeapArray, ResizeArray)
@@ -399,7 +414,7 @@ UTEST(test_HeapArray, ResizeLargeArray)
 
     uint32_t number = 1;
 
-    for (auto& value : array) ASSERT_EQ(number++, value);
+    for (auto it = array.CreateIterator(); it; ++it) ASSERT_EQ(number++, *it);
 
     array.Resize(9);
 

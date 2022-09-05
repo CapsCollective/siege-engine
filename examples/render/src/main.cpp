@@ -313,8 +313,9 @@ int main()
 
         if (!renderer.StartFrame()) continue;
 
-        for (auto& shape : shapes)
+        for (auto it = shapes.CreateIterator(); it; ++it)
         {
+            Components::Shape shape = *it;
             Siege::Renderer3D::DrawModel(shape.GetModel(),
                                          shape.GetPosition(),
                                          shape.GetScale(),
@@ -332,8 +333,9 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
 
-        for (auto& shape : shapes2D)
+        for (auto it = shapes2D.CreateIterator(); it; ++it)
         {
+            Components::Shape shape = *it;
             Siege::Renderer2D::DrawModel(shape.GetModel(),
                                          shape.GetPosition2D(),
                                          shape.GetScale2D(),
