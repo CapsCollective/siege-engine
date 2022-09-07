@@ -13,7 +13,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-namespace Utils::Math
+namespace Math
 {
 float Normalise(float value, float min, float max);
 
@@ -26,6 +26,6 @@ int Sign(T val)
 {
     return (T(0) < val) - (val < T(0));
 }
-} // namespace Utils::Math
+} // namespace Math
 
 #endif

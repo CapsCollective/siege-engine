@@ -88,7 +88,7 @@ private:
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
     static VulkanDevice* deviceInstance;
-    static Utils::Array<VkCommandBuffer> commandBuffers;
+    static Array<VkCommandBuffer> commandBuffers;
 
     VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 

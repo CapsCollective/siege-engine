@@ -61,13 +61,13 @@ public:
     void BuildMaterial();
 
     void SetUniformData(VkDeviceSize dataSize, const void* data);
-    void SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data);
-    void SetUniformData(const char* name, VkDeviceSize dataSize, const void* data);
+    void SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data);
+    void SetUniformData(const String& name, VkDeviceSize dataSize, const void* data);
 
     void SetVertexShader(Shader* shader);
     void SetFragmentShader(Shader* shader);
 
-    bool HasProperty(Utils::StringId id);
+    bool HasProperty(Hash::StringId id);
 
     void Bind(VkCommandBuffer commandBuffer);
     void CreatePipeline();
@@ -89,7 +89,7 @@ private:
     struct Property
     {
         uint32_t binding = 0;
-        Utils::StringId id = 0;
+        Hash::StringId id = 0;
         VkShaderStageFlags stage;
         u64 offset = 0;
         u64 size = 0;
@@ -99,7 +99,7 @@ private:
 
     Material(Shader* vertexShader, Shader* fragmentShader, u32 shaderCount);
 
-    Property& GetProperty(Utils::StringId id);
+    Property& GetProperty(Hash::StringId id);
     void AddShader(Shader* shader);
     void SetShaderProperties(Shader* shader, u64& offset);
 
@@ -120,15 +120,15 @@ private:
     Shader* vertexShader {nullptr};
     Shader* fragmentShader {nullptr};
 
-    Utils::StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
+    StackArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 
     Buffer::Buffer buffer;
     u64 bufferSize = 0;
 
-    Utils::StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
-    Utils::StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
+    StackArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
+    StackArray<u32, MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
-    Utils::StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
+    StackArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
 
     Pipeline pipeline;
     VkPipelineLayout pipelineLayout {VK_NULL_HANDLE};

@@ -96,15 +96,25 @@ void VulkanDevice::CreateInstance()
 
     // Get all extensions required by our windowing system.
     auto extensions = Extensions::GetRequiredExtensions(enableValidationLayers);
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-    createInfo.ppEnabledExtensionNames = extensions.data();
+
+    const char* rawExtensions[extensions.Size()];
+
+    for (size_t i = 0; i < extensions.Size(); i++) rawExtensions[i] = extensions[i].Str();
+
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.Size());
+    createInfo.ppEnabledExtensionNames = rawExtensions;
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (enableValidationLayers)
     {
+        const char* rawLayers[VALIDATION_LAYERS_COUNT];
+
+        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++)
+            rawLayers[i] = validationLayers[i].Str();
+
         // Only add the ability to report on validation layers if the feature is enabled.
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+        createInfo.ppEnabledLayerNames = rawLayers;
 
         DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
@@ -140,13 +150,15 @@ void VulkanDevice::PickPhysicalDevice()
     VkPhysicalDevice devices[deviceCount];
     vkEnumeratePhysicalDevices(instance, &deviceCount, OUT devices);
 
+    const char* rawExtensions[deviceExtensions.size()];
+
+    for (size_t i = 0; i < deviceExtensions.size(); i++)
+        rawExtensions[i] = deviceExtensions[i].Str();
+
     for (size_t i = 0; i < deviceCount; i++)
     {
         VkPhysicalDevice device = devices[i];
-        if (PhysicalDevice::IsSuitable(device,
-                                       surface,
-                                       deviceExtensions.data(),
-                                       deviceExtensions.size()))
+        if (PhysicalDevice::IsSuitable(device, surface, rawExtensions, deviceExtensions.size()))
         {
             physicalDevice = device;
             break;
@@ -193,15 +205,26 @@ void VulkanDevice::CreateLogicalDevice()
     createInfo.pQueueCreateInfos = queueCreateInfos;
 
     createInfo.pEnabledFeatures = &deviceFeatures;
+
+    const char* rawExtensions[deviceExtensions.size()];
+
+    for (size_t i = 0; i < deviceExtensions.size(); i++)
+        rawExtensions[i] = deviceExtensions[i].Str();
+
     createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    createInfo.ppEnabledExtensionNames = rawExtensions;
 
     // might not really be necessary anymore because device specific validation layers
     // have been deprecated
     if (enableValidationLayers)
     {
+        const char* rawLayers[VALIDATION_LAYERS_COUNT];
+
+        for (size_t i = 0; i < VALIDATION_LAYERS_COUNT; i++)
+            rawLayers[i] = validationLayers[i].Str();
+
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+        createInfo.ppEnabledLayerNames = rawLayers;
     }
     else
     {

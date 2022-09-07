@@ -9,10 +9,11 @@
 #ifndef SIEGE_ENGINE_MODEL_H
 #define SIEGE_ENGINE_MODEL_H
 
+#include <utils/Hash.h>
+
 #include "../buffer/Buffer.h"
 #include "../material/Material.h"
 #include "../mesh/Mesh.h"
-#include "../utils/Hash.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
@@ -44,7 +45,7 @@ public:
     };
 
     Model(const Mesh::MeshData& meshData);
-    Model(const char* filePath);
+    Model(const String& filePath);
     Model();
     ~Model();
 
@@ -81,7 +82,7 @@ public:
 
 private:
 
-    void LoadModelFromFile(const char* filePath);
+    void LoadModelFromFile(const String& filePath);
 
     Mesh modelMesh;
     Material* material {nullptr};

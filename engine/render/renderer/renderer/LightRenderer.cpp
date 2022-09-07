@@ -13,7 +13,7 @@ namespace Siege
 LightRenderer::LightRenderer() {}
 LightRenderer::~LightRenderer() {}
 
-void LightRenderer::Initialise(const char* globalDataAttributeName, const u64& globalDataSize)
+void LightRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     lightDataId = INTERN_STR("lightUBO");

@@ -223,6 +223,8 @@ public:
 
 private:
 
+    static constexpr size_t VALIDATION_LAYERS_COUNT = 1;
+
     /**
      * Instantiates a Vulkan instance for the use of this renderer.
      *
@@ -313,13 +315,14 @@ private:
     /**
      * An array storing all required validation layers (if enabled).
      **/
-    const std::array<const char*, 1> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+    const std::array<const String, VALIDATION_LAYERS_COUNT> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"};
 
     /**
      * An array storing all required extensions. All of these must be present for the renderer to
      *start.
      **/
-    const std::array<const char*, 2> deviceExtensions = {
+    const std::array<const String, 2> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME};
 };

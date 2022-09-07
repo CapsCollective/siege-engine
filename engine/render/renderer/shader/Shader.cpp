@@ -19,7 +19,7 @@ Shader Shader::BuildShader()
     return Shader();
 }
 
-Shader& Shader::FromShader(const char* filePath)
+Shader& Shader::FromShader(const String& filePath)
 {
     this->filePath = filePath;
 
@@ -32,7 +32,7 @@ Shader& Shader::WithStage(PipelineConfig::PipelineStage stage)
     return *this;
 }
 
-Shader& Shader::WithUniform(u32 binding, const char* name, u64 size, size_t arraySize)
+Shader& Shader::WithUniform(u32 binding, const String& name, u64 size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size, arraySize);
 
@@ -42,7 +42,7 @@ Shader& Shader::WithUniform(u32 binding, const char* name, u64 size, size_t arra
 }
 
 Shader& Shader::WithDynamicUniform(u32 binding,
-                                   const char* name,
+                                   const String& name,
                                    u64 size,
                                    size_t arraySize,
                                    size_t count)
@@ -59,7 +59,7 @@ Shader& Shader::WithDynamicUniform(u32 binding,
     return *this;
 }
 
-Shader& Shader::WithStorage(u32 binding, const char* name, u64 size, size_t arraySize)
+Shader& Shader::WithStorage(u32 binding, const String& name, u64 size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size, arraySize);
 
@@ -69,7 +69,7 @@ Shader& Shader::WithStorage(u32 binding, const char* name, u64 size, size_t arra
 }
 
 Shader& Shader::WithDynamicStorage(u32 binding,
-                                   const char* name,
+                                   const String& name,
                                    u64 size,
                                    size_t arraySize,
                                    size_t count)
@@ -118,18 +118,18 @@ Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType
 }
 
 void Shader::SetUniformType(u32 binding,
-                            const char* name,
+                            const String& name,
                             VkDescriptorType type,
                             u64 size,
                             size_t arraySize,
                             size_t count)
 {
     CC_ASSERT(uniforms.Count() <= uniforms.Size(),
-              std::string("ERROR: Maximum number of uniforms have been reached. Maximum is " +
-                          std::to_string(uniforms.Size()))
-                  .c_str());
+              String("ERROR: Maximum number of uniforms have been reached. Maximum is " +
+                     String(uniforms.Size()))
+                  .Str());
 
-    Utils::StringId strId = INTERN_STR(name);
+    Hash::StringId strId = INTERN_STR(name);
 
     auto paddedSize = Buffer::PadUniformBufferSize(size);
 

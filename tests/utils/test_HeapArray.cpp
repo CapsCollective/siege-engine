@@ -13,7 +13,7 @@
 
 UTEST(test_HeapArray, CreateEmptyHeapArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array;
+    Siege::HeapArray<uint32_t> array;
 
     ASSERT_TRUE(array.Size() == 0);
     ASSERT_TRUE(array.Data() == nullptr);
@@ -21,7 +21,7 @@ UTEST(test_HeapArray, CreateEmptyHeapArray)
 
 UTEST(test_HeapArray, CreateHeapArrayWithSize)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     ASSERT_TRUE(array.Size() == 2);
     ASSERT_FALSE(array.Data() == nullptr);
@@ -29,7 +29,7 @@ UTEST(test_HeapArray, CreateHeapArrayWithSize)
 
 UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
 {
-    Siege::Utils::HeapArray<uint32_t> array = {0, 1};
+    Siege::HeapArray<uint32_t> array = {0, 1};
 
     ASSERT_TRUE(array.Size() == 2);
     ASSERT_FALSE(array.Data() == nullptr);
@@ -40,8 +40,8 @@ UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
 
 UTEST(test_HeapArray, CreateHeapArrayFromCopyConstructor)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA = {0, 1};
-    Siege::Utils::HeapArray<uint32_t> arrayB(arrayA);
+    Siege::HeapArray<uint32_t> arrayA = {0, 1};
+    Siege::HeapArray<uint32_t> arrayB(arrayA);
 
     ASSERT_EQ(arrayA.Size(), arrayB.Size());
     ASSERT_EQ(arrayA.Count(), arrayB.Count());
@@ -52,9 +52,9 @@ UTEST(test_HeapArray, CreateHeapArrayFromCopyConstructor)
 
 UTEST(test_HeapArray, CopyEmptyArrayWithConstructor)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA;
+    Siege::HeapArray<uint32_t> arrayA;
 
-    Siege::Utils::HeapArray<uint32_t> arrayB(arrayA);
+    Siege::HeapArray<uint32_t> arrayB(arrayA);
 
     ASSERT_EQ(arrayA.Data(), arrayB.Data());
     ASSERT_EQ(arrayA.Count(), arrayB.Count());
@@ -63,7 +63,7 @@ UTEST(test_HeapArray, CopyEmptyArrayWithConstructor)
 
 UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA({1, 2, 3, 4});
+    Siege::HeapArray<uint32_t> arrayA({1, 2, 3, 4});
 
     ASSERT_EQ(arrayA.Count(), 4);
     ASSERT_EQ(arrayA.Size(), 4);
@@ -74,7 +74,7 @@ UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
     ASSERT_EQ(arrayA[2], 3);
     ASSERT_EQ(arrayA[3], 4);
 
-    Siege::Utils::HeapArray<uint32_t> arrayB(std::move(arrayA));
+    Siege::HeapArray<uint32_t> arrayB(std::move(arrayA));
 
     ASSERT_EQ(arrayB.Count(), 4);
     ASSERT_EQ(arrayB.Size(), 4);
@@ -88,8 +88,8 @@ UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
 
 UTEST(test_HeapArray, DestroyHeapArray)
 {
-    Siege::Utils::HeapArray<uint32_t> emptyArray;
-    Siege::Utils::HeapArray<uint32_t> filledArray(2);
+    Siege::HeapArray<uint32_t> emptyArray;
+    Siege::HeapArray<uint32_t> filledArray(2);
 
     emptyArray.Destroy();
     filledArray.Destroy();
@@ -103,7 +103,7 @@ UTEST(test_HeapArray, DestroyHeapArray)
 
 UTEST(test_HeapArray, CheckIndexInBounds)
 {
-    Siege::Utils::HeapArray<uint32_t> array(1);
+    Siege::HeapArray<uint32_t> array(1);
 
     ASSERT_TRUE(array.IsInBounds(0));
     ASSERT_FALSE(array.IsInBounds(1));
@@ -111,7 +111,7 @@ UTEST(test_HeapArray, CheckIndexInBounds)
 
 UTEST(test_HeapArray, InsertElementUsingFunction)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array.Insert(0, 1);
 
@@ -127,7 +127,7 @@ UTEST(test_HeapArray, InsertElementUsingFunction)
 
 UTEST(test_HeapArray, InsertElementUsingBrackets)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -143,7 +143,7 @@ UTEST(test_HeapArray, InsertElementUsingBrackets)
 
 UTEST(test_HeapArray, GetElementUsingFunction)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -156,7 +156,7 @@ UTEST(test_HeapArray, GetElementUsingFunction)
 
 UTEST(test_HeapArray, GetElementUsingBrackets)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -169,7 +169,7 @@ UTEST(test_HeapArray, GetElementUsingBrackets)
 
 UTEST(test_HeapArray, CheckElementIsActive)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -183,7 +183,7 @@ UTEST(test_HeapArray, CheckElementIsActive)
 
 UTEST(test_HeapArray, RemoveElementByIndex)
 {
-    Siege::Utils::HeapArray<uint32_t> array(2);
+    Siege::HeapArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -208,8 +208,8 @@ UTEST(test_HeapArray, RemoveElementByIndex)
 
 UTEST(test_HeapArray, CopyArray)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA = {0, 1};
-    Siege::Utils::HeapArray<uint32_t> arrayB = {3, 4};
+    Siege::HeapArray<uint32_t> arrayA = {0, 1};
+    Siege::HeapArray<uint32_t> arrayB = {3, 4};
 
     arrayA = arrayB;
 
@@ -222,8 +222,8 @@ UTEST(test_HeapArray, CopyArray)
 
 UTEST(test_HeapArray, CopyEmptyArray)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA;
-    Siege::Utils::HeapArray<uint32_t> arrayB(arrayA);
+    Siege::HeapArray<uint32_t> arrayA;
+    Siege::HeapArray<uint32_t> arrayB(arrayA);
 
     arrayA = arrayB;
 
@@ -234,9 +234,9 @@ UTEST(test_HeapArray, CopyEmptyArray)
 
 UTEST(test_HeapArray, CopyEmptyArrayToFullArray)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA;
+    Siege::HeapArray<uint32_t> arrayA;
 
-    Siege::Utils::HeapArray<uint32_t> arrayB = {1, 2, 3, 4};
+    Siege::HeapArray<uint32_t> arrayB = {1, 2, 3, 4};
     arrayB = arrayA;
 
     ASSERT_EQ(arrayA.Data(), arrayB.Data());
@@ -246,14 +246,14 @@ UTEST(test_HeapArray, CopyEmptyArrayToFullArray)
 
 UTEST(test_HeapArray, MoveArray)
 {
-    Siege::Utils::HeapArray<uint32_t> arrayA;
+    Siege::HeapArray<uint32_t> arrayA;
 
     ASSERT_EQ(arrayA.Size(), 0);
     ASSERT_EQ(arrayA.Count(), 0);
 
     ASSERT_EQ(arrayA.Data(), nullptr);
 
-    Siege::Utils::HeapArray<uint32_t> arrayB({3, 4});
+    Siege::HeapArray<uint32_t> arrayB({3, 4});
 
     ASSERT_EQ(arrayB.Size(), 2);
     ASSERT_EQ(arrayB.Count(), 2);
@@ -274,7 +274,7 @@ UTEST(test_HeapArray, MoveArray)
 
 UTEST(test_HeapArray, IterateUsingBrackets)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2, 3, 4});
+    Siege::HeapArray<uint32_t> array({1, 2, 3, 4});
 
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
@@ -286,7 +286,7 @@ UTEST(test_HeapArray, IterateUsingBrackets)
 
 UTEST(test_HeapArray, IterateUsingRangedForLoop)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2, 3, 4});
+    Siege::HeapArray<uint32_t> array({1, 2, 3, 4});
 
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
@@ -299,7 +299,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoop)
 
 UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array(5);
+    Siege::HeapArray<uint32_t> array(5);
 
     array[0] = 1;
     array[1] = 2;
@@ -317,7 +317,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
 
 UTEST(test_HeapArray, IterateOverSingleElementArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1});
+    Siege::HeapArray<uint32_t> array({1});
 
     uint32_t expectedResults[] = {1};
 
@@ -330,7 +330,7 @@ UTEST(test_HeapArray, IterateOverSingleElementArray)
 
 UTEST(test_HeapArray, IterateOverEmptyArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array;
+    Siege::HeapArray<uint32_t> array;
 
     uint32_t expectedIndex {0};
 
@@ -345,7 +345,7 @@ UTEST(test_HeapArray, IterateOverEmptyArray)
 
 UTEST(test_HeapArray, ResizeArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2, 3, 4});
+    Siege::HeapArray<uint32_t> array({1, 2, 3, 4});
 
     ASSERT_EQ(array.Size(), 4);
     ASSERT_EQ(array.Count(), 4);
@@ -381,7 +381,7 @@ UTEST(test_HeapArray, ResizeArray)
 
 UTEST(test_HeapArray, ResizeArrayToSmallerSize)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2, 3, 4});
+    Siege::HeapArray<uint32_t> array({1, 2, 3, 4});
 
     ASSERT_EQ(array.Size(), 4);
     ASSERT_EQ(array.Count(), 4);
@@ -407,7 +407,7 @@ UTEST(test_HeapArray, ResizeArrayToSmallerSize)
 
 UTEST(test_HeapArray, ResizeLargeArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    Siege::HeapArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
     ASSERT_EQ(array.Size(), 10);
     ASSERT_EQ(array.Count(), 10);
@@ -426,7 +426,7 @@ UTEST(test_HeapArray, ResizeLargeArray)
 
 UTEST(test_HeapArray, ClearArray)
 {
-    Siege::Utils::HeapArray<uint32_t> array({1, 2});
+    Siege::HeapArray<uint32_t> array({1, 2});
 
     ASSERT_EQ(array.Size(), 2);
     ASSERT_EQ(array.Count(), 2);

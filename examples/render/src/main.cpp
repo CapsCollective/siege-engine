@@ -122,8 +122,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     if (glm::dot(rotate, rotate) > glm::epsilon<float>())
     {
         glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
-        viewerObject.SetRotation(
-            Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+        viewerObject.SetRotation(Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -149,7 +148,7 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
     {
         glm::vec3 newMove = viewerObject.GetPosition() + moveSpeed * glm::normalize(moveDir);
-        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
+        viewerObject.SetPosition(Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;
@@ -170,8 +169,6 @@ int main()
     Siege::Camera camera;
 
     Components::Shape cameraObject;
-
-    Siege::Utils::HeapArray<u32> array;
 
     // Shader Declaration
 
@@ -246,13 +243,13 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    Siege::Utils::HeapArray<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
-                                                         Components::Shape(&cubeObjModel),
-                                                         Components::Shape(&vaseObjModel)};
+    Siege::HeapArray<Components::Shape> shapes = {Components::Shape(&cubeObjModel),
+                                                  Components::Shape(&cubeObjModel),
+                                                  Components::Shape(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    Siege::Utils::HeapArray<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
-                                                           Components::Shape(&squareModel)};
+    Siege::HeapArray<Components::Shape> shapes2D = {Components::Shape(&triangleModel),
+                                                    Components::Shape(&squareModel)};
 
     shapes[0].SetPosition({0.f, -.5f, 0.f});
     shapes[0].SetScale({.5f, .5f, .5f});
