@@ -60,8 +60,8 @@ public:
 
     // 'Structors
 
-    Pipeline(const char* vertFilePath,
-             const char* fragFilePath,
+    Pipeline(const String& vertFilePath,
+             const String& fragFilePath,
              const PipelineConfigInfo& configInfo);
 
     Pipeline(const PipelineConfig::ShaderConfig* shaders,
@@ -95,8 +95,8 @@ public:
     void Bind(VkCommandBuffer commandBuffer);
 
     // TODO: document this
-    void RecreatePipeline(const char* vertFilePath,
-                          const char* fragFilePath,
+    void RecreatePipeline(const String& vertFilePath,
+                          const String& fragFilePath,
                           const PipelineConfigInfo& configInfo);
 
     void RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
@@ -117,7 +117,7 @@ private:
      * @param filePath a raw c string specifying the file path.
      * @returns a heap-allocated array containing the file contents.
      **/
-    static Utils::Array<char> ReadFile(const char* filePath);
+    static Utils::Array<char> ReadFile(const String& filePath);
 
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
                                 u32 shaderCount,

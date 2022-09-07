@@ -24,7 +24,7 @@ namespace Siege::Extensions
  * @param validationLayers a const char** array containing all required valiation layers.
  * @param size - the size of the array.
  **/
-bool CheckValidationLayerSupport(const char* const* validationLayers, size_t size);
+bool CheckValidationLayerSupport(const String* validationLayers, size_t size);
 
 /**
  * Compiles a list of all required extensions.
@@ -32,7 +32,7 @@ bool CheckValidationLayerSupport(const char* const* validationLayers, size_t siz
  * @param enableValidationLayers a boolean specifying if validation layers are enabled
  * @returns a vector of required validation layers (represented as const chars)
  **/
-std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers);
+Utils::Array<String> GetRequiredExtensions(bool enableValidationLayers);
 
 /**
  * Validates that all required extensions exist for our Vulkan instance.

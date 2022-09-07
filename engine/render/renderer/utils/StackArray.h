@@ -14,6 +14,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <utils/String.h>
 
 #include "Array.h"
 
@@ -80,11 +81,12 @@ public:
 
     void Append(T value)
     {
-        assert(count < S && std::string("Too many elements added to array. Max is ")
-                                .append(std::to_string(S))
-                                .c_str());
+        assert(count < S && (String("Too many elements added to array. Max is ")
+                             + String::FromInt(S)).Str());
         Activate(count);
         Set(count - 1, value);
+
+
     }
 
     void Remove(size_t index)

@@ -30,4 +30,11 @@ StringId WSID(const char* str)
 {
     return crc32((uint8_t*) str, strlen_c(str));
 }
-} // namespace Siege::Utils
+
+StringId WSID(const String& str)
+{
+    const char* rawStr = str.Str();
+    return crc32((uint8_t*) rawStr, strlen_c(rawStr));
+}
+
+} // namespace Siege

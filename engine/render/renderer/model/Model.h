@@ -44,7 +44,7 @@ public:
     };
 
     Model(const Mesh::MeshData& meshData);
-    Model(const char* filePath);
+    Model(const String& filePath);
     Model();
     ~Model();
 
@@ -81,7 +81,7 @@ public:
 
 private:
 
-    void LoadModelFromFile(const char* filePath);
+    void LoadModelFromFile(const String& filePath);
 
     Mesh modelMesh;
     Material* material {nullptr};

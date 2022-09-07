@@ -23,7 +23,7 @@ bool CheckExtensionSupport(VkPhysicalDevice device,
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, OUT availableExtensions);
 
     // We use a set here so that we can store only unique values.
-    std::set<std::string> requiredExtensions;
+    std::set<String> requiredExtensions;
 
     for (size_t i = 0; i < deviceExtensionCount; i++)
     {
