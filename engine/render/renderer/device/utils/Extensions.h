@@ -32,7 +32,7 @@ bool CheckValidationLayerSupport(const String* validationLayers, size_t size);
  * @param enableValidationLayers a boolean specifying if validation layers are enabled
  * @returns a vector of required validation layers (represented as const chars)
  **/
-Utils::Array<String> GetRequiredExtensions(bool enableValidationLayers);
+Array<String> GetRequiredExtensions(bool enableValidationLayers);
 
 /**
  * Validates that all required extensions exist for our Vulkan instance.

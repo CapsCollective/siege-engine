@@ -28,8 +28,8 @@ void ModelRenderer::DrawModel(Model* model,
 {
     models.Append(model);
 
-    auto transform = Utils::Math::CalculateTransform3D(position, rotation, scale);
-    auto normal = Utils::Math::CalculateNormalMatrix(rotation, scale);
+    auto transform = Math::CalculateTransform3D(position, rotation, scale);
+    auto normal = Math::CalculateNormalMatrix(rotation, scale);
     transforms.Append({transform, normal});
 }
 

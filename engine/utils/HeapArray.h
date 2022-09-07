@@ -17,7 +17,7 @@
 #include <initializer_list>
 #include <utility>
 
-namespace Siege::Utils
+namespace Siege
 {
 namespace Memory
 {
@@ -701,6 +701,6 @@ private:
     T* data {nullptr};
 };
 
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_HEAP_ARRAY_H

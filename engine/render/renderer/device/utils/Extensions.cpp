@@ -13,17 +13,6 @@
 #include <unordered_set>
 #include <vector>
 
-template<>
-struct std::hash<String>
-{
-    size_t operator()(const String& str) const
-    {
-        size_t seed = 0;
-        Siege::Utils::HashCombine(seed, str.At(0), str.At(str.Size()), str.Size(), str.Capacity());
-        return seed;
-    };
-};
-
 namespace Siege::Extensions
 {
 bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
@@ -58,8 +47,7 @@ bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
     return true;
 }
 
-
-Utils::Array<String> GetRequiredExtensions(bool enableValidationLayers)
+Array<String> GetRequiredExtensions(bool enableValidationLayers)
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -67,11 +55,11 @@ Utils::Array<String> GetRequiredExtensions(bool enableValidationLayers)
 
     size_t size = glfwExtensionCount + (1 * enableValidationLayers);
 
-    Utils::Array<String> array(size);
+    Array<String> array(size);
 
-    for(size_t i = 0; i < glfwExtensionCount; i++) array[i] = glfwExtensions[i];
+    for (size_t i = 0; i < glfwExtensionCount; i++) array[i] = glfwExtensions[i];
 
-    if (enableValidationLayers) array[size-1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    if (enableValidationLayers) array[size - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
     return array;
 }

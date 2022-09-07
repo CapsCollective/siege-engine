@@ -42,7 +42,7 @@ struct PipelineConfigInfo
     VkPipelineColorBlendStateCreateInfo colorBlendInfo {};
     VkPipelineDepthStencilStateCreateInfo depthStencilInfo {};
 
-    Utils::Array<VkDynamicState> dynamicStateEnables;
+    Array<VkDynamicState> dynamicStateEnables;
     VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 
     // Dependent structs on other data.
@@ -117,7 +117,7 @@ private:
      * @param filePath a raw c string specifying the file path.
      * @returns a heap-allocated array containing the file contents.
      **/
-    static Utils::Array<char> ReadFile(const String& filePath);
+    static Array<char> ReadFile(const String& filePath);
 
     void CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
                                 u32 shaderCount,
@@ -130,7 +130,7 @@ private:
      * @param fileData an array containing our binary shader data.
      * @param shaderModule a pointer to a shaderModule that we want to populate.
      **/
-    void CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule);
+    void CreateShaderModule(Array<char>& fileData, VkShaderModule* shaderModule);
 
     /**
      * The vulkan representation of a graphics pipeline.

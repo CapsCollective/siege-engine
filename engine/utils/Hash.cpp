@@ -8,8 +8,9 @@
 
 #include "Hash.h"
 
-namespace Siege::Utils
+namespace Hash
 {
+
 // Constexpr implementation and helpers
 uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc)
 {
@@ -31,10 +32,4 @@ StringId WSID(const char* str)
     return crc32((uint8_t*) str, strlen_c(str));
 }
 
-StringId WSID(const String& str)
-{
-    const char* rawStr = str.Str();
-    return crc32((uint8_t*) rawStr, strlen_c(rawStr));
-}
-
-} // namespace Siege
+} // namespace Hash

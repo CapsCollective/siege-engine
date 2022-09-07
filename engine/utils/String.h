@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "Hash.h"
 #include "Macros.h"
 
 /**
@@ -610,5 +611,22 @@ String operator+(const char& lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
+
+// Define a hash function for the string so that it can be stored in a map or ordered set
+// TODO(Aryeh): Maybe replace this with a custom implementation when the time comes.
+template<>
+struct std::hash<String>
+{
+    size_t operator()(const String& string) const
+    {
+        size_t seed = 0;
+        Hash::HashCombine(seed,
+                          string.At(0),
+                          string.At(string.Size()),
+                          string.Size(),
+                          string.Capacity());
+        return seed;
+    };
+};
 
 #endif // SIEGE_ENGINE_STRING_H

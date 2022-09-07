@@ -9,16 +9,19 @@
 #ifndef SIEGE_ENGINE_STACK_ARRAY_H
 #define SIEGE_ENGINE_STACK_ARRAY_H
 
+#include <utils/String.h>
+
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <memory>
-#include <utils/String.h>
 
 #include "Array.h"
 
-namespace Siege::Utils
+// TODO(Aryeh): Move this to Utils.
+
+namespace Siege
 {
 template<typename T, size_t S>
 class StackArray
@@ -81,12 +84,10 @@ public:
 
     void Append(T value)
     {
-        assert(count < S && (String("Too many elements added to array. Max is ")
-                             + String::FromInt(S)).Str());
+        assert(count < S &&
+               (String("Too many elements added to array. Max is ") + String::FromInt(S)).Str());
         Activate(count);
         Set(count - 1, value);
-
-
     }
 
     void Remove(size_t index)
@@ -187,6 +188,6 @@ private:
     T data[S];
     size_t count {0};
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif

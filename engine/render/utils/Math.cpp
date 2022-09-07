@@ -8,7 +8,7 @@
 
 #include "Math.h"
 
-namespace Utils::Math
+namespace Math
 {
 float Normalise(float value, float min, float max)
 {
@@ -26,4 +26,4 @@ glm::vec3 Lerp(glm::vec3 origin, glm::vec3 destination, float time)
             Lerp(origin.y, destination.y, time),
             Lerp(origin.z, destination.z, time)};
 }
-} // namespace Utils::Math
+} // namespace Math

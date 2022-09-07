@@ -32,7 +32,7 @@ Pipeline::~Pipeline()
     isFreed = true;
 }
 
-Utils::Array<char> Pipeline::ReadFile(const String& filePath)
+Array<char> Pipeline::ReadFile(const String& filePath)
 {
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
@@ -43,7 +43,7 @@ Utils::Array<char> Pipeline::ReadFile(const String& filePath)
     // the file stream is reading from (which presumably is at the end of the file).
     u32 size = static_cast<u32>(file.tellg());
 
-    Utils::Array<char> buffer(size);
+    Array<char> buffer(size);
 
     // Move to the beginning of the file.
     file.seekg(0);
@@ -166,7 +166,7 @@ void Pipeline::DestroyPipeline()
     isFreed = true;
 }
 
-void Pipeline::CreateShaderModule(Utils::Array<char>& fileData, VkShaderModule* shaderModule)
+void Pipeline::CreateShaderModule(Array<char>& fileData, VkShaderModule* shaderModule)
 {
     VkShaderModuleCreateInfo createInfo {};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

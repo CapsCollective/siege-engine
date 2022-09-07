@@ -126,9 +126,10 @@ void Shader::SetUniformType(u32 binding,
 {
     CC_ASSERT(uniforms.Count() <= uniforms.Size(),
               String("ERROR: Maximum number of uniforms have been reached. Maximum is " +
-                          String(uniforms.Size())).Str());
+                     String(uniforms.Size()))
+                  .Str());
 
-    Utils::StringId strId = INTERN_STR(name);
+    Hash::StringId strId = INTERN_STR(name);
 
     auto paddedSize = Buffer::PadUniformBufferSize(size);
 

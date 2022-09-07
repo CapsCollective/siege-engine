@@ -13,7 +13,9 @@
 
 #include <cstdint>
 
-namespace Siege::Utils
+// TODO: Move this to a separate area - maybe a vulkan-API specific directory.
+
+namespace Siege
 {
 // TODO document this
 class Descriptor
@@ -80,6 +82,6 @@ public:
 
 private:
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif

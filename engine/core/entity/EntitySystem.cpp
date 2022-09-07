@@ -8,12 +8,13 @@
 
 #include "EntitySystem.h"
 
+#include <utils/Logging.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
 
 #include "./Entity.h"
-#include "utils/Logging.h"
 
 int32_t GetEntityIndex(Entity* entity, const std::vector<Entity*>& storage)
 {

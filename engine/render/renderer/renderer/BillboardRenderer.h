@@ -50,12 +50,12 @@ private:
     Material billboardMaterial;
     Model billboardModel;
 
-    Utils::StringId globalDataId;
-    Utils::StringId positionsId;
+    Hash::StringId globalDataId;
+    Hash::StringId positionsId;
 
-    Utils::StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
-    Utils::StackArray<u32, Mesh::MAX_INDICES> indices;
-    Utils::StackArray<BillboardUBO, 1000> positions;
+    StackArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
+    StackArray<u32, Mesh::MAX_INDICES> indices;
+    StackArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege
 

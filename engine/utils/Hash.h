@@ -12,9 +12,10 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
-#include <utils/String.h>
 
-namespace Siege::Utils
+#define INTERN_STR(str) Hash::WSID(str)
+
+namespace Hash
 {
 // from: https://stackoverflow.com/a/57595105
 template<typename T, typename... Rest>
@@ -22,7 +23,7 @@ void HashCombine(std::size_t& seed, const T& v, const Rest&... rest)
 {
     seed ^= std::hash<T> {}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     (HashCombine(seed, rest), ...);
-};
+}
 
 typedef uint32_t StringId;
 
@@ -59,8 +60,6 @@ uint32_t crc32(const uint8_t* data, size_t length);
 size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
+} // namespace Hash
 
-StringId WSID(const String& str);
-} // namespace Siege
-
-#endif
+#endif // SIEGE_ENGINE_HASH_H

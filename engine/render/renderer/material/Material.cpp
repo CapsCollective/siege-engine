@@ -101,7 +101,7 @@ void Material::RecreatePipeline()
 
 void Material::CreatePipeline()
 {
-    Utils::StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS> shaderConfigs;
+    StackArray<PipelineConfig::ShaderConfig, MAX_SHADERS> shaderConfigs;
 
     if (vertexShader) shaderConfigs.Append({vertexShader->GetPath(), vertexShader->GetStage()});
     if (fragmentShader)
@@ -167,10 +167,8 @@ void Material::CreateDescriptors()
 
         // TODO: bindings MUST be unique for all bound shaders. This means that
         // TODO: new bindings on a new shader must follow a consecutive order.
-        auto layoutBinding = Utils::Descriptor::CreateLayoutBinding(property.binding,
-                                                                    1,
-                                                                    binding.type,
-                                                                    property.stage);
+        auto layoutBinding =
+            Descriptor::CreateLayoutBinding(property.binding, 1, binding.type, property.stage);
 
         auto stage = property.stage == VK_SHADER_STAGE_VERTEX_BIT   ? "vertex" :
                      property.stage == VK_SHADER_STAGE_FRAGMENT_BIT ? "fragment" :
@@ -181,41 +179,37 @@ void Material::CreateDescriptors()
 
         // Create all layouts
 
-        CC_ASSERT(Utils::Descriptor::CreateLayout(device->Device(),
-                                                  OUT binding.layout,
-                                                  &layoutBinding,
-                                                  1),
+        CC_ASSERT(Descriptor::CreateLayout(device->Device(), OUT binding.layout, &layoutBinding, 1),
                   "Failed to create descriptor set!");
 
         u64 offset = property.offset;
 
-        bufferInfos[i] = Utils::Descriptor::CreateBufferInfo(buffer.buffer,
-                                                             offset,
-                                                             property.size * property.count);
+        bufferInfos[i] =
+            Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
 
         std::cout << "Property Size: " << property.size * property.count << std::endl;
 
         std::cout << "Allocating descriptor set for binding " << property.binding << std::endl;
-        Utils::Descriptor::AllocateSets(device->Device(),
-                                        &binding.descriptorSet,
-                                        descriptorPool,
-                                        1,
-                                        &binding.layout);
+        Descriptor::AllocateSets(device->Device(),
+                                 &binding.descriptorSet,
+                                 descriptorPool,
+                                 1,
+                                 &binding.layout);
 
         descriptorSets.Append(binding.descriptorSet);
 
-        writeDescriptorSets[i] = Utils::Descriptor::CreateWriteSet(property.binding,
-                                                                   binding.descriptorSet,
-                                                                   1,
-                                                                   (VkDescriptorType) binding.type,
-                                                                   bufferInfos[i]);
+        writeDescriptorSets[i] = Descriptor::CreateWriteSet(property.binding,
+                                                            binding.descriptorSet,
+                                                            1,
+                                                            (VkDescriptorType) binding.type,
+                                                            bufferInfos[i]);
     }
 
     std::cout << "Successfully created all required layouts!" << std::endl;
 
     std::cout << "Total descriptor sets: " << descriptorSets.Count() << std::endl;
 
-    Utils::Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
+    Descriptor::WriteSets(device->Device(), writeDescriptorSets, propertiesCount);
 }
 
 void Material::AddShader(Shader* shader)
@@ -297,7 +291,7 @@ void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
     Buffer::CopyData(buffer, dataSize, data);
 }
 
-void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const void* data)
+void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data)
 {
     for (auto& property : propertiesArray)
     {
@@ -309,7 +303,7 @@ void Material::SetUniformData(Utils::StringId id, VkDeviceSize dataSize, const v
     }
 }
 
-bool Material::HasProperty(Utils::StringId id)
+bool Material::HasProperty(Hash::StringId id)
 {
     for (auto& property : propertiesArray)
     {
@@ -340,16 +334,14 @@ void Material::BuildMaterials(std::initializer_list<Material*> materials)
     for (auto material : materials) material->BuildMaterial();
 }
 
-Material::Property& Material::GetProperty(Utils::StringId id)
+Material::Property& Material::GetProperty(Hash::StringId id)
 {
     for (auto& property : propertiesArray)
     {
         if (id == property.id) return property;
     }
 
-    CC_ASSERT(false,
-              (std::string("No property with ID: ") + std::to_string(id) + std::string(" exists!"))
-                  .c_str());
+    CC_ASSERT(false, "No property with ID: " << id << " exists!");
 }
 
 void Material::BuildMaterial()

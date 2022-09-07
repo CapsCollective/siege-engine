@@ -12,6 +12,7 @@
 #include <tiny_obj_loader.h>
 
 #include <cstring>
+#include <glm/glm.hpp>
 
 namespace std
 {
@@ -21,7 +22,40 @@ struct hash<Siege::Vertex>
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Siege::Utils::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        return seed;
+    };
+};
+
+template<>
+struct hash<glm::vec3>
+{
+    size_t operator()(const glm::vec3& vertex) const
+    {
+        size_t seed = 0;
+        Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z);
+        return seed;
+    };
+};
+
+template<>
+struct hash<glm::vec2>
+{
+    size_t operator()(const glm::vec2& vertex) const
+    {
+        size_t seed = 0;
+        Hash::HashCombine(seed, vertex.x, vertex.y);
+        return seed;
+    };
+};
+
+template<>
+struct hash<glm::vec4>
+{
+    size_t operator()(const glm::vec4& vertex) const
+    {
+        size_t seed = 0;
+        Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
         return seed;
     };
 };
@@ -32,7 +66,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Siege::Utils::HashCombine(seed, vertex.position, vertex.color);
+        Hash::HashCombine(seed, vertex.position, vertex.color);
         return seed;
     };
 };

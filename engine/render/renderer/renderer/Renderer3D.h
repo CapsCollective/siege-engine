@@ -68,7 +68,7 @@ private:
     // static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
     static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
 
-    static Utils::StringId globalDataId;
+    static Hash::StringId globalDataId;
 
     // FIXME(Aryeh): Everything below this needs to change.
 

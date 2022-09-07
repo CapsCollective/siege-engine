@@ -56,7 +56,7 @@ IF "%ERRORLEVEL%" EQU "0" CALL :SetupVulkanValidationLayers
 
 echo "Configuring environment file..."
 
-echo VK_LAYER_PATH=%BUILD_DIR%\lib\explicit_layer.d> .env
+echo VK_LAYER_PATH=%BIN_DIR%\examples\render\build\lib\explicit_layer.d> .env
 
 echo "Setup Complete"
 

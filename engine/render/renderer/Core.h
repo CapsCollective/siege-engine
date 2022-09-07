@@ -9,14 +9,13 @@
 #ifndef SIEGE_ENGINE_CORE_H
 #define SIEGE_ENGINE_CORE_H
 
-#include <utils/HeapArray.h>
+#include <utils/Hash.h>
 #include <volk/volk.h>
 
 #include <cstdint>
 #include <iostream>
 
 #include "utils/Array.h"
-#include "utils/Hash.h"
 #include "utils/StackArray.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -42,8 +41,6 @@ typedef size_t size;
     }())
 
 #define OUT
-
-#define INTERN_STR(str) Utils::WSID(str)
 
 namespace Siege
 {
