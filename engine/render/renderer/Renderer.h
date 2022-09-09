@@ -66,7 +66,7 @@ public:
 
     VkCommandBuffer GetCurrentCommandBuffer() const
     {
-        CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!");
+        CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!")
         return commandBuffers[currentFrameIndex];
     }
 

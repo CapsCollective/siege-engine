@@ -115,7 +115,7 @@ String::String(const char* string) : memory()
     Assign(string);
 }
 
-String::String(const char& character) : memory()
+String::String(char character) : memory()
 {
     char cstr[2] = {character, '\0'};
     Assign(cstr);
@@ -188,7 +188,7 @@ String String::operator+(const char* rhs) const
     return cstr;
 }
 
-String String::operator+(const char& rhs) const
+String String::operator+(char rhs) const
 {
     const char* data = Data();
     size_t lhsLength = Size();
@@ -213,7 +213,7 @@ String& String::operator+=(const char* rhs)
     return *this;
 }
 
-String& String::operator+=(const char& rhs)
+String& String::operator+=(char rhs)
 {
     Append(rhs);
     return *this;
@@ -263,44 +263,34 @@ bool String::GetFloat(float& value) const
     return false;
 }
 
-String String::FromInt(const int& value)
+String String::FromInt(int value)
 {
     return GetFromFormat("%d", value);
 }
 
-String String::FromFloat(const float& value)
+String String::FromFloat(float value)
 {
     return GetFromFormat("%f", value);
 }
 
-String String::FromDouble(const double& value)
+String String::FromDouble(double value)
 {
     return GetFromFormat("%0.17f", value);
 }
 
-String String::FromLong(const long& value)
+String String::FromLong(long value)
 {
     return GetFromFormat("%ld", value);
 }
 
-String String::FromSizeT(const size_t& value)
+String String::FromU32(uint32_t value)
 {
     return GetFromFormat("%lu", value);
 }
 
-String String::FromU32(const uint32_t& value)
+String String::FromU64(uint64_t value)
 {
     return GetFromFormat("%lu", value);
-}
-
-String String::FromU64(const uint64_t& value)
-{
-    return GetFromFormat("%lu", value);
-}
-
-Hash::StringId String::WSID(const String& str)
-{
-    return Hash::WSID(str.Str());
 }
 
 bool String::OnHeap() const
@@ -352,7 +342,7 @@ size_t String::Find(const char* substring, int startIdx) const
     return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
-size_t String::Find(const char& character, int startIdx) const
+size_t String::Find(char character, int startIdx) const
 {
     const char* data = Data();
     int len = (int) Size();
@@ -382,7 +372,7 @@ std::vector<String> String::Split(const char* delimiters) const
     return strings;
 }
 
-std::vector<String> String::Split(const char& delimiter) const
+std::vector<String> String::Split(char delimiter) const
 {
     // Provide the method with c-string
     char delimiters[2] = {delimiter, '\0'};
@@ -489,7 +479,7 @@ void String::Append(const char* string)
     Assign(cstr);
 }
 
-void String::Append(const char& character)
+void String::Append(char character)
 {
     const char* data = Data();
     size_t lhsLength = Size();
@@ -664,7 +654,7 @@ String operator+(const char* lhs, const String& rhs)
     return {cstr};
 }
 
-String operator+(const char& lhs, const String& rhs)
+String operator+(char lhs, const String& rhs)
 {
     size_t rhsLength = rhs.Size();
 

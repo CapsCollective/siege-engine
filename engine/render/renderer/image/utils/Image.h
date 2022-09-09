@@ -37,7 +37,7 @@ public:
         VkImageUsageFlags usage,
         VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         uint32_t queueFamilyCount = 0,
-        const uint32_t* pQueueFamilyIndices = 0,
+        const uint32_t* pQueueFamilyIndices = VK_NULL_HANDLE,
         VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         VkImageCreateFlags flags = 0,
         const void* pNext = nullptr);

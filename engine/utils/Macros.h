@@ -24,7 +24,4 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-// Abort command
-#define EXIT_APP abort();
-
 #endif // SIEGE_ENGINE_MACROS_H
