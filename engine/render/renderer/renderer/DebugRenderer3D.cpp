@@ -14,7 +14,8 @@ DebugRenderer3D::DebugRenderer3D() {}
 
 DebugRenderer3D::~DebugRenderer3D() {}
 
-void DebugRenderer3D::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
+void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
+                                 const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
 
@@ -78,7 +79,7 @@ void DebugRenderer3D::Flush()
 }
 
 void DebugRenderer3D::RenderLines(VkCommandBuffer& commandBuffer,
-                                  const u64& globalDataSize,
+                                  const uint64_t& globalDataSize,
                                   const void* globalData)
 {
     if (lines.Count() == 0) return;
@@ -87,14 +88,14 @@ void DebugRenderer3D::RenderLines(VkCommandBuffer& commandBuffer,
     lineMaterial.Bind(commandBuffer);
 
     lineModel.UpdateMesh(
-        {sizeof(LineVertex), lines.Data(), static_cast<u32>(lines.Count()), nullptr, 0});
+        {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count()), nullptr, 0});
 
     lineModel.Bind(commandBuffer);
     lineModel.Draw(commandBuffer, 0);
 }
 
 void DebugRenderer3D::Render(VkCommandBuffer& commandBuffer,
-                             const u64& globalDataSize,
+                             const uint64_t& globalDataSize,
                              const void* globalData)
 {
     RenderLines(commandBuffer, globalDataSize, globalData);

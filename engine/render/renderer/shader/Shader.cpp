@@ -32,18 +32,18 @@ Shader& Shader::WithStage(PipelineConfig::PipelineStage stage)
     return *this;
 }
 
-Shader& Shader::WithUniform(u32 binding, const String& name, u64 size, size_t arraySize)
+Shader& Shader::WithUniform(uint32_t binding, const String& name, uint64_t size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size, arraySize);
 
-    std::cout << "Added uniform " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added uniform [{}] for binding [{}]", filePath, name, binding)
 
     return *this;
 }
 
-Shader& Shader::WithDynamicUniform(u32 binding,
+Shader& Shader::WithDynamicUniform(uint32_t binding,
                                    const String& name,
-                                   u64 size,
+                                   uint64_t size,
                                    size_t arraySize,
                                    size_t count)
 {
@@ -54,23 +54,29 @@ Shader& Shader::WithDynamicUniform(u32 binding,
                    arraySize,
                    count);
 
-    std::cout << "Added dynamic uniform " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added dynamic uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
 
-Shader& Shader::WithStorage(u32 binding, const String& name, u64 size, size_t arraySize)
+Shader& Shader::WithStorage(uint32_t binding, const String& name, uint64_t size, size_t arraySize)
 {
     SetUniformType(binding, name, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, size, arraySize);
 
-    std::cout << "Added storage " << name << "for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added storage uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
 
-Shader& Shader::WithDynamicStorage(u32 binding,
+Shader& Shader::WithDynamicStorage(uint32_t binding,
                                    const String& name,
-                                   u64 size,
+                                   uint64_t size,
                                    size_t arraySize,
                                    size_t count)
 {
@@ -81,12 +87,15 @@ Shader& Shader::WithDynamicStorage(u32 binding,
                    arraySize,
                    count);
 
-    std::cout << "Added dynamic storage " << name << " for binding: " << binding << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Added dynamic storage uniform [{}] for binding [{}]",
+                filePath,
+                name,
+                binding)
 
     return *this;
 }
 
-Shader& Shader::WithVertexType(u32 size)
+Shader& Shader::WithVertexType(uint32_t size)
 {
     size_t index = vertexBindings.Count();
 
@@ -94,13 +103,16 @@ Shader& Shader::WithVertexType(u32 size)
     auto& binding = vertexBindings.Get(index);
     binding.vertexStride = size;
 
-    std::cout << "Added new vertex type of size " << size << std::endl;
-    std::cout << "There are now " << vertexBindings.Count() << " bindings" << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
+                filePath,
+                vertexBindings.Count(),
+                MAX_UNIFORMS,
+                size)
 
     return *this;
 }
 
-Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType type)
+Shader& Shader::WithVertexAttribute(uint32_t offset, VertexDescription::AttributeType type)
 {
     size_t index = vertexBindings.Count() - 1;
 
@@ -111,16 +123,19 @@ Shader& Shader::WithVertexAttribute(u32 offset, VertexDescription::AttributeType
 
     attributes.Append({offset, type});
 
-    std::cout << "Added new vertex attribute for binding " << index << std::endl;
-    std::cout << "Binding now has " << binding.attributes.Count() << " attributes" << std::endl;
+    CC_LOG_INFO("SHADER: [{}] - Vertex attribute [{}/{}] added for binding [{}]",
+                filePath,
+                binding.attributes.Count(),
+                binding.MAX_VERTEX_ATTRIBUTES,
+                index)
 
     return *this;
 }
 
-void Shader::SetUniformType(u32 binding,
+void Shader::SetUniformType(uint32_t binding,
                             const String& name,
                             VkDescriptorType type,
-                            u64 size,
+                            uint64_t size,
                             size_t arraySize,
                             size_t count)
 {

@@ -95,7 +95,7 @@ public:
      * swapchain's max image count.
      * @return VkFramebuffer the framebuffer in index i
      */
-    VkFramebuffer GetFrameBuffer(u32 i)
+    VkFramebuffer GetFrameBuffer(uint32_t i)
     {
         return framebuffers.GetFramebuffer(i);
     }
@@ -103,9 +103,9 @@ public:
     /**
      * @brief Get the number of images that can be active at once.
      *
-     * @return u32 representing the number of possible active simultaneous images.
+     * @return uint32_t representing the number of possible active simultaneous images.
      */
-    static u32 GetImageCount()
+    static uint32_t GetImageCount()
     {
         return FrameImages::GetImageCount();
     }
@@ -123,9 +123,9 @@ public:
     /**
      * @brief Get the swapchain image width.
      *
-     * @return u32 representing the width of the image.
+     * @return uint32_t representing the width of the image.
      */
-    u32 GetWidth() const
+    uint32_t GetWidth() const
     {
         return swapChainExtent.width;
     }
@@ -133,9 +133,9 @@ public:
     /**
      * @brief Get the swapchain image height.
      *
-     * @return u32 representing the image height.
+     * @return uint32_t representing the image height.
      */
-    u32 GetHeight() const
+    uint32_t GetHeight() const
     {
         return swapChainExtent.height;
     }
@@ -163,7 +163,7 @@ public:
      * @param imageIndex - the index of the next image.
      * @return VkResult - the result of acquiring the next image.
      */
-    VkResult AcquireNextImage(u32* imageIndex);
+    VkResult AcquireNextImage(uint32_t* imageIndex);
 
     /**
      * @brief Submits a command buffer for drawing.
@@ -172,7 +172,7 @@ public:
      * @param imageIndex - the index of the image being drawn.
      * @return VkResult - the result of submitting the buffer.
      */
-    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, u32* imageIndex);
+    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
     void RecreateSwapchain();
 

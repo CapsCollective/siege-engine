@@ -27,7 +27,7 @@ void RenderPass::Begin(VkRenderPass renderPass,
                        VkOffset2D offset,
                        VkExtent2D extent,
                        VkClearValue* clearValues,
-                       u32 clearValueCount)
+                       uint32_t clearValueCount)
 {
     VkRenderPassBeginInfo renderPassInfo {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

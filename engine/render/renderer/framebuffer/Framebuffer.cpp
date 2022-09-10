@@ -10,7 +10,7 @@
 
 namespace Siege
 {
-u32 Framebuffer::IMAGE_COUNT = 0;
+uint32_t Framebuffer::IMAGE_COUNT = 0;
 
 Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& device)
 {
@@ -78,14 +78,15 @@ Framebuffer::Config& Framebuffer::Config::WithRenderPass(VkRenderPass targetRend
     return *this;
 }
 
-Framebuffer::Config& Framebuffer::Config::WithImageDimensions(u32 targetWidth, u32 targetHeight)
+Framebuffer::Config& Framebuffer::Config::WithImageDimensions(uint32_t targetWidth,
+                                                              uint32_t targetHeight)
 {
     width = targetWidth;
     height = targetHeight;
     return *this;
 }
 
-Framebuffer::Config& Framebuffer::Config::WithLayers(u32 targetLayers)
+Framebuffer::Config& Framebuffer::Config::WithLayers(uint32_t targetLayers)
 {
     layers = targetLayers;
     return *this;

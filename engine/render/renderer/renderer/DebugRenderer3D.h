@@ -22,14 +22,16 @@ public:
     DebugRenderer3D();
     ~DebugRenderer3D();
 
-    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
     // Wire primitives
     void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
     void DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 
-    void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
+    void Render(VkCommandBuffer& commandBuffer,
+                const uint64_t& globalDataSize,
+                const void* globalData);
 
     void Flush();
 
@@ -44,7 +46,7 @@ private:
     };
 
     void RenderLines(VkCommandBuffer& commandBuffer,
-                     const u64& globalDataSize,
+                     const uint64_t& globalDataSize,
                      const void* globalData);
     void RenderRects();
 

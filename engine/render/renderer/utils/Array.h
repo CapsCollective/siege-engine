@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_ARRAY_H
 
 #include <cstdint>
-#include <iostream>
 #include <memory>
 
 namespace Siege

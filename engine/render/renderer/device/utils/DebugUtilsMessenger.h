@@ -9,8 +9,6 @@
 #ifndef SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 #define SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 
-#include <iostream>
-
 #include "../../Core.h"
 
 namespace Siege::DebugUtilsMessenger

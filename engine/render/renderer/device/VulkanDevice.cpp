@@ -10,7 +10,6 @@
 
 // std headers
 #include <cstring>
-#include <iostream>
 #include <set>
 
 namespace Siege
@@ -145,7 +144,7 @@ void VulkanDevice::PickPhysicalDevice()
 
     CC_ASSERT(deviceCount > 0, "Failed to find GPUs with Vulkan Support!");
 
-    std::cout << "Device count: " << deviceCount << std::endl;
+    CC_LOG_INFO("Device count: {}", deviceCount)
 
     VkPhysicalDevice devices[deviceCount];
     vkEnumeratePhysicalDevices(instance, &deviceCount, OUT devices);
@@ -168,9 +167,10 @@ void VulkanDevice::PickPhysicalDevice()
     CC_ASSERT(physicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
 
     vkGetPhysicalDeviceProperties(physicalDevice, OUT & properties);
-    std::cout << "physical device: " << properties.deviceName << std::endl;
-    std::cout << "GPU has a minumum buffer alignment of "
-              << properties.limits.minUniformBufferOffsetAlignment << std::endl;
+
+    CC_LOG_INFO("Physical device found: {} with minumum buffer alignment of {}",
+                properties.deviceName,
+                properties.limits.minUniformBufferOffsetAlignment)
 }
 
 void VulkanDevice::CreateLogicalDevice()

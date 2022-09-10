@@ -9,12 +9,11 @@
 #include "Pipeline.h"
 
 #include <fstream>
-#include <iostream>
 
 namespace Siege
 {
 Pipeline::Pipeline(const PipelineConfig::ShaderConfig* shaders,
-                   u32 shaderCount,
+                   uint32_t shaderCount,
                    const PipelineConfigInfo& configInfo) :
     Pipeline()
 {
@@ -41,7 +40,7 @@ Array<char> Pipeline::ReadFile(const String& filePath)
 
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).
-    u32 size = static_cast<u32>(file.tellg());
+    uint32_t size = static_cast<uint32_t>(file.tellg());
 
     Array<char> buffer(size);
 
@@ -56,7 +55,7 @@ Array<char> Pipeline::ReadFile(const String& filePath)
 }
 
 void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shaders,
-                                      u32 shaderCount,
+                                      uint32_t shaderCount,
                                       const PipelineConfigInfo& configInfo)
 {
     CC_ASSERT(configInfo.pipelineLayout != VK_NULL_HANDLE,
@@ -102,9 +101,9 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexAttributeDescriptionCount =
-        static_cast<u32>(attributeDescriptions.Size());
+        static_cast<uint32_t>(attributeDescriptions.Size());
     vertexInputCreateInfo.vertexBindingDescriptionCount =
-        static_cast<u32>(bindingDescriptions.Size());
+        static_cast<uint32_t>(bindingDescriptions.Size());
     vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.Data();
     vertexInputCreateInfo.pVertexBindingDescriptions = bindingDescriptions.Data();
 
@@ -141,7 +140,7 @@ void Pipeline::CreateGraphicsPipeline(const PipelineConfig::ShaderConfig* shader
 }
 
 void Pipeline::RecreatePipeline(const PipelineConfig::ShaderConfig* shaders,
-                                u32 shaderCount,
+                                uint32_t shaderCount,
                                 const PipelineConfigInfo& configInfo)
 {
     CreateGraphicsPipeline(shaders, shaderCount, configInfo);
@@ -173,7 +172,7 @@ void Pipeline::CreateShaderModule(Array<char>& fileData, VkShaderModule* shaderM
     createInfo.codeSize = fileData.Size();
     // Because the code is expected to be numerical, we need to cast the values in the
     // array to 32-bit unsigned integers.
-    createInfo.pCode = reinterpret_cast<const u32*>(fileData.Data());
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(fileData.Data());
 
     auto device = VulkanDevice::GetDeviceInstance();
 
@@ -238,7 +237,7 @@ PipelineConfigInfo Pipeline::DefaultPipelineConfig()
     configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
     configInfo.dynamicStateInfo = PipelineConfig::InitDynamicStateCreateInfo(
-        static_cast<u32>(configInfo.dynamicStateEnables.Size()),
+        static_cast<uint32_t>(configInfo.dynamicStateEnables.Size()),
         configInfo.dynamicStateEnables.Data());
 
     return configInfo;

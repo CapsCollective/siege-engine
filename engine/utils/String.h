@@ -73,7 +73,7 @@ public:
      * Character constructor for initialising by copy
      * @param string - the character to copy
      */
-    String(const char& character);
+    String(char character);
 
     /**
      * Destructor for cleaning up String data
@@ -158,7 +158,7 @@ public:
      * @param rhs - the character to append
      * @return a new String object with the appended value
      */
-    String operator+(const char& rhs) const;
+    String operator+(char rhs) const;
 
     /**
      * Addition compound assignment operator overload for appending other Strings
@@ -179,7 +179,7 @@ public:
      * @param rhs - the c-string to append
      * @return a reference to the original String object
      */
-    String& operator+=(const char& rhs);
+    String& operator+=(char rhs);
 
     /**
      * Indexing operator overload for obtaining reference to characters within the String
@@ -223,26 +223,44 @@ public:
     /**
      * Conversion method for integer values
      * @param value - the integer value to convert
+     * @return the newly created String
      */
-    static String FromInt(const int& value);
+    static String FromInt(int value);
 
     /**
      * Conversion method for float values
      * @param value - the float value to convert
+     * @return the newly created String
      */
-    static String FromFloat(const float& value);
+    static String FromFloat(float value);
 
     /**
      * Conversion method for double values
      * @param value - the double value to convert
+     * @return the newly created String
      */
-    static String FromDouble(const double& value);
+    static String FromDouble(double value);
 
     /**
      * Conversion method for long values
      * @param value - the long value to convert
+     * @return the newly created String
      */
-    static String FromLong(const long& value);
+    static String FromLong(long value);
+
+    /**
+     * Conversion method for 32-bit unsigned integer values
+     * @param value - the uint32_t value to convert
+     * @return the newly created String
+     */
+    static String FromU32(uint32_t value);
+
+    /**
+     * Conversion method for 64-bit unsigned integer values
+     * @param value - the uint64_t value to convert
+     * @return the newly created String
+     */
+    static String FromU64(uint64_t value);
 
     // State methods
 
@@ -311,7 +329,7 @@ public:
      * @param startIdx - the starting index for the search, defaults to 0
      * @return the index of the character if found, else -1
      */
-    size_t Find(const char& character, int startIdx = 0) const;
+    size_t Find(char character, int startIdx = 0) const;
 
     /**
      * Splits the String by a provided list of delimiter characters
@@ -325,7 +343,7 @@ public:
      * @param delimiter - a character to use as the delimiter
      * @return a vector of Strings resulting from the split
      */
-    std::vector<String> Split(const char& delimiter) const;
+    std::vector<String> Split(char delimiter) const;
 
     /**
      * Gets a substring of the String based on position and length
@@ -382,7 +400,7 @@ public:
      * Appends the value of a character to the String
      * @param character - the character to append
      */
-    void Append(const char& character);
+    void Append(char character);
 
     /**
      * Prepends the value of another String
@@ -602,7 +620,7 @@ String operator+(const char* lhs, const String& rhs);
  * @param rhs - the string to append
  * @return a new string object with the appended value
  */
-String operator+(const char& lhs, const String& rhs);
+String operator+(char lhs, const String& rhs);
 
 /**
  * std::ostream insertion operator overload for appending Strings

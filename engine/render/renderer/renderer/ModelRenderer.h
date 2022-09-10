@@ -22,7 +22,7 @@ public:
     ModelRenderer();
     ~ModelRenderer();
 
-    void Initialise(const String& globalDataAttributeName, const u64& globalDataSize);
+    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
     void DrawModel(Model* model,
@@ -30,7 +30,9 @@ public:
                    const glm::vec3& scale,
                    const glm::vec3& rotation);
 
-    void Render(VkCommandBuffer& commandBuffer, const u64& globalDataSize, const void* globalData);
+    void Render(VkCommandBuffer& commandBuffer,
+                const uint64_t& globalDataSize,
+                const void* globalData);
 
     void Flush();
 

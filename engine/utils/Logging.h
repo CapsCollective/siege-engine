@@ -41,6 +41,24 @@
 #define DEFINE_VARIANT_TYPE(type, transform) \
     VariantContainer(type) : data(transform) {}
 
+// Assert macros
+#define REPORT_ASSERT_FAILURE(expr, file, line, message)                          \
+    CC_LOG_ERROR("ASSERTION FAILURE: {} IN FILE: {} ON LINE: {} WIH MESSAGE: {}", \
+                 #expr,                                                           \
+                 file,                                                            \
+                 line,                                                            \
+                 message)
+
+// Custom assert macro
+#define CC_ASSERT(expr, message)                                 \
+    expr || [&]() -> bool {                                      \
+        REPORT_ASSERT_FAILURE(expr, __FILE__, __LINE__, message) \
+        return true;                                             \
+    }() && []() {                                                \
+        abort();                                                 \
+        return true;                                             \
+    }();
+
 // Don't compile logging if unused
 #ifdef CC_LOG_LEVEL
 #ifndef CC_ENABLE_LOGGING
@@ -61,15 +79,18 @@ public:
 
     // 'Structors
 
-    DEFINE_VARIANT_TYPE(const String& data, data);
+    DEFINE_VARIANT_TYPE(String data, std::move(data));
     DEFINE_VARIANT_TYPE(const char* data, data);
     DEFINE_VARIANT_TYPE(const char data, data);
-    DEFINE_VARIANT_TYPE(const int& data, String::FromInt(data));
-    DEFINE_VARIANT_TYPE(const float& data, String::FromFloat(data));
-    DEFINE_VARIANT_TYPE(const double& data, String::FromDouble(data));
-    DEFINE_VARIANT_TYPE(const long& data, String::FromLong(data));
+    DEFINE_VARIANT_TYPE(int data, String::FromInt(data));
+    DEFINE_VARIANT_TYPE(float data, String::FromFloat(data));
+    DEFINE_VARIANT_TYPE(double data, String::FromDouble(data));
+    DEFINE_VARIANT_TYPE(long data, String::FromLong(data));
+    DEFINE_VARIANT_TYPE(unsigned int data, String::FromU32(data));
+    DEFINE_VARIANT_TYPE(unsigned long data, String::FromU32(data));
+    DEFINE_VARIANT_TYPE(unsigned long long data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(Vec3 data, "Vector3(" + data.ToString() + ")");
 
     /**
      * Returns the data held by the variant container
@@ -103,7 +124,9 @@ static constexpr const char REPLACE_STRING[] = "{}";
  *                       the text with
  * @param size - the size of variantItems
  */
-static void VariantFormat(String& text, const VariantContainer* variantItems, const size_t& size)
+[[maybe_unused]] static void VariantFormat(String& text,
+                                           const VariantContainer* variantItems,
+                                           const size_t& size)
 {
     size_t cursor(0);
     for (size_t i(0); i < size; i++)

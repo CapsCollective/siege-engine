@@ -13,7 +13,8 @@ namespace Siege
 BillboardRenderer::BillboardRenderer() {}
 BillboardRenderer::~BillboardRenderer() {}
 
-void BillboardRenderer::Initialise(const String& globalDataAttributeName, const u64& globalDataSize)
+void BillboardRenderer::Initialise(const String& globalDataAttributeName,
+                                   const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     positionsId = INTERN_STR("positions");
@@ -75,7 +76,7 @@ void BillboardRenderer::DrawBillboard(const glm::vec3& position,
 }
 
 void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
-                               const u64& globalDataSize,
+                               const uint64_t& globalDataSize,
                                const void* globalData)
 {
     if (vertices.Count() == 0) return;
@@ -88,9 +89,9 @@ void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
 
     billboardModel.UpdateMesh({sizeof(BillboardVertex),
                                vertices.Data(),
-                               static_cast<u32>(vertices.Count()),
+                               static_cast<uint32_t>(vertices.Count()),
                                indices.Data(),
-                               static_cast<u32>(indices.Count())});
+                               static_cast<uint32_t>(indices.Count())});
 
     billboardModel.Bind(commandBuffer);
     billboardModel.Draw(commandBuffer);

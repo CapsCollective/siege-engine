@@ -31,7 +31,7 @@ Mesh::Mesh(const MeshData& meshData)
 Mesh::~Mesh()
 {
     if (isFreed) return;
-    std::cout << "Destroying Mesh" << std::endl;
+    CC_LOG_INFO("Destroying Mesh")
     DestroyMesh();
 }
 
@@ -101,7 +101,7 @@ void Mesh::CreateVertexBuffers(const void* vertices)
     Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, bufferSize);
 }
 
-void Mesh::CreateIndexBuffer(const u32* indices)
+void Mesh::CreateIndexBuffer(const uint32_t* indices)
 {
     VkDeviceSize bufferSize = indexSize * MAX_INDICES;
 
@@ -156,7 +156,7 @@ void Mesh::UpdateVertexBuffer(const void* vertices)
     Buffer::CopyBuffer(globalStagingBuffer.buffer, vertexBuffer.buffer, vertexSize * vertexCount);
 }
 
-void Mesh::UpdateIndexBuffer(u32* indices)
+void Mesh::UpdateIndexBuffer(uint32_t* indices)
 {
     if (indexCount == 0) return;
 
@@ -166,8 +166,6 @@ void Mesh::UpdateIndexBuffer(u32* indices)
         hasIndexBuffer = true;
         return;
     }
-
-    VkDeviceSize indexSize = sizeof(u32) * indexCount;
 
     Buffer::CopyData(globalIndexStagingBuffer, indexSize, indices);
     Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, indexSize);
