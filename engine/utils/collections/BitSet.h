@@ -253,7 +253,7 @@ public:
      * @param bit the bit to set, ranging from 1 - bytes * 8.
      * @return true of the bit is set, false if it is set to 0.
      */
-    bool IsSet(const unsigned long& bit);
+    bool IsSet(const unsigned long& bit) const;
 
     /**
      * Returns the position of the largest set bit. For example, the left most bit in the byte:

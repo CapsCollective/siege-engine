@@ -6,8 +6,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_IMAGE_H
-#define SIEGE_ENGINE_IMAGE_H
+#ifndef SIEGE_ENGINE_VULKAN_UTILS_IMAGE_H
+#define SIEGE_ENGINE_VULKAN_UTILS_IMAGE_H
 
 #include "render/renderer/Core.h"
 
@@ -69,4 +69,5 @@ private:
                                                            VkImageViewCreateFlags createFlags = 0);
 };
 } // namespace Siege::Vulkan::Utils
-#endif // SIEGE_ENGINE_IMAGE_H
+
+#endif // SIEGE_ENGINE_VULKAN_UTILS_IMAGE_H

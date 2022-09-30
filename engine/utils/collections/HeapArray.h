@@ -267,7 +267,7 @@ public:
      * @param index the index of the element we want to check
      * @return `true` if this element has been set, `false` if it has not
      */
-    bool Active(size_t index)
+    bool Active(size_t index) const
     {
         return bitField.IsSet(index + 1);
     }

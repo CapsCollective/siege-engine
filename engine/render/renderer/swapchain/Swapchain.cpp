@@ -186,7 +186,7 @@ void SwapChain::CreateSwapChain()
     createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
     CC_ASSERT(vkCreateSwapchainKHR(device, &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-              "Failed to create Swapchain!");
+              "Failed to create Swapchain!")
 
     swapchainImages = FrameImages(swapChain,
                                   {extent.width, extent.height, 1},

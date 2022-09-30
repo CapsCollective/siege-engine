@@ -144,6 +144,11 @@ public:
         Initialise(config);
     }
 
+    RenderPass(RenderPass&& other)
+    {
+        Swap(other);
+    }
+
     /**
      * @brief Initialises the RenderPass. Creating a RenderPass requires us to explicitly state what
      * operations the RenderPass will be responsible for, along with any graphics stages the

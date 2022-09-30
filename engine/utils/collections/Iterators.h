@@ -150,7 +150,7 @@ public:
      * @brief The dereference operator
      * @return the de-referenced pointer value
      */
-    inline constexpr T& operator*()
+    inline constexpr T& operator*() const
     {
         return *(ptr->Data() + index);
     }
