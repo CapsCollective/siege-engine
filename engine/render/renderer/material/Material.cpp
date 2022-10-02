@@ -11,7 +11,6 @@
 #include <utils/Logging.h>
 
 #include "../mesh/Mesh.h"
-#include "../swapchain/Swapchain.h"
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 
@@ -127,7 +126,7 @@ void Material::CreatePipeline()
     pipelineConfig.rasterizationInfo.polygonMode = (VkPolygonMode) shaderSettings.mode;
     pipelineConfig.inputAssemblyInfo.topology = (VkPrimitiveTopology) shaderSettings.topology;
 
-    pipelineConfig.renderPass = SwapChain::GetInstance()->GetRenderPass()->GetRenderPass();
+    pipelineConfig.renderPass = Vulkan::Context::GetSwapchain().GetRenderPass()->GetRenderPass();
     pipelineConfig.pipelineLayout = pipelineLayout;
 
     pipelineConfig.vertexData =

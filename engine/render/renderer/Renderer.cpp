@@ -19,9 +19,11 @@ Renderer::Renderer(Window& window) : window {window}
 {
     if (instance == nullptr) instance = this;
 
-    context.Init(Window::GetRequiredExtensions, Window::CreateWindowSurface);
+    auto extent = window.GetExtent();
 
-    swapChain.SetWindowExtents(window.GetExtent());
+    context.Init({extent.width, extent.height},
+                 Window::GetRequiredExtensions,
+                 Window::CreateWindowSurface);
 
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10);
@@ -45,7 +47,7 @@ Renderer::~Renderer()
 
 void Renderer::CreateCommandBuffers()
 {
-    commandBuffers = Utils::MHArray<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers = Utils::MHArray<VkCommandBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -79,15 +81,16 @@ void Renderer::RecreateSwapChain()
         window.WaitEvents();
     }
 
-    auto oldImageFormat = swapChain.GetImageFormat();
-    auto oldDepthFormat = swapChain.GetDepthFormat();
+    auto& swapchain = context.GetSwapchain();
 
-    // Re-create swapchain
-    swapChain.RecreateSwapchain();
+    auto oldImageFormat = swapchain.GetImageFormat();
+    auto oldDepthFormat = swapchain.GetDepthFormat();
+
+    context.RecreateSwapchain({extent.width, extent.height});
 
     // Re-create the pipeline once the swapchain renderpass
     // becomes available again.
-    if (!swapChain.CompareSwapFormats(oldImageFormat, oldDepthFormat))
+    if (!swapchain.IsSameSwapFormat(oldImageFormat, oldDepthFormat))
     {
         Renderer3D::RecreateMaterials();
         Renderer2D::RecreateMaterials();
@@ -98,7 +101,9 @@ bool Renderer::StartFrame()
 {
     CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
 
-    auto result = swapChain.AcquireNextImage(&currentImageIndex);
+    auto& swapchain = context.GetSwapchain();
+
+    auto result = swapchain.AcquireNextImage(&currentImageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -126,7 +131,9 @@ bool Renderer::StartFrame()
 
 void Renderer::EndFrame()
 {
-    CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!");
+    CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
+
+    auto& swapchain = context.GetSwapchain();
 
     DrawFrame();
 
@@ -137,7 +144,7 @@ void Renderer::EndFrame()
     CC_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
               "Failed to record command buffer!");
 
-    auto result = swapChain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
+    auto result = swapchain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.WasResized())
     {
@@ -150,7 +157,7 @@ void Renderer::EndFrame()
     }
 
     isFrameStarted = false;
-    currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
+    currentFrameIndex = (currentFrameIndex + 1) % Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT;
 
     Renderer3D::Flush();
     Renderer2D::Flush();
@@ -158,6 +165,8 @@ void Renderer::EndFrame()
 
 void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
+    auto& swapchain = context.GetSwapchain();
+
     CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
               "Can't begin a render pass on a command buffer from another frame!");
@@ -167,22 +176,24 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     clearValues[0].color = clearValue;
     clearValues[1].depthStencil = {1.0f, 0};
 
-    RenderPass::Begin(swapChain.GetRenderPass()->GetRenderPass(),
+    auto swapExtent = swapchain.GetExtent();
+
+    RenderPass::Begin(swapchain.GetRenderPass()->GetRenderPass(),
                       OUT commandBuffer,
-                      swapChain.GetFrameBuffer(currentImageIndex),
+                      swapchain.GetFrameBuffer(currentImageIndex),
                       {0, 0},
-                      swapChain.GetSwapChainExtent(),
+                      {swapExtent.width, swapExtent.height},
                       clearValues,
                       clearValueCount);
 
     VkViewport viewport {};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapChain.GetSwapChainExtent().width);
-    viewport.height = static_cast<float>(swapChain.GetSwapChainExtent().height);
+    viewport.width = static_cast<float>(swapExtent.width);
+    viewport.height = static_cast<float>(swapExtent.height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
-    VkRect2D scissor {{0, 0}, swapChain.GetSwapChainExtent()};
+    VkRect2D scissor {{0, 0}, {swapExtent.width, swapExtent.height}};
 
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
