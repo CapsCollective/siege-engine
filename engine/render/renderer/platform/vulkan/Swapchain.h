@@ -13,6 +13,8 @@
 #include "render/renderer/pass/RenderPass.h"
 #include "render/renderer/platform/vulkan/utils/Types.h"
 
+#include "Semaphore.h"
+
 namespace Siege::Vulkan
 {
 class Swapchain
@@ -118,12 +120,14 @@ private:
     Utils::DepthFormat swapChainDepthFormat {Utils::DEPTH_NONE};
 
     // TODO: Replace with HArrays (or SArrays) when caught up with main
-    VkSemaphore* imageAvailableSemaphores {VK_NULL_HANDLE};
-    VkSemaphore* renderFinishedSemaphores {VK_NULL_HANDLE};
+
+    Semaphore imageAvailableSemaphores;
+    Semaphore renderFinishedSemaphores;
+
     VkFence* inFlightFences {VK_NULL_HANDLE};
     VkFence* imagesInFlight {VK_NULL_HANDLE};
     size_t currentFrame = 0;
 };
 } // namespace Siege::Vulkan
 
-#endif // SIEGE_ENGINE_SWAPCHAIN_H
+#endif // SIEGE_ENGINE_VULKAN_SWAPCHAIN_H

@@ -61,21 +61,24 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchain)
         imageCount = capabilities.maxImageCount;
     }
 
-    swapchain =
-        Utils::SwapchainBuilder()
-            .WithSurface(surface)
-            .WithMinImageCount(imageCount)
-            .WithSurfaceFormat(surfaceFormat)
-            .WithImageExtent(extent)
-            .WithQueueFamilyIndices({physicalDevice->GetGraphicsFamilyQueueIndex(),
-                                     physicalDevice->GetPresentFamilyQueueIndex()})
-            .WithPreTransform(capabilities.currentTransform)
-            .WithCompositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-            .WithPresentMode(Vulkan::Utils::ChoosePresentMode(
-                Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(), surface)))
-            .IsClipped(VK_TRUE)
-            .FromOldSwapchain(oldSwapchain)
-            .Build();
+    swapchain = Utils::SwapchainBuilder()
+                    .WithSurface(surface)
+                    .WithMinImageCount(imageCount)
+                    .WithSurfaceFormat(surfaceFormat)
+                    .WithImageExtent(extent)
+                    .WithQueueFamilyIndices(
+                        {
+                            physicalDevice->GetGraphicsFamilyQueueIndex(),
+                            physicalDevice->GetPresentFamilyQueueIndex()
+                        })
+                    .WithPreTransform(capabilities.currentTransform)
+                    .WithCompositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+                    .WithPresentMode(Vulkan::Utils::ChoosePresentMode(
+                        Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(),
+                                                                  surface)))
+                    .IsClipped(VK_TRUE)
+                    .FromOldSwapchain(oldSwapchain)
+                    .Build();
 
     swapchainImages = FrameImages(swapchain,
                                   {extent.width, extent.height, 1},
@@ -106,26 +109,20 @@ Swapchain::~Swapchain()
         }
     }
 
-    if (renderFinishedSemaphores && imageAvailableSemaphores && inFlightFences)
+    if (inFlightFences)
     {
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
             vkDestroyFence(device, inFlightFences[i], nullptr);
         }
     }
 
     delete[] imagesInFlight;
     delete[] swapChainFrameBuffers;
-    delete[] renderFinishedSemaphores;
-    delete[] imageAvailableSemaphores;
     delete[] inFlightFences;
 
     imagesInFlight = VK_NULL_HANDLE;
     swapChainFrameBuffers = VK_NULL_HANDLE;
-    renderFinishedSemaphores = VK_NULL_HANDLE;
-    imageAvailableSemaphores = VK_NULL_HANDLE;
     inFlightFences = VK_NULL_HANDLE;
     swapchain = VK_NULL_HANDLE;
 }
@@ -315,10 +312,9 @@ void Swapchain::CreateSyncObjects()
     auto device = Vulkan::Context::GetVkLogicalDevice();
     uint32_t imageCount = FrameImages::GetImageCount();
 
-    if (imageAvailableSemaphores == nullptr)
-        imageAvailableSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
-    if (renderFinishedSemaphores == nullptr)
-        renderFinishedSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+    imageAvailableSemaphores = Semaphore(MAX_FRAMES_IN_FLIGHT);
+    renderFinishedSemaphores = Semaphore(MAX_FRAMES_IN_FLIGHT);
+
     if (inFlightFences == nullptr) inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
     if (imagesInFlight == nullptr) imagesInFlight = new VkFence[imageCount];
 
@@ -336,15 +332,8 @@ void Swapchain::CreateSyncObjects()
     // Create the synchronisation objects
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        CC_ASSERT(
-            vkCreateSemaphore(device, &semaphoreInfo, nullptr, OUT & imageAvailableSemaphores[i]) ==
-                    VK_SUCCESS &&
-                vkCreateSemaphore(device,
-                                  &semaphoreInfo,
-                                  nullptr,
-                                  OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
-                vkCreateFence(device, &fenceInfo, nullptr, OUT & inFlightFences[i]) == VK_SUCCESS,
-            "Failed to create synchronization objects fora  frame!");
+        CC_ASSERT(vkCreateFence(device, &fenceInfo, nullptr, OUT & inFlightFences[i]) == VK_SUCCESS,
+            "Failed to create synchronization objects for a frame!");
     }
 }
 
@@ -359,11 +348,11 @@ void Swapchain::Swap(Swapchain& other)
     auto tmpRenderPass = std::move(renderPass);
     auto tmpDepthImages = std::move(depthImages);
     auto tmpFrameBuffers = swapChainFrameBuffers;
-    auto tmpAvailableSemaphores = imageAvailableSemaphores;
-    auto tmpRenderFinishedSemaphores = renderFinishedSemaphores;
     auto tmpInFlightFences = inFlightFences;
     auto tmpImagesInFlight = imagesInFlight;
     auto tmpCurrentFrame = currentFrame;
+    auto tmpImageAvailableSemaphores2 = std::move(imageAvailableSemaphores);
+    auto tmpRenderFinishedSemaphores2 = std::move(renderFinishedSemaphores);
 
     windowExtent = other.windowExtent;
     swapchain = other.swapchain;
@@ -374,11 +363,12 @@ void Swapchain::Swap(Swapchain& other)
     renderPass = std::move(other.renderPass);
     depthImages = std::move(other.depthImages);
     swapChainFrameBuffers = other.swapChainFrameBuffers;
-    imageAvailableSemaphores = other.imageAvailableSemaphores;
-    renderFinishedSemaphores = other.renderFinishedSemaphores;
     inFlightFences = other.inFlightFences;
     imagesInFlight = other.imagesInFlight;
     currentFrame = other.currentFrame;
+    imageAvailableSemaphores = std::move(other.imageAvailableSemaphores);
+    renderFinishedSemaphores = std::move(other.renderFinishedSemaphores);
+
 
     other.windowExtent = tmpWindowExtent;
     other.swapchainExtent = tmpSwapchainExtent;
@@ -389,10 +379,10 @@ void Swapchain::Swap(Swapchain& other)
     other.renderPass = std::move(tmpRenderPass);
     other.depthImages = std::move(tmpDepthImages);
     other.swapChainFrameBuffers = tmpFrameBuffers;
-    other.imageAvailableSemaphores = tmpAvailableSemaphores;
-    other.renderFinishedSemaphores = tmpRenderFinishedSemaphores;
     other.inFlightFences = tmpInFlightFences;
     other.imagesInFlight = tmpImagesInFlight;
     other.currentFrame = tmpCurrentFrame;
+    other.imageAvailableSemaphores = std::move(tmpImageAvailableSemaphores2);
+    other.renderFinishedSemaphores = std::move(tmpRenderFinishedSemaphores2);
 }
 } // namespace Siege::Vulkan
