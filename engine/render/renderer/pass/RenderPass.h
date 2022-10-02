@@ -144,7 +144,7 @@ public:
         Initialise(config);
     }
 
-    RenderPass(RenderPass&& other)
+    inline RenderPass(RenderPass&& other)
     {
         Swap(other);
     }
