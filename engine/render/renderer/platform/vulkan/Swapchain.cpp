@@ -10,9 +10,9 @@
 
 #include "Context.h"
 #include "utils/Device.h"
+#include "utils/Queue.h"
 #include "utils/Swapchain.h"
 #include "utils/TypeAdaptor.h"
-#include "utils/Queue.h"
 
 namespace Siege::Vulkan
 {
@@ -62,24 +62,21 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchain)
         imageCount = capabilities.maxImageCount;
     }
 
-    swapchain = Utils::SwapchainBuilder()
-                    .WithSurface(surface)
-                    .WithMinImageCount(imageCount)
-                    .WithSurfaceFormat(surfaceFormat)
-                    .WithImageExtent(extent)
-                    .WithQueueFamilyIndices(
-                        {
-                            physicalDevice->GetGraphicsFamilyQueueIndex(),
-                            physicalDevice->GetPresentFamilyQueueIndex()
-                        })
-                    .WithPreTransform(capabilities.currentTransform)
-                    .WithCompositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-                    .WithPresentMode(Vulkan::Utils::ChoosePresentMode(
-                        Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(),
-                                                                  surface)))
-                    .IsClipped(VK_TRUE)
-                    .FromOldSwapchain(oldSwapchain)
-                    .Build();
+    swapchain =
+        Utils::SwapchainBuilder()
+            .WithSurface(surface)
+            .WithMinImageCount(imageCount)
+            .WithSurfaceFormat(surfaceFormat)
+            .WithImageExtent(extent)
+            .WithQueueFamilyIndices({physicalDevice->GetGraphicsFamilyQueueIndex(),
+                                     physicalDevice->GetPresentFamilyQueueIndex()})
+            .WithPreTransform(capabilities.currentTransform)
+            .WithCompositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+            .WithPresentMode(Vulkan::Utils::ChoosePresentMode(
+                Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(), surface)))
+            .IsClipped(VK_TRUE)
+            .FromOldSwapchain(oldSwapchain)
+            .Build();
 
     swapchainImages = FrameImages(swapchain,
                                   {extent.width, extent.height, 1},
@@ -116,7 +113,7 @@ Swapchain::~Swapchain()
     swapchain = VK_NULL_HANDLE;
 }
 
-VkResult Swapchain::AcquireNextImage(uint32_t* imageIndex)
+Utils::Result Swapchain::AcquireNextImage(uint32_t* imageIndex)
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -124,12 +121,30 @@ VkResult Swapchain::AcquireNextImage(uint32_t* imageIndex)
     inFlightFences.Wait(currentFrame);
 
     // Once available, Add it to our available images semaphor for usage
-    return vkAcquireNextImageKHR(device,
-                                 swapchain,
-                                 std::numeric_limits<uint64_t>::max(),
-                                 imageAvailableSemaphores[currentFrame],
-                                 VK_NULL_HANDLE,
-                                 imageIndex);
+    return static_cast<Utils::Result>(vkAcquireNextImageKHR(device,
+                                                            swapchain,
+                                                            std::numeric_limits<uint64_t>::max(),
+                                                            imageAvailableSemaphores[currentFrame],
+                                                            VK_NULL_HANDLE,
+                                                            imageIndex));
+}
+
+void Swapchain::BeginRenderPass(VkCommandBuffer commandBuffer,
+                                uint32_t imageIndex,
+                                std::initializer_list<VkClearValue> clearValues)
+{
+    RenderPass::Begin(renderPass.GetRenderPass(),
+                      OUT commandBuffer,
+                      swapChainFrameBuffers[imageIndex],
+                      {0, 0},
+                      {swapchainExtent.width, swapchainExtent.height},
+                      std::data(clearValues),
+                      clearValues.size());
+}
+
+void Swapchain::EndRenderPass(VkCommandBuffer commandBuffer)
+{
+    vkCmdEndRenderPass(OUT commandBuffer);
 }
 
 Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
@@ -153,15 +168,15 @@ Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, ui
         .SignalSemaphores({renderFinishedSemaphores[currentFrame]})
         .Submit(inFlightFences[currentFrame]);
 
-    currentFrame = ((currentFrame+1) < MAX_FRAMES_IN_FLIGHT) * (currentFrame+1);
+    currentFrame = ((currentFrame + 1) < MAX_FRAMES_IN_FLIGHT) * (currentFrame + 1);
 
     // Return the result of the rendering process
     return Utils::SubmitPresentCommand()
-                 .ToQueue(Vulkan::Context::GetCurrentDevice()->GetPresentQueue())
-                 .SignalSemaphores({renderFinishedSemaphores[frameIdx]})
-                 .ForSwapchains({swapchain})
-                 .WithImageIndices({index})
-                 .Submit();
+        .ToQueue(Vulkan::Context::GetCurrentDevice()->GetPresentQueue())
+        .SignalSemaphores({renderFinishedSemaphores[frameIdx]})
+        .ForSwapchains({swapchain})
+        .WithImageIndices({index})
+        .Submit();
 }
 
 bool Swapchain::IsSameSwapFormat(Utils::ImageFormat oldImageFormat,
@@ -287,7 +302,6 @@ void Swapchain::Swap(Swapchain& other)
     currentFrame = other.currentFrame;
     imageAvailableSemaphores = std::move(other.imageAvailableSemaphores);
     renderFinishedSemaphores = std::move(other.renderFinishedSemaphores);
-
 
     other.windowExtent = tmpWindowExtent;
     other.swapchainExtent = tmpSwapchainExtent;

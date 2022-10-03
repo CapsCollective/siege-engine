@@ -95,7 +95,14 @@ enum ImageUsage
 enum Result
 {
     SUCCESS = 0,
-    ERROR_RESIZED = 1
+    NOT_READY = 1,
+    TIMEOUT = 2,
+    SUBOPTIMAL = 1000001003,
+    ERROR_OUT_OF_DATE = -1000001004,
+    ERROR_RESIZED = SUBOPTIMAL | ERROR_OUT_OF_DATE,
+    ERROR_OUT_OF_HOST_MEM = -1,
+    ERROR_OUT_OF_DEVICE_MEM = -2,
+    ERROR_DEVICE_LOST = -4
 };
 
 //----------------------------------------- Structs -----------------------------------------------

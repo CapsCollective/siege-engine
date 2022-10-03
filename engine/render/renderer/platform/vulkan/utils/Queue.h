@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_QUEUE_H
 #define SIEGE_ENGINE_QUEUE_H
 
-#include "Types.h"
-
-#include <volk/volk.h>
 #include <utils/collections/StackArray.h>
+#include <volk/volk.h>
+
+#include "Types.h"
 
 namespace Siege::Vulkan::Utils
 {
@@ -52,6 +52,6 @@ struct SubmitPresentCommand
     ::Siege::Utils::MSArray<VkSwapchainKHR, MAX_SWAPCHAINS> swapchains;
     ::Siege::Utils::MSArray<uint32_t, MAX_INDICES> indices;
 };
-} // namespace Siege
+} // namespace Siege::Vulkan::Utils
 
 #endif // SIEGE_ENGINE_QUEUE_H

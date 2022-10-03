@@ -52,7 +52,9 @@
 #else
 
 #define ASSERT_LAYERS_EXIST(...)
-#define DEBUG_EXTENSIONS(...)
+#define DEBUG_EXTENSIONS(name, extensions) \
+    name = Siege::Utils::MHArray<const char*>(extensions.Data(), extensions.Size());
+
 #define SETUP_UTILS_MESSENGER
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags) \

@@ -7,13 +7,14 @@
 //
 
 #include "Fence.h"
-#include "Context.h"
 
 #include <utils/Logging.h>
 
+#include "Context.h"
+
 namespace Siege::Vulkan
 {
-Fence::Fence(size_t fenceCount, FenceInitState initState) : size{fenceCount}, initState{initState}
+Fence::Fence(size_t fenceCount, FenceInitState initState) : size {fenceCount}, initState {initState}
 {
     auto device = Context::GetVkLogicalDevice();
 
@@ -26,8 +27,9 @@ Fence::Fence(size_t fenceCount, FenceInitState initState) : size{fenceCount}, in
     for (size_t i = 0; i < fenceCount; i++)
     {
         if (initState == FENCE_NULL) fences[i] = VK_NULL_HANDLE;
-        else CC_ASSERT(vkCreateFence(device, &fenceInfo, nullptr, OUT &fences[i]) == VK_SUCCESS,
-                       "[FENCE] Failed to create Fence!")
+        else
+            CC_ASSERT(vkCreateFence(device, &fenceInfo, nullptr, OUT & fences[i]) == VK_SUCCESS,
+                      "[FENCE] Failed to create Fence!")
     }
 }
 
@@ -52,7 +54,7 @@ Fence::~Fence()
 
 void Fence::Reset(const size_t idx)
 {
-    vkResetFences(Context::GetVkLogicalDevice(), 1, OUT &fences[idx]);
+    vkResetFences(Context::GetVkLogicalDevice(), 1, OUT & fences[idx]);
 }
 
 void Fence::Wait(const size_t idx)
@@ -77,4 +79,4 @@ void Fence::Swap(Fence& other)
     other.size = tmpSize;
     other.initState = tmpInitState;
 }
-}
+} // namespace Siege::Vulkan

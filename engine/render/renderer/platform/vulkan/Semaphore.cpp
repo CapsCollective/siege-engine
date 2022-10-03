@@ -7,13 +7,14 @@
 //
 
 #include "Semaphore.h"
-#include "Context.h"
 
 #include <utils/Logging.h>
 
+#include "Context.h"
+
 namespace Siege::Vulkan
 {
-Semaphore::Semaphore(size_t semaphoreCount) : size{semaphoreCount}
+Semaphore::Semaphore(size_t semaphoreCount) : size {semaphoreCount}
 {
     auto device = Context::GetVkLogicalDevice();
 
@@ -24,8 +25,9 @@ Semaphore::Semaphore(size_t semaphoreCount) : size{semaphoreCount}
 
     for (size_t i = 0; i < semaphoreCount; i++)
     {
-        CC_ASSERT(vkCreateSemaphore(device, &semaphoreInfo, nullptr, OUT & semaphores[i]) ==
-                      VK_SUCCESS, "[SEMAPHORE] Failed to create Semaphore!")
+        CC_ASSERT(
+            vkCreateSemaphore(device, &semaphoreInfo, nullptr, OUT & semaphores[i]) == VK_SUCCESS,
+            "[SEMAPHORE] Failed to create Semaphore!")
     }
 }
 
@@ -54,4 +56,4 @@ void Semaphore::Swap(Semaphore& other)
     other.semaphores = tmpSemaphores;
     other.size = tmpSize;
 }
-}
+} // namespace Siege::Vulkan

@@ -9,6 +9,7 @@
 #define VOLK_IMPLEMENTATION
 
 #include "Renderer.h"
+
 #include "platform/vulkan/utils/Types.h"
 
 namespace Siege
@@ -106,13 +107,13 @@ bool Renderer::StartFrame()
 
     auto result = swapchain.AcquireNextImage(&currentImageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    if (result == Vulkan::Utils::ERROR_OUT_OF_DATE)
     {
         RecreateSwapChain();
         return false;
     }
 
-    CC_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR,
+    CC_ASSERT(result == Vulkan::Utils::SUCCESS || result == Vulkan::Utils::SUBOPTIMAL,
               "Failed to acquire swapchain image!");
 
     isFrameStarted = true;
@@ -168,20 +169,9 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
               "Can't begin a render pass on a command buffer from another frame!");
 
-    uint32_t clearValueCount = 2;
-    VkClearValue clearValues[clearValueCount];
-    clearValues[0].color = clearValue;
-    clearValues[1].depthStencil = {1.0f, 0};
-
     auto swapExtent = swapchain.GetExtent();
 
-    RenderPass::Begin(swapchain.GetRenderPass()->GetRenderPass(),
-                      OUT commandBuffer,
-                      swapchain.GetFrameBuffer(currentImageIndex),
-                      {0, 0},
-                      {swapExtent.width, swapExtent.height},
-                      clearValues,
-                      clearValueCount);
+    swapchain.BeginRenderPass(OUT commandBuffer, currentImageIndex, {{clearValue}, {{{1.f, 0.f}}}});
 
     VkViewport viewport {};
     viewport.x = 0.0f;
@@ -198,10 +188,12 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 
 void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
 {
+    auto& swapchain = context.GetSwapchain();
+
     CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
     CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
-              "Can't begin a render pass on a command buffer from another frame!");
+              "Can't end a render pass on a command buffer from another frame!");
 
-    RenderPass::End(commandBuffer);
+    swapchain.EndRenderPass(commandBuffer);
 }
 } // namespace Siege

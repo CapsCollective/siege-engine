@@ -35,7 +35,7 @@ void RenderPass::Begin(VkRenderPass renderPass,
                        VkFramebuffer frameBuffer,
                        VkOffset2D offset,
                        VkExtent2D extent,
-                       VkClearValue* clearValues,
+                       const VkClearValue* clearValues,
                        uint32_t clearValueCount)
 {
     VkRenderPassBeginInfo renderPassInfo {};

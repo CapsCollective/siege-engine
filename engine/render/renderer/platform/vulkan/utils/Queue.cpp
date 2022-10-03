@@ -7,9 +7,10 @@
 //
 
 #include "Queue.h"
-#include "TypeAdaptor.h"
 
 #include <utils/Logging.h>
+
+#include "TypeAdaptor.h"
 
 namespace Siege::Vulkan::Utils
 {
@@ -20,27 +21,31 @@ SubmitGraphicsCommand& SubmitGraphicsCommand::ToQueue(VkQueue targetQueue)
     return *this;
 }
 
-SubmitGraphicsCommand& SubmitGraphicsCommand::WaitOnSemaphores(std::initializer_list<VkSemaphore> list)
+SubmitGraphicsCommand& SubmitGraphicsCommand::WaitOnSemaphores(
+    std::initializer_list<VkSemaphore> list)
 {
-    for(auto& element : list) waitSemaphores.Append(element);
+    for (auto& element : list) waitSemaphores.Append(element);
     return *this;
 }
 
-SubmitGraphicsCommand& SubmitGraphicsCommand::WithCommandBuffers(std::initializer_list<VkCommandBuffer> list)
+SubmitGraphicsCommand& SubmitGraphicsCommand::WithCommandBuffers(
+    std::initializer_list<VkCommandBuffer> list)
 {
-    for(auto& element : list) commandBuffers.Append(element);
+    for (auto& element : list) commandBuffers.Append(element);
     return *this;
 }
 
-SubmitGraphicsCommand& SubmitGraphicsCommand::SignalSemaphores(std::initializer_list<VkSemaphore> list)
+SubmitGraphicsCommand& SubmitGraphicsCommand::SignalSemaphores(
+    std::initializer_list<VkSemaphore> list)
 {
-    for(auto& element : list) signalSemaphores.Append(element);
+    for (auto& element : list) signalSemaphores.Append(element);
     return *this;
 }
 
-SubmitGraphicsCommand& SubmitGraphicsCommand::WithPipelineStages(std::initializer_list<VkPipelineStageFlags> list)
+SubmitGraphicsCommand& SubmitGraphicsCommand::WithPipelineStages(
+    std::initializer_list<VkPipelineStageFlags> list)
 {
-    for(auto& element : list) waitDstStageMask.Append(element);
+    for (auto& element : list) waitDstStageMask.Append(element);
     return *this;
 }
 
@@ -71,21 +76,23 @@ SubmitPresentCommand& SubmitPresentCommand::ToQueue(VkQueue targetQueue)
     return *this;
 }
 
-SubmitPresentCommand& SubmitPresentCommand::SignalSemaphores(std::initializer_list<VkSemaphore> list)
+SubmitPresentCommand& SubmitPresentCommand::SignalSemaphores(
+    std::initializer_list<VkSemaphore> list)
 {
-    for(auto& element : list) signalSemaphores.Append(element);
+    for (auto& element : list) signalSemaphores.Append(element);
     return *this;
 }
 
-SubmitPresentCommand& SubmitPresentCommand::ForSwapchains(std::initializer_list<VkSwapchainKHR> list)
+SubmitPresentCommand& SubmitPresentCommand::ForSwapchains(
+    std::initializer_list<VkSwapchainKHR> list)
 {
-    for(auto& element : list) swapchains.Append(element);
+    for (auto& element : list) swapchains.Append(element);
     return *this;
 }
 
 SubmitPresentCommand& SubmitPresentCommand::WithImageIndices(std::initializer_list<uint32_t> list)
 {
-    for(auto& element : list) indices.Append(element);
+    for (auto& element : list) indices.Append(element);
     return *this;
 }
 
@@ -105,11 +112,12 @@ Utils::Result SubmitPresentCommand::Submit()
 
     auto result = vkQueuePresentKHR(queue, &presentInfo);
 
-    CC_ASSERT(result == VK_SUCCESS || result == VK_ERROR_OUT_OF_DATE_KHR
-                  || result == VK_SUBOPTIMAL_KHR, "Failed to submit to present queue!")
+    CC_ASSERT(
+        result == VK_SUCCESS || result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR,
+        "Failed to submit to present queue!")
 
     return static_cast<Utils::Result>(result == VK_ERROR_OUT_OF_DATE_KHR ||
                                       result == VK_SUBOPTIMAL_KHR);
 }
 
-} // namespace Siege
+} // namespace Siege::Vulkan::Utils
