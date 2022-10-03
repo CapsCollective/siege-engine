@@ -9,6 +9,7 @@
 #define VOLK_IMPLEMENTATION
 
 #include "Renderer.h"
+#include "platform/vulkan/utils/Types.h"
 
 namespace Siege
 {
@@ -146,14 +147,10 @@ void Renderer::EndFrame()
 
     auto result = swapchain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.WasResized())
+    if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized())
     {
         window.ResetWindowResized();
         RecreateSwapChain();
-    }
-    else if (result != VK_SUCCESS)
-    {
-        CC_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer for drawing!");
     }
 
     isFrameStarted = false;

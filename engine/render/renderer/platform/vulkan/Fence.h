@@ -35,6 +35,10 @@ public:
 
     inline VkFence& operator[](size_t index) {return Get(index); }
     inline VkFence& Get(size_t index) { return fences[index]; }
+    inline void Set(size_t index, VkFence fence) { fences[index] = fence; }
+
+    void Wait(const size_t idx = 0);
+    void Reset(const size_t idx = 0);
     ~Fence();
 private:
     void Swap(Fence& other);

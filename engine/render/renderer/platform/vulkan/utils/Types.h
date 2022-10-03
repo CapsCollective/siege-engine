@@ -92,6 +92,12 @@ enum ImageUsage
     USAGE_STORAGE
 };
 
+enum Result
+{
+    SUCCESS = 0,
+    ERROR_RESIZED = 1
+};
+
 //----------------------------------------- Structs -----------------------------------------------
 
 struct Extent2D

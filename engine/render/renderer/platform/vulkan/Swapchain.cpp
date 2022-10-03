@@ -12,6 +12,7 @@
 #include "utils/Device.h"
 #include "utils/Swapchain.h"
 #include "utils/TypeAdaptor.h"
+#include "utils/Queue.h"
 
 namespace Siege::Vulkan
 {
@@ -92,13 +93,13 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchain)
 Swapchain::~Swapchain()
 {
     auto device = Context::GetVkLogicalDevice();
+
+    if (device == nullptr) return;
+
     uint32_t imageCount = FrameImages::GetImageCount();
 
-    if (device)
-    {
-        CC_LOG_INFO("Clearing Swapchain")
-        vkDestroySwapchainKHR(device, swapchain, nullptr);
-    }
+    CC_LOG_INFO("Clearing Swapchain")
+    vkDestroySwapchainKHR(device, swapchain, nullptr);
 
     if (swapChainFrameBuffers)
     {
@@ -120,11 +121,7 @@ VkResult Swapchain::AcquireNextImage(uint32_t* imageIndex)
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
     // Wait for the image of the current frame to become available
-    vkWaitForFences(device,
-                    1,
-                    &inFlightFences[currentFrame],
-                    VK_TRUE,
-                    std::numeric_limits<uint64_t>::max());
+    inFlightFences.Wait(currentFrame);
 
     // Once available, Add it to our available images semaphor for usage
     return vkAcquireNextImageKHR(device,
@@ -135,83 +132,36 @@ VkResult Swapchain::AcquireNextImage(uint32_t* imageIndex)
                                  imageIndex);
 }
 
-VkResult Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
+Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
 {
-    auto device = Vulkan::Context::GetVkLogicalDevice();
-
     uint32_t index = *imageIndex;
+    uint32_t frameIdx = currentFrame;
 
     // If the image being asked for is being used, we wait for it to become available
-    if (imagesInFlight[index] != VK_NULL_HANDLE)
-    {
-        vkWaitForFences(device, 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
-    }
+    imagesInFlight.Wait(index);
 
     // Get the frame's image and move it to our images in flight
-    imagesInFlight[index] = inFlightFences[currentFrame];
+    imagesInFlight.Set(index, inFlightFences[currentFrame]);
 
-    // With our submission, we specify a semaphore to wait on to grab data from and one to
-    // signal when the rendering is complete.
+    inFlightFences.Reset(currentFrame);
 
-    VkSubmitInfo submitInfo {};
+    Utils::SubmitGraphicsCommand()
+        .ToQueue(Vulkan::Context::GetCurrentDevice()->GetGraphicsQueue())
+        .WaitOnSemaphores({imageAvailableSemaphores[currentFrame]})
+        .WithPipelineStages({VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT})
+        .WithCommandBuffers({buffers[0]})
+        .SignalSemaphores({renderFinishedSemaphores[currentFrame]})
+        .Submit(inFlightFences[currentFrame]);
 
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-    // Specify the semaphores we want to wait for (the one for our current frame)
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-
-    // Set a stage that you need to wait for. In this case we wait until the colour stage of the
-    // pipeline is done (fragment stage)
-    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = buffers;
-
-    // Specify some semaphores to be signalled when rendering is done
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
-
-    // Reset the fence of this frame
-    vkResetFences(device, 1, OUT & inFlightFences[currentFrame]);
-
-    auto logicalDevice = Vulkan::Context::GetCurrentDevice();
-
-    // Submit the command buffer to the graphics queue
-    CC_ASSERT(vkQueueSubmit(logicalDevice->GetGraphicsQueue(),
-                            1,
-                            &submitInfo,
-                            OUT inFlightFences[currentFrame]) == VK_SUCCESS,
-              "Failed to submit draw command buffer");
-
-    // Set up our presentation information and the semaphores to wait on
-    VkPresentInfoKHR presentInfo {};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
-
-    // Specify the swapchains we want to use (currently only using one)
-    VkSwapchainKHR swapChains[] {swapchain};
-
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = swapChains;
-
-    // Store the image we want to render
-    presentInfo.pImageIndices = imageIndex;
-
-    // Submit the presentation info to the present queue.
-    auto result = vkQueuePresentKHR(logicalDevice->GetPresentQueue(), &presentInfo);
-
-    // Set the frame to the next frame
-    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    currentFrame = ((currentFrame+1) < MAX_FRAMES_IN_FLIGHT) * (currentFrame+1);
 
     // Return the result of the rendering process
-    return result;
+    return Utils::SubmitPresentCommand()
+                 .ToQueue(Vulkan::Context::GetCurrentDevice()->GetPresentQueue())
+                 .SignalSemaphores({renderFinishedSemaphores[frameIdx]})
+                 .ForSwapchains({swapchain})
+                 .WithImageIndices({index})
+                 .Submit();
 }
 
 bool Swapchain::IsSameSwapFormat(Utils::ImageFormat oldImageFormat,

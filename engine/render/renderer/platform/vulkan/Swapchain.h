@@ -54,7 +54,7 @@ public:
      * @param imageIndex - the index of the image being drawn.
      * @return VkResult - the result of submitting the buffer.
      */
-    VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+    Utils::Result SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
     VkSwapchainKHR GetRaw()
     {

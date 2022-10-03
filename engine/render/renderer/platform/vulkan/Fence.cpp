@@ -50,6 +50,19 @@ Fence::~Fence()
     size = 0;
 }
 
+void Fence::Reset(const size_t idx)
+{
+    vkResetFences(Context::GetVkLogicalDevice(), 1, OUT &fences[idx]);
+}
+
+void Fence::Wait(const size_t idx)
+{
+    if (fences[idx] == VK_NULL_HANDLE) return;
+
+    // If the image being asked for is being used, we wait for it to become available
+    vkWaitForFences(Context::GetVkLogicalDevice(), 1, &fences[idx], VK_TRUE, UINT64_MAX);
+}
+
 void Fence::Swap(Fence& other)
 {
     auto tmpFences = fences;
