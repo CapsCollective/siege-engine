@@ -109,21 +109,9 @@ Swapchain::~Swapchain()
         }
     }
 
-    if (inFlightFences)
-    {
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-        {
-            vkDestroyFence(device, inFlightFences[i], nullptr);
-        }
-    }
-
-    delete[] imagesInFlight;
     delete[] swapChainFrameBuffers;
-    delete[] inFlightFences;
 
-    imagesInFlight = VK_NULL_HANDLE;
     swapChainFrameBuffers = VK_NULL_HANDLE;
-    inFlightFences = VK_NULL_HANDLE;
     swapchain = VK_NULL_HANDLE;
 }
 
@@ -309,32 +297,13 @@ void Swapchain::CreateFrameBuffers()
 
 void Swapchain::CreateSyncObjects()
 {
-    auto device = Vulkan::Context::GetVkLogicalDevice();
     uint32_t imageCount = FrameImages::GetImageCount();
 
     imageAvailableSemaphores = Semaphore(MAX_FRAMES_IN_FLIGHT);
     renderFinishedSemaphores = Semaphore(MAX_FRAMES_IN_FLIGHT);
 
-    if (inFlightFences == nullptr) inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
-    if (imagesInFlight == nullptr) imagesInFlight = new VkFence[imageCount];
-
-    // Set all images in flight to null
-    for (size_t i = 0; i < imageCount; i++) imagesInFlight[i] = VK_NULL_HANDLE;
-
-    // Create our semaphore and fence create info
-    VkSemaphoreCreateInfo semaphoreInfo {};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-    VkFenceCreateInfo fenceInfo {};
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    // Create the synchronisation objects
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-    {
-        CC_ASSERT(vkCreateFence(device, &fenceInfo, nullptr, OUT & inFlightFences[i]) == VK_SUCCESS,
-            "Failed to create synchronization objects for a frame!");
-    }
+    inFlightFences = Fence(MAX_FRAMES_IN_FLIGHT);
+    imagesInFlight = Fence(imageCount, Fence::FENCE_NULL);
 }
 
 void Swapchain::Swap(Swapchain& other)
@@ -348,8 +317,8 @@ void Swapchain::Swap(Swapchain& other)
     auto tmpRenderPass = std::move(renderPass);
     auto tmpDepthImages = std::move(depthImages);
     auto tmpFrameBuffers = swapChainFrameBuffers;
-    auto tmpInFlightFences = inFlightFences;
-    auto tmpImagesInFlight = imagesInFlight;
+    auto tmpInFlightFences = std::move(inFlightFences);
+    auto tmpImagesInFlight = std::move(imagesInFlight);
     auto tmpCurrentFrame = currentFrame;
     auto tmpImageAvailableSemaphores2 = std::move(imageAvailableSemaphores);
     auto tmpRenderFinishedSemaphores2 = std::move(renderFinishedSemaphores);
@@ -363,8 +332,8 @@ void Swapchain::Swap(Swapchain& other)
     renderPass = std::move(other.renderPass);
     depthImages = std::move(other.depthImages);
     swapChainFrameBuffers = other.swapChainFrameBuffers;
-    inFlightFences = other.inFlightFences;
-    imagesInFlight = other.imagesInFlight;
+    inFlightFences = std::move(other.inFlightFences);
+    imagesInFlight = std::move(other.imagesInFlight);
     currentFrame = other.currentFrame;
     imageAvailableSemaphores = std::move(other.imageAvailableSemaphores);
     renderFinishedSemaphores = std::move(other.renderFinishedSemaphores);
@@ -379,8 +348,8 @@ void Swapchain::Swap(Swapchain& other)
     other.renderPass = std::move(tmpRenderPass);
     other.depthImages = std::move(tmpDepthImages);
     other.swapChainFrameBuffers = tmpFrameBuffers;
-    other.inFlightFences = tmpInFlightFences;
-    other.imagesInFlight = tmpImagesInFlight;
+    other.inFlightFences = std::move(tmpInFlightFences);
+    other.imagesInFlight = std::move(tmpImagesInFlight);
     other.currentFrame = tmpCurrentFrame;
     other.imageAvailableSemaphores = std::move(tmpImageAvailableSemaphores2);
     other.renderFinishedSemaphores = std::move(tmpRenderFinishedSemaphores2);

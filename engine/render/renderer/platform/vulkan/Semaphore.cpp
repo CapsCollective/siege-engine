@@ -31,8 +31,13 @@ Semaphore::Semaphore(size_t semaphoreCount) : size{semaphoreCount}
 
 Semaphore::~Semaphore()
 {
+    if (semaphores == nullptr) return;
+
+    CC_LOG_INFO("[SEMAPHORE] Destroying Semaphore")
+
     auto device = Context::GetVkLogicalDevice();
     for (size_t i = 0; i < size; i++) vkDestroySemaphore(device, semaphores[i], nullptr);
+
     delete[] semaphores;
     semaphores = VK_NULL_HANDLE;
     size = 0;

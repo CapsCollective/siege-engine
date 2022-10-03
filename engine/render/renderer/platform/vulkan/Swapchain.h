@@ -14,6 +14,7 @@
 #include "render/renderer/platform/vulkan/utils/Types.h"
 
 #include "Semaphore.h"
+#include "Fence.h"
 
 namespace Siege::Vulkan
 {
@@ -116,16 +117,16 @@ private:
     FrameImages depthImages;
 
     RenderPass renderPass;
+
     Utils::ImageFormat swapChainImageFormat {Utils::NONE};
     Utils::DepthFormat swapChainDepthFormat {Utils::DEPTH_NONE};
-
-    // TODO: Replace with HArrays (or SArrays) when caught up with main
 
     Semaphore imageAvailableSemaphores;
     Semaphore renderFinishedSemaphores;
 
-    VkFence* inFlightFences {VK_NULL_HANDLE};
-    VkFence* imagesInFlight {VK_NULL_HANDLE};
+    Fence inFlightFences;
+    Fence imagesInFlight;
+
     size_t currentFrame = 0;
 };
 } // namespace Siege::Vulkan

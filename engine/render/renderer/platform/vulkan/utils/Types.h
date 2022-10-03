@@ -30,6 +30,7 @@ struct VkDeviceMemory_T;
 struct VkBuffer_T;
 struct VkSwapchainKHR_T;
 struct VkSemaphore_T;
+struct VkFence_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -46,6 +47,7 @@ typedef VkDeviceMemory_T* VkDeviceMemory;
 typedef VkBuffer_T* VkBuffer;
 typedef VkSwapchainKHR_T* VkSwapchainKHR;
 typedef VkSemaphore_T* VkSemaphore;
+typedef VkFence_T* VkFence;
 
 namespace Siege::Vulkan::Utils
 {
