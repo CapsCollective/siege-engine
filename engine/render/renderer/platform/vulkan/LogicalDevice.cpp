@@ -124,38 +124,38 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
     return *this;
 }
 
-CommandBuffer LogicalDevice::GetCommandBuffer()
+VkCommandBuffer LogicalDevice::GetCommandBuffer()
 {
     return Utils::CommandBuffer::AllocateCommandBuffer(device, commandPool);
 }
 
-CommandBuffer LogicalDevice::BeginSingleTimeCommand(CommandBuffer commandBuffer)
+VkCommandBuffer LogicalDevice::BeginSingleTimeCommand(VkCommandBuffer commandBuffer)
 {
     Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
 
     return commandBuffer;
 }
 
-void LogicalDevice::EndSingleTimeCommand(CommandBuffer commandBuffer)
+void LogicalDevice::EndSingleTimeCommand(VkCommandBuffer commandBuffer)
 {
     FlushCommandBuffer(commandBuffer);
     SubmitToGraphicsQueue(commandBuffer);
     FreeCommandBuffer(commandBuffer);
 }
 
-void LogicalDevice::FlushCommandBuffer(CommandBuffer commandBuffer)
+void LogicalDevice::FlushCommandBuffer(VkCommandBuffer commandBuffer)
 {
     CC_ASSERT(commandBuffer != VK_NULL_HANDLE, "commandBuffer must be a valid value!")
 
     vkEndCommandBuffer(commandBuffer);
 }
 
-void LogicalDevice::SubmitToGraphicsQueue(CommandBuffer commandBuffer)
+void LogicalDevice::SubmitToGraphicsQueue(VkCommandBuffer commandBuffer)
 {
     SubmitToQueue(commandBuffer, graphicsQueue);
 }
 
-void LogicalDevice::SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue)
+void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
 {
     VkSubmitInfo submitInfo {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -180,7 +180,7 @@ void LogicalDevice::SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue)
     vkDestroyFence(device, fence, nullptr);
 }
 
-void LogicalDevice::FreeCommandBuffer(CommandBuffer commandBuffer)
+void LogicalDevice::FreeCommandBuffer(VkCommandBuffer commandBuffer)
 {
     vkFreeCommandBuffers(device, GetCommandPool(), 1, OUT & commandBuffer);
 }

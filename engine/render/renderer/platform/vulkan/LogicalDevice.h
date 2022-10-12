@@ -43,16 +43,16 @@ public:
         return device;
     }
 
-    CommandBuffer GetCommandBuffer();
+    VkCommandBuffer GetCommandBuffer();
 
-    CommandBuffer BeginSingleTimeCommand(CommandBuffer commandBuffer);
-    void EndSingleTimeCommand(CommandBuffer commandBuffer);
+    VkCommandBuffer BeginSingleTimeCommand(VkCommandBuffer commandBuffer);
+    void EndSingleTimeCommand(VkCommandBuffer commandBuffer);
 
-    void FlushCommandBuffer(CommandBuffer commandBuffer);
+    void FlushCommandBuffer(VkCommandBuffer commandBuffer);
 
-    void SubmitToGraphicsQueue(CommandBuffer commandBuffer);
-    void SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue);
-    void FreeCommandBuffer(CommandBuffer commandBuffer);
+    void SubmitToGraphicsQueue(VkCommandBuffer commandBuffer);
+    void SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue);
+    void FreeCommandBuffer(VkCommandBuffer commandBuffer);
 
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size);
     void CopyBufferToImage(VkBuffer buffer,

@@ -42,7 +42,7 @@ typedef VkImageView_T* VkImageView;
 typedef VkDevice_T* VkDevice;
 typedef VkQueue_T* VkQueue;
 typedef VkCommandPool_T* VkCommandPool;
-typedef VkCommandBuffer_T* CommandBuffer;
+typedef VkCommandBuffer_T* VkCommandBuffer;
 typedef VkDeviceMemory_T* VkDeviceMemory;
 typedef VkBuffer_T* VkBuffer;
 typedef VkSwapchainKHR_T* VkSwapchainKHR;
