@@ -8,12 +8,12 @@
 
 #include "LogicalDevice.h"
 
+#include "CommandBuffer.h"
 #include "Config.h"
+#include "Fence.h"
 #include "utils/Buffer.h"
 #include "utils/CommandPool.h"
 #include "utils/Device.h"
-#include "CommandBuffer.h"
-#include "Fence.h"
 
 // std headers
 #include <set>

@@ -31,7 +31,7 @@ void RenderPass::DestroyRenderPass()
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
-                       VkCommandBuffer commandBuffer,
+                       Vulkan::CommandBuffer& commandBuffer,
                        VkFramebuffer frameBuffer,
                        VkOffset2D offset,
                        VkExtent2D extent,
@@ -49,12 +49,14 @@ void RenderPass::Begin(VkRenderPass renderPass,
     renderPassInfo.clearValueCount = clearValueCount;
     renderPassInfo.pClearValues = clearValues;
 
-    vkCmdBeginRenderPass(OUT commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(OUT commandBuffer.GetActiveCommandBuffer(),
+                         &renderPassInfo,
+                         VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderPass::End(VkCommandBuffer commandBuffer)
+void RenderPass::End(Vulkan::CommandBuffer& commandBuffer)
 {
-    vkCmdEndRenderPass(OUT commandBuffer);
+    vkCmdEndRenderPass(OUT commandBuffer.GetActiveCommandBuffer());
 }
 
 RenderPass::RenderPass() = default;

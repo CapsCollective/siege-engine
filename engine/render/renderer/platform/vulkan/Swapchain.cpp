@@ -134,7 +134,7 @@ void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                                 std::initializer_list<VkClearValue> clearValues)
 {
     RenderPass::Begin(renderPass.GetRenderPass(),
-                      OUT commandBuffer.GetActiveCommandBuffer(),
+                      OUT commandBuffer,
                       swapChainFrameBuffers[imageIndex],
                       {0, 0},
                       {swapchainExtent.width, swapchainExtent.height},

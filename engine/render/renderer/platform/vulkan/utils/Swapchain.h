@@ -57,7 +57,6 @@ VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
 VkPresentModeKHR ChoosePresentMode(const ::Siege::Utils::MHArray<VkPresentModeKHR>& presentModes);
 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
                             const VkExtent2D& windowExtent);
-
 } // namespace Siege::Vulkan::Utils
 
 #endif // SIEGE_ENGINE_VULKAN_UTILS_SWAPCHAIN_H

@@ -14,9 +14,7 @@
 #include "render/renderer/image/FrameImages.h"
 #include "render/renderer/pass/RenderPass.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
-
-#include "Semaphore.h"
-#include "Fence.h"
+#include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege::Vulkan
 {
