@@ -20,7 +20,7 @@ Fence::Fence(size_t fenceCount, FenceInitState initState) : size {fenceCount}, i
 
     VkFenceCreateInfo fenceInfo {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    fenceInfo.flags = (initState == FENCE_EMPTY_SIGNALED) * VK_FENCE_CREATE_SIGNALED_BIT;
 
     fences = new VkFence[fenceCount];
 
@@ -40,7 +40,7 @@ Fence::~Fence()
     CC_LOG_INFO("[FENCE] Destroying Fence")
     auto device = Context::GetVkLogicalDevice();
 
-    size = (initState == FENCE_EMPTY) * size;
+    size = (initState == FENCE_EMPTY || initState == FENCE_EMPTY_SIGNALED) * size;
 
     for (size_t i = 0; i < size; i++)
     {

@@ -129,12 +129,12 @@ Utils::Result Swapchain::AcquireNextImage(uint32_t* imageIndex)
                                                             imageIndex));
 }
 
-void Swapchain::BeginRenderPass(VkCommandBuffer commandBuffer,
+void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                                 uint32_t imageIndex,
                                 std::initializer_list<VkClearValue> clearValues)
 {
     RenderPass::Begin(renderPass.GetRenderPass(),
-                      OUT commandBuffer,
+                      OUT commandBuffer.GetActiveCommandBuffer(),
                       swapChainFrameBuffers[imageIndex],
                       {0, 0},
                       {swapchainExtent.width, swapchainExtent.height},
@@ -142,12 +142,12 @@ void Swapchain::BeginRenderPass(VkCommandBuffer commandBuffer,
                       clearValues.size());
 }
 
-void Swapchain::EndRenderPass(VkCommandBuffer commandBuffer)
+void Swapchain::EndRenderPass(Vulkan::CommandBuffer& commandBuffer)
 {
-    vkCmdEndRenderPass(OUT commandBuffer);
+    vkCmdEndRenderPass(OUT commandBuffer.GetActiveCommandBuffer());
 }
 
-Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
+Utils::Result Swapchain::SubmitCommandBuffers(CommandBuffer& buffers, uint32_t* imageIndex)
 {
     uint32_t index = *imageIndex;
     uint32_t frameIdx = currentFrame;
@@ -164,7 +164,7 @@ Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, ui
         .ToQueue(Vulkan::Context::GetCurrentDevice()->GetGraphicsQueue())
         .WaitOnSemaphores({imageAvailableSemaphores[currentFrame]})
         .WithPipelineStages({VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT})
-        .WithCommandBuffers({buffers[0]})
+        .WithCommandBuffers({buffers[currentFrame]})
         .SignalSemaphores({renderFinishedSemaphores[currentFrame]})
         .Submit(inFlightFences[currentFrame]);
 

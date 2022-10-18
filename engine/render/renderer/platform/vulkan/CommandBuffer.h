@@ -15,16 +15,99 @@
 
 namespace Siege::Vulkan
 {
+/**
+ *
+ */
 class CommandBuffer
 {
+    typedef void (*cmdFunc)();
 public:
-    CommandBuffer(uint32_t count = 0);
+    /**
+     *
+     */
+    CommandBuffer() = default;
+    /**
+     *
+     */
     ~CommandBuffer() = default;
 
-    void Begin(int32_t idx = -1);
-    void End(int32_t idx = -1);
+    /**
+     *
+     * @param count
+     */
+    CommandBuffer(uint32_t count);
+    /**
+     *
+     * @param other
+     */
+    inline CommandBuffer(CommandBuffer&& other) { Swap(other); }
+
+    /**
+     *
+     * @param other
+     * @return
+     */
+    inline CommandBuffer& operator=(CommandBuffer&& other)
+    {
+        Swap(other);
+        return *this;
+    }
+    /**
+     *
+     * @param idx
+     * @return
+     */
+    inline VkCommandBuffer& operator[](const size_t idx) { return commandBuffers[idx]; }
+
+    /**
+     *
+     * @param index
+     * @return
+     */
+    VkCommandBuffer Get(const size_t index = 0) { return commandBuffers[index]; }
+    /**
+     *
+     * @return
+     */
+    VkCommandBuffer GetActiveCommandBuffer() { return activeCommandBuffer; }
+
+    /**
+     *
+     * @param index
+     */
+    void Begin(int32_t index = 0);
+    /**
+     *
+     */
+    void End();
+
+    /**
+     *
+     */
+    void Submit(const size_t index = 0);
+
+    template<typename F>
+    static void ExecuteSingleTimeCommand(F&& func)
+    {
+        auto commandBuffer = Vulkan::CommandBuffer(1);
+        commandBuffer.Begin();
+        func(commandBuffer.Get());
+        commandBuffer.End();
+        commandBuffer.Submit();
+    }
 private:
+    /**
+     *
+     * @param other
+     */
+    void Swap(CommandBuffer& other);
+    /**
+     *
+     */
     ::Siege::Utils::MHArray<VkCommandBuffer> commandBuffers;
+    /**
+     *
+     */
     VkCommandBuffer activeCommandBuffer {nullptr};
 };
 } // namespace Siege::Vulkan

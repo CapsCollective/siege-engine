@@ -10,9 +10,10 @@
 
 #include "Config.h"
 #include "utils/Buffer.h"
-#include "utils/CommandBuffer.h"
 #include "utils/CommandPool.h"
 #include "utils/Device.h"
+#include "CommandBuffer.h"
+#include "Fence.h"
 
 // std headers
 #include <set>
@@ -124,75 +125,11 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
     return *this;
 }
 
-VkCommandBuffer LogicalDevice::GetCommandBuffer()
-{
-    return Utils::CommandBuffer::AllocateCommandBuffer(device, commandPool);
-}
-
-VkCommandBuffer LogicalDevice::BeginSingleTimeCommand(VkCommandBuffer commandBuffer)
-{
-    Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
-
-    return commandBuffer;
-}
-
-void LogicalDevice::EndSingleTimeCommand(VkCommandBuffer commandBuffer)
-{
-    FlushCommandBuffer(commandBuffer);
-    SubmitToGraphicsQueue(commandBuffer);
-    FreeCommandBuffer(commandBuffer);
-}
-
-void LogicalDevice::FlushCommandBuffer(VkCommandBuffer commandBuffer)
-{
-    CC_ASSERT(commandBuffer != VK_NULL_HANDLE, "commandBuffer must be a valid value!")
-
-    vkEndCommandBuffer(commandBuffer);
-}
-
-void LogicalDevice::SubmitToGraphicsQueue(VkCommandBuffer commandBuffer)
-{
-    SubmitToQueue(commandBuffer, graphicsQueue);
-}
-
-void LogicalDevice::SubmitToQueue(VkCommandBuffer commandBuffer, VkQueue queue)
-{
-    VkSubmitInfo submitInfo {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    VkFenceCreateInfo fenceCreateInfo = {};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.flags = 0;
-
-    VkFence fence;
-
-    CC_ASSERT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence) == VK_SUCCESS,
-              "Failed to create Fence!")
-
-    CC_ASSERT(vkQueueSubmit(queue, 1, &submitInfo, fence) == VK_SUCCESS,
-              "Failed to submit to queue!")
-
-    CC_ASSERT(vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX) == VK_SUCCESS,
-              "Failed to wait for successful execution of queue submission!")
-
-    vkDestroyFence(device, fence, nullptr);
-}
-
-void LogicalDevice::FreeCommandBuffer(VkCommandBuffer commandBuffer)
-{
-    vkFreeCommandBuffers(device, GetCommandPool(), 1, OUT & commandBuffer);
-}
-
 void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size)
 {
-    auto commandBuffer = BeginSingleTimeCommand(GetCommandBuffer());
-
-    auto copyRegion = Utils::Buffer::CopyRegion(size);
-    Utils::Buffer::CopyBuffer(commandBuffer, srcBuffer, dstBuffer, copyRegion, 1);
-
-    EndSingleTimeCommand(commandBuffer);
+    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer buffer) {
+        Utils::Buffer::CopyBuffer(buffer, srcBuffer, dstBuffer, Utils::Buffer::CopyRegion(size), 1);
+    });
 }
 
 void LogicalDevice::CopyBufferToImage(VkBuffer buffer,
@@ -201,29 +138,28 @@ void LogicalDevice::CopyBufferToImage(VkBuffer buffer,
                                       uint32_t height,
                                       uint32_t layerCount)
 {
-    auto commandBuffer = BeginSingleTimeCommand(GetCommandBuffer());
+    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer cmdBuffer) {
+        VkBufferImageCopy region {};
 
-    VkBufferImageCopy region {};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
 
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = layerCount;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = layerCount;
 
-    region.imageOffset = {0, 0, 0};
-    region.imageExtent = {width, height, 1};
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = {width, height, 1};
 
-    vkCmdCopyBufferToImage(commandBuffer,
-                           buffer,
-                           image,
-                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                           1,
-                           &region);
-
-    EndSingleTimeCommand(commandBuffer);
+        vkCmdCopyBufferToImage(cmdBuffer,
+                               buffer,
+                               image,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               1,
+                               &region);
+    });
 }
 
 void LogicalDevice::Move(LogicalDevice& other)

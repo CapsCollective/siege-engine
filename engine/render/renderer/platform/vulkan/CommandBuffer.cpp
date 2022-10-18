@@ -7,12 +7,10 @@
 //
 
 #include "CommandBuffer.h"
-#include "Swapchain.h"
 #include "Context.h"
 
-#include "render/renderer/Renderer.h"
-
 #include "utils/CommandBuffer.h"
+#include "utils/SubmitCommands.h"
 
 namespace Siege::Vulkan
 {
@@ -21,18 +19,46 @@ CommandBuffer::CommandBuffer(uint32_t count)
     auto device = Context::GetVkLogicalDevice();
     auto pool = Context::GetCurrentDevice()->GetCommandPool();
 
-    count = ((count == 0) * Swapchain::MAX_FRAMES_IN_FLIGHT) + ((count != 0) * count);
-
     commandBuffers = Utils::CommandBuffer::AllocateCommandBuffers(device, pool, count);
 }
 
-void CommandBuffer::Begin(int32_t idx)
+void CommandBuffer::Begin(int32_t index)
 {
-    auto bufferIndex = Renderer::Get()->GetCurrentFrameIndex();
+    auto commandBuffer = commandBuffers[index];
+
+    Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
+
+    activeCommandBuffer = commandBuffer;
 }
 
-void CommandBuffer::End(int32_t idx)
+void CommandBuffer::End()
 {
+    Utils::CommandBuffer::EndCommandBuffer(activeCommandBuffer);
 
+    activeCommandBuffer = nullptr;
+}
+
+void CommandBuffer::Submit(const size_t index)
+{
+    Vulkan::Fence fence(1, Fence::FENCE_EMPTY);
+
+    Utils::SubmitGraphicsCommand()
+        .ToQueue(Vulkan::Context::GetCurrentDevice()->GetGraphicsQueue())
+        .WithCommandBuffers({commandBuffers[index]})
+        .Submit(fence.Get());
+
+    fence.Wait();
+}
+
+void CommandBuffer::Swap(CommandBuffer& other)
+{
+    auto tmpCmdBuffers = std::move(commandBuffers);
+    auto tmpActiveCmdBuffer = activeCommandBuffer;
+
+    commandBuffers = std::move(other.commandBuffers);
+    activeCommandBuffer = other.activeCommandBuffer;
+
+    other.commandBuffers = std::move(tmpCmdBuffers);
+    other.activeCommandBuffer = tmpActiveCmdBuffer;
 }
 } // namespace Siege::Vulkan

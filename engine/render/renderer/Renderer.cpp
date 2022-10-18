@@ -15,7 +15,8 @@
 namespace Siege
 {
 Renderer* Renderer::instance {nullptr};
-Utils::MHArray<VkCommandBuffer> Renderer::commandBuffers;
+Vulkan::CommandBuffer Renderer::commandBuffers;
+uint32_t Renderer::currentFrameIndex = 0;
 
 Renderer::Renderer(Window& window) : window {window}
 {
@@ -37,7 +38,7 @@ Renderer::Renderer(Window& window) : window {window}
     Renderer3D::Initialise();
     Renderer2D::Initialise();
 
-    CreateCommandBuffers();
+    commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 }
 
 Renderer::~Renderer()
@@ -47,25 +48,9 @@ Renderer::~Renderer()
     Renderer3D::DestroyRenderer3D();
 }
 
-void Renderer::CreateCommandBuffers()
-{
-    commandBuffers = Utils::MHArray<VkCommandBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
-
-    VkCommandBufferAllocateInfo allocInfo {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = Vulkan::Context::GetCurrentDevice()->GetCommandPool();
-    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.Size());
-
-    CC_ASSERT(vkAllocateCommandBuffers(Vulkan::Context::GetVkLogicalDevice(),
-                                       &allocInfo,
-                                       OUT commandBuffers.Data()) == VK_SUCCESS,
-              "Failed to allocate command buffer");
-}
-
 void Renderer::DrawFrame()
 {
-    auto commandBuffer = GetCurrentCommandBuffer();
+    auto commandBuffer = commandBuffers.GetActiveCommandBuffer();
 
     Renderer2D::GlobalData global2DData = {projection};
 
@@ -101,7 +86,7 @@ void Renderer::RecreateSwapChain()
 
 bool Renderer::StartFrame()
 {
-    CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");
+    CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!")
 
     auto& swapchain = context.GetSwapchain();
 
@@ -114,19 +99,13 @@ bool Renderer::StartFrame()
     }
 
     CC_ASSERT(result == Vulkan::Utils::SUCCESS || result == Vulkan::Utils::SUBOPTIMAL,
-              "Failed to acquire swapchain image!");
+              "Failed to acquire swapchain image!")
 
     isFrameStarted = true;
 
-    VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
+    commandBuffers.Begin(currentFrameIndex);
 
-    VkCommandBufferBeginInfo beginInfo {};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-    CC_ASSERT(vkBeginCommandBuffer(OUT commandBuffer, &beginInfo) == VK_SUCCESS,
-              "Failed to begin recording command buffer");
-
-    BeginSwapChainRenderPass(commandBuffer);
+    BeginSwapChainRenderPass();
 
     return true;
 }
@@ -139,14 +118,11 @@ void Renderer::EndFrame()
 
     DrawFrame();
 
-    VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
+    EndSwapChainRenderPass();
 
-    EndSwapChainRenderPass(commandBuffer);
+    commandBuffers.End();
 
-    CC_ASSERT(vkEndCommandBuffer(OUT commandBuffer) == VK_SUCCESS,
-              "Failed to record command buffer!");
-
-    auto result = swapchain.SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
+    auto result = swapchain.SubmitCommandBuffers(commandBuffers, &currentImageIndex);
 
     if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized())
     {
@@ -161,17 +137,15 @@ void Renderer::EndFrame()
     Renderer2D::Flush();
 }
 
-void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
+void Renderer::BeginSwapChainRenderPass()
 {
     auto& swapchain = context.GetSwapchain();
 
-    CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!");
-    CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
-              "Can't begin a render pass on a command buffer from another frame!");
+    CC_ASSERT(isFrameStarted, "Can't start render pass while the frame hasn't started!")
 
     auto swapExtent = swapchain.GetExtent();
 
-    swapchain.BeginRenderPass(OUT commandBuffer, currentImageIndex, {{clearValue}, {{{1.f, 0.f}}}});
+    swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {{clearValue}, {{{1.f, 0.f}}}});
 
     VkViewport viewport {};
     viewport.x = 0.0f;
@@ -182,18 +156,16 @@ void Renderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
     viewport.maxDepth = 1.0f;
     VkRect2D scissor {{0, 0}, {swapExtent.width, swapExtent.height}};
 
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    vkCmdSetViewport(commandBuffers.GetActiveCommandBuffer(), 0, 1, &viewport);
+    vkCmdSetScissor(commandBuffers.GetActiveCommandBuffer(), 0, 1, &scissor);
 }
 
-void Renderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
+void Renderer::EndSwapChainRenderPass()
 {
     auto& swapchain = context.GetSwapchain();
 
-    CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!");
-    CC_ASSERT(commandBuffer == GetCurrentCommandBuffer(),
-              "Can't end a render pass on a command buffer from another frame!");
+    CC_ASSERT(isFrameStarted, "Can't end render pass while the frame hasn't started!")
 
-    swapchain.EndRenderPass(commandBuffer);
+    swapchain.EndRenderPass(commandBuffers);
 }
 } // namespace Siege

@@ -20,6 +20,7 @@
 #include "render/window/Window.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
+#include "render/renderer/platform/vulkan/CommandBuffer.h"
 
 namespace Siege
 {
@@ -31,12 +32,6 @@ public:
 
     ~Renderer();
 
-    int GetCurrentFrameIndex() const
-    {
-        CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!");
-        return currentFrameIndex;
-    }
-
     float GetAspectRatio() const
     {
         return static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
@@ -45,12 +40,6 @@ public:
     void SetProjection(const Mat4& projectionMat, const Mat4& viewMat)
     {
         projection = {projectionMat, viewMat};
-    }
-
-    VkCommandBuffer GetCurrentCommandBuffer() const
-    {
-        CC_ASSERT(isFrameStarted, "Can't get command buffer when frame is not in progress!")
-        return commandBuffers[currentFrameIndex];
     }
 
     bool StartFrame();
@@ -79,19 +68,18 @@ public:
 private:
 
     static Renderer* instance;
-    static Utils::MHArray<VkCommandBuffer> commandBuffers;
+    static Vulkan::CommandBuffer commandBuffers;
+    static uint32_t currentFrameIndex;
 
     Vulkan::Context context;
 
     // Make this adjustable in the window, not the renderer.
     VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
-    void CreateCommandBuffers();
-
     void RecreateSwapChain();
 
-    void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-    void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
+    void BeginSwapChainRenderPass();
+    void EndSwapChainRenderPass();
 
     void DrawFrame();
 
@@ -99,7 +87,6 @@ private:
 
     uint32_t currentImageIndex;
     bool isFrameStarted {false};
-    int currentFrameIndex {0};
 
     CameraData projection;
 };
