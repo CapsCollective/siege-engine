@@ -15,6 +15,8 @@
 #include "../pipeline/Pipeline.h"
 #include "../shader/Shader.h"
 
+#include "render/renderer/platform/vulkan/Shader.h"
+
 namespace Siege
 {
 class Material
@@ -42,6 +44,8 @@ public:
     Material();
     Material(Shader* vertexShader);
     Material(Shader* vertexShader, Shader* fragmentShader);
+
+    Material(const Vulkan::Shader& vertexShader, const Vulkan::Shader& fragmentShader);
 
     Material(const Material&) = delete;
     Material& operator=(const Material&) = delete;
@@ -119,6 +123,9 @@ private:
 
     Shader* vertexShader {nullptr};
     Shader* fragmentShader {nullptr};
+
+    Vulkan::Shader vertShader;
+    Vulkan::Shader fragShader;
 
     Utils::MSArray<Property, MAX_MATERIAL_BINDINGS> propertiesArray;
 

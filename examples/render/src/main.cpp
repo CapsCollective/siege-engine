@@ -12,6 +12,7 @@
 #include <render/renderer/model/Model.h>
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
+#include <render/renderer/platform/vulkan/Shader.h>
 #include <utils/math/Float.h>
 
 #include <chrono>
@@ -99,7 +100,43 @@ int main()
             .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
             .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
 
+    using Siege::Vulkan::Shader;
+    auto testDiffuseShader =
+        Shader::Builder()
+            .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+            .WithVertexBinding(
+                Shader::VertexBinding()
+                   .AddFloatVec3Attribute()
+                   .AddFloatVec4Attribute()
+                   .AddFloatVec3Attribute()
+                   .AddFloatVec2Attribute())
+            .WithTransform3DStorage(1000)
+            .WithGlobalData3DUniform()
+            .Build();
+
+    auto testSpriteShader =
+        Shader::Builder()
+            .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
+                .WithVertexBinding(
+                    Shader::VertexBinding()
+                        .AddFloatVec2Attribute()
+                        .AddFloatVec4Attribute())
+            .WithTransform2DStorage(1000)
+            .WithGlobalData2DUniform()
+            .Build();
+
     // Fragment shaders
+
+    auto testFragShader =
+        Shader::Builder()
+            .FromFragmentShader("assets/shaders/simpleShader.frag.spv")
+            .Build();
+
+    auto testDiffuseFragShader =
+        Shader::Builder()
+            .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+            .WithGlobalData3DUniform()
+            .Build();
 
     auto fragShader = Siege::Shader::BuildShader()
                           .FromShader("assets/shaders/simpleShader.frag.spv")
@@ -118,6 +155,9 @@ int main()
     // vertex       // fragment
     Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     Siege::Material spriteMat(&spriteShader, &fragShader); // 2D sprite material
+
+    // TODO: Finish this
+    Siege::Material testDiffuseMat(testDiffuseShader, testDiffuseFragShader);
 
     // shader
 

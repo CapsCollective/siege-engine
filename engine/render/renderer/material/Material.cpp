@@ -43,6 +43,13 @@ Material::Material(Shader* vertexShader, Shader* fragmentShader, uint32_t shader
     fragmentShader(fragmentShader)
 {}
 
+Material::Material(const Vulkan::Shader& vertexShader, const Vulkan::Shader& fragmentShader)
+    : shaderCount{2}, vertShader{vertexShader}, fragShader{fragmentShader}
+{
+    bufferSize += (Buffer::PadUniformBufferSize(vertShader.GetTotalUniformSize()) +
+                   Buffer::PadUniformBufferSize(fragShader.GetTotalUniformSize()));
+}
+
 void Material::SetVertexShader(Shader* shader)
 {
     if (vertexShader == nullptr) shaderCount++;

@@ -118,6 +118,45 @@ DECL_VULKAN_SWITCH_FUN(
                                                                DEPTH24STENCIL8)
                                                         SWITCH_DEFAULT(NONE))
 
+DECL_VULKAN_SWITCH_FUN(VkDescriptorType,
+                       UniformType,
+                       SWITCH_MEM(UniformType, TEXTURE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+                       SWITCH_MEM(UniformType, STORAGE, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
+                       SWITCH_MEM(UniformType, UNIFORM, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+                       SWITCH_DEFAULT(VK_DESCRIPTOR_TYPE_MAX_ENUM))
+
+DECL_VULKAN_SWITCH_FUN(UniformType,
+                       VkDescriptorType,
+                       SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, TEXTURE)
+                       SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, STORAGE)
+                       SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, UNIFORM)
+                       SWITCH_DEFAULT(UNKNOWN))
+
+DECL_VULKAN_SWITCH_FUN(VkShaderStageFlagBits,
+                       ShaderType,
+                       SWITCH_MEM(ShaderType, VERTEX, VK_SHADER_STAGE_VERTEX_BIT)
+                       SWITCH_MEM(ShaderType, FRAGMENT, VK_SHADER_STAGE_FRAGMENT_BIT)
+                       SWITCH_DEFAULT(VK_SHADER_STAGE_ALL_GRAPHICS))
+
+DECL_VULKAN_SWITCH_FUN(ShaderType,
+                       VkShaderStageFlagBits,
+                       SWITCH_MEM(VkShaderStageFlagBits, VK_SHADER_STAGE_VERTEX_BIT, VERTEX)
+                       SWITCH_MEM(VkShaderStageFlagBits, VK_SHADER_STAGE_FRAGMENT_BIT, FRAGMENT)
+                       SWITCH_DEFAULT(ALL_GRAPHICS))
+
+DECL_VULKAN_SWITCH_FUN(VkFormat,
+                       VertexAttributeType,
+                       SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC2, VK_FORMAT_R32G32_SFLOAT)
+                       SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC3, VK_FORMAT_R32G32B32_SFLOAT)
+                       SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC4, VK_FORMAT_R32G32B32A32_SFLOAT)
+                       SWITCH_DEFAULT(VK_FORMAT_UNDEFINED))
+
+DECL_VULKAN_SWITCH_FUN(VertexAttributeType, VkFormat,
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, VERTEX_FLOAT_VEC2)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32_SFLOAT, VERTEX_FLOAT_VEC3)
+                       SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32A32_SFLOAT, VERTEX_FLOAT_VEC4)
+                       SWITCH_DEFAULT(VERTEX_UNDEFINED))
+
 //----------------------------------------- Structs -----------------------------------------------
 
 DECL_CONVERSION_FUN(VkExtent2D, Extent2D, {GET_MEMBER(width), GET_MEMBER(height)})

@@ -220,7 +220,7 @@ public:
      * Copies two equally sized SMArrays.
      * @param other the other array to be copied.
      */
-    MSArray(MSArray& other)
+    MSArray(const MSArray& other)
     {
         Copy(other);
     }
