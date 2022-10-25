@@ -27,6 +27,8 @@ public:
         Hash::StringId id {0};
         uint64_t allocatedSize {0};
         uint32_t dynamicSize {0};
+        uint32_t totalSize {0};
+        uint32_t set {0};
         uint32_t slot {0};
         Utils::UniformType type {Utils::UNKNOWN};
     };
@@ -60,7 +62,7 @@ public:
         Builder& WithVertexBinding(const VertexBinding& binding);
 
         template<typename T>
-        inline Builder& WithUniform(const String& name, uint64_t size = 1, uint32_t count = 1)
+        inline Builder& WithUniform(const String& name, uint32_t set = 0, uint64_t size = 1, uint32_t count = 1)
         {
             auto paddedSize = Buffer::PadUniformBufferSize(sizeof(T));
 
@@ -76,7 +78,7 @@ public:
         }
 
         template<typename T>
-        inline Builder& WithStorage(const String& name, uint64_t size = 1, uint32_t count = 1)
+        inline Builder& WithStorage(const String& name, uint32_t set = 0,  uint64_t size = 1, uint32_t count = 1)
         {
             auto paddedSize = Buffer::PadUniformBufferSize(sizeof(T));
 
@@ -91,15 +93,15 @@ public:
             return *this;
         }
 
-        Builder& WithGlobalData3DUniform();
+        Builder& WithGlobalData3DUniform(uint32_t set = 0);
 
-        Builder& WithGlobalData2DUniform();
+        Builder& WithGlobalData2DUniform(uint32_t set = 0);
 
-        Builder& WithTransform3DStorage(uint64_t size = 1);
+        Builder& WithTransform3DStorage(uint32_t set = 0, uint64_t size = 1);
 
-        Builder& WithTransform2DStorage(uint64_t size = 1);
+        Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
 
-        Builder& WithTexture(const String& name, uint32_t count = 1);
+        Builder& WithTexture(const String& name, uint32_t set = 0, uint32_t count = 1);
 
         Shader Build() const;
 
@@ -143,13 +145,16 @@ public:
     const size_t& GetTotalUniformSize() { return totalUniformSize; }
 
     const ::Siege::Utils::MSArray<VertexBinding, 5>& GetVertexBindings() const { return vertexBindings; }
+    inline const ::Siege::Utils::MSArray<Uniform, 10>& GetUniforms() const { return expectedUniforms; }
+
+    inline Utils::ShaderType GetShaderType() const { return type; }
 
 private:
     void Swap(Shader& other);
     void CreateShaderModule();
 
     String filePath {""};
-    Utils::ShaderType type {Utils::ShaderType::ALL_GRAPHICS};
+    Utils::ShaderType type {Utils::ShaderType::EMPTY};
     VkShaderModule shaderModule {nullptr};
     ::Siege::Utils::MSArray<Uniform, 10> expectedUniforms;
     ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;

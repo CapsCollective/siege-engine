@@ -45,8 +45,6 @@ public:
     Material(Shader* vertexShader);
     Material(Shader* vertexShader, Shader* fragmentShader);
 
-    Material(const Vulkan::Shader& vertexShader, const Vulkan::Shader& fragmentShader);
-
     Material(const Material&) = delete;
     Material& operator=(const Material&) = delete;
 

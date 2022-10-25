@@ -43,13 +43,6 @@ Material::Material(Shader* vertexShader, Shader* fragmentShader, uint32_t shader
     fragmentShader(fragmentShader)
 {}
 
-Material::Material(const Vulkan::Shader& vertexShader, const Vulkan::Shader& fragmentShader)
-    : shaderCount{2}, vertShader{vertexShader}, fragShader{fragmentShader}
-{
-    bufferSize += (Buffer::PadUniformBufferSize(vertShader.GetTotalUniformSize()) +
-                   Buffer::PadUniformBufferSize(fragShader.GetTotalUniformSize()));
-}
-
 void Material::SetVertexShader(Shader* shader)
 {
     if (vertexShader == nullptr) shaderCount++;
@@ -202,7 +195,7 @@ void Material::CreateDescriptors()
                                                             binding.descriptorSet,
                                                             1,
                                                             (VkDescriptorType) binding.type,
-                                                            bufferInfos[i]);
+                                                            &bufferInfos[i]);
 
         CC_LOG_INFO("Property[{}/{}] - Created a property for pipeline stage [{}] with a size of "
                     "[{} bytes] for binding [{}]",

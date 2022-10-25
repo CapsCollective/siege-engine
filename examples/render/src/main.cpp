@@ -13,6 +13,7 @@
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
 #include <render/renderer/platform/vulkan/Shader.h>
+#include <render/renderer/platform/vulkan/Material.h>
 #include <utils/math/Float.h>
 
 #include <chrono>
@@ -101,18 +102,6 @@ int main()
             .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
 
     using Siege::Vulkan::Shader;
-    auto testDiffuseShader =
-        Shader::Builder()
-            .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-            .WithVertexBinding(
-                Shader::VertexBinding()
-                   .AddFloatVec3Attribute()
-                   .AddFloatVec4Attribute()
-                   .AddFloatVec3Attribute()
-                   .AddFloatVec2Attribute())
-            .WithTransform3DStorage(1000)
-            .WithGlobalData3DUniform()
-            .Build();
 
     auto testSpriteShader =
         Shader::Builder()
@@ -130,12 +119,6 @@ int main()
     auto testFragShader =
         Shader::Builder()
             .FromFragmentShader("assets/shaders/simpleShader.frag.spv")
-            .Build();
-
-    auto testDiffuseFragShader =
-        Shader::Builder()
-            .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
-            .WithGlobalData3DUniform()
             .Build();
 
     auto fragShader = Siege::Shader::BuildShader()
@@ -156,12 +139,26 @@ int main()
     Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
     Siege::Material spriteMat(&spriteShader, &fragShader); // 2D sprite material
 
-    // TODO: Finish this
-    Siege::Material testDiffuseMat(testDiffuseShader, testDiffuseFragShader);
-
     // shader
 
     Siege::Material::BuildMaterials({&diffuseMat, &spriteMat});
+
+    auto testMaterial =
+        Siege::Vulkan::Material(Shader::Builder()
+            .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+            .WithVertexBinding(
+                Shader::VertexBinding()
+                    .AddFloatVec3Attribute()
+                    .AddFloatVec4Attribute()
+                    .AddFloatVec3Attribute()
+                    .AddFloatVec2Attribute())
+            .WithTransform3DStorage(0, 1000)
+            .WithGlobalData3DUniform()
+            .Build(),
+        Shader::Builder()
+            .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+            .WithGlobalData3DUniform()
+            .Build());
 
     // Generate models
 

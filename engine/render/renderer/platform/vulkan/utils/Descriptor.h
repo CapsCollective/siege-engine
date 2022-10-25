@@ -67,7 +67,7 @@ public:
         VkDescriptorSet& dstSet,
         uint32_t descriptorCount,
         VkDescriptorType type,
-        VkDescriptorBufferInfo& bufferInfo,
+        const VkDescriptorBufferInfo* bufferInfo,
         const VkDescriptorImageInfo* texelBufferView = nullptr,
         const VkBufferView* imageInfos = nullptr,
         const void* pNext = nullptr);

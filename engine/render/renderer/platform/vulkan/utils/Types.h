@@ -117,6 +117,7 @@ enum UniformType
 
 enum ShaderType
 {
+    EMPTY = 0,
     VERTEX = 0x00000001,
     FRAGMENT = 0x00000010,
     ALL_GRAPHICS = 0x0000001F

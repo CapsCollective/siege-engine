@@ -40,13 +40,15 @@ Shader::VertexBinding& Shader::VertexBinding::AddFloatVec2Attribute()
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithGlobalData3DUniform()
+Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)
 {
     auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Renderer3D::GlobalData));
 
     uniforms.Append({INTERN_STR("globalData"),
                      paddedSize,
                      1,
+                     static_cast<uint32_t>(paddedSize),
+                     set,
                      static_cast<uint32_t>(uniforms.Count()),
                      Utils::UNIFORM});
 
@@ -55,13 +57,15 @@ Shader::Builder& Shader::Builder::WithGlobalData3DUniform()
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithGlobalData2DUniform()
+Shader::Builder& Shader::Builder::WithGlobalData2DUniform(uint32_t set)
 {
     auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Renderer2D::GlobalData));
 
     uniforms.Append({INTERN_STR("globalData"),
                      paddedSize,
                      1,
+                     static_cast<uint32_t>(paddedSize),
+                     set,
                      static_cast<uint32_t>(uniforms.Count()),
                      Utils::UNIFORM});
 
@@ -70,13 +74,15 @@ Shader::Builder& Shader::Builder::WithGlobalData2DUniform()
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithTransform2DStorage(uint64_t size)
+Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t size)
 {
     auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Model::Transform2D));
 
     uniforms.Append({INTERN_STR("transforms"),
                      paddedSize,
                      1,
+                     static_cast<uint32_t>(paddedSize * size),
+                     set,
                      static_cast<uint32_t>(uniforms.Count()),
                      Utils::STORAGE});
 
@@ -84,13 +90,15 @@ Shader::Builder& Shader::Builder::WithTransform2DStorage(uint64_t size)
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithTransform3DStorage(uint64_t size)
+Shader::Builder& Shader::Builder::WithTransform3DStorage(uint32_t set, uint64_t size)
 {
     auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Model::Transform));
 
     uniforms.Append({INTERN_STR("transforms"),
                      paddedSize,
                      1,
+                     static_cast<uint32_t>(paddedSize * size),
+                     set,
                      static_cast<uint32_t>(uniforms.Count()),
                      Utils::STORAGE});
 
@@ -98,11 +106,12 @@ Shader::Builder& Shader::Builder::WithTransform3DStorage(uint64_t size)
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithTexture(const String& name, uint32_t count)
+Shader::Builder& Shader::Builder::WithTexture(const String& name, uint32_t set, uint32_t count)
 {
     uniforms.Append({INTERN_STR(name.Str()),
                      0,
                      count,
+                     set,
                      static_cast<uint32_t>(uniforms.Count()),
                      Utils::TEXTURE});
     return *this;
@@ -146,7 +155,8 @@ Shader Shader::Builder::Build() const
 }
 
 Shader::Shader(const Shader& other)
-    : type{other.type},
+    : filePath{other.filePath},
+    type{other.type},
     expectedUniforms{other.expectedUniforms},
     vertexBindings{other.vertexBindings},
     totalUniformSize{other.totalUniformSize}
