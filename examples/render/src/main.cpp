@@ -14,6 +14,7 @@
 #include <render/window/Window.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Material.h>
+#include <render/renderer/platform/vulkan/Pipeline.h>
 #include <utils/math/Float.h>
 
 #include <chrono>
@@ -145,7 +146,7 @@ int main()
 
     auto testMaterial =
         Siege::Vulkan::Material(Shader::Builder()
-            .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+            .FromVertexShader("assets/shaders/simpleShader2.vert.spv")
             .WithVertexBinding(
                 Shader::VertexBinding()
                     .AddFloatVec3Attribute()
@@ -156,7 +157,7 @@ int main()
             .WithGlobalData3DUniform()
             .Build(),
         Shader::Builder()
-            .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+            .FromFragmentShader("assets/shaders/diffuseFragShader2.frag.spv")
             .WithGlobalData3DUniform()
             .Build());
 

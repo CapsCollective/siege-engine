@@ -1,5 +1,4 @@
 //
-//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -18,8 +17,8 @@ class Material
 {
 public:
     Material() = default;
-    Material(const Shader& vertShader, const Shader& fragShader);
-    Material(Material&& other);
+    Material(Shader  vertShader, Shader  fragShader);
+    Material(Material&& other) noexcept ;
 
     ~Material();
 

@@ -8,16 +8,19 @@
 
 #include "Material.h"
 
+#include <utility>
+
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 #include "render/renderer/descriptor/DescriptorPool.h"
 #include "utils/TypeAdaptor.h"
+#include "Pipeline.h"
 
 #include <utils/Logging.h>
 
 namespace Siege::Vulkan
 {
-Material::Material(const Shader& vertShader, const Shader& fragShader)
-    : vertexShader{vertShader}, fragmentShader{fragShader}
+Material::Material(Shader vertShader, Shader fragShader)
+    : vertexShader{std::move(vertShader)}, fragmentShader{std::move(fragShader)}
 {
     bufferSize += (Buffer::PadUniformBufferSize(vertexShader.GetTotalUniformSize()) +
                    Buffer::PadUniformBufferSize(fragmentShader.GetTotalUniformSize()));
@@ -50,7 +53,7 @@ Material::Material(const Shader& vertShader, const Shader& fragShader)
             auto& property = set.properties[j];
 
             bindings[j] =
-                Descriptor::CreateLayoutBinding(property.binding,
+                Descriptor::CreateLayoutBinding(j,
                                                 1,
                                                 property.type,
                                                 property.shaderStage);
@@ -59,7 +62,7 @@ Material::Material(const Shader& vertShader, const Shader& fragShader)
         CC_ASSERT(Descriptor::CreateLayout(Vulkan::Context::GetVkLogicalDevice(),
                                            OUT set.layout,
                                            bindings,
-                                           1),
+                                           set.properties.Count()),
                   "Failed to create descriptor set!")
 
         Descriptor::AllocateSets(Vulkan::Context::GetVkLogicalDevice(),
@@ -77,7 +80,7 @@ Material::Material(const Shader& vertShader, const Shader& fragShader)
             VkDescriptorBufferInfo bufferInfo = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
 
             writes[j] = Descriptor::CreateWriteSet(
-                property.binding,
+                j,
                 set.set,
                 1,
                 Utils::ToVkDescriptorType(property.type),
@@ -88,9 +91,24 @@ Material::Material(const Shader& vertShader, const Shader& fragShader)
                               writes,
                               set.properties.Count());
     }
+
+    // Create Pipeline
+
+    ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts;
+
+    for(size_t i = 0; i < propertiesSlots.Count(); i++) layouts.Append(propertiesSlots[i].layout);
+
+    auto pipeline = Pipeline::Builder()
+        .WithRenderPass(Context::GetSwapchain().GetRenderPass())
+        .WithDynamicViewport()
+        .WithDynamicScissor()
+        .WithVertexShader(&vertexShader)
+        .WithFragmentShader(&fragmentShader).WithProperties(layouts)
+        .WithProperties(layouts)
+        .Build();
 }
 
-Material::Material(Material&& other) { Swap(other); }
+Material::Material(Material&& other) noexcept { Swap(other); }
 
 Material::~Material()
 {

@@ -35,7 +35,7 @@ public:
 
     struct VertexAttribute
     {
-        uint64_t offset {0};
+        uint32_t offset {0};
         Utils::VertexAttributeType type {Utils::VertexAttributeType::VERTEX_UNDEFINED};
     };
 
@@ -50,7 +50,7 @@ public:
 
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
         ::Siege::Utils::MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
-        uint64_t stride {0};
+        uint32_t stride {0};
     };
 
     struct Builder
@@ -146,6 +146,8 @@ public:
 
     const ::Siege::Utils::MSArray<VertexBinding, 5>& GetVertexBindings() const { return vertexBindings; }
     inline const ::Siege::Utils::MSArray<Uniform, 10>& GetUniforms() const { return expectedUniforms; }
+        inline const VkShaderModule GetShaderModule() const { return shaderModule; }
+    inline const uint32_t GetTotalAttributeCount() const {return totalVertexAttributeCount; }
 
     inline Utils::ShaderType GetShaderType() const { return type; }
 
@@ -159,6 +161,7 @@ private:
     ::Siege::Utils::MSArray<Uniform, 10> expectedUniforms;
     ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
     size_t totalUniformSize {0};
+    uint32_t totalVertexAttributeCount {0};
 };
 } // namespace Siege::Vulkan
 

@@ -149,6 +149,11 @@ Shader Shader::Builder::Build() const
     shader.vertexBindings = vertexBindings;
     shader.totalUniformSize = totalUniformSize;
 
+    for (size_t i = 0; i < vertexBindings.Count(); i++)
+    {
+        shader.totalVertexAttributeCount += vertexBindings[i].attributes.Count();
+    }
+
     shader.CreateShaderModule();
 
     return shader;
@@ -225,6 +230,7 @@ void Shader::Swap(Shader& other)
     auto tmpExpectedUniforms = expectedUniforms;
     auto tmpVertexBindings = vertexBindings;
     auto tmpTotalUniformSize = totalUniformSize;
+    auto tmpTotalAttributeCount = totalVertexAttributeCount;
 
     filePath = other.filePath;
     type = other.type;
@@ -232,6 +238,7 @@ void Shader::Swap(Shader& other)
     expectedUniforms = other.expectedUniforms;
     vertexBindings = other.vertexBindings;
     totalUniformSize = other.totalUniformSize;
+    totalVertexAttributeCount = other.totalVertexAttributeCount;
 
     other.filePath = tmpFilePath;
     other.type = tmpShaderType;
@@ -239,5 +246,6 @@ void Shader::Swap(Shader& other)
     other.expectedUniforms = tmpExpectedUniforms;
     other.vertexBindings = tmpVertexBindings;
     other.totalUniformSize = tmpTotalUniformSize;
+    other.totalVertexAttributeCount = tmpTotalAttributeCount;
 }
 } // namespace Siege::Vulkan

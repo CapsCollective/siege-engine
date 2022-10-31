@@ -157,6 +157,18 @@ DECL_VULKAN_SWITCH_FUN(VertexAttributeType, VkFormat,
                        SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32A32_SFLOAT, VERTEX_FLOAT_VEC4)
                        SWITCH_DEFAULT(VERTEX_UNDEFINED))
 
+DECL_VULKAN_SWITCH_FUN(PipelineTopology, VkPrimitiveTopology,
+                       SWITCH_MEM(VkPrimitiveTopology, VK_PRIMITIVE_TOPOLOGY_POINT_LIST, TOPOLOGY_POINT_LIST)
+                       SWITCH_MEM(VkPrimitiveTopology, VK_PRIMITIVE_TOPOLOGY_LINE_LIST, TOPOLOGY_LINE_LIST)
+                       SWITCH_MEM(VkPrimitiveTopology, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, TOPOLOGY_TRIANGLE_LIST)
+                       SWITCH_DEFAULT(TOPOLOGY_POINT_LIST))
+
+DECL_VULKAN_SWITCH_FUN(VkPrimitiveTopology, PipelineTopology,
+                       SWITCH_MEM(PipelineTopology, TOPOLOGY_POINT_LIST, VK_PRIMITIVE_TOPOLOGY_POINT_LIST)
+                       SWITCH_MEM(PipelineTopology, TOPOLOGY_LINE_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST)
+                       SWITCH_MEM(PipelineTopology, TOPOLOGY_TRIANGLE_LIST, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+                       SWITCH_DEFAULT(VK_PRIMITIVE_TOPOLOGY_POINT_LIST))
+
 //----------------------------------------- Structs -----------------------------------------------
 
 DECL_CONVERSION_FUN(VkExtent2D, Extent2D, {GET_MEMBER(width), GET_MEMBER(height)})

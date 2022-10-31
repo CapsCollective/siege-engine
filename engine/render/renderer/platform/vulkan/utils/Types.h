@@ -32,6 +32,8 @@ struct VkSwapchainKHR_T;
 struct VkSemaphore_T;
 struct VkFence_T;
 struct VkShaderModule_T;
+struct VkPipelineLayout_T;
+struct VkPipeline_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -50,6 +52,8 @@ typedef VkSwapchainKHR_T* VkSwapchainKHR;
 typedef VkSemaphore_T* VkSemaphore;
 typedef VkFence_T* VkFence;
 typedef VkShaderModule_T* VkShaderModule;
+typedef VkPipelineLayout_T* VkPipelineLayout;
+typedef VkPipeline_T* VkPipeline;
 
 namespace Siege::Vulkan::Utils
 {
@@ -129,6 +133,13 @@ enum VertexAttributeType
     VERTEX_FLOAT_VEC2 = 103,
     VERTEX_FLOAT_VEC3 = 106,
     VERTEX_FLOAT_VEC4 = 109
+};
+
+enum PipelineTopology
+{
+    TOPOLOGY_POINT_LIST = 0,
+    TOPOLOGY_LINE_LIST = 1,
+    TOPOLOGY_TRIANGLE_LIST = 3
 };
 
 //----------------------------------------- Structs -----------------------------------------------
