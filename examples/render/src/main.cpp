@@ -146,7 +146,7 @@ int main()
 
     auto testMaterial =
         Siege::Vulkan::Material(Shader::Builder()
-            .FromVertexShader("assets/shaders/simpleShader2.vert.spv")
+            .FromVertexShader("assets/shaders/vert.vert.spv")
             .WithVertexBinding(
                 Shader::VertexBinding()
                     .AddFloatVec3Attribute()
@@ -157,7 +157,7 @@ int main()
             .WithGlobalData3DUniform()
             .Build(),
         Shader::Builder()
-            .FromFragmentShader("assets/shaders/diffuseFragShader2.frag.spv")
+            .FromFragmentShader("assets/shaders/frag.frag.spv")
             .WithGlobalData3DUniform()
             .Build());
 
@@ -174,12 +174,14 @@ int main()
     Siege::Model vaseObjModel("assets/models/smooth_vase.obj");
 
     // Set 2D sprite material
-    triangleModel.SetMaterial(&spriteMat);
-    squareModel.SetMaterial(&spriteMat);
+//    triangleModel.SetMaterial(&spriteMat);
+//    squareModel.SetMaterial(&spriteMat);
 
     // Set 3D diffuse material
     cubeObjModel.SetMaterial(&diffuseMat);
+    cubeObjModel.SetMaterial(&testMaterial);
     vaseObjModel.SetMaterial(&diffuseMat);
+    vaseObjModel.SetMaterial(&testMaterial);
 
     // Create shapes for use
     Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),

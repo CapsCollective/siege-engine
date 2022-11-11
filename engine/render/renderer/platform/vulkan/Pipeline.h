@@ -66,11 +66,23 @@ public:
     };
 
     Pipeline() = default;
+    Pipeline(Pipeline&& other) noexcept { Swap(other); }
     ~Pipeline();
 
-    void Bind(const CommandBuffer& commandBuffer);
+    Pipeline& operator=(Pipeline&& other) noexcept
+    {
+        Swap(other);
+        return *this;
+    }
 
+    void Bind(const CommandBuffer& commandBuffer);
+    void BindSets(const CommandBuffer& commandBuffer, StackArray<VkDescriptorSet, 10> sets);
+
+    // TODO: Remove the next two functions once we incorporate the CommandBuffer class into renderer
+    void Bind(VkCommandBuffer commandBuffer);
+    void BindSets(VkCommandBuffer, StackArray<VkDescriptorSet, 10> sets);
 private:
+    void Swap(Pipeline& other);
     VkPipelineLayout layout {nullptr};
     VkPipeline pipeline {nullptr};
 };

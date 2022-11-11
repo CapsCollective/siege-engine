@@ -19,7 +19,7 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName,
                                const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
-    transformId = INTERN_STR("objectBuffer");
+    transformId = INTERN_STR("transforms");
 }
 
 void ModelRenderer::Destroy() {}
@@ -46,14 +46,14 @@ void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
     {
         auto& model = models.Get(i);
 
-        if (currentMaterial != model->GetMaterial())
+        if (currentMaterial2 != model->GetMaterial2())
         {
-            currentMaterial = model->GetMaterial();
-            currentMaterial->SetUniformData(transformId,
+            currentMaterial2 = model->GetMaterial2();
+            currentMaterial2->SetUniformData(transformId,
                                             sizeof(transforms[0]) * transforms.Count(),
                                             transforms.Data());
-            currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
-            currentMaterial->Bind(commandBuffer);
+            currentMaterial2->SetUniformData(globalDataId, globalDataSize, globalData);
+            currentMaterial2->Bind(commandBuffer);
         }
 
         if (currentModel != model)
@@ -67,6 +67,7 @@ void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
 
     currentModel = nullptr;
     currentMaterial = nullptr;
+    currentMaterial2 = nullptr;
 }
 
 void ModelRenderer::Flush()

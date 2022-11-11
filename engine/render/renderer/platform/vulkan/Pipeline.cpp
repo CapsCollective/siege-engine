@@ -283,4 +283,45 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
 {
     vkCmdBindPipeline(commandBuffer.Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 }
+
+void Pipeline::BindSets(const CommandBuffer& commandBuffer, StackArray<VkDescriptorSet, 10> sets)
+{
+    vkCmdBindDescriptorSets(commandBuffer.Get(),
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            layout,
+                            0,
+                            sets.Count(),
+                            sets.Data(),
+                            0,
+                            nullptr);
+}
+
+// TODO: Remove the next two functions once we incorporate the CommandBuffer class into renderer
+void Pipeline::Bind(VkCommandBuffer commandBuffer)
+{
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+}
+void Pipeline::BindSets(VkCommandBuffer commandBuffer, StackArray<VkDescriptorSet, 10> sets)
+{
+    vkCmdBindDescriptorSets(commandBuffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            layout,
+                            0,
+                            sets.Count(),
+                            sets.Data(),
+                            0,
+                            nullptr);
+}
+
+void Pipeline::Swap(Pipeline& other)
+{
+    auto tmpPipelineLayout = layout;
+    auto tmpPipeline = pipeline;
+
+    layout = other.layout;
+    pipeline = other.pipeline;
+
+    other.pipeline = tmpPipeline;
+    other.layout = tmpPipelineLayout;
+}
 }

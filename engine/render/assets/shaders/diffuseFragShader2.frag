@@ -19,7 +19,7 @@ struct LightData
     vec3 position;
 };
 
-layout (set = 0, binding = 1) uniform GlobalData {
+layout (binding = 1) uniform GlobalData {
     CameraData cameraData;
     LightData lightData;
 } globalData;

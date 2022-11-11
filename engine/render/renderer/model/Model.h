@@ -17,6 +17,7 @@
 #include "../buffer/Buffer.h"
 #include "../material/Material.h"
 #include "../mesh/Mesh.h"
+#include "render/renderer/platform/vulkan/Material.h"
 
 namespace Siege
 {
@@ -64,11 +65,22 @@ public:
     {
         return material;
     }
+
+    Vulkan::Material* GetMaterial2()
+    {
+        return material2;
+    }
+
     void UpdateMesh(const Mesh::MeshData& meshData);
     void SetMesh(const Mesh::MeshData& meshData);
     void SetMaterial(Material* newMaterial)
     {
         material = newMaterial;
+    }
+
+    void SetMaterial(Vulkan::Material* newMaterial)
+    {
+        material2 = newMaterial;
     }
 
     bool IsIndexed()
@@ -82,6 +94,7 @@ private:
 
     Mesh modelMesh;
     Material* material {nullptr};
+    Vulkan::Material* material2 {nullptr};
 };
 } // namespace Siege
 

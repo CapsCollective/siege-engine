@@ -11,6 +11,7 @@
 
 #include "../Core.h"
 #include "../model/Model.h"
+#include "render/renderer/platform/vulkan/Material.h"
 
 namespace Siege
 {
@@ -46,6 +47,7 @@ private:
     Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Material* currentMaterial {nullptr};
+    Vulkan::Material* currentMaterial2 {nullptr};
     Model* currentModel {nullptr};
 };
 } // namespace Siege

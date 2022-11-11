@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_VULKAN_MATERIAL_H
 #define SIEGE_ENGINE_VULKAN_MATERIAL_H
 
+#include "CommandBuffer.h"
+#include "Pipeline.h"
 #include "Shader.h"
 
 namespace Siege::Vulkan
@@ -23,6 +25,12 @@ public:
     ~Material();
 
     Material& operator=(Material&& other);
+
+    void SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data);
+
+    void Bind(const CommandBuffer& commandBuffer);
+    // TODO: Remove the next function once we incorporate the CommandBuffer class into renderer
+    void Bind(VkCommandBuffer commandBuffer);
 private:
 
     struct Property
@@ -44,6 +52,11 @@ private:
 
     void Swap(Material& other);
     void AddShader(const Shader& shader, uint64_t& offset);
+
+    void UpdateMaterial();
+    void WriteSet(PropertiesSlot& slot);
+
+    Pipeline graphicsPipeline;
 
     Shader vertexShader;
     Shader fragmentShader;

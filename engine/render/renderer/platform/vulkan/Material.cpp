@@ -71,25 +71,7 @@ Material::Material(Shader vertShader, Shader fragShader)
                                  1,
                                  &set.layout);
 
-        VkWriteDescriptorSet writes[set.properties.Count()];
-
-        for (size_t j = 0; j < set.properties.Count(); j++)
-        {
-            auto& property = set.properties[j];
-
-            VkDescriptorBufferInfo bufferInfo = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
-
-            writes[j] = Descriptor::CreateWriteSet(
-                j,
-                set.set,
-                1,
-                Utils::ToVkDescriptorType(property.type),
-                &bufferInfo);
-        }
-
-        Descriptor::WriteSets(Vulkan::Context::GetVkLogicalDevice(),
-                              writes,
-                              set.properties.Count());
+        WriteSet(set);
     }
 
     // Create Pipeline
@@ -98,7 +80,7 @@ Material::Material(Shader vertShader, Shader fragShader)
 
     for(size_t i = 0; i < propertiesSlots.Count(); i++) layouts.Append(propertiesSlots[i].layout);
 
-    auto pipeline = Pipeline::Builder()
+    graphicsPipeline = Pipeline::Builder()
         .WithRenderPass(Context::GetSwapchain().GetRenderPass())
         .WithDynamicViewport()
         .WithDynamicScissor()
@@ -128,6 +110,22 @@ Material& Material::operator=(Material&& other)
     return *this;
 }
 
+void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data)
+{
+    // TODO: Clean this up.
+    for (auto& slot : propertiesSlots)
+    {
+        for (auto& property : slot.properties)
+        {
+            if (property.id == id)
+            {
+                Buffer::CopyData(buffer, dataSize, data, property.offset);
+                return;
+            }
+        }
+    }
+}
+
 void Material::AddShader(const Shader& shader, uint64_t& offset)
 {
     auto uniforms = shader.GetUniforms();
@@ -143,10 +141,11 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
 
         for (size_t j = 0; j < slot.properties.Count(); j++)
         {
-            if (slot.properties[j].id == uniform.id)
+            auto& property = slot.properties[j];
+            if (property.id == uniform.id)
             {
-                propertyIdx = j;
-                break;
+                property.shaderStage = static_cast<Utils::ShaderType>(property.shaderStage | shader.GetShaderType());
+                return;
             }
         }
 
@@ -169,18 +168,78 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
     }
 }
 
+void Material::Bind(const CommandBuffer& commandBuffer)
+{
+    graphicsPipeline.Bind(commandBuffer);
+
+    // TODO: Cache this on the material itself?
+    StackArray<VkDescriptorSet, 10> setsToBind;
+    for (auto property : propertiesSlots) setsToBind.Append(property.set);
+
+    graphicsPipeline.BindSets(commandBuffer, setsToBind);
+}
+
+// TODO: Remove the next function once we incorporate the CommandBuffer class into renderer
+void Material::Bind(VkCommandBuffer commandBuffer)
+{
+    graphicsPipeline.Bind(commandBuffer);
+
+    // TODO: Cache this on the material itself?
+    StackArray<VkDescriptorSet, 10> setsToBind;
+    for (auto property : propertiesSlots) setsToBind.Append(property.set);
+
+    graphicsPipeline.BindSets(commandBuffer, setsToBind);
+}
+
+void Material::UpdateMaterial()
+{
+    for (size_t i = 0; i < propertiesSlots.Count(); i++) WriteSet(propertiesSlots[i]);
+}
+
+void Material::WriteSet(PropertiesSlot& slot)
+{
+    VkWriteDescriptorSet writes[slot.properties.Count()];
+
+    for (size_t j = 0; j < slot.properties.Count(); j++)
+    {
+        auto& property = slot.properties[j];
+
+        VkDescriptorBufferInfo bufferInfo = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
+
+        writes[j] = Descriptor::CreateWriteSet(
+            j,
+            slot.set,
+            1,
+            Utils::ToVkDescriptorType(property.type),
+            &bufferInfo);
+    }
+
+    Descriptor::WriteSets(Vulkan::Context::GetVkLogicalDevice(),
+                          writes,
+                          slot.properties.Count());
+}
+
 void Material::Swap(Material& other)
 {
     auto tmpVertexShader = std::move(vertexShader);
     auto tmpFragmentShader = std::move(fragmentShader);
     auto tmpBufferSize = bufferSize;
+    auto tmpBuffer = buffer;
+    auto tmpGraphicsPipeline = std::move(graphicsPipeline);
+    auto tmpPropertiesSlots = propertiesSlots;
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
     bufferSize = other.bufferSize;
+    buffer = other.buffer;
+    graphicsPipeline = std::move(other.graphicsPipeline);
+    propertiesSlots = other.propertiesSlots;
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
     other.bufferSize = tmpBufferSize;
+    other.buffer = tmpBuffer;
+    other.graphicsPipeline = std::move(tmpGraphicsPipeline);
+    other.propertiesSlots = tmpPropertiesSlots;
 }
 } // namespace Siege::Vulkan

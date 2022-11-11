@@ -29,11 +29,11 @@ struct LightData
     vec3 position;
 };
 
-layout (std140, set = 0, binding = 0) readonly buffer ObjectBuffer {
+layout (std140, binding = 0) readonly buffer ObjectBuffer {
     ObjectData objects[];
 } objectBuffer;
 
-layout (set = 0, binding = 1) uniform GlobalData {
+layout (binding = 1) uniform GlobalData {
     CameraData cameraData;
     LightData lightData;
 } globalData;
