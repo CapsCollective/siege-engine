@@ -52,6 +52,7 @@ private:
     static Hash::StringId globalDataId;
 
     static Material* currentMaterial;
+    static Vulkan::Material* currentMaterial2;
     static Model* currentModel;
 };
 } // namespace Siege

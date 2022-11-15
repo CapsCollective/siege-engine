@@ -21,11 +21,12 @@ Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D
 Utils::MSArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
 Material* Renderer2D::currentMaterial = nullptr;
+Vulkan::Material* Renderer2D::currentMaterial2 = nullptr;
 Model* Renderer2D::currentModel = nullptr;
 
 void Renderer2D::Initialise()
 {
-    transformId = INTERN_STR("objectBuffer");
+    transformId = INTERN_STR("transforms");
     globalDataId = INTERN_STR("globalData");
 }
 
@@ -66,12 +67,12 @@ void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& global
     {
         auto model = models[i];
 
-        if (currentMaterial != model->GetMaterial())
+        if (currentMaterial2 != model->GetMaterial2())
         {
-            currentMaterial = model->GetMaterial();
-            currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
-            currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-            currentMaterial->Bind(commandBuffer);
+            currentMaterial2 = model->GetMaterial2();
+            currentMaterial2->SetUniformData(transformId, transformSize, transforms.Data());
+            currentMaterial2->SetUniformData(globalDataId, sizeof(globalData), &globalData);
+            currentMaterial2->Bind(commandBuffer);
         }
 
         if (currentModel != model)
@@ -85,6 +86,7 @@ void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& global
 
     currentModel = nullptr;
     currentMaterial = nullptr;
+    currentMaterial2 = nullptr;
 }
 
 void Renderer2D::Flush()

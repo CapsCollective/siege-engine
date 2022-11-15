@@ -30,6 +30,7 @@ PhysicalDevice::PhysicalDevice(Surface surface, const Instance& vulkanInstance)
 
     properties = {vkProperties.deviceName,
                   vkProperties.limits.minUniformBufferOffsetAlignment,
+                  vkProperties.limits.minStorageBufferOffsetAlignment,
                   FindDepthFormat()};
 
     CC_LOG_INFO("Physical device found: {} with minumum buffer alignment of {}",

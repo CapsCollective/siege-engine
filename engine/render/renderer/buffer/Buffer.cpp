@@ -89,7 +89,19 @@ void DestroyBuffer(Buffer& buffer)
 size_t PadUniformBufferSize(size_t originalSize)
 {
     // Calculate required alignment based on minimum device offset alignment
-    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinDeviceAlignment();
+    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinUniformDeviceAlignment();
+    size_t alignedSize = originalSize;
+    if (minUboAlignment > 0)
+    {
+        alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    return alignedSize;
+}
+
+size_t PadStorageBufferSize(size_t originalSize)
+{
+    // Calculate required alignment based on minimum device offset alignment
+    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinStorageDeviceAlignment();
     size_t alignedSize = originalSize;
     if (minUboAlignment > 0)
     {

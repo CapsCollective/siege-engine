@@ -22,8 +22,12 @@ namespace Siege::Vulkan
 Material::Material(Shader vertShader, Shader fragShader)
     : vertexShader{std::move(vertShader)}, fragmentShader{std::move(fragShader)}
 {
-    bufferSize += (Buffer::PadUniformBufferSize(vertexShader.GetTotalUniformSize()) +
-                   Buffer::PadUniformBufferSize(fragmentShader.GetTotalUniformSize()));
+    // Separate uniforms into unique properties
+
+    uint64_t offset {0};
+
+    AddShader(vertexShader, OUT offset);
+    AddShader(fragmentShader, OUT offset);
 
     // TODO: Make a standalone buffer class
     // Allocate buffer which can store all the data we need
@@ -32,13 +36,6 @@ Material::Material(Shader vertShader, Shader fragShader)
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                          OUT buffer.buffer,
                          OUT buffer.bufferMemory);
-
-    // Separate uniforms into unique properties
-
-    uint64_t offset {0};
-
-    AddShader(vertexShader, OUT offset);
-    AddShader(fragmentShader, OUT offset);
 
     // Create Descriptor Set Layout for Sets
 
@@ -113,13 +110,15 @@ Material& Material::operator=(Material&& other)
 void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data)
 {
     // TODO: Clean this up.
-    for (auto& slot : propertiesSlots)
+    for (auto it = propertiesSlots.CreateIterator(); it; ++it)
     {
-        for (auto& property : slot.properties)
+        auto slot = *it;
+        for (auto slotIt = slot.properties.CreateIterator(); slotIt; ++slotIt)
         {
-            if (property.id == id)
+            auto prop = *slotIt;
+            if (prop.id == id)
             {
-                Buffer::CopyData(buffer, dataSize, data, property.offset);
+                Buffer::CopyData(buffer, dataSize, data, prop.offset);
                 return;
             }
         }
@@ -164,6 +163,8 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
         property.shaderStage = (Utils::ShaderType)(property.shaderStage | shader.GetShaderType());
         property.offset = offset;
 
+        bufferSize += uniform.totalSize;
+
         offset += uniform.totalSize;
     }
 }
@@ -173,8 +174,8 @@ void Material::Bind(const CommandBuffer& commandBuffer)
     graphicsPipeline.Bind(commandBuffer);
 
     // TODO: Cache this on the material itself?
-    StackArray<VkDescriptorSet, 10> setsToBind;
-    for (auto property : propertiesSlots) setsToBind.Append(property.set);
+    ::Siege::Utils::MSArray<VkDescriptorSet, 10> setsToBind;
+    for (auto it = propertiesSlots.CreateIterator(); it; ++it) setsToBind.Append((*it).set);
 
     graphicsPipeline.BindSets(commandBuffer, setsToBind);
 }
@@ -185,8 +186,8 @@ void Material::Bind(VkCommandBuffer commandBuffer)
     graphicsPipeline.Bind(commandBuffer);
 
     // TODO: Cache this on the material itself?
-    StackArray<VkDescriptorSet, 10> setsToBind;
-    for (auto property : propertiesSlots) setsToBind.Append(property.set);
+    ::Siege::Utils::MSArray<VkDescriptorSet, 10> setsToBind;
+    for (auto it = propertiesSlots.CreateIterator(); it; ++it) setsToBind.Append((*it).set);
 
     graphicsPipeline.BindSets(commandBuffer, setsToBind);
 }
@@ -199,19 +200,20 @@ void Material::UpdateMaterial()
 void Material::WriteSet(PropertiesSlot& slot)
 {
     VkWriteDescriptorSet writes[slot.properties.Count()];
+    VkDescriptorBufferInfo bufferInfos[slot.properties.Count()];
 
     for (size_t j = 0; j < slot.properties.Count(); j++)
     {
         auto& property = slot.properties[j];
 
-        VkDescriptorBufferInfo bufferInfo = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
+        bufferInfos[j] = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
 
         writes[j] = Descriptor::CreateWriteSet(
             j,
             slot.set,
             1,
             Utils::ToVkDescriptorType(property.type),
-            &bufferInfo);
+            &bufferInfos[j]);
     }
 
     Descriptor::WriteSets(Vulkan::Context::GetVkLogicalDevice(),

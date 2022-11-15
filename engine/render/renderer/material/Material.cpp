@@ -176,7 +176,7 @@ void Material::CreateDescriptors()
                                            OUT binding.layout,
                                            &layoutBinding,
                                            1),
-                  "Failed to create descriptor set!");
+                  "Failed to create descriptor set!")
 
         uint64_t offset = property.offset;
 

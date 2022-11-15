@@ -76,7 +76,7 @@ Shader::Builder& Shader::Builder::WithGlobalData2DUniform(uint32_t set)
 
 Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t size)
 {
-    auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Model::Transform2D));
+    auto paddedSize = Buffer::PadStorageBufferSize(sizeof(Siege::Model::Transform2D));
 
     uniforms.Append({INTERN_STR("transforms"),
                      paddedSize,
@@ -92,7 +92,7 @@ Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t 
 
 Shader::Builder& Shader::Builder::WithTransform3DStorage(uint32_t set, uint64_t size)
 {
-    auto paddedSize = Buffer::PadUniformBufferSize(sizeof(Siege::Model::Transform));
+    auto paddedSize = Buffer::PadStorageBufferSize(sizeof(Siege::Model::Transform));
 
     uniforms.Append({INTERN_STR("transforms"),
                      paddedSize,

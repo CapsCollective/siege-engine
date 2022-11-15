@@ -284,7 +284,7 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
     vkCmdBindPipeline(commandBuffer.Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 }
 
-void Pipeline::BindSets(const CommandBuffer& commandBuffer, StackArray<VkDescriptorSet, 10> sets)
+void Pipeline::BindSets(const CommandBuffer& commandBuffer, ::Siege::Utils::MSArray<VkDescriptorSet, 10> sets)
 {
     vkCmdBindDescriptorSets(commandBuffer.Get(),
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -301,7 +301,7 @@ void Pipeline::Bind(VkCommandBuffer commandBuffer)
 {
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 }
-void Pipeline::BindSets(VkCommandBuffer commandBuffer, StackArray<VkDescriptorSet, 10> sets)
+void Pipeline::BindSets(VkCommandBuffer commandBuffer, ::Siege::Utils::MSArray<VkDescriptorSet, 10> sets)
 {
     vkCmdBindDescriptorSets(commandBuffer,
                             VK_PIPELINE_BIND_POINT_GRAPHICS,

@@ -77,89 +77,39 @@ int main()
 
     // Shader Declaration
 
-    // Vertex shaders
-
-    auto diffuseShader =
-        Siege::Shader::BuildShader()
-            .FromShader("assets/shaders/simpleShader.vert.spv")
-            .WithStage(Siege::PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(Siege::Vertex))
-            .WithVertexAttribute(offsetof(Siege::Vertex, position), Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(Siege::Vertex, color), Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(Siege::Vertex, normal), Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(Siege::Vertex, uv), Siege::VertexDescription::VEC2)
-            .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform), 1000)
-            .WithUniform(1, "globalData", sizeof(Siege::Renderer3D::GlobalData), 1);
-
-    auto spriteShader =
-        Siege::Shader::BuildShader()
-            .FromShader("assets/shaders/simpleShader2D.vert.spv")
-            .WithStage(Siege::PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(Siege::Vertex2D))
-            .WithVertexAttribute(offsetof(Siege::Vertex2D, position),
-                                 Siege::VertexDescription::VEC2)
-            .WithVertexAttribute(offsetof(Siege::Vertex2D, color), Siege::VertexDescription::VEC3)
-            .WithStorage(0, "objectBuffer", sizeof(Siege::Model::Transform2D), 1000)
-            .WithUniform(1, "globalData", sizeof(Siege::Renderer2D::GlobalData));
-
     using Siege::Vulkan::Shader;
-
-    auto testSpriteShader =
-        Shader::Builder()
-            .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
-                .WithVertexBinding(
-                    Shader::VertexBinding()
-                        .AddFloatVec2Attribute()
-                        .AddFloatVec4Attribute())
-            .WithTransform2DStorage(1000)
-            .WithGlobalData2DUniform()
-            .Build();
-
-    // Fragment shaders
-
-    auto testFragShader =
-        Shader::Builder()
-            .FromFragmentShader("assets/shaders/simpleShader.frag.spv")
-            .Build();
-
-    auto fragShader = Siege::Shader::BuildShader()
-                          .FromShader("assets/shaders/simpleShader.frag.spv")
-                          .WithStage(Siege::PipelineConfig::FRAGMENT);
-
-    auto diffuseFragShader =
-        Siege::Shader::BuildShader()
-            .FromShader("assets/shaders/diffuseFragShader.frag.spv")
-            .WithStage(Siege::PipelineConfig::FRAGMENT)
-            .WithUniform(1,
-                         "globalData",
-                         sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique
-                                                                 // across all available shaders
-
-    // Material Declaration
-    // vertex       // fragment
-    Siege::Material diffuseMat(&diffuseShader, &diffuseFragShader); // 3D diffuse material
-    Siege::Material spriteMat(&spriteShader, &fragShader); // 2D sprite material
-
-    // shader
-
-    Siege::Material::BuildMaterials({&diffuseMat, &spriteMat});
 
     auto testMaterial =
         Siege::Vulkan::Material(Shader::Builder()
-            .FromVertexShader("assets/shaders/vert.vert.spv")
+            .FromVertexShader("assets/shaders/simpleShader2.vert.spv")
             .WithVertexBinding(
                 Shader::VertexBinding()
                     .AddFloatVec3Attribute()
-                    .AddFloatVec4Attribute()
+                    .AddFloatVec3Attribute()
                     .AddFloatVec3Attribute()
                     .AddFloatVec2Attribute())
             .WithTransform3DStorage(0, 1000)
             .WithGlobalData3DUniform()
             .Build(),
         Shader::Builder()
-            .FromFragmentShader("assets/shaders/frag.frag.spv")
+            .FromFragmentShader("assets/shaders/diffuseFragShader2.frag.spv")
             .WithGlobalData3DUniform()
             .Build());
+
+    auto testMaterial2D =
+        Siege::Vulkan::Material(
+            Shader::Builder()
+                .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
+                    .WithVertexBinding(
+                        Shader::VertexBinding()
+                            .AddFloatVec2Attribute()
+                            .AddFloatVec3Attribute())
+                    .WithTransform2DStorage(0, 1000)
+                    .WithGlobalData2DUniform()
+                    .Build(),
+            Shader::Builder()
+                .FromFragmentShader("assets/shaders/simpleShader.frag.spv")
+                .Build());
 
     // Generate models
 
@@ -174,13 +124,11 @@ int main()
     Siege::Model vaseObjModel("assets/models/smooth_vase.obj");
 
     // Set 2D sprite material
-//    triangleModel.SetMaterial(&spriteMat);
-//    squareModel.SetMaterial(&spriteMat);
+    triangleModel.SetMaterial(&testMaterial2D);
+    squareModel.SetMaterial(&testMaterial2D);
 
     // Set 3D diffuse material
-    cubeObjModel.SetMaterial(&diffuseMat);
     cubeObjModel.SetMaterial(&testMaterial);
-    vaseObjModel.SetMaterial(&diffuseMat);
     vaseObjModel.SetMaterial(&testMaterial);
 
     // Create shapes for use
