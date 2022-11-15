@@ -165,6 +165,8 @@ EXIT /B 0
 
     CALL :UpdateSubmodule vulkan\SPIRV-Tools
 
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\SPIRV-Tools 2022.4
+
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\SPIRV-Tools\build
 
     mkdir %BUILD_DIR%

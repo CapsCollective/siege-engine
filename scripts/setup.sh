@@ -156,6 +156,7 @@ setup_spirv_headers() {
 setup_spirv_tools() {
     echo "Cloning SPIRV Tools..."
     update_submodules vulkan/SPIRV-Tools
+    checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "2022.4"
 
     echo "Setting up SPIRV Tools..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build
