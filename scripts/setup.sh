@@ -26,6 +26,7 @@ fi
 
 # Set setup details
 VULKAN_VERSION="1.3.211"
+SPIRV_VERSION="2022.4"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
@@ -156,6 +157,7 @@ setup_spirv_headers() {
 setup_spirv_tools() {
     echo "Cloning SPIRV Tools..."
     update_submodules vulkan/SPIRV-Tools
+    checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "$SPIRV_VERSION"
 
     echo "Setting up SPIRV Tools..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build

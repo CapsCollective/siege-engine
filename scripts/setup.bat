@@ -13,6 +13,7 @@ setlocal enableextensions
 set ROOT_DIR=%cd%
 
 set VULKAN_VERSION=1.3.211
+set SPIRV_VERSION=2022.4
 set GENERATOR=MinGW Makefiles
 set VENDOR_DIR=%ROOT_DIR%\vendor
 
@@ -164,6 +165,8 @@ EXIT /B 0
     echo "Cloning SPIRV-Tools..."
 
     CALL :UpdateSubmodule vulkan\SPIRV-Tools
+
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\SPIRV-Tools %SPIRV_VERSION%
 
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\SPIRV-Tools\build
 
