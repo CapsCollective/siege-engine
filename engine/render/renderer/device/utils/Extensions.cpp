@@ -13,6 +13,17 @@
 #include <unordered_set>
 #include <vector>
 
+#ifdef __APPLE__
+#define REQUIRES_PORTABILITY_EXTENSION 1
+
+#define GET_MACOS_REQUIRED_EXTENSIONS(collection, size, offset) \
+    collection = Array<String>(size);                   \
+    collection[size - offset] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+#else
+#define REQUIRES_PORTABILITY_EXTENSION 0
+#define GET_MACOS_REQUIRED_EXTENSIONS(...)
+#endif
+
 namespace Siege::Extensions
 {
 bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
@@ -53,9 +64,13 @@ Array<String> GetRequiredExtensions(bool enableValidationLayers)
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    size_t size = glfwExtensionCount + (1 * enableValidationLayers);
+    size_t offset = enableValidationLayers + REQUIRES_PORTABILITY_EXTENSION;
+
+    size_t size = glfwExtensionCount + offset;
 
     Array<String> array(size);
+
+    GET_MACOS_REQUIRED_EXTENSIONS(array, size, offset)
 
     for (size_t i = 0; i < glfwExtensionCount; i++) array[i] = glfwExtensions[i];
 
@@ -90,7 +105,7 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     for (const auto& required : requiredExtensions)
     {
         requiredExtensionsMsg += String("\n\t %s").Formatted(required.Str());
-        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!");
+        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!")
     }
 
     CC_LOG_INFO("Required Extensions: {}", requiredExtensionsMsg)

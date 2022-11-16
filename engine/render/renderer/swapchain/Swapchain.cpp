@@ -37,8 +37,6 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    uint32_t imageCount = FrameImages::GetImageCount();
-
     swapchainImages.DestroyFrameImages();
 
     if (!isRecreated && swapChain != nullptr)

@@ -12,6 +12,12 @@
 #include <cstring>
 #include <set>
 
+#ifdef __APPLE__
+#define ADD_PORTABILITY_BIT(info) info.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#else
+#define ADD_PORTABILITY_BIT(...)
+#endif
+
 namespace Siege
 {
 
@@ -102,6 +108,8 @@ void VulkanDevice::CreateInstance()
 
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.Size());
     createInfo.ppEnabledExtensionNames = rawExtensions;
+
+    ADD_PORTABILITY_BIT(createInfo)
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (enableValidationLayers)
