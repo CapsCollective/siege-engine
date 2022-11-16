@@ -17,9 +17,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: update apt
-      run: |
-        sudo apt update
-        sudo apt-get update
+      run: sudo apt-get update
 
     - name: install vulkan dependencies
       run: sudo apt install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
