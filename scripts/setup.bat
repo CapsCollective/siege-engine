@@ -12,8 +12,8 @@ setlocal enableextensions
 
 set ROOT_DIR=%cd%
 
-set VULKAN_VERSION=1.3.211
-set SPIRV_VERSION=2022.4
+set VULKAN_VERSION=v1.3.211
+set SPIRV_VERSION=v2022.4
 set GENERATOR=MinGW Makefiles
 set VENDOR_DIR=%ROOT_DIR%\vendor
 
@@ -68,7 +68,7 @@ EXIT /B %ERRORLEVEL%
 EXIT /B 0
 
 :CheckoutTags
-    git -C %~1 fetch --all --tags && git -C %~1 checkout tags/v%~2
+    git -C %~1 fetch --all --tags && git -C %~1 checkout tags/%~2
 EXIT /B 0
 
 :SetupGlfw
@@ -152,6 +152,8 @@ EXIT /B 0
     echo "Cloning SPIRV-Headers..."
 
     CALL :UpdateSubmodule vulkan\SPIRV-Headers
+
+    CALL :CheckoutTags %VULKAN_VENDOR_DIR%\SPIRV-Headers sdk-1.3.231.1
 
     set BUILD_DIR=%VULKAN_VENDOR_DIR%\SPIRV-Headers\build
 

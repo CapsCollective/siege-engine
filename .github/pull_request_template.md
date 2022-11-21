@@ -11,6 +11,7 @@
 
 ### The code has been...
 - [ ] made mergable and free of conflicts in relation to `master` *(according to GitHub)*
+- [ ] tested in a packaged state using the `package` targets
 - [ ] pulled to the reviewer's machine and reasonably tested
 
 <!-- Any questions related to the PR should be added as comments below, tagging a specific team member -->

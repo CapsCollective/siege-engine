@@ -25,7 +25,7 @@ else
 fi
 
 # Set setup details
-VULKAN_VERSION="1.3.211"
+VULKAN_VERSION="v1.3.231"
 SPIRV_VERSION="2022.4"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
@@ -41,7 +41,7 @@ update_submodules() {
 }
 
 checkout_tags() {
-    git -C "$1"  fetch --all --tags ; git -C "$1" checkout tags/v"$2"
+    git -C "$1"  fetch --all --tags ; git -C "$1" checkout tags/"$2"
 }
 
 setup_glfw() {
@@ -118,6 +118,7 @@ setup_vulkan_loader() {
 setup_moltenVk() {
     echo "Cloning MoltenVk..."
     update_submodules vulkan/MoltenVK
+    checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK "v1.2.0"
 
     echo "Setting up MoltenVk..."
     (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos --v-headers-root "${VULKAN_VENDOR_DIR}"/Vulkan-Headers)
@@ -146,6 +147,8 @@ setup_robin_hood_hashing() {
 setup_spirv_headers() {
     echo "Cloning SPIRV Headers..."
     update_submodules vulkan/SPIRV-Headers
+
+    checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "sdk-1.3.231.1"
 
     echo "Setting up SPIRV Headers..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build
@@ -176,16 +179,16 @@ setup_validation_layers() {
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers/build
     mkdir -p "${BUILD_DIR}"
     cmake \
-        -DVULKAN_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Headers/build/install \
-        -DVULKAN_LOADER_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Loader/build \
-        -DGLSLANG_INSTALL_DIR="${VENDOR_DIR}"/glslang/build/install \
-        -DSPIRV_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build/install \
-        -DSPIRV_TOOLS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build/install \
-        -DROBIN_HOOD_HASHING_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/robin-hood-hashing/build/install \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" \
-        -DBUILD_TESTS=OFF \
-        -S"${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers \
+        -DVULKAN_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Headers/build/install          \
+        -DVULKAN_LOADER_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Loader/build                    \
+        -DGLSLANG_INSTALL_DIR="${VENDOR_DIR}"/glslang/build/install                               \
+        -DSPIRV_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build/install            \
+        -DSPIRV_TOOLS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build/install                \
+        -DROBIN_HOOD_HASHING_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/robin-hood-hashing/build/install  \
+        -DCMAKE_BUILD_TYPE=Release                                                                \
+        -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"                                                     \
+        -DBUILD_TESTS=OFF                                                                         \
+        -S"${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers                                          \
         -B"${BUILD_DIR}"
     cmake --build "${BUILD_DIR}" --config Release --target install -j"${NUMBER_OF_PROCESSORS}"
     mkdir -p "${VULKAN_LIB_DIR}"/explicit_layer.d

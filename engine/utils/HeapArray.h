@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
+#include <iterator>
 #include <utility>
 
 namespace Siege
@@ -515,7 +516,9 @@ private:
                   masksSize,
                   Memory::Allocate<uint8_t>(BITMASK_SIZE * masksSize),
                   Memory::Allocate<T>(sizeof(T) * newSize))
-    {}
+    {
+        memset(stateMaskBitfield, 0, (BITMASK_SIZE * masksSize));
+    }
 
     // Functions
 
