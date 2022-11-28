@@ -54,11 +54,14 @@ void CommandBuffer::Swap(CommandBuffer& other)
 {
     auto tmpCmdBuffers = std::move(commandBuffers);
     auto tmpActiveCmdBuffer = activeCommandBuffer;
+    auto tmpCurrentActiveBufferIndex = currentActiveBufferIndex;
 
     commandBuffers = std::move(other.commandBuffers);
     activeCommandBuffer = other.activeCommandBuffer;
+    currentActiveBufferIndex = other.currentActiveBufferIndex;
 
     other.commandBuffers = std::move(tmpCmdBuffers);
     other.activeCommandBuffer = tmpActiveCmdBuffer;
+    other.currentActiveBufferIndex = tmpCurrentActiveBufferIndex;
 }
 } // namespace Siege::Vulkan

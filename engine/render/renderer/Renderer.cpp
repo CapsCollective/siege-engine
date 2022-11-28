@@ -122,7 +122,9 @@ void Renderer::EndFrame()
 
     commandBuffers.End();
 
-    auto result = swapchain.SubmitCommandBuffers(commandBuffers, &currentImageIndex);
+    commandBuffers.SetActiveBufferIndex(currentFrameIndex);
+
+    auto result = swapchain.SubmitCommandBuffers(commandBuffers, currentImageIndex);
 
     if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized())
     {

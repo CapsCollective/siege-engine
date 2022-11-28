@@ -9,9 +9,9 @@
 #ifndef SIEGE_ENGINE_VULKAN_COMMANDBUFFER_H
 #define SIEGE_ENGINE_VULKAN_COMMANDBUFFER_H
 
-#include "utils/Types.h"
-
 #include <utils/collections/HeapArray.h>
+
+#include "utils/Types.h"
 
 namespace Siege::Vulkan
 {
@@ -73,11 +73,22 @@ public:
     /**
      * Returns the raw Vulkan CommandBuffer pointer
      * @param index the index of the CommandBuffer to be accessed
-     * @return
+     * @warn this function does not bounds check - please ensure that the provided index is in
+     * bounds, otherwise undefined behaviour may occur
+     * @return a raw Vulkan Command Buffer
      */
-    VkCommandBuffer Get(const size_t index = 0)
+    VkCommandBuffer Get(const size_t index) const
     {
         return commandBuffers[index];
+    }
+
+    /**
+     * Returns the raw Vulkan CommandBuffer pointer of the current active Command Buffer
+     * @return the current active command buffer
+     */
+    VkCommandBuffer Get() const
+    {
+        return commandBuffers[currentActiveBufferIndex];
     }
 
     /**
@@ -120,6 +131,11 @@ public:
         commandBuffer.Submit();
     }
 
+    inline void SetActiveBufferIndex(uint32_t index)
+    {
+        currentActiveBufferIndex = index;
+    }
+
 private:
 
     /**
@@ -130,6 +146,7 @@ private:
 
     ::Siege::Utils::MHArray<VkCommandBuffer> commandBuffers;
     VkCommandBuffer activeCommandBuffer {nullptr};
+    uint32_t currentActiveBufferIndex {0};
 };
 } // namespace Siege::Vulkan
 

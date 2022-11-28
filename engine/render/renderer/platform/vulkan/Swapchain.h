@@ -97,7 +97,7 @@ public:
      * @param imageIndex - the index of the image being drawn
      * @return VkResult - the result of submitting the buffer
      */
-    Utils::Result SubmitCommandBuffers(CommandBuffer& commandBuffer, uint32_t* imageIndex);
+    Utils::Result SubmitCommandBuffers(const CommandBuffer& commandBuffer, uint32_t imageIndex);
 
     /**
      * Compares the inputted image and depth formats to the ones used in the Swapchain

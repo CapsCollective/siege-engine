@@ -37,7 +37,6 @@ Fence::~Fence()
 {
     if (fences == nullptr) return;
 
-    CC_LOG_INFO("[FENCE] Destroying Fence")
     auto device = Context::GetVkLogicalDevice();
 
     size = (initState == FENCE_EMPTY || initState == FENCE_EMPTY_SIGNALED) * size;
