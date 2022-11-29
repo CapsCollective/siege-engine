@@ -8,13 +8,10 @@
 
 #include <render/input/Input.h>
 #include <render/renderer/Renderer.h>
-#include <render/renderer/material/Material.h>
 #include <render/renderer/model/Model.h>
-#include <render/renderer/shader/Shader.h>
-#include <render/window/Window.h>
-#include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Material.h>
-#include <render/renderer/platform/vulkan/Pipeline.h>
+#include <render/renderer/platform/vulkan/Shader.h>
+#include <render/window/Window.h>
 #include <utils/math/Float.h>
 
 #include <chrono>
@@ -81,35 +78,29 @@ int main()
 
     auto testMaterial =
         Siege::Vulkan::Material(Shader::Builder()
-            .FromVertexShader("assets/shaders/simpleShader2.vert.spv")
-            .WithVertexBinding(
-                Shader::VertexBinding()
-                    .AddFloatVec3Attribute()
-                    .AddFloatVec3Attribute()
-                    .AddFloatVec3Attribute()
-                    .AddFloatVec2Attribute())
-            .WithTransform3DStorage(0, 1000)
-            .WithGlobalData3DUniform()
-            .Build(),
-        Shader::Builder()
-            .FromFragmentShader("assets/shaders/diffuseFragShader2.frag.spv")
-            .WithGlobalData3DUniform()
-            .Build());
+                                    .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+                                    .WithVertexBinding(Shader::VertexBinding()
+                                                           .AddFloatVec3Attribute()
+                                                           .AddFloatVec3Attribute()
+                                                           .AddFloatVec3Attribute()
+                                                           .AddFloatVec2Attribute())
+                                    .WithTransform3DStorage(0, 1000)
+                                    .WithGlobalData3DUniform()
+                                    .Build(),
+                                Shader::Builder()
+                                    .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+                                    .WithGlobalData3DUniform()
+                                    .Build());
 
-    auto testMaterial2D =
-        Siege::Vulkan::Material(
-            Shader::Builder()
-                .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
-                    .WithVertexBinding(
-                        Shader::VertexBinding()
-                            .AddFloatVec2Attribute()
-                            .AddFloatVec3Attribute())
-                    .WithTransform2DStorage(0, 1000)
-                    .WithGlobalData2DUniform()
-                    .Build(),
-            Shader::Builder()
-                .FromFragmentShader("assets/shaders/simpleShader.frag.spv")
-                .Build());
+    auto testMaterial2D = Siege::Vulkan::Material(
+        Shader::Builder()
+            .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
+            .WithVertexBinding(
+                Shader::VertexBinding().AddFloatVec2Attribute().AddFloatVec3Attribute())
+            .WithTransform2DStorage(0, 1000)
+            .WithGlobalData2DUniform()
+            .Build(),
+        Shader::Builder().FromFragmentShader("assets/shaders/simpleShader.frag.spv").Build());
 
     // Generate models
 

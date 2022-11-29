@@ -155,9 +155,47 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::Iter<const SArray<T, S>, const T> CreateIterator() const
+    constexpr inline Utils::CIter<SArray<T, S>, T> CreateIterator() const
     {
         return {this};
+    }
+
+    template<typename F>
+    inline void ForEachI(F&& func)
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void ForEach(F&& func)
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F>
+    inline void ForEachI(F&& func) const
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void ForEach(F&& func) const
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
     }
 
     T data[S];
@@ -431,7 +469,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<const MSArray<T, S>, T> CreateIterator() const
+    inline Utils::CMIter<MSArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -453,9 +491,85 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<const MSArray<T, S>, T> CreateFIterator() const
+    inline Utils::CIter<MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
+    }
+
+    template<typename F>
+    inline void ForEachI(F&& func)
+    {
+        size_t i = 0;
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void ForEach(F&& func)
+    {
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F>
+    inline void MForEachI(F&& func)
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void MForEach(F&& func)
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F>
+    inline void ForEachI(F&& func) const
+    {
+        size_t i = 0;
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void ForEach(F&& func) const
+    {
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F>
+    inline void MForEachI(F&& func) const
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F>
+    inline void MForEach(F&& func) const
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
     }
 
 private:

@@ -11,12 +11,14 @@
 
 #include "../Core.h"
 #include "../lights/PointLight.h"
-#include "../material/Material.h"
 #include "../model/Model.h"
 #include "BillboardRenderer.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
+
+// TODO(Aryeh): Convert this class into a normal class and remove the statics. Their existence is a
+// TODO(Aryeh): blight on humanity and ends up really messing with Vulkan's memory management
 
 namespace Siege
 {
@@ -43,17 +45,18 @@ public:
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
-    static void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
+    static void DrawLine(const Siege::Vec3& origin,
+                         const Siege::Vec3& destination,
+                         const Siege::Vec4& colour);
 
-    static void DrawRect(const Vec3& position, const Vec2& scale, Vec4& color);
-    static void DrawPointLight(const Vec3& position,
-                               float radius,
-                               const Vec4& colour,
-                               const Vec4& ambientColor);
+    static void DrawPointLight(const Siege::Vec3& position,
+                               const float& radius,
+                               const Siege::Vec4& colour,
+                               const Siege::Vec4& ambientColor);
 
     static void RecreateMaterials();
 
-    static void Render(VkCommandBuffer& commandBuffer, const CameraData& globalData);
+    static void Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& globalData);
     static void Flush();
 
     static void DestroyRenderer3D();
@@ -61,18 +64,18 @@ public:
 private:
 
     // static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-    static void RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+    static void RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
 
     static Hash::StringId globalDataId;
 
-    // FIXME(Aryeh): Everything below this needs to change.
+    // FIXME(Aryeh): These statics are evil and need to be removed.
 
     static ModelRenderer modelRenderer;
     static DebugRenderer3D debugRenderer;
     static BillboardRenderer billboardRenderer;
     static LightRenderer lightRenderer;
 
-    static Material gridMaterial;
+    static Vulkan::Material gridMaterial;
 
     static GlobalData global3DData;
 };

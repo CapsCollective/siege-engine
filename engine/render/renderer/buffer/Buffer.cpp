@@ -82,8 +82,13 @@ void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
 void DestroyBuffer(Buffer& buffer)
 {
     VkDevice device = Vulkan::Context::GetVkLogicalDevice();
+    if (device == nullptr) return;
+
     if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
     if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
+
+    buffer.buffer = VK_NULL_HANDLE;
+    buffer.bufferMemory = VK_NULL_HANDLE;
 }
 
 size_t PadUniformBufferSize(size_t originalSize)

@@ -24,12 +24,12 @@ struct BillboardData
     vec3 scale;
 };
 
-layout (set = 0, binding = 0) uniform GlobalData {
+layout (binding = 0) uniform GlobalData {
     CameraData cameraData;
     LightData lightData;
 } globalData;
 
-layout (std140, set = 1, binding = 1) readonly buffer ObjectBuffer {
+layout (std140, binding = 1) readonly buffer ObjectBuffer {
     BillboardData data[];
 } objectBuffer;
 

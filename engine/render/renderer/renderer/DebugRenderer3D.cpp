@@ -19,25 +19,15 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
 
-    // vertex Shaders
-    auto vertexShader =
-        Shader::BuildShader()
-            .FromShader("assets/shaders/line.vert.spv")
-            .WithStage(PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(LineVertex))
-            .WithVertexAttribute(offsetof(LineVertex, position), VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(LineVertex, colour), VertexDescription::VEC3)
-            .WithUniform(0, globalDataAttributeName, globalDataSize, 1);
-
-    // fragmentShaders
-    auto fragmentShader = Shader::BuildShader()
-                              .FromShader("assets/shaders/line.frag.spv")
-                              .WithStage(PipelineConfig::FRAGMENT);
-
-    lineMaterial.SetVertexShader(&vertexShader);
-    lineMaterial.SetFragmentShader(&fragmentShader);
-    lineMaterial.SetTopology(Material::Topology::LINE_LIST);
-    lineMaterial.BuildMaterial();
+    lineMaterial = Vulkan::Material(
+        Vulkan::Shader::Builder()
+            .FromVertexShader("assets/shaders/line.vert.spv")
+            .WithVertexBinding(
+                Vulkan::Shader::VertexBinding().AddFloatVec3Attribute().AddFloatVec4Attribute())
+            .WithGlobalData3DUniform()
+            .WithVertexTopology(Vulkan::Utils::TOPOLOGY_LINE_LIST)
+            .Build(),
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/line.frag.spv").Build());
 
     // Set empty mesh
     lineModel.SetMesh({sizeof(LineVertex), nullptr, 0, nullptr, 0});
@@ -47,16 +37,13 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
 
 void DebugRenderer3D::Destroy()
 {
-    lineMaterial.DestroyMaterial();
+    lineMaterial.~Material();
     lineModel.DestroyModel();
-    rectMaterial.DestroyMaterial();
-    rectModel.DestroyModel();
 }
 
 void DebugRenderer3D::RecreateMaterials()
 {
-    lineMaterial.RecreatePipeline();
-    rectMaterial.RecreatePipeline();
+    lineMaterial.Recreate();
 }
 
 // Wire primitives
@@ -66,30 +53,28 @@ void DebugRenderer3D::DrawLine(const Vec3& origin, const Vec3& destination, cons
     lines.Append({destination, colour});
 }
 
-void DebugRenderer3D::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale) {}
-
 void DebugRenderer3D::Flush()
 {
     lines.Clear();
 }
 
-void DebugRenderer3D::RenderLines(VkCommandBuffer& commandBuffer,
+void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
                                   const uint64_t& globalDataSize,
                                   const void* globalData)
 {
     if (lines.Count() == 0) return;
 
     lineMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
-    lineMaterial.Bind(commandBuffer);
+    lineMaterial.Bind(buffer);
 
     lineModel.UpdateMesh(
         {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count()), nullptr, 0});
 
-    lineModel.Bind(commandBuffer);
-    lineModel.Draw(commandBuffer, 0);
+    lineModel.Bind(buffer);
+    lineModel.Draw(buffer, 0);
 }
 
-void DebugRenderer3D::Render(VkCommandBuffer& commandBuffer,
+void DebugRenderer3D::Render(Vulkan::CommandBuffer& commandBuffer,
                              const uint64_t& globalDataSize,
                              const void* globalData)
 {

@@ -50,12 +50,10 @@ Renderer::~Renderer()
 
 void Renderer::DrawFrame()
 {
-    auto commandBuffer = commandBuffers.GetActiveCommandBuffer();
-
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(commandBuffer, projection);
-    Renderer2D::Render(commandBuffer, global2DData);
+    Renderer3D::Render(commandBuffers, projection);
+    Renderer2D::Render(commandBuffers, global2DData);
 }
 
 void Renderer::RecreateSwapChain()

@@ -52,7 +52,7 @@ void Descriptor::AllocateSets(VkDevice device,
 {
     auto allocateInfo = CreateAllocateInfo(descriptorPool, setCount, layouts, pNext);
 
-    auto result = vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
+    vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
 }
 
 VkDescriptorSetAllocateInfo Descriptor::CreateAllocateInfo(VkDescriptorPool pool,

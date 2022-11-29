@@ -15,7 +15,6 @@
 #include <unordered_map>
 
 #include "../buffer/Buffer.h"
-#include "../material/Material.h"
 #include "../mesh/Mesh.h"
 #include "render/renderer/platform/vulkan/Material.h"
 
@@ -52,35 +51,25 @@ public:
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
 
-    void Bind(VkCommandBuffer commandBuffer);
+    void Bind(Vulkan::CommandBuffer& commandBuffer);
 
     /**
      * @brief Draws the current set vertices (and writes them to the currently bound vertex buffer).
      *
      * @param commandBuffer The command buffer being used to draw the image
      */
-    void Draw(VkCommandBuffer commandBuffer, const uint32_t& instance = 0);
+    void Draw(Vulkan::CommandBuffer& commandBuffer, const uint32_t& instance = 0);
 
-    Material* GetMaterial()
+    Vulkan::Material* GetMaterial()
     {
         return material;
     }
 
-    Vulkan::Material* GetMaterial2()
-    {
-        return material2;
-    }
-
     void UpdateMesh(const Mesh::MeshData& meshData);
     void SetMesh(const Mesh::MeshData& meshData);
-    void SetMaterial(Material* newMaterial)
-    {
-        material = newMaterial;
-    }
-
     void SetMaterial(Vulkan::Material* newMaterial)
     {
-        material2 = newMaterial;
+        material = newMaterial;
     }
 
     bool IsIndexed()
@@ -93,8 +82,7 @@ private:
     void LoadModelFromFile(const String& filePath);
 
     Mesh modelMesh;
-    Material* material {nullptr};
-    Vulkan::Material* material2 {nullptr};
+    Vulkan::Material* material {nullptr};
 };
 } // namespace Siege
 

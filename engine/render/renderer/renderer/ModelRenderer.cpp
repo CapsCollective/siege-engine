@@ -36,7 +36,7 @@ void ModelRenderer::DrawModel(Model* model,
     transforms.Append({transform, normal});
 }
 
-void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
+void ModelRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
                            const void* globalData)
 {
@@ -46,28 +46,27 @@ void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
     {
         auto& model = models.Get(i);
 
-        if (currentMaterial2 != model->GetMaterial2())
+        if (currentMaterial != model->GetMaterial())
         {
-            currentMaterial2 = model->GetMaterial2();
-            currentMaterial2->SetUniformData(transformId,
+            currentMaterial = model->GetMaterial();
+            currentMaterial->SetUniformData(transformId,
                                             sizeof(transforms[0]) * transforms.Count(),
                                             transforms.Data());
-            currentMaterial2->SetUniformData(globalDataId, globalDataSize, globalData);
-            currentMaterial2->Bind(commandBuffer);
+            currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
+            currentMaterial->Bind(buffer);
         }
 
         if (currentModel != model)
         {
             currentModel = model;
-            currentModel->Bind(commandBuffer);
+            currentModel->Bind(buffer);
         }
 
-        model->Draw(commandBuffer, i);
+        model->Draw(buffer, i);
     }
 
     currentModel = nullptr;
     currentMaterial = nullptr;
-    currentMaterial2 = nullptr;
 }
 
 void ModelRenderer::Flush()
@@ -78,6 +77,6 @@ void ModelRenderer::Flush()
 
 void ModelRenderer::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    if (currentMaterial) currentMaterial->Recreate();
 }
 } // namespace Siege

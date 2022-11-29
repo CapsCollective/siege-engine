@@ -8,19 +8,22 @@
 
 #include "Material.h"
 
+#include <utils/Logging.h>
+
 #include <utility>
 
-#include "render/renderer/platform/vulkan/utils/Descriptor.h"
-#include "render/renderer/descriptor/DescriptorPool.h"
-#include "utils/TypeAdaptor.h"
 #include "Pipeline.h"
-
-#include <utils/Logging.h>
+#include "Swapchain.h"
+#include "render/renderer/Renderer.h"
+#include "render/renderer/descriptor/DescriptorPool.h"
+#include "render/renderer/platform/vulkan/utils/Descriptor.h"
+#include "utils/TypeAdaptor.h"
 
 namespace Siege::Vulkan
 {
-Material::Material(Shader vertShader, Shader fragShader)
-    : vertexShader{std::move(vertShader)}, fragmentShader{std::move(fragShader)}
+Material::Material(Shader vertShader, Shader fragShader) :
+    vertexShader {std::move(vertShader)},
+    fragmentShader {std::move(fragShader)}
 {
     // Separate uniforms into unique properties
 
@@ -28,6 +31,8 @@ Material::Material(Shader vertShader, Shader fragShader)
 
     AddShader(vertexShader, OUT offset);
     AddShader(fragmentShader, OUT offset);
+
+    auto framesCount = Context::GetSwapchain().MAX_FRAMES_IN_FLIGHT;
 
     // TODO: Make a standalone buffer class
     // Allocate buffer which can store all the data we need
@@ -37,68 +42,60 @@ Material::Material(Shader vertShader, Shader fragShader)
                          OUT buffer.buffer,
                          OUT buffer.bufferMemory);
 
+    // Set the number of frames
+    perFrameDescriptorSets =
+        Siege::Utils::MHArray<::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>>(
+            framesCount);
+
+    writes = Siege::Utils::MHArray<::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>>(framesCount);
+
     // Create Descriptor Set Layout for Sets
+    propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
+        ::Siege::Utils::MSArray<VkDescriptorSetLayoutBinding, 10> bindings;
 
-    for (size_t i = 0; i < propertiesSlots.Count(); i++)
-    {
-        auto& set = propertiesSlots[i];
+        auto& properties = slot.properties;
 
-        VkDescriptorSetLayoutBinding bindings[set.properties.Count()];
-
-        for (size_t j = 0; j < set.properties.Count(); j++)
-        {
-            auto& property = set.properties[j];
-
-            bindings[j] =
-                Descriptor::CreateLayoutBinding(j,
-                                                1,
-                                                property.type,
-                                                property.shaderStage);
-        }
+        properties.MForEachI([&](Property& prop, size_t j) {
+            bindings.Append(Descriptor::CreateLayoutBinding(j, 1, prop.type, prop.shaderStage));
+        });
 
         CC_ASSERT(Descriptor::CreateLayout(Vulkan::Context::GetVkLogicalDevice(),
-                                           OUT set.layout,
-                                           bindings,
-                                           set.properties.Count()),
+                                           OUT slot.layout,
+                                           bindings.Data(),
+                                           properties.Count()),
                   "Failed to create descriptor set!")
 
-        Descriptor::AllocateSets(Vulkan::Context::GetVkLogicalDevice(),
-                                 &set.set,
-                                 DescriptorPool::GetDescriptorPool(),
-                                 1,
-                                 &set.layout);
+        perFrameDescriptorSets.ForEach(
+            [&](::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>& sets) {
+                sets.Append(VK_NULL_HANDLE);
+                Descriptor::AllocateSets(Vulkan::Context::GetVkLogicalDevice(),
+                                         OUT & sets[sets.Count() - 1],
+                                         DescriptorPool::GetDescriptorPool(),
+                                         1,
+                                         &slot.layout);
+            });
 
-        WriteSet(set);
-    }
+        WriteSet(i, slot);
+    });
 
     // Create Pipeline
-
-    ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts;
-
-    for(size_t i = 0; i < propertiesSlots.Count(); i++) layouts.Append(propertiesSlots[i].layout);
-
-    graphicsPipeline = Pipeline::Builder()
-        .WithRenderPass(Context::GetSwapchain().GetRenderPass())
-        .WithDynamicViewport()
-        .WithDynamicScissor()
-        .WithVertexShader(&vertexShader)
-        .WithFragmentShader(&fragmentShader).WithProperties(layouts)
-        .WithProperties(layouts)
-        .Build();
+    Recreate();
 }
 
-Material::Material(Material&& other) noexcept { Swap(other); }
+Material::Material(Material&& other) noexcept
+{
+    Swap(other);
+}
 
 Material::~Material()
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+    if (device == nullptr) return;
+
     Buffer::DestroyBuffer(buffer);
 
-    for (auto it = propertiesSlots.CreateIterator(); it; ++it)
-    {
-        vkDestroyDescriptorSetLayout(Vulkan::Context::GetVkLogicalDevice(),
-                                     (*it).layout,
-                                     nullptr);
-    }
+    propertiesSlots.ForEach(
+        [&](PropertiesSlot& prop) { vkDestroyDescriptorSetLayout(device, prop.layout, nullptr); });
 }
 
 Material& Material::operator=(Material&& other)
@@ -127,44 +124,38 @@ void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* 
 
 void Material::AddShader(const Shader& shader, uint64_t& offset)
 {
+    using Utils::ShaderType;
     auto uniforms = shader.GetUniforms();
 
     for (auto it = uniforms.CreateIterator(); it; ++it)
     {
         auto uniform = *it;
         if (uniform.set >= propertiesSlots.Count()) propertiesSlots.Append({});
+        auto& properties = propertiesSlots[uniform.set].properties;
 
-        auto& slot = propertiesSlots[uniform.set];
-
-        uint32_t propertyIdx = -1;
-
-        for (size_t j = 0; j < slot.properties.Count(); j++)
-        {
-            auto& property = slot.properties[j];
-            if (property.id == uniform.id)
+        properties.ForEach([&](Property& prop) {
+            if (prop.id == uniform.id)
             {
-                property.shaderStage = static_cast<Utils::ShaderType>(property.shaderStage | shader.GetShaderType());
+                prop.shaderStage = (ShaderType) (prop.shaderStage | shader.GetShaderType());
                 return;
             }
-        }
+        });
 
-        if (propertyIdx == -1)
-        {
-            propertyIdx = slot.properties.Count();
-            slot.properties.Append({});
-        }
+        properties.Append({
+            uniform.id,
+            uniform.slot,
+            offset,
+            uniform.totalSize,
+            uniform.type,
+            shader.GetShaderType(),
+        });
 
-        auto& property = slot.properties[propertyIdx];
+        using Vulkan::Utils::UniformType;
 
-        property.id = uniform.id;
-        property.type = uniform.type;
-        property.binding = uniform.slot;
-        property.size = uniform.totalSize;
-        property.shaderStage = (Utils::ShaderType)(property.shaderStage | shader.GetShaderType());
-        property.offset = offset;
-
-        bufferSize += uniform.totalSize;
-
+        bufferSize += ((uniform.type == UniformType::STORAGE) *
+                       Buffer::PadStorageBufferSize(uniform.totalSize)) +
+                      ((uniform.type == UniformType::UNIFORM) *
+                       Buffer::PadUniformBufferSize(uniform.totalSize));
         offset += uniform.totalSize;
     }
 }
@@ -172,53 +163,72 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
 void Material::Bind(const CommandBuffer& commandBuffer)
 {
     graphicsPipeline.Bind(commandBuffer);
-
-    // TODO: Cache this on the material itself?
-    ::Siege::Utils::MSArray<VkDescriptorSet, 10> setsToBind;
-    for (auto it = propertiesSlots.CreateIterator(); it; ++it) setsToBind.Append((*it).set);
-
-    graphicsPipeline.BindSets(commandBuffer, setsToBind);
+    graphicsPipeline.BindSets(commandBuffer,
+                              perFrameDescriptorSets[Renderer::GetCurrentFrameIndex()]);
 }
 
-// TODO: Remove the next function once we incorporate the CommandBuffer class into renderer
-void Material::Bind(VkCommandBuffer commandBuffer)
+void Material::Recreate()
 {
-    graphicsPipeline.Bind(commandBuffer);
+    ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts;
 
-    // TODO: Cache this on the material itself?
-    ::Siege::Utils::MSArray<VkDescriptorSet, 10> setsToBind;
-    for (auto it = propertiesSlots.CreateIterator(); it; ++it) setsToBind.Append((*it).set);
+    propertiesSlots.MForEach([&](PropertiesSlot& slot) { layouts.Append(slot.layout); });
 
-    graphicsPipeline.BindSets(commandBuffer, setsToBind);
+    graphicsPipeline = Pipeline::Builder()
+                           .WithRenderPass(Context::GetSwapchain().GetRenderPass())
+                           .WithDynamicViewport()
+                           .WithDynamicScissor()
+                           .WithVertexShader(&vertexShader)
+                           .WithFragmentShader(&fragmentShader)
+                           .WithProperties(layouts)
+                           .Build();
 }
 
-void Material::UpdateMaterial()
+void Material::Update()
 {
-    for (size_t i = 0; i < propertiesSlots.Count(); i++) WriteSet(propertiesSlots[i]);
+    auto& targetSets = writes[Renderer::GetCurrentFrameIndex()];
+
+    using Vulkan::Context;
+
+    Descriptor::WriteSets(Context::GetVkLogicalDevice(), targetSets.Data(), targetSets.Count());
 }
 
-void Material::WriteSet(PropertiesSlot& slot)
+void Material::Update(Hash::StringId id)
 {
-    VkWriteDescriptorSet writes[slot.properties.Count()];
-    VkDescriptorBufferInfo bufferInfos[slot.properties.Count()];
+    propertiesSlots.ForEachI([&](PropertiesSlot& slot, size_t i) {
+        auto& properties = slot.properties;
 
-    for (size_t j = 0; j < slot.properties.Count(); j++)
-    {
-        auto& property = slot.properties[j];
+        properties.ForEachI([&](Property& prop, size_t j) {
+            if (prop.id == id)
+            {
+                auto& setsToWrite = writes[Renderer::GetCurrentFrameIndex()];
+                Descriptor::WriteSets(Context::GetVkLogicalDevice(), &setsToWrite[j], 1);
+                return;
+            }
+        });
+    });
+}
 
-        bufferInfos[j] = Descriptor::CreateBufferInfo(buffer.buffer, property.offset, property.size);
+void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
+{
+    auto& properties = slot.properties;
 
-        writes[j] = Descriptor::CreateWriteSet(
-            j,
-            slot.set,
-            1,
-            Utils::ToVkDescriptorType(property.type),
-            &bufferInfos[j]);
-    }
+    properties.MForEachI([&](Property& prop, size_t i) {
+        bufferInfos.Append(Descriptor::CreateBufferInfo(buffer.buffer, prop.offset, prop.size));
+        perFrameDescriptorSets.ForEachI(
+            [&](::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>& sets, size_t j) {
+                writes[j].Append(Descriptor::CreateWriteSet(i,
+                                                            sets[set],
+                                                            1,
+                                                            Utils::ToVkDescriptorType(prop.type),
+                                                            &bufferInfos[i]));
+            });
+    });
 
-    Descriptor::WriteSets(Vulkan::Context::GetVkLogicalDevice(),
-                          writes,
-                          slot.properties.Count());
+    using Vulkan::Context;
+
+    writes.MForEach([&](::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>& writeSets) {
+        Descriptor::WriteSets(Context::GetVkLogicalDevice(), writeSets.Data(), writeSets.Count());
+    });
 }
 
 void Material::Swap(Material& other)
@@ -229,6 +239,9 @@ void Material::Swap(Material& other)
     auto tmpBuffer = buffer;
     auto tmpGraphicsPipeline = std::move(graphicsPipeline);
     auto tmpPropertiesSlots = propertiesSlots;
+    auto tmpPerFrameDescriptors = std::move(perFrameDescriptorSets);
+    auto tmpWrites = std::move(writes);
+    auto tmpBufferInfos = std::move(bufferInfos);
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
@@ -236,6 +249,9 @@ void Material::Swap(Material& other)
     buffer = other.buffer;
     graphicsPipeline = std::move(other.graphicsPipeline);
     propertiesSlots = other.propertiesSlots;
+    perFrameDescriptorSets = std::move(other.perFrameDescriptorSets);
+    writes = std::move(other.writes);
+    bufferInfos = std::move(other.bufferInfos);
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
@@ -243,5 +259,8 @@ void Material::Swap(Material& other)
     other.buffer = tmpBuffer;
     other.graphicsPipeline = std::move(tmpGraphicsPipeline);
     other.propertiesSlots = tmpPropertiesSlots;
+    other.perFrameDescriptorSets = std::move(tmpPerFrameDescriptors);
+    other.writes = std::move(tmpWrites);
+    other.bufferInfos = std::move(tmpBufferInfos);
 }
 } // namespace Siege::Vulkan

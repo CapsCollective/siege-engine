@@ -20,8 +20,7 @@ uint64_t Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRA
 Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
 Utils::MSArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
-Material* Renderer2D::currentMaterial = nullptr;
-Vulkan::Material* Renderer2D::currentMaterial2 = nullptr;
+Vulkan::Material* Renderer2D::currentMaterial = nullptr;
 Model* Renderer2D::currentModel = nullptr;
 
 void Renderer2D::Initialise()
@@ -56,10 +55,10 @@ void Renderer2D::DrawModel(Model* model, const Vec2& position)
 
 void Renderer2D::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    if (currentMaterial) currentMaterial->Recreate();
 }
 
-void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData)
 {
     if (models.Count() == 0) return;
 
@@ -67,26 +66,25 @@ void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& global
     {
         auto model = models[i];
 
-        if (currentMaterial2 != model->GetMaterial2())
+        if (currentMaterial != model->GetMaterial())
         {
-            currentMaterial2 = model->GetMaterial2();
-            currentMaterial2->SetUniformData(transformId, transformSize, transforms.Data());
-            currentMaterial2->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-            currentMaterial2->Bind(commandBuffer);
+            currentMaterial = model->GetMaterial();
+            currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
+            currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
+            currentMaterial->Bind(buffer);
         }
 
         if (currentModel != model)
         {
             currentModel = model;
-            currentModel->Bind(commandBuffer);
+            currentModel->Bind(buffer);
         }
 
-        model->Draw(commandBuffer, i);
+        model->Draw(buffer, i);
     }
 
     currentModel = nullptr;
     currentMaterial = nullptr;
-    currentMaterial2 = nullptr;
 }
 
 void Renderer2D::Flush()
@@ -94,4 +92,6 @@ void Renderer2D::Flush()
     models.Clear();
     transforms.Clear();
 }
+
+void Renderer2D::Destroy() {}
 } // namespace Siege

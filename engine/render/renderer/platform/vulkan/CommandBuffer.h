@@ -131,7 +131,10 @@ public:
         commandBuffer.Submit();
     }
 
-    inline void SetActiveBufferIndex(uint32_t index) { currentActiveBufferIndex = index; }
+    inline void SetActiveBufferIndex(uint32_t index)
+    {
+        currentActiveBufferIndex = index;
+    }
 
 private:
 

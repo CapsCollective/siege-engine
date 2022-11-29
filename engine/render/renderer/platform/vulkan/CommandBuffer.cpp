@@ -29,6 +29,7 @@ void CommandBuffer::Begin(int32_t index)
     Utils::CommandBuffer::BeginSingleTimeCommand(commandBuffer);
 
     activeCommandBuffer = commandBuffer;
+    currentActiveBufferIndex = index;
 }
 
 void CommandBuffer::End()

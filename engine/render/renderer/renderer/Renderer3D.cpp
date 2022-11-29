@@ -13,7 +13,7 @@ namespace Siege
 // static initialisation
 Hash::StringId Renderer3D::globalDataId;
 
-Material Renderer3D::gridMaterial;
+Vulkan::Material Renderer3D::gridMaterial;
 
 ModelRenderer Renderer3D::modelRenderer;
 DebugRenderer3D Renderer3D::debugRenderer;
@@ -31,18 +31,12 @@ void Renderer3D::Initialise()
     billboardRenderer.Initialise("globalData", sizeof(GlobalData));
     lightRenderer.Initialise("globalData", sizeof(GlobalData));
 
-    auto gridShader = Shader::BuildShader()
-                          .FromShader("assets/shaders/grid.vert.spv")
-                          .WithStage(PipelineConfig::VERTEX)
-                          .WithUniform(0, "globalData", sizeof(Renderer3D::GlobalData));
-
-    auto gridFragShader = Shader::BuildShader()
-                              .FromShader("assets/shaders/grid.frag.spv")
-                              .WithStage(PipelineConfig::FRAGMENT);
-
-    gridMaterial.SetVertexShader(&gridShader);
-    gridMaterial.SetFragmentShader(&gridFragShader);
-    gridMaterial.BuildMaterial();
+    gridMaterial = Vulkan::Material(
+        Vulkan::Shader::Builder()
+            .FromVertexShader("assets/shaders/grid.vert.spv")
+            .WithGlobalData3DUniform()
+            .Build(),
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build());
 }
 
 void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour)
@@ -68,17 +62,17 @@ void Renderer3D::DrawModel(Model* model, const Vec3& position)
     DrawModel(model, position, Vec3::One, Vec3::Zero);
 }
 
-void Renderer3D::DrawPointLight(const Vec3& position,
-                                float radius,
-                                const Vec4& colour,
-                                const Vec4& ambientColor)
+void Renderer3D::DrawPointLight(const Siege::Vec3& position,
+                                const float& radius,
+                                const Siege::Vec4& colour,
+                                const Siege::Vec4& ambientColor)
 {
     global3DData.lightData = {colour, ambientColor, position};
 
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
 
-void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& cameraData)
+void Renderer3D::Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
@@ -98,12 +92,12 @@ void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec
     debugRenderer.DrawLine(origin, destination, colour);
 }
 
-void Renderer3D::RenderGrid(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+void Renderer3D::RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData)
 {
     gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
     gridMaterial.Bind(commandBuffer);
 
-    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    vkCmdDraw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
 }
 
 void Renderer3D::RecreateMaterials()
@@ -113,7 +107,7 @@ void Renderer3D::RecreateMaterials()
     billboardRenderer.RecreateMaterials();
     lightRenderer.RecreateMaterials();
 
-    gridMaterial.RecreatePipeline();
+    gridMaterial.Recreate();
 }
 
 void Renderer3D::Flush()
@@ -131,6 +125,6 @@ void Renderer3D::DestroyRenderer3D()
     billboardRenderer.Destroy();
     lightRenderer.Destroy();
 
-    gridMaterial.DestroyMaterial();
+    gridMaterial.~Material();
 }
 } // namespace Siege

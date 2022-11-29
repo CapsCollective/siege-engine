@@ -119,17 +119,17 @@ void Mesh::CreateIndexBuffer(const uint32_t* indices)
     Buffer::CopyBuffer(globalIndexStagingBuffer.buffer, indexBuffer.buffer, bufferSize);
 }
 
-void Mesh::Bind(VkCommandBuffer commandBuffer)
+void Mesh::Bind(Vulkan::CommandBuffer& commandBuffer)
 {
     if (vertexCount > 0)
     {
         VkBuffer buffers[] = {vertexBuffer.buffer};
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+        vkCmdBindVertexBuffers(commandBuffer.Get(), 0, 1, buffers, offsets);
     }
 
     if (hasIndexBuffer)
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer.Get(), indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
 void Mesh::UpdateVertices(const Mesh::MeshData& meshData)

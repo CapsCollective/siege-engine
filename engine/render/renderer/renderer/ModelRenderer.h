@@ -27,7 +27,7 @@ public:
 
     void DrawModel(Model* model, const Vec3& position, const Vec3& scale, const Vec3& rotation);
 
-    void Render(VkCommandBuffer& commandBuffer,
+    void Render(Vulkan::CommandBuffer& buffer,
                 const uint64_t& globalDataSize,
                 const void* globalData);
 
@@ -46,8 +46,7 @@ private:
     Utils::MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
     Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
-    Material* currentMaterial {nullptr};
-    Vulkan::Material* currentMaterial2 {nullptr};
+    Vulkan::Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};
 };
 } // namespace Siege

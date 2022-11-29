@@ -1,9 +1,9 @@
 #version 450
 
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 colour;
+layout(location = 1) in vec4 colour;
 
-layout(location = 0) out vec3 outColour;
+layout(location = 0) out vec4 outColour;
 
 struct CameraData
 {
@@ -18,7 +18,7 @@ struct LightData
     vec3 position;
 };
 
-layout (set = 0, binding = 0) uniform GlobalData {
+layout (binding = 0) uniform GlobalData {
     CameraData cameraData;
     LightData lightData;
 } globalData;

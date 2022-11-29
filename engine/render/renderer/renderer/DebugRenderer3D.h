@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_DEBUG_RENDERER3D_H
 
 #include "../Core.h"
-#include "../material/Material.h"
 #include "../model/Model.h"
 
 namespace Siege
@@ -26,10 +25,11 @@ public:
     void Destroy();
 
     // Wire primitives
-    void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
-    void DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale);
+    void DrawLine(const Siege::Vec3& origin,
+                  const Siege::Vec3& destination,
+                  const Siege::Vec4& colour);
 
-    void Render(VkCommandBuffer& commandBuffer,
+    void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
                 const void* globalData);
 
@@ -45,18 +45,14 @@ private:
         Vec4 colour;
     };
 
-    void RenderLines(VkCommandBuffer& commandBuffer,
+    void RenderLines(Vulkan::CommandBuffer& commandBuffer,
                      const uint64_t& globalDataSize,
                      const void* globalData);
-    void RenderRects();
 
     Vec3 lineColor;
 
-    Material lineMaterial;
+    Vulkan::Material lineMaterial;
     Model lineModel;
-
-    Material rectMaterial;
-    Model rectModel;
 
     Hash::StringId globalDataId;
 

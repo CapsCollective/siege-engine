@@ -126,6 +126,7 @@ String::String(char character) : memory()
 String::~String()
 {
     if (OnHeap()) free(str);
+    str = nullptr;
 }
 
 String& String::operator=(const String& rhs)

@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_RENDERER2D_H
 
 #include "../Core.h"
-#include "../material/Material.h"
 #include "../model/Model.h"
 
 namespace Siege
@@ -36,8 +35,10 @@ public:
 
     static void RecreateMaterials();
 
-    static void Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
+    static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
     static void Flush();
+
+    static void Destroy();
 
 private:
 
@@ -51,8 +52,7 @@ private:
     static Hash::StringId transformId;
     static Hash::StringId globalDataId;
 
-    static Material* currentMaterial;
-    static Vulkan::Material* currentMaterial2;
+    static Vulkan::Material* currentMaterial;
     static Model* currentModel;
 };
 } // namespace Siege
