@@ -12,14 +12,14 @@
 
 namespace Siege
 {
-void Camera::SetOrthographicProjection(const float& left,
-                                       const float& right,
-                                       const float& top,
-                                       const float& bottom,
-                                       const float& near,
-                                       const float& far)
+void Camera::SetOrthographicProjection(float left,
+                                       float right,
+                                       float top,
+                                       float bottom,
+                                       float near,
+                                       float far)
 {
-    projectionMatrix = Siege::Mat4::Identity;
+    projectionMatrix = Mat4::Identity;
     projectionMatrix[0] = 2.f / (right - left);
     projectionMatrix[5] = 2.f / (bottom - top);
     projectionMatrix[10] = 1.f / (far - near);
@@ -28,10 +28,7 @@ void Camera::SetOrthographicProjection(const float& left,
     projectionMatrix[14] = -near / (far - near);
 }
 
-void Camera::SetPerspectiveProjection(const float& fovy,
-                                      const float& aspect,
-                                      const float& near,
-                                      const float& far)
+void Camera::SetPerspectiveProjection(float fovy, float aspect, float near, float far)
 {
     CC_ASSERT(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "");
 
@@ -44,17 +41,15 @@ void Camera::SetPerspectiveProjection(const float& fovy,
     projectionMatrix[14] = -(far * near) / (far - near);
 }
 
-void Camera::SetViewDirection(const Siege::Vec3& position,
-                              const Siege::Vec3& direction,
-                              const Siege::Vec3& up)
+void Camera::SetViewDirection(const Vec3& position, const Vec3& direction, const Vec3& up)
 {
     // Sets up an orthonormal basis - 3 vectors that are unit length (length of 1),
     // and are at 90 degree angles from one another.
-    const Siege::Vec3 w {direction.Normalise()};
-    const Siege::Vec3 u {w.Cross(up).Normalise()};
-    const Siege::Vec3 v {w.Cross(u)};
+    const Vec3 w {direction.Normalise()};
+    const Vec3 u {w.Cross(up).Normalise()};
+    const Vec3 v {w.Cross(u)};
 
-    viewMatrix = Siege::Mat4::Identity;
+    viewMatrix = Mat4::Identity;
     viewMatrix[0] = u.x;
     viewMatrix[1] = u.y;
     viewMatrix[2] = u.z;
@@ -69,15 +64,13 @@ void Camera::SetViewDirection(const Siege::Vec3& position,
     viewMatrix[14] = -w.Dot(position);
 }
 
-void Camera::SetViewTarget(const Siege::Vec3& position,
-                           const Siege::Vec3& target,
-                           const Siege::Vec3& up)
+void Camera::SetViewTarget(const Vec3& position, const Vec3& target, const Vec3& up)
 {
     // Set the direction to the direction from the camera to the target.
     SetViewDirection(position, target - position, up);
 }
 
-void Camera::SetViewYXZ(const Siege::Vec3& position, const Siege::Vec3& rotation)
+void Camera::SetViewYXZ(const Vec3& position, const Vec3& rotation)
 {
     // Sets up a rotation matrix.
     const float c3 = glm::cos(rotation.z);
@@ -86,10 +79,10 @@ void Camera::SetViewYXZ(const Siege::Vec3& position, const Siege::Vec3& rotation
     const float s2 = glm::sin(rotation.x);
     const float c1 = glm::cos(rotation.y);
     const float s1 = glm::sin(rotation.y);
-    const Siege::Vec3 u {(c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1)};
-    const Siege::Vec3 v {(c3 * s1 * s2 - c1 * s3), (c2 * c3), (c1 * c3 * s2 + s1 * s3)};
-    const Siege::Vec3 w {(c2 * s1), (-s2), (c1 * c2)};
-    viewMatrix = Siege::Mat4::Identity;
+    const Vec3 u {(c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1)};
+    const Vec3 v {(c3 * s1 * s2 - c1 * s3), (c2 * c3), (c1 * c3 * s2 + s1 * s3)};
+    const Vec3 w {(c2 * s1), (-s2), (c1 * c2)};
+    viewMatrix = Mat4::Identity;
     viewMatrix[0] = u.x;
     viewMatrix[4] = u.y;
     viewMatrix[8] = u.z;

@@ -23,9 +23,9 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName,
 void ModelRenderer::Destroy() {}
 
 void ModelRenderer::DrawModel(Model* model,
-                              const Siege::Vec3& position,
-                              const Siege::Vec3& scale,
-                              const Siege::Vec3& rotation)
+                              const Vec3& position,
+                              const Vec3& scale,
+                              const Vec3& rotation)
 {
     models.Append(model);
 

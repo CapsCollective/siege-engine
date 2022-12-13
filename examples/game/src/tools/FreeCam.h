@@ -23,7 +23,7 @@ public:
         moveSpeed(10.f),
         lookSpeed(0.1f),
         camera(ServiceLocator::GetCamera()),
-        rotation(Siege::Vec3(0.f, -1.f, -1.f)),
+        rotation({0.f, -1.f, -1.f}),
         previousMousePosition({0.f, 0.f, 0.f})
     {}
 

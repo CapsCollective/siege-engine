@@ -9,11 +9,7 @@
 #ifndef SIEGE_ENGINE_VEC3_H
 #define SIEGE_ENGINE_VEC3_H
 
-#include "Vec2.h"
-
-#define VEC_OPERATOR_BODY_VEC(op, sep) x op rhs.x sep y op rhs.y sep z op rhs.z sep
-
-#define VEC_OPERATOR_BODY_FLOAT(op, sep) x op rhs sep y op rhs sep z op rhs sep
+#include "Operators.h"
 
 namespace Siege
 {
@@ -42,13 +38,27 @@ struct Vec3
 
     // 'Structors
 
+    Vec3() = default;
+
     /**
      * Base Vector constructor.
      * @param x the value to be given to the x dimension (default is zero)
      * @param y the value to be given to the y dimension (default is zero)
      * @param z the value to be given to the z dimension (default is zero)
      */
-    Vec3(float x = 0.f, float y = 0.f, float z = 0.f) : x(x), y(y), z(z) {}
+    Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+    /**
+     * A 3D vector constructor from a 2D vector.
+     * @param other a 2 dimensional vector to copy.
+     */
+    explicit Vec3(const Vec2& other);
+
+    /**
+     * A 3D vector constructor from a 4 dimensional vector
+     * @param other a 4 dimensional vector to copy.
+     */
+    explicit Vec3(const Vec4& other);
 
     // Operator overloads
 
@@ -66,6 +76,12 @@ struct Vec3
      */
     Vec3& operator=(const Vec2& rhs);
 
+    Vec3& operator=(const Vec4& rhs);
+
+    operator Vec2() const;
+
+    operator Vec4() const;
+
     // Operator overloads
 
     /**
@@ -73,28 +89,28 @@ struct Vec3
      * @param rhs the 3D vector to be added by.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_OP(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A three dimensional Vector subtraction operator.
      * @param rhs the 3D vector to be subtracted by.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(-=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_OP(-=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A three dimensional Vector multiplication operator.
      * @param rhs the 3D vector to be multiplied by.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(*=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_OP(*=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A three dimensional Vector division operator.
      * @param rhs the 3D vector to be divided by.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(/=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_OP(/=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * An equality operator.
@@ -104,88 +120,95 @@ struct Vec3
     bool operator==(const Vec3& other);
 
     /**
+     * An inequality operator.
+     * @param other the vector to be compared.
+     * @return a boolean specifying if the two vectors are equal.
+     */
+    bool operator!=(const Vec3& other);
+
+    /**
      * A scalar addition operator.
      * @param rhs the scalar to add.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(+=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_OP(+=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A scalar subtraction operator.
      * @param rhs the scalar to subtract.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(-=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_OP(-=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A scalar multiplication operator.
      * @param rhs the scalar to multiply.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(*=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_OP(*=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A scalar division operator.
      * @param rhs the scalar to divide.
      * @return a reference to the current vector.
      */
-    DEFINE_OPERATOR(/=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_OP(/=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A 3D vector const addition operator.
      * @param rhs the vector to add by.
      * @return a new vector representing the result of the vector addition.
      */
-    DEFINE_CONST_OPERATOR(+, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_CONST_OP(+, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A 3D vector const subtraction operator.
      * @param rhs the vector to subtract by.
      * @return a new vector representing the result of the vector subtraction.
      */
-    DEFINE_CONST_OPERATOR(-, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_CONST_OP(-, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A 3D vector const multiplication operator.
      * @param rhs the vector to multiply by.
      * @return a new vector representing the result of the vector multiplication.
      */
-    DEFINE_CONST_OPERATOR(*, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_CONST_OP(*, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A 3D vector const division operator.
      * @param rhs the vector to divide by.
      * @return a new vector representing the result of the vector division.
      */
-    DEFINE_CONST_OPERATOR(/, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
+    // DEFINE_VEC_CONST_OP(/, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
 
     /**
      * A const scalar addition operator.
      * @param rhs the vector to add by.
      * @return a new vector representing the result of the vector addition.
      */
-    DEFINE_CONST_OPERATOR(+, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_CONST_OP(+, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A const scalar subtraction operator.
      * @param rhs the vector to subtract by.
      * @return a new vector representing the result of the vector subtraction.
      */
-    DEFINE_CONST_OPERATOR(-, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_CONST_OP(-, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A const scalar multiplication operator.
      * @param rhs the vector to multiply by.
      * @return a new vector representing the result of the vector multiplication.
      */
-    DEFINE_CONST_OPERATOR(*, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_CONST_OP(*, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     /**
      * A const scalar division operator.
      * @param rhs the vector to divide by.
      * @return a new vector representing the result of the vector division.
      */
-    DEFINE_CONST_OPERATOR(/, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
+    // DEFINE_VEC_CONST_OP(/, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     // Static methods
 
@@ -263,12 +286,66 @@ struct Vec3
 
     // Public members
 
-    float x;
-    float y;
-    float z;
+    float x {0.f}, y {0.f}, z {0.f};
 };
 
 // Binary operators
+
+// Addition
+
+DECL_VEC_BINARY_OP_NO_IMP(+=, void, Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(+=, Vec3&, Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(+=, Vec3&, Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(+=, void, Vec3&, float)
+
+DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, float)
+
+// Subtraction
+
+DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, float)
+
+DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, float)
+
+// Multiplication
+
+DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, float)
+
+DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, float)
+
+// Division
+
+DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, float)
+
+DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec2&)
+DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec3&)
+DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec4&)
+
+DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, float)
 
 inline Vec3 operator/(const float& scalar, const Vec3& vec)
 {

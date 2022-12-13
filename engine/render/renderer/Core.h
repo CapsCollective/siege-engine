@@ -29,8 +29,8 @@ namespace Siege
 {
 struct CameraData
 {
-    Siege::Mat4 projectionMatrix;
-    Siege::Mat4 viewMatrix;
+    Mat4 projectionMatrix;
+    Mat4 viewMatrix;
 };
 } // namespace Siege
 

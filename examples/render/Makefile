@@ -42,7 +42,6 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
-linkFlags += -l render -l utils
 
 .PHONY: all render-assets
 

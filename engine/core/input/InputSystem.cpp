@@ -54,7 +54,7 @@ void InputSystem::DisableMouseCursor()
     DisableCursor();
 }
 
-Siege::Vec3 InputSystem::GetMousePos()
+Vec3 InputSystem::GetMousePos()
 {
     return ToVec3(GetMousePosition());
 }

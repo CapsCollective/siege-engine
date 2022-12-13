@@ -31,49 +31,47 @@ void Renderer3D::Initialise()
     billboardRenderer.Initialise("globalData", sizeof(GlobalData));
     lightRenderer.Initialise("globalData", sizeof(GlobalData));
 
-    auto gridShader = Siege::Shader::BuildShader()
+    auto gridShader = Shader::BuildShader()
                           .FromShader("assets/shaders/grid.vert.spv")
-                          .WithStage(Siege::PipelineConfig::VERTEX)
-                          .WithUniform(0, "globalData", sizeof(Siege::Renderer3D::GlobalData));
+                          .WithStage(PipelineConfig::VERTEX)
+                          .WithUniform(0, "globalData", sizeof(Renderer3D::GlobalData));
 
-    auto gridFragShader = Siege::Shader::BuildShader()
+    auto gridFragShader = Shader::BuildShader()
                               .FromShader("assets/shaders/grid.frag.spv")
-                              .WithStage(Siege::PipelineConfig::FRAGMENT);
+                              .WithStage(PipelineConfig::FRAGMENT);
 
     gridMaterial.SetVertexShader(&gridShader);
     gridMaterial.SetFragmentShader(&gridFragShader);
     gridMaterial.BuildMaterial();
 }
 
-void Renderer3D::DrawBillboard(const Siege::Vec3& position,
-                               const Siege::Vec2& scale,
-                               const Siege::Vec4& colour)
+void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour)
 {
     billboardRenderer.DrawBillboard(position, scale, colour);
 }
 
 void Renderer3D::DrawModel(Model* model,
-                           const Siege::Vec3& position,
-                           const Siege::Vec3& scale,
-                           const Siege::Vec3& rotation)
+                           const Vec3& position,
+                           const Vec3& scale,
+                           const Vec3& rotation)
 {
     modelRenderer.DrawModel(model, position, scale, rotation);
 }
 
-void Renderer3D::DrawModel(Model* model, const Siege::Vec3& position, const Siege::Vec3& scale)
+void Renderer3D::DrawModel(Model* model, const Vec3& position, const Vec3& scale)
 {
-    DrawModel(model, position, scale, Siege::Vec3::Zero);
+    DrawModel(model, position, scale, Vec3::Zero);
 }
 
-void Renderer3D::DrawModel(Model* model, const Siege::Vec3& position)
+void Renderer3D::DrawModel(Model* model, const Vec3& position)
 {
-    DrawModel(model, position, Siege::Vec3::One, Siege::Vec3::Zero);
+    DrawModel(model, position, Vec3::One, Vec3::Zero);
 }
 
-void Renderer3D::DrawPointLight(const Siege::Vec3& position,
-                                const float& radius,
-                                const Siege::Vec4& colour,
-                                const Siege::Vec4& ambientColor)
+void Renderer3D::DrawPointLight(const Vec3& position,
+                                float radius,
+                                const Vec4& colour,
+                                const Vec4& ambientColor)
 {
     global3DData.lightData = {colour, ambientColor, position};
 
@@ -95,9 +93,7 @@ void Renderer3D::Render(VkCommandBuffer& commandBuffer, const CameraData& camera
 #endif
 }
 
-void Renderer3D::DrawLine(const Siege::Vec3& origin,
-                          const Siege::Vec3& destination,
-                          const Siege::Vec4& colour)
+void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour)
 {
     debugRenderer.DrawLine(origin, destination, colour);
 }

@@ -26,42 +26,37 @@ public:
 
     struct GPUCameraData
     {
-        Siege::Mat4 projection;
-        Siege::Mat4 view;
-        Siege::Mat4 projView;
+        Mat4 projection;
+        Mat4 view;
+        Mat4 projView;
     };
 
-    void SetOrthographicProjection(const float& left,
-                                   const float& right,
-                                   const float& top,
-                                   const float& bottom,
-                                   const float& near,
-                                   const float& far);
+    void SetOrthographicProjection(float left,
+                                   float right,
+                                   float top,
+                                   float bottom,
+                                   float near,
+                                   float far);
 
-    void SetPerspectiveProjection(const float& fovy,
-                                  const float& aspect,
-                                  const float& near,
-                                  const float& far);
+    void SetPerspectiveProjection(float fovy, float aspect, float near, float far);
 
-    void SetViewDirection(const Siege::Vec3& position,
-                          const Siege::Vec3& direction,
-                          const Siege::Vec3& up = {0.f, -1.f, 0.f});
+    void SetViewDirection(const Vec3& position,
+                          const Vec3& direction,
+                          const Vec3& up = {0.f, -1.f, 0.f});
 
-    void SetViewTarget(const Siege::Vec3& position,
-                       const Siege::Vec3& target,
-                       const Siege::Vec3& up = {0.f, -1.f, 0.f});
+    void SetViewTarget(const Vec3& position, const Vec3& target, const Vec3& up = {0.f, -1.f, 0.f});
 
-    void SetViewYXZ(const Siege::Vec3& position, const Siege::Vec3& rotation);
+    void SetViewYXZ(const Vec3& position, const Vec3& rotation);
 
-    const Siege::Mat4& GetProjection()
+    const Mat4& GetProjection()
     {
         return projectionMatrix;
     }
-    const Siege::Mat4& GetView()
+    const Mat4& GetView()
     {
         return viewMatrix;
     }
-    Siege::Mat4 GetProjView()
+    Mat4 GetProjView()
     {
         return projectionMatrix * viewMatrix;
     }
@@ -72,8 +67,8 @@ public:
 
 private:
 
-    Siege::Mat4 projectionMatrix {1.f};
-    Siege::Mat4 viewMatrix {1.f};
+    Mat4 projectionMatrix {1.f};
+    Mat4 viewMatrix {1.f};
 };
 } // namespace Siege
 

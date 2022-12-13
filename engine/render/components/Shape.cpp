@@ -121,7 +121,7 @@ void Shape::SetRotation2D(float rotation)
 
 void Shape::SetPosition2D(const Siege::Vec2& newPos)
 {
-    transform.position = {newPos.x, newPos.y, transform.position.z};
+    transform.position = Siege::Vec3 {newPos.x, newPos.y, transform.position.z};
 }
 
 void Shape::SetScale2D(const Siege::Vec2& newScale)

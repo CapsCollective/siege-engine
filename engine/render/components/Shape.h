@@ -21,8 +21,8 @@ namespace Components
 {
 struct Transform
 {
-    Siege::Vec3 position {0.0f};
-    Siege::Vec3 scale {1.f, 1.f, 1.f};
+    Siege::Vec3 position {Siege::Vec3::Zero};
+    Siege::Vec3 scale {Siege::Vec3::One};
     Siege::Vec3 rotation {};
 };
 

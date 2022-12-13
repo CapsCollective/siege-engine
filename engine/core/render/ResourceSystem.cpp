@@ -11,12 +11,11 @@
 #include <raylib/raylib-cpp.hpp>
 #include <vector>
 
-static std::map<Siege::String, Model> models = std::map<Siege::String, Model>();
-
-static std::map<Siege::String, Texture> textures = std::map<Siege::String, Texture>();
-
 namespace Siege
 {
+static std::map<String, Model> models = std::map<String, Model>();
+
+static std::map<String, Texture> textures = std::map<String, Texture>();
 
 void ResourceSystem::RegisterModel(const String& path)
 {

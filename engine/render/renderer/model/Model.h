@@ -36,14 +36,14 @@ public:
 
     struct Transform
     {
-        Siege::Mat4 transform;
-        Siege::Mat4 normalMatrix;
+        Mat4 transform;
+        Mat4 normalMatrix;
     };
 
     // Placeholder - in case we need to add more unique 2D data
     struct Transform2D
     {
-        Siege::Mat4 transform;
+        Mat4 transform;
     };
 
     Model(const Mesh::MeshData& meshData);

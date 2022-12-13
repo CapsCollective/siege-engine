@@ -311,7 +311,7 @@ Mat3 operator*(const Mat3& lhs, const Mat3& rhs)
     return Mat3::Multiply(lhs, rhs);
 }
 
-const Vec3 operator*(const Mat3& lhs, const Siege::Vec3& rhs)
+const Vec3 operator*(const Mat3& lhs, const Vec3& rhs)
 {
     return Mat3::Multiply(lhs, rhs);
 }

@@ -17,7 +17,7 @@
 #define LHS(dimension, idx, size) values[dimension(idx, size)]
 #define RHS(dimension, idx, size) other[dimension(idx, size)]
 
-#define DEFINE_OP(op, sep, idx, element, rowSize) \
+#define DEFINE_MAT_VEC_OP(op, sep, idx, element, rowSize) \
     LHS(element, idx, rowSize) op RHS(element, idx, rowSize)
 
 #define DEFINE_SCALAR_OP(op, sep, idx, element, rowSize) LHS(element, idx, rowSize) op scalar
@@ -30,7 +30,8 @@
 
 #define MAT2_LOGIC_OP(op, logic, bLogic, body) body(op, logic, 0) bLogic body(op, logic, 1)
 
-#define MAT2_BODY_FUNC(op, sep, idx) DEFINE_OP(op, sep, idx, X, 2) sep DEFINE_OP(op, sep, idx, Y, 2)
+#define MAT2_BODY_FUNC(op, sep, idx) \
+    DEFINE_MAT_VEC_OP(op, sep, idx, X, 2) sep DEFINE_MAT_VEC_OP(op, sep, idx, Y, 2)
 
 #define MAT2_BODY_SCALAR_FUNC(op, sep, idx) \
     DEFINE_SCALAR_OP(op, sep, idx, X, 2) sep DEFINE_SCALAR_OP(op, sep, idx, Y, 2)
@@ -46,9 +47,9 @@
 #define MAT3_LOGIC_OP(op, logic, bLogic, body) \
     MAT2_LOGIC_OP(op, logic, bLogic, body) bLogic body(op, logic, 2)
 
-#define MAT3_BODY_FUNC(op, sep, idx) \
-    DEFINE_OP(op, sep, idx, X, 3)    \
-    sep DEFINE_OP(op, sep, idx, Y, 3) sep DEFINE_OP(op, sep, idx, Z, 3)
+#define MAT3_BODY_FUNC(op, sep, idx)      \
+    DEFINE_MAT_VEC_OP(op, sep, idx, X, 3) \
+    sep DEFINE_MAT_VEC_OP(op, sep, idx, Y, 3) sep DEFINE_MAT_VEC_OP(op, sep, idx, Z, 3)
 
 #define MAT3_BODY_SCALAR_FUNC(op, sep, idx) \
     DEFINE_SCALAR_OP(op, sep, idx, X, 3)    \
@@ -69,13 +70,10 @@
 #define MAT4_LOGIC_OP(op, logic, bLogic, body) \
     MAT3_LOGIC_OP(op, logic, bLogic, body) bLogic body(op, logic, 3)
 
-#define MAT4_BODY_FUNC(op, sep, idx)                                                       \
-    DEFINE_OP(op, sep, idx, X, 4)                                                          \
-    sep DEFINE_OP(op, sep, idx, Y, 4) sep DEFINE_OP(op, sep, idx, Z, 4) sep DEFINE_OP(op,  \
-                                                                                      sep, \
-                                                                                      idx, \
-                                                                                      W,   \
-                                                                                      4)
+#define MAT4_BODY_FUNC(op, sep, idx)                                                        \
+    DEFINE_MAT_VEC_OP(op, sep, idx, X, 4)                                                   \
+    sep DEFINE_MAT_VEC_OP(op, sep, idx, Y, 4) sep DEFINE_MAT_VEC_OP(op, sep, idx, Z, 4) sep \
+    DEFINE_MAT_VEC_OP(op, sep, idx, W, 4)
 
 #define MAT4_BODY_SCALAR_FUNC(op, sep, idx)                                               \
     DEFINE_SCALAR_OP(op, sep, idx, X, 4)                                                  \

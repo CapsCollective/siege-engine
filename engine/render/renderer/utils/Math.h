@@ -25,14 +25,12 @@ class Math
 {
 public:
 
-    static Siege::Mat4 CalculateTransform3D(const Siege::Vec3& position,
-                                            const Siege::Vec3& rotation,
-                                            const Siege::Vec3& scale);
+    static Mat4 CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3& scale);
     // TODO use this function or remove it
-    [[maybe_unused]] static Siege::Mat2 CalculateTransform2D(const Siege::Vec2& position,
-                                                             const float& rotation,
-                                                             const Siege::Vec2& scale);
-    static Siege::Mat3 CalculateNormalMatrix(const Siege::Vec3& rotation, const Siege::Vec3& scale);
+    [[maybe_unused]] static Mat2 CalculateTransform2D(const Vec2& position,
+                                                      const float& rotation,
+                                                      const Vec2& scale);
+    static Mat3 CalculateNormalMatrix(const Vec3& rotation, const Vec3& scale);
 };
 } // namespace Siege
 

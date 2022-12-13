@@ -26,12 +26,8 @@ public:
     void Destroy();
 
     // Wire primitives
-    void DrawLine(const Siege::Vec3& origin,
-                  const Siege::Vec3& destination,
-                  const Siege::Vec4& colour);
-    void DrawCube(const Siege::Vec3& position,
-                  const Siege::Vec3& rotation,
-                  const Siege::Vec3& scale);
+    void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
+    void DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -45,8 +41,8 @@ private:
 
     struct LineVertex
     {
-        Siege::Vec3 position;
-        Siege::Vec4 colour;
+        Vec3 position;
+        Vec4 colour;
     };
 
     void RenderLines(VkCommandBuffer& commandBuffer,

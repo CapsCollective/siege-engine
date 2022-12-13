@@ -99,7 +99,7 @@ private:
 
     void DrawFrame();
 
-    Siege::Window& window;
+    Window& window;
 
     VulkanDevice device;
     SwapChain swapChain;

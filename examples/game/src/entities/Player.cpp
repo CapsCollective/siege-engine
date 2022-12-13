@@ -40,7 +40,7 @@ void Player::OnUpdate()
     velocity += move.Normalise() * speed * Siege::Window::GetDeltaTime();
 
     // Apply force of gravity
-    velocity += Siege::Vec3(0.f, -0.01f, 0.f);
+    velocity += {0.f, -0.01f, 0.f};
 
     // Set the resulting attempted move's velocity to the object's position
     velocity = Siege::Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);

@@ -303,7 +303,7 @@ float Mat4::Determinant() const
     float SubFactor04 = values[2] * values[11] - values[3] * values[10];
     float SubFactor05 = values[2] * values[7] - values[3] * values[6];
 
-    Siege::Vec4 coefficient = {
+    Vec4 coefficient = {
         +(values[5] * SubFactor00 - values[9] * SubFactor01 + values[13] * SubFactor02),
         -(values[1] * SubFactor00 - values[9] * SubFactor03 + values[13] * SubFactor04),
         +(values[1] * SubFactor01 - values[5] * SubFactor03 + values[13] * SubFactor05),
@@ -372,9 +372,11 @@ Mat4 Mat4::Inverse() const
 
     Mat4 inverse = {inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB};
 
+    Vec4 column0 {inverse[0], inverse[4], inverse[8], inverse[12]};
+    Vec4 row0 {values[0], values[1], values[2], values[3]};
+
     // Get the dot product of the first column of the inverse and the original matrix.
-    Vec4 dot0 = Vec4(inverse[0], inverse[4], inverse[8], inverse[12]) *
-                Vec4(values[0], values[1], values[2], values[3]);
+    Vec4 dot0 = column0 * row0;
     float dot = (dot0.x + dot0.y) + (dot0.z + dot0.w);
 
     float OneOverDeterminant = 1.f / dot;

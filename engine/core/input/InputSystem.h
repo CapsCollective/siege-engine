@@ -144,7 +144,7 @@ public:
 
     void DisableMouseCursor();
 
-    Siege::Vec3 GetMousePos();
+    Vec3 GetMousePos();
 };
 } // namespace Siege
 

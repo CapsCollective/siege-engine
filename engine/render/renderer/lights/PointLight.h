@@ -21,13 +21,13 @@ public:
 
     struct Data
     {
-        Siege::Vec4 lightColor = {1.f, 1.f, 1.f, 0.2f};
-        alignas(16) Siege::Vec4 ambientLightColor = {1.f, 1.f, 1.f, .02f};
-        alignas(16) Siege::Vec3 position = Siege::Vec3::Zero;
+        Vec4 lightColor = {1.f, 1.f, 1.f, 0.2f};
+        alignas(16) Vec4 ambientLightColor = {1.f, 1.f, 1.f, .02f};
+        alignas(16) Vec3 position = Vec3::Zero;
     };
 
     PointLight();
-    PointLight(Siege::Vec3 position, Siege::Vec4 color, Siege::Vec4 ambientColor);
+    PointLight(Vec3 position, Vec4 color, Vec4 ambientColor);
     ~PointLight();
 
     Data& GetLightData()
@@ -38,15 +38,15 @@ public:
     {
         return model;
     }
-    void SetPosition(Siege::Vec3 position)
+    void SetPosition(Vec3 position)
     {
         lightData.position = position;
     }
-    void SetColor(Siege::Vec4 color)
+    void SetColor(Vec4 color)
     {
         lightData.lightColor = color;
     }
-    void SetAmbientColor(Siege::Vec4 ambientColor)
+    void SetAmbientColor(Vec4 ambientColor)
     {
         lightData.ambientLightColor = ambientColor;
     }

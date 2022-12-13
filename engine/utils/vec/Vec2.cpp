@@ -8,9 +8,6 @@
 
 #include "Vec2.h"
 
-#include "Vec3.h"
-#include "Vec4.h"
-
 namespace Siege
 {
 
@@ -25,35 +22,55 @@ const Vec2 Vec2::Up = {0.f, 1.f};
 
 // Unary operator implementations.
 
-bool Vec2::operator==(const Vec2& other)
+Vec2& Vec2::operator=(const Vec3& rhs)
 {
-    return x == other.x && y == other.y;
+    x = rhs.x;
+    y = rhs.y;
+    return *this;
 }
 
-bool Vec2::operator!=(const Vec2& other)
+Vec2& Vec2::operator=(const Vec4& rhs)
 {
-    return x != other.x || y != other.y;
+    x = rhs.x;
+    y = rhs.y;
+    return *this;
 }
 
-DEFINE_OPERATOR_IMP(+=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(-=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(*=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(/=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+Vec2::operator Vec3() const
+{
+    return {x, y, 0.f};
+}
 
-DEFINE_OPERATOR_IMP(+=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(-=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(*=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(/=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+Vec2::operator Vec4() const
+{
+    return {x, y, 0.f, 0.f};
+}
 
-DEFINE_CONST_OPERATOR_IMP(+, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(-, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(*, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(/, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+// bool Vec2::operator==(const Vec2& other)
+//{
+//     return x == other.x && y == other.y;
+// }
+//
+// bool Vec2::operator!=(const Vec2& other)
+//{
+//     return x != other.x || y != other.y;
+// }
 
-DEFINE_CONST_OPERATOR_IMP(+, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(-, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(*, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-DEFINE_CONST_OPERATOR_IMP(/, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(+=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(-=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+//
+// DEFINE_VEC_OP_IMP(+=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(-=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+
+// DEFINE_VEC_CONST_OP_IMP(+, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(-, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(*, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(/, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
+
+// DEFINE_VEC_CONST_OP_IMP(+, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(-, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(*, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_CONST_OP_IMP(/, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
 
 bool Vec2::FromString(OUT Vec2& vec, const String& string)
 {
@@ -74,5 +91,10 @@ Vec2 Vec2::Normalise() const
     float length = Length();
     if (length == 0.f) length = 1.f;
     return *this * 1.f / length;
+}
+
+float Vec2::Dot(const Vec2& other) const
+{
+    return (x * other.x) + (y * other.y);
 }
 } // namespace Siege

@@ -25,8 +25,8 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
             .FromShader("assets/shaders/line.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(LineVertex))
-            .WithVertexAttribute(offsetof(LineVertex, position), Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(LineVertex, colour), Siege::VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(LineVertex, position), VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(LineVertex, colour), VertexDescription::VEC3)
             .WithUniform(0, globalDataAttributeName, globalDataSize, 1);
 
     // fragmentShaders
@@ -60,18 +60,13 @@ void DebugRenderer3D::RecreateMaterials()
 }
 
 // Wire primitives
-void DebugRenderer3D::DrawLine(const Siege::Vec3& origin,
-                               const Siege::Vec3& destination,
-                               const Siege::Vec4& colour)
+void DebugRenderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour)
 {
     lines.Append({origin, colour});
     lines.Append({destination, colour});
 }
 
-void DebugRenderer3D::DrawCube(const Siege::Vec3& position,
-                               const Siege::Vec3& rotation,
-                               const Siege::Vec3& scale)
-{}
+void DebugRenderer3D::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale) {}
 
 void DebugRenderer3D::Flush()
 {

@@ -61,8 +61,8 @@ Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, s
 
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
-    static auto oldMousePos = Input::GetCursorPosition();
-    auto mousePos = Input::GetCursorPosition();
+    static auto oldMousePos = Siege::Input::GetCursorPosition();
+    auto mousePos = Siege::Input::GetCursorPosition();
 
     Siege::Vec3 rotate {};
     float lookSpeed = 4.0f;
@@ -73,11 +73,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     rotate.y += float(differenceX);
     rotate.x += float(differenceY);
 
-    if (rotate.Dot(rotate) > Utils::Math::Float::Epsilon())
+    if (rotate.Dot(rotate) > Siege::Utils::Math::Float::Epsilon())
     {
         Siege::Vec3 newRotation = viewerObject.GetRotation() + lookSpeed * rotate.Normalise();
         viewerObject.SetRotation(
-            Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+            Siege::Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -89,21 +89,22 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     const Siege::Vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
     const Siege::Vec3 upDir {0.f, -1.f, 0.f};
 
-    Siege::Vec3 moveDir {0.f};
-    if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
-    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
-    if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
-    if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
+    Siege::Vec3 moveDir {Siege::Vec3::Zero};
+    if (Siege::Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
+    if (Siege::Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
+    if (Siege::Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
+    if (Siege::Input::IsKeyDown(KEY_D)) moveDir += rightDir;
 
-    if (Input::IsKeyDown(KEY_E)) moveDir += upDir;
-    if (Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
+    if (Siege::Input::IsKeyDown(KEY_E)) moveDir += upDir;
+    if (Siege::Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
 
     float moveSpeed = 2.f;
 
-    if (moveDir.Dot(moveDir) > Utils::Math::Float::Epsilon())
+    if (moveDir.Dot(moveDir) > Siege::Utils::Math::Float::Epsilon())
     {
         Siege::Vec3 newMove = viewerObject.GetPosition() + moveSpeed * moveDir.Normalise();
-        viewerObject.SetPosition(Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
+        viewerObject.SetPosition(
+            Siege::Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;
@@ -117,7 +118,7 @@ int main()
 
     window.DisableCursor();
 
-    Input::SetWindowPointer(&window);
+    Siege::Input::SetWindowPointer(&window);
 
     Siege::Renderer renderer(window);
 
@@ -247,7 +248,7 @@ int main()
 
         window.Update();
 
-        if (Input::IsKeyJustPressed(KEY_ESCAPE))
+        if (Siege::Input::IsKeyJustPressed(KEY_ESCAPE))
         {
             inputEnabled = !inputEnabled;
             window.ToggleCursor(inputEnabled);
@@ -283,7 +284,7 @@ int main()
         Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
 
-        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f});
 
         for (auto it = shapes2D.CreateIterator(); it; ++it)
         {

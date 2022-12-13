@@ -12,10 +12,37 @@ namespace Siege
 // Define static members
 const Vec4 Vec4::Zero = {0.f, 0.f, 0.f, 0.f};
 const Vec4 Vec4::One = {1.f, 1.f, 1.f, 1.f};
-const Vec4 Vec4::Up = {0.f, 1.f, 0.f, 0.f};
 
-Vec4::Vec4(const Vec2& other) : x {other.x}, y {other.y}, z {0.f}, w {0.f} {}
-Vec4::Vec4(const Vec3& other) : x {other.x}, y {other.y}, z {other.z}, w {0.f} {}
+Vec4& Vec4::operator=(const Vec2& rhs)
+{
+    x = rhs.x;
+    y = rhs.y;
+    return *this;
+}
+
+Vec4& Vec4::operator=(const Vec3& rhs)
+{
+    x = rhs.x;
+    y = rhs.y;
+    z = rhs.z;
+    return *this;
+}
+
+Vec4& Vec4::operator=(const Vec4& rhs)
+{
+    x = rhs.x, y = rhs.y, z = rhs.z, w = rhs.w;
+    return *this;
+}
+
+Vec4::operator Vec2() const
+{
+    return {x, y};
+}
+
+Vec4::operator Vec3() const
+{
+    return {x, y, z};
+}
 
 bool Vec4::FromString(OUT Vec4& vec, const String& string)
 {
@@ -38,25 +65,25 @@ bool Vec4::operator!=(const Vec4& other)
     return x != other.x || y != other.y || z != other.z || w != other.w;
 }
 
-DEFINE_OPERATOR_IMP(+=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(-=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(*=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(/=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
-
-DEFINE_OPERATOR_IMP(+=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(-=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(*=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
-DEFINE_OPERATOR_IMP(/=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-DEFINE_CONST_OPERATOR_IMP(+, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
-DEFINE_CONST_OPERATOR_IMP(-, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
-DEFINE_CONST_OPERATOR_IMP(*, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
-DEFINE_CONST_OPERATOR_IMP(/, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
-
-DEFINE_CONST_OPERATOR_IMP(+, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
-DEFINE_CONST_OPERATOR_IMP(-, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
-DEFINE_CONST_OPERATOR_IMP(*, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
-DEFINE_CONST_OPERATOR_IMP(/, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
+// DEFINE_VEC_OP_IMP(+=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(-=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(*=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(/=, Vec4, Vec3, VEC_OPERATOR_BODY_VEC)
+//
+// DEFINE_VEC_OP_IMP(+=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(-=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(*=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
+// DEFINE_VEC_OP_IMP(/=, Vec4, Vec2, VEC2_OPERATOR_BODY_VEC)
+//
+// DEFINE_VEC_CONST_OP_IMP(+, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
+// DEFINE_VEC_CONST_OP_IMP(-, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
+// DEFINE_VEC_CONST_OP_IMP(*, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
+// DEFINE_VEC_CONST_OP_IMP(/, Vec4, Vec3, VEC4_OPERATOR_BODY_VEC3)
+//
+// DEFINE_VEC_CONST_OP_IMP(+, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
+// DEFINE_VEC_CONST_OP_IMP(-, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
+// DEFINE_VEC_CONST_OP_IMP(*, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
+// DEFINE_VEC_CONST_OP_IMP(/, Vec4, Vec2, VEC4_OPERATOR_BODY_VEC2)
 
 String Vec4::ToString() const
 {
@@ -69,4 +96,124 @@ Vec4 Vec4::Normalise() const
     if (length == 0.f) length = 1.f;
     return *this * 1.f / length;
 }
+
+float Vec4::Dot(const Vec4& other) const
+{
+    return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
+}
+
+Vec4::Vec4(const Vec2& other) : x {other.x}, y {other.y} {}
+
+Vec4::Vec4(const Vec3& other) : x {other.x}, y {other.y}, z {other.z} {}
+
+// Addition
+
+// static Vec4 operator+(const Vec4& lhs, float rhs);
+
+DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec4&, const Vec2&, lhs.x += rhs.x; lhs.y += rhs.y;)
+DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec4&, const Vec3&, lhs.x += rhs.x; lhs.y += rhs.y;
+                         lhs.z += rhs.z;)
+DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec4&, const Vec4&, lhs.x += rhs.x; lhs.y += rhs.y;
+                         lhs.z += rhs.z;
+                         lhs.w += rhs.w;)
+
+DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec4&, float, lhs.x += rhs; lhs.y += rhs; lhs.z += rhs;
+                         lhs.w += rhs;)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    +, Vec4, const Vec4&, const Vec2&, return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(
+    +, Vec4, const Vec4&, const Vec3&, return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(+,
+                         Vec4,
+                         const Vec4&,
+                         const Vec4&,
+                         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    +, Vec4, const Vec4&, float, return {lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs};)
+
+// Subtraction
+
+DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec4&, const Vec2&, lhs.x -= rhs.x; lhs.y -= rhs.y;)
+DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec4&, const Vec3&, lhs.x -= rhs.x; lhs.y -= rhs.y;
+                         lhs.z -= rhs.z;)
+DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec4&, const Vec4&, lhs.x -= rhs.x; lhs.y -= rhs.y;
+                         lhs.z -= rhs.z;
+                         lhs.w -= rhs.w;)
+
+DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec4&, float, lhs.x -= rhs; lhs.y -= rhs; lhs.z -= rhs;
+                         lhs.w -= rhs;)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    -, Vec4, const Vec4&, const Vec2&, return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(
+    -, Vec4, const Vec4&, const Vec3&, return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(-,
+                         Vec4,
+                         const Vec4&,
+                         const Vec4&,
+                         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w};)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    -, Vec4, const Vec4&, float, return {lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs};)
+
+// Multiplication
+
+DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec4&, const Vec2&, lhs.x *= rhs.x; lhs.y *= rhs.y;)
+DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec4&, const Vec3&, lhs.x *= rhs.x; lhs.y *= rhs.y;
+                         lhs.z *= rhs.z;)
+DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec4&, const Vec4&, lhs.x *= rhs.x; lhs.y *= rhs.y;
+                         lhs.z *= rhs.z;
+                         lhs.w *= rhs.w;)
+
+DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec4&, float, lhs.x *= rhs; lhs.y *= rhs; lhs.z *= rhs;
+                         lhs.w *= rhs;)
+
+DEFINE_VEC_BINARY_OP_IMP(*,
+                         Vec4,
+                         const Vec4&,
+                         const Vec2&,
+                         return {lhs.x * rhs.x, lhs.y* rhs.y, lhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(*,
+                         Vec4,
+                         const Vec4&,
+                         const Vec3&,
+                         return {lhs.x * rhs.x, lhs.y* rhs.y, lhs.z* rhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(*,
+                         Vec4,
+                         const Vec4&,
+                         const Vec4&,
+                         return {lhs.x * rhs.x, lhs.y* rhs.y, lhs.z* rhs.z, lhs.w* rhs.w};)
+
+DEFINE_VEC_BINARY_OP_IMP(*,
+                         Vec4,
+                         const Vec4&,
+                         float,
+                         return {lhs.x * rhs, lhs.y* rhs, lhs.z* rhs, lhs.w* rhs};)
+
+// Division
+
+DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec4&, const Vec2&, lhs.x /= rhs.x; lhs.y /= rhs.y;)
+DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec4&, const Vec3&, lhs.x /= rhs.x; lhs.y /= rhs.y;
+                         lhs.z /= rhs.z;)
+DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec4&, const Vec4&, lhs.x /= rhs.x; lhs.y /= rhs.y;
+                         lhs.z /= rhs.z;
+                         lhs.w /= rhs.w;)
+
+DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec4&, float, lhs.x /= rhs; lhs.y /= rhs; lhs.z /= rhs;
+                         lhs.w /= rhs;)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    /, Vec4, const Vec4&, const Vec2&, return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(
+    /, Vec4, const Vec4&, const Vec3&, return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w};)
+DEFINE_VEC_BINARY_OP_IMP(/,
+                         Vec4,
+                         const Vec4&,
+                         const Vec4&,
+                         return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w};)
+
+DEFINE_VEC_BINARY_OP_IMP(
+    /, Vec4, const Vec4&, float, return {lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs};)
 } // namespace Siege

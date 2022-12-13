@@ -10,9 +10,7 @@
 
 namespace Siege
 {
-Siege::Mat4 Math::CalculateTransform3D(const Siege::Vec3& position,
-                                       const Siege::Vec3& rotation,
-                                       const Siege::Vec3& scale)
+Mat4 Math::CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3& scale)
 {
     const float s3 = glm::sin(rotation.z);
     const float c3 = glm::cos(rotation.z);
@@ -42,7 +40,7 @@ Siege::Mat4 Math::CalculateTransform3D(const Siege::Vec3& position,
             {position.x, position.y, position.z, 1.0f}};
 }
 
-Siege::Mat3 Math::CalculateNormalMatrix(const Siege::Vec3& rotation, const Siege::Vec3& scale)
+Mat3 Math::CalculateNormalMatrix(const Vec3& rotation, const Vec3& scale)
 {
     const float c3 = glm::cos(rotation.z);
     const float s3 = glm::sin(rotation.z);
@@ -51,7 +49,7 @@ Siege::Mat3 Math::CalculateNormalMatrix(const Siege::Vec3& rotation, const Siege
     const float c1 = glm::cos(rotation.y);
     const float s1 = glm::sin(rotation.y);
 
-    Siege::Vec3 inverseScale = 1.0f / scale;
+    Vec3 inverseScale = 1.0f / scale;
 
     return {{
                 inverseScale.x * (c1 * c3 + s1 * s2 * s3),
@@ -69,15 +67,13 @@ Siege::Mat3 Math::CalculateNormalMatrix(const Siege::Vec3& rotation, const Siege
                 inverseScale.z * (c1 * c2),
             }};
 }
-Siege::Mat2 Math::CalculateTransform2D(const Siege::Vec2& position,
-                                       const float& rotation,
-                                       const Siege::Vec2& scale)
+Mat2 Math::CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale)
 {
     const float s = glm::sin(rotation);
     const float c = glm::cos(rotation);
-    Siege::Mat2 rotMatrix {{c, s}, {-s, c}};
+    Mat2 rotMatrix {{c, s}, {-s, c}};
 
-    Siege::Mat2 scaleMat {{scale.x, .0f}, {.0f, scale.y}};
+    Mat2 scaleMat {{scale.x, .0f}, {.0f, scale.y}};
     return rotMatrix * scaleMat;
 }
 } // namespace Siege

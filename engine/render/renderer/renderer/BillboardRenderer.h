@@ -25,9 +25,7 @@ public:
     void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
-    void DrawBillboard(const Siege::Vec3& position,
-                       const Siege::Vec2& scale,
-                       const Siege::Vec4& colour);
+    void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -41,14 +39,14 @@ private:
 
     struct BillboardVertex
     {
-        Siege::Vec3 position;
-        Siege::Vec4 colour;
+        Vec3 position;
+        Vec4 colour;
     };
 
     struct BillboardUBO
     {
-        alignas(16) Siege::Vec3 position;
-        alignas(16) Siege::Vec3 scale;
+        alignas(16) Vec3 position;
+        alignas(16) Vec3 scale;
     };
 
     Material billboardMaterial;

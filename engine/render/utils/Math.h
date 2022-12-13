@@ -15,7 +15,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Utils::Math
+namespace Siege::Utils::Math
 {
 
 class Float
@@ -31,13 +31,13 @@ float Normalise(float value, float min, float max);
 
 float Lerp(float origin, float destination, float time);
 
-Siege::Vec3 Lerp(Siege::Vec3 origin, Siege::Vec3 destination, float time);
+Vec3 Lerp(Vec3 origin, Vec3 destination, float time);
 
 template<typename T>
 int Sign(T val)
 {
     return (T(0) < val) - (val < T(0));
 }
-} // namespace Utils::Math
+} // namespace Siege::Utils::Math
 
 #endif

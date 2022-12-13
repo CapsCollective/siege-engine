@@ -22,6 +22,7 @@
 #define _CC_LOG_COLOUR_RED "31"
 #define _CC_LOG_COLOUR_YELLOW "33"
 #define _CC_LOG_COLOUR_GREY "37"
+
 #define _CC_LOG_WRAP_TEXT(colour, text) "\x1B[" colour "m" text "\033[0m"
 
 // Define logging helper macros
@@ -40,7 +41,8 @@
         std::cout << _CC_LOG_FMT_STR << std::endl;                                              \
     }
 #define DEFINE_VARIANT_TYPE(type, transform) \
-    VariantContainer(type) : data(transform) {}
+    VariantContainer(type) : data(transform) \
+    {}
 
 // Assert macros
 #define REPORT_ASSERT_FAILURE(expr, file, line, message)                          \
@@ -91,9 +93,9 @@ public:
     DEFINE_VARIANT_TYPE(unsigned long data, String::FromU32(data));
     DEFINE_VARIANT_TYPE(unsigned long long data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(const Siege::Vec2& data, "Vector2(" + data.ToString() + ")");
-    DEFINE_VARIANT_TYPE(const Siege::Vec3& data, "Vector3(" + data.ToString() + ")");
-    DEFINE_VARIANT_TYPE(const Siege::Vec4& data, "Vector4(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + data.ToString() + ")");
 
     /**
      * Returns the data held by the variant container

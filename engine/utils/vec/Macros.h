@@ -10,35 +10,26 @@
 
 #include "../Macros.h"
 
+namespace Siege
+{
+typedef struct Vec2 Vec2;
+typedef struct Vec3 Vec3;
+typedef struct Vec4 Vec4;
+} // namespace Siege
+
 // Define macros
 
-#define DEFINE_OPERATOR_NO_IMP(op, lhsType, rhsType) lhsType& operator op(const rhsType& rhs);
+#define DECL_VEC_BINARY_OP_NO_IMP(op, returnType, lhsType, rhsType) \
+    returnType operator op(lhsType lhs, rhsType rhs) _SEMICOLON
 
-#define DEFINE_CONST_OPERATOR_NO_IMP(op, lhsType, rhsType) \
-    lhsType operator op(const rhsType& rhs) const;
-
-#define DEFINE_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType& lhsType::operator op(const rhsType& rhs)   \
-    {                                                   \
-        body(op, _SEMICOLON) return *this;              \
+#define DEFINE_VEC_BINARY_OP_IMP(op, returnType, lhsType, rhsType, ...) \
+    returnType operator op(lhsType lhs, rhsType rhs)                    \
+    {                                                                   \
+        __VA_ARGS__                                                     \
     }
 
-#define DEFINE_CONST_OPERATOR_IMP(op, lhsType, rhsType, body) \
-    lhsType lhsType::operator op(const rhsType& rhs) const    \
-    {                                                         \
-        return {body(op, _COMMA)};                            \
-    }
+#define VEC2_OPERATOR_BODY_VEC(op, sep) lhs.x op rhs.x sep lhs.y op rhs.y sep
 
-#define DEFINE_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType& operator op(const rhsType& rhs)        \
-    {                                               \
-        body(op, _SEMICOLON) return *this;          \
-    }
-
-#define DEFINE_CONST_OPERATOR(op, lhsType, rhsType, body) \
-    lhsType operator op(const rhsType& rhs) const         \
-    {                                                     \
-        return {body(op, _COMMA)};                        \
-    }
+#define VEC2_OPERATOR_BODY_FLOAT(op, sep) lhs.x op rhs sep lhs.y op rhs sep
 
 #endif // SIEGE_ENGINE_VEC_MACROS_H

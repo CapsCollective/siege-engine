@@ -315,7 +315,7 @@ Mat3 operator*(const Mat3& lhs, const Mat3& rhs);
  * @param rhs the vector to be multiplied.
  * @return a new matrix containing the product of the vector and the matrix.
  */
-const Vec3 operator*(const Mat3& lhs, const Siege::Vec3& rhs);
+const Vec3 operator*(const Mat3& lhs, const Vec3& rhs);
 
 /**
  * Divides two 3x3 matrices.

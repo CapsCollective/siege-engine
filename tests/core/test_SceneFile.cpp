@@ -18,7 +18,7 @@ class TestEntity1 : public Entity
 {
 public:
 
-    static const Siege::String ENTITY_NAME;
+    static const String ENTITY_NAME;
 
     TestEntity1() : Entity(ENTITY_NAME) {};
 

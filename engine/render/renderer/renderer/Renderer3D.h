@@ -35,27 +35,23 @@ public:
     static void Initialise();
 
     static void DrawModel(Model* model,
-                          const Siege::Vec3& position,
-                          const Siege::Vec3& scale,
-                          const Siege::Vec3& rotation);
-    static void DrawModel(Model* model, const Siege::Vec3& position, const Siege::Vec3& scale);
-    static void DrawModel(Model* model, const Siege::Vec3& position);
+                          const Vec3& position,
+                          const Vec3& scale,
+                          const Vec3& rotation);
+    static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
+    static void DrawModel(Model* model, const Vec3& position);
 
-    static void DrawBillboard(const Siege::Vec3& position,
-                              const Siege::Vec2& scale,
-                              const Siege::Vec4& colour);
+    static void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
-    static void DrawLine(const Siege::Vec3& origin,
-                         const Siege::Vec3& destination,
-                         const Siege::Vec4& colour);
+    static void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
 
-    static void DrawRect(const Siege::Vec3& position, const Siege::Vec2& scale, Siege::Vec4& color);
-    static void DrawPointLight(const Siege::Vec3& position,
-                               const float& radius,
-                               const Siege::Vec4& colour,
-                               const Siege::Vec4& ambientColor);
+    static void DrawRect(const Vec3& position, const Vec2& scale, Vec4& color);
+    static void DrawPointLight(const Vec3& position,
+                               float radius,
+                               const Vec4& colour,
+                               const Vec4& ambientColor);
 
     static void RecreateMaterials();
 

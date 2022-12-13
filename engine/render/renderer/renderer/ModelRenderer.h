@@ -25,10 +25,7 @@ public:
     void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
-    void DrawModel(Model* model,
-                   const Siege::Vec3& position,
-                   const Siege::Vec3& scale,
-                   const Siege::Vec3& rotation);
+    void DrawModel(Model* model, const Vec3& position, const Vec3& scale, const Vec3& rotation);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,

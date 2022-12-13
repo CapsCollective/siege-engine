@@ -8,12 +8,14 @@
 
 #include "Input.h"
 
-Siege::Window* Input::windowPtr = nullptr;
+namespace Siege
+{
+Window* Input::windowPtr = nullptr;
 Input::MouseCoordinates Input::currentMouseCoordinates;
 
 std::map<int, int> Input::keyMap;
 
-void Input::SetWindowPointer(Siege::Window* window)
+void Input::SetWindowPointer(Window* window)
 {
     // TODO: Fail if inputted pointer is nullptr
     windowPtr = window;
@@ -80,3 +82,4 @@ void Input::GetCursorPositionCallback(GLFWwindow* window, double xpos, double yp
     currentMouseCoordinates.x = static_cast<float>(xpos);
     currentMouseCoordinates.y = static_cast<float>(ypos);
 }
+} // namespace Siege

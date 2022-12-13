@@ -24,9 +24,8 @@ void BillboardRenderer::Initialise(const String& globalDataAttributeName,
             .FromShader("assets/shaders/billboard.vert.spv")
             .WithStage(PipelineConfig::VERTEX)
             .WithVertexType(sizeof(BillboardVertex))
-            .WithVertexAttribute(offsetof(BillboardVertex, position),
-                                 Siege::VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(BillboardVertex, colour), Siege::VertexDescription::VEC4)
+            .WithVertexAttribute(offsetof(BillboardVertex, position), VertexDescription::VEC3)
+            .WithVertexAttribute(offsetof(BillboardVertex, colour), VertexDescription::VEC4)
             .WithUniform(0, globalDataAttributeName, globalDataSize)
             .WithStorage(1, "positions", sizeof(BillboardUBO), 1000);
 
@@ -54,9 +53,7 @@ void BillboardRenderer::Destroy()
     billboardModel.DestroyModel();
 }
 
-void BillboardRenderer::DrawBillboard(const Siege::Vec3& position,
-                                      const Siege::Vec2& scale,
-                                      const Siege::Vec4& colour)
+void BillboardRenderer::DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour)
 {
     vertices.Append({{1.f, 1.f, 1.f}, colour});
     vertices.Append({{1.f, -1.f, 1.f}, colour});

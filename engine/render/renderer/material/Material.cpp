@@ -182,9 +182,6 @@ void Material::CreateDescriptors()
         bufferInfos[i] =
             Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
 
-        bufferInfos[i] =
-            Descriptor::CreateBufferInfo(buffer.buffer, offset, property.size * property.count);
-
         Descriptor::AllocateSets(device->Device(),
                                  &binding.descriptorSet,
                                  descriptorPool,

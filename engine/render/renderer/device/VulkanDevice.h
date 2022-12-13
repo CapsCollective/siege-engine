@@ -43,7 +43,7 @@ public:
 
     // 'Structors
 
-    VulkanDevice(Siege::Window* window);
+    VulkanDevice(Window* window);
     VulkanDevice();
 
     ~VulkanDevice();

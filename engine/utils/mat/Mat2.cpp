@@ -89,7 +89,7 @@ void Mat2::Multiply(const Mat2& other)
     // row by its corresponding parts, we evaluate each element of each row and get the dot product
     // of the corresponding column.
     //              │1, 2│   │2, 5│   │(1 * 2) + (2 * 6), (1 * 5) + (2 * 3)│   │14, 11│
-    // For example, │3, 4│ * │6, 3│ = │(3 * 2) + (4 * 2), (3 * 5) + (4 * 3)│ = │14, 27│
+    // For example, │3, 4│ * │6, 3│ = │(3 * 2) + (4 * 6), (3 * 5) + (4 * 3)│ = │30, 27│
 
     values[0] = DOT(m0x0, m0y0, m1x0, m1y0);
     values[1] = DOT(m0x0, m0y0, m1x1, m1y1);
