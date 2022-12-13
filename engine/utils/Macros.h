@@ -25,7 +25,7 @@
 #define TOSTRING(x) STRINGIFY(x)
 
 // Macro for declaring a binary operator
-#define DECL_BINARY_OP_NO_IMP(op, returnType, lhsType, rhsType) \
+#define DECL_BINARY_OP_NO_IMPL(op, returnType, lhsType, rhsType) \
     returnType operator op(lhsType lhs, rhsType rhs) _SEMICOLON
 
 #endif // SIEGE_ENGINE_MACROS_H

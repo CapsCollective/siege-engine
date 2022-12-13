@@ -16,8 +16,6 @@ exampleRenderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleRenderBin
 exampleRenderBuildDir := $(exampleRenderBinDir)/build
 exampleRenderOutputName := "Render Example"
 
-linkFlags += -l render -l utils
-
 # Set packaging vars
 ifeq ($(platform), linux)
     packagingEnvVars := \
@@ -42,6 +40,7 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
+linkFlags += -l render -l utils
 
 .PHONY: all render-assets
 

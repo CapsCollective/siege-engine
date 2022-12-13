@@ -301,7 +301,7 @@ UTEST(test_Vec2, GetVectorLength)
 
     float length = vec0.Length();
 
-    ASSERT_EQ(3.60506248f, length);
+    ASSERT_EQ(3.60555124f, length);
 }
 
 UTEST(test_Vec2, NormaliseVector)

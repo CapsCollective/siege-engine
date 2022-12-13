@@ -10,16 +10,22 @@
 #ifndef SIEGE_ENGINE_COMMON_H
 #define SIEGE_ENGINE_COMMON_H
 
+#include <cmath>
+
+#include "../Macros.h"
+
 namespace Siege
 {
 
 /**
- * // A fast square root algorithm taken from Quake 3
- * (https://thatonegamedev.com/math/fast-square-root-quake-iii/)
+ * Computes the square root of a float
  * @param n the number to evaluate
  * @return a float value representing the square root
  */
-float FastSqrt(float n);
+inline constexpr float FastSqrt(float n)
+{
+    return sqrtf(n);
+}
 
 /**
  * computes the dot product of a set of floats.
@@ -34,14 +40,14 @@ float FastSqrt(float n);
  * @param w1 the w dimension on the second vector
  * @return a float value representing the dot product
  */
-inline float Dot(float x0 = 0,
-                 float x1 = 0,
-                 float y0 = 0,
-                 float y1 = 0,
-                 float z0 = 0,
-                 float z1 = 0,
-                 float w0 = 0,
-                 float w1 = 0)
+inline constexpr float Dot(float x0 = 0,
+                           float x1 = 0,
+                           float y0 = 0,
+                           float y1 = 0,
+                           float z0 = 0,
+                           float z1 = 0,
+                           float w0 = 0,
+                           float w1 = 0)
 {
     return (x0 * x1) + (y0 * y1) + (z0 * z1) + (w0 * w1);
 }
@@ -54,7 +60,7 @@ inline float Dot(float x0 = 0,
  * @param w the w dimension of the vector
  * @return the length of the vector represented as a float
  */
-inline float Length(float x = 0, float y = 0, float z = 0, float w = 0)
+inline constexpr float Length(float x = 0, float y = 0, float z = 0, float w = 0)
 {
     return FastSqrt((x * x) + (y * y) + (z * z) + (w * w));
 }
@@ -65,7 +71,7 @@ inline float Length(float x = 0, float y = 0, float z = 0, float w = 0)
  * @param max the maximum it should be normalised from
  * @return a float representing a normalised value between 0 and 1
  */
-inline float Normalise(float value, float max)
+inline constexpr float Normalise(float value, float max)
 {
     return value * 1.f / max;
 }
