@@ -7,6 +7,9 @@
 //      https://opensource.org/licenses/Zlib
 //
 
+#include <cmath>
+#include <limits>
+
 #include "utest.h"
 #include "utils/vec/Vec4.h"
 

@@ -8,19 +8,24 @@
 
 #include "Vec2.h"
 
+#include "Common.h"
+
 namespace Siege
 {
+
+// 'Structors
 
 Vec2::Vec2(const Vec3& other) : x {other.x}, y {other.y} {}
 
 Vec2::Vec2(const Vec4& other) : x {other.x}, y {other.y} {}
 
-// Define static members
+// Public Constants
+
 const Vec2 Vec2::Zero = {0.f, 0.f};
 const Vec2 Vec2::One = {1.f, 1.f};
 const Vec2 Vec2::Up = {0.f, 1.f};
 
-// Unary operator implementations.
+// Unary Operators
 
 Vec2& Vec2::operator=(const Vec3& rhs)
 {
@@ -46,31 +51,7 @@ Vec2::operator Vec4() const
     return {x, y, 0.f, 0.f};
 }
 
-// bool Vec2::operator==(const Vec2& other)
-//{
-//     return x == other.x && y == other.y;
-// }
-//
-// bool Vec2::operator!=(const Vec2& other)
-//{
-//     return x != other.x || y != other.y;
-// }
-
-// DEFINE_VEC_OP_IMP(+=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_OP_IMP(-=, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-//
-// DEFINE_VEC_OP_IMP(+=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_OP_IMP(-=, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-
-// DEFINE_VEC_CONST_OP_IMP(+, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(-, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(*, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(/, Vec2, Vec3, VEC2_OPERATOR_BODY_VEC)
-
-// DEFINE_VEC_CONST_OP_IMP(+, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(-, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(*, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
-// DEFINE_VEC_CONST_OP_IMP(/, Vec2, Vec4, VEC2_OPERATOR_BODY_VEC)
+// Static Methods
 
 bool Vec2::FromString(OUT Vec2& vec, const String& string)
 {
@@ -82,19 +63,41 @@ bool Vec2::FromString(OUT Vec2& vec, const String& string)
     return (components[0].GetFloat(vec.x) && components[1].GetFloat(vec.y));
 }
 
+Vec2 Vec2::Normalise(const Vec2& vec)
+{
+    float length = vec.Length();
+    length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
+    return {::Siege::Normalise(vec.x, length), ::Siege::Normalise(vec.y, length)};
+}
+
+float Vec2::Length(const Vec2& vec)
+{
+    return ::Siege::Length(vec.x, vec.y);
+}
+
+float Vec2::Dot(const Vec2& lhs, const Vec2& rhs)
+{
+    return ::Siege::Dot(lhs.x, rhs.x, lhs.y, rhs.y);
+}
+
+// Public Methods
+
 String Vec2::ToString() const
 {
     return String("%.2f,%.2f").Formatted(x, y);
 }
 Vec2 Vec2::Normalise() const
 {
-    float length = Length();
-    if (length == 0.f) length = 1.f;
-    return *this * 1.f / length;
+    return Normalise(*this);
+}
+
+float Vec2::Length() const
+{
+    return Length(*this);
 }
 
 float Vec2::Dot(const Vec2& other) const
 {
-    return (x * other.x) + (y * other.y);
+    return Dot(*this, other);
 }
 } // namespace Siege

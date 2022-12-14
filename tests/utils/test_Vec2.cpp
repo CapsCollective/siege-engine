@@ -7,6 +7,9 @@
 //      https://opensource.org/licenses/Zlib
 //
 
+#include <cmath>
+#include <limits>
+
 #include "utest.h"
 #include "utils/vec/Vec2.h"
 #include "utils/vec/Vec3.h"
@@ -298,7 +301,7 @@ UTEST(test_Vec2, GetVectorLength)
 
     float length = vec0.Length();
 
-    ASSERT_EQ(3.60555127546f, length);
+    ASSERT_EQ(3.60506248f, length);
 }
 
 UTEST(test_Vec2, NormaliseVector)
@@ -307,8 +310,8 @@ UTEST(test_Vec2, NormaliseVector)
 
     Vec2 norm = vec0.Normalise();
 
-    ASSERT_TRUE((norm.x - 0.554700196f) < std::numeric_limits<float>::epsilon());
-    ASSERT_TRUE((norm.y - 0.832050323f) < std::numeric_limits<float>::epsilon());
+    ASSERT_TRUE((norm.x - 0.554775417f) < std::numeric_limits<float>::epsilon());
+    ASSERT_TRUE((norm.y - 0.832163095f) < std::numeric_limits<float>::epsilon());
 }
 
 UTEST(test_Vec2, CalculateDotProduct)

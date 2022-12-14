@@ -13,13 +13,12 @@
 
 namespace Siege
 {
-
 /**
  * Struct representing a 3 dimensional vector.
  */
 struct Vec3
 {
-    // Public constants
+    // Public Constants
 
     /**
      * A vector in which all elements are 0.
@@ -38,6 +37,9 @@ struct Vec3
 
     // 'Structors
 
+    /**
+     * A default Vec3 constructor. Initiates all values to 0
+     */
     Vec3() = default;
 
     /**
@@ -52,163 +54,48 @@ struct Vec3
      * A 3D vector constructor from a 2D vector.
      * @param other a 2 dimensional vector to copy.
      */
-    explicit Vec3(const Vec2& other);
+    explicit Vec3(const struct Vec2& other);
 
     /**
      * A 3D vector constructor from a 4 dimensional vector
      * @param other a 4 dimensional vector to copy.
      */
-    explicit Vec3(const Vec4& other);
+    explicit Vec3(const struct Vec4& other);
 
     // Operator overloads
 
     /**
-     * Default assignment operator.
-     * @param rhs variable to assign values from.
-     * @return a reference to the current object.
+     * Default assignment operator
+     * @param rhs variable to assign values from
+     * @return a reference to the current object
      */
     Vec3& operator=(const Vec3& rhs) = default;
 
     /**
      * Assignment operator from a 2D vector
-     * @param rhs variable to assign values from.
-     * @return a reference to the current object.
+     * @param rhs variable to assign values from
+     * @return a reference to the current object
      */
     Vec3& operator=(const Vec2& rhs);
 
+    /**
+     * Assignment operator from a 4D vector
+     * @param rhs a 4D vector to assign values from
+     * @return a reference to the current object
+     */
     Vec3& operator=(const Vec4& rhs);
 
+    /**
+     * A Vec2 conversion operator. Converts a Vec3 to a Vec2
+     * @return a new Vec3 with the Vec3's x and y values
+     */
     operator Vec2() const;
 
+    /**
+     * A Vec4 conversion operator. Converts a Vec3 to a Vec4
+     * @return a new Vec4 with the Vec3's x, y and z values
+     */
     operator Vec4() const;
-
-    // Operator overloads
-
-    /**
-     * A three dimensional Vector addition operator.
-     * @param rhs the 3D vector to be added by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(+=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A three dimensional Vector subtraction operator.
-     * @param rhs the 3D vector to be subtracted by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(-=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A three dimensional Vector multiplication operator.
-     * @param rhs the 3D vector to be multiplied by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(*=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A three dimensional Vector division operator.
-     * @param rhs the 3D vector to be divided by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(/=, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * An equality operator.
-     * @param other the vector to be compared.
-     * @return a boolean specifying if the two vectors are equal.
-     */
-    bool operator==(const Vec3& other);
-
-    /**
-     * An inequality operator.
-     * @param other the vector to be compared.
-     * @return a boolean specifying if the two vectors are equal.
-     */
-    bool operator!=(const Vec3& other);
-
-    /**
-     * A scalar addition operator.
-     * @param rhs the scalar to add.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(+=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar subtraction operator.
-     * @param rhs the scalar to subtract.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(-=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar multiplication operator.
-     * @param rhs the scalar to multiply.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(*=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar division operator.
-     * @param rhs the scalar to divide.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(/=, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A 3D vector const addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DEFINE_VEC_CONST_OP(+, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A 3D vector const subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DEFINE_VEC_CONST_OP(-, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A 3D vector const multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DEFINE_VEC_CONST_OP(*, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A 3D vector const division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DEFINE_VEC_CONST_OP(/, Vec3, Vec3, VEC_OPERATOR_BODY_VEC)
-
-    /**
-     * A const scalar addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DEFINE_VEC_CONST_OP(+, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DEFINE_VEC_CONST_OP(-, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DEFINE_VEC_CONST_OP(*, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DEFINE_VEC_CONST_OP(/, Vec3, float, VEC_OPERATOR_BODY_FLOAT)
 
     // Static methods
 
@@ -219,6 +106,36 @@ struct Vec3
      * @return a boolean specifying if the operation was successful.
      */
     static bool FromString(OUT Vec3& vec, const String& string);
+
+    /**
+     * Normalises a target vector between 0 and 1 for each element
+     * @param vec the vector to be normalised
+     * @return a new vector with the normalised vector coordinates
+     */
+    static Vec3 Normalise(const Vec3& vec);
+
+    /**
+     * Calculates the length of the vector
+     * @param vec the vector who's length is to be calculated
+     * @return the length of the vector in the form of a float
+     */
+    static float Length(const Vec3& vec);
+
+    /**
+     * Calculates the dot product of two vectors
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the dot product of both vectors
+     */
+    static float Dot(const Vec3& lhs, const Vec3& rhs);
+
+    /**
+     * Calculates the Cross product of two vectors
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the cross product of the two vectors
+     */
+    static Vec3 Cross(const Vec3& lhs, const Vec3& rhs);
 
     // Public methods
 
@@ -252,10 +169,7 @@ struct Vec3
      * Computes the length of the vector.
      * @return the length of the vector.
      */
-    float Length() const
-    {
-        return sqrtf(x * x + y * y + z * z);
-    }
+    float Length() const;
 
     /**
      * Returns a vector with the x dimension filled in and the rest set to 0.
@@ -288,80 +202,6 @@ struct Vec3
 
     float x {0.f}, y {0.f}, z {0.f};
 };
-
-// Binary operators
-
-// Addition
-
-DECL_VEC_BINARY_OP_NO_IMP(+=, void, Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(+=, Vec3&, Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(+=, Vec3&, Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(+=, void, Vec3&, float)
-
-DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(+, Vec3, const Vec3&, float)
-
-// Subtraction
-
-DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(-=, void, Vec3&, float)
-
-DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(-, Vec3, const Vec3&, float)
-
-// Multiplication
-
-DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(*=, void, Vec3&, float)
-
-DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(*, Vec3, const Vec3&, float)
-
-// Division
-
-DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(/=, void, Vec3&, float)
-
-DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec2&)
-DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec3&)
-DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, const Vec4&)
-
-DECL_VEC_BINARY_OP_NO_IMP(/, Vec3, const Vec3&, float)
-
-inline Vec3 operator/(const float& scalar, const Vec3& vec)
-{
-    return {scalar / vec.x, scalar / vec.y, scalar / vec.z};
-}
-
-inline Vec3 operator*(const float& scalar, const Vec3& vec)
-{
-    return {scalar * vec.x, scalar * vec.y, scalar * vec.z};
-}
-
-inline bool operator==(const Vec3& lhs, const Vec3& rhs)
-{
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
-}
-
 } // namespace Siege
 
 #endif // SIEGE_ENGINE_VEC3_H

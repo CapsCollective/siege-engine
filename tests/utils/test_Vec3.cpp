@@ -7,6 +7,9 @@
 //      https://opensource.org/licenses/Zlib
 //
 
+#include <cmath>
+#include <limits>
+
 #include "utest.h"
 #include "utils/vec/Vec2.h"
 #include "utils/vec/Vec3.h"
@@ -372,7 +375,7 @@ UTEST(test_Vec3, NormaliseVector)
 
     Vec3 norm = vec0.Normalise();
 
-    ASSERT_TRUE((norm.x - 0.371390671f) < std::numeric_limits<float>::epsilon());
-    ASSERT_TRUE((norm.y - 0.557086051f) < std::numeric_limits<float>::epsilon());
-    ASSERT_TRUE((norm.z - 0.742781341f) < std::numeric_limits<float>::epsilon());
+    ASSERT_TRUE((norm.x - 0.37181139f) < std::numeric_limits<float>::epsilon());
+    ASSERT_TRUE((norm.y - 0.557717085f) < std::numeric_limits<float>::epsilon());
+    ASSERT_TRUE((norm.z - 0.743622779f) < std::numeric_limits<float>::epsilon());
 }

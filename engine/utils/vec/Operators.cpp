@@ -9,26 +9,56 @@
 
 #include "Operators.h"
 
-#define DECL_VEC_BINARY_OP_NO_IMP(op, returnType, lhsType, rhsType) \
-    returnType operator op(lhsType lhs, rhsType rhs) _SEMICOLON
-
-#define DEFINE_VEC_BINARY_OP_IMP(op, returnType, lhsType, rhsType, ...) \
-    returnType operator op(lhsType lhs, rhsType rhs)                    \
-    {                                                                   \
-        __VA_ARGS__                                                     \
+#define DEF_BIN_OP_IMP(op, returnType, lhsType, rhsType, ...) \
+    returnType operator op(lhsType lhs, rhsType rhs)          \
+    {                                                         \
+        __VA_ARGS__                                           \
     }
 
-#define VEC2_OPERATOR_BODY_VEC(op, sep) lhs.x op rhs.x sep lhs.y op rhs.y sep
+#define FORCE_EVAL(...) __VA_ARGS__
 
-#define VEC2_OPERATOR_BODY_FLOAT(op, sep) lhs.x op rhs sep lhs.y op rhs sep
+#define RETURN(body) return body _SEMICOLON
 
-#define VEC3_OPERATOR_BODY_VEC(op, sep) VEC2_OPERATOR_BODY_VEC(op, sep) lhs.z op rhs.z sep
+#define RETURN_VEC(body) FORCE_EVAL(return {body} _SEMICOLON)
 
-#define VEC3_OPERATOR_BODY_FLOAT(op, sep) VEC2_OPERATOR_BODY_FLOAT(op, sep) lhs.z op rhs sep
+#define VEC2_OP_BODY_VEC(op, sep) lhs.x op rhs.x sep lhs.y op rhs.y sep
 
-#define VEC4_OPERATOR_BODY_VEC(op, sep) VEC3_OPERATOR_BODY_VEC(op, sep) lhs.w op rhs.w sep
+#define VEC2_OP_BODY_PARAMS(op) lhs.x op rhs.x _COMMA lhs.y op rhs.y
 
-#define VEC4_OPERATOR_BODY_FLOAT(op, sep) VEC3_OPERATOR_BODY_FLOAT(op, sep) lhs.w op rhs sep
+#define VEC2_OP_BODY_PARAMS_F(op) lhs.x op rhs _COMMA lhs.y op rhs
+
+#define VEC2_OP_BODY_PARAMS_F_REV(op) lhs op rhs.x _COMMA lhs op rhs.y
+
+#define VEC2_OP_BODY_F(op, sep) lhs.x op rhs sep lhs.y op rhs sep
+
+#define VEC2_OP_BODY_F_REV(op, sep) lhs op rhs.x sep lhs op rhs.y sep
+
+#define VEC2_LOGIC_OP(op, logic, sep) lhs.x op rhs.x logic lhs.y op rhs.y
+
+#define VEC3_OP_BODY_VEC(op, sep) lhs.x op rhs.x sep lhs.y op rhs.y sep lhs.z op rhs.z sep
+
+#define VEC3_OP_BODY_PARAMS(op) VEC2_OP_BODY_PARAMS(op) _COMMA lhs.z op rhs.z
+
+#define VEC3_OP_BODY_PARAMS_F(op) VEC2_OP_BODY_PARAMS_F(op) _COMMA lhs.z op rhs
+
+#define VEC3_OP_BODY_PARAMS_F_REV(op) VEC2_OP_BODY_PARAMS_F_REV(op) _COMMA lhs op rhs.z
+
+#define VEC3_OP_BODY_F(op, sep) VEC2_OP_BODY_F(op, sep) lhs.z op rhs sep
+
+#define VEC3_LOGIC_OP(op, logic, sep) VEC2_LOGIC_OP(op, logic, sep) logic lhs.z op rhs.z
+
+#define VEC4_OP_BODY_VEC(op, sep) \
+    lhs.x op rhs.x sep lhs.y op rhs.y sep lhs.z op rhs.z sep lhs.w op rhs.w sep
+
+#define VEC4_OP_BODY_PARAMS(op) VEC3_OP_BODY_PARAMS(op) _COMMA lhs.w op rhs.w
+
+#define VEC4_OP_BODY_PARAMS_F(op) VEC3_OP_BODY_PARAMS_F(op) _COMMA lhs.w op rhs
+
+#define VEC4_OP_BODY_PARAMS_F_REV(op) VEC3_OP_BODY_PARAMS_F_REV(op) _COMMA lhs op rhs.w
+
+#define VEC4_OP_BODY_F(op, sep) VEC3_OP_BODY_F(op, sep) lhs.w op rhs sep
+
+#define VEC4_LOGIC_OP(op, logic, sep) VEC3_LOGIC_OP(op, logic, sep) logic lhs.w op rhs.w
 
 namespace Siege
 {
@@ -37,68 +67,219 @@ namespace Siege
 
 // Addition
 
-DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec2&, const Vec2&, VEC2_OPERATOR_BODY_VEC(+=, _SEMICOLON))
-DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec2&, const Vec3&, VEC2_OPERATOR_BODY_VEC(+=, _SEMICOLON))
-DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec2&, const Vec4&, VEC2_OPERATOR_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec2&, const Vec2&, VEC2_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec2&, const Vec3&, VEC2_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec2&, const Vec4&, VEC2_OP_BODY_VEC(+=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(+=, void, Vec2&, float, VEC2_OPERATOR_BODY_FLOAT(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec2&, float, VEC2_OP_BODY_F(+=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(+, Vec2, const Vec2&, const Vec2&, return {lhs.x + rhs.x, lhs.y + rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(+, Vec2, const Vec2&, const Vec3&, return {lhs.x + rhs.x, lhs.y + rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(+, Vec2, const Vec2&, const Vec4&, return {lhs.x + rhs.x, lhs.y + rhs.y};)
+DEF_BIN_OP_IMP(+, Vec2, const Vec2&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_VEC(+, _COMMA)))
+DEF_BIN_OP_IMP(+, Vec2, const Vec2&, const Vec3&, RETURN_VEC(VEC2_OP_BODY_VEC(+, _COMMA)))
+DEF_BIN_OP_IMP(+, Vec2, const Vec2&, const Vec4&, RETURN_VEC(VEC2_OP_BODY_VEC(+, _COMMA)))
 
-DEFINE_VEC_BINARY_OP_IMP(+, Vec2, const Vec2&, float, return {lhs.x + rhs, lhs.y + rhs};)
-DEFINE_VEC_BINARY_OP_IMP(+, Vec2, float, const Vec2&, return {lhs + rhs.x, lhs + rhs.y};)
+DEF_BIN_OP_IMP(+, Vec2, const Vec2&, float, RETURN_VEC(VEC2_OP_BODY_F(+, _COMMA)))
+DEF_BIN_OP_IMP(+, Vec2, float, const Vec2&, RETURN_VEC(VEC2_OP_BODY_F_REV(+, _COMMA)))
 
 // Subtraction
 
-DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec2&, const Vec2&, lhs.x -= rhs.x; lhs.y -= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec2&, const Vec3&, lhs.x -= rhs.x; lhs.y -= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec2&, const Vec4&, lhs.x -= rhs.x; lhs.y -= rhs.y;)
+DEF_BIN_OP_IMP(-=, void, Vec2&, const Vec2&, VEC2_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec2&, const Vec3&, VEC2_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec2&, const Vec4&, VEC2_OP_BODY_VEC(-=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(-=, void, Vec2&, float, lhs.x -= rhs; lhs.y -= rhs;)
+DEF_BIN_OP_IMP(-=, void, Vec2&, float, VEC2_OP_BODY_F(-=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(-, Vec2, const Vec2&, const Vec2&, return {lhs.x - rhs.x, lhs.y - rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(-, Vec2, const Vec2&, const Vec3&, return {lhs.x - rhs.x, lhs.y - rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(-, Vec2, const Vec2&, const Vec4&, return {lhs.x - rhs.x, lhs.y - rhs.y};)
+DEF_BIN_OP_IMP(-, Vec2, const Vec2&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_VEC(-, _COMMA)))
+DEF_BIN_OP_IMP(-, Vec2, const Vec2&, const Vec3&, RETURN_VEC(VEC2_OP_BODY_VEC(-, _COMMA)))
+DEF_BIN_OP_IMP(-, Vec2, const Vec2&, const Vec4&, RETURN_VEC(VEC2_OP_BODY_VEC(-, _COMMA)))
 
-DEFINE_VEC_BINARY_OP_IMP(-, Vec2, const Vec2&, float, return {lhs.x - rhs, lhs.y - rhs};)
-DEFINE_VEC_BINARY_OP_IMP(-, Vec2, float, const Vec2&, return {lhs - rhs.x, lhs - rhs.y};)
+DEF_BIN_OP_IMP(-, Vec2, const Vec2&, float, RETURN_VEC(VEC2_OP_BODY_F(-, _COMMA)))
+DEF_BIN_OP_IMP(-, Vec2, float, const Vec2&, RETURN_VEC(VEC2_OP_BODY_F_REV(-, _COMMA)))
 
 // Multiplication
 
-DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec2&, const Vec2&, lhs.x *= rhs.x; lhs.y *= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec2&, const Vec3&, lhs.x *= rhs.x; lhs.y *= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec2&, const Vec4&, lhs.x *= rhs.x; lhs.y *= rhs.y;)
+DEF_BIN_OP_IMP(*=, void, Vec2&, const Vec2&, VEC2_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec2&, const Vec3&, VEC2_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec2&, const Vec4&, VEC2_OP_BODY_VEC(*=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(*=, void, Vec2&, float, lhs.x *= rhs; lhs.y *= rhs;)
+DEF_BIN_OP_IMP(*=, void, Vec2&, float, VEC2_OP_BODY_F(*=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(*, Vec2, const Vec2&, const Vec2&, return {lhs.x * rhs.x, lhs.y* rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(*, Vec2, const Vec2&, const Vec3&, return {lhs.x * rhs.x, lhs.y* rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(*, Vec2, const Vec2&, const Vec4&, return {lhs.x * rhs.x, lhs.y* rhs.y};)
+DEF_BIN_OP_IMP(*, Vec2, const Vec2&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_VEC(*, _COMMA)))
+DEF_BIN_OP_IMP(*, Vec2, const Vec2&, const Vec3&, RETURN_VEC(VEC2_OP_BODY_VEC(*, _COMMA)))
+DEF_BIN_OP_IMP(*, Vec2, const Vec2&, const Vec4&, RETURN_VEC(VEC2_OP_BODY_VEC(*, _COMMA)))
 
-DEFINE_VEC_BINARY_OP_IMP(*, Vec2, const Vec2&, float, return {lhs.x * rhs, lhs.y* rhs};)
-DEFINE_VEC_BINARY_OP_IMP(*, Vec2, float, const Vec2&, return {lhs * rhs.x, lhs* rhs.y};)
+DEF_BIN_OP_IMP(*, Vec2, const Vec2&, float, RETURN_VEC(VEC2_OP_BODY_F(*, _COMMA)))
+DEF_BIN_OP_IMP(*, Vec2, float, const Vec2&, RETURN_VEC(VEC2_OP_BODY_F_REV(*, _COMMA)))
 
 // Division
 
-DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec2&, const Vec2&, lhs.x /= rhs.x; lhs.y /= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec2&, const Vec3&, lhs.x /= rhs.x; lhs.y /= rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec2&, const Vec4&, lhs.x /= rhs.x; lhs.y /= rhs.y;)
+DEF_BIN_OP_IMP(/=, void, Vec2&, const Vec2&, VEC2_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec2&, const Vec3&, VEC2_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec2&, const Vec4&, VEC2_OP_BODY_VEC(/=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(/=, void, Vec2&, float, lhs.x /= rhs; lhs.y /= rhs;)
+DEF_BIN_OP_IMP(/=, void, Vec2&, float, VEC2_OP_BODY_F(/=, _SEMICOLON))
 
-DEFINE_VEC_BINARY_OP_IMP(/, Vec2, const Vec2&, const Vec2&, return {lhs.x / rhs.x, lhs.y / rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(/, Vec2, const Vec2&, const Vec3&, return {lhs.x / rhs.x, lhs.y / rhs.y};)
-DEFINE_VEC_BINARY_OP_IMP(/, Vec2, const Vec2&, const Vec4&, return {lhs.x / rhs.x, lhs.y / rhs.y};)
+DEF_BIN_OP_IMP(/, Vec2, const Vec2&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_VEC(/, _COMMA)))
+DEF_BIN_OP_IMP(/, Vec2, const Vec2&, const Vec3&, RETURN_VEC(VEC2_OP_BODY_VEC(/, _COMMA)))
+DEF_BIN_OP_IMP(/, Vec2, const Vec2&, const Vec4&, RETURN_VEC(VEC2_OP_BODY_VEC(/, _COMMA)))
 
-DEFINE_VEC_BINARY_OP_IMP(/, Vec2, const Vec2&, float, return {lhs.x / rhs, lhs.y / rhs};)
-DEFINE_VEC_BINARY_OP_IMP(/, Vec2, float, const Vec2&, return {lhs / rhs.x, lhs / rhs.y};)
+DEF_BIN_OP_IMP(/, Vec2, const Vec2&, float, RETURN_VEC(VEC2_OP_BODY_F(/, _COMMA)))
+DEF_BIN_OP_IMP(/, Vec2, float, const Vec2&, RETURN_VEC(VEC2_OP_BODY_F_REV(/, _COMMA)))
 
 // Boolean Operators
 
-DEFINE_VEC_BINARY_OP_IMP(
-    ==, bool, const Vec2&, const Vec2&, return lhs.x == rhs.x && lhs.y == rhs.y;)
-DEFINE_VEC_BINARY_OP_IMP(
-    !=, bool, const Vec2&, const Vec2&, return lhs.x != rhs.x || lhs.y != rhs.y;)
+DEF_BIN_OP_IMP(==, bool, const Vec2&, const Vec2&, RETURN(VEC2_LOGIC_OP(==, &&, _SEMICOLON)))
+DEF_BIN_OP_IMP(!=, bool, const Vec2&, const Vec2&, RETURN(VEC2_LOGIC_OP(!=, ||, _SEMICOLON)))
+
+// Vec3
+
+// Addition
+
+DEF_BIN_OP_IMP(+=, void, Vec3&, const Vec2&, VEC2_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec3&, const Vec3&, VEC3_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec3&, const Vec4&, VEC3_OP_BODY_VEC(+=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(+=, void, Vec3&, float, VEC3_OP_BODY_F(+=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(+, Vec3, const Vec3&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_PARAMS(+) _COMMA lhs.z))
+DEF_BIN_OP_IMP(+, Vec3, const Vec3&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(+)))
+DEF_BIN_OP_IMP(+, Vec3, const Vec3&, const Vec4&, RETURN_VEC(VEC3_OP_BODY_PARAMS(+)))
+
+DEF_BIN_OP_IMP(+, Vec3, const Vec3&, float, RETURN_VEC(VEC3_OP_BODY_PARAMS_F(+)))
+DEF_BIN_OP_IMP(+, Vec3, float, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS_F_REV(+)))
+
+// Subtraction
+
+DEF_BIN_OP_IMP(-=, void, Vec3&, const Vec2&, VEC2_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec3&, const Vec3&, VEC3_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec3&, const Vec4&, VEC3_OP_BODY_VEC(-=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(-=, void, Vec3&, float, VEC3_OP_BODY_F(-=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(-, Vec3, const Vec3&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_PARAMS(-) _COMMA lhs.z))
+DEF_BIN_OP_IMP(-, Vec3, const Vec3&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(-)))
+DEF_BIN_OP_IMP(-, Vec3, const Vec3&, const Vec4&, RETURN_VEC(VEC3_OP_BODY_PARAMS(-)))
+
+DEF_BIN_OP_IMP(-, Vec3, const Vec3&, float, RETURN_VEC(VEC3_OP_BODY_PARAMS_F(-)))
+DEF_BIN_OP_IMP(-, Vec3, float, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS_F_REV(-)))
+
+// Multiplication
+
+DEF_BIN_OP_IMP(*=, void, Vec3&, const Vec2&, VEC2_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec3&, const Vec3&, VEC3_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec3&, const Vec4&, VEC3_OP_BODY_VEC(*=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(*=, void, Vec3&, float, VEC3_OP_BODY_F(*=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(*, Vec3, const Vec3&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_PARAMS(*) _COMMA lhs.z))
+DEF_BIN_OP_IMP(*, Vec3, const Vec3&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(*)))
+DEF_BIN_OP_IMP(*, Vec3, const Vec3&, const Vec4&, RETURN_VEC(VEC3_OP_BODY_PARAMS(*)))
+
+DEF_BIN_OP_IMP(*, Vec3, const Vec3&, float, RETURN_VEC(VEC3_OP_BODY_PARAMS_F(*)))
+DEF_BIN_OP_IMP(*, Vec3, float, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS_F_REV(*)))
+
+// Division
+
+DEF_BIN_OP_IMP(/=, void, Vec3&, const Vec2&, VEC2_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec3&, const Vec3&, VEC3_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec3&, const Vec4&, VEC3_OP_BODY_VEC(/=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(/=, void, Vec3&, float, VEC3_OP_BODY_F(/=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(/, Vec3, const Vec3&, const Vec2&, RETURN_VEC(VEC2_OP_BODY_PARAMS(/) _COMMA lhs.z))
+DEF_BIN_OP_IMP(/, Vec3, const Vec3&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(/)))
+DEF_BIN_OP_IMP(/, Vec3, const Vec3&, const Vec4&, RETURN_VEC(VEC3_OP_BODY_PARAMS(/)))
+
+DEF_BIN_OP_IMP(/, Vec3, const Vec3&, float, RETURN_VEC(VEC3_OP_BODY_PARAMS_F(/)))
+DEF_BIN_OP_IMP(/, Vec3, float, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS_F_REV(/)))
+
+// Boolean Operators
+
+DEF_BIN_OP_IMP(==, bool, const Vec3&, const Vec3&, RETURN(VEC3_LOGIC_OP(==, &&, _SEMICOLON)))
+DEF_BIN_OP_IMP(!=, bool, const Vec3&, const Vec3&, RETURN(VEC3_LOGIC_OP(!=, ||, _SEMICOLON)))
+
+// Vec4
+
+// Addition
+
+// static Vec4 operator+(const Vec4& lhs, float rhs);
+
+DEF_BIN_OP_IMP(+=, void, Vec4&, const Vec2&, VEC2_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec4&, const Vec3&, VEC3_OP_BODY_VEC(+=, _SEMICOLON))
+DEF_BIN_OP_IMP(+=, void, Vec4&, const Vec4&, VEC4_OP_BODY_VEC(+=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(+=, void, Vec4&, float, VEC4_OP_BODY_F(+=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(+,
+               Vec4,
+               const Vec4&,
+               const Vec2&,
+               RETURN_VEC(VEC2_OP_BODY_PARAMS(+) _COMMA lhs.z _COMMA lhs.w))
+DEF_BIN_OP_IMP(+, Vec4, const Vec4&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(+) _COMMA lhs.w))
+DEF_BIN_OP_IMP(+, Vec4, const Vec4&, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS(+)))
+
+DEF_BIN_OP_IMP(+, Vec4, const Vec4&, float, RETURN_VEC(VEC4_OP_BODY_PARAMS_F(+)))
+DEF_BIN_OP_IMP(+, Vec4, float, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS_F_REV(+)))
+
+// Subtraction
+
+DEF_BIN_OP_IMP(-=, void, Vec4&, const Vec2&, VEC2_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec4&, const Vec3&, VEC3_OP_BODY_VEC(-=, _SEMICOLON))
+DEF_BIN_OP_IMP(-=, void, Vec4&, const Vec4&, VEC4_OP_BODY_VEC(-=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(-=, void, Vec4&, float, VEC4_OP_BODY_F(-=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(-,
+               Vec4,
+               const Vec4&,
+               const Vec2&,
+               RETURN_VEC(VEC2_OP_BODY_PARAMS(-) _COMMA lhs.z _COMMA lhs.w))
+DEF_BIN_OP_IMP(-, Vec4, const Vec4&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(-) _COMMA lhs.w))
+DEF_BIN_OP_IMP(-, Vec4, const Vec4&, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS(-)))
+
+DEF_BIN_OP_IMP(-, Vec4, const Vec4&, float, RETURN_VEC(VEC4_OP_BODY_PARAMS_F(-)))
+DEF_BIN_OP_IMP(-, Vec4, float, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS_F_REV(-)))
+
+// Multiplication
+
+DEF_BIN_OP_IMP(*=, void, Vec4&, const Vec2&, VEC2_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec4&, const Vec3&, VEC3_OP_BODY_VEC(*=, _SEMICOLON))
+DEF_BIN_OP_IMP(*=, void, Vec4&, const Vec4&, VEC4_OP_BODY_VEC(*=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(*=, void, Vec4&, float, VEC4_OP_BODY_F(*=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(*,
+               Vec4,
+               const Vec4&,
+               const Vec2&,
+               RETURN_VEC(VEC2_OP_BODY_PARAMS(*) _COMMA lhs.z _COMMA lhs.w))
+DEF_BIN_OP_IMP(*, Vec4, const Vec4&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(*) _COMMA lhs.w))
+DEF_BIN_OP_IMP(*, Vec4, const Vec4&, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS(*)))
+
+DEF_BIN_OP_IMP(*, Vec4, const Vec4&, float, RETURN_VEC(VEC4_OP_BODY_PARAMS_F(*)))
+DEF_BIN_OP_IMP(*, Vec4, float, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS_F_REV(*)))
+
+// Division
+
+DEF_BIN_OP_IMP(/=, void, Vec4&, const Vec2&, VEC2_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec4&, const Vec3&, VEC3_OP_BODY_VEC(/=, _SEMICOLON))
+DEF_BIN_OP_IMP(/=, void, Vec4&, const Vec4&, VEC4_OP_BODY_VEC(/=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(/=, void, Vec4&, float, VEC4_OP_BODY_F(/=, _SEMICOLON))
+
+DEF_BIN_OP_IMP(/,
+               Vec4,
+               const Vec4&,
+               const Vec2&,
+               RETURN_VEC(VEC2_OP_BODY_PARAMS(/) _COMMA lhs.z _COMMA lhs.w))
+DEF_BIN_OP_IMP(/, Vec4, const Vec4&, const Vec3&, RETURN_VEC(VEC3_OP_BODY_PARAMS(/) _COMMA lhs.w))
+DEF_BIN_OP_IMP(/, Vec4, const Vec4&, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS(/)))
+
+DEF_BIN_OP_IMP(/, Vec4, const Vec4&, float, RETURN_VEC(VEC4_OP_BODY_PARAMS_F(/)))
+DEF_BIN_OP_IMP(/, Vec4, float, const Vec4&, RETURN_VEC(VEC4_OP_BODY_PARAMS_F_REV(/)))
+
+// Boolean Operators
+
+DEF_BIN_OP_IMP(==, bool, const Vec4&, const Vec4&, RETURN(VEC4_LOGIC_OP(==, &&, _SEMICOLON)))
+DEF_BIN_OP_IMP(!=, bool, const Vec4&, const Vec4&, RETURN(VEC4_LOGIC_OP(!=, ||, _SEMICOLON)))
+
 } // namespace Siege

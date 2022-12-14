@@ -31,32 +31,29 @@ public:
         scale(scale)
     {}
 
-    const Vec3& GetPosition() const
+    inline const Vec3& GetPosition() const
     {
         return position;
     }
 
-    float GetRotation() const
+    inline float GetRotation() const
     {
         return rotation;
     }
 
-    const Vec3& GetScale() const
+    inline const Vec3& GetScale() const
     {
         return scale;
     }
 
-    void SetPosition(const Vec3& newPosition)
+    inline void SetPosition(const Vec3& newPosition)
     {
         position = newPosition;
     }
 
-    void SetRotation(float newRotation)
-    {
-        rotation = fmod(newRotation, 360.f);
-    }
+    void SetRotation(float newRotation);
 
-    void SetScale(const Vec3& newScale)
+    inline void SetScale(const Vec3& newScale)
     {
         scale = newScale;
     }

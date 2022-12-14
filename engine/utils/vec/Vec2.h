@@ -9,38 +9,38 @@
 #ifndef SIEGE_ENGINE_VEC2_H
 #define SIEGE_ENGINE_VEC2_H
 
-#include <cmath>
-
 #include "../String.h"
-#include "Macros.h"
 #include "Operators.h"
 
 namespace Siege
 {
 /**
- * Struct representing a 2 dimensional vector.
+ * Struct representing a 2 dimensional vector
  */
 struct Vec2
 {
     // Public constants
 
     /**
-     * A vector in which all elements are 0.
+     * A vector in which all elements are 0
      */
     static const Vec2 Zero;
 
     /**
-     * A vector in which all elements are instantiated to 1.
+     * A vector in which all elements are instantiated to 1
      */
     static const Vec2 One;
 
     /**
-     * A vector in which all elements except for the y value are 0.
+     * A vector in which all elements except for the y value are 0
      */
     static const Vec2 Up;
 
     // 'Structors
 
+    /**
+     * A default Vec2 constructor. Initialises all values to Zero
+     */
     Vec2() = default;
 
     /**
@@ -55,255 +55,49 @@ struct Vec2
      * into our vector.
      * @param other a 3 dimensional vector to copy.
      */
-    explicit Vec2(const Vec3& other);
+    explicit Vec2(const struct Vec3& other);
 
     /**
      * A 4D vector constructor. Takes the x and y components from the other vector and copies them
      * into our vector.
      * @param other a 4 dimensional vector to copy.
      */
-    explicit Vec2(const Vec4& other);
+    explicit Vec2(const struct Vec4& other);
 
     // Operator overloads
 
     /**
-     * A Vec3 assignment operator.
-     * @param rhs a Vec3 assignment operator
-     * @return a reference to the current object.
+     * A Vecw assignment operator
+     * @param rhs a Vec2 to assign data from
+     * @return a reference to the current Vec2 object
      */
     Vec2& operator=(const Vec2& rhs) = default;
 
+    /**
+     * A Vec3 assignment operator
+     * @param rhs a Vec3 to assign data from
+     * @return a reference to the current Vec2 object
+     */
     Vec2& operator=(const Vec3& rhs);
 
+    /**
+     * A Vec4 assignment operator
+     * @param rhs a Vec4 to assign data from
+     * @return a reference to the current Vec2 object
+     */
     Vec2& operator=(const Vec4& rhs);
 
+    /**
+     * A Vec3 conversion operator. Converts a Vec2 to a Vec3
+     * @return a new Vec3 with the Vec2's x and y values
+     */
     operator Vec3() const;
 
+    /**
+     * A Vec4 conversion operator. Converts a Vec2 to a Vec3
+     * @return a new Vec3 with the Vec2's x and y values
+     */
     operator Vec4() const;
-
-    /**
-     * A two dimensional Vector Addition operator.
-     * @param rhs the 2D vector to be added by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(+=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A two dimensional Vector subtraction operator.
-     * @param rhs the 2D vector to be subtracted by.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(-=, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A 2D - 3D Vector addition operator.
-     * @param rhs the 3D vector to be added by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(+=, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D Vector subtraction operator.
-     * @param rhs the 3D vector to be subtracted by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(-=, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D Vector multiplication operator.
-     * @param rhs the 3D vector to be multiplied by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(*=, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D Vector division operator.
-     * @param rhs the 3D vector to be divided by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(/=, Vec2, Vec3)
-
-    /**
-     * A 2D - 4D Vector addition operator.
-     * @param rhs the 4D vector to be added by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(+=, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D Vector subtraction operator.
-     * @param rhs the 4D vector to be subtracted by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(-=, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D Vector multiplication operator.
-     * @param rhs the 4D vector to be multiplied by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(*=, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D Vector division operator.
-     * @param rhs the 4D vector to be divided by.
-     * @return a reference to the current vector.
-     */
-    // DECL_VEC_OP_NO_IMP(/=, Vec2, Vec4)
-
-    /**
-     * An equality operator.
-     * @param other the vector to be compared.
-     * @return a boolean specifying if the two vectors are equal.
-     */
-    // bool operator==(const Vec2& other);
-
-    /**
-     * An inequality operator.
-     * @param other the vector to be compared.
-     * @return a boolean specifying if the two vectors are not equal.
-     */
-    // bool operator!=(const Vec2& other);
-
-    /**
-     * A scalar addition operator.
-     * @param rhs the scalar to add.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(+=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar subtraction operator.
-     * @param rhs the scalar to subtract.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(-=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar multiplication operator.
-     * @param rhs the scalar to multiply.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(*=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A scalar divide operator.
-     * @param rhs the scalar to divide.
-     * @return a reference to the current vector.
-     */
-    // DEFINE_VEC_OP(/=, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A 2D vector const addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DEFINE_VEC_CONST_OP(+, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A 2D vector const subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DEFINE_VEC_CONST_OP(-, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A 2D vector const multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DEFINE_VEC_CONST_OP(*, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A 2D vector const division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DEFINE_VEC_CONST_OP(/, Vec2, Vec2, VEC2_OPERATOR_BODY_VEC)
-
-    /**
-     * A 2D - 3D vector const addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DECL_CONST_OP_NO_IMP(+, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D vector const subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DECL_CONST_OP_NO_IMP(-, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D vector const multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DECL_CONST_OP_NO_IMP(*, Vec2, Vec3)
-
-    /**
-     * A 2D - 3D vector const division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DECL_CONST_OP_NO_IMP(/, Vec2, Vec3)
-
-    /**
-     * A 2D - 4D vector const addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DECL_CONST_OP_NO_IMP(+, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D vector const subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DECL_CONST_OP_NO_IMP(-, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D vector const multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DECL_CONST_OP_NO_IMP(*, Vec2, Vec4)
-
-    /**
-     * A 2D - 4D vector const division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DECL_CONST_OP_NO_IMP(/, Vec2, Vec4)
-
-    /**
-     * A const scalar addition operator.
-     * @param rhs the vector to add by.
-     * @return a new vector representing the result of the vector addition.
-     */
-    // DEFINE_VEC_CONST_OP(+, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar subtraction operator.
-     * @param rhs the vector to subtract by.
-     * @return a new vector representing the result of the vector subtraction.
-     */
-    // DEFINE_VEC_CONST_OP(-, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar multiplication operator.
-     * @param rhs the vector to multiply by.
-     * @return a new vector representing the result of the vector multiplication.
-     */
-    // DEFINE_VEC_CONST_OP(*, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
-
-    /**
-     * A const scalar division operator.
-     * @param rhs the vector to divide by.
-     * @return a new vector representing the result of the vector division.
-     */
-    // DEFINE_VEC_CONST_OP(/, Vec2, float, VEC2_OPERATOR_BODY_FLOAT)
 
     // Static methods
 
@@ -314,6 +108,28 @@ struct Vec2
      * @return a boolean specifying if the operation was successful.
      */
     static bool FromString(OUT Vec2& vec, const String& string);
+
+    /**
+     * Normalises a target vector between 0 and 1 for each element
+     * @param vec the vector to be normalised
+     * @return a new vector with the normalised vector coordinates
+     */
+    static Vec2 Normalise(const Vec2& vec);
+
+    /**
+     * Calculates the length of the vector
+     * @param vec the vector who's length is to be calculated
+     * @return the length of the vector in the form of a float
+     */
+    static float Length(const Vec2& vec);
+
+    /**
+     * Calculates the dot product of two vectors
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the dot product of both vectors
+     */
+    static float Dot(const Vec2& lhs, const Vec2& rhs);
 
     // Public methods
 
@@ -333,10 +149,14 @@ struct Vec2
      * Computes the length of the vector.
      * @return the length of the vector.
      */
-    float Length() const
-    {
-        return sqrtf(x * x + y * y);
-    }
+    float Length() const;
+
+    /**
+     * Computes the dot product of the vector with another vector.
+     * @param other the vector to get the dot product with.
+     * @return the dot product of the two vectors.
+     */
+    float Dot(const Vec2& other) const;
 
     /**
      * Returns a vector with the x dimension filled in and the rest set to 0.
@@ -344,10 +164,7 @@ struct Vec2
      */
     Vec2 XComp() const
     {
-        return {
-            x,
-            0.f,
-        };
+        return {x, 0.f};
     }
 
     /**
@@ -359,12 +176,7 @@ struct Vec2
         return {0.f, y};
     }
 
-    /**
-     * Computes the dot product of the vector with another vector.
-     * @param other the vector to get the dot product with.
-     * @return the dot product of the two vectors.
-     */
-    float Dot(const Vec2& other) const;
+    // Member variables (the x and y components)
 
     float x {0.f}, y {0.f};
 };

@@ -9,6 +9,8 @@
 #include <utest.h>
 #include <utils/mat/Mat3.h>
 
+#include <limits>
+
 UTEST(test_Matrix3x3, CreateEmptyMatrix)
 {
     Siege::Mat3 matrix;
