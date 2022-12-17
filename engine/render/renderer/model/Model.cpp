@@ -11,51 +11,50 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include <cstring>
-#include <glm/glm.hpp>
-
 namespace std
 {
+// We need to use the Siege namespace here since the Hash functions only operate in the std
+// namespace
 template<>
 struct hash<Siege::Vertex>
 {
     size_t operator()(const Siege::Vertex& vertex) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
         return seed;
     };
 };
 
 template<>
-struct hash<glm::vec3>
+struct hash<Siege::Vec3>
 {
-    size_t operator()(const glm::vec3& vertex) const
+    size_t operator()(const Siege::Vec3& vertex) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z);
         return seed;
     };
 };
 
 template<>
-struct hash<glm::vec2>
+struct hash<Siege::Vec2>
 {
-    size_t operator()(const glm::vec2& vertex) const
+    size_t operator()(const Siege::Vec2& vertex) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed, vertex.x, vertex.y);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y);
         return seed;
     };
 };
 
 template<>
-struct hash<glm::vec4>
+struct hash<Siege::Vec4>
 {
-    size_t operator()(const glm::vec4& vertex) const
+    size_t operator()(const Siege::Vec4& vertex) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
+        Siege::Hash::HashCombine(seed, vertex.x, vertex.y, vertex.z, vertex.w);
         return seed;
     };
 };
@@ -66,7 +65,7 @@ struct hash<Siege::Vertex2D>
     size_t operator()(const Siege::Vertex2D& vertex) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed, vertex.position, vertex.color);
+        Siege::Hash::HashCombine(seed, vertex.position, vertex.color);
         return seed;
     };
 };
@@ -116,26 +115,26 @@ void Model::LoadModelFromFile(const String& filePath)
 
             if (index.vertex_index >= 0)
             {
-                vertex.position = {attrib.vertices[3 * index.vertex_index + 0],
-                                   attrib.vertices[3 * index.vertex_index + 1],
-                                   attrib.vertices[3 * index.vertex_index + 2]};
+                vertex.position = Vec3 {attrib.vertices[3 * index.vertex_index + 0],
+                                        attrib.vertices[3 * index.vertex_index + 1],
+                                        attrib.vertices[3 * index.vertex_index + 2]};
 
-                vertex.color = {attrib.colors[3 * index.vertex_index + 0],
-                                attrib.colors[3 * index.vertex_index + 1],
-                                attrib.colors[3 * index.vertex_index + 2]};
+                vertex.color = Vec3 {attrib.colors[3 * index.vertex_index + 0],
+                                     attrib.colors[3 * index.vertex_index + 1],
+                                     attrib.colors[3 * index.vertex_index + 2]};
             }
 
             if (index.normal_index >= 0)
             {
-                vertex.normal = {attrib.normals[3 * index.normal_index + 0],
-                                 attrib.normals[3 * index.normal_index + 1],
-                                 attrib.normals[3 * index.normal_index + 2]};
+                vertex.normal = Vec3 {attrib.normals[3 * index.normal_index + 0],
+                                      attrib.normals[3 * index.normal_index + 1],
+                                      attrib.normals[3 * index.normal_index + 2]};
             }
 
             if (index.texcoord_index >= 0)
             {
-                vertex.uv = {attrib.texcoords[2 * index.texcoord_index + 0],
-                             attrib.texcoords[2 * index.texcoord_index + 1]};
+                vertex.uv = Vec2 {attrib.texcoords[2 * index.texcoord_index + 0],
+                                  attrib.texcoords[2 * index.texcoord_index + 1]};
             }
 
             if (uniqueVertices.count(vertex) == 0)

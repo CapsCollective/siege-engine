@@ -26,8 +26,8 @@ public:
     void Destroy();
 
     // Wire primitives
-    void DrawLine(const glm::vec3& origin, const glm::vec3& destination, const glm::vec3& colour);
-    void DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+    void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
+    void DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -41,8 +41,8 @@ private:
 
     struct LineVertex
     {
-        glm::vec3 position;
-        glm::vec3 colour;
+        Vec3 position;
+        Vec4 colour;
     };
 
     void RenderLines(VkCommandBuffer& commandBuffer,

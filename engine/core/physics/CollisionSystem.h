@@ -13,6 +13,8 @@
 
 #include "../entity/Entity.h"
 
+namespace Siege
+{
 class CollisionSystem
 {
 public:
@@ -72,5 +74,6 @@ private:
 
     std::vector<Entity*> removedEntities;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_COLLISIONSYSTEM_H

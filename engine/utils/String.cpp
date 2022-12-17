@@ -13,6 +13,8 @@
 #include <ostream>
 #include <stdexcept>
 
+namespace Siege
+{
 static inline char* Allocate(size_t len)
 {
     return static_cast<char*>(malloc(len + 1));
@@ -669,3 +671,4 @@ std::ostream& operator<<(std::ostream& os, const String& string)
 {
     return os.write(string.Str(), (long) string.Size());
 }
+} // namespace Siege

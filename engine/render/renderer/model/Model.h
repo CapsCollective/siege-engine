@@ -18,6 +18,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <utils/mat/Mat4.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 #include <unordered_map>
@@ -34,14 +36,14 @@ public:
 
     struct Transform
     {
-        glm::mat4 transform;
-        glm::mat4 normalMatrix;
+        Mat4 transform;
+        Mat4 normalMatrix;
     };
 
     // Placeholder - in case we need to add more unique 2D data
     struct Transform2D
     {
-        glm::mat4 transform;
+        Mat4 transform;
     };
 
     Model(const Mesh::MeshData& meshData);

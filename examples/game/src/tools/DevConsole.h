@@ -15,7 +15,7 @@
 #include "../ServiceLocator.h"
 #include "MessageDisplay.h"
 
-class DevConsole : public Entity
+class DevConsole : public Siege::Entity
 {
 public:
 
@@ -40,7 +40,7 @@ private:
 
     bool CheckEditorMode();
 
-    bool CheckArgs(const String& command, const String& args);
+    bool CheckArgs(const Siege::String& command, const Siege::String& args);
 
     // Private fields
 
@@ -48,11 +48,11 @@ private:
 
     bool isActive;
 
-    String inputText;
+    Siege::String inputText;
 
-    String lastInput;
+    Siege::String lastInput;
 
-    EntityPtr<MessageDisplay> messageDisplay;
+    Siege::EntityPtr<MessageDisplay> messageDisplay;
 };
 
 #endif // SIEGE_ENGINE_DEVCONSOLE_H

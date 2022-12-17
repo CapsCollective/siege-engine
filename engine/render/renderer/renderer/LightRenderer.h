@@ -25,10 +25,10 @@ public:
 
     void Destroy();
 
-    void DrawPointLight(const glm::vec3& position,
-                        const float& radius,
-                        const glm::vec4& colour,
-                        const glm::vec4& ambientColor);
+    void DrawPointLight(const Vec3& position,
+                        float radius,
+                        const Vec4& colour,
+                        const Vec4& ambientColor);
 
     void Render(VkCommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,

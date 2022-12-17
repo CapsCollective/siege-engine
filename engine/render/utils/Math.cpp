@@ -8,7 +8,7 @@
 
 #include "Math.h"
 
-namespace Math
+namespace Siege::Utils::Math
 {
 float Normalise(float value, float min, float max)
 {
@@ -20,10 +20,10 @@ float Lerp(float origin, float destination, float time)
     return origin * (1.0f - time) + destination * time;
 }
 
-glm::vec3 Lerp(glm::vec3 origin, glm::vec3 destination, float time)
+Vec3 Lerp(Vec3 origin, Vec3 destination, float time)
 {
     return {Lerp(origin.x, destination.x, time),
             Lerp(origin.y, destination.y, time),
             Lerp(origin.z, destination.z, time)};
 }
-} // namespace Math
+} // namespace Siege::Utils::Math

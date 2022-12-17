@@ -16,6 +16,8 @@
 #include "Hash.h"
 #include "Macros.h"
 
+namespace Siege
+{
 /**
  * The String class provides an alternative to standard strings, bundling in greater manipulation
  * functionality and providing a relatively compact implementation of small String optimisation.
@@ -629,20 +631,21 @@ String operator+(char lhs, const String& rhs);
  * @return the formatted std::ostream instance
  */
 std::ostream& operator<<(std::ostream& os, const String& string);
+} // namespace Siege
 
 // Define a hash function for the string so that it can be stored in a map or ordered set
 // TODO(Aryeh): Maybe replace this with a custom implementation when the time comes.
 template<>
-struct std::hash<String>
+struct std::hash<Siege::String>
 {
-    size_t operator()(const String& string) const
+    size_t operator()(const Siege::String& string) const
     {
         size_t seed = 0;
-        Hash::HashCombine(seed,
-                          string.At(0),
-                          string.At(string.Size()),
-                          string.Size(),
-                          string.Capacity());
+        Siege::Hash::HashCombine(seed,
+                                 string.At(0),
+                                 string.At(string.Size()),
+                                 string.Size(),
+                                 string.Capacity());
         return seed;
     };
 };

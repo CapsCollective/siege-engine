@@ -13,9 +13,9 @@
 #include <cstring>
 #include <functional>
 
-#define INTERN_STR(str) Hash::WSID(str)
+#define INTERN_STR(str) Siege::Hash::WSID(str)
 
-namespace Hash
+namespace Siege::Hash
 {
 // from: https://stackoverflow.com/a/57595105
 template<typename T, typename... Rest>
@@ -60,6 +60,6 @@ uint32_t crc32(const uint8_t* data, size_t length);
 size_t strlen_c(const char* str);
 
 StringId WSID(const char* str);
-} // namespace Hash
+} // namespace Siege::Hash
 
 #endif // SIEGE_ENGINE_HASH_H

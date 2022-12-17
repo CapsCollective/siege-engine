@@ -14,6 +14,8 @@
 #include "../utils/Colour.h"
 #include "../utils/Maths.h"
 
+namespace Siege
+{
 // Raylib conversions
 
 Vec3 ToVec3(raylib::Vector3 vector);
@@ -33,5 +35,6 @@ BoundingBox FromBoundedBox(BoundedBox bbox);
 Colour ToColour(Color color);
 
 Color FromColour(Colour color);
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_TRANSITIONADAPTER_H

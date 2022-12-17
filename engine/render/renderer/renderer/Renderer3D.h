@@ -35,26 +35,23 @@ public:
     static void Initialise();
 
     static void DrawModel(Model* model,
-                          const glm::vec3& position,
-                          const glm::vec3& scale,
-                          const glm::vec3& rotation);
-    static void DrawModel(Model* model, const glm::vec3& position, const glm::vec3& scale);
-    static void DrawModel(Model* model, const glm::vec3& position);
+                          const Vec3& position,
+                          const Vec3& scale,
+                          const Vec3& rotation);
+    static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
+    static void DrawModel(Model* model, const Vec3& position);
 
-    static void DrawBillboard(const glm::vec3& position,
-                              const glm::vec2& scale,
-                              const glm::vec4& colour);
+    static void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
-    static void DrawLine(const glm::vec3& origin,
-                         const glm::vec3& destination,
-                         const glm::vec3& colour);
-    static void DrawRect(const glm::vec3& position, const glm::vec2& scale, glm::vec3 color);
-    static void DrawPointLight(const glm::vec3& position,
-                               const float& radius,
-                               const glm::vec4& colour,
-                               const glm::vec4& ambientColor);
+    static void DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour);
+
+    static void DrawRect(const Vec3& position, const Vec2& scale, Vec4& color);
+    static void DrawPointLight(const Vec3& position,
+                               float radius,
+                               const Vec4& colour,
+                               const Vec4& ambientColor);
 
     static void RecreateMaterials();
 

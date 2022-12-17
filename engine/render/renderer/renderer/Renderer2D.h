@@ -29,15 +29,12 @@ public:
     static void Initialise();
 
     static void DrawModel(Model* model,
-                          const glm::vec2& position,
-                          const glm::vec2& scale,
-                          const float& rotation,
-                          const float& zIndex);
-    static void DrawModel(Model* model,
-                          const glm::vec2& position,
-                          const glm::vec2& scale,
-                          const float& zIndex);
-    static void DrawModel(Model* model, const glm::vec2& position);
+                          const Vec2& position,
+                          const Vec2& scale,
+                          float rotation,
+                          float zIndex);
+    static void DrawModel(Model* model, const Vec2& position, const Vec2& scale, float zIndex);
+    static void DrawModel(Model* model, const Vec2& position);
 
     static void RecreateMaterials();
 

@@ -12,6 +12,8 @@
 
 #include <utility>
 
+using namespace Siege;
+
 class TestEntity1 : public Entity
 {
 public:

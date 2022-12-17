@@ -19,16 +19,16 @@ void LightRenderer::Initialise(const String& globalDataAttributeName,
     globalDataId = INTERN_STR(globalDataAttributeName);
     lightDataId = INTERN_STR("lightUBO");
 
-    auto pointLightVertShader = Siege::Shader::BuildShader()
+    auto pointLightVertShader = Shader::BuildShader()
                                     .FromShader("assets/shaders/pointLight.vert.spv")
-                                    .WithStage(Siege::PipelineConfig::VERTEX)
-                                    .WithVertexType(sizeof(glm::vec2))
-                                    .WithVertexAttribute(0, Siege::VertexDescription::VEC2)
+                                    .WithStage(PipelineConfig::VERTEX)
+                                    .WithVertexType(sizeof(Vec2))
+                                    .WithVertexAttribute(0, VertexDescription::VEC2)
                                     .WithUniform(0, globalDataAttributeName, globalDataSize);
 
-    auto pointLightFragShader = Siege::Shader::BuildShader()
+    auto pointLightFragShader = Shader::BuildShader()
                                     .FromShader("assets/shaders/pointLight.frag.spv")
-                                    .WithStage(Siege::PipelineConfig::FRAGMENT)
+                                    .WithStage(PipelineConfig::FRAGMENT)
                                     .WithUniform(0, globalDataAttributeName, globalDataSize);
 
     lightMaterial.SetVertexShader(&pointLightVertShader);
@@ -46,10 +46,10 @@ void LightRenderer::Destroy()
     lightModel.DestroyModel();
 }
 
-void LightRenderer::DrawPointLight(const glm::vec3& position,
-                                   const float& radius,
-                                   const glm::vec4& colour,
-                                   const glm::vec4& ambientColor)
+void LightRenderer::DrawPointLight(const Vec3& position,
+                                   float radius,
+                                   const Vec4& colour,
+                                   const Vec4& ambientColor)
 {
     pointLightVertices.Append({1.f, 1.f});
     pointLightVertices.Append({1.f, -1.f});

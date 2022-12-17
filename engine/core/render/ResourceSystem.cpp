@@ -11,9 +11,11 @@
 #include <raylib/raylib-cpp.hpp>
 #include <vector>
 
-static std::map<String, Model> models;
+namespace Siege
+{
+static std::map<String, Model> models = std::map<String, Model>();
 
-static std::map<String, Texture> textures;
+static std::map<String, Texture> textures = std::map<String, Texture>();
 
 void ResourceSystem::RegisterModel(const String& path)
 {
@@ -76,3 +78,4 @@ const String& ResourceSystem::GetBaseDirectory()
 {
     return baseDir;
 }
+} // namespace Siege

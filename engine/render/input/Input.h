@@ -27,6 +27,8 @@
 
 #define KEY_ESCAPE GLFW_KEY_ESCAPE
 
+namespace Siege
+{
 class Input
 {
 public:
@@ -36,7 +38,7 @@ public:
         double x;
         double y;
     };
-    static void SetWindowPointer(Siege::Window* window);
+    static void SetWindowPointer(Window* window);
     static bool IsKeyDown(int key);
     static bool IsKeyJustPressed(int key);
 
@@ -45,12 +47,13 @@ public:
 
 private:
 
-    static Siege::Window* windowPtr;
+    static Window* windowPtr;
     static bool movedLastFrame;
     static MouseCoordinates currentMouseCoordinates;
     static std::map<int, int> keyMap;
 
     static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 };
+} // namespace Siege
 
 #endif

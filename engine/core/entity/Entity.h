@@ -15,6 +15,8 @@
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
 
+namespace Siege
+{
 /**
  * The base entity class for game objects and tool
  */
@@ -202,7 +204,7 @@ protected:
     // Protected fields
 
     /**
-     * The transform of the entity as an Xform
+     * The transform of the entity as a Xform
      */
     Xform transform;
 
@@ -225,5 +227,6 @@ private:
      */
     int zIndex;
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ENTITY_H

@@ -12,7 +12,9 @@
 
 #include "../TransitionAdapter.h"
 
-static Vec3 pos(0.f, 10.f, 10.f);
+namespace Siege
+{
+static Vec3 pos {0.f, 10.f, 10.f};
 
 static raylib::Camera3D& GetCamera()
 {
@@ -41,7 +43,7 @@ void Cam::End3D()
 
 Vec3 Cam::GetScreenPos(const Vec3& position)
 {
-    return ToVec3(GetWorldToScreen(FromVec3(position + Vec3(0.f, 4.f, 0.f)), GetCamera()));
+    return ToVec3(GetWorldToScreen(FromVec3(position + Vec3 {0.f, 4.f, 0.f}), GetCamera()));
 }
 
 RayCast Cam::GetMouseRay()
@@ -63,3 +65,4 @@ void Cam::SetTarget(const Vec3& target)
 {
     GetCamera().SetTarget(FromVec3(target));
 }
+} // namespace Siege

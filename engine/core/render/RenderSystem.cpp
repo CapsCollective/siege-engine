@@ -13,6 +13,8 @@
 #include "../TransitionAdapter.h"
 #include "ResourceSystem.h"
 
+namespace Siege
+{
 void RenderSystem::Add(Entity* entity, const ModelData& modelData)
 {
     Add(entity, modelData, entity->GetTransform());
@@ -69,3 +71,4 @@ void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, Co
 {
     DrawRectangle(posX, posY, width, height, FromColour(color));
 }
+} // namespace Siege

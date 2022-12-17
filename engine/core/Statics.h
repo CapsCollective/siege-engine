@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_STATICS_H
 #define SIEGE_ENGINE_STATICS_H
 
+namespace Siege
+{
 class Statics
 {
 public:
@@ -27,5 +29,6 @@ public:
 
     static class EntitySystem& Tool();
 };
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_STATICS_H

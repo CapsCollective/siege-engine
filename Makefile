@@ -60,7 +60,7 @@ all: testapp package-gameapp package-renderapp
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
-$(coreLib): buildFlags  $(utilsLib)
+$(coreLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
 $(renderLib): buildFlags $(utilsLib)
@@ -98,6 +98,10 @@ clean:
 	$(RM) $(call platformpth, $(outputDir))
 	$(RM) $(call platformpth, $(buildFlagsFile))
 
+# Check file formatting program across all source files
+format-check:
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)" --check
+
 # Run file formatting program across all source files
 format:
-	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)" $(ARGS)
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)"

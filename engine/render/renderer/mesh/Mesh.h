@@ -23,21 +23,21 @@ namespace Siege
 {
 struct Vertex
 {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec3 normal;
-    glm::vec2 uv;
+    Vec3 position;
+    Vec3 color;
+    Vec3 normal;
+    Vec2 uv;
 };
 
 struct Vertex2D
 {
-    glm::vec2 position;
-    glm::vec3 color;
+    Vec2 position;
+    Vec3 color;
 };
 
 struct BillboardVertex
 {
-    glm::vec2 position;
+    Vec2 position;
 };
 
 bool operator==(const Vertex& left, const Vertex& right);

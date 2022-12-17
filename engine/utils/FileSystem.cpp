@@ -11,7 +11,9 @@
 #include <cstdio>
 #include <fstream>
 
-String FileSystem::Read(const String& filename)
+namespace Siege::FileSystem
+{
+String Read(const String& filename)
 {
     // Try open the file for reading
     FILE* file = fopen(filename, "r");
@@ -32,13 +34,13 @@ String FileSystem::Read(const String& filename)
     return content;
 }
 
-bool FileSystem::Exists(const String& filename)
+bool Exists(const String& filename)
 {
     std::ifstream file(filename);
     return (bool) file;
 }
 
-bool FileSystem::Save(const String& filename, const String& content)
+bool Save(const String& filename, const String& content)
 {
     // Open a new file stream, serialise the data to it and close it
     std::ofstream fileStream(filename.Str());
@@ -47,3 +49,4 @@ bool FileSystem::Save(const String& filename, const String& content)
     fileStream.close();
     return true;
 }
+} // namespace Siege::FileSystem

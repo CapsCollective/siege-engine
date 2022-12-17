@@ -59,58 +59,12 @@ uint32_t squareIndices[] = {0, 1, 3, 1, 2, 3};
 
 Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
 
-glm::vec2 squareVertsRaw[] = {{1.f, 1.f}, {1.f, -1.f}, {-1.f, -1.f}, {-1.f, 1.f}};
-
-Siege::Mesh::MeshData rawSquareMeshData {sizeof(glm::vec2), squareVertsRaw, 4, squareIndices, 6};
-
-Siege::Vertex cubeVerts[] = {
-    {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-    {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-    {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-    {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-
-    // right face (yellow)
-    {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-    {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-    {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-    {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-
-    // top face (orange, remember y axis points down)
-    {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-    {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-    {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-    {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-
-    // bottom face (red)
-    {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-    {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-    {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-    {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-
-    // nose face (blue)
-    {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-    {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-    {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-    {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-
-    // tail face (green)
-    {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-    {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-    {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-    {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-};
-
-uint32_t cubeIndices[] = {0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
-                          12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21};
-
-Siege::Mesh::MeshData cubeMeshData {sizeof(Siege::Vertex), cubeVerts, 24, cubeIndices, 36};
-
 void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
 {
-    static auto oldMousePos = Input::GetCursorPosition();
-    auto mousePos = Input::GetCursorPosition();
+    static auto oldMousePos = Siege::Input::GetCursorPosition();
+    auto mousePos = Siege::Input::GetCursorPosition();
 
-    glm::vec3 rotate {0};
+    Siege::Vec3 rotate {};
     float lookSpeed = 4.0f;
 
     double differenceX = mousePos.x - oldMousePos.x;
@@ -119,10 +73,11 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     rotate.y += float(differenceX);
     rotate.x += float(differenceY);
 
-    if (glm::dot(rotate, rotate) > glm::epsilon<float>())
+    if (rotate.Dot(rotate) > Siege::Utils::Math::Float::Epsilon())
     {
-        glm::vec3 newRotation = viewerObject.GetRotation() + lookSpeed * glm::normalize(rotate);
-        viewerObject.SetRotation(Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
+        Siege::Vec3 newRotation = viewerObject.GetRotation() + lookSpeed * rotate.Normalise();
+        viewerObject.SetRotation(
+            Siege::Utils::Math::Lerp(viewerObject.GetRotation(), newRotation, deltaTime));
     }
 
     // Limit the pitch values to avoid objects rotating upside-down.
@@ -130,25 +85,26 @@ void MoveCameraXZ(float deltaTime, Components::Shape& viewerObject)
     viewerObject.SetRotationY(glm::mod(viewerObject.GetRotation().y, glm::two_pi<float>()));
 
     float yaw = viewerObject.GetRotation().y;
-    const glm::vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
-    const glm::vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
-    const glm::vec3 upDir {0.f, -1.f, 0.f};
+    const Siege::Vec3 forwardDir {glm::sin(yaw), 0.f, glm::cos(yaw)};
+    const Siege::Vec3 rightDir {forwardDir.z, 0.f, -forwardDir.x};
+    const Siege::Vec3 upDir {0.f, -1.f, 0.f};
 
-    glm::vec3 moveDir {0.f};
-    if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
-    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
-    if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
-    if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
+    Siege::Vec3 moveDir {Siege::Vec3::Zero};
+    if (Siege::Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
+    if (Siege::Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
+    if (Siege::Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
+    if (Siege::Input::IsKeyDown(KEY_D)) moveDir += rightDir;
 
-    if (Input::IsKeyDown(KEY_E)) moveDir += upDir;
-    if (Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
+    if (Siege::Input::IsKeyDown(KEY_E)) moveDir += upDir;
+    if (Siege::Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
 
     float moveSpeed = 2.f;
 
-    if (glm::dot(moveDir, moveDir) > glm::epsilon<float>())
+    if (moveDir.Dot(moveDir) > Siege::Utils::Math::Float::Epsilon())
     {
-        glm::vec3 newMove = viewerObject.GetPosition() + moveSpeed * glm::normalize(moveDir);
-        viewerObject.SetPosition(Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
+        Siege::Vec3 newMove = viewerObject.GetPosition() + moveSpeed * moveDir.Normalise();
+        viewerObject.SetPosition(
+            Siege::Utils::Math::Lerp(viewerObject.GetPosition(), newMove, deltaTime));
     }
 
     oldMousePos = mousePos;
@@ -162,7 +118,7 @@ int main()
 
     window.DisableCursor();
 
-    Input::SetWindowPointer(&window);
+    Siege::Input::SetWindowPointer(&window);
 
     Siege::Renderer renderer(window);
 
@@ -210,7 +166,7 @@ int main()
             .WithUniform(1,
                          "globalData",
                          sizeof(Siege::Renderer3D::GlobalData)); // TIL: bindings must be unique
-                                                                 // accross all available shaders
+                                                                 // across all available shaders
 
     // Material Declaration
     // vertex       // fragment
@@ -292,7 +248,7 @@ int main()
 
         window.Update();
 
-        if (Input::IsKeyJustPressed(KEY_ESCAPE))
+        if (Siege::Input::IsKeyJustPressed(KEY_ESCAPE))
         {
             inputEnabled = !inputEnabled;
             window.ToggleCursor(inputEnabled);
@@ -328,7 +284,7 @@ int main()
         Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
 
-        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f});
 
         for (auto it = shapes2D.CreateIterator(); it; ++it)
         {

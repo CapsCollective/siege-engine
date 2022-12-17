@@ -92,14 +92,6 @@ void Renderer::RecreateSwapChain()
     }
 }
 
-void Renderer::FreeCommandBuffers()
-{
-    vkFreeCommandBuffers(device.Device(),
-                         device.GetCommandPool(),
-                         swapChain.GetImageCount(),
-                         commandBuffers.Data());
-}
-
 bool Renderer::StartFrame()
 {
     CC_ASSERT(!isFrameStarted, "Can't start a frame when a frame is already in progress!");

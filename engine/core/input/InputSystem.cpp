@@ -12,6 +12,8 @@
 
 #include "../TransitionAdapter.h"
 
+namespace Siege
+{
 bool InputSystem::KeyDown(Key::Keyboard key)
 {
     return IsKeyDown(key);
@@ -56,3 +58,4 @@ Vec3 InputSystem::GetMousePos()
 {
     return ToVec3(GetMousePosition());
 }
+} // namespace Siege

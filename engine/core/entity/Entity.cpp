@@ -13,6 +13,8 @@
 
 #include "EntitySystem.h"
 
+namespace Siege
+{
 // Static member initialisation
 const String Entity::ENTITY_NAME("Entity");
 
@@ -104,3 +106,4 @@ void Entity::SetZIndex(int idx)
     zIndex = idx;
     EntitySystem::Resort(this, oldZIndex);
 }
+} // namespace Siege

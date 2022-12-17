@@ -14,7 +14,7 @@
 UTEST(test_String, DefaultConstruct)
 {
     // The string should default construct correctly
-    String s;
+    Siege::String s;
     ASSERT_FALSE(s);
     ASSERT_TRUE(s.IsEmpty());
     ASSERT_EQ(0, s.Size());
@@ -23,7 +23,7 @@ UTEST(test_String, DefaultConstruct)
     ASSERT_EQ(0, std::strcmp(s.Str(), ""));
 
     // Assignment via assignment operator should apply
-    String h("hello");
+    Siege::String h("hello");
     s = h;
     ASSERT_FALSE(s.IsEmpty());
     ASSERT_EQ(5, s.Size());
@@ -41,10 +41,10 @@ UTEST(test_String, DefaultConstruct)
 UTEST(test_String, CopyConstruct)
 {
     // The string should copy construct correctly
-    String s1("hello");
-    String s2(s1);
-    String s3;
-    String s4(s3);
+    Siege::String s1("hello");
+    Siege::String s2(s1);
+    Siege::String s3;
+    Siege::String s4(s3);
     ASSERT_TRUE(s2);
     ASSERT_STREQ("hello", s2.Str());
     ASSERT_FALSE(s4);
@@ -57,7 +57,7 @@ UTEST(test_String, CopyConstruct)
     ASSERT_FALSE(s3);
 
     // Copy construction from c-strings should apply
-    String s("hello");
+    Siege::String s("hello");
     ASSERT_TRUE(s);
     ASSERT_STREQ("hello", s.Str());
     s = "goodbye";
@@ -65,7 +65,7 @@ UTEST(test_String, CopyConstruct)
     ASSERT_STREQ("goodbye", s.Str());
 
     // Copy construction from characters should apply
-    String s5('h');
+    Siege::String s5('h');
     ASSERT_TRUE(s5);
     ASSERT_STREQ("h", s5.Str());
     s5 = 'i';
@@ -76,24 +76,24 @@ UTEST(test_String, CopyConstruct)
 UTEST(test_String, MoveConstruct)
 {
     // The string should move construct correctly
-    String s1(String("hello"));
-    String s2((String()));
+    Siege::String s1(Siege::String("hello"));
+    Siege::String s2((Siege::String()));
     ASSERT_TRUE(s1);
     ASSERT_STREQ("hello", s1.Str());
     ASSERT_FALSE(s2);
 
     // Assignment via move assignment should apply
-    s1 = String("goodbye");
+    s1 = Siege::String("goodbye");
     ASSERT_TRUE(s1);
     ASSERT_STREQ("goodbye", s1.Str());
-    s1 = String();
+    s1 = Siege::String();
     ASSERT_FALSE(s1);
 }
 
 UTEST(test_String, Clear)
 {
     // The string can be cleared
-    String s1("hello");
+    Siege::String s1("hello");
     ASSERT_TRUE(s1);
     ASSERT_EQ(5, s1.Size());
     s1.Clear();
@@ -104,8 +104,8 @@ UTEST(test_String, Clear)
 UTEST(test_String, Add)
 {
     // The addition operator creates prepended strings with c-strings
-    String s1;
-    String s2(s1 + "hello");
+    Siege::String s1;
+    Siege::String s2(s1 + "hello");
     ASSERT_STREQ("hello", s2.Str());
     s2 = s2 + "goodbye";
     ASSERT_STREQ("hellogoodbye", s2.Str());
@@ -114,8 +114,8 @@ UTEST(test_String, Add)
     ASSERT_EQ(19, s2.Size());
 
     // The addition operator creates prepended strings with characters
-    String s3;
-    String s4(s3 + 'h');
+    Siege::String s3;
+    Siege::String s4(s3 + 'h');
     ASSERT_STREQ("h", s4.Str());
     s4 = s4 + 'i';
     ASSERT_STREQ("hi", s4.Str());
@@ -124,9 +124,9 @@ UTEST(test_String, Add)
     ASSERT_EQ(4, s4.Size());
 
     // The addition operator creates prepended strings with other strings
-    String h("hello");
-    String g("goodbye");
-    String s5 = String() + h;
+    Siege::String h("hello");
+    Siege::String g("goodbye");
+    Siege::String s5 = Siege::String() + h;
     ASSERT_STREQ("hello", s5.Str());
     s5 = s5 + g;
     ASSERT_STREQ("hellogoodbye", s5.Str());
@@ -138,17 +138,17 @@ UTEST(test_String, Add)
 UTEST(test_String, Append)
 {
     // The string should correctly append c-strings
-    String s1;
+    Siege::String s1;
     s1 += "hello";
     ASSERT_STREQ("hello", s1.Str());
-    String s2 = "goodbye" + s1;
+    Siege::String s2 = "goodbye" + s1;
     ASSERT_STREQ("goodbyehello", s2.Str());
     s2.Append("goodbye");
     ASSERT_STREQ("goodbyehellogoodbye", s2.Str());
     ASSERT_EQ(19, s2.Size());
 
     // The string should correctly append characters
-    String s5;
+    Siege::String s5;
     s5 += 'h';
     ASSERT_STREQ("h", s5.Str());
     s5 += 'i';
@@ -160,12 +160,12 @@ UTEST(test_String, Append)
     ASSERT_EQ(4, s5.Size());
 
     // The string should correctly append others strings
-    String h("hello");
-    String g("goodbye");
-    String s3;
+    Siege::String h("hello");
+    Siege::String g("goodbye");
+    Siege::String s3;
     s3 += h;
     ASSERT_STREQ(h.Str(), s3.Str());
-    String s4 = g;
+    Siege::String s4 = g;
     s4.Append(s3);
     ASSERT_STREQ("goodbyehello", s4.Str());
     s4.Append("goodbye");
@@ -178,7 +178,7 @@ UTEST(test_String, Append)
 UTEST(test_String, Prepend)
 {
     // The string should correctly prepend c-strings
-    String s1;
+    Siege::String s1;
     s1.Prepend("hello");
     ASSERT_STREQ("hello", s1.Str());
     s1.Prepend("goodbye");
@@ -188,7 +188,7 @@ UTEST(test_String, Prepend)
     ASSERT_EQ(19, s1.Size());
 
     // The string should correctly prepend characters
-    String s5('t');
+    Siege::String s5('t');
     ASSERT_STREQ("t", s5.Str());
     s5.Prepend('n');
     ASSERT_STREQ("nt", s5.Str());
@@ -197,12 +197,12 @@ UTEST(test_String, Prepend)
     ASSERT_EQ(3, s5.Size());
 
     // The string should correctly prepend other strings
-    String s2;
-    String h("hello");
-    String g("goodbye");
+    Siege::String s2;
+    Siege::String h("hello");
+    Siege::String g("goodbye");
     s2.Prepend(h);
     ASSERT_STREQ(h.Str(), s2.Str());
-    String s3 = g;
+    Siege::String s3 = g;
     s3.Prepend(s2);
     ASSERT_STREQ("hellogoodbye", s3.Str());
     s3.Prepend("goodbye");
@@ -215,7 +215,7 @@ UTEST(test_String, Prepend)
 UTEST(test_String, Index)
 {
     // The string can be indexed
-    String s1("abcdefg");
+    Siege::String s1("abcdefg");
     ASSERT_EQ('g', s1.At(-1));
     ASSERT_EQ('a', s1.At(0));
     ASSERT_EQ('b', s1.At(1));
@@ -238,7 +238,7 @@ UTEST(test_String, Index)
 UTEST(test_String, Erase)
 {
     // The string can be erased
-    String s1("this is a string of a certain length");
+    Siege::String s1("this is a string of a certain length");
     s1.Erase();
     ASSERT_FALSE(s1);
     s1 = "this is a string of a certain length";
@@ -266,7 +266,7 @@ UTEST(test_String, Erase)
 UTEST(test_String, Insert)
 {
     // The string can handle insertion
-    String s1(" is a  of a  length");
+    Siege::String s1(" is a  of a  length");
     s1.Insert(5, "");
     ASSERT_STREQ(" is a  of a  length", s1.Str());
     s1.Insert(0, "this");
@@ -290,8 +290,8 @@ UTEST(test_String, Insert)
 UTEST(test_String, Swap)
 {
     // The string can be swapped
-    String s1("stringA");
-    String s2 = "stringB";
+    Siege::String s1("stringA");
+    Siege::String s2 = "stringB";
     s1.Swap(s2);
     ASSERT_STREQ("stringB", s1.Str());
     ASSERT_STREQ("stringA", s2.Str());
@@ -306,7 +306,7 @@ UTEST(test_String, Swap)
 UTEST(test_String, Cast)
 {
     // The string implicitly casts to c-string
-    String s1("hellogoodbye");
+    Siege::String s1("hellogoodbye");
     const char* cstr = s1;
     ASSERT_EQ(0, std::strcmp(cstr, "hellogoodbye"));
 }
@@ -314,10 +314,10 @@ UTEST(test_String, Cast)
 UTEST(test_String, Find)
 {
     // The string can be searched for substrings
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
-    String s1("lANgUagE");
-    String s2("...");
-    String s3("rUBy");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String s1("lANgUagE");
+    Siege::String s2("...");
+    Siege::String s3("rUBy");
     ASSERT_EQ(0, s.Find("ruSt"));
     ASSERT_EQ(8, s.Find("a MuCH SafEr"));
     ASSERT_EQ(21, s.Find(s1));
@@ -332,8 +332,8 @@ UTEST(test_String, Find)
 UTEST(test_String, Replace)
 {
     // The string can replace by substring
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
-    String s3("rUBy");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String s3("rUBy");
     ASSERT_TRUE(s.Replace("ruSt", s3));
     ASSERT_STREQ("rUBy Is a MuCH SafEr lANgUagE...", s.Str());
     ASSERT_EQ(0, s.Find(s3));
@@ -353,8 +353,8 @@ UTEST(test_String, Replace)
 UTEST(test_String, Split)
 {
     // The string can be split into substrings by delimiter
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
-    std::vector<String> vec1 = s.Split(" ");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
+    std::vector<Siege::String> vec1 = s.Split(" ");
     ASSERT_EQ(6, vec1.size());
     ASSERT_STREQ("ruSt", vec1[0].Str());
     ASSERT_STREQ("Is", vec1[1].Str());
@@ -363,31 +363,31 @@ UTEST(test_String, Split)
     ASSERT_STREQ("SafEr", vec1[4].Str());
     ASSERT_STREQ("lANgUagE...", vec1[5].Str());
 
-    String s4("hi:my,name,is");
-    std::vector<String> vec2 = s4.Split(",");
+    Siege::String s4("hi:my,name,is");
+    std::vector<Siege::String> vec2 = s4.Split(",");
     ASSERT_EQ(3, vec2.size());
     ASSERT_STREQ("hi:my", vec2[0].Str());
     ASSERT_STREQ("name", vec2[1].Str());
     ASSERT_STREQ("is", vec2[2].Str());
 
-    std::vector<String> vec3 = s4.Split(":,");
+    std::vector<Siege::String> vec3 = s4.Split(":,");
     ASSERT_EQ(4, vec3.size());
     ASSERT_STREQ("hi", vec3[0].Str());
     ASSERT_STREQ("my", vec3[1].Str());
     ASSERT_STREQ("name", vec3[2].Str());
     ASSERT_STREQ("is", vec3[3].Str());
 
-    String str("hello+goodbye+blah");
-    std::vector<String> vec4 = String("+" + str).Split("+");
+    Siege::String str("hello+goodbye+blah");
+    std::vector<Siege::String> vec4 = Siege::String("+" + str).Split("+");
     ASSERT_EQ(3, vec4.size());
 
-    std::vector<String> vec5 = String(str + "+").Split("+");
+    std::vector<Siege::String> vec5 = Siege::String(str + "+").Split("+");
     ASSERT_EQ(3, vec5.size());
 
-    std::vector<String> vec6 = String("").Split("+");
+    std::vector<Siege::String> vec6 = Siege::String("").Split("+");
     ASSERT_TRUE(vec6.empty());
 
-    std::vector<String> vec7 = String("blah&bleh").Split("\0");
+    std::vector<Siege::String> vec7 = Siege::String("blah&bleh").Split("\0");
     ASSERT_EQ(1, vec7.size());
     ASSERT_STREQ("blah&bleh", vec7[0].Str());
 }
@@ -395,7 +395,7 @@ UTEST(test_String, Split)
 UTEST(test_String, ToUpper)
 {
     // The string can be upper-cased
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
     s.ToUpper();
     ASSERT_STREQ("RUST IS A MUCH SAFER LANGUAGE...", s.Str());
 }
@@ -403,7 +403,7 @@ UTEST(test_String, ToUpper)
 UTEST(test_String, ToLower)
 {
     // The string can be lower-cased
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
     s.ToLower();
     ASSERT_STREQ("rust is a much safer language...", s.Str());
     s = "34143523322421@#@#!@##%";
@@ -414,11 +414,11 @@ UTEST(test_String, ToLower)
 UTEST(test_String, Format)
 {
     // The string can be formatted
-    String fs("This is a %s: ");
-    String fss(fs + "%s");
+    Siege::String fs("This is a %s: ");
+    Siege::String fss(fs + "%s");
     fss.Format("string", "hi");
     ASSERT_STREQ("This is a string: hi", fss.Str());
-    String fsd(fs + "%d");
+    Siege::String fsd(fs + "%d");
     fsd.Format("decimal", 5);
     ASSERT_STREQ("This is a decimal: 5", fsd.Str());
     fsd.Format(200);
@@ -431,8 +431,8 @@ UTEST(test_String, Format)
 UTEST(test_String, SubString)
 {
     // The string can generate substrings
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
-    String sub = s.SubString();
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String sub = s.SubString();
     ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE...", sub.Str());
     sub = s.SubString(5);
     ASSERT_STREQ("Is a MuCH SafEr lANgUagE...", sub.Str());
@@ -459,7 +459,7 @@ UTEST(test_String, SubString)
 UTEST(test_String, PopBack)
 {
     // The string can pop back
-    String s("ruSt Is a MuCH SafEr lANgUagE...");
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
     ASSERT_EQ('.', s.PopBack());
     ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE..", s.Str());
     ASSERT_EQ('.', s.PopBack());
@@ -473,8 +473,8 @@ UTEST(test_String, PopBack)
 UTEST(test_String, GetLine)
 {
     // The string can get its next line
-    String s4("hi\nmy\nname\nis");
-    String line;
+    Siege::String s4("hi\nmy\nname\nis");
+    Siege::String line;
     ASSERT_TRUE(s4.GetLine(line));
     ASSERT_STREQ("hi", line.Str());
     ASSERT_TRUE(s4.GetLine(line));
@@ -504,7 +504,7 @@ UTEST(test_String, GetInt)
 {
     // The string can be converted to int
     int value;
-    String s4("2");
+    Siege::String s4("2");
     ASSERT_TRUE(s4.GetInt(value));
     ASSERT_EQ(2, value);
     s4 = "3.3";
@@ -528,7 +528,7 @@ UTEST(test_String, GetFloat)
 {
     // The string can be converted to float
     float value;
-    String s4("2");
+    Siege::String s4("2");
     ASSERT_TRUE(s4.GetFloat(value));
     ASSERT_EQ(2.f, value);
     s4 = "3.3";
@@ -551,36 +551,36 @@ UTEST(test_String, GetFloat)
 UTEST(test_String, FromInt)
 {
     // The string can be converted from int
-    ASSERT_STREQ("2", String::FromInt(2).Str());
-    ASSERT_STREQ("90000000", String::FromInt(90000000).Str());
+    ASSERT_STREQ("2", Siege::String::FromInt(2).Str());
+    ASSERT_STREQ("90000000", Siege::String::FromInt(90000000).Str());
 }
 
 UTEST(test_String, FromFloat)
 {
     // The string can be converted from float
-    ASSERT_STREQ("2.000000", String::FromFloat(2.f).Str());
-    ASSERT_STREQ("9.001430", String::FromFloat(9.00143f).Str());
+    ASSERT_STREQ("2.000000", Siege::String::FromFloat(2.f).Str());
+    ASSERT_STREQ("9.001430", Siege::String::FromFloat(9.00143f).Str());
 }
 
 UTEST(test_String, FromDouble)
 {
     // The string can be converted from double
-    ASSERT_STREQ("0.14159265358979323", String::FromDouble(0.14159265358979323L).Str());
-    ASSERT_STREQ("0.04159245358979343", String::FromDouble(0.04159245358979343L).Str());
+    ASSERT_STREQ("0.14159265358979323", Siege::String::FromDouble(0.14159265358979323L).Str());
+    ASSERT_STREQ("0.04159245358979343", Siege::String::FromDouble(0.04159245358979343L).Str());
 }
 
 UTEST(test_String, FromLong)
 {
     // The string can be converted from long
-    ASSERT_STREQ("2", String::FromLong(2l).Str());
-    ASSERT_STREQ("90000000000000", String::FromLong(90000000000000l).Str());
+    ASSERT_STREQ("2", Siege::String::FromLong(2l).Str());
+    ASSERT_STREQ("90000000000000", Siege::String::FromLong(90000000000000l).Str());
 }
 
 UTEST(test_String, OnHeap)
 {
     // The string should make use of small string allocation
-    ASSERT_LE(16, sizeof(String));
-    String s1;
+    ASSERT_LE(16, sizeof(Siege::String));
+    Siege::String s1;
     ASSERT_FALSE(s1.OnHeap());
     ASSERT_EQ(0, s1.Size());
     ASSERT_EQ(15, s1.Capacity());
@@ -590,7 +590,7 @@ UTEST(test_String, OnHeap)
     ASSERT_EQ(5, s1.Size());
     ASSERT_EQ(15, s1.Capacity());
 
-    String s2("world");
+    Siege::String s2("world");
     ASSERT_FALSE(s1.OnHeap());
     ASSERT_EQ(5, s1.Size());
     ASSERT_EQ(15, s1.Capacity());
@@ -619,27 +619,27 @@ UTEST(test_String, OnHeap)
     ASSERT_EQ(28, s1.Capacity());
 
     // It can handle values of the length of its specified max size
-    char bigStr[String::MAX_SIZE + 2];
-    memset(bigStr, '1', String::MAX_SIZE);
-    bigStr[String::MAX_SIZE] = '\0';
+    char bigStr[Siege::String::MAX_SIZE + 2];
+    memset(bigStr, '1', Siege::String::MAX_SIZE);
+    bigStr[Siege::String::MAX_SIZE] = '\0';
     s1 = bigStr;
     ASSERT_TRUE(s1.OnHeap());
-    ASSERT_EQ(String::MAX_SIZE, s1.Size());
-    ASSERT_EQ(String::MAX_SIZE, s1.Capacity());
+    ASSERT_EQ(Siege::String::MAX_SIZE, s1.Size());
+    ASSERT_EQ(Siege::String::MAX_SIZE, s1.Capacity());
 
     // It will fail to assign values of lengths above its specified max size
-    bigStr[String::MAX_SIZE] = '1';
-    bigStr[String::MAX_SIZE + 1] = '\0';
+    bigStr[Siege::String::MAX_SIZE] = '1';
+    bigStr[Siege::String::MAX_SIZE + 1] = '\0';
     s1 = bigStr;
     ASSERT_TRUE(s1.OnHeap());
-    ASSERT_EQ(String::MAX_SIZE, s1.Size());
-    ASSERT_EQ(String::MAX_SIZE, s1.Capacity());
+    ASSERT_EQ(Siege::String::MAX_SIZE, s1.Size());
+    ASSERT_EQ(Siege::String::MAX_SIZE, s1.Capacity());
 }
 
 UTEST(test_String, Reset)
 {
     // The string should allow for resetting to default values
-    String s1;
+    Siege::String s1;
     ASSERT_FALSE(s1);
     ASSERT_EQ(0, s1.Size());
     ASSERT_EQ(15, s1.Capacity());
@@ -681,7 +681,7 @@ UTEST(test_String, Reset)
 UTEST(test_String, Reserve)
 {
     // The string should allow for pre-reserving capacity
-    String s1;
+    Siege::String s1;
     ASSERT_FALSE(s1);
     ASSERT_EQ(0, s1.Size());
     ASSERT_EQ(15, s1.Capacity());
@@ -730,7 +730,7 @@ UTEST(test_String, Reserve)
 UTEST(test_String, Shrink)
 {
     // The string should allow for shrinking capacity
-    String s1;
+    Siege::String s1;
     ASSERT_FALSE(s1);
     ASSERT_EQ(0, s1.Size());
     ASSERT_EQ(15, s1.Capacity());

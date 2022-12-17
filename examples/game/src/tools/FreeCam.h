@@ -13,7 +13,7 @@
 
 #include "../ServiceLocator.h"
 
-class FreeCam : public Entity
+class FreeCam : public Siege::Entity
 {
 public:
 
@@ -23,7 +23,7 @@ public:
         moveSpeed(10.f),
         lookSpeed(0.1f),
         camera(ServiceLocator::GetCamera()),
-        rotation(Vec3(0.f, -1.f, -1.f)),
+        rotation({0.f, -1.f, -1.f}),
         previousMousePosition({0.f, 0.f, 0.f})
     {}
 
@@ -41,11 +41,11 @@ private:
 
     float lookSpeed;
 
-    Cam* camera;
+    Siege::Cam* camera;
 
-    Vec3 rotation;
+    Siege::Vec3 rotation;
 
-    Vec3 previousMousePosition;
+    Siege::Vec3 previousMousePosition;
 };
 
 #endif // SIEGE_ENGINE_FREECAM_H

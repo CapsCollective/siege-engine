@@ -10,6 +10,8 @@
 
 #include <algorithm>
 
+namespace Siege
+{
 void CollisionSystem::Add(Entity* entity)
 {
     // Set the entity for registration
@@ -78,3 +80,4 @@ bool CollisionSystem::CheckCollision(const BoundedBox& boundingBox)
     }
     return false;
 }
+} // namespace Siege
