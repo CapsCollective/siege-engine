@@ -7,13 +7,13 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#include <cmath>
-#include <limits>
-
 #include <utest.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
+
+#include <cmath>
+#include <limits>
 
 using namespace Siege;
 

@@ -53,7 +53,7 @@ struct Vec4
      * A constructor from a 3D vector.
      * @param other the 3D vector to copy elements from.
      */
-     explicit Vec4(const struct Vec3& other);
+    explicit Vec4(const struct Vec3& other);
 
     /**
      * An assignment operator from a 2D vector

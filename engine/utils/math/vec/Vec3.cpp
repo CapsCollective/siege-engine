@@ -9,7 +9,6 @@
 #include "Vec3.h"
 
 #include "../Float.h"
-
 #include "Common.h"
 
 namespace Siege

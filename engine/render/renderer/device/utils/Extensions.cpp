@@ -17,7 +17,7 @@
 #define REQUIRES_PORTABILITY_EXTENSION 1
 
 #define GET_MACOS_REQUIRED_EXTENSIONS(collection, size, offset) \
-    collection = Array<String>(size);                           \
+    collection = HeapArray<String>(size);                       \
     collection[size - offset] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #else
 #define REQUIRES_PORTABILITY_EXTENSION 0
@@ -58,7 +58,7 @@ bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
     return true;
 }
 
-Array<String> GetRequiredExtensions(bool enableValidationLayers)
+HeapArray<String> GetRequiredExtensions(bool enableValidationLayers)
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -68,7 +68,7 @@ Array<String> GetRequiredExtensions(bool enableValidationLayers)
 
     size_t size = glfwExtensionCount + offset;
 
-    Array<String> array(size);
+    HeapArray<String> array(size);
 
     GET_MACOS_REQUIRED_EXTENSIONS(array, size, offset)
 
@@ -102,8 +102,9 @@ void HasGflwRequiredInstanceExtensions(bool enableValidationLayers)
     String requiredExtensionsMsg;
 
     auto requiredExtensions = GetRequiredExtensions(enableValidationLayers);
-    for (const auto& required : requiredExtensions)
+    for (auto it = requiredExtensions.CreateIterator(); it; ++it)
     {
+        auto required = *it;
         requiredExtensionsMsg += String("\n\t %s").Formatted(required.Str());
         CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!")
     }

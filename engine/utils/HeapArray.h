@@ -427,7 +427,10 @@ public:
     void Clear()
     {
         count = 0;
-        memset(stateMaskBitfield, 0, (BITMASK_SIZE * CalculateByteMaskCount(size)));
+        if (stateMaskBitfield)
+        {
+            memset(stateMaskBitfield, 0, (BITMASK_SIZE * CalculateByteMaskCount(size)));
+        }
     }
 
     /**

@@ -16,12 +16,79 @@
 #include <cstring>
 #include <memory>
 
-#include "Array.h"
-
 // TODO(Aryeh): Move this to Utils.
 
 namespace Siege
 {
+template<typename Array>
+class ArrayIterator
+{
+public:
+
+    using ValueType = typename Array::ValueType;
+    using PointerType = ValueType*;
+    using ReferenceType = ValueType&;
+
+public:
+
+    ArrayIterator(PointerType pointer) : pointer {pointer} {};
+
+    ArrayIterator& operator++()
+    {
+        pointer++;
+        return *this;
+    }
+
+    ArrayIterator operator++(int)
+    {
+        ArrayIterator iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+
+    ArrayIterator& operator--()
+    {
+        pointer--;
+        return *this;
+    }
+
+    ArrayIterator operator--(int)
+    {
+        ArrayIterator iterator = *this;
+        --(*this);
+        return iterator;
+    }
+
+    ReferenceType operator[](size_t index)
+    {
+        return *(pointer + index);
+    }
+
+    PointerType operator->()
+    {
+        return pointer;
+    }
+
+    ReferenceType operator*()
+    {
+        return *pointer;
+    }
+
+    bool operator==(const ArrayIterator& other) const
+    {
+        return pointer == other.pointer;
+    }
+
+    bool operator!=(const ArrayIterator& other) const
+    {
+        return !(*this == other);
+    }
+
+private:
+
+    PointerType pointer;
+};
+
 template<typename T, size_t S>
 class StackArray
 {

@@ -8,9 +8,9 @@
 
 #include "Maths.h"
 
-#include "Xform.h"
-
 #include <cmath>
+
+#include "Xform.h"
 
 namespace Siege
 {

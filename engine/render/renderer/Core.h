@@ -9,15 +9,15 @@
 #ifndef SIEGE_ENGINE_CORE_H
 #define SIEGE_ENGINE_CORE_H
 
-#include "utils/StackArray.h"
-
 #include <utils/Hash.h>
 #include <utils/HeapArray.h>
 #include <utils/Logging.h>
 #include <utils/math/mat/Mat4.h>
-
 #include <volk/volk.h>
+
 #include <cstdint>
+
+#include "utils/StackArray.h"
 
 namespace Siege
 {

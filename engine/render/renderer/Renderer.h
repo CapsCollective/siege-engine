@@ -85,7 +85,7 @@ public:
 private:
 
     static VulkanDevice* deviceInstance;
-    static Array<VkCommandBuffer> commandBuffers;
+    static HeapArray<VkCommandBuffer> commandBuffers;
 
     VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 

@@ -11,13 +11,12 @@
 
 #include <utils/Macros.h>
 #include <utils/String.h>
+#include <utils/math/Maths.h>
 
 #include <functional>
 #include <map>
 #include <utility>
 #include <vector>
-
-#include "utils/math/Maths.h"
 
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                         \
