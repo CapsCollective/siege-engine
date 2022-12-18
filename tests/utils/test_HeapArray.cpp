@@ -442,3 +442,16 @@ UTEST(test_HeapArray, ClearArray)
     ASSERT_FALSE(array.Active(0));
     ASSERT_FALSE(array.Active(1));
 }
+
+UTEST(test_HeapArray, ClearEmptyArray)
+{
+    Siege::HeapArray<uint32_t> array;
+
+    ASSERT_EQ(array.Count(), 0);
+    ASSERT_EQ(array.Data(), nullptr);
+
+    array.Clear();
+
+    ASSERT_EQ(array.Count(), 0);
+    ASSERT_EQ(array.Data(), nullptr);
+}

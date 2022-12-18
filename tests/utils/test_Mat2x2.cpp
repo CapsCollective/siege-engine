@@ -7,7 +7,7 @@
 //
 
 #include <utest.h>
-#include <utils/mat/Mat2.h>
+#include <utils/math/mat/Mat2.h>
 
 #include <limits>
 

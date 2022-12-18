@@ -9,10 +9,11 @@
 #ifndef SIEGE_ENGINE_TRANSITIONADAPTER_H
 #define SIEGE_ENGINE_TRANSITIONADAPTER_H
 
+#include <utils/math/Maths.h>
+
 #include <raylib/Vector3.hpp>
 
 #include "../utils/Colour.h"
-#include "../utils/Maths.h"
 
 namespace Siege
 {

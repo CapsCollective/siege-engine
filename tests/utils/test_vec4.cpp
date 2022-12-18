@@ -11,7 +11,7 @@
 #include <limits>
 
 #include "utest.h"
-#include "utils/vec/Vec4.h"
+#include "utils/math/vec/Vec4.h"
 
 using namespace Siege;
 

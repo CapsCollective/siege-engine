@@ -19,12 +19,13 @@ Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& devi
 
 void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 {
-    for (auto& framebuffer : framebuffers) vkDestroyFramebuffer(device, framebuffer, nullptr);
+    for (auto it = framebuffers.CreateIterator(); it; ++it)
+        vkDestroyFramebuffer(device, *it, nullptr);
 }
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
 {
-    framebuffers = Array<VkFramebuffer>(IMAGE_COUNT);
+    framebuffers = HeapArray<VkFramebuffer>(IMAGE_COUNT);
 
     auto* colorAttachments = config.GetColorAttachments();
     auto* depthAttachments = config.GetDepthAttachments();
@@ -58,7 +59,7 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
     if (framebuffers.Size() > 0) DestroyFramebuffer(device);
 
     framebuffers = std::move(other.framebuffers);
-    other.framebuffers.Reset();
+    other.framebuffers.Clear();
 
     return *this;
 }
@@ -67,7 +68,7 @@ Framebuffer::~Framebuffer()
 {
     auto device = VulkanDevice::GetDeviceInstance();
     DestroyFramebuffer(device->Device());
-    framebuffers.Reset();
+    framebuffers.Clear();
 }
 
 // Config functions

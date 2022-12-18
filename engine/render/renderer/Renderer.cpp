@@ -6,11 +6,13 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#define VOLK_IMPLEMENTATION
+
 #include "Renderer.h"
 
 namespace Siege
 {
-Array<VkCommandBuffer> Renderer::commandBuffers;
+HeapArray<VkCommandBuffer> Renderer::commandBuffers;
 VulkanDevice* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
@@ -42,7 +44,7 @@ Renderer::~Renderer()
 
 void Renderer::CreateCommandBuffers()
 {
-    commandBuffers = Array<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers = HeapArray<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -59,11 +61,9 @@ void Renderer::DrawFrame()
 {
     auto commandBuffer = GetCurrentCommandBuffer();
 
-    CameraData cameraData = {mainCamera->GetProjection(), mainCamera->GetView()};
+    Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer2D::GlobalData global2DData = {{cameraData}};
-
-    Renderer3D::Render(commandBuffer, cameraData);
+    Renderer3D::Render(commandBuffer, projection);
     Renderer2D::Render(commandBuffer, global2DData);
 }
 

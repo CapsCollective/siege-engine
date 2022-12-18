@@ -10,7 +10,7 @@
 #define SIEGE_ENGINE_RENDERSYSTEM_H
 
 #include <utils/Colour.h>
-#include <utils/Maths.h>
+#include <utils/math/Maths.h>
 
 #include <map>
 #include <utility>

@@ -7,6 +7,7 @@
 
 #include "Vec4.h"
 
+#include "../Float.h"
 #include "Common.h"
 
 namespace Siege
@@ -57,6 +58,14 @@ Vec4::operator Vec3() const
 
 // Static Methods
 
+Vec4 Vec4::Lerp(Vec4 origin, Vec4 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time),
+            Float::Lerp(origin.w, destination.w, time)};
+}
+
 bool Vec4::FromString(OUT Vec4& vec, const String& string)
 {
     // Split the string at comma values and check the number of components
@@ -77,10 +86,10 @@ Vec4 Vec4::Normalise(const Vec4& vec)
 {
     float length = vec.Length();
     length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
-    return {::Siege::Normalise(vec.x, length),
-            ::Siege::Normalise(vec.y, length),
-            ::Siege::Normalise(vec.z, length),
-            ::Siege::Normalise(vec.w, length)};
+    return {Float::Normalise(vec.x, length),
+            Float::Normalise(vec.y, length),
+            Float::Normalise(vec.z, length),
+            Float::Normalise(vec.w, length)};
 }
 
 float Vec4::Dot(const Vec4& lhs, const Vec4& rhs)

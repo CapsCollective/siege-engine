@@ -50,7 +50,7 @@ private:
                      const void* globalData);
     void RenderRects();
 
-    glm::vec3 lineColor;
+    Vec3 lineColor;
 
     Material lineMaterial;
     Model lineModel;
@@ -61,7 +61,7 @@ private:
     Hash::StringId globalDataId;
 
     StackArray<LineVertex, Mesh::MAX_VERTICES> lines;
-    StackArray<glm::vec3, Mesh::MAX_VERTICES> rects;
+    StackArray<Vec3, Mesh::MAX_VERTICES> rects;
 };
 } // namespace Siege
 

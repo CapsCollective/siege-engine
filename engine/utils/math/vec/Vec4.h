@@ -120,6 +120,8 @@ struct Vec4
      */
     static float Dot(const Vec4& lhs, const Vec4& rhs);
 
+    static Vec4 Lerp(Vec4 origin, Vec4 destination, float time);
+
     // Public Methods
 
     /**

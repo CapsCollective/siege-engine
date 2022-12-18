@@ -10,15 +10,10 @@
 
 #include <cmath>
 
+#include "Xform.h"
+
 namespace Siege
 {
-// ---------------------------------------- XForm --------------------------------------------------
-
-void Xform::SetRotation(float newRotation)
-{
-    rotation = fmod(newRotation, 360.f);
-}
-
 // -------------------------------------- BoundedBox -----------------------------------------------
 
 bool BoundedBox::Intersects(const BoundedBox& other) const

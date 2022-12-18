@@ -8,6 +8,8 @@
 
 #include "Renderer2D.h"
 
+#include <utils/math/Graphics.h>
+
 namespace Siege
 {
 Hash::StringId Renderer2D::transformId;
@@ -35,9 +37,9 @@ void Renderer2D::DrawModel(Model* model,
 {
     models.Append(model);
 
-    auto transform = Math::CalculateTransform3D({position.x, position.y, zIndex},
-                                                {0.f, 0.f, rotation},
-                                                {scale.x, scale.y, 0.f});
+    auto transform = Graphics::CalculateTransform3D({position.x, position.y, zIndex},
+                                                    {0.f, 0.f, rotation},
+                                                    {scale.x, scale.y, 0.f});
     transforms.Append({transform});
 }
 

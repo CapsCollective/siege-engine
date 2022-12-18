@@ -8,6 +8,7 @@
 
 #include "Vec3.h"
 
+#include "../Float.h"
 #include "Common.h"
 
 namespace Siege
@@ -18,13 +19,12 @@ const Vec3 Vec3::Zero = {0.f, 0.f, 0.f};
 const Vec3 Vec3::One = {1.f, 1.f, 1.f};
 const Vec3 Vec3::Up = {0.f, 1.f, 0.f};
 
-// 'Structors
-
-Vec3::Vec3(const Vec2& other) : x {other.x}, y {other.y} {}
-
-Vec3::Vec3(const Vec4& other) : x {other.x}, y {other.y}, z {other.z} {}
-
-// Unary Operators
+Vec3 Vec3::Lerp(Vec3 origin, Vec3 destination, float time)
+{
+    return {Float::Lerp(origin.x, destination.x, time),
+            Float::Lerp(origin.y, destination.y, time),
+            Float::Lerp(origin.z, destination.z, time)};
+}
 
 Vec3& Vec3::operator=(const Vec2& rhs)
 {
@@ -70,9 +70,9 @@ Vec3 Vec3::Normalise(const Vec3& vec)
 {
     float length = vec.Length();
     length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
-    return {::Siege::Normalise(vec.x, length),
-            ::Siege::Normalise(vec.y, length),
-            ::Siege::Normalise(vec.z, length)};
+    return {Float::Normalise(vec.x, length),
+            Float::Normalise(vec.y, length),
+            Float::Normalise(vec.z, length)};
 }
 
 float Vec3::Dot(const Vec3& lhs, const Vec3& rhs)

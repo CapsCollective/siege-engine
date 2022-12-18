@@ -9,8 +9,9 @@
 #ifndef SIEGE_ENGINE_ENTITY_H
 #define SIEGE_ENGINE_ENTITY_H
 
-#include <utils/Maths.h>
 #include <utils/String.h>
+#include <utils/math/Maths.h>
+#include <utils/math/Xform.h>
 
 #include "EntityPtr.h"
 #include "IndexAllocator.h"

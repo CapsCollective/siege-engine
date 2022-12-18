@@ -10,8 +10,8 @@
 #define SIEGE_ENGINE_SCENEFILE_H
 
 #include <utils/Macros.h>
-#include <utils/Maths.h>
 #include <utils/String.h>
+#include <utils/math/Maths.h>
 
 #include <functional>
 #include <map>

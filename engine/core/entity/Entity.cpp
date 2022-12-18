@@ -73,7 +73,7 @@ const Vec3& Entity::GetPosition() const
 
 float Entity::GetRotation() const
 {
-    return transform.GetRotation();
+    return transform.GetRotation().y;
 }
 
 const Vec3& Entity::GetScale() const
@@ -88,7 +88,8 @@ void Entity::SetPosition(const Vec3& position)
 
 void Entity::SetRotation(float rotation)
 {
-    transform.SetRotation(fmod(rotation, 360.f));
+    transform.SetRotation(
+        {transform.GetRotation().x, fmod(rotation, 360.f), transform.GetRotation().z});
 }
 
 void Entity::SetScale(const Vec3& scale)

@@ -11,7 +11,6 @@
 
 #include "../Core.h"
 #include "../model/Model.h"
-#include "../utils/Math.h"
 
 namespace Siege
 {
