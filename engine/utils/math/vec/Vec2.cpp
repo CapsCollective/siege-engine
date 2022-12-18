@@ -73,7 +73,7 @@ Vec2 Vec2::Normalise(const Vec2& vec)
 {
     float length = vec.Length();
     length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
-    return {::Siege::Normalise(vec.x, length), ::Siege::Normalise(vec.y, length)};
+    return {Float::Normalise(vec.x, length), Float::Normalise(vec.y, length)};
 }
 
 float Vec2::Length(const Vec2& vec)

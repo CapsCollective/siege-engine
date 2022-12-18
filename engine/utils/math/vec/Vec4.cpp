@@ -86,10 +86,10 @@ Vec4 Vec4::Normalise(const Vec4& vec)
 {
     float length = vec.Length();
     length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
-    return {::Siege::Normalise(vec.x, length),
-            ::Siege::Normalise(vec.y, length),
-            ::Siege::Normalise(vec.z, length),
-            ::Siege::Normalise(vec.w, length)};
+    return {Float::Normalise(vec.x, length),
+            Float::Normalise(vec.y, length),
+            Float::Normalise(vec.z, length),
+            Float::Normalise(vec.w, length)};
 }
 
 float Vec4::Dot(const Vec4& lhs, const Vec4& rhs)

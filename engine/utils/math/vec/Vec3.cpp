@@ -70,9 +70,9 @@ Vec3 Vec3::Normalise(const Vec3& vec)
 {
     float length = vec.Length();
     length = ((length == 0) * 1.f) + ((length > 0 || length < 0) * length);
-    return {::Siege::Normalise(vec.x, length),
-            ::Siege::Normalise(vec.y, length),
-            ::Siege::Normalise(vec.z, length)};
+    return {Float::Normalise(vec.x, length),
+            Float::Normalise(vec.y, length),
+            Float::Normalise(vec.z, length)};
 }
 
 float Vec3::Dot(const Vec3& lhs, const Vec3& rhs)

@@ -69,7 +69,7 @@ const Input::MouseCoordinates& Input::GetCursorPosition()
 
 Input::MouseCoordinates Input::GetNormalisedMousePosition()
 {
-    using Siege::Float;
+    using namespace Siege::Float;
     return {Float::Clamp(Float::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
                          -1.f,
                          1.f),

@@ -13,20 +13,10 @@
 #include <cmath>
 
 #include "../../Macros.h"
+#include "../Float.h"
 
 namespace Siege
 {
-
-/**
- * Computes the square root of a float
- * @param n the number to evaluate
- * @return a float value representing the square root
- */
-inline constexpr float FastSqrt(float n)
-{
-    return sqrtf(n);
-}
-
 /**
  * computes the dot product of a set of floats.
  * NOTE: all dimensions must be provided as pairs (i.e: x0 must have an x1 value provided)
@@ -62,18 +52,7 @@ inline constexpr float Dot(float x0 = 0,
  */
 inline constexpr float Length(float x = 0, float y = 0, float z = 0, float w = 0)
 {
-    return FastSqrt((x * x) + (y * y) + (z * z) + (w * w));
-}
-
-/**
- * Normalises a value by a given maximum value
- * @param value the value to normalise
- * @param max the maximum it should be normalised from
- * @return a float representing a normalised value between 0 and 1
- */
-inline constexpr float Normalise(float value, float max)
-{
-    return value * 1.f / max;
+    return Float::FastSqrt((x * x) + (y * y) + (z * z) + (w * w));
 }
 } // namespace Siege
 
