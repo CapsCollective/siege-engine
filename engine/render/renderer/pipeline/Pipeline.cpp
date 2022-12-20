@@ -8,8 +8,9 @@
 
 #include "Pipeline.h"
 
-#include <fstream>
 #include <utils/Logging.h>
+
+#include <fstream>
 
 namespace Siege
 {

@@ -14,8 +14,8 @@
 #include <utils/StackArray.h>
 #include <utils/math/mat/Mat4.h>
 #include <volk/volk.h>
-#include <cstdint>
 
+#include <cstdint>
 
 namespace Siege
 {

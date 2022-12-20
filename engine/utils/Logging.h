@@ -16,7 +16,6 @@
 
 #include "Macros.h"
 #include "String.h"
-
 #include "math/Maths.h"
 
 // Define terminal colour wrapping macros

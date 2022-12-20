@@ -145,12 +145,12 @@ int main()
 
     // Create shapes for use
     Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
-                                                     GameObject(&cubeObjModel),
-                                                     GameObject(&vaseObjModel)};
+                                                   GameObject(&cubeObjModel),
+                                                   GameObject(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
     Siege::Utils::MHArray<GameObject> objects2D = {GameObject(&triangleModel),
-                                                     GameObject(&squareModel)};
+                                                   GameObject(&squareModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});

@@ -8,11 +8,11 @@
 
 #include "Material.h"
 
+#include <utils/Logging.h>
+
 #include "../mesh/Mesh.h"
 #include "../swapchain/Swapchain.h"
 #include "../utils/Descriptor.h"
-
-#include <utils/Logging.h>
 
 namespace Siege
 {
@@ -237,7 +237,8 @@ void Material::AddShader(Shader* shader)
 
 void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
 {
-    // TODO: Error is occurring because log(2)/log(2) = 1.5, which is being rounded down to 1. Therefore only one iteration is occurring.
+    // TODO: Error is occurring because log(2)/log(2) = 1.5, which is being rounded down to 1.
+    // Therefore only one iteration is occurring.
     auto& uniforms = shader->GetUniforms();
 
     for (auto it = uniforms.CreateIterator(); it; ++it)

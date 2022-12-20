@@ -11,18 +11,19 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
 #include <utility>
-#include <cmath>
 
 namespace Siege::Utils
 {
 class ArrayUtils
 {
 public:
+
     /**
      * @brief Allocates a chunk of memory and returns it as a pointer to a type.
      * @tparam T the type of the pointer to allocate.

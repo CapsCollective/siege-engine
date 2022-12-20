@@ -126,7 +126,7 @@ private:
     uint64_t bufferSize = 0;
 
     Utils::MSArray<VkDescriptorSet, MAX_MATERIAL_BINDINGS> descriptorSets;
-    Utils::MSArray<uint32_t , MAX_MATERIAL_BINDINGS> descriptorOffsets;
+    Utils::MSArray<uint32_t, MAX_MATERIAL_BINDINGS> descriptorOffsets;
 
     Utils::MSArray<VertexDescription::Binding, MAX_MATERIAL_BINDINGS> vertexBindings;
 

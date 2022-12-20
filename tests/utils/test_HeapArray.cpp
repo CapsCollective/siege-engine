@@ -374,7 +374,7 @@ UTEST(test_MHArray, IterateOverPartiallyFilledArray)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
@@ -397,7 +397,7 @@ UTEST(test_MHArray, IterateOverArrayWithMissingFrontAndEnd)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
@@ -421,13 +421,38 @@ UTEST(test_MHArray, IterateOverArrayWithLargeGaps)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
 }
 
-UTEST(test_HeapArray, ResizeArray)
+UTEST(test_MHArray, IterateOverSparseArray)
+{
+    MHArray<uint32_t> array(20);
+    int expected[] = {2, 1, 3};
+
+    // 0000 0001 0000 0000 0010 0010
+    array[1] = 2;
+    array[5] = 1;
+    array[16] = 3;
+
+    const size_t ARR_COUNT = 3;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for (size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MHArray, ResizeArray)
 {
     MHArray<uint32_t> array({1, 2, 3, 4});
 
@@ -463,7 +488,7 @@ UTEST(test_HeapArray, ResizeArray)
     ASSERT_EQ(array.Count(), 6);
 }
 
-UTEST(test_HeapArray, ResizeArrayToSmallerSize)
+UTEST(test_MHArray, ResizeArrayToSmallerSize)
 {
     MHArray<uint32_t> array({1, 2, 3, 4});
 
@@ -489,7 +514,7 @@ UTEST(test_HeapArray, ResizeArrayToSmallerSize)
     ASSERT_FALSE(array.Active(3));
 }
 
-UTEST(test_HeapArray, ResizeLargeArray)
+UTEST(test_MHArray, ResizeLargeArray)
 {
     MHArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
@@ -508,7 +533,7 @@ UTEST(test_HeapArray, ResizeLargeArray)
     ASSERT_FALSE(array.Active(9));
 }
 
-UTEST(test_HeapArray, ClearArray)
+UTEST(test_MHArray, ClearArray)
 {
     MHArray<uint32_t> array({1, 2});
 
@@ -527,7 +552,7 @@ UTEST(test_HeapArray, ClearArray)
     ASSERT_FALSE(array.Active(1));
 }
 
-UTEST(test_HeapArray, ClearEmptyArray)
+UTEST(test_MHArray, ClearEmptyArray)
 {
     MHArray<uint32_t> array;
 

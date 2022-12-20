@@ -9,8 +9,8 @@
 #include <utest.h>
 #include <utils/StackArray.h>
 
-#include <utility>
 #include <cmath>
+#include <utility>
 
 //---------------------------------------- SArray --------------------------------------------------
 
@@ -647,7 +647,7 @@ UTEST(test_MSArray, IterateUsingRangedForLoop)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
@@ -672,7 +672,7 @@ UTEST(test_MSArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
@@ -693,7 +693,7 @@ UTEST(test_MSArray, IterateOverSingleElementArray)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
@@ -716,7 +716,7 @@ UTEST(test_MSArray, IterateOverLargeArray)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expectedResults[i], actualResults[i]);
     }
@@ -754,7 +754,7 @@ UTEST(test_MSArray, IterateOverPartiallyFilledArray)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
@@ -777,12 +777,11 @@ UTEST(test_MSArray, IterateOverArrayWithMissingFrontAndEnd)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
 }
-
 
 UTEST(test_MSArray, IterateOverArrayWithLargeGaps)
 {
@@ -802,7 +801,32 @@ UTEST(test_MSArray, IterateOverArrayWithLargeGaps)
         actualResults[index++] = *it;
     }
 
-    for(size_t i = 0; i < ARR_COUNT; i++)
+    for (size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MSArray, IterateOverSparseArray)
+{
+    Siege::Utils::MSArray<uint32_t, 20> array;
+    int expected[] = {2, 1, 3};
+
+    // 0000 0001 0000 0000 0010 0010
+    array[1] = 2;
+    array[5] = 1;
+    array[16] = 3;
+
+    const size_t ARR_COUNT = 3;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for (size_t i = 0; i < ARR_COUNT; i++)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }

@@ -9,16 +9,16 @@
 #include "Extensions.h"
 
 #include <GLFW/glfw3.h>
+#include <utils/Logging.h>
 
 #include <unordered_set>
-#include <utils/Logging.h>
 #include <vector>
 
 #ifdef __APPLE__
 #define REQUIRES_PORTABILITY_EXTENSION 1
 
 #define GET_MACOS_REQUIRED_EXTENSIONS(collection, size, offset) \
-    collection = Utils::MHArray<String>(size);                \
+    collection = Utils::MHArray<String>(size);                  \
     collection[size - offset] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #else
 #define REQUIRES_PORTABILITY_EXTENSION 0

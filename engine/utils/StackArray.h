@@ -400,8 +400,7 @@ public:
      */
     MSArray(MSArray&& other)
     {
-        Copy(other);
-        other.Clear();
+        Swap(other);
     }
 
     // Operator Overloads
@@ -425,8 +424,8 @@ public:
      */
     inline T& operator[](const size_t& index)
     {
-        count += !bitField.IsSet(index+1);
-        bitField.SetBit(index+1);
+        count += !bitField.IsSet(index + 1);
+        bitField.SetBit(index + 1);
         return Get(index);
     }
 
@@ -526,8 +525,8 @@ public:
      */
     inline void Insert(const size_t& index, const T& element)
     {
-        count += !bitField.IsSet(index+1);
-        bitField.SetBit(index+1);
+        count += !bitField.IsSet(index + 1);
+        bitField.SetBit(index + 1);
         Set(index, element);
     }
 
@@ -535,7 +534,7 @@ public:
     {
         ArrayUtils::AssertIsInBounds(count, S);
         Set(count, element);
-        count += !bitField.IsSet(count+1);
+        count += !bitField.IsSet(count + 1);
         bitField.SetBit(count);
     }
 
@@ -557,7 +556,7 @@ public:
      */
     inline bool Active(const size_t& index) const
     {
-        return bitField.IsSet(index+1);
+        return bitField.IsSet(index + 1);
     }
 
     /**
@@ -567,7 +566,7 @@ public:
      */
     inline void Remove(const size_t& index)
     {
-        bitField.UnsetBit(index+1);
+        bitField.UnsetBit(index + 1);
         count--;
     }
 
@@ -613,6 +612,21 @@ private:
         ArrayUtils::CopyData(data, other.Data(), sizeof(T) * other.Size());
         bitField = other.bitField;
         count = other.count;
+    }
+
+    inline void Swap(MSArray& other)
+    {
+        auto tmpData = data;
+        auto tmpBitField = bitField;
+        auto tmpCount = count;
+
+        memcpy(data, other.data, sizeof(T) * S);
+        bitField = other.bitField;
+        count = other.count;
+
+        memcpy(other.data, tmpData, sizeof(T) * S);
+        other.bitField = tmpBitField;
+        other.count = tmpCount;
     }
 
     T data[S];

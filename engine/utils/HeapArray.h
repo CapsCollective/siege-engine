@@ -240,6 +240,7 @@ public:
      */
     T& operator[](const size_t& index)
     {
+        assert(data && "Trying to index into MHArray when the array has not been initialised!");
         count += !bitField.IsSet(index + 1);
         bitField.SetBit(index + 1);
 

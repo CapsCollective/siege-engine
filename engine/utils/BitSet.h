@@ -429,6 +429,6 @@ private:
      */
     static void AssertIsInBounds(const unsigned long& index, const unsigned long& size);
 };
-} // namespace Siege
+} // namespace Siege::Utils
 
 #endif // SIEGE_ENGINE_BITSET_H

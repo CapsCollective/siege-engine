@@ -100,7 +100,7 @@ Shader& Shader::WithDynamicStorage(uint32_t binding,
 Shader& Shader::WithVertexType(uint32_t size)
 {
     vertexBindings.Append({});
-    vertexBindings[vertexBindings.Count()-1].vertexStride = size;
+    vertexBindings[vertexBindings.Count() - 1].vertexStride = size;
 
     CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
                 filePath,
