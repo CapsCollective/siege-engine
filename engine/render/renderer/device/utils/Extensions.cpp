@@ -18,7 +18,7 @@
 #define REQUIRES_PORTABILITY_EXTENSION 1
 
 #define GET_MACOS_REQUIRED_EXTENSIONS(collection, size, offset) \
-    collection = Utils::HeapArray<String>(size);                \
+    collection = Utils::MHArray<String>(size);                \
     collection[size - offset] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #else
 #define REQUIRES_PORTABILITY_EXTENSION 0
@@ -59,7 +59,7 @@ bool CheckValidationLayerSupport(const String* validationLayers, size_t size)
     return true;
 }
 
-Utils::HeapArray<String> GetRequiredExtensions(bool enableValidationLayers)
+Utils::MHArray<String> GetRequiredExtensions(bool enableValidationLayers)
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -69,7 +69,7 @@ Utils::HeapArray<String> GetRequiredExtensions(bool enableValidationLayers)
 
     size_t size = glfwExtensionCount + offset;
 
-    Utils::HeapArray<String> array(size);
+    Utils::MHArray<String> array(size);
 
     GET_MACOS_REQUIRED_EXTENSIONS(array, size, offset)
 

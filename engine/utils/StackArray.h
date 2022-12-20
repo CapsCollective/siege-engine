@@ -263,126 +263,94 @@ class MSArray
 public:
 
     /**
-     * @brief A base iterator for the Managed Stack Array (MSArray) class. This iterator moves
-     * through all active elements in the array and returns them. As such, all data points not
-     * explicitly inserted into the array will be ignored.
+     * @brief A base iterator for the HeapArray class. This iterator moves through all active
+     * elements in the array and returns them. As such, all data points not explicitly inserted
+     * into the array will be ignored
      */
-    class Iterator
+    class Iter
     {
     public:
 
+        typedef void (Iter::*BoolType)() const;
+
         // TODO(Aryeh): Add more operators as needed (--, ->, etc).
         /**
-         * @brief Iterator constructor.
-         * @param valuePointer the raw array pointer.
-         * @param newMaskPointer the pointer to our state array.
-         * @param newIndex the starting index.
-         * @param newSize the array size.
+         * @brief Iterator constructor
+         * @param arrPtr the pointer to the HeapArray
          */
-        explicit Iterator(T* valuePointer, uint8_t* newMaskPointer, const size_t& newIndex, const size_t& newLeftBit) :
-            pointer {valuePointer},
-            maskPointer {newMaskPointer},
-            index {newIndex},
-            leftMostBit{newLeftBit}
-        {}
+        inline Iter(MSArray<T, S>* arrPtr) : ptr {arrPtr}
+        {
+            ptr = arrPtr->Data() ? arrPtr : nullptr;
+            while (!ptr->Active(index)) index++;
+        }
 
         /**
          * @brief The iterator prefix increment operator. This operator will increment the pointer
-         * as many times as needed to find an active element. As such, it will not return unactive
-         * array elements.
-         * @return the iterator with the pointer and index incremented.
+         * as many times as needed to find an active element. As such, it will not return inactive
+         * array elements
+         * @return the iterator with the pointer and index incremented
          */
-        Iterator& operator++()
+        inline Iter& operator++()
         {
-            // As long as we're within the range of bits, we continue to increment the pointer.
+            // If the next element in the array is invalid, keep incrementing until we find one that
+            // is
+            while (ptr->Data() && !ptr->Active(index + 1)) index++;
 
-            Increment();
+            // TODO: Profile if using a reinterpret cast would be faster here
+            ptr = index < ptr->Size() ? ptr : 0;
+
+            index++;
 
             return *this;
         }
 
         /**
-         * @brief The postfix increment operator. Does the same thing as the postfix operator, but
-         * applies it after returning the object.
-         * @return the iterator before it was incremented.
+         * @brief The dereference operator
+         * @return the de-referenced pointer value
          */
-        const Iterator operator++(int)
+        inline T& operator*()
         {
-            Iterator iterator = *this;
-            ++(*this);
-            return iterator;
+            return *(ptr->Data() + index);
         }
 
         /**
-         * @brief The dereference operator.
-         * @return the de-referenced pointer value.
+         * Checks if the Iterator if valid or not
+         * @return true of the Iterator is valid, false otherwise
          */
-        T& operator*()
+        inline operator BoolType() const
         {
-            while(IsInvalid(index) && index < leftMostBit) Increment();
-
-            return *pointer;
+            return ptr && ptr->count > 0 ? &Iter::DoNothing : 0;
         }
 
         /**
-         * @brief Increments the pointer and index
+         * @brief An equal operator, checks with equality
+         * @param other the other iterator to compare to
+         * @return `true` if the pointers stored by both iterators are the same
          */
-        void Increment()
+        inline bool operator==(const Iter& other) const
         {
-            pointer++;
-            index++;
-        }
-
-        bool IsInvalid(const size_t& indexToEvaluate)
-        {
-            // Get the chunk of bytes we want to use to search for states.
-            uint8_t byteMask = maskPointer[(indexToEvaluate) / BitUtils::BYTE_SIZE_IN_BITS];
-
-            /**
-             * Get a bit representation of the position we want to search for.
-             * For example, given a bit position in index 1, we create a bit mask with a value of
-             * 1 left shifted by 1 position (0000 0010). Finally, since our bytes contain 8 bits,
-             * we want to make sure that we just check the index we get is relative to our byte.
-             * i.e: 2 % 8 = 2 or 9 % 8 = 1. No matter how large the index, we'll always get its
-             * position in 8s.
-             */
-            auto bitPosition = (1 << ((indexToEvaluate) % BitUtils::BYTE_SIZE_IN_BITS));
-
-            /**
-             * Run a bitwise AND operation to check if the corresponding byte exists in the original
-             * mask. i.e: 1010 0010 & 0000 0010 will return 1 (since 1 exists in the second bit).
-             *
-             * Finally, we also want to make sure the next index is in bounds.
-             */
-            return (byteMask & bitPosition) == 0 && (indexToEvaluate) < S;
+            return ptr->Data() == other.ptr->Data() && index == other.index;
         }
 
         /**
-         * @brief An equal operator, checks with equality.
-         * @param other the other iterator to compare to.
-         * @return `true` if the pointers stored by both iterators are the same.
+         * @brief A non equality operator. Checks that two iterators are not equal
+         * @param other the iterator to compare to
+         * @return `true` if the pointer addresses stored by both iterators are not the same
          */
-        bool operator==(const Iterator& other) const
+        inline bool operator!=(const Iter& other) const
         {
-            return pointer == other.pointer;
-        }
-
-        /**
-         * @brief A non equality operator. Checks that twio iterators are not equal.
-         * @param other the iterator to compare to.
-         * @return `true` if the pointer addresses stored by both iterators are not the same.
-         */
-        bool operator!=(const Iterator& other) const
-        {
-            return pointer != other.pointer;
+            return ptr->Data() != other.ptr->Data() && index != other.index;
         }
 
     private:
 
-        T* pointer {nullptr};
-        uint8_t* maskPointer {nullptr};
+        /**
+         * A private function which does nothing (used for implementing the safe bool idiom)
+         */
+        inline void DoNothing() const {};
+
         size_t index {0};
-        size_t leftMostBit {0};
+        MSArray<T, S>* ptr {nullptr};
     };
     /**
      * Default constructor.
@@ -612,40 +580,9 @@ public:
         count = 0;
     }
 
-    /**
-     * @brief Creates a const iterator pointing to the start of the MSArray.
-     * @return an Iterator set to the start of the array.
-     */
-    inline const Iterator begin() const
+    inline Iter CreateIterator()
     {
-        return Iterator(data, bitField.BitField(), 0, bitField.LeftMostBit());
-    }
-
-    /**
-     * @brief Creates a const iterator pointing to the end of the MSArray.
-     * @return an Iterator set to the end of the array.
-     */
-    inline const Iterator end() const
-    {
-        return Iterator(data + bitField.LeftMostBit(), bitField.BitField(), bitField.LeftMostBit(), bitField.LeftMostBit());
-    }
-
-    /**
-     * @brief Creates an iterator pointing to the start of the HeapArray.
-     * @return an Iterator set to the end of the array.
-     */
-    inline Iterator begin()
-    {
-        return Iterator(data, bitField.BitField(), 0, bitField.LeftMostBit());
-    }
-
-    /**
-     * @brief Creates an iterator pointing to the end of the HeapArray.
-     * @return an Iterator set to the end of the array.
-     */
-    inline Iterator end()
-    {
-        return Iterator(data + bitField.LeftMostBit(), bitField.BitField(), bitField.LeftMostBit(), bitField.LeftMostBit());
+        return {this};
     }
 
 private:

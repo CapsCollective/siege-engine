@@ -51,6 +51,7 @@ The following are dependencies for building and running the project:
 - **Windows**
     - [MinGW32 Make](https://www.mingw-w64.org/)
     - [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+    - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html) (Linux & MacOS)
 - **Linux**
     - For linux environments the following packages are required for building the dependencies:
         - `libx11-xcb-dev`

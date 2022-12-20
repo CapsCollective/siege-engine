@@ -12,7 +12,7 @@
 
 namespace Siege
 {
-Utils::HeapArray<VkCommandBuffer> Renderer::commandBuffers;
+Utils::MHArray<VkCommandBuffer> Renderer::commandBuffers;
 VulkanDevice* Renderer::deviceInstance = nullptr;
 
 Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
@@ -44,7 +44,7 @@ Renderer::~Renderer()
 
 void Renderer::CreateCommandBuffers()
 {
-    commandBuffers = Utils::HeapArray<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers = Utils::MHArray<VkCommandBuffer>(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

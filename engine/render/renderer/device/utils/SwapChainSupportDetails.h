@@ -26,10 +26,10 @@ struct SwapChainSupportDetails
     VkSurfaceCapabilitiesKHR capabilities {};
 
     // An array of available surface formats
-    Utils::HeapArray<VkSurfaceFormatKHR> formats {};
+    Utils::MHArray<VkSurfaceFormatKHR> formats {};
 
     // A array of present modes
-    Utils::HeapArray<VkPresentModeKHR> presentModes {};
+    Utils::MHArray<VkPresentModeKHR> presentModes {};
 
     bool hasFormats = false;
     bool hasPresentModes = false;

@@ -144,12 +144,12 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    Siege::Utils::HeapArray<GameObject> objects3D = {GameObject(&cubeObjModel),
+    Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
                                                      GameObject(&cubeObjModel),
                                                      GameObject(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    Siege::Utils::HeapArray<GameObject> objects2D = {GameObject(&triangleModel),
+    Siege::Utils::MHArray<GameObject> objects2D = {GameObject(&triangleModel),
                                                      GameObject(&squareModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});

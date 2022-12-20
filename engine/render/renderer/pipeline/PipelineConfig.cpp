@@ -38,8 +38,8 @@ VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCoun
         totalAttributes += bindings[i].attributeCount;
     }
 
-    vertexData.bindings = Utils::HeapArray<VkVertexInputBindingDescription>(bindingCount);
-    vertexData.attributes = Utils::HeapArray<VkVertexInputAttributeDescription>(totalAttributes);
+    vertexData.bindings = Utils::MHArray<VkVertexInputBindingDescription>(bindingCount);
+    vertexData.attributes = Utils::MHArray<VkVertexInputAttributeDescription>(totalAttributes);
 
     size_t processedAttributes = 0;
     for (size_t i = 0; i < bindingCount; i++)

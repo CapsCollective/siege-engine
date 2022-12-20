@@ -28,7 +28,7 @@ namespace Siege::Utils
  * @tparam T The data type the array will be storing
  */
 template<typename T>
-class HeapArray
+class MHArray
 {
 public:
 
@@ -37,20 +37,22 @@ public:
      * elements in the array and returns them. As such, all data points not explicitly inserted
      * into the array will be ignored
      */
-    class Iterator
+    class Iter
     {
     public:
 
-        typedef void (Iterator::*BoolType)() const;
+        typedef void (Iter::*BoolType)() const;
 
         // TODO(Aryeh): Add more operators as needed (--, ->, etc).
         /**
          * @brief Iterator constructor
          * @param arrPtr the pointer to the HeapArray
          */
-        inline Iterator(HeapArray<T>* arrPtr) : ptr {arrPtr}
+        inline Iter(MHArray<T>* arrPtr) : ptr {arrPtr}
         {
             ptr = arrPtr->Data() ? arrPtr : nullptr;
+
+            while (ptr && !ptr->Active(index)) index++;
         }
 
         /**
@@ -59,7 +61,7 @@ public:
          * array elements
          * @return the iterator with the pointer and index incremented
          */
-        inline Iterator& operator++()
+        inline Iter& operator++()
         {
             // If the next element in the array is invalid, keep incrementing until we find one that
             // is
@@ -88,7 +90,7 @@ public:
          */
         inline operator BoolType() const
         {
-            return ptr ? &Iterator::DoNothing : 0;
+            return ptr ? &Iter::DoNothing : 0;
         }
 
         /**
@@ -96,7 +98,7 @@ public:
          * @param other the other iterator to compare to
          * @return `true` if the pointers stored by both iterators are the same
          */
-        inline bool operator==(const Iterator& other) const
+        inline bool operator==(const Iter& other) const
         {
             return ptr->Data() == other.ptr->Data() && index == other.index;
         }
@@ -106,7 +108,7 @@ public:
          * @param other the iterator to compare to
          * @return `true` if the pointer addresses stored by both iterators are not the same
          */
-        inline bool operator!=(const Iterator& other) const
+        inline bool operator!=(const Iter& other) const
         {
             return ptr->Data() != other.ptr->Data() && index != other.index;
         }
@@ -119,7 +121,7 @@ public:
         inline void DoNothing() const {};
 
         size_t index {0};
-        HeapArray<T>* ptr {nullptr};
+        MHArray<T>* ptr {nullptr};
     };
 
     /**
@@ -128,21 +130,21 @@ public:
      * heap. Constructing an array this way requires either an explicit resizing or a new creation
      * to add a size. Any usage of the Get() or subscript operator will cause an error
      */
-    HeapArray() = default;
+    MHArray() = default;
 
     /**
      * @brief Initialises the HeapArray with the given size
      * @param arraySize the size of the array
      */
-    explicit HeapArray(const size_t& arraySize) :
-        HeapArray(arraySize, 0, BitUtils::CalculateBitSetSize(arraySize))
+    explicit MHArray(const size_t& arraySize) :
+        MHArray(arraySize, 0, BitUtils::CalculateBitSetSize(arraySize))
     {}
 
     /**
      * @brief Initialises the array using an initialiser list
      * @param list the initialiser list
      */
-    HeapArray(const std::initializer_list<T>& list)
+    MHArray(const std::initializer_list<T>& list)
     {
         size = list.size();
         data = ArrayUtils::Allocate<T>(sizeof(T) * size);
@@ -157,7 +159,7 @@ public:
         count = size;
     }
 
-    HeapArray(const T* rawPtr, const size_t ptrSize)
+    MHArray(const T* rawPtr, const size_t ptrSize)
     {
         size = ptrSize;
         data = ArrayUtils::Allocate<T>(sizeof(T) * size);
@@ -176,7 +178,7 @@ public:
      * @brief A copy constructor for the HeapArray
      * @param other the array to be copied
      */
-    HeapArray(const HeapArray<T>& other) : size {other.size}, count {other.count}
+    MHArray(const MHArray<T>& other) : size {other.size}, count {other.count}
     {
         size = other.size;
 
@@ -197,7 +199,7 @@ public:
      * @brief A move constructor for the HeapArray
      * @param other the array to be moved
      */
-    HeapArray(HeapArray<T>&& other) noexcept
+    MHArray(MHArray<T>&& other) noexcept
     {
         Swap(std::move(other));
     }
@@ -205,7 +207,7 @@ public:
     /**
      * @brief The destructor for the HeapArray
      */
-    ~HeapArray()
+    ~MHArray()
     {
         Destroy();
     }
@@ -249,7 +251,7 @@ public:
      * @param other the array to be copied
      * @return the array with the copied elements
      */
-    HeapArray<T>& operator=(const HeapArray<T>& other)
+    MHArray<T>& operator=(const MHArray<T>& other)
     {
         // Don't copy if the objects are the same
         if (this == &other) return *this;
@@ -266,7 +268,7 @@ public:
      * @param other the array to be moved
      * @return the new array with the moved contents
      */
-    HeapArray<T>& operator=(HeapArray<T>&& other) noexcept
+    MHArray<T>& operator=(MHArray<T>&& other) noexcept
     {
         if (this == &other) return *this;
 
@@ -412,7 +414,7 @@ public:
         return data;
     }
 
-    Iterator CreateIterator()
+    Iter CreateIterator()
     {
         return {this};
     }
@@ -429,7 +431,7 @@ private:
      * @param masks a raw pointer to a set of 8-bit unsigned integers.
      * @param data a raw pointer to the data stored in the array.
      */
-    HeapArray(const size_t& newSize, const size_t& newCount, const size_t& newBytes, T* data) :
+    MHArray(const size_t& newSize, const size_t& newCount, const size_t& newBytes, T* data) :
         size {newSize},
         count {newCount},
         bitField {BitUtils::BitSet(newBytes)},
@@ -442,8 +444,8 @@ private:
      * @param newCount the number of elements in the array.
      * @param masksSize the number of bytes to allocate for storing our states.
      */
-    HeapArray(const size_t& newSize, const size_t& newCount, const size_t& masksSize) :
-        HeapArray(newSize, newCount, masksSize, ArrayUtils::Allocate<T>(sizeof(T) * newSize))
+    MHArray(const size_t& newSize, const size_t& newCount, const size_t& masksSize) :
+        MHArray(newSize, newCount, masksSize, ArrayUtils::Allocate<T>(sizeof(T) * newSize))
     {}
 
     // Functions
@@ -482,7 +484,7 @@ private:
      * @brief Swaps the data between two HeapArrays.
      * @param other the HeapArray to swap with.
      */
-    void Swap(HeapArray&& other)
+    void Swap(MHArray&& other)
     {
         auto tmpSize = size;
         auto tmpCount = count;
@@ -523,7 +525,7 @@ private:
      * @brief Copies the elements from one HeapArray to another
      * @param other the other array to copy elements from
      */
-    void Copy(const HeapArray<T>& other)
+    void Copy(const MHArray<T>& other)
     {
         if (other.size == 0 && other.data == nullptr) return;
 

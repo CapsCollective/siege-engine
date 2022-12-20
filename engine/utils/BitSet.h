@@ -176,15 +176,6 @@ public:
         }
 
         /**
-         * Returns the array of bytes being stored by the BitSet.
-         * @return the array of bytes being stored by the BitSet.
-         */
-        inline unsigned char* BitField()
-        {
-            return bitfield;
-        }
-
-        /**
          * @brief Resizes the state mask in accordance to the new array size.
          * @param newSize the new array size.
          */
@@ -295,15 +286,6 @@ public:
          * @return the array of bytes being stored by the BitSet.
          */
         inline constexpr const unsigned char* BitField() const
-        {
-            return bitfield;
-        }
-
-        /**
-         * Returns the array of bytes being stored by the BitSet.
-         * @return the array of bytes being stored by the BitSet.
-         */
-        inline constexpr unsigned char* BitField()
         {
             return bitfield;
         }

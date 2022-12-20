@@ -642,9 +642,9 @@ UTEST(test_MSArray, IterateUsingRangedForLoop)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -667,9 +667,9 @@ UTEST(test_MSArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -688,9 +688,9 @@ UTEST(test_MSArray, IterateOverSingleElementArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -711,9 +711,9 @@ UTEST(test_MSArray, IterateOverLargeArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -726,14 +726,15 @@ UTEST(test_MSArray, IterateOverEmptyArray)
 {
     Siege::Utils::MSArray<uint32_t, 20> array;
 
+    uint32_t expectedIndex {0};
+
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        element = element+1;
         index++;
     }
 
-    ASSERT_EQ(0, index);
+    ASSERT_EQ(expectedIndex, index);
 }
 
 UTEST(test_MSArray, IterateOverPartiallyFilledArray)
@@ -748,9 +749,9 @@ UTEST(test_MSArray, IterateOverPartiallyFilledArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -771,9 +772,9 @@ UTEST(test_MSArray, IterateOverArrayWithMissingFrontAndEnd)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)
@@ -796,9 +797,9 @@ UTEST(test_MSArray, IterateOverArrayWithLargeGaps)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto& element : array)
+    for (auto it = array.CreateIterator(); it; ++it)
     {
-        actualResults[index++] = element;
+        actualResults[index++] = *it;
     }
 
     for(size_t i = 0; i < ARR_COUNT; i++)

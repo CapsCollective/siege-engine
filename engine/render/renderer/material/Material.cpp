@@ -240,8 +240,10 @@ void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
     // TODO: Error is occurring because log(2)/log(2) = 1.5, which is being rounded down to 1. Therefore only one iteration is occurring.
     auto& uniforms = shader->GetUniforms();
 
-    for (auto& uniform : uniforms)
+    for (auto it = uniforms.CreateIterator(); it; ++it)
     {
+        auto& uniform = *it;
+
         if (HasProperty(uniform.id))
         {
             auto& property = GetProperty(uniform.id);
@@ -275,9 +277,9 @@ void Material::DestroyMaterial()
 {
     auto device = VulkanDevice::GetDeviceInstance();
 
-    for (auto& property : propertiesArray)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
-        vkDestroyDescriptorSetLayout(device->Device(), property.descriptorBinding.layout, nullptr);
+        vkDestroyDescriptorSetLayout(device->Device(), (*it).descriptorBinding.layout, nullptr);
     }
 
     pipeline.DestroyPipeline();
@@ -296,8 +298,9 @@ void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
 
 void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data)
 {
-    for (auto& property : propertiesArray)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
+        auto& property = *it;
         if (id == property.id)
         {
             Buffer::CopyData(buffer, dataSize, data, property.offset);
@@ -308,9 +311,9 @@ void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const vo
 
 bool Material::HasProperty(Hash::StringId id)
 {
-    for (auto& property : propertiesArray)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
-        if (id == property.id)
+        if (id == (*it).id)
         {
             return true;
         }
@@ -322,8 +325,9 @@ void Material::SetUniformData(const String& name, VkDeviceSize dataSize, const v
 {
     auto id = INTERN_STR(name);
 
-    for (auto& property : propertiesArray)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
+        auto& property = *it;
         if (id == property.id)
         {
             Buffer::CopyData(buffer, dataSize, data, property.offset);
@@ -339,12 +343,13 @@ void Material::BuildMaterials(std::initializer_list<Material*> materials)
 
 Material::Property& Material::GetProperty(Hash::StringId id)
 {
-    for (auto& property : propertiesArray)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
+        auto& property = *it;
         if (id == property.id) return property;
     }
 
-    CC_ASSERT(false, String("No property with ID: %lu exists!").Formatted(id));
+    CC_ASSERT(false, String("No property with ID: %lu exists!").Formatted(id))
 }
 
 void Material::BuildMaterial()

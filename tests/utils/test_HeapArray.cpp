@@ -11,11 +11,11 @@
 
 #include <utility>
 
-using Siege::Utils::HeapArray;
+using Siege::Utils::MHArray;
 
 UTEST(test_HeapArray, CreateEmptyHeapArray)
 {
-    HeapArray<uint32_t> array;
+    MHArray<uint32_t> array;
 
     ASSERT_TRUE(array.Size() == 0);
     ASSERT_TRUE(array.Data() == nullptr);
@@ -23,7 +23,7 @@ UTEST(test_HeapArray, CreateEmptyHeapArray)
 
 UTEST(test_HeapArray, CreateHeapArrayWithSize)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     ASSERT_TRUE(array.Size() == 2);
     ASSERT_FALSE(array.Data() == nullptr);
@@ -31,7 +31,7 @@ UTEST(test_HeapArray, CreateHeapArrayWithSize)
 
 UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
 {
-    HeapArray<uint32_t> array = {0, 1};
+    MHArray<uint32_t> array = {0, 1};
 
     ASSERT_TRUE(array.Size() == 2);
     ASSERT_FALSE(array.Data() == nullptr);
@@ -43,7 +43,7 @@ UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
 UTEST(test_MSArray, CreateHeapArrayFromRawArray)
 {
     uint32_t values[] = {1, 2, 3, 4};
-    Siege::Utils::HeapArray<uint32_t> array(values, 4);
+    Siege::Utils::MHArray<uint32_t> array(values, 4);
 
     ASSERT_EQ(array.Count(), 4);
     ASSERT_EQ(array.Size(), 4);
@@ -62,8 +62,8 @@ UTEST(test_MSArray, CreateHeapArrayFromRawArray)
 
 UTEST(test_HeapArray, CreateHeapArrayFromCopyConstructor)
 {
-    HeapArray<uint32_t> arrayA = {0, 1};
-    HeapArray<uint32_t> arrayB(arrayA);
+    MHArray<uint32_t> arrayA = {0, 1};
+    MHArray<uint32_t> arrayB(arrayA);
 
     ASSERT_EQ(arrayA.Size(), arrayB.Size());
     ASSERT_EQ(arrayA.Count(), arrayB.Count());
@@ -74,9 +74,9 @@ UTEST(test_HeapArray, CreateHeapArrayFromCopyConstructor)
 
 UTEST(test_HeapArray, CopyEmptyArrayWithConstructor)
 {
-    HeapArray<uint32_t> arrayA;
+    MHArray<uint32_t> arrayA;
 
-    HeapArray<uint32_t> arrayB(arrayA);
+    MHArray<uint32_t> arrayB(arrayA);
 
     ASSERT_EQ(arrayA.Data(), arrayB.Data());
     ASSERT_EQ(arrayA.Count(), arrayB.Count());
@@ -85,7 +85,7 @@ UTEST(test_HeapArray, CopyEmptyArrayWithConstructor)
 
 UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
 {
-    HeapArray<uint32_t> arrayA({1, 2, 3, 4});
+    MHArray<uint32_t> arrayA({1, 2, 3, 4});
 
     ASSERT_EQ(arrayA.Count(), 4);
     ASSERT_EQ(arrayA.Size(), 4);
@@ -96,7 +96,7 @@ UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
     ASSERT_EQ(arrayA[2], 3);
     ASSERT_EQ(arrayA[3], 4);
 
-    HeapArray<uint32_t> arrayB(std::move(arrayA));
+    MHArray<uint32_t> arrayB(std::move(arrayA));
 
     ASSERT_EQ(arrayB.Count(), 4);
     ASSERT_EQ(arrayB.Size(), 4);
@@ -110,8 +110,8 @@ UTEST(test_HeapArray, CreateHeapArrayFromMoveConstructor)
 
 UTEST(test_HeapArray, DestroyHeapArray)
 {
-    HeapArray<uint32_t> emptyArray;
-    HeapArray<uint32_t> filledArray(2);
+    MHArray<uint32_t> emptyArray;
+    MHArray<uint32_t> filledArray(2);
 
     emptyArray.Destroy();
     filledArray.Destroy();
@@ -125,7 +125,7 @@ UTEST(test_HeapArray, DestroyHeapArray)
 
 UTEST(test_HeapArray, InsertElementUsingFunction)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array.Insert(0, 1);
 
@@ -141,7 +141,7 @@ UTEST(test_HeapArray, InsertElementUsingFunction)
 
 UTEST(test_HeapArray, InsertElementUsingBrackets)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -157,7 +157,7 @@ UTEST(test_HeapArray, InsertElementUsingBrackets)
 
 UTEST(test_HeapArray, GetElementUsingFunction)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -170,7 +170,7 @@ UTEST(test_HeapArray, GetElementUsingFunction)
 
 UTEST(test_HeapArray, GetElementUsingBrackets)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -183,7 +183,7 @@ UTEST(test_HeapArray, GetElementUsingBrackets)
 
 UTEST(test_HeapArray, CheckElementIsActive)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -197,7 +197,7 @@ UTEST(test_HeapArray, CheckElementIsActive)
 
 UTEST(test_HeapArray, RemoveElementByIndex)
 {
-    HeapArray<uint32_t> array(2);
+    MHArray<uint32_t> array(2);
 
     array[0] = 1;
 
@@ -222,8 +222,8 @@ UTEST(test_HeapArray, RemoveElementByIndex)
 
 UTEST(test_HeapArray, CopyArray)
 {
-    HeapArray<uint32_t> arrayA = {0, 1};
-    HeapArray<uint32_t> arrayB = {3, 4};
+    MHArray<uint32_t> arrayA = {0, 1};
+    MHArray<uint32_t> arrayB = {3, 4};
 
     arrayA = arrayB;
 
@@ -236,8 +236,8 @@ UTEST(test_HeapArray, CopyArray)
 
 UTEST(test_HeapArray, CopyEmptyArray)
 {
-    HeapArray<uint32_t> arrayA;
-    HeapArray<uint32_t> arrayB(arrayA);
+    MHArray<uint32_t> arrayA;
+    MHArray<uint32_t> arrayB(arrayA);
 
     arrayA = arrayB;
 
@@ -248,9 +248,9 @@ UTEST(test_HeapArray, CopyEmptyArray)
 
 UTEST(test_HeapArray, CopyEmptyArrayToFullArray)
 {
-    HeapArray<uint32_t> arrayA;
+    MHArray<uint32_t> arrayA;
 
-    HeapArray<uint32_t> arrayB = {1, 2, 3, 4};
+    MHArray<uint32_t> arrayB = {1, 2, 3, 4};
     arrayB = arrayA;
 
     ASSERT_EQ(arrayA.Data(), arrayB.Data());
@@ -260,14 +260,14 @@ UTEST(test_HeapArray, CopyEmptyArrayToFullArray)
 
 UTEST(test_HeapArray, MoveArray)
 {
-    HeapArray<uint32_t> arrayA;
+    MHArray<uint32_t> arrayA;
 
     ASSERT_EQ(arrayA.Size(), 0);
     ASSERT_EQ(arrayA.Count(), 0);
 
     ASSERT_EQ(arrayA.Data(), nullptr);
 
-    HeapArray<uint32_t> arrayB({3, 4});
+    MHArray<uint32_t> arrayB({3, 4});
 
     ASSERT_EQ(arrayB.Size(), 2);
     ASSERT_EQ(arrayB.Count(), 2);
@@ -288,7 +288,7 @@ UTEST(test_HeapArray, MoveArray)
 
 UTEST(test_HeapArray, IterateUsingBrackets)
 {
-    HeapArray<uint32_t> array({1, 2, 3, 4});
+    MHArray<uint32_t> array({1, 2, 3, 4});
 
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
@@ -300,7 +300,7 @@ UTEST(test_HeapArray, IterateUsingBrackets)
 
 UTEST(test_HeapArray, IterateUsingRangedForLoop)
 {
-    HeapArray<uint32_t> array({1, 2, 3, 4});
+    MHArray<uint32_t> array({1, 2, 3, 4});
 
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
@@ -313,7 +313,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoop)
 
 UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
 {
-    HeapArray<uint32_t> array(5);
+    MHArray<uint32_t> array(5);
 
     array[0] = 1;
     array[1] = 2;
@@ -331,7 +331,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
 
 UTEST(test_HeapArray, IterateOverSingleElementArray)
 {
-    HeapArray<uint32_t> array({1});
+    MHArray<uint32_t> array({1});
 
     uint32_t expectedResults[] = {1};
 
@@ -344,7 +344,7 @@ UTEST(test_HeapArray, IterateOverSingleElementArray)
 
 UTEST(test_HeapArray, IterateOverEmptyArray)
 {
-    HeapArray<uint32_t> array;
+    MHArray<uint32_t> array;
 
     uint32_t expectedIndex {0};
 
@@ -357,9 +357,79 @@ UTEST(test_HeapArray, IterateOverEmptyArray)
     ASSERT_EQ(expectedIndex, index);
 }
 
+UTEST(test_MHArray, IterateOverPartiallyFilledArray)
+{
+    MHArray<uint32_t> array(4);
+    int expected[] = {2, 1};
+
+    array[1] = 2;
+    array[3] = 1;
+
+    const size_t ARR_COUNT = 2;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MHArray, IterateOverArrayWithMissingFrontAndEnd)
+{
+    MHArray<uint32_t> array(4);
+    int expected[] = {2, 1};
+
+    array[1] = 2;
+    array[2] = 1;
+
+    const size_t ARR_COUNT = 2;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MHArray, IterateOverArrayWithLargeGaps)
+{
+    MHArray<uint32_t> array(10);
+    int expected[] = {2, 1, 3};
+
+    array[1] = 2;
+    array[5] = 1;
+    array[8] = 3;
+
+    const size_t ARR_COUNT = 3;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.CreateIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for(size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
 UTEST(test_HeapArray, ResizeArray)
 {
-    HeapArray<uint32_t> array({1, 2, 3, 4});
+    MHArray<uint32_t> array({1, 2, 3, 4});
 
     ASSERT_EQ(array.Size(), 4);
     ASSERT_EQ(array.Count(), 4);
@@ -395,7 +465,7 @@ UTEST(test_HeapArray, ResizeArray)
 
 UTEST(test_HeapArray, ResizeArrayToSmallerSize)
 {
-    HeapArray<uint32_t> array({1, 2, 3, 4});
+    MHArray<uint32_t> array({1, 2, 3, 4});
 
     ASSERT_EQ(array.Size(), 4);
     ASSERT_EQ(array.Count(), 4);
@@ -421,7 +491,7 @@ UTEST(test_HeapArray, ResizeArrayToSmallerSize)
 
 UTEST(test_HeapArray, ResizeLargeArray)
 {
-    HeapArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    MHArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
     ASSERT_EQ(array.Size(), 10);
     ASSERT_EQ(array.Count(), 10);
@@ -440,7 +510,7 @@ UTEST(test_HeapArray, ResizeLargeArray)
 
 UTEST(test_HeapArray, ClearArray)
 {
-    HeapArray<uint32_t> array({1, 2});
+    MHArray<uint32_t> array({1, 2});
 
     ASSERT_EQ(array.Size(), 2);
     ASSERT_EQ(array.Count(), 2);
@@ -459,7 +529,7 @@ UTEST(test_HeapArray, ClearArray)
 
 UTEST(test_HeapArray, ClearEmptyArray)
 {
-    HeapArray<uint32_t> array;
+    MHArray<uint32_t> array;
 
     ASSERT_EQ(array.Count(), 0);
     ASSERT_EQ(array.Data(), nullptr);
