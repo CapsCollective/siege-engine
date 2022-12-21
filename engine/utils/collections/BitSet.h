@@ -1,4 +1,5 @@
 //
+//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -25,14 +26,14 @@ public:
      */
     enum BIT_POSITIONS
     {
-        BIT_POSITION_1 = 1,
-        BIT_POSITION_2 = 2,
-        BIT_POSITION_4 = 3,
-        BIT_POSITION_8 = 4,
-        BIT_POSITION_16 = 5,
-        BIT_POSITION_32 = 6,
-        BIT_POSITION_64 = 7,
-        BIT_POSITION_128 = 8,
+        BIT_POSITION_1 [[maybe_unused]] = 1,
+        BIT_POSITION_2 [[maybe_unused]] = 2,
+        BIT_POSITION_4 [[maybe_unused]] = 3,
+        BIT_POSITION_8 [[maybe_unused]] = 4,
+        BIT_POSITION_16 [[maybe_unused]] = 5,
+        BIT_POSITION_32 [[maybe_unused]] = 6,
+        BIT_POSITION_64 [[maybe_unused]] = 7,
+        BIT_POSITION_128 [[maybe_unused]] = 8,
     };
 
     // The number of states we can fit per segment (1 byte = 8 states)

@@ -1,4 +1,5 @@
 //
+//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -11,6 +12,7 @@
 
 #include "ArrayUtils.h"
 #include "BitSet.h"
+#include "Iterators.h"
 
 namespace Siege::Utils
 {
@@ -31,98 +33,6 @@ template<typename T>
 class MHArray
 {
 public:
-
-    /**
-     * @brief A base iterator for the HeapArray class. This iterator moves through all active
-     * elements in the array and returns them. As such, all data points not explicitly inserted
-     * into the array will be ignored
-     */
-    class Iter
-    {
-    public:
-
-        typedef void (Iter::*BoolType)() const;
-
-        // TODO(Aryeh): Add more operators as needed (--, ->, etc).
-        /**
-         * @brief Iterator constructor
-         * @param arrPtr the pointer to the HeapArray
-         */
-        inline Iter(MHArray<T>* arrPtr) : ptr {arrPtr}
-        {
-            ptr = arrPtr->Data() ? arrPtr : nullptr;
-
-            while (ptr && !ptr->Active(index)) index++;
-        }
-
-        /**
-         * @brief The iterator prefix increment operator. This operator will increment the pointer
-         * as many times as needed to find an active element. As such, it will not return inactive
-         * array elements
-         * @return the iterator with the pointer and index incremented
-         */
-        inline Iter& operator++()
-        {
-            // If the next element in the array is invalid, keep incrementing until we find one that
-            // is
-            while (ptr->Data() && !ptr->Active(index + 1)) index++;
-
-            // TODO: Profile if using a reinterpret cast would be faster here
-            ptr = index < ptr->Size() ? ptr : 0;
-
-            index++;
-
-            return *this;
-        }
-
-        /**
-         * @brief The dereference operator
-         * @return the de-referenced pointer value
-         */
-        inline T& operator*()
-        {
-            return *(ptr->Data() + index);
-        }
-
-        /**
-         * Checks if the Iterator if valid or not
-         * @return true of the Iterator is valid, false otherwise
-         */
-        inline operator BoolType() const
-        {
-            return ptr ? &Iter::DoNothing : 0;
-        }
-
-        /**
-         * @brief An equal operator, checks with equality
-         * @param other the other iterator to compare to
-         * @return `true` if the pointers stored by both iterators are the same
-         */
-        inline bool operator==(const Iter& other) const
-        {
-            return ptr->Data() == other.ptr->Data() && index == other.index;
-        }
-
-        /**
-         * @brief A non equality operator. Checks that two iterators are not equal
-         * @param other the iterator to compare to
-         * @return `true` if the pointer addresses stored by both iterators are not the same
-         */
-        inline bool operator!=(const Iter& other) const
-        {
-            return ptr->Data() != other.ptr->Data() && index != other.index;
-        }
-
-    private:
-
-        /**
-         * A private function which does nothing (used for implementing the safe bool idiom)
-         */
-        inline void DoNothing() const {};
-
-        size_t index {0};
-        MHArray<T>* ptr {nullptr};
-    };
 
     /**
      * @brief An empty constructor. This is invoked when no parameters are passed to the
@@ -415,7 +325,24 @@ public:
         return data;
     }
 
-    Iter CreateIterator()
+    /**
+     * Creates a base managed iterator for the array. This iterator will ignore elements which
+     * have not been previously assigned. This method is slower than the FIterator but ensures
+     * no garbage data is accessed
+     * @return a MIter to iterate over the array
+     */
+    Utils::MIter<MHArray<T>, T> Iterator()
+    {
+        return {this};
+    }
+
+    /**
+     * Creates a fast iterator type. The fast iterator iterates over every single element in an
+     * array, regardless of whether they have been assigned to. This method is faster than the
+     * default iterator but is less safe
+     * @return an Iter instance to iterate over the array
+     */
+    Utils::Iter<MHArray<T>, T> FIterator()
     {
         return {this};
     }
@@ -437,7 +364,9 @@ private:
         count {newCount},
         bitField {BitUtils::BitSet(newBytes)},
         data {data}
-    {}
+    {
+        memset(data, 0, sizeof(T) * size);
+    }
 
     /**
      * @brief A constructor for creating a HeapArray with a number of sizes.

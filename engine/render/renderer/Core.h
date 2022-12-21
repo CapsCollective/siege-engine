@@ -10,12 +10,13 @@
 #define SIEGE_ENGINE_CORE_H
 
 #include <utils/Hash.h>
-#include <utils/HeapArray.h>
-#include <utils/StackArray.h>
 #include <utils/math/mat/Mat4.h>
 #include <volk/volk.h>
 
 #include <cstdint>
+
+#include "utils/collections/HeapArray.h"
+#include "utils/collections/StackArray.h"
 
 namespace Siege
 {

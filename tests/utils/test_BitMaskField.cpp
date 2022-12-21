@@ -7,9 +7,10 @@
 //
 
 #include <utest.h>
-#include <utils/BitSet.h>
 
 #include <utility>
+
+#include "utils/collections/BitSet.h"
 
 UTEST(test_BitSet, CreateBitSet)
 {

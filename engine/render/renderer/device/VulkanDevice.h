@@ -18,7 +18,7 @@
 #include "utils/SwapChainSupportDetails.h"
 
 // std lib headers
-#include <utils/StackArray.h>
+#include "utils/collections/StackArray.h"
 
 #if ENABLE_VALIDATION_LAYERS == 1
 #define VALIDATION_LAYERS_ENABLED true

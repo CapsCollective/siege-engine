@@ -1,4 +1,5 @@
 //
+//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -6,11 +7,12 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_STACKARRAY_H
-#define SIEGE_ENGINE_STACKARRAY_H
+#ifndef SIEGE_ENGINE_STACK_ARRAY_H
+#define SIEGE_ENGINE_STACK_ARRAY_H
 
 #include "ArrayUtils.h"
 #include "BitSet.h"
+#include "Iterators.h"
 
 namespace Siege::Utils
 {
@@ -29,72 +31,6 @@ template<typename T, size_t S>
 struct SArray
 {
 public:
-
-    /**
-     * The iterator class for the SArray.
-     */
-    struct Iterator
-    {
-        /**
-         * The constructor for the StackArray iterator.
-         * @param valuePointer a pointer to location of memory which the iterator is pointing to.
-         */
-        explicit Iterator(T* valuePointer) : pointer {valuePointer} {}
-
-        /**
-         * @brief The iterator prefix increment operator. This operator will increment the pointer
-         * as many times as needed to find an active element. As such, it will not return unactive
-         * array elements.
-         * @return the iterator with the pointer and index incremented.
-         */
-        inline Iterator& operator++()
-        {
-            pointer++;
-            return *this;
-        }
-
-        /**
-         * @brief The postfix increment operator. Does the same thing as the postfix operator, but
-         * applies it after returning the object.
-         * @return the iterator before it was incremented.
-         */
-        inline const Iterator operator++(int)
-        {
-            Iterator iterator = *this;
-            ++(*this);
-            return iterator;
-        }
-
-        /**
-         * @brief The dereference operator.
-         * @return the de-referenced pointer value.
-         */
-        inline T& operator*()
-        {
-            return *pointer;
-        }
-        /**
-         * @brief An equal operator, checks with equality.
-         * @param other the other iterator to compare to.
-         * @return `true` if the pointers stored by both iterators are the same.
-         */
-        inline bool operator==(const Iterator& other) const
-        {
-            return pointer == other.pointer;
-        }
-
-        /**
-         * @brief A non equality operator. Checks that twio iterators are not equal.
-         * @param other the iterator to compare to.
-         * @return `true` if the pointer addresses stored by both iterators are not the same.
-         */
-        inline bool operator!=(const Iterator& other) const
-        {
-            return pointer != other.pointer;
-        }
-
-        T* pointer;
-    };
 
     /**
      * A const overload to the subscript operator. Retrieves the element stored in the provided
@@ -159,7 +95,7 @@ public:
     }
 
     /**
-     * Inserts a value into a positon in the array.
+     * Inserts a value into a position in the array.
      * @param index the index to get the value from.
      * @param element the data to insert into the array.
      */
@@ -205,37 +141,13 @@ public:
     }
 
     /**
-     * Returns an iterator pointing to the start of the array.
-     * @return an iterator pointing to the start of the array.
+     * Creates a fast iterator type. The fast iterator iterates over every single element in an
+     * array, regardless of whether they have been assigned to.
+     * @return an Iter instance to iterate over the array
      */
-    constexpr inline Iterator begin()
+    constexpr inline Utils::Iter<SArray<T, S>, T> Iterator()
     {
-        return Iterator(data);
-    }
-    /**
-     * Returns an iterator pointing to the end of the array.
-     * @return an iterator pointing to the end of the array.
-     */
-    constexpr inline Iterator end()
-    {
-        return Iterator(data + S);
-    }
-
-    /**
-     * Returns an iterator pointing to the end of the array.
-     * @return an iterator pointing to the end of the array.
-     */
-    constexpr inline const Iterator begin() const
-    {
-        return Iterator(data);
-    }
-    /**
-     * Returns a const iterator pointing to the end of the array.
-     * @return an iterator pointing to the end of the array.
-     */
-    constexpr inline const Iterator end() const
-    {
-        return Iterator(data + S);
+        return {this};
     }
 
     T data[S];
@@ -263,104 +175,14 @@ class MSArray
 public:
 
     /**
-     * @brief A base iterator for the HeapArray class. This iterator moves through all active
-     * elements in the array and returns them. As such, all data points not explicitly inserted
-     * into the array will be ignored
-     */
-    class Iter
-    {
-    public:
-
-        typedef void (Iter::*BoolType)() const;
-
-        // TODO(Aryeh): Add more operators as needed (--, ->, etc).
-        /**
-         * @brief Iterator constructor
-         * @param arrPtr the pointer to the HeapArray
-         */
-        inline Iter(MSArray<T, S>* arrPtr) : ptr {arrPtr}
-        {
-            ptr = arrPtr->Data() ? arrPtr : nullptr;
-            while (!ptr->Active(index)) index++;
-        }
-
-        /**
-         * @brief The iterator prefix increment operator. This operator will increment the pointer
-         * as many times as needed to find an active element. As such, it will not return inactive
-         * array elements
-         * @return the iterator with the pointer and index incremented
-         */
-        inline Iter& operator++()
-        {
-            // If the next element in the array is invalid, keep incrementing until we find one that
-            // is
-            while (ptr->Data() && !ptr->Active(index + 1)) index++;
-
-            // TODO: Profile if using a reinterpret cast would be faster here
-            ptr = index < ptr->Size() ? ptr : 0;
-
-            index++;
-
-            return *this;
-        }
-
-        /**
-         * @brief The dereference operator
-         * @return the de-referenced pointer value
-         */
-        inline T& operator*()
-        {
-            return *(ptr->Data() + index);
-        }
-
-        /**
-         * Checks if the Iterator if valid or not
-         * @return true of the Iterator is valid, false otherwise
-         */
-        inline operator BoolType() const
-        {
-            return ptr && ptr->count > 0 ? &Iter::DoNothing : 0;
-        }
-
-        /**
-         * @brief An equal operator, checks with equality
-         * @param other the other iterator to compare to
-         * @return `true` if the pointers stored by both iterators are the same
-         */
-        inline bool operator==(const Iter& other) const
-        {
-            return ptr->Data() == other.ptr->Data() && index == other.index;
-        }
-
-        /**
-         * @brief A non equality operator. Checks that two iterators are not equal
-         * @param other the iterator to compare to
-         * @return `true` if the pointer addresses stored by both iterators are not the same
-         */
-        inline bool operator!=(const Iter& other) const
-        {
-            return ptr->Data() != other.ptr->Data() && index != other.index;
-        }
-
-    private:
-
-        /**
-         * A private function which does nothing (used for implementing the safe bool idiom)
-         */
-        inline void DoNothing() const {};
-
-        size_t index {0};
-        MSArray<T, S>* ptr {nullptr};
-    };
-    /**
      * Default constructor.
      */
-    MSArray() = default;
+    MSArray() : MSArray(0) {}
 
     /**
      * Initializer list constructor. this constructor allows a MSArray to be constructed using a
      * list format. For example: `MSArray<int, 2> arr = {1, 2};`. If more parameters are passed
-     * into the initalizer list thant the static size of the array, only the number of elements
+     * into the initializer list thant the static size of the array, only the number of elements
      * equal to the static size will be copied.
      * @param list the parameter list to be added to the MSArray.
      */
@@ -579,7 +401,24 @@ public:
         count = 0;
     }
 
-    inline Iter CreateIterator()
+    /**
+     * Creates a base managed iterator for the array. This iterator will ignore elements which
+     * have not been previously assigned. This method is slower than the FIterator but ensures
+     * no garbage data is accessed
+     * @return a MIter to iterate over the array
+     */
+    inline Utils::MIter<MSArray<T, S>, T> Iterator()
+    {
+        return {this};
+    }
+
+    /**
+     * Creates a fast iterator type. The fast iterator iterates over every single element in an
+     * array, regardless of whether they have been assigned to. This method is faster than the
+     * default iterator but is less safe
+     * @return an Iter instance to iterate over the array
+     */
+    Utils::Iter<MSArray<T, S>, T> FIterator()
     {
         return {this};
     }
@@ -590,7 +429,10 @@ private:
      * A private constructor for the MSArray. Simply initialises the count value of the array.
      * @param arrSize the amount to set the count to.
      */
-    MSArray(const size_t& arrSize) : count {arrSize} {}
+    MSArray(const size_t& arrSize) : count {arrSize}
+    {
+        memset(data, 0, sizeof(T) * S);
+    }
 
     /**
      * Sets the value of a given index. This function does no error checking and is susceptible to
@@ -635,4 +477,4 @@ private:
 };
 } // namespace Siege::Utils
 
-#endif // SIEGE_ENGINE_STACKARRAY_H
+#endif // SIEGE_ENGINE_STACK_ARRAY_H

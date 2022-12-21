@@ -7,7 +7,7 @@
 //
 
 #include <utest.h>
-#include <utils/HeapArray.h>
+#include <utils/collections/HeapArray.h>
 
 #include <utility>
 
@@ -305,7 +305,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoop)
     uint32_t expectedResults[] = {1, 2, 3, 4};
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         ASSERT_EQ(expectedResults[index++], *it);
     }
@@ -323,7 +323,7 @@ UTEST(test_HeapArray, IterateUsingRangedForLoopWithPartiallyFilledArray)
     uint32_t expectedResults[] = {1, 2, 4, 5};
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         ASSERT_EQ(expectedResults[index++], *it);
     }
@@ -336,7 +336,7 @@ UTEST(test_HeapArray, IterateOverSingleElementArray)
     uint32_t expectedResults[] = {1};
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         ASSERT_EQ(expectedResults[index++], *it);
     }
@@ -344,12 +344,12 @@ UTEST(test_HeapArray, IterateOverSingleElementArray)
 
 UTEST(test_HeapArray, IterateOverEmptyArray)
 {
-    MHArray<uint32_t> array;
+    MHArray<uint32_t> array(20);
 
     uint32_t expectedIndex {0};
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         index++;
     }
@@ -369,7 +369,7 @@ UTEST(test_MHArray, IterateOverPartiallyFilledArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         actualResults[index++] = *it;
     }
@@ -392,7 +392,7 @@ UTEST(test_MHArray, IterateOverArrayWithMissingFrontAndEnd)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         actualResults[index++] = *it;
     }
@@ -416,7 +416,7 @@ UTEST(test_MHArray, IterateOverArrayWithLargeGaps)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
     {
         actualResults[index++] = *it;
     }
@@ -441,7 +441,52 @@ UTEST(test_MHArray, IterateOverSparseArray)
     uint32_t actualResults[ARR_COUNT];
 
     size_t index = 0;
-    for (auto it = array.CreateIterator(); it; ++it)
+    for (auto it = array.Iterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for (size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MHArray, IterateWithFastIterator)
+{
+    MHArray<uint32_t> array = {2, 1, 3};
+    int expected[] = {2, 1, 3};
+
+    const size_t ARR_COUNT = 3;
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.FIterator(); it; ++it)
+    {
+        actualResults[index++] = *it;
+    }
+
+    for (size_t i = 0; i < ARR_COUNT; i++)
+    {
+        ASSERT_EQ(expected[i], actualResults[i]);
+    }
+}
+
+UTEST(test_MHArray, IterateWithFastIteratorWithGaps)
+{
+    const size_t ARR_COUNT = 20;
+
+    MHArray<uint32_t> array(ARR_COUNT);
+    int expected[] = {0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0};
+
+    array[1] = 2;
+    array[5] = 1;
+    array[16] = 3;
+
+    uint32_t actualResults[ARR_COUNT];
+
+    size_t index = 0;
+    for (auto it = array.FIterator(); it; ++it)
     {
         actualResults[index++] = *it;
     }
@@ -523,7 +568,7 @@ UTEST(test_MHArray, ResizeLargeArray)
 
     uint32_t number = 1;
 
-    for (auto it = array.CreateIterator(); it; ++it) ASSERT_EQ(number++, *it);
+    for (auto it = array.Iterator(); it; ++it) ASSERT_EQ(number++, *it);
 
     array.Resize(9);
 

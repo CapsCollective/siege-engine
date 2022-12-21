@@ -21,8 +21,7 @@ Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& devi
 
 void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 {
-    for (auto it = framebuffers.CreateIterator(); it; ++it)
-        vkDestroyFramebuffer(device, *it, nullptr);
+    for (auto it = framebuffers.Iterator(); it; ++it) vkDestroyFramebuffer(device, *it, nullptr);
 }
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)

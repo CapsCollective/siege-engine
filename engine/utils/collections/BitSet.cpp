@@ -1,4 +1,5 @@
 //
+//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -14,7 +15,7 @@
 #include <cstring>
 #include <utility>
 
-#include "Branchless.h"
+#include "../Branchless.h"
 
 // Macro for translating a byte value into an index position.
 #define GET_BIT_POS(pos) static_cast<size_t>(BitUtils::BIT_POSITION_##pos)
