@@ -241,7 +241,7 @@ void Material::SetShaderProperties(Shader* shader, uint64_t& offset)
     // Therefore only one iteration is occurring.
     auto& uniforms = shader->GetUniforms();
 
-    for (auto it = uniforms.Iterator(); it; ++it)
+    for (auto it = uniforms.CreateIterator(); it; ++it)
     {
         auto& uniform = *it;
 
@@ -278,7 +278,7 @@ void Material::DestroyMaterial()
 {
     auto device = VulkanDevice::GetDeviceInstance();
 
-    for (auto it = propertiesArray.Iterator(); it; ++it)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
         vkDestroyDescriptorSetLayout(device->Device(), (*it).descriptorBinding.layout, nullptr);
     }
@@ -299,7 +299,7 @@ void Material::SetUniformData(VkDeviceSize dataSize, const void* data)
 
 void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const void* data)
 {
-    for (auto it = propertiesArray.Iterator(); it; ++it)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
         auto& property = *it;
         if (id == property.id)
@@ -312,7 +312,7 @@ void Material::SetUniformData(Hash::StringId id, VkDeviceSize dataSize, const vo
 
 bool Material::HasProperty(Hash::StringId id)
 {
-    for (auto it = propertiesArray.Iterator(); it; ++it)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
         if (id == (*it).id)
         {
@@ -326,7 +326,7 @@ void Material::SetUniformData(const String& name, VkDeviceSize dataSize, const v
 {
     auto id = INTERN_STR(name);
 
-    for (auto it = propertiesArray.Iterator(); it; ++it)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
         auto& property = *it;
         if (id == property.id)
@@ -344,7 +344,7 @@ void Material::BuildMaterials(std::initializer_list<Material*> materials)
 
 Material::Property& Material::GetProperty(Hash::StringId id)
 {
-    for (auto it = propertiesArray.Iterator(); it; ++it)
+    for (auto it = propertiesArray.CreateIterator(); it; ++it)
     {
         auto& property = *it;
         if (id == property.id) return property;

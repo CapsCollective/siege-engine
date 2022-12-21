@@ -38,7 +38,7 @@ public:
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline const T& operator[](const size_t& index) const
+    constexpr inline const T& operator[](size_t index) const
     {
         return Get(index);
     }
@@ -47,7 +47,7 @@ public:
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline T& operator[](const size_t& index)
+    constexpr inline T& operator[](size_t index)
     {
         return Get(index);
     }
@@ -57,7 +57,7 @@ public:
      * @param index the index to check.
      * @return true if the index is in bounds, false if the index is not in bounds.
      */
-    constexpr inline bool IsInBounds(const size_t& index)
+    constexpr inline bool IsInBounds(size_t index)
     {
         return index < S;
     }
@@ -67,7 +67,7 @@ public:
      * @param index the index to check.
      * @return true if the index is in bounds, false if the index is not in bounds.
      */
-    constexpr inline const bool IsInBounds(const size_t& index) const
+    constexpr inline const bool IsInBounds(size_t index) const
     {
         return index < S;
     }
@@ -77,7 +77,7 @@ public:
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline const T& Get(const size_t& index) const
+    constexpr inline const T& Get(size_t index) const
     {
         assert(IsInBounds(index) && "Provided index is out of bounds!");
         return data[index];
@@ -88,7 +88,7 @@ public:
      * @param index the index to get the value from.
      * @return the value stored in the provided index.
      */
-    constexpr inline T& Get(const size_t& index)
+    constexpr inline T& Get(size_t index)
     {
         assert(IsInBounds(index) && "Provided index is out of bounds!");
         return data[index];
@@ -99,7 +99,7 @@ public:
      * @param index the index to get the value from.
      * @param element the data to insert into the array.
      */
-    constexpr inline void Insert(const size_t& index, const T& element)
+    constexpr inline void Insert(size_t index, const T& element)
     {
         assert(IsInBounds(index) && "Provided index is out of bounds!");
         data[index] = element;
@@ -145,7 +145,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::Iter<SArray<T, S>, T> Iterator()
+    constexpr inline Utils::Iter<SArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -199,7 +199,7 @@ public:
      * @param ptr
      * @param ptrSize
      */
-    MSArray(const T* ptr, const size_t& ptrSize) : MSArray(ptrSize)
+    MSArray(const T* ptr, size_t ptrSize) : MSArray(ptrSize)
     {
         count = ArrayUtils::SetCount(ptrSize, 0, S);
         ArrayUtils::CopyData(data, ptr, sizeof(T) * count);
@@ -233,7 +233,7 @@ public:
      * @param index the index position to search.
      * @return a constant reference to the value stored in the index.
      */
-    inline const T& operator[](const size_t& index) const
+    inline const T& operator[](size_t index) const
     {
         return Get(index);
     }
@@ -244,7 +244,7 @@ public:
      * @param index the index position to search.
      * @return a mutable reference to the value stored in the index.
      */
-    inline T& operator[](const size_t& index)
+    inline T& operator[](size_t index)
     {
         count += !bitField.IsSet(index + 1);
         bitField.SetBit(index + 1);
@@ -271,8 +271,7 @@ public:
      */
     inline MSArray& operator=(MSArray&& other)
     {
-        Copy(other);
-        other.Clear();
+        Swap(other);
         return *this;
     }
 
@@ -284,7 +283,7 @@ public:
      * @param index the index position to search.
      * @return a constant reference to the value stored in the index.
      */
-    inline const T& Get(const size_t& index) const
+    inline const T& Get(size_t index) const
     {
         BitUtils::AssertIsSet(bitField.BitField(), index);
         ArrayUtils::AssertIsInBounds(index, S);
@@ -296,7 +295,7 @@ public:
      * @param index the index position to search.
      * @return a constant reference to the value stored in the index.
      */
-    inline T& Get(const size_t& index)
+    inline T& Get(size_t index)
     {
         return data[index];
     }
@@ -345,13 +344,17 @@ public:
      * @param index the position in the array we want to insert the element into.
      * @param element the element we want to store in the array.
      */
-    inline void Insert(const size_t& index, const T& element)
+    inline void Insert(size_t index, const T& element)
     {
         count += !bitField.IsSet(index + 1);
         bitField.SetBit(index + 1);
         Set(index, element);
     }
 
+    /**
+     * Appends a value to the end of the collection
+     * @param element the value to add
+     */
     inline void Append(const T& element)
     {
         ArrayUtils::AssertIsInBounds(count, S);
@@ -376,7 +379,7 @@ public:
      * @param index the index of the element being searched for.
      * @return true if the index has been previously assigned to.
      */
-    inline bool Active(const size_t& index) const
+    inline bool Active(size_t index) const
     {
         return bitField.IsSet(index + 1);
     }
@@ -386,10 +389,10 @@ public:
      * is larger than the array's size, an exception will be thrown.
      * @param index the index of the element we want to remove.
      */
-    inline void Remove(const size_t& index)
+    inline void Remove(size_t index)
     {
         bitField.UnsetBit(index + 1);
-        count--;
+        --count;
     }
 
     /**
@@ -403,11 +406,11 @@ public:
 
     /**
      * Creates a base managed iterator for the array. This iterator will ignore elements which
-     * have not been previously assigned. This method is slower than the FIterator but ensures
+     * have not been previously assigned. This method is slower than the CreateFIterator but ensures
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<MSArray<T, S>, T> Iterator()
+    inline Utils::MIter<MSArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -418,7 +421,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    Utils::Iter<MSArray<T, S>, T> FIterator()
+    Utils::Iter<MSArray<T, S>, T> CreateFIterator()
     {
         return {this};
     }
@@ -429,7 +432,7 @@ private:
      * A private constructor for the MSArray. Simply initialises the count value of the array.
      * @param arrSize the amount to set the count to.
      */
-    MSArray(const size_t& arrSize) : count {arrSize}
+    MSArray(size_t arrSize) : count {arrSize}
     {
         memset(data, 0, sizeof(T) * S);
     }
@@ -440,7 +443,7 @@ private:
      * @param index the index of the value to set.
      * @param element the element that you want to set the array position to.
      */
-    inline void Set(const size_t& index, const T& element)
+    inline void Set(size_t index, const T& element)
     {
         data[index] = element;
     }

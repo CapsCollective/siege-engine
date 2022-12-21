@@ -46,7 +46,7 @@ public:
      * @brief Initialises the HeapArray with the given size
      * @param arraySize the size of the array
      */
-    explicit MHArray(const size_t& arraySize) :
+    explicit MHArray(size_t arraySize) :
         MHArray(arraySize, 0, BitUtils::CalculateBitSetSize(arraySize))
     {}
 
@@ -94,9 +94,7 @@ public:
 
         if (other.data == nullptr && other.size == 0) return;
 
-        auto stateMaskCount = BitUtils::CalculateBitSetSize(other.size);
-
-        AllocateMemory(size, stateMaskCount);
+        AllocateMemory(size);
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
 
@@ -111,7 +109,7 @@ public:
      */
     MHArray(MHArray<T>&& other) noexcept
     {
-        Swap(std::move(other));
+        Swap(other);
     }
 
     /**
@@ -136,7 +134,7 @@ public:
      * @param index the index to search for
      * @return a const reference to the element at the given index
      */
-    const T& operator[](const size_t& index) const
+    const T& operator[](size_t index) const
     {
         return Get(index);
     }
@@ -148,7 +146,7 @@ public:
      * @param index the index to search for
      * @return a reference to the element at the given index
      */
-    T& operator[](const size_t& index)
+    T& operator[](size_t index)
     {
         assert(data && "Trying to index into MHArray when the array has not been initialised!");
         count += !bitField.IsSet(index + 1);
@@ -181,13 +179,7 @@ public:
      */
     MHArray<T>& operator=(MHArray<T>&& other) noexcept
     {
-        if (this == &other) return *this;
-
-        // Deallocate all existing memory
-        Destroy();
-
-        Swap(std::move(other));
-
+        Swap(other);
         return *this;
     }
 
@@ -196,7 +188,7 @@ public:
      * @param index the index of the element we want to access
      * @return the element (if found)
      */
-    const T& Get(const size_t& index) const
+    const T& Get(size_t index) const
     {
         BitUtils::AssertIsSet(bitField.BitField(), size);
 
@@ -208,7 +200,7 @@ public:
      * @param index the index of the element we want to access
      * @return the element (if found)
      */
-    T& Get(const size_t& index)
+    T& Get(size_t index)
     {
         return data[index];
     }
@@ -218,7 +210,7 @@ public:
      * @param index the position in the array we want to insert the element into.
      * @param element the element we want to store in the array.
      */
-    void Insert(const size_t index, const T& element)
+    void Insert(size_t index, const T& element)
     {
         count += !bitField.IsSet(index + 1);
         bitField.SetBit(index + 1);
@@ -231,7 +223,7 @@ public:
      * is larger than the array's size, an exception will be thrown
      * @param index the index of the element we want to remove
      */
-    void Remove(const size_t& index)
+    void Remove(size_t index)
     {
         bitField.UnsetBit(index + 1);
         count--;
@@ -242,7 +234,7 @@ public:
      * accordingly
      * @param newSize the new size of the array
      */
-    void Resize(const size_t& newSize)
+    void Resize(size_t newSize)
     {
         // Setting the array to 0 is the equivalent of destroying the array.
         if (newSize == 0)
@@ -256,7 +248,7 @@ public:
         size_t newByteCount = ((newSize / BitUtils::BYTE_SIZE_IN_BITS) + 1);
 
         // Reallocate the two pointers
-        ReallocateMemory(newSize, newByteCount);
+        ReallocateMemory(newSize);
 
         // Resize our state mask. Reallocating the states simply changes the number of bytes.
         // We need to change the last byte available to us to represent the new number of possible
@@ -275,7 +267,7 @@ public:
      * @param index the index of the element we want to check
      * @return `true` if this element has been set, `false` if it has not
      */
-    bool Active(const size_t& index)
+    bool Active(size_t index)
     {
         return bitField.IsSet(index + 1);
     }
@@ -327,7 +319,7 @@ public:
 
     /**
      * Creates a base managed iterator for the array. This iterator will ignore elements which
-     * have not been previously assigned. This method is slower than the FIterator but ensures
+     * have not been previously assigned. This method is slower than the CreateFIterator but ensures
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
@@ -359,7 +351,7 @@ private:
      * @param masks a raw pointer to a set of 8-bit unsigned integers.
      * @param data a raw pointer to the data stored in the array.
      */
-    MHArray(const size_t& newSize, const size_t& newCount, const size_t& newBytes, T* data) :
+    MHArray(size_t newSize, size_t newCount, size_t newBytes, T* data) :
         size {newSize},
         count {newCount},
         bitField {BitUtils::BitSet(newBytes)},
@@ -374,7 +366,7 @@ private:
      * @param newCount the number of elements in the array.
      * @param masksSize the number of bytes to allocate for storing our states.
      */
-    MHArray(const size_t& newSize, const size_t& newCount, const size_t& masksSize) :
+    MHArray(size_t newSize, size_t newCount, size_t masksSize) :
         MHArray(newSize, newCount, masksSize, ArrayUtils::Allocate<T>(sizeof(T) * newSize))
     {}
 
@@ -385,7 +377,7 @@ private:
      * @param index the index to insert the element into
      * @param value the element to insert
      */
-    void Set(const size_t& index, const T& value)
+    void Set(size_t index, const T& value)
     {
         data[index] = value;
     }
@@ -395,7 +387,7 @@ private:
      * @param arraySize the size to allocate `data` to.
      * @param bytesCount the number of bytes to assign for states.
      */
-    void AllocateMemory(const size_t& arraySize, const size_t& bytesCount)
+    void AllocateMemory(size_t arraySize)
     {
         data = ArrayUtils::Allocate<T>(sizeof(T) * arraySize);
     }
@@ -405,7 +397,7 @@ private:
      * @param arraySize the number of elements in the array.
      * @param bytesCount the number of bytes to allocate.
      */
-    void ReallocateMemory(const size_t& arraySize, const size_t& bytesCount)
+    void ReallocateMemory(size_t arraySize)
     {
         data = ArrayUtils::Reallocate<T>(data, sizeof(T) * arraySize);
     }
@@ -414,7 +406,7 @@ private:
      * @brief Swaps the data between two HeapArrays.
      * @param other the HeapArray to swap with.
      */
-    void Swap(MHArray&& other)
+    void Swap(MHArray<T>& other)
     {
         auto tmpSize = size;
         auto tmpCount = count;
@@ -462,9 +454,7 @@ private:
         count = other.count;
         size = other.size;
 
-        auto byteCount = BitUtils::CalculateBitSetSize(other.size);
-
-        ReallocateMemory(size, byteCount);
+        ReallocateMemory(size);
 
         ArrayUtils::CopyData(data, other.data, sizeof(T) * size);
         bitField = other.bitField;

@@ -20,7 +20,7 @@ namespace Siege::Utils
  * 'Data()' and `Size()` function
  * @tparam R The type returned by the iterator (usually the type of the array)
  */
-template<typename T, typename R>
+template<typename A, typename T>
 class Iter
 {
 public:
@@ -29,10 +29,10 @@ public:
 
     // TODO(Aryeh): Add more operators as needed (--, ->, etc).
     /**
-     * @brief Iterator constructor
+     * @brief CreateIterator constructor
      * @param arrPtr the pointer to the Array
      */
-    inline constexpr Iter(T* arrPtr) : ptr {arrPtr}
+    inline constexpr Iter(A* arrPtr) : ptr {arrPtr}
     {
         ptr = arrPtr->Data() && arrPtr->Size() > 0 ? arrPtr : nullptr;
     }
@@ -54,14 +54,14 @@ public:
      * @brief The dereference operator
      * @return the de-referenced pointer value
      */
-    inline constexpr R& operator*()
+    inline constexpr T& operator*()
     {
         return *(ptr->Data() + index);
     }
 
     /**
-     * Checks if the Iterator if valid or not
-     * @return true of the Iterator is valid, false otherwise
+     * Checks if the CreateIterator if valid or not
+     * @return true of the CreateIterator is valid, false otherwise
      */
     inline constexpr operator BoolType() const
     {
@@ -96,7 +96,7 @@ private:
     inline constexpr void DoNothing() const {};
 
     size_t index {0};
-    T* ptr {nullptr};
+    A* ptr {nullptr};
 };
 
 /**
@@ -106,7 +106,7 @@ private:
  * 'Data()', `Size()`, and 'Active()' function
  * @tparam R The type returned by the iterator (usually the type of the array)
  */
-template<typename T, typename R>
+template<typename A, typename T>
 class MIter
 {
 public:
@@ -115,10 +115,11 @@ public:
 
     // TODO(Aryeh): Add more operators as needed (--, ->, etc).
     /**
-     * @brief Iterator constructor. Automatically sets the iterator to the first active element
+     * @brief CreateIterator constructor. Automatically sets the iterator to the first active
+     * element
      * @param arrPtr the pointer to the array
      */
-    inline constexpr MIter(T* arrPtr) : ptr {arrPtr}
+    inline constexpr MIter(A* arrPtr) : ptr {arrPtr}
     {
         ptr = arrPtr->Data() && arrPtr->Count() > 0 ? arrPtr : nullptr;
 
@@ -149,14 +150,14 @@ public:
      * @brief The dereference operator
      * @return the de-referenced pointer value
      */
-    inline constexpr R& operator*()
+    inline constexpr T& operator*()
     {
         return *(ptr->Data() + index);
     }
 
     /**
-     * Checks if the Iterator if valid or not
-     * @return true of the Iterator is valid, false otherwise
+     * Checks if the CreateIterator if valid or not
+     * @return true of the CreateIterator is valid, false otherwise
      */
     inline constexpr operator BoolType() const
     {
@@ -193,7 +194,7 @@ private:
     // private variables
 
     size_t index {0};
-    T* ptr {nullptr};
+    A* ptr {nullptr};
 };
 } // namespace Siege::Utils
 

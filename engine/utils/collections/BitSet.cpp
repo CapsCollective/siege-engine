@@ -20,23 +20,20 @@
 // Macro for translating a byte value into an index position.
 #define GET_BIT_POS(pos) static_cast<size_t>(BitUtils::BIT_POSITION_##pos)
 
-namespace Siege::Utils
+namespace Siege::Utils::BitUtils
 {
-// +----------------------------------------------------------------------------------------------+
-// |------------------------------------- BitUtils -----------------------------------------------|
-// +----------------------------------------------------------------------------------------------+
 
-unsigned long BitUtils::UnsetBit(unsigned char* bitfield,
-                                 const unsigned long& bit,
-                                 const unsigned long& leftMostBit,
-                                 const unsigned long& size)
+unsigned long UnsetBit(unsigned char* bitfield,
+                       const unsigned long& bit,
+                       const unsigned long& leftMostBit,
+                       const unsigned long& size)
 {
     AssertIsInBounds(bit - (bit > 0), size * BYTE_SIZE_IN_BITS);
 
     auto indexedBit = bit - 1;
     auto byteIndex = Byte(indexedBit);
 
-    BitUtils::SetBitToZero(bitfield[byteIndex], indexedBit);
+    SetBitToZero(bitfield[byteIndex], indexedBit);
 
     // Skip the loop below if the bit being processed is not the leftMostBit
     byteIndex = IF(bit < leftMostBit THEN - 1 ELSE byteIndex);
@@ -56,16 +53,16 @@ unsigned long BitUtils::UnsetBit(unsigned char* bitfield,
     return newLeftMostBit;
 }
 
-unsigned long BitUtils::SetBit(unsigned char* bitfield,
-                               const unsigned long& bit,
-                               const unsigned long& leftMostBit)
+unsigned long SetBit(unsigned char* bitfield,
+                     const unsigned long& bit,
+                     const unsigned long& leftMostBit)
 {
     auto indexedBit = bit - 1;
     bitfield[Byte(indexedBit)] |= BitAtIndex(indexedBit);
     return IF(bit > leftMostBit THEN bit ELSE leftMostBit);
 }
 
-unsigned long BitUtils::CalculateLeftMostBit(const unsigned char& byte)
+unsigned long CalculateLeftMostBit(const unsigned char& byte)
 {
     size_t r = byte;
     // Active all bits after leftmost bit
@@ -79,7 +76,7 @@ unsigned long BitUtils::CalculateLeftMostBit(const unsigned char& byte)
     return GetBitPosIndex(r & -r);
 }
 
-unsigned long BitUtils::GetBitPosIndex(const unsigned long& bit)
+unsigned long GetBitPosIndex(const unsigned long& bit)
 {
     switch (bit)
     {
@@ -104,7 +101,7 @@ unsigned long BitUtils::GetBitPosIndex(const unsigned long& bit)
     }
 }
 
-void BitUtils::SetBitsToOne(unsigned char* bitfield, const unsigned long& bits)
+void SetBitsToOne(unsigned char* bitfield, const unsigned long& bits)
 {
     size_t bitsToProcess = bits;
     size_t newByteCount = (bitsToProcess / BYTE_SIZE_IN_BITS);
@@ -114,41 +111,38 @@ void BitUtils::SetBitsToOne(unsigned char* bitfield, const unsigned long& bits)
     bitfield[newByteCount] = MAX_BIT_VALUES[bitsLeft - 1];
 }
 
-void BitUtils::Clear(unsigned char* bitfield, const unsigned long& size)
+void Clear(unsigned char* bitfield, const unsigned long& size)
 {
     memset(bitfield, 0, BYTE_MASK_SIZE * size);
 }
 
-void BitUtils::AssertIsInBounds(const size_t& index, const size_t& size)
+void AssertIsInBounds(const unsigned long& index, const unsigned long& size)
 {
     // TODO: Change this to CC_ASSERT once the logging integration is complete
     assert(IsInBounds(index, size) && "The provided index is out of bounds!");
 }
 
-void BitUtils::AssertIsSet(const uint8_t* bitField, const size_t& index)
+void AssertIsSet(const unsigned char* bitField, const unsigned long& index)
 {
     // TODO: Change this to CC_ASSERT once the logging integration is complete
-    assert(BitUtils::IsSet(bitField, index) &&
-           "Cannot index into element that hasn't been assigned!");
+    assert(IsSet(bitField, index) && "Cannot index into element that hasn't been assigned!");
 }
 
-// +----------------------------------------------------------------------------------------------+
-// |----------------------------------------- BitSet ---------------------------------------------|
-// +----------------------------------------------------------------------------------------------+
+// BitSet functrion implementations
 
-BitUtils::BitSet::BitSet(const size_t& bytes) : leftMostBit {0}, size {bytes}
+BitSet::BitSet(const unsigned long& bytes) : leftMostBit {0}, size {bytes}
 {
     bitfield = static_cast<uint8_t*>(malloc(BYTE_MASK_SIZE * bytes));
-    BitUtils::Clear(bitfield, size);
+    ::Siege::Utils::BitUtils::Clear(bitfield, size);
 }
 
-BitUtils::BitSet::BitSet(const BitSet& other) : leftMostBit {other.leftMostBit}, size {other.size}
+BitSet::BitSet(const BitSet& other) : leftMostBit {other.leftMostBit}, size {other.size}
 {
     bitfield = static_cast<uint8_t*>(malloc(BYTE_MASK_SIZE * other.size));
     memcpy(bitfield, other.bitfield, BYTE_MASK_SIZE * other.size);
 }
 
-BitUtils::BitSet::BitSet(BitSet&& other) : leftMostBit {other.leftMostBit}, size {other.size}
+BitSet::BitSet(BitSet&& other) : leftMostBit {other.leftMostBit}, size {other.size}
 {
     bitfield = std::move(other.bitfield);
     leftMostBit = std::move(other.leftMostBit);
@@ -157,19 +151,19 @@ BitUtils::BitSet::BitSet(BitSet&& other) : leftMostBit {other.leftMostBit}, size
     other.ResetValues();
 }
 
-BitUtils::BitSet::~BitSet()
+BitSet::~BitSet()
 {
     free(bitfield);
     bitfield = nullptr;
 }
 
-const uint8_t& BitUtils::BitSet::operator[](const size_t& index)
+const uint8_t& BitSet::operator[](const unsigned long& index)
 {
     AssertIsInBounds(index, size);
     return bitfield[index];
 }
 
-BitUtils::BitSet& BitUtils::BitSet::operator=(const BitSet& other)
+BitSet& BitSet::operator=(const BitSet& other)
 {
     if (this == &other) return *this;
 
@@ -182,7 +176,7 @@ BitUtils::BitSet& BitUtils::BitSet::operator=(const BitSet& other)
     return *this;
 }
 
-BitUtils::BitSet& BitUtils::BitSet::operator=(BitSet&& other)
+BitSet& BitSet::operator=(BitSet&& other)
 {
     bitfield = std::move(other.bitfield);
     leftMostBit = std::move(other.leftMostBit);
@@ -193,34 +187,34 @@ BitUtils::BitSet& BitUtils::BitSet::operator=(BitSet&& other)
     return *this;
 }
 
-void BitUtils::BitSet::SetBit(const size_t& bit)
+void BitSet::SetBit(const unsigned long& bit)
 {
-    leftMostBit = BitUtils::SetBit(bitfield, bit, leftMostBit);
+    leftMostBit = ::Siege::Utils::BitUtils::SetBit(bitfield, bit, leftMostBit);
 }
 
-bool BitUtils::BitSet::IsSet(const size_t& bit)
+bool BitSet::IsSet(const unsigned long& bit)
 {
-    return BitUtils::IsSet(bitfield, bit);
+    return ::Siege::Utils::BitUtils::IsSet(bitfield, bit);
 }
 
-void BitUtils::BitSet::UnsetBit(const size_t& bit)
+void BitSet::UnsetBit(const unsigned long& bit)
 {
-    leftMostBit = BitUtils::UnsetBit(bitfield, bit, leftMostBit, size);
+    leftMostBit = ::Siege::Utils::BitUtils::UnsetBit(bitfield, bit, leftMostBit, size);
 }
 
-void BitUtils::BitSet::SetBitsToOne(const size_t& bits)
+void BitSet::SetBitsToOne(const unsigned long& bits)
 {
-    BitUtils::SetBitsToOne(bitfield, bits);
+    ::Siege::Utils::BitUtils::SetBitsToOne(bitfield, bits);
     leftMostBit = bits;
 }
 
-void BitUtils::BitSet::Clear()
+void BitSet::Clear()
 {
-    BitUtils::Clear(bitfield, size);
+    ::Siege::Utils::BitUtils::Clear(bitfield, size);
     leftMostBit = size = 0;
 }
 
-void BitUtils::BitSet::UnsetPostBits(const size_t& bit)
+void BitSet::UnsetPostBits(const unsigned long& bit)
 {
     auto byteIndex = Byte(bit);
 
@@ -231,7 +225,7 @@ void BitUtils::BitSet::UnsetPostBits(const size_t& bit)
     leftMostBit = CalculateLeftMostBit(bitfield[byteIndex]) + (byteIndex * BYTE_SIZE_IN_BITS);
 }
 
-void BitUtils::BitSet::Resize(const size_t& newSize)
+void BitSet::Resize(const unsigned long& newSize)
 {
     bitfield = static_cast<uint8_t*>(realloc(bitfield, BYTE_MASK_SIZE * newSize));
 
@@ -248,9 +242,9 @@ void BitUtils::BitSet::Resize(const size_t& newSize)
     UnsetPostBits(leftMostBit);
 }
 
-void BitUtils::BitSet::ResetValues()
+void BitSet::ResetValues()
 {
     bitfield = nullptr;
     leftMostBit = size = 0;
 }
-} // namespace Siege::Utils
+} // namespace Siege::Utils::BitUtils
