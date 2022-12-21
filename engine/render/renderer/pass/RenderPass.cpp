@@ -8,6 +8,8 @@
 
 #include "RenderPass.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 

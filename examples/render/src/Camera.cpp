@@ -10,6 +10,7 @@
 #include "Camera.h"
 
 #include <render/input/Input.h>
+#include <utils/math/Float.h>
 
 void Camera::UpdatePerspectiveProjection(const float& fovy,
                                          const float& aspect,

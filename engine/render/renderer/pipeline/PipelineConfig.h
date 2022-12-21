@@ -48,8 +48,8 @@ public:
 
     struct Data
     {
-        HeapArray<VkVertexInputBindingDescription> bindings;
-        HeapArray<VkVertexInputAttributeDescription> attributes;
+        Utils::MHArray<VkVertexInputBindingDescription> bindings;
+        Utils::MHArray<VkVertexInputAttributeDescription> attributes;
     };
 
     static Data CreateDescriptions(size_t bindingCount, Binding* bindings);

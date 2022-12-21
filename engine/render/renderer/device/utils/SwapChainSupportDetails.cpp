@@ -22,7 +22,7 @@ SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surf
     if (formatCount != 0)
     {
         // Populate our format array
-        details.formats = HeapArray<VkSurfaceFormatKHR>(static_cast<size_t>(formatCount));
+        details.formats = Utils::MHArray<VkSurfaceFormatKHR>(static_cast<size_t>(formatCount));
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.Data());
 
         details.hasFormats = true;
@@ -34,7 +34,8 @@ SwapChainSupportDetails QuerySupport(VkPhysicalDevice device, VkSurfaceKHR& surf
     if (presentModeCount != 0)
     {
         // populate our presentModes array
-        details.presentModes = HeapArray<VkPresentModeKHR>(static_cast<uint32_t>(presentModeCount));
+        details.presentModes =
+            Utils::MHArray<VkPresentModeKHR>(static_cast<uint32_t>(presentModeCount));
         vkGetPhysicalDeviceSurfacePresentModesKHR(device,
                                                   surface,
                                                   &presentModeCount,

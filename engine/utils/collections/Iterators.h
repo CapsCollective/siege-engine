@@ -1,0 +1,201 @@
+//
+//
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
+//
+
+#ifndef SIEGE_ENGINE_ITERATORS_H
+#define SIEGE_ENGINE_ITERATORS_H
+
+#include <cstddef>
+namespace Siege::Utils
+{
+/**
+ * A standard linear iterator. This iterator always iterates over every element of the array
+ * regardless of whether it has been filled or not. This is the 'standard' iterator type
+ * @tparam T the type of array stored by the iterator. Must be an array type which exposes a
+ * 'Data()' and `Size()` function
+ * @tparam R The type returned by the iterator (usually the type of the array)
+ */
+template<typename A, typename T>
+class Iter
+{
+public:
+
+    typedef void (Iter::*BoolType)() const;
+
+    // TODO(Aryeh): Add more operators as needed (--, ->, etc).
+    /**
+     * @brief CreateIterator constructor
+     * @param arrPtr the pointer to the Array
+     */
+    inline constexpr Iter(A* arrPtr) : ptr {arrPtr}
+    {
+        ptr = arrPtr->Data() && arrPtr->Size() > 0 ? arrPtr : nullptr;
+    }
+
+    /**
+     * @brief The iterator prefix increment operator. This operator will increment the pointer
+     * as many times as needed to find an active element. As such, it will not return inactive
+     * array elements
+     * @return the iterator with the pointer and index incremented
+     */
+    inline constexpr Iter& operator++()
+    {
+        // TODO: Profile if using a reinterpret cast would be faster here
+        ptr = ++index < ptr->Size() ? ptr : 0;
+        return *this;
+    }
+
+    /**
+     * @brief The dereference operator
+     * @return the de-referenced pointer value
+     */
+    inline constexpr T& operator*()
+    {
+        return *(ptr->Data() + index);
+    }
+
+    /**
+     * Checks if the CreateIterator if valid or not
+     * @return true of the CreateIterator is valid, false otherwise
+     */
+    inline constexpr operator BoolType() const
+    {
+        return ptr ? &Iter::DoNothing : 0;
+    }
+
+    /**
+     * @brief An equal operator, checks with equality
+     * @param other the other iterator to compare to
+     * @return `true` if the pointers stored by both iterators are the same
+     */
+    inline constexpr bool operator==(const Iter& other) const
+    {
+        return ptr->Data() == other.ptr->Data() && index == other.index;
+    }
+
+    /**
+     * @brief A non equality operator. Checks that two iterators are not equal
+     * @param other the iterator to compare to
+     * @return `true` if the pointer addresses stored by both iterators are not the same
+     */
+    inline constexpr bool operator!=(const Iter& other) const
+    {
+        return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+private:
+
+    /**
+     * A private function which does nothing (used for implementing the safe bool idiom)
+     */
+    inline constexpr void DoNothing() const {};
+
+    size_t index {0};
+    A* ptr {nullptr};
+};
+
+/**
+ * A 'Managed' iterator. This iterator assumes that an array has some way of checking if an index
+ * has been assigned (via an 'Active()' class).
+ * @tparam T the type of array stored by the iterator. Must be an array type which exposes a
+ * 'Data()', `Size()`, and 'Active()' function
+ * @tparam R The type returned by the iterator (usually the type of the array)
+ */
+template<typename A, typename T>
+class MIter
+{
+public:
+
+    typedef void (MIter::*BoolType)() const;
+
+    // TODO(Aryeh): Add more operators as needed (--, ->, etc).
+    /**
+     * @brief CreateIterator constructor. Automatically sets the iterator to the first active
+     * element
+     * @param arrPtr the pointer to the array
+     */
+    inline constexpr MIter(A* arrPtr) : ptr {arrPtr}
+    {
+        ptr = arrPtr->Data() && arrPtr->Count() > 0 ? arrPtr : nullptr;
+
+        while (ptr && !ptr->Active(index)) index++;
+    }
+
+    /**
+     * @brief The iterator prefix increment operator. This operator will increment the pointer
+     * as many times as needed to find an active element. As such, it will not return inactive
+     * array elements
+     * @return the iterator with the pointer and index incremented
+     */
+    inline constexpr MIter& operator++()
+    {
+        // If the next element in the array is invalid, keep incrementing until we find one that
+        // is
+        while (ptr->Data() && !ptr->Active(index + 1)) index++;
+
+        // TODO: Profile if using a reinterpret cast would be faster here
+        ptr = index < ptr->Size() ? ptr : 0;
+
+        index++;
+
+        return *this;
+    }
+
+    /**
+     * @brief The dereference operator
+     * @return the de-referenced pointer value
+     */
+    inline constexpr T& operator*()
+    {
+        return *(ptr->Data() + index);
+    }
+
+    /**
+     * Checks if the CreateIterator if valid or not
+     * @return true of the CreateIterator is valid, false otherwise
+     */
+    inline constexpr operator BoolType() const
+    {
+        return ptr ? &MIter::DoNothing : 0;
+    }
+
+    /**
+     * @brief An equal operator, checks with equality
+     * @param other the other iterator to compare to
+     * @return `true` if the pointers stored by both iterators are the same
+     */
+    inline constexpr bool operator==(const MIter& other) const
+    {
+        return ptr->Data() == other.ptr->Data() && index == other.index;
+    }
+
+    /**
+     * @brief A non equality operator. Checks that two iterators are not equal
+     * @param other the iterator to compare to
+     * @return `true` if the pointer addresses stored by both iterators are not the same
+     */
+    inline constexpr bool operator!=(const MIter& other) const
+    {
+        return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+private:
+
+    /**
+     * A private function which does nothing (used for implementing the safe bool idiom)
+     */
+    inline constexpr void DoNothing() const {};
+
+    // private variables
+
+    size_t index {0};
+    A* ptr {nullptr};
+};
+} // namespace Siege::Utils
+
+#endif // SIEGE_ENGINE_ITERATORS_H

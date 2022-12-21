@@ -8,6 +8,8 @@
 
 #include "DebugUtilsMessenger.h"
 
+#include <utils/Logging.h>
+
 namespace Siege::DebugUtilsMessenger
 {
 

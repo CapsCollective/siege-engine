@@ -59,8 +59,8 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId lightDataId;
 
-    StackArray<Vec2, Mesh::MAX_VERTICES> pointLightVertices;
-    StackArray<uint32_t, Mesh::MAX_INDICES> pointLightIndices;
+    Utils::MSArray<Vec2, Mesh::MAX_VERTICES> pointLightVertices;
+    Utils::MSArray<uint32_t, Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege
 

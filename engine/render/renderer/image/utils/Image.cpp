@@ -8,6 +8,8 @@
 
 #include "Image.h"
 
+#include <utils/Logging.h>
+
 VkImageView Image::CreateImageView(VkDevice device,
                                    VkImage image,
                                    VkImageViewType viewType,

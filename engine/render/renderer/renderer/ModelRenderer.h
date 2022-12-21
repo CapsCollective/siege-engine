@@ -42,8 +42,8 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId transformId;
 
-    StackArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-    StackArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    Utils::MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
+    Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};

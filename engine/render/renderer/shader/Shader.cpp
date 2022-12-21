@@ -8,6 +8,8 @@
 
 #include "Shader.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 Shader::Shader() {}
@@ -97,11 +99,8 @@ Shader& Shader::WithDynamicStorage(uint32_t binding,
 
 Shader& Shader::WithVertexType(uint32_t size)
 {
-    size_t index = vertexBindings.Count();
-
-    vertexBindings.Activate(index);
-    auto& binding = vertexBindings.Get(index);
-    binding.vertexStride = size;
+    vertexBindings.Append({});
+    vertexBindings[vertexBindings.Count() - 1].vertexStride = size;
 
     CC_LOG_INFO("SHADER: [{}] - Vertex [{}/{}] added with size: {}",
                 filePath,

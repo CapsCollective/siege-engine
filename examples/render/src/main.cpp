@@ -12,13 +12,13 @@
 #include <render/renderer/model/Model.h>
 #include <render/renderer/shader/Shader.h>
 #include <render/window/Window.h>
-#include <utils/HeapArray.h>
 #include <utils/math/Float.h>
 
 #include <chrono>
 
 #include "Camera.h"
 #include "GameObject.h"
+#include "utils/collections/HeapArray.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -144,12 +144,13 @@ int main()
     vaseObjModel.SetMaterial(&diffuseMat);
 
     // Create shapes for use
-    Siege::HeapArray<GameObject> objects3D = {GameObject(&cubeObjModel),
-                                              GameObject(&cubeObjModel),
-                                              GameObject(&vaseObjModel)};
+    Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
+                                                   GameObject(&cubeObjModel),
+                                                   GameObject(&vaseObjModel)};
 
     // TODO(Aryeh): create a separate object for representing 2D shapes
-    Siege::HeapArray<GameObject> objects2D = {GameObject(&triangleModel), GameObject(&squareModel)};
+    Siege::Utils::MHArray<GameObject> objects2D = {GameObject(&triangleModel),
+                                                   GameObject(&squareModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});
@@ -211,7 +212,7 @@ int main()
 
         camera.Update();
 
-        for (auto it = objects3D.CreateIterator(); it; ++it)
+        for (auto it = objects3D.FIterator(); it; ++it)
         {
             GameObject obj = *it;
             Siege::Renderer3D::DrawModel(obj.GetModel(),
@@ -231,7 +232,7 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f});
 
-        for (auto it = objects2D.CreateIterator(); it; ++it)
+        for (auto it = objects2D.FIterator(); it; ++it)
         {
             GameObject obj = *it;
             Siege::Renderer2D::DrawModel(obj.GetModel(),

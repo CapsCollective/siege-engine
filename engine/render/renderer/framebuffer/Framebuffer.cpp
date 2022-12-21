@@ -8,6 +8,8 @@
 
 #include "Framebuffer.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 uint32_t Framebuffer::IMAGE_COUNT = 0;
@@ -19,13 +21,12 @@ Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& devi
 
 void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 {
-    for (auto it = framebuffers.CreateIterator(); it; ++it)
-        vkDestroyFramebuffer(device, *it, nullptr);
+    for (auto it = framebuffers.Iterator(); it; ++it) vkDestroyFramebuffer(device, *it, nullptr);
 }
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
 {
-    framebuffers = HeapArray<VkFramebuffer>(IMAGE_COUNT);
+    framebuffers = Utils::MHArray<VkFramebuffer>(IMAGE_COUNT);
 
     auto* colorAttachments = config.GetColorAttachments();
     auto* depthAttachments = config.GetDepthAttachments();
@@ -48,7 +49,7 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
         CC_ASSERT(vkCreateFramebuffer(device, &frameBufferInfo, nullptr, OUT & framebuffers[i]) ==
                       VK_SUCCESS,
-                  "Failed to create framebuffer");
+                  "Failed to create framebuffer")
     }
 }
 
@@ -59,7 +60,6 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
     if (framebuffers.Size() > 0) DestroyFramebuffer(device);
 
     framebuffers = std::move(other.framebuffers);
-    other.framebuffers.Clear();
 
     return *this;
 }

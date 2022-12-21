@@ -8,6 +8,8 @@
 
 #include "PipelineConfig.h"
 
+#include <utils/Logging.h>
+
 namespace Siege
 {
 VkVertexInputBindingDescription VertexDescription::CreateBinding(uint32_t binding,
@@ -36,8 +38,8 @@ VertexDescription::Data VertexDescription::CreateDescriptions(size_t bindingCoun
         totalAttributes += bindings[i].attributeCount;
     }
 
-    vertexData.bindings = HeapArray<VkVertexInputBindingDescription>(bindingCount);
-    vertexData.attributes = HeapArray<VkVertexInputAttributeDescription>(totalAttributes);
+    vertexData.bindings = Utils::MHArray<VkVertexInputBindingDescription>(bindingCount);
+    vertexData.attributes = Utils::MHArray<VkVertexInputAttributeDescription>(totalAttributes);
 
     size_t processedAttributes = 0;
     for (size_t i = 0; i < bindingCount; i++)

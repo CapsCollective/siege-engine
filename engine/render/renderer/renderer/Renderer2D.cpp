@@ -17,8 +17,8 @@ Hash::StringId Renderer2D::globalDataId;
 
 uint64_t Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
 
-StackArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
-StackArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
+Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
+Utils::MSArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
 Material* Renderer2D::currentMaterial = nullptr;
 Model* Renderer2D::currentModel = nullptr;

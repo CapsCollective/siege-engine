@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_RENDERER_H
 #define SIEGE_ENGINE_RENDERER_H
 
+#include <utils/Logging.h>
+
 #include "descriptor/DescriptorPool.h"
 #include "device/VulkanDevice.h"
 #include "lights/PointLight.h"
@@ -85,7 +87,7 @@ public:
 private:
 
     static VulkanDevice* deviceInstance;
-    static HeapArray<VkCommandBuffer> commandBuffers;
+    static Utils::MHArray<VkCommandBuffer> commandBuffers;
 
     VkClearColorValue clearValue {{0, 0, 0, 1.f}};
 
