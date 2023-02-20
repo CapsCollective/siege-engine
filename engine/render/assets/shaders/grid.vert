@@ -35,10 +35,6 @@ layout (set = 0, binding = 0) uniform GlobalData {
     LightData lightData;
 } globalData;
 
-const vec3 scale = vec3(4.0, 4.0, 1.0);
-
-const vec3 position = vec3(0.0, 0.0, 0.0);
-
 CameraData camera = globalData.cameraData;
 
 vec3 unprojectPoint(float x, float y, float z, mat4 view, mat4 projection) {

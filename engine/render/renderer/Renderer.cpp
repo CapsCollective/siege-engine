@@ -12,15 +12,16 @@
 
 namespace Siege
 {
+Renderer* Renderer::instance {nullptr};
 Utils::MHArray<VkCommandBuffer> Renderer::commandBuffers;
-VulkanDevice* Renderer::deviceInstance = nullptr;
 
-Renderer::Renderer(Window& window) : window {window}, swapChain {SwapChain(device)}
+Renderer::Renderer(Window& window) : window {window}
 {
-    device.SetWindow(&window);
-    swapChain.SetWindowExtents(window.GetExtent());
+    if (instance == nullptr) instance = this;
 
-    if (deviceInstance == nullptr) deviceInstance = &device;
+    context.Init(Window::GetRequiredExtensions, Window::CreateWindowSurface);
+
+    swapChain.SetWindowExtents(window.GetExtent());
 
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10);
@@ -49,11 +50,12 @@ void Renderer::CreateCommandBuffers()
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = device.GetCommandPool();
+    allocInfo.commandPool = Vulkan::Context::GetCurrentDevice()->GetCommandPool();
     allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.Size());
 
-    CC_ASSERT(vkAllocateCommandBuffers(device.Device(), &allocInfo, OUT commandBuffers.Data()) ==
-                  VK_SUCCESS,
+    CC_ASSERT(vkAllocateCommandBuffers(Vulkan::Context::GetVkLogicalDevice(),
+                                       &allocInfo,
+                                       OUT commandBuffers.Data()) == VK_SUCCESS,
               "Failed to allocate command buffer");
 }
 

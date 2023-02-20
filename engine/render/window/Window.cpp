@@ -10,6 +10,7 @@
 
 namespace Siege
 {
+GLFWwindow* Window::window = nullptr;
 bool Window::glfwInitialised = false;
 size_t Window::glfwWindows = 0;
 
@@ -28,13 +29,21 @@ bool Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
     return glfwCreateWindowSurface(instance, window, nullptr, surface) == VK_SUCCESS;
 }
 
+Utils::MHArray<const char*> Window::GetRequiredExtensions()
+{
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    return Utils::MHArray<const char*>(glfwExtensions, glfwExtensionCount);
+}
+
 void Window::ResizeCallback(GLFWwindow* windowPtr, int width, int height)
 {
-    auto window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
+    auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
 
-    window->wasResized = true;
+    windowContext->wasResized = true;
 
-    window->width = width;
-    window->height = height;
+    windowContext->width = width;
+    windowContext->height = height;
 }
 } // namespace Siege

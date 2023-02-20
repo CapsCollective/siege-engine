@@ -9,7 +9,16 @@
 #ifndef SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 #define SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 
-#include "../../Core.h"
+#include "render/renderer/Core.h"
+
+#if ENABLE_VALIDATION_LAYERS == 1
+#define CREATE_DEBUG_MESSENGER(debugInfo) DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);
+#define DESTROY_DEBUG_MESSENGER(debugMessenger) \
+    DebugUtilsMessenger::DestroyMessenger(instance, debugMessenger, nullptr);
+#else
+#define CREATE_DEBUG_MESSENGER(...)
+#define DESTROY_DEBUG_MESSENGER(...)
+#endif
 
 namespace Siege::DebugUtilsMessenger
 {

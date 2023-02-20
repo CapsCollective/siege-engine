@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_SWAPCHAIN_H
 #define SIEGE_ENGINE_SWAPCHAIN_H
 
-#include "../device/VulkanDevice.h"
 #include "../framebuffer/Framebuffer.h"
 #include "../image/FrameImages.h"
 #include "../pass/RenderPass.h"
+#include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege
 {
@@ -54,8 +54,8 @@ public:
      * @param windowExtent the window resolution. Images need to be scaled to an extent, this
      * usually must follow the extents of the window.
      */
-    SwapChain(VulkanDevice& device, VkExtent2D windowExtent);
-    explicit SwapChain(VulkanDevice& device);
+    SwapChain(VkExtent2D windowExtent);
+    SwapChain();
     ~SwapChain();
 
     // Delete copy constructors.
@@ -71,10 +71,7 @@ public:
      *
      * @return VkFormat the format being used by the renderer.
      */
-    VkFormat GetSwapChainImageFormat()
-    {
-        return swapchainImages.GetFormat();
-    }
+    VkFormat GetSwapChainImageFormat();
 
     /**
      * @brief Returns the image width and height that images are being rendered to.
@@ -272,7 +269,6 @@ private:
     void ClearMemory();
 
     // Device and window data
-    VulkanDevice& device;
     VkExtent2D windowExtent;
 
     static SwapChain* instance;

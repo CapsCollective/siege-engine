@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_PIPELINE_H
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 #include "PipelineConfig.h"
 
 namespace Siege

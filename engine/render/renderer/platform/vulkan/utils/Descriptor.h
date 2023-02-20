@@ -9,9 +9,9 @@
 #ifndef SIEGE_ENGINE_DESCRIPTOR_H
 #define SIEGE_ENGINE_DESCRIPTOR_H
 
-#include <volk/volk.h>
-
 #include <cstdint>
+
+#include "volk/volk.h"
 
 namespace Siege
 {

@@ -10,6 +10,8 @@
 
 #include <utils/Logging.h>
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 namespace Siege
 {
 
@@ -20,7 +22,7 @@ RenderPass::~RenderPass()
 
 void RenderPass::DestroyRenderPass()
 {
-    vkDestroyRenderPass(VulkanDevice::GetDeviceInstance()->Device(), renderPass, nullptr);
+    vkDestroyRenderPass(Vulkan::Context::GetVkLogicalDevice(), renderPass, nullptr);
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
@@ -54,8 +56,6 @@ RenderPass::RenderPass() = default;
 
 void RenderPass::Initialise(const RenderPass::Config& config)
 {
-    auto device = VulkanDevice::GetDeviceInstance()->Device();
-
     auto& attachments = config.GetAttachments();
     auto& subPasses = config.GetSubPasses();
     auto& dependencies = config.GetDependencies();
@@ -69,24 +69,16 @@ void RenderPass::Initialise(const RenderPass::Config& config)
     renderPassCreateInfo.dependencyCount = dependencies.Count();
     renderPassCreateInfo.pDependencies = dependencies.Data();
 
-    CC_ASSERT(
-        vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, OUT & renderPass) == VK_SUCCESS,
-        "Failed to create render pass!");
+    CC_ASSERT(vkCreateRenderPass(Vulkan::Context::GetVkLogicalDevice(),
+                                 &renderPassCreateInfo,
+                                 nullptr,
+                                 OUT & renderPass) == VK_SUCCESS,
+              "Failed to create render pass!");
 }
 
 void RenderPass::Initialise(RenderPass& renderpass, const RenderPass::Config& config)
 {
     renderpass.Initialise(config);
-}
-
-RenderPass& RenderPass::operator=(RenderPass&& other) noexcept
-{
-    if (renderPass != VK_NULL_HANDLE) DestroyRenderPass();
-
-    renderPass = std::move(other.renderPass);
-    other.renderPass = VK_NULL_HANDLE;
-
-    return *this;
 }
 
 // Config functions.
@@ -107,5 +99,14 @@ RenderPass::Config& RenderPass::Config::WithDependency(const VkSubpassDependency
 {
     dependencies.Append(dependency);
     return *this;
+}
+
+void RenderPass::Swap(RenderPass& other)
+{
+    auto tmpRenderPass = renderPass;
+
+    renderPass = other.renderPass;
+
+    other.renderPass = tmpRenderPass;
 }
 } // namespace Siege

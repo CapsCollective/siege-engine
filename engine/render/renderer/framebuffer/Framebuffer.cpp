@@ -10,6 +10,8 @@
 
 #include <utils/Logging.h>
 
+#include "render/renderer/platform/vulkan/Context.h"
+
 namespace Siege
 {
 uint32_t Framebuffer::IMAGE_COUNT = 0;
@@ -21,7 +23,8 @@ Framebuffer::Framebuffer(const Framebuffer::Config& config, const VkDevice& devi
 
 void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 {
-    for (auto it = framebuffers.Iterator(); it; ++it) vkDestroyFramebuffer(device, *it, nullptr);
+    for (auto it = framebuffers.CreateIterator(); it; ++it)
+        vkDestroyFramebuffer(device, *it, nullptr);
 }
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
@@ -35,8 +38,8 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
     {
         VkImageView attachments[config.GetAttachmentCount()];
 
-        if (colorAttachments != nullptr) attachments[0] = colorAttachments->GetImageView(i);
-        if (depthAttachments != nullptr) attachments[1] = depthAttachments->GetImageView(i);
+        if (colorAttachments != nullptr) attachments[0] = colorAttachments->GetVkImage(i).GetView();
+        if (depthAttachments != nullptr) attachments[1] = depthAttachments->GetVkImage(i).GetView();
 
         VkFramebufferCreateInfo frameBufferInfo {};
         frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -55,19 +58,13 @@ void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& 
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 {
-    auto device = VulkanDevice::GetDeviceInstance()->Device();
-
-    if (framebuffers.Size() > 0) DestroyFramebuffer(device);
-
-    framebuffers = std::move(other.framebuffers);
-
+    Swap(other);
     return *this;
 }
 
 Framebuffer::~Framebuffer()
 {
-    auto device = VulkanDevice::GetDeviceInstance();
-    DestroyFramebuffer(device->Device());
+    DestroyFramebuffer(Vulkan::Context::GetVkLogicalDevice());
     framebuffers.Clear();
 }
 
@@ -105,6 +102,15 @@ Framebuffer::Config& Framebuffer::Config::WithColorAttachments(FrameImages* targ
     colorAttachments = targetAttachments;
     attachmentCount += 1;
     return *this;
+}
+
+void Framebuffer::Swap(Framebuffer& other)
+{
+    auto tmpFrameBuffers = framebuffers;
+
+    framebuffers = other.framebuffers;
+
+    other.framebuffers = tmpFrameBuffers;
 }
 
 } // namespace Siege

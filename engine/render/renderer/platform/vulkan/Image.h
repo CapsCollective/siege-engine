@@ -1,0 +1,81 @@
+//
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
+//
+
+#ifndef SIEGE_ENGINE_VULKAN_IMAGE_H
+#define SIEGE_ENGINE_VULKAN_IMAGE_H
+
+#include <cstdint>
+
+#include "utils/Types.h"
+
+namespace Siege::Vulkan
+{
+class Image
+{
+public:
+
+    struct Config
+    {
+        Utils::ImageFormat imageFormat;
+        Utils::Extent3D imageExtent;
+        Utils::ImageUsage usage;
+        uint32_t mipLevels;
+        uint32_t layers;
+    };
+
+    Image() = default;
+    Image(const Config& config);
+    Image(VkImage swapchainImage, const Config& config);
+    Image(Image&& other);
+    ~Image();
+
+    Image& operator=(Image&& other);
+
+    VkImageView GetView()
+    {
+        return imageView;
+    }
+
+    const VkImage& GetImage() const
+    {
+        return image;
+    }
+    const VkDeviceMemory& GetMemory() const
+    {
+        return memory;
+    }
+    const VkImageView GetView() const
+    {
+        return imageView;
+    }
+
+    void Free();
+    void Invalidate();
+
+    bool IsValid();
+    bool HasInfo();
+
+private:
+
+    static bool IsDepthFormat(Utils::ImageFormat format);
+    static uint32_t GetVkUsageFlag(Utils::ImageUsage usage, Utils::ImageFormat format);
+
+    void Move(Image& other);
+
+    void CreateImage(const Config& config);
+    void AllocateMemory();
+    void BindImageMemory(VkDevice);
+    void CreateImageView(const Config& config);
+
+    VkImage image {nullptr};
+    VkDeviceMemory memory {nullptr};
+    VkImageView imageView {nullptr};
+};
+} // namespace Siege::Vulkan
+
+#endif // SIEGE_ENGINE_VULKAN_IMAGE_H

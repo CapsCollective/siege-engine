@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_RENDER_PASS_H
 
 #include "../Core.h"
-#include "../device/VulkanDevice.h"
 #include "utils/Attachments.h"
 
 namespace Siege
@@ -202,7 +201,11 @@ public:
      */
     static void End(VkCommandBuffer commandBuffer);
 
-    RenderPass& operator=(RenderPass&& other) noexcept;
+    inline RenderPass& operator=(RenderPass&& other) noexcept
+    {
+        Swap(other);
+        return *this;
+    }
 
     /**
      * @brief Returns the Vulkan RenderPass object.
@@ -226,6 +229,8 @@ public:
     void DestroyRenderPass();
 
 private:
+
+    void Swap(RenderPass& other);
 
     VkRenderPass renderPass {VK_NULL_HANDLE};
 };

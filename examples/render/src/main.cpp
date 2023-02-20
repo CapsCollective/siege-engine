@@ -212,7 +212,7 @@ int main()
 
         camera.Update();
 
-        for (auto it = objects3D.FIterator(); it; ++it)
+        for (auto it = objects3D.CreateFIterator(); it; ++it)
         {
             GameObject obj = *it;
             Siege::Renderer3D::DrawModel(obj.GetModel(),
@@ -232,7 +232,7 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f});
 
-        for (auto it = objects2D.FIterator(); it; ++it)
+        for (auto it = objects2D.CreateFIterator(); it; ++it)
         {
             GameObject obj = *it;
             Siege::Renderer2D::DrawModel(obj.GetModel(),

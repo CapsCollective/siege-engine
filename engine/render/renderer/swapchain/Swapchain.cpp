@@ -10,19 +10,21 @@
 
 #include <utils/Logging.h>
 
+#include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/utils/Device.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
+
 namespace Siege
 {
 // TODO: Fix the warnings
 SwapChain* SwapChain::instance = nullptr;
 
-SwapChain::SwapChain(VulkanDevice& device, VkExtent2D windowExtent) :
-    device {device},
-    windowExtent {windowExtent}
+SwapChain::SwapChain(VkExtent2D windowExtent) : windowExtent {windowExtent}
 {
     Init();
 }
 
-SwapChain::SwapChain(VulkanDevice& device) : device {device} {}
+SwapChain::SwapChain() {}
 
 SwapChain::~SwapChain()
 {
@@ -39,23 +41,28 @@ void SwapChain::SetWindowExtents(VkExtent2D windowExtent)
 
 void SwapChain::ClearSwapChain(bool isRecreated)
 {
-    swapchainImages.DestroyFrameImages();
+    uint32_t imageCount = FrameImages::GetImageCount();
+
+    auto device = Vulkan::Context::GetVkLogicalDevice();
 
     if (!isRecreated && swapChain != nullptr)
     {
         CC_LOG_INFO("Clearing Swapchain")
-        vkDestroySwapchainKHR(device.Device(), GetSwapChain(), nullptr);
+        vkDestroySwapchainKHR(device, GetSwapChain(), nullptr);
         swapChain = nullptr;
     }
 
-    depthImages.DestroyFrameImages();
-
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        vkDestroySemaphore(device.Device(), renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(device.Device(), imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(device.Device(), inFlightFences[i], nullptr);
+        vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(device, inFlightFences[i], nullptr);
     }
+}
+
+VkFormat SwapChain::GetSwapChainImageFormat()
+{
+    return Vulkan::Utils::ToVkFormat(swapchainImages.GetFormat());
 }
 
 void SwapChain::ClearMemory()
@@ -97,31 +104,40 @@ void SwapChain::Init()
 // TODO: Clean this function
 void SwapChain::CreateSwapChain()
 {
-    // Get our swapchain details
-    SwapChainSupportDetails::SwapChainSupportDetails details = device.GetSwapChainSupport();
+    auto physicalDevice = Vulkan::Context::GetPhysicalDevice();
+    auto surface = Vulkan::Context::GetSurface();
+    auto device = Vulkan::Context::GetVkLogicalDevice();
 
-    // Get our supported color format
-    VkSurfaceFormatKHR surfaceFormat =
-        ChooseSwapSurfaceFormat(details.formats.Data(),
-                                static_cast<uint32_t>(details.formats.Size()));
+    // Get our swapchain details
+    auto formats =
+        Vulkan::Device::Physical::GetSurfaceFormats(physicalDevice->GetDevice(), surface);
+
+    auto presentModes =
+        Vulkan::Device::Physical::GetPresentModes(physicalDevice->GetDevice(), surface);
+
+    auto capabilities =
+        Vulkan::Device::Physical::GetSurfaceCapabilities(physicalDevice->GetDevice(), surface);
+
+    // Get our supported colour format
+    auto surfaceFormat =
+        ChooseSwapSurfaceFormat(formats.Data(), static_cast<uint32_t>(formats.Size()));
 
     // Choose our presentation mode (the form of image buffering)
-    VkPresentModeKHR presentMode =
-        ChoosePresentMode(details.presentModes.Data(),
-                          static_cast<uint32_t>(details.presentModes.Size()));
+    auto presentMode =
+        ChoosePresentMode(presentModes.Data(), static_cast<uint32_t>(presentModes.Size()));
 
     // The size of our images.
-    VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+    VkExtent2D extent = ChooseSwapExtent(capabilities);
 
     CC_LOG_INFO("Swapchain created with image extents: [{}x{}]", extent.width, extent.height)
 
     // Get the image count we can support
-    uint32_t imageCount = details.capabilities.minImageCount + 1;
+    uint32_t imageCount = capabilities.minImageCount + 1;
 
     // Make sure we aren't exceeding the GPU's image count maximums
-    if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.maxImageCount)
+    if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
     {
-        imageCount = details.capabilities.maxImageCount;
+        imageCount = capabilities.maxImageCount;
     }
 
     CC_LOG_INFO("Images supported by swapchain: {}", imageCount)
@@ -129,7 +145,7 @@ void SwapChain::CreateSwapChain()
     // Now we populate the base swapchain creation struct
     VkSwapchainCreateInfoKHR createInfo {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = device.Surface();
+    createInfo.surface = Vulkan::Context::GetSurface();
 
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
@@ -138,13 +154,14 @@ void SwapChain::CreateSwapChain()
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    // Get our image queue information for rendering
-    QueueFamilyIndices::QueueFamilyIndices indices = device.FindPhysicalQueueFamilies();
-    uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+    uint32_t graphicsFamily = physicalDevice->GetGraphicsFamilyQueueIndex();
+    uint32_t presentFamily = physicalDevice->GetPresentFamilyQueueIndex();
+
+    uint32_t queueFamilyIndices[] = {graphicsFamily, presentFamily};
 
     // Sometimes the graphics and presentation queues are the same. We want to check for this
     // eventuality.
-    if (indices.graphicsFamily != indices.presentFamily)
+    if (graphicsFamily != presentFamily)
     {
         // We specify that there are two distinct queues that need to be used
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -160,7 +177,7 @@ void SwapChain::CreateSwapChain()
     }
 
     // Indicates any pre-transforms that need to occur to images (default is none)
-    createInfo.preTransform = details.capabilities.currentTransform;
+    createInfo.preTransform = capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
     createInfo.presentMode = presentMode;
@@ -168,30 +185,17 @@ void SwapChain::CreateSwapChain()
 
     createInfo.oldSwapchain = swapChain ? swapChain : VK_NULL_HANDLE;
 
-    CC_ASSERT(
-        vkCreateSwapchainKHR(device.Device(), &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
-        "Failed to create Swapchain!");
+    CC_ASSERT(vkCreateSwapchainKHR(device, &createInfo, nullptr, OUT & swapChain) == VK_SUCCESS,
+              "Failed to create Swapchain!");
 
-    swapchainImages = FrameImages(&device, surfaceFormat.format);
-
-    // Once the swapchain has been created, get the number of images supported.
-    vkGetSwapchainImagesKHR(device.Device(), swapChain, OUT & imageCount, nullptr);
-
-    FrameImages::SetImageCount(imageCount);
-    Framebuffer::SetImageCount(imageCount);
-
-    vkGetSwapchainImagesKHR(device.Device(),
-                            swapChain,
-                            &imageCount,
-                            OUT swapchainImages.GetImages());
+    swapchainImages = FrameImages(swapChain,
+                                  {extent.width, extent.height, 1},
+                                  Vulkan::Utils::ToImageFormat(surfaceFormat.format));
 
     swapChainExtent = extent;
 }
 
-void SwapChain::CreateImageViews()
-{
-    swapchainImages.InitColorImageView2D();
-}
+void SwapChain::CreateImageViews() {}
 
 void SwapChain::CreateRenderPass()
 {
@@ -225,14 +229,15 @@ void SwapChain::CreateDepthResources()
     VkExtent2D extent = GetSwapChainExtent();
 
     // Initialise our depth image information.
-    depthImages = FrameImages(&device, swapChainDepthFormat);
-
-    depthImages.InitDepthImageView2D(extent.width, extent.height, 1);
+    depthImages = FrameImages({extent.width, extent.height, 1},
+                              Vulkan::Utils::ToImageFormat(swapChainDepthFormat));
 }
 
 void SwapChain::CreateFrameBuffers()
 {
     VkExtent2D extent = GetSwapChainExtent();
+
+    Framebuffer::SetImageCount(FrameImages::GetImageCount());
 
     // Create a set of frame buffers to begin with.
     framebuffers = Framebuffer(Framebuffer::Config()
@@ -241,12 +246,13 @@ void SwapChain::CreateFrameBuffers()
                                    .WithDepthAttachments(&depthImages)
                                    .WithImageDimensions(extent.width, extent.height)
                                    .WithLayers(1),
-                               device.Device());
+                               Vulkan::Context::GetVkLogicalDevice());
 }
 
 // TODO(Aryeh): See if this logic can be encapsulated in an object/s
 void SwapChain::CreateSyncObjects()
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
     uint32_t imageCount = FrameImages::GetImageCount();
 
     if (imageAvailableSemaphores == nullptr)
@@ -271,31 +277,30 @@ void SwapChain::CreateSyncObjects()
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
         CC_ASSERT(
-            vkCreateSemaphore(device.Device(),
-                              &semaphoreInfo,
-                              nullptr,
-                              OUT & imageAvailableSemaphores[i]) == VK_SUCCESS &&
-                vkCreateSemaphore(device.Device(),
+            vkCreateSemaphore(device, &semaphoreInfo, nullptr, OUT & imageAvailableSemaphores[i]) ==
+                    VK_SUCCESS &&
+                vkCreateSemaphore(device,
                                   &semaphoreInfo,
                                   nullptr,
                                   OUT & renderFinishedSemaphores[i]) == VK_SUCCESS &&
-                vkCreateFence(device.Device(), &fenceInfo, nullptr, OUT & inFlightFences[i]) ==
-                    VK_SUCCESS,
+                vkCreateFence(device, &fenceInfo, nullptr, OUT & inFlightFences[i]) == VK_SUCCESS,
             "Failed to create synchronization objects fora  frame!");
     }
 }
 
 VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex)
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+
     // Wait for the image of the current frame to become available
-    vkWaitForFences(device.Device(),
+    vkWaitForFences(device,
                     1,
                     &inFlightFences[currentFrame],
                     VK_TRUE,
                     std::numeric_limits<uint64_t>::max());
 
     // Once available, Add it to our available images semaphor for usage
-    return vkAcquireNextImageKHR(device.Device(),
+    return vkAcquireNextImageKHR(device,
                                  swapChain,
                                  std::numeric_limits<uint64_t>::max(),
                                  imageAvailableSemaphores[currentFrame],
@@ -305,12 +310,14 @@ VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex)
 
 VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
 {
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+
     uint32_t index = *imageIndex;
 
     // If the image being asked for is being used, we wait for it to become available
     if (imagesInFlight[index] != VK_NULL_HANDLE)
     {
-        vkWaitForFences(device.Device(), 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
+        vkWaitForFences(device, 1, &imagesInFlight[index], VK_TRUE, UINT64_MAX);
     }
 
     // Get the frame's image and move it to our images in flight
@@ -343,13 +350,16 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Reset the fence of this frame
-    vkResetFences(device.Device(), 1, OUT & inFlightFences[currentFrame]);
+    vkResetFences(device, 1, OUT & inFlightFences[currentFrame]);
+
+    auto logicalDevice = Vulkan::Context::GetCurrentDevice();
 
     // Submit the command buffer to the graphics queue
-    CC_ASSERT(
-        vkQueueSubmit(device.GraphicsQueue(), 1, &submitInfo, OUT inFlightFences[currentFrame]) ==
-            VK_SUCCESS,
-        "Failed to submit draw command buffer");
+    CC_ASSERT(vkQueueSubmit(logicalDevice->GetGraphicsQueue(),
+                            1,
+                            &submitInfo,
+                            OUT inFlightFences[currentFrame]) == VK_SUCCESS,
+              "Failed to submit draw command buffer");
 
     // Set up our presentation information and the semaphores to wait on
     VkPresentInfoKHR presentInfo {};
@@ -368,7 +378,7 @@ VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_
     presentInfo.pImageIndices = imageIndex;
 
     // Submit the presentation info to the present queue.
-    auto result = vkQueuePresentKHR(device.PresentQueue(), &presentInfo);
+    auto result = vkQueuePresentKHR(logicalDevice->GetPresentQueue(), &presentInfo);
 
     // Set the frame to the next frame
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -385,10 +395,10 @@ VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(VkSurfaceFormatKHR* format
     // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB color space.
     for (size_t i = 0; i < formatCount; i++)
     {
-        VkSurfaceFormatKHR& availableFormat = formats[i];
+        VkSurfaceFormatKHR availableFormat = formats[i];
         if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
             availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-            return availableFormat;
+            return formats[i];
     }
     // If we can't find what we want then we use whatever is available on the GPU.
     return formats[0];
@@ -399,14 +409,14 @@ VkPresentModeKHR SwapChain::ChoosePresentMode(VkPresentModeKHR* presentModes,
 {
     for (size_t i = 0; i < presentModeCount; i++)
     {
-        VkPresentModeKHR& availablePresentMode = presentModes[i];
+        VkPresentModeKHR availablePresentMode = presentModes[i];
 
         // Ideally, we want to support triple buffering since it has the best
         // balance between performance and image quality
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
         {
             CC_LOG_INFO("Present Mode: Mailbox")
-            return availablePresentMode;
+            return presentModes[i];
         }
     }
 
@@ -437,19 +447,6 @@ VkExtent2D SwapChain::ChooseSwapExtent(VkSurfaceCapabilitiesKHR& capabilities)
 
 VkFormat SwapChain::FindDepthFormat()
 {
-    // The formats we want to search for:
-    // 1. A 32 bit floating point
-    // 2. A 32 bit floating point for storing depth information and 8 bits for stencil data.
-    // 3. A 32 bit component with 8 unsigned bits for stencil data and 24 unsigned normalised bits
-    // for depth.
-    VkFormat formats[] = {VK_FORMAT_D32_SFLOAT,
-                          VK_FORMAT_D32_SFLOAT_S8_UINT,
-                          VK_FORMAT_D24_UNORM_S8_UINT};
-    return device.FindSupportedFormat(
-        formats,
-        3,
-        VK_IMAGE_TILING_OPTIMAL, // specify we want texels to be laid out optimally
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT); // specifies that we can use image views to
-                                                         // specify depth information
+    return Vulkan::Utils::ToVkFormat(Vulkan::Context::Get().GetPhysicalDevice()->GetDepthFormat());
 }
 } // namespace Siege

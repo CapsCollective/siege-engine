@@ -150,6 +150,16 @@ public:
         return {this};
     }
 
+    /**
+     * Creates a fast iterator type. The fast iterator iterates over every single element in an
+     * array, regardless of whether they have been assigned to.
+     * @return an Iter instance to iterate over the array
+     */
+    constexpr inline Utils::Iter<const SArray<T, S>, const T> CreateIterator() const
+    {
+        return {this};
+    }
+
     T data[S];
 };
 
@@ -416,12 +426,34 @@ public:
     }
 
     /**
+     * Creates a base managed iterator for the array. This iterator will ignore elements which
+     * have not been previously assigned. This method is slower than the CreateFIterator but ensures
+     * no garbage data is accessed
+     * @return a MIter to iterate over the array
+     */
+    inline Utils::MIter<const MSArray<T, S>, T> CreateIterator() const
+    {
+        return {this};
+    }
+
+    /**
      * Creates a fast iterator type. The fast iterator iterates over every single element in an
      * array, regardless of whether they have been assigned to. This method is faster than the
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
     Utils::Iter<MSArray<T, S>, T> CreateFIterator()
+    {
+        return {this};
+    }
+
+    /**
+     * Creates a base managed iterator for the array. This iterator will ignore elements which
+     * have not been previously assigned. This method is slower than the CreateFIterator but ensures
+     * no garbage data is accessed
+     * @return a MIter to iterate over the array
+     */
+    inline Utils::MIter<const MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
     }
