@@ -389,7 +389,7 @@ public:
      * @param index the index of the element being searched for.
      * @return true if the index has been previously assigned to.
      */
-    inline bool Active(size_t index) const
+    inline bool IsActive(size_t index) const
     {
         return bitField.IsSet(index + 1);
     }

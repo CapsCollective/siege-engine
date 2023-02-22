@@ -79,8 +79,11 @@ public:
         return Get(index);
     }
 
+    // TODO (Aryeh): Add some form of bounds checking?
     /**
      * Gets the raw vulkan Fence pointer stored by the wrapper
+     * @warn this method does not bounds check the index. It is the user's responsibility to make
+     * sure the index is valid
      * @param index the index to access, defaults to 0
      * @return the pointer to the raw vulkan pointer
      */
