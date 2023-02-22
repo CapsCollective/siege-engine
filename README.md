@@ -100,7 +100,7 @@ If you want to build with validation layers then the setup scripts should be run
 
 ```console
 // Linux & macOS
-$ ./scripts/install.sh --include-validation-layers
+$ ./scripts/setup.sh --include-validation-layers
 ```
 ```console
 // Windows
@@ -111,7 +111,7 @@ $ ./scripts/install.sh --include-validation-layers
 
 ### Building the Project
 
-Assuming all dependencies have been satisfied, the project can be build and run using the following command:
+Assuming all dependencies have been satisfied, the project can be build using the following command:
 
 ```console
 // Linux and macOS
@@ -128,9 +128,7 @@ $ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
 > mingw32-make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
 ```
 
-These commands should build the project and immediately run executable.
-
-Once these are done the project should be built and ready to go. Enjoy!
+Once it completes, all targets should be built and ready to run from the newly generated `output` directory.
 
 ### Working With Siege
 
