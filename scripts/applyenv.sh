@@ -13,4 +13,5 @@ if [ $# -ne 1 ]; then
 fi
 
 ENV_FILE=$1
-export "$(xargs "<$ENV_FILE")"
+
+export $(cat "$ENV_FILE" | xargs)

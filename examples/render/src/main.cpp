@@ -157,7 +157,7 @@ int main()
     objects3D[0].SetColor({.5f, 0.f, 0.f});
 
     objects3D[1].SetPosition({0.f, 0.f, 0.f});
-    objects3D[1].SetScale({3.f, 3.f, 0.01f});
+    objects3D[1].SetScale({3.f, 3.f, 0.1f});
     objects3D[1].SetColor({.5f, 0.f, 0.f});
     objects3D[1].SetRotationX(1.570796f);
 

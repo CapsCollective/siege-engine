@@ -20,7 +20,6 @@
 #include "render/window/Window.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
-#include "swapchain/Swapchain.h"
 
 namespace Siege
 {
@@ -32,16 +31,6 @@ public:
 
     ~Renderer();
 
-    SwapChain& GetSwapChain()
-    {
-        return swapChain;
-    }
-
-    VkRenderPass GetSwapChanRenderPass()
-    {
-        return swapChain.GetRenderPass()->GetRenderPass();
-    }
-
     int GetCurrentFrameIndex() const
     {
         CC_ASSERT(!isFrameStarted, "Can't get frame index when frame is not in progress!");
@@ -50,17 +39,12 @@ public:
 
     float GetAspectRatio() const
     {
-        return swapChain.ExtentAspectRatio();
+        return static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
     }
 
     void SetProjection(const Mat4& projectionMat, const Mat4& viewMat)
     {
         projection = {projectionMat, viewMat};
-    }
-
-    bool IsFrameStarted() const
-    {
-        return isFrameStarted;
     }
 
     VkCommandBuffer GetCurrentCommandBuffer() const
@@ -112,8 +96,6 @@ private:
     void DrawFrame();
 
     Window& window;
-
-    SwapChain swapChain;
 
     uint32_t currentImageIndex;
     bool isFrameStarted {false};

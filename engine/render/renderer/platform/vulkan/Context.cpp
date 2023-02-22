@@ -17,12 +17,14 @@ namespace Siege::Vulkan
 {
 Context::~Context()
 {
+    swapchain.~Swapchain();
     logicalDevice.~LogicalDevice();
     vkDestroySurfaceKHR(vulkanInstance.GetInstance(), surface, nullptr);
     vulkanInstance.~Instance();
 }
 
-void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
+void Context::Init(const Utils::Extent2D& extent,
+                   Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
                    GetWindowSurfaceCallBack windowSurfaceCallback)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
@@ -35,10 +37,24 @@ void Context::Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallb
     physicalDevice = PhysicalDevice(surface, vulkanInstance);
 
     logicalDevice = LogicalDevice(surface, physicalDevice);
+
+    swapchain = Swapchain(extent);
 }
 
 Context& Context::Get()
 {
     return Renderer::Context();
 }
+
+void Context::RecreateSwapchain(const Utils::Extent2D& extent)
+{
+    auto oldSwapchain = Get().GetSwapchain().GetRaw();
+    Get().RecreateSwapchain(extent, oldSwapchain);
+}
+
+void Context::RecreateSwapchain(const Utils::Extent2D& extent, VkSwapchainKHR oldSwapchain)
+{
+    swapchain = Swapchain(extent, oldSwapchain);
+}
+
 } // namespace Siege::Vulkan

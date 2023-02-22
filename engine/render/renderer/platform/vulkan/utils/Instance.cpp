@@ -107,7 +107,7 @@ VkInstance CreateInstance(VkApplicationInfo appInfo,
                           const char* const* layers,
                           VkDebugUtilsMessengerCreateInfoEXT* debugUils)
 {
-    VkInstance instance;
+    VkInstance instance {VK_NULL_HANDLE};
     CREATE_INSTANCE(instance, appInfo, extensionSize, extensions, layerSize, layers, debugUils)
     return instance;
 }

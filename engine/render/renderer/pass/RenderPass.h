@@ -144,6 +144,11 @@ public:
         Initialise(config);
     }
 
+    inline RenderPass(RenderPass&& other)
+    {
+        Swap(other);
+    }
+
     /**
      * @brief Initialises the RenderPass. Creating a RenderPass requires us to explicitly state what
      * operations the RenderPass will be responsible for, along with any graphics stages the
@@ -190,7 +195,7 @@ public:
                       VkFramebuffer frameBuffer,
                       VkOffset2D offset,
                       VkExtent2D extent,
-                      VkClearValue* clearValues,
+                      const VkClearValue* clearValues,
                       uint32_t clearValueCount);
 
     /**

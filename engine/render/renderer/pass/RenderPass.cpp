@@ -22,7 +22,12 @@ RenderPass::~RenderPass()
 
 void RenderPass::DestroyRenderPass()
 {
-    vkDestroyRenderPass(Vulkan::Context::GetVkLogicalDevice(), renderPass, nullptr);
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+    if (device)
+    {
+        vkDestroyRenderPass(device, renderPass, nullptr);
+        renderPass = VK_NULL_HANDLE;
+    }
 }
 
 void RenderPass::Begin(VkRenderPass renderPass,
@@ -30,7 +35,7 @@ void RenderPass::Begin(VkRenderPass renderPass,
                        VkFramebuffer frameBuffer,
                        VkOffset2D offset,
                        VkExtent2D extent,
-                       VkClearValue* clearValues,
+                       const VkClearValue* clearValues,
                        uint32_t clearValueCount)
 {
     VkRenderPassBeginInfo renderPassInfo {};

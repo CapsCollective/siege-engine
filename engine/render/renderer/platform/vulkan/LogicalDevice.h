@@ -65,7 +65,7 @@ private:
 
     void Move(LogicalDevice& other);
 
-    VkDevice device;
+    VkDevice device {nullptr};
 
     PhysicalDevice* physicalDevice;
 

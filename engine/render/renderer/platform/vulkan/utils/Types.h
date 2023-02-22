@@ -28,6 +28,9 @@ struct VkCommandPool_T;
 struct VkCommandBuffer_T;
 struct VkDeviceMemory_T;
 struct VkBuffer_T;
+struct VkSwapchainKHR_T;
+struct VkSemaphore_T;
+struct VkFence_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -42,6 +45,9 @@ typedef VkCommandPool_T* VkCommandPool;
 typedef VkCommandBuffer_T* CommandBuffer;
 typedef VkDeviceMemory_T* VkDeviceMemory;
 typedef VkBuffer_T* VkBuffer;
+typedef VkSwapchainKHR_T* VkSwapchainKHR;
+typedef VkSemaphore_T* VkSemaphore;
+typedef VkFence_T* VkFence;
 
 namespace Siege::Vulkan::Utils
 {
@@ -84,6 +90,19 @@ enum ImageUsage
     USAGE_TEXTURE,
     USAGE_ATTACHMENT,
     USAGE_STORAGE
+};
+
+enum Result
+{
+    SUCCESS = 0,
+    NOT_READY = 1,
+    TIMEOUT = 2,
+    SUBOPTIMAL = 1000001003,
+    ERROR_OUT_OF_DATE = -1000001004,
+    ERROR_RESIZED = SUBOPTIMAL | ERROR_OUT_OF_DATE,
+    ERROR_OUT_OF_HOST_MEM = -1,
+    ERROR_OUT_OF_DEVICE_MEM = -2,
+    ERROR_DEVICE_LOST = -4
 };
 
 //----------------------------------------- Structs -----------------------------------------------

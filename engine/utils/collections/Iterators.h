@@ -123,7 +123,7 @@ public:
     {
         ptr = arrPtr->Data() && arrPtr->Count() > 0 ? arrPtr : nullptr;
 
-        while (ptr && !ptr->Active(index)) index++;
+        while (ptr && !ptr->IsActive(index)) index++;
     }
 
     /**
@@ -136,7 +136,7 @@ public:
     {
         // If the next element in the array is invalid, keep incrementing until we find one that
         // is
-        while (ptr->Data() && !ptr->Active(index + 1)) index++;
+        while (ptr->Data() && !ptr->IsActive(index + 1)) index++;
 
         // TODO: Profile if using a reinterpret cast would be faster here
         ptr = index < ptr->Size() ? ptr : 0;
@@ -150,7 +150,7 @@ public:
      * @brief The dereference operator
      * @return the de-referenced pointer value
      */
-    inline constexpr T& operator*()
+    inline constexpr T& operator*() const
     {
         return *(ptr->Data() + index);
     }

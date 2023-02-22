@@ -12,6 +12,7 @@
 #include "Instance.h"
 #include "LogicalDevice.h"
 #include "PhysicalDevice.h"
+#include "Swapchain.h"
 
 namespace Siege::Vulkan
 {
@@ -25,7 +26,8 @@ public:
     Context() = default;
     ~Context();
 
-    void Init(Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
+    void Init(const Utils::Extent2D& extent,
+              Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
               GetWindowSurfaceCallBack windowSurfaceCallback);
 
     static Context& Get();
@@ -39,7 +41,7 @@ public:
         return &Get().physicalDevice;
     }
 
-    static Surface GetSurface()
+    static Surface& GetSurface()
     {
         return Get().surface;
     }
@@ -49,13 +51,23 @@ public:
         return Get().logicalDevice.GetDevice();
     }
 
+    static Swapchain& GetSwapchain()
+    {
+        return Get().swapchain;
+    }
+
+    static void RecreateSwapchain(const Utils::Extent2D& extent);
+
 private:
+
+    void RecreateSwapchain(const Utils::Extent2D& extent, VkSwapchainKHR oldSwapchain);
 
     static inline Instance vulkanInstance;
 
     PhysicalDevice physicalDevice;
-    Surface surface;
+    Surface surface {VK_NULL_HANDLE};
     LogicalDevice logicalDevice;
+    Swapchain swapchain;
 };
 } // namespace Siege::Vulkan
 

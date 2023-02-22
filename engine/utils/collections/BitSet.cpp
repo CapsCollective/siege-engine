@@ -192,7 +192,7 @@ void BitSet::SetBit(const unsigned long& bit)
     leftMostBit = ::Siege::Utils::BitUtils::SetBit(bitfield, bit, leftMostBit);
 }
 
-bool BitSet::IsSet(const unsigned long& bit)
+bool BitSet::IsSet(const unsigned long& bit) const
 {
     return ::Siege::Utils::BitUtils::IsSet(bitfield, bit);
 }

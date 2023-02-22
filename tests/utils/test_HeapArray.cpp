@@ -49,10 +49,10 @@ UTEST(test_MSArray, CreateHeapArrayFromRawArray)
     ASSERT_EQ(array.Size(), 4);
     ASSERT_NE(array.Data(), nullptr);
 
-    ASSERT_TRUE(array.Active(0));
-    ASSERT_TRUE(array.Active(1));
-    ASSERT_TRUE(array.Active(2));
-    ASSERT_TRUE(array.Active(3));
+    ASSERT_TRUE(array.IsActive(0));
+    ASSERT_TRUE(array.IsActive(1));
+    ASSERT_TRUE(array.IsActive(2));
+    ASSERT_TRUE(array.IsActive(3));
 
     ASSERT_EQ(array[0], 1);
     ASSERT_EQ(array[1], 2);
@@ -187,12 +187,12 @@ UTEST(test_HeapArray, CheckElementIsActive)
 
     array[0] = 1;
 
-    ASSERT_TRUE(array.Active(0));
-    ASSERT_FALSE(array.Active(1));
+    ASSERT_TRUE(array.IsActive(0));
+    ASSERT_FALSE(array.IsActive(1));
 
     array[1] = 2;
 
-    ASSERT_TRUE(array.Active(1));
+    ASSERT_TRUE(array.IsActive(1));
 }
 
 UTEST(test_HeapArray, RemoveElementByIndex)
@@ -202,22 +202,22 @@ UTEST(test_HeapArray, RemoveElementByIndex)
     array[0] = 1;
 
     ASSERT_EQ(array.Count(), 1);
-    ASSERT_TRUE(array.Active(0));
+    ASSERT_TRUE(array.IsActive(0));
 
     array[1] = 2;
 
     ASSERT_EQ(array.Count(), 2);
-    ASSERT_TRUE(array.Active(1));
+    ASSERT_TRUE(array.IsActive(1));
 
     array.Remove(1);
 
     ASSERT_EQ(array.Count(), 1);
-    ASSERT_FALSE(array.Active(1));
+    ASSERT_FALSE(array.IsActive(1));
 
     array.Remove(0);
 
     ASSERT_EQ(array.Count(), 0);
-    ASSERT_FALSE(array.Active(0));
+    ASSERT_FALSE(array.IsActive(0));
 }
 
 UTEST(test_HeapArray, CopyArray)
@@ -519,14 +519,14 @@ UTEST(test_MHArray, ResizeArray)
     ASSERT_EQ(array[2], 3);
     ASSERT_EQ(array[3], 4);
 
-    ASSERT_FALSE(array.Active(4));
-    ASSERT_FALSE(array.Active(5));
+    ASSERT_FALSE(array.IsActive(4));
+    ASSERT_FALSE(array.IsActive(5));
 
     array[4] = 5;
     array[5] = 6;
 
-    ASSERT_TRUE(array.Active(4));
-    ASSERT_TRUE(array.Active(5));
+    ASSERT_TRUE(array.IsActive(4));
+    ASSERT_TRUE(array.IsActive(5));
 
     ASSERT_EQ(array[4], 5);
     ASSERT_EQ(array[5], 6);
@@ -553,10 +553,10 @@ UTEST(test_MHArray, ResizeArrayToSmallerSize)
     ASSERT_EQ(array[0], 1);
     ASSERT_EQ(array[1], 2);
 
-    ASSERT_TRUE(array.Active(0));
-    ASSERT_TRUE(array.Active(1));
-    ASSERT_FALSE(array.Active(2));
-    ASSERT_FALSE(array.Active(3));
+    ASSERT_TRUE(array.IsActive(0));
+    ASSERT_TRUE(array.IsActive(1));
+    ASSERT_FALSE(array.IsActive(2));
+    ASSERT_FALSE(array.IsActive(3));
 }
 
 UTEST(test_MHArray, ResizeLargeArray)
@@ -575,7 +575,7 @@ UTEST(test_MHArray, ResizeLargeArray)
     ASSERT_EQ(array.Size(), 9);
     ASSERT_EQ(array.Count(), 9);
 
-    ASSERT_FALSE(array.Active(9));
+    ASSERT_FALSE(array.IsActive(9));
 }
 
 UTEST(test_MHArray, ClearArray)
@@ -593,8 +593,8 @@ UTEST(test_MHArray, ClearArray)
     ASSERT_EQ(array.Size(), 2);
     ASSERT_EQ(array.Count(), 0);
 
-    ASSERT_FALSE(array.Active(0));
-    ASSERT_FALSE(array.Active(1));
+    ASSERT_FALSE(array.IsActive(0));
+    ASSERT_FALSE(array.IsActive(1));
 }
 
 UTEST(test_MHArray, ClearEmptyArray)
