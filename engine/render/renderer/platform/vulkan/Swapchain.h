@@ -13,6 +13,7 @@
 #include "Semaphore.h"
 #include "render/renderer/image/FrameImages.h"
 #include "render/renderer/pass/RenderPass.h"
+#include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege::Vulkan
@@ -96,7 +97,7 @@ public:
      * @param imageIndex - the index of the image being drawn
      * @return VkResult - the result of submitting the buffer
      */
-    Utils::Result SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+    Utils::Result SubmitCommandBuffers(const CommandBuffer& commandBuffer, uint32_t imageIndex);
 
     /**
      * Compares the inputted image and depth formats to the ones used in the Swapchain
@@ -167,11 +168,11 @@ public:
         return swapchainExtent;
     }
 
-    void BeginRenderPass(VkCommandBuffer commandBuffer,
+    void BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                          uint32_t imageIndex,
                          std::initializer_list<VkClearValue> clearValues);
 
-    void EndRenderPass(VkCommandBuffer commandBuffer);
+    void EndRenderPass(Vulkan::CommandBuffer& commandBuffer);
 
 private:
 

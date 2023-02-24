@@ -190,7 +190,7 @@ public:
      */
     const T& Get(size_t index) const
     {
-        BitUtils::AssertIsSet(bitField.BitField(), size);
+        BitUtils::AssertIsSet(bitField.BitField(), index);
 
         return data[index];
     }

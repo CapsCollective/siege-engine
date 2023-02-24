@@ -43,17 +43,6 @@ public:
         return device;
     }
 
-    CommandBuffer GetCommandBuffer();
-
-    CommandBuffer BeginSingleTimeCommand(CommandBuffer commandBuffer);
-    void EndSingleTimeCommand(CommandBuffer commandBuffer);
-
-    void FlushCommandBuffer(CommandBuffer commandBuffer);
-
-    void SubmitToGraphicsQueue(CommandBuffer commandBuffer);
-    void SubmitToQueue(CommandBuffer commandBuffer, VkQueue queue);
-    void FreeCommandBuffer(CommandBuffer commandBuffer);
-
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size);
     void CopyBufferToImage(VkBuffer buffer,
                            VkImage image,

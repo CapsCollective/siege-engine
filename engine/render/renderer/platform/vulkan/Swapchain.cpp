@@ -129,7 +129,7 @@ Utils::Result Swapchain::AcquireNextImage(uint32_t* imageIndex)
                                                             imageIndex));
 }
 
-void Swapchain::BeginRenderPass(VkCommandBuffer commandBuffer,
+void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                                 uint32_t imageIndex,
                                 std::initializer_list<VkClearValue> clearValues)
 {
@@ -142,21 +142,18 @@ void Swapchain::BeginRenderPass(VkCommandBuffer commandBuffer,
                       clearValues.size());
 }
 
-void Swapchain::EndRenderPass(VkCommandBuffer commandBuffer)
+void Swapchain::EndRenderPass(Vulkan::CommandBuffer& commandBuffer)
 {
-    vkCmdEndRenderPass(OUT commandBuffer);
+    vkCmdEndRenderPass(OUT commandBuffer.GetActiveCommandBuffer());
 }
 
-Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
+Utils::Result Swapchain::SubmitCommandBuffers(const CommandBuffer& buffers, uint32_t imageIndex)
 {
-    uint32_t index = *imageIndex;
-    uint32_t frameIdx = currentFrame;
-
     // If the image being asked for is being used, we wait for it to become available
-    imagesInFlight.Wait(index);
+    imagesInFlight.Wait(imageIndex);
 
     // Get the frame's image and move it to our images in flight
-    imagesInFlight.Set(index, inFlightFences[currentFrame]);
+    imagesInFlight.Set(imageIndex, inFlightFences[currentFrame]);
 
     inFlightFences.Reset(currentFrame);
 
@@ -164,18 +161,20 @@ Utils::Result Swapchain::SubmitCommandBuffers(const VkCommandBuffer* buffers, ui
         .ToQueue(Vulkan::Context::GetCurrentDevice()->GetGraphicsQueue())
         .WaitOnSemaphores({imageAvailableSemaphores[currentFrame]})
         .WithPipelineStages({VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT})
-        .WithCommandBuffers({buffers[0]})
+        .WithCommandBuffers({buffers.Get()})
         .SignalSemaphores({renderFinishedSemaphores[currentFrame]})
         .Submit(inFlightFences[currentFrame]);
+
+    uint32_t previousFrame = currentFrame;
 
     currentFrame = ((currentFrame + 1) < MAX_FRAMES_IN_FLIGHT) * (currentFrame + 1);
 
     // Return the result of the rendering process
     return Utils::SubmitPresentCommand()
         .ToQueue(Vulkan::Context::GetCurrentDevice()->GetPresentQueue())
-        .SignalSemaphores({renderFinishedSemaphores[frameIdx]})
+        .SignalSemaphores({renderFinishedSemaphores[previousFrame]})
         .ForSwapchains({swapchain})
-        .WithImageIndices({index})
+        .WithImageIndices({imageIndex})
         .Submit();
 }
 

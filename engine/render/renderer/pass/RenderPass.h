@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_RENDER_PASS_H
 
 #include "../Core.h"
+#include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "utils/Attachments.h"
 
 namespace Siege
@@ -191,7 +192,7 @@ public:
      * @param clearValueCount The number of clear values provided
      */
     static void Begin(VkRenderPass renderPass,
-                      VkCommandBuffer commandBuffer,
+                      Vulkan::CommandBuffer& commandBuffer,
                       VkFramebuffer frameBuffer,
                       VkOffset2D offset,
                       VkExtent2D extent,
@@ -204,7 +205,7 @@ public:
      *
      * @param commandBuffer The command buffer currently being recorded to
      */
-    static void End(VkCommandBuffer commandBuffer);
+    static void End(Vulkan::CommandBuffer& commandBuffer);
 
     inline RenderPass& operator=(RenderPass&& other) noexcept
     {

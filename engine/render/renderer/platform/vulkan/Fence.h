@@ -28,7 +28,8 @@ public:
     enum FenceInitState
     {
         FENCE_EMPTY = 0,
-        FENCE_NULL = 1
+        FENCE_NULL = 1,
+        FENCE_EMPTY_SIGNALED = 2
     };
 
     /**
@@ -42,7 +43,7 @@ public:
      * @param fenceCount the number of fences to be initialised
      * @param initState the initialisation state - can either be NULL or EMPTY
      */
-    Fence(size_t fenceCount, FenceInitState = FENCE_EMPTY);
+    Fence(size_t fenceCount, FenceInitState = FENCE_EMPTY_SIGNALED);
 
     /**
      * Move constructor for the Fence class

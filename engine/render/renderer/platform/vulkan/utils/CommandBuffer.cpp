@@ -28,6 +28,25 @@ VkCommandBuffer CommandBuffer::AllocateCommandBuffer(VkDevice device, VkCommandP
     return commandBuffer;
 }
 
+::Siege::Utils::MHArray<VkCommandBuffer> CommandBuffer::AllocateCommandBuffers(VkDevice device,
+                                                                               VkCommandPool pool,
+                                                                               uint32_t count)
+{
+    using ::Siege::Utils::MHArray;
+    MHArray<VkCommandBuffer> buffers(count);
+
+    VkCommandBufferAllocateInfo allocInfo {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = pool;
+    allocInfo.commandBufferCount = count;
+
+    CC_ASSERT(vkAllocateCommandBuffers(device, &allocInfo, OUT buffers.Data()) == VK_SUCCESS,
+              "Failed to allocate command buffer!")
+
+    return buffers;
+}
+
 void CommandBuffer::BeginSingleTimeCommand(VkCommandBuffer buffer)
 {
     VkCommandBufferBeginInfo beginInfo {};
