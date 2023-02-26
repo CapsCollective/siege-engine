@@ -243,7 +243,7 @@ public:
             return;
         }
 
-        // Every 8 positions are represented with one 8 bit unsigned integer. As such, every 8
+        // Every 8 positions are represented with one 8-bit unsigned integer. As such, every 8
         // elements in the array represents one to the size of our collection of byte masks.
         size_t newByteCount = ((newSize / BitUtils::BYTE_SIZE_IN_BITS) + 1);
 
