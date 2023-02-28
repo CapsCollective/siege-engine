@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_MESH_H
 #define SIEGE_ENGINE_MESH_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../buffer/Buffer.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
@@ -18,7 +20,7 @@ namespace Siege
 struct Vertex
 {
     Vec3 position;
-    Vec3 color;
+    FColour color;
     Vec3 normal;
     Vec2 uv;
 };
@@ -26,7 +28,7 @@ struct Vertex
 struct Vertex2D
 {
     Vec2 position;
-    Vec3 color;
+    FColour color;
 };
 
 struct BillboardVertex

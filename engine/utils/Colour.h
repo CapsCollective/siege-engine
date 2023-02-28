@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "Hash.h"
+
 namespace Siege
 {
 template<typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
@@ -43,8 +45,28 @@ struct Colour
         r {static_cast<T>(other.r)},
         g {static_cast<T>(other.g)},
         b {static_cast<T>(other.b)},
-        a {static_cast<T>(other.a )}
+        a {static_cast<T>(other.a)}
     {}
+
+    inline constexpr bool operator==(const FColour& other) const
+    {
+        return r == other.r && g == other.g && b == other.b && a == other.a;
+    }
+
+    inline constexpr bool operator==(const IColour& other) const
+    {
+        return r == other.r && g == other.g && b == other.b && a == other.a;
+    }
+
+    inline constexpr bool operator!=(const FColour& other) const
+    {
+        return r == other.r || g == other.g || b == other.b || a == other.a;
+    }
+
+    inline constexpr bool operator!=(const IColour& other) const
+    {
+        return r == other.r || g == other.g || b == other.b || a == other.a;
+    }
 
     // Public members
 
@@ -72,6 +94,49 @@ inline constexpr IColour IGreen = {0, 255, 0, 255};
 inline constexpr IColour IBlue = {0, 0, 255, 255};
 inline constexpr IColour IPink = {255, 109, 194, 255};
 
+// Conversion functions
+
+inline constexpr FColour ToFColour(const IColour& other)
+{
+    return {(static_cast<float>(other.r) - 0.f) / (255.f - 0.f),
+            (static_cast<float>(other.g) - 0.f) / (255.f - 0.f),
+            (static_cast<float>(other.b) - 0.f) / (255.f - 0.f),
+            (static_cast<float>(other.a) - 0.f) / (255.f - 0.f)};
+}
+
+inline constexpr FColour ToIColour(const FColour& other)
+{
+    return {static_cast<float>(other.r * 255),
+            static_cast<float>(other.g * 255),
+            static_cast<float>(other.b * 255),
+            static_cast<float>(other.a * 255)};
+}
+
 } // namespace Siege
+
+namespace std
+{
+template<>
+struct ::std::hash<Siege::FColour>
+{
+    size_t operator()(const Siege::FColour& colour) const
+    {
+        size_t seed = 0;
+        Siege::Hash::HashCombine(seed, colour.r, colour.g, colour.b, colour.a);
+        return seed;
+    };
+};
+
+template<>
+struct ::std::hash<Siege::IColour>
+{
+    size_t operator()(const Siege::IColour& colour) const
+    {
+        size_t seed = 0;
+        Siege::Hash::HashCombine(seed, colour.r, colour.g, colour.b, colour.a);
+        return seed;
+    };
+};
+} // namespace std
 
 #endif // SIEGE_ENGINE_COLOUR_H

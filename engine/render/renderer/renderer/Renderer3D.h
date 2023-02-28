@@ -41,18 +41,16 @@ public:
     static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
     static void DrawModel(Model* model, const Vec3& position);
 
-    static void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
+    static void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
-    static void DrawLine(const Siege::Vec3& origin,
-                         const Siege::Vec3& destination,
-                         const Siege::Vec4& colour);
+    static void DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour);
 
-    static void DrawPointLight(const Siege::Vec3& position,
-                               const float& radius,
-                               const Siege::Vec4& colour,
-                               const Siege::Vec4& ambientColor);
+    static void DrawPointLight(const Vec3& position,
+                               float radius,
+                               const IColour& colour,
+                               const IColour& ambientColor);
 
     static void RecreateMaterials();
 

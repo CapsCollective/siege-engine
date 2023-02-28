@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_BILLBOARD_RENDERER_H
 #define SIEGE_ENGINE_BILLBOARD_RENDERER_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
 
@@ -24,7 +26,7 @@ public:
     void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
     void Destroy();
 
-    void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
+    void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -39,7 +41,7 @@ private:
     struct BillboardVertex
     {
         Vec3 position;
-        Vec4 colour;
+        FColour colour;
     };
 
     struct BillboardUBO

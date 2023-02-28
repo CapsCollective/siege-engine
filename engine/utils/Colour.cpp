@@ -6,8 +6,5 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include "Colour.h"
-
 namespace Siege
-{
-} // namespace Siege
+{} // namespace Siege

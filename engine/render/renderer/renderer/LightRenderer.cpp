@@ -39,8 +39,8 @@ void LightRenderer::Destroy()
 
 void LightRenderer::DrawPointLight(const Vec3& position,
                                    float radius,
-                                   const Vec4& colour,
-                                   const Vec4& ambientColor)
+                                   const IColour& colour,
+                                   const IColour& ambientColor)
 {
     pointLightVertices.Append({1.f, 1.f});
     pointLightVertices.Append({1.f, -1.f});

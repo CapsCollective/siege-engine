@@ -24,8 +24,8 @@ public:
 
     void DrawPointLight(const Vec3& position,
                         float radius,
-                        const Vec4& colour,
-                        const Vec4& ambientColor);
+                        const IColour& colour,
+                        const IColour& ambientColor);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
