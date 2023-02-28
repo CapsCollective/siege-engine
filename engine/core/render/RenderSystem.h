@@ -51,9 +51,9 @@ public:
 
     void DrawFrame();
 
-    void DrawText2D(const String& text, int posX, int posY, int fontSize, Colour color);
+    void DrawText2D(const String& text, int posX, int posY, int fontSize, IColour color);
 
-    void DrawRectangle2D(int posX, int posY, int width, int height, Colour color);
+    void DrawRectangle2D(int posX, int posY, int width, int height, IColour color);
 
 private:
 

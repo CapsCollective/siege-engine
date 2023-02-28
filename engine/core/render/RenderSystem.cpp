@@ -62,12 +62,12 @@ void RenderSystem::Remove(Entity* entity)
     if (it != renderItems.end()) renderItems.erase(it);
 }
 
-void RenderSystem::DrawText2D(const String& text, int posX, int posY, int fontSize, Colour color)
+void RenderSystem::DrawText2D(const String& text, int posX, int posY, int fontSize, IColour color)
 {
     DrawText(text, posX, posY, fontSize, FromColour(color));
 }
 
-void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, Colour color)
+void RenderSystem::DrawRectangle2D(int posX, int posY, int width, int height, IColour color)
 {
     DrawRectangle(posX, posY, width, height, FromColour(color));
 }

@@ -152,8 +152,8 @@ void DevConsole::OnDraw2D()
     Siege::Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::Colour::Black);
-    Siege::Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Siege::Colour::White);
+    Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IBlack);
+    Siege::Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Siege::IWhite);
 }
 
 bool DevConsole::CheckEditorMode()

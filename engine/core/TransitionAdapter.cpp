@@ -47,12 +47,12 @@ BoundingBox FromBoundedBox(BoundedBox bbox)
     return {FromVec3(bbox.min), FromVec3(bbox.max)};
 }
 
-Colour ToColour(Color color)
+IColour ToColour(Color color)
 {
     return {color.r, color.g, color.b, color.a};
 }
 
-Color FromColour(Colour color)
+Color FromColour(IColour color)
 {
     return {(unsigned char) color.r,
             (unsigned char) color.g,

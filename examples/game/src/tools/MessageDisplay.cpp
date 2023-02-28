@@ -16,7 +16,7 @@ void MessageDisplay::OnDraw2D()
     // Draw the display message to the screen while the display time is valid
     if (displayTime > 0.f)
     {
-        Siege::Statics::Render().DrawText2D(displayMessage, 10, 10, 20, Siege::Colour::Pink);
+        Siege::Statics::Render().DrawText2D(displayMessage, 10, 10, 20, Siege::IPink);
         displayTime -= 0.1f;
     }
 }

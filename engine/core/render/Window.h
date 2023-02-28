@@ -46,7 +46,7 @@ private:
 
     // Private fields
 
-    Colour backgroundColour;
+    IColour backgroundColour;
 
     static float deltaTime;
 };
