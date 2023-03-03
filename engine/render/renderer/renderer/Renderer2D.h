@@ -38,8 +38,6 @@ public:
     static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
     static void Flush();
 
-    static void Destroy();
-
 private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;

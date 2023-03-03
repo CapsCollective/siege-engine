@@ -147,6 +147,11 @@ public:
     ~Pipeline();
 
     /**
+     * Manual destruction function
+     */
+    void Destroy();
+
+    /**
      * A Pipeline move assignment operator
      * @param other the Pipeline to be moved
      * @return a reference to the newly created Pipeline instance

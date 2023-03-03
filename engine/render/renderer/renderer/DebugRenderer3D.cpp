@@ -37,7 +37,7 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
 
 void DebugRenderer3D::Destroy()
 {
-    lineMaterial.~Material();
+    lineMaterial.Destroy();
     lineModel.DestroyModel();
 }
 

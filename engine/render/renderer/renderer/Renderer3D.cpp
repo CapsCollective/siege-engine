@@ -120,7 +120,6 @@ void Renderer3D::Flush()
 
 void Renderer3D::DestroyRenderer3D()
 {
-    modelRenderer.Destroy();
     debugRenderer.Destroy();
     billboardRenderer.Destroy();
     lightRenderer.Destroy();

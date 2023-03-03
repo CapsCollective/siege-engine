@@ -130,6 +130,11 @@ Shader::Shader(const String& filePath,
 
 Shader::~Shader()
 {
+    Destroy();
+}
+
+void Shader::Destroy()
+{
     Utils::Shader::DestroyShaderModule(shaderModule);
 }
 

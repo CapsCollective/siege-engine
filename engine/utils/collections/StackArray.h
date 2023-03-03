@@ -155,7 +155,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::CIter<SArray<T, S>, T> CreateIterator() const
+    constexpr inline Utils::ConstIter<SArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -491,12 +491,14 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::CIter<MSArray<T, S>, T> CreateFIterator() const
+    inline Utils::ConstIter<MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void ForEachI(F&& func)
     {
         size_t i = 0;
@@ -506,7 +508,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void ForEach(F&& func)
     {
         for (auto it = CreateFIterator(); it; ++it)
@@ -515,7 +519,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void MForEachI(F&& func)
     {
         size_t i = 0;
@@ -525,7 +531,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void MForEach(F&& func)
     {
         for (auto it = CreateIterator(); it; ++it)
@@ -534,7 +542,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void ForEachI(F&& func) const
     {
         size_t i = 0;
@@ -544,7 +554,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void ForEach(F&& func) const
     {
         for (auto it = CreateFIterator(); it; ++it)
@@ -553,7 +565,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void MForEachI(F&& func) const
     {
         size_t i = 0;
@@ -563,7 +577,9 @@ public:
         }
     }
 
-    template<typename F>
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
     inline void MForEach(F&& func) const
     {
         for (auto it = CreateIterator(); it; ++it)

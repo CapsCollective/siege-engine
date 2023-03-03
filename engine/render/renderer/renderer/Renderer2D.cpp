@@ -92,6 +92,4 @@ void Renderer2D::Flush()
     models.Clear();
     transforms.Clear();
 }
-
-void Renderer2D::Destroy() {}
 } // namespace Siege

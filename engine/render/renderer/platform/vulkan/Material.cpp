@@ -98,6 +98,22 @@ Material::~Material()
         [&](PropertiesSlot& prop) { vkDestroyDescriptorSetLayout(device, prop.layout, nullptr); });
 }
 
+void Material::Destroy()
+{
+    auto device = Vulkan::Context::GetVkLogicalDevice();
+
+    Buffer::DestroyBuffer(buffer);
+
+    propertiesSlots.MForEach([&](PropertiesSlot& prop) {
+        vkDestroyDescriptorSetLayout(device, prop.layout, nullptr);
+        prop.layout = nullptr;
+    });
+
+    vertexShader.Destroy();
+    fragmentShader.Destroy();
+    graphicsPipeline.Destroy();
+}
+
 Material& Material::operator=(Material&& other)
 {
     Swap(other);

@@ -288,6 +288,8 @@ public:
      */
     ~Shader();
 
+    void Destroy();
+
     static ::Siege::Utils::MHArray<char> ReadFileAsBinary(const String& filePath);
 
     /**

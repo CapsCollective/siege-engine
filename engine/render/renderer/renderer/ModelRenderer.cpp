@@ -22,8 +22,6 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName,
     transformId = INTERN_STR("transforms");
 }
 
-void ModelRenderer::Destroy() {}
-
 void ModelRenderer::DrawModel(Model* model,
                               const Vec3& position,
                               const Vec3& scale,

@@ -59,6 +59,8 @@ public:
      */
     ~Material();
 
+    void Destroy();
+
     /**
      * A movement assignment operator
      * @param other the Material to be moved

@@ -33,7 +33,7 @@ void LightRenderer::Initialise(const String& globalDataAttributeName,
 
 void LightRenderer::Destroy()
 {
-    lightMaterial.~Material();
+    lightMaterial.Destroy();
     lightModel.DestroyModel();
 }
 

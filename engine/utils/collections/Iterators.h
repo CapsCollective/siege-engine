@@ -107,18 +107,18 @@ private:
  * @tparam R The type returned by the iterator (usually the type of the array)
  */
 template<typename A, typename T>
-class CIter
+class ConstIter
 {
 public:
 
-    typedef void (CIter::*BoolType)() const;
+    typedef void (ConstIter::*BoolType)() const;
 
     // TODO(Aryeh): Add more operators as needed (--, ->, etc).
     /**
      * @brief CreateIterator constructor
      * @param arrPtr the pointer to the Array
      */
-    inline constexpr CIter(const A* arrPtr)
+    inline constexpr ConstIter(const A* arrPtr)
     {
         ptr = arrPtr->Data() && arrPtr->Size() > 0 ? arrPtr : nullptr;
     }
@@ -129,7 +129,7 @@ public:
      * array elements
      * @return the iterator with the pointer and index incremented
      */
-    inline constexpr CIter& operator++()
+    inline constexpr ConstIter& operator++()
     {
         // TODO: Profile if using a reinterpret cast would be faster here
         ptr = ++index < ptr->Size() ? ptr : 0;
@@ -151,7 +151,7 @@ public:
      */
     inline constexpr operator BoolType() const
     {
-        return ptr ? &CIter::DoNothing : 0;
+        return ptr ? &ConstIter::DoNothing : 0;
     }
 
     /**
@@ -159,7 +159,7 @@ public:
      * @param other the other iterator to compare to
      * @return `true` if the pointers stored by both iterators are the same
      */
-    inline constexpr bool operator==(const CIter& other) const
+    inline constexpr bool operator==(const ConstIter& other) const
     {
         return ptr->Data() == other.ptr->Data() && index == other.index;
     }
@@ -169,7 +169,7 @@ public:
      * @param other the iterator to compare to
      * @return `true` if the pointer addresses stored by both iterators are not the same
      */
-    inline constexpr bool operator!=(const CIter& other) const
+    inline constexpr bool operator!=(const ConstIter& other) const
     {
         return ptr->Data() != other.ptr->Data() && index != other.index;
     }

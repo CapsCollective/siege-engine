@@ -145,6 +145,11 @@ Pipeline Pipeline::Builder::Build()
 
 Pipeline::~Pipeline()
 {
+    Destroy();
+}
+
+void Pipeline::Destroy()
+{
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
     // This check is only necessary because we're using globals.
