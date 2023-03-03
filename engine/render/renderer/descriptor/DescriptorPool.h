@@ -28,7 +28,7 @@ public:
 
 private:
 
-    static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 10;
+    static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 1024;
 
     static VkDescriptorPool descriptorPool;
     static Utils::MSArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;

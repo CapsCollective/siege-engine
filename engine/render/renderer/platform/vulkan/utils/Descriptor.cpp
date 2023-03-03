@@ -74,7 +74,7 @@ VkWriteDescriptorSet Descriptor::CreateWriteSet(uint32_t dstBinding,
                                                 VkDescriptorSet& dstSet,
                                                 uint32_t descriptorCount,
                                                 VkDescriptorType type,
-                                                VkDescriptorBufferInfo& bufferInfo,
+                                                const VkDescriptorBufferInfo* bufferInfo,
                                                 const VkDescriptorImageInfo* imageInfos,
                                                 const VkBufferView* texelBufferView,
                                                 const void* pNext)
@@ -87,7 +87,7 @@ VkWriteDescriptorSet Descriptor::CreateWriteSet(uint32_t dstBinding,
             descriptorCount,
             type,
             imageInfos,
-            &bufferInfo,
+            bufferInfo,
             texelBufferView};
 }
 

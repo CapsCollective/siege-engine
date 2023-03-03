@@ -146,20 +146,6 @@ public:
     }
 
     /**
-     * @brief Get a frame buffer object corresponding to index i. The swapchain object stores
-     * multiple frame buffers equal to the number of images that can be held at once.
-     *
-     * @param i the index of the required framebuffer. NOTE: this can return a segfault if an
-     * incorrect index is provided. Please ensure that the index provided is between 0 and the
-     * swapchain's max image count.
-     * @return VkFramebuffer the framebuffer in index i
-     */
-    VkFramebuffer GetFrameBuffer(uint32_t i)
-    {
-        return swapChainFrameBuffers[i];
-    }
-
-    /**
      * Returns the swapchain image extent
      * @return the width and height of the swapchain images
      */

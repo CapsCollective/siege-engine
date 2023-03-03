@@ -20,12 +20,12 @@ uint64_t Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRA
 Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
 Utils::MSArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
 
-Material* Renderer2D::currentMaterial = nullptr;
+Vulkan::Material* Renderer2D::currentMaterial = nullptr;
 Model* Renderer2D::currentModel = nullptr;
 
 void Renderer2D::Initialise()
 {
-    transformId = INTERN_STR("objectBuffer");
+    transformId = INTERN_STR("transforms");
     globalDataId = INTERN_STR("globalData");
 }
 
@@ -55,10 +55,10 @@ void Renderer2D::DrawModel(Model* model, const Vec2& position)
 
 void Renderer2D::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    if (currentMaterial) currentMaterial->Recreate();
 }
 
-void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& globalData)
+void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData)
 {
     if (models.Count() == 0) return;
 
@@ -71,16 +71,16 @@ void Renderer2D::Render(VkCommandBuffer& commandBuffer, const GlobalData& global
             currentMaterial = model->GetMaterial();
             currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
             currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-            currentMaterial->Bind(commandBuffer);
+            currentMaterial->Bind(buffer);
         }
 
         if (currentModel != model)
         {
             currentModel = model;
-            currentModel->Bind(commandBuffer);
+            currentModel->Bind(buffer);
         }
 
-        model->Draw(commandBuffer, i);
+        model->Draw(buffer, i);
     }
 
     currentModel = nullptr;

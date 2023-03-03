@@ -6,7 +6,7 @@ layout(location = 1) in vec3 color;
 
 layout(location = 0) out vec3 fragColor;
 
-layout (std140, set = 0, binding = 0) readonly buffer Transforms{
+layout (std140, binding = 0) readonly buffer Transforms{
     mat4 transforms[];
 } transforms;
 
@@ -16,7 +16,7 @@ struct CameraData
     mat4 viewMatrix;
 };
 
-layout (set = 1, binding = 1) uniform GlobalData {
+layout (binding = 1) uniform GlobalData {
     CameraData cameraData;
 } globalData;
 

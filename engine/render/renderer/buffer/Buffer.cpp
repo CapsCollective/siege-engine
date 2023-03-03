@@ -82,14 +82,31 @@ void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
 void DestroyBuffer(Buffer& buffer)
 {
     VkDevice device = Vulkan::Context::GetVkLogicalDevice();
+    if (device == nullptr) return;
+
     if (buffer.buffer != VK_NULL_HANDLE) vkDestroyBuffer(device, buffer.buffer, nullptr);
     if (buffer.bufferMemory != VK_NULL_HANDLE) vkFreeMemory(device, buffer.bufferMemory, nullptr);
+
+    buffer.buffer = VK_NULL_HANDLE;
+    buffer.bufferMemory = VK_NULL_HANDLE;
 }
 
 size_t PadUniformBufferSize(size_t originalSize)
 {
     // Calculate required alignment based on minimum device offset alignment
-    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinDeviceAlignment();
+    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinUniformDeviceAlignment();
+    size_t alignedSize = originalSize;
+    if (minUboAlignment > 0)
+    {
+        alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    return alignedSize;
+}
+
+size_t PadStorageBufferSize(size_t originalSize)
+{
+    // Calculate required alignment based on minimum device offset alignment
+    size_t minUboAlignment = Vulkan::Context::GetPhysicalDevice()->GetMinStorageDeviceAlignment();
     size_t alignedSize = originalSize;
     if (minUboAlignment > 0)
     {

@@ -22,6 +22,7 @@ public:
         // TODO: Add new properties as new needs are discovered.
         const char* deviceName;
         uint64_t minUniformBufferOffsetAlignment {0};
+        uint64_t minStorageBufferOffsetAlignment {0};
         Utils::DepthFormat depthFormat {Utils::DEPTH_NONE};
     };
 
@@ -38,9 +39,14 @@ public:
         return device;
     }
 
-    inline constexpr size_t GetMinDeviceAlignment() const
+    inline constexpr size_t GetMinUniformDeviceAlignment() const
     {
         return properties.minUniformBufferOffsetAlignment;
+    }
+
+    inline constexpr size_t GetMinStorageDeviceAlignment() const
+    {
+        return properties.minStorageBufferOffsetAlignment;
     }
 
     inline constexpr Utils::DepthFormat GetDepthFormat() const

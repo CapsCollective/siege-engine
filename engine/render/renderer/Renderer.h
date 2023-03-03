@@ -13,9 +13,7 @@
 
 #include "descriptor/DescriptorPool.h"
 #include "lights/PointLight.h"
-#include "material/Material.h"
 #include "model/Model.h"
-#include "pipeline/Pipeline.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/window/Window.h"
@@ -63,6 +61,11 @@ public:
     static Renderer* Get()
     {
         return instance;
+    }
+
+    static uint32_t GetCurrentFrameIndex()
+    {
+        return currentFrameIndex;
     }
 
 private:

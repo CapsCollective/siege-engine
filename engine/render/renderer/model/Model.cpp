@@ -164,15 +164,15 @@ void Model::SetMesh(const Mesh::MeshData& meshData)
     modelMesh.LoadVertices(meshData);
 }
 
-void Model::Bind(VkCommandBuffer commandBuffer)
+void Model::Bind(Vulkan::CommandBuffer& commandBuffer)
 {
     modelMesh.Bind(commandBuffer);
 }
 
-void Model::Draw(VkCommandBuffer commandBuffer, const uint32_t& instance)
+void Model::Draw(Vulkan::CommandBuffer& commandBuffer, const uint32_t& instance)
 {
     if (modelMesh.HasIndexBuffer())
-        vkCmdDrawIndexed(commandBuffer, modelMesh.GetIndexCount(), 1, 0, 0, instance);
-    else vkCmdDraw(commandBuffer, modelMesh.GetVertexCount(), 1, 0, instance);
+        vkCmdDrawIndexed(commandBuffer.Get(), modelMesh.GetIndexCount(), 1, 0, 0, instance);
+    else vkCmdDraw(commandBuffer.Get(), modelMesh.GetVertexCount(), 1, 0, instance);
 }
 } // namespace Siege

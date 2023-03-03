@@ -79,6 +79,7 @@ void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size);
 void DestroyBuffer(Buffer& buffer);
 
 size_t PadUniformBufferSize(size_t originalSize);
+size_t PadStorageBufferSize(size_t originalSize);
 } // namespace Siege::Buffer
 
 #endif

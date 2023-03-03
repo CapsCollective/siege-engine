@@ -19,10 +19,8 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName,
                                const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
-    transformId = INTERN_STR("objectBuffer");
+    transformId = INTERN_STR("transforms");
 }
-
-void ModelRenderer::Destroy() {}
 
 void ModelRenderer::DrawModel(Model* model,
                               const Vec3& position,
@@ -36,7 +34,7 @@ void ModelRenderer::DrawModel(Model* model,
     transforms.Append({transform, normal});
 }
 
-void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
+void ModelRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
                            const void* globalData)
 {
@@ -53,16 +51,16 @@ void ModelRenderer::Render(VkCommandBuffer& commandBuffer,
                                             sizeof(transforms[0]) * transforms.Count(),
                                             transforms.Data());
             currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
-            currentMaterial->Bind(commandBuffer);
+            currentMaterial->Bind(buffer);
         }
 
         if (currentModel != model)
         {
             currentModel = model;
-            currentModel->Bind(commandBuffer);
+            currentModel->Bind(buffer);
         }
 
-        model->Draw(commandBuffer, i);
+        model->Draw(buffer, i);
     }
 
     currentModel = nullptr;
@@ -77,6 +75,6 @@ void ModelRenderer::Flush()
 
 void ModelRenderer::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->RecreatePipeline();
+    if (currentMaterial) currentMaterial->Recreate();
 }
 } // namespace Siege

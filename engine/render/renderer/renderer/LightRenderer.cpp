@@ -10,30 +10,21 @@
 
 namespace Siege
 {
-LightRenderer::LightRenderer() {}
-LightRenderer::~LightRenderer() {}
-
 void LightRenderer::Initialise(const String& globalDataAttributeName,
                                const uint64_t& globalDataSize)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
-    lightDataId = INTERN_STR("lightUBO");
 
-    auto pointLightVertShader = Shader::BuildShader()
-                                    .FromShader("assets/shaders/pointLight.vert.spv")
-                                    .WithStage(PipelineConfig::VERTEX)
-                                    .WithVertexType(sizeof(Vec2))
-                                    .WithVertexAttribute(0, VertexDescription::VEC2)
-                                    .WithUniform(0, globalDataAttributeName, globalDataSize);
-
-    auto pointLightFragShader = Shader::BuildShader()
-                                    .FromShader("assets/shaders/pointLight.frag.spv")
-                                    .WithStage(PipelineConfig::FRAGMENT)
-                                    .WithUniform(0, globalDataAttributeName, globalDataSize);
-
-    lightMaterial.SetVertexShader(&pointLightVertShader);
-    lightMaterial.SetFragmentShader(&pointLightFragShader);
-    lightMaterial.BuildMaterial();
+    lightMaterial = Vulkan::Material(
+        Vulkan::Shader::Builder()
+            .FromVertexShader("assets/shaders/pointLight.vert.spv")
+            .WithVertexBinding(Vulkan::Shader::VertexBinding().AddFloatVec2Attribute())
+            .WithGlobalData3DUniform()
+            .Build(),
+        Vulkan::Shader::Builder()
+            .FromFragmentShader("assets/shaders/pointLight.frag.spv")
+            .WithGlobalData3DUniform()
+            .Build());
 
     lightModel.SetMesh({sizeof(Vec2), nullptr, 0, nullptr, 0});
 
@@ -42,7 +33,7 @@ void LightRenderer::Initialise(const String& globalDataAttributeName,
 
 void LightRenderer::Destroy()
 {
-    lightMaterial.DestroyMaterial();
+    lightMaterial.Destroy();
     lightModel.DestroyModel();
 }
 
@@ -66,14 +57,14 @@ void LightRenderer::DrawPointLight(const Vec3& position,
     pointLightIndices.Append(pointLightVertices.Count() - 1);
 }
 
-void LightRenderer::Render(VkCommandBuffer& commandBuffer,
+void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
                            const void* globalData)
 {
     if (pointLightVertices.Count() == 0) return;
 
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
-    lightMaterial.Bind(commandBuffer);
+    lightMaterial.Bind(buffer);
 
     lightModel.UpdateMesh({sizeof(Vec2),
                            pointLightVertices.Data(),
@@ -81,8 +72,8 @@ void LightRenderer::Render(VkCommandBuffer& commandBuffer,
                            pointLightIndices.Data(),
                            static_cast<uint32_t>(pointLightIndices.Count())});
 
-    lightModel.Bind(commandBuffer);
-    lightModel.Draw(commandBuffer, 0);
+    lightModel.Bind(buffer);
+    lightModel.Draw(buffer, 0);
 }
 
 void LightRenderer::Flush()
@@ -93,6 +84,6 @@ void LightRenderer::Flush()
 
 void LightRenderer::RecreateMaterials()
 {
-    lightMaterial.RecreatePipeline();
+    lightMaterial.Recreate();
 }
 } // namespace Siege

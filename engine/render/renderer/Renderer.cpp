@@ -28,10 +28,10 @@ Renderer::Renderer(Window& window) : window {window}
                  Window::GetRequiredExtensions,
                  Window::CreateWindowSurface);
 
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 10);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 10);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 10);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 10);
+    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024);
+    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);
+    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1024);
+    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1024);
 
     DescriptorPool::BuildPool();
 
@@ -50,12 +50,10 @@ Renderer::~Renderer()
 
 void Renderer::DrawFrame()
 {
-    auto commandBuffer = commandBuffers.GetActiveCommandBuffer();
-
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(commandBuffer, projection);
-    Renderer2D::Render(commandBuffer, global2DData);
+    Renderer3D::Render(commandBuffers, projection);
+    Renderer2D::Render(commandBuffers, global2DData);
 }
 
 void Renderer::RecreateSwapChain()

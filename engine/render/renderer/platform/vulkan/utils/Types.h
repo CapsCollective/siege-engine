@@ -31,6 +31,9 @@ struct VkBuffer_T;
 struct VkSwapchainKHR_T;
 struct VkSemaphore_T;
 struct VkFence_T;
+struct VkShaderModule_T;
+struct VkPipelineLayout_T;
+struct VkPipeline_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -48,6 +51,9 @@ typedef VkBuffer_T* VkBuffer;
 typedef VkSwapchainKHR_T* VkSwapchainKHR;
 typedef VkSemaphore_T* VkSemaphore;
 typedef VkFence_T* VkFence;
+typedef VkShaderModule_T* VkShaderModule;
+typedef VkPipelineLayout_T* VkPipelineLayout;
+typedef VkPipeline_T* VkPipeline;
 
 namespace Siege::Vulkan::Utils
 {
@@ -103,6 +109,37 @@ enum Result
     ERROR_OUT_OF_HOST_MEM = -1,
     ERROR_OUT_OF_DEVICE_MEM = -2,
     ERROR_DEVICE_LOST = -4
+};
+
+enum UniformType
+{
+    UNKNOWN = 0,
+    TEXTURE = 1,
+    UNIFORM = 6,
+    STORAGE = 7
+};
+
+enum ShaderType
+{
+    EMPTY = 0,
+    VERTEX = 0x00000001,
+    FRAGMENT = 0x00000010,
+    ALL_GRAPHICS = 0x0000001F
+};
+
+enum VertexAttributeType
+{
+    VERTEX_UNDEFINED = 0,
+    VERTEX_FLOAT_VEC2 = 103,
+    VERTEX_FLOAT_VEC3 = 106,
+    VERTEX_FLOAT_VEC4 = 109
+};
+
+enum PipelineTopology
+{
+    TOPOLOGY_POINT_LIST = 0,
+    TOPOLOGY_LINE_LIST = 1,
+    TOPOLOGY_TRIANGLE_LIST = 3
 };
 
 //----------------------------------------- Structs -----------------------------------------------

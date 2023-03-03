@@ -11,7 +11,7 @@
 
 #include "../Core.h"
 #include "../buffer/Buffer.h"
-#include "../pipeline/PipelineConfig.h"
+#include "render/renderer/platform/vulkan/CommandBuffer.h"
 
 namespace Siege
 {
@@ -66,7 +66,7 @@ public:
     void UpdateVertexBuffer(const void* vertices);
     void UpdateIndexBuffer(uint32_t* indices);
 
-    void Bind(VkCommandBuffer commandBuffer);
+    void Bind(Vulkan::CommandBuffer& commandBuffer);
     void DestroyMesh();
 
     bool HasIndexBuffer()

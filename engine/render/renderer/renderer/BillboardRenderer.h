@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_BILLBOARD_RENDERER_H
 
 #include "../Core.h"
-#include "../material/Material.h"
 #include "../model/Model.h"
 
 namespace Siege
@@ -27,7 +26,7 @@ public:
 
     void DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour);
 
-    void Render(VkCommandBuffer& commandBuffer,
+    void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
                 const void* globalData);
 
@@ -49,7 +48,7 @@ private:
         alignas(16) Vec3 scale;
     };
 
-    Material billboardMaterial;
+    Vulkan::Material billboardMaterial;
     Model billboardModel;
 
     Hash::StringId globalDataId;

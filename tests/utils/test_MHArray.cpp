@@ -609,3 +609,225 @@ UTEST(test_MHArray, ClearEmptyArray)
     ASSERT_EQ(array.Count(), 0);
     ASSERT_EQ(array.Data(), nullptr);
 }
+
+UTEST(test_MHArray, IterateWithFunction)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.ForEach([&](uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithFunctionAndIndex)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.ForEachI([&](uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithConstFunction)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.ForEach([&](const uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithConstFunctionOnConstArray)
+{
+    const MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.ForEach([&](const uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithConstFunctionAndIndex)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.ForEachI([&](const uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithConstFunctionAndIndexOnConstArray)
+{
+    const MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.ForEachI([&](const uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithFunctionOverZeroSizedArray)
+{
+    MHArray<uint32_t> array;
+
+    size_t i = 0;
+    array.ForEach([&](uint32_t& val) { i++; });
+
+    ASSERT_EQ(i, 0);
+}
+
+UTEST(test_MHArray, IterateWithFunctionOverEmptyArray)
+{
+    MHArray<uint32_t> array(5);
+
+    size_t i = 0;
+    array.ForEach([&](uint32_t& val) { i++; });
+
+    ASSERT_EQ(i, 5);
+}
+
+UTEST(test_MHArray, IterateWithFunctionOverZeroSizedArrayWithIndex)
+{
+    MHArray<uint32_t> array;
+
+    size_t iterations = 0;
+    array.ForEachI([&](uint32_t& val, size_t i) { iterations++; });
+
+    ASSERT_EQ(iterations, 0);
+}
+
+UTEST(test_MHArray, IterateWithFunctionOverEmptyArrayWithIndex)
+{
+    MHArray<uint32_t> array(5);
+
+    size_t iterations = 0;
+    array.ForEachI([&](uint32_t& val, size_t i) { iterations++; });
+
+    ASSERT_EQ(iterations, 5);
+}
+
+UTEST(test_MHArray, IterateWithManagedFunction)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.MForEach([&](uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionAndIndex)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.MForEachI([&](uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionOnConstArray)
+{
+    const MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.MForEach([&](const uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionAndIndexOnConstArray)
+{
+    const MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.MForEachI([&](const uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionAndConstant)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    size_t i = 0;
+    array.MForEach([&](const uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionAndIndexAndConstant)
+{
+    MHArray<uint32_t> array = {1, 2, 3, 4, 5};
+
+    uint32_t expectedResults[] = {1, 2, 3, 4, 5};
+
+    array.MForEachI([&](const uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionWithGaps)
+{
+    MHArray<uint32_t> array(5);
+
+    array[1] = 2;
+    array[3] = 4;
+    array[4] = 0;
+
+    uint32_t expectedResults[] = {2, 4, 0};
+
+    size_t i = 0;
+    array.MForEach([&](uint32_t& val) {
+        ASSERT_EQ(expectedResults[i], val);
+        i++;
+    });
+}
+
+UTEST(test_MHArray, IterateWithManagedFunctionAndIndexWithGaps)
+{
+    MHArray<uint32_t> array(5);
+
+    array[1] = 2;
+    array[3] = 4;
+    array[4] = 0;
+
+    uint32_t expectedResults[] = {2, 4, 0};
+
+    array.MForEachI([&](uint32_t& val, size_t i) { ASSERT_EQ(expectedResults[i], val); });
+}
+
+UTEST(test_MHArray, IterateOverEmptyArrayWithManagedFunction)
+{
+    MHArray<uint32_t> array;
+
+    size_t iterations = 0;
+    array.MForEach([&](uint32_t& val) { iterations++; });
+
+    ASSERT_EQ(0, iterations);
+}
+
+UTEST(test_MHArray, IterateOverEmptyArrayWithManagedFunctionAndIndex)
+{
+    MHArray<uint32_t> array;
+
+    size_t iterations = 0;
+    array.MForEachI([&](uint32_t& val, size_t i) { iterations++; });
+
+    ASSERT_EQ(0, iterations);
+}

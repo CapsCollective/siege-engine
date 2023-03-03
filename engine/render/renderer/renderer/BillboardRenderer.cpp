@@ -19,23 +19,15 @@ void BillboardRenderer::Initialise(const String& globalDataAttributeName,
     globalDataId = INTERN_STR(globalDataAttributeName);
     positionsId = INTERN_STR("positions");
 
-    auto vertexShader =
-        Shader::BuildShader()
-            .FromShader("assets/shaders/billboard.vert.spv")
-            .WithStage(PipelineConfig::VERTEX)
-            .WithVertexType(sizeof(BillboardVertex))
-            .WithVertexAttribute(offsetof(BillboardVertex, position), VertexDescription::VEC3)
-            .WithVertexAttribute(offsetof(BillboardVertex, colour), VertexDescription::VEC4)
-            .WithUniform(0, globalDataAttributeName, globalDataSize)
-            .WithStorage(1, "positions", sizeof(BillboardUBO), 1000);
-
-    auto fragmentShader = Shader::BuildShader()
-                              .FromShader("assets/shaders/billboard.frag.spv")
-                              .WithStage(PipelineConfig::FRAGMENT);
-
-    billboardMaterial.SetVertexShader(&vertexShader);
-    billboardMaterial.SetFragmentShader(&fragmentShader);
-    billboardMaterial.BuildMaterial();
+    billboardMaterial = Vulkan::Material(
+        Vulkan::Shader::Builder()
+            .FromVertexShader("assets/shaders/billboard.vert.spv")
+            .WithVertexBinding(
+                Vulkan::Shader::VertexBinding().AddFloatVec3Attribute().AddFloatVec4Attribute())
+            .WithGlobalData3DUniform()
+            .WithStorage<BillboardUBO>("positions", 0, 1000)
+            .Build(),
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/billboard.frag.spv").Build());
 
     billboardModel.SetMesh({sizeof(BillboardVertex), nullptr, 0, nullptr, 0});
 
@@ -44,12 +36,12 @@ void BillboardRenderer::Initialise(const String& globalDataAttributeName,
 
 void BillboardRenderer::RecreateMaterials()
 {
-    billboardMaterial.RecreatePipeline();
+    billboardMaterial.Recreate();
 }
 
 void BillboardRenderer::Destroy()
 {
-    billboardMaterial.DestroyMaterial();
+    billboardMaterial.~Material();
     billboardModel.DestroyModel();
 }
 
@@ -72,7 +64,7 @@ void BillboardRenderer::DrawBillboard(const Vec3& position, const Vec2& scale, c
     positions.Append({position, {scale.x, scale.y, 0.f}});
 }
 
-void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
+void BillboardRenderer::Render(Vulkan::CommandBuffer& buffer,
                                const uint64_t& globalDataSize,
                                const void* globalData)
 {
@@ -82,7 +74,7 @@ void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
     billboardMaterial.SetUniformData(positionsId,
                                      sizeof(positions[0]) * positions.Count(),
                                      positions.Data());
-    billboardMaterial.Bind(commandBuffer);
+    billboardMaterial.Bind(buffer);
 
     billboardModel.UpdateMesh({sizeof(BillboardVertex),
                                vertices.Data(),
@@ -90,8 +82,8 @@ void BillboardRenderer::Render(VkCommandBuffer& commandBuffer,
                                indices.Data(),
                                static_cast<uint32_t>(indices.Count())});
 
-    billboardModel.Bind(commandBuffer);
-    billboardModel.Draw(commandBuffer);
+    billboardModel.Bind(buffer);
+    billboardModel.Draw(buffer);
 }
 
 void BillboardRenderer::Flush()

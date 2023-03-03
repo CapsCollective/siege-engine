@@ -243,7 +243,7 @@ public:
             return;
         }
 
-        // Every 8 positions are represented with one 8 bit unsigned integer. As such, every 8
+        // Every 8 positions are represented with one 8-bit unsigned integer. As such, every 8
         // elements in the array represents one to the size of our collection of byte masks.
         size_t newByteCount = ((newSize / BitUtils::BYTE_SIZE_IN_BITS) + 1);
 
@@ -323,7 +323,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    Utils::MIter<MHArray<T>, T> CreateIterator()
+    inline Utils::MIter<MHArray<T>, T> CreateIterator()
     {
         return {this};
     }
@@ -334,7 +334,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    Utils::MIter<const MHArray<T>, T> CreateIterator() const
+    inline Utils::CMIter<MHArray<T>, T> CreateIterator() const
     {
         return {this};
     }
@@ -345,7 +345,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    Utils::Iter<MHArray<T>, T> CreateFIterator()
+    inline Utils::ConstIter<MHArray<T>, T> CreateFIterator() const
     {
         return {this};
     }
@@ -356,9 +356,101 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    Utils::Iter<const MHArray<T>, T> CreateFIterator() const
+    inline Utils::Iter<MHArray<T>, T> CreateFIterator()
     {
         return {this};
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void ForEachI(F&& func)
+    {
+        size_t i = 0;
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void ForEach(F&& func)
+    {
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void MForEachI(F&& func)
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void MForEach(F&& func)
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void ForEachI(F&& func) const
+    {
+        size_t i = 0;
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void ForEach(F&& func) const
+    {
+        for (auto it = CreateFIterator(); it; ++it)
+        {
+            func(*it);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void MForEachI(F&& func) const
+    {
+        size_t i = 0;
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it, i++);
+        }
+    }
+
+    template<typename F,
+             typename = typename std::enable_if<
+                 std::is_function<typename std::remove_reference<F>::type>::value>>
+    inline void MForEach(F&& func) const
+    {
+        for (auto it = CreateIterator(); it; ++it)
+        {
+            func(*it);
+        }
     }
 
 private:
