@@ -45,12 +45,15 @@ void BillboardRenderer::Destroy()
     billboardModel.DestroyModel();
 }
 
-void BillboardRenderer::DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour)
+void BillboardRenderer::DrawBillboard(const Vec3& position,
+                                      const Vec2& scale,
+                                      const IColour& colour)
 {
-    vertices.Append({{1.f, 1.f, 1.f}, colour});
-    vertices.Append({{1.f, -1.f, 1.f}, colour});
-    vertices.Append({{-1.f, -1.f, 1.f}, colour});
-    vertices.Append({{-1.f, 1.f, 1.f}, colour});
+    auto fColour = ToFColour(colour);
+    vertices.Append({{1.f, 1.f, 1.f}, fColour});
+    vertices.Append({{1.f, -1.f, 1.f}, fColour});
+    vertices.Append({{-1.f, -1.f, 1.f}, fColour});
+    vertices.Append({{-1.f, 1.f, 1.f}, fColour});
 
     // Pattern: 0, 1, 3, 1, 2, 3
     indices.Append(vertices.Count() - 4);

@@ -24,7 +24,7 @@ static float MOVE_LEVELS[] = {.01f, .1f, 1.f, 5.f, 10.f, 50.f, 100.f};
 static float ROTATE_LEVELS[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
 
 // Define colours
-static Siege::Colour BRIGHT_PINK(255, 5, 146);
+static Siege::IColour BRIGHT_PINK(255, 5, 146);
 
 void EditorController::OnStart()
 {
@@ -189,19 +189,19 @@ void EditorController::OnDraw2D()
         (int) screenPosition.x - Siege::Window::GetTextWidth(nameLabel, 20) / 2,
         (int) screenPosition.y,
         20,
-        Siege::Colour::Pink);
+        Siege::IColour::Pink);
     Siege::Statics::Render().DrawText2D(
         posLabel,
         (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
         (int) screenPosition.y + 20,
         18,
-        currentMode == POSITION ? BRIGHT_PINK : Siege::Colour::Pink);
+        currentMode == POSITION ? BRIGHT_PINK : Siege::IColour::Pink);
     Siege::Statics::Render().DrawText2D(
         rotLabel,
         (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
         (int) screenPosition.y + 40,
         18,
-        currentMode == ROTATION ? BRIGHT_PINK : Siege::Colour::Pink);
+        currentMode == ROTATION ? BRIGHT_PINK : Siege::IColour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)

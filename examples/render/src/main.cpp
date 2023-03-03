@@ -35,9 +35,9 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-Siege::Vertex2D triangleVerts[] = {{{0.f, -1.f}, {1.f, 0.f, 0.f}},
-                                   {{1.f, 1.f}, {0.f, 1.f, 0.f}},
-                                   {{-1.f, 1.f}, {0.f, 0.f, 1.f}}};
+Siege::Vertex2D triangleVerts[] = {{{0.f, -1.f}, {1.f, 0.f, 0.f, 1.f}},
+                                   {{1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}},
+                                   {{-1.f, 1.f}, {0.f, 0.f, 1.f, 1.f}}};
 
 Siege::Mesh::MeshData triangleMeshData {
     sizeof(Siege::Vertex2D),
@@ -48,10 +48,10 @@ Siege::Mesh::MeshData triangleMeshData {
 };
 
 Siege::Vertex2D squareVerts[] = {
-    {{1.f, 1.f}, {1.f, 0.f, 0.f}}, // top right
-    {{1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom right
-    {{-1.f, -1.f}, {1.f, 0.f, 0.f}}, // bottom left
-    {{-1.f, 1.f}, {1.f, 0.f, 0.f}}, // top left
+    {{1.f, 1.f}, {1.f, 0.f, 0.f, 1.f}}, // top right
+    {{1.f, -1.f}, {1.f, 0.f, 0.f, 1.f}}, // bottom right
+    {{-1.f, -1.f}, {1.f, 0.f, 0.f, 1.f}}, // bottom left
+    {{-1.f, 1.f}, {1.f, 0.f, 0.f, 1.f}}, // top left
 };
 
 uint32_t squareIndices[] = {0, 1, 3, 1, 2, 3};
@@ -81,7 +81,7 @@ int main()
                                     .FromVertexShader("assets/shaders/simpleShader.vert.spv")
                                     .WithVertexBinding(Shader::VertexBinding()
                                                            .AddFloatVec3Attribute()
-                                                           .AddFloatVec3Attribute()
+                                                           .AddFloatVec4Attribute()
                                                            .AddFloatVec3Attribute()
                                                            .AddFloatVec2Attribute())
                                     .WithTransform3DStorage(0, 1000)
@@ -96,7 +96,7 @@ int main()
         Shader::Builder()
             .FromVertexShader("assets/shaders/simpleShader2D.vert.spv")
             .WithVertexBinding(
-                Shader::VertexBinding().AddFloatVec2Attribute().AddFloatVec3Attribute())
+                Shader::VertexBinding().AddFloatVec2Attribute().AddFloatVec4Attribute())
             .WithTransform2DStorage(0, 1000)
             .WithGlobalData2DUniform()
             .Build(),
@@ -133,16 +133,16 @@ int main()
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});
-    objects3D[0].SetColor({.5f, 0.f, 0.f});
+    objects3D[0].SetColour({128, 0, 0, 255});
 
     objects3D[1].SetPosition({0.f, 0.f, 0.f});
     objects3D[1].SetScale({3.f, 3.f, 0.1f});
-    objects3D[1].SetColor({.5f, 0.f, 0.f});
+    objects3D[1].SetColour({128, 0, 0, 255});
     objects3D[1].SetRotationX(1.570796f);
 
     objects3D[2].SetPosition({0.f, -1.f, 0.f});
     objects3D[2].SetScale({2.f, 2.f, 2.f});
-    objects3D[2].SetColor({.5f, 0.f, 0.f});
+    objects3D[2].SetColour({128, 0, 0, 255});
 
     objects2D[0].SetPosition2D({1.5f, -1.f});
     objects2D[0].SetScale2D({.5f, 0.5f});
@@ -203,13 +203,13 @@ int main()
         // TODO(Aryeh): This will eventually need to take in multiple lights.
         Siege::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f},
                                           0.05f,
-                                          {1.f, 0.f, 0.f, alpha},
-                                          {1.f, 1.f, 1.f, .02f});
+                                          {255, 0, 0, (uint8_t) (alpha * 255.f)},
+                                          {0, 0, 255, 5});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 1.f, 1.f, 1.f});
-        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {1.f, 0.f, 0.f, 1.f});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
+        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
-        Siege::Renderer3D::DrawLine({0.0f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {1.f, 1.f, 1.f, 1.f});
+        Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
         for (auto it = objects2D.CreateFIterator(); it; ++it)
         {

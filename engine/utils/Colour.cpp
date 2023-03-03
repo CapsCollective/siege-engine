@@ -10,11 +10,10 @@
 
 namespace Siege
 {
-// Define static members
-const Colour Colour::Black = {0, 0, 0, 255};
-const Colour Colour::White = {255, 255, 255, 255};
-const Colour Colour::Red = {230, 41, 55, 255};
-const Colour Colour::Green = {0, 228, 48, 255};
-const Colour Colour::Blue = {0, 121, 241, 255};
-const Colour Colour::Pink = {255, 109, 194, 255};
+Colour<uint8_t>::Colour(const FColour& other) :
+    r {static_cast<uint8_t>(other.r)},
+    g {static_cast<uint8_t>(other.g)},
+    b {static_cast<uint8_t>(other.b)},
+    a {static_cast<uint8_t>(other.a)}
+{}
 } // namespace Siege

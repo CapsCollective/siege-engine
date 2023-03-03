@@ -39,7 +39,7 @@ void Renderer3D::Initialise()
         Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build());
 }
 
-void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const Vec4& colour)
+void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour)
 {
     billboardRenderer.DrawBillboard(position, scale, colour);
 }
@@ -62,12 +62,12 @@ void Renderer3D::DrawModel(Model* model, const Vec3& position)
     DrawModel(model, position, Vec3::One, Vec3::Zero);
 }
 
-void Renderer3D::DrawPointLight(const Siege::Vec3& position,
-                                const float& radius,
-                                const Siege::Vec4& colour,
-                                const Siege::Vec4& ambientColor)
+void Renderer3D::DrawPointLight(const Vec3& position,
+                                float radius,
+                                const IColour& colour,
+                                const IColour& ambientColor)
 {
-    global3DData.lightData = {colour, ambientColor, position};
+    global3DData.lightData = {ToFColour(colour), ToFColour(ambientColor), position};
 
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
@@ -87,7 +87,7 @@ void Renderer3D::Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& 
 #endif
 }
 
-void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour)
+void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour)
 {
     debugRenderer.DrawLine(origin, destination, colour);
 }

@@ -21,13 +21,13 @@ public:
 
     struct Data
     {
-        Vec4 lightColor = {1.f, 1.f, 1.f, 0.2f};
-        alignas(16) Vec4 ambientLightColor = {1.f, 1.f, 1.f, .02f};
+        FColour lightColor = {1.f, 1.f, 1.f, 0.2f};
+        alignas(16) FColour ambientLightColor = {1.f, 1.f, 1.f, .02f};
         alignas(16) Vec3 position = Vec3::Zero;
     };
 
     PointLight();
-    PointLight(Vec3 position, Vec4 color, Vec4 ambientColor);
+    PointLight(Vec3 position, FColour color, FColour ambientColor);
     ~PointLight();
 
     Data& GetLightData()
@@ -42,11 +42,11 @@ public:
     {
         lightData.position = position;
     }
-    void SetColor(Vec4 color)
+    void SetColor(FColour color)
     {
         lightData.lightColor = color;
     }
-    void SetAmbientColor(Vec4 ambientColor)
+    void SetAmbientColor(FColour ambientColor)
     {
         lightData.ambientLightColor = ambientColor;
     }

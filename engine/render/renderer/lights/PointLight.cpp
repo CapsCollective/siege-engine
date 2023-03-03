@@ -13,7 +13,7 @@ namespace Siege
 
 PointLight::PointLight() : PointLight(Vec3::Zero, {1.0f, 1.0f, 1.0f, 0.2f}, {1.f, 1.f, 1.f, .2f}) {}
 
-PointLight::PointLight(Vec3 position, Vec4 color, Vec4 ambientColor) :
+PointLight::PointLight(Vec3 position, FColour color, FColour ambientColor) :
     lightData {color, ambientColor, position}
 {}
 

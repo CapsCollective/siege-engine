@@ -47,10 +47,11 @@ void DebugRenderer3D::RecreateMaterials()
 }
 
 // Wire primitives
-void DebugRenderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const Vec4& colour)
+void DebugRenderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour)
 {
-    lines.Append({origin, colour});
-    lines.Append({destination, colour});
+    auto fColour = ToFColour(colour);
+    lines.Append({origin, fColour});
+    lines.Append({destination, fColour});
 }
 
 void DebugRenderer3D::Flush()

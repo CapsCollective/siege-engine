@@ -14,7 +14,7 @@ GameObject::GameObject(Siege::Model* model) : model {model} {}
 
 GameObject::~GameObject() {}
 
-void GameObject::SetColor(const Siege::Vec3& newColor)
+void GameObject::SetColour(const Siege::IColour& newColor)
 {
     fillColor = newColor;
 }

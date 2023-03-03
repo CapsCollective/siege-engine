@@ -33,9 +33,9 @@ BoundedBox ToBoundedBox(BoundingBox bbox);
 
 BoundingBox FromBoundedBox(BoundedBox bbox);
 
-Colour ToColour(Color color);
+IColour ToColour(Color color);
 
-Color FromColour(Colour color);
+Color FromColour(IColour color);
 } // namespace Siege
 
 #endif // SIEGE_ENGINE_TRANSITIONADAPTER_H

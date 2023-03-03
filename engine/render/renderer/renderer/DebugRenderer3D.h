@@ -25,9 +25,8 @@ public:
     void Destroy();
 
     // Wire primitives
-    void DrawLine(const Siege::Vec3& origin,
-                  const Siege::Vec3& destination,
-                  const Siege::Vec4& colour);
+    void DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour);
+    void DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -42,7 +41,7 @@ private:
     struct LineVertex
     {
         Vec3 position;
-        Vec4 colour;
+        FColour colour;
     };
 
     void RenderLines(Vulkan::CommandBuffer& commandBuffer,

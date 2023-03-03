@@ -120,9 +120,10 @@ void Model::LoadModelFromFile(const String& filePath)
                                         attrib.vertices[3 * index.vertex_index + 1],
                                         attrib.vertices[3 * index.vertex_index + 2]};
 
-                vertex.color = Vec3 {attrib.colors[3 * index.vertex_index + 0],
-                                     attrib.colors[3 * index.vertex_index + 1],
-                                     attrib.colors[3 * index.vertex_index + 2]};
+                vertex.color = FColour {attrib.colors[3 * index.vertex_index + 0],
+                                        attrib.colors[3 * index.vertex_index + 1],
+                                        attrib.colors[3 * index.vertex_index + 2],
+                                        1.f};
             }
 
             if (index.normal_index >= 0)
