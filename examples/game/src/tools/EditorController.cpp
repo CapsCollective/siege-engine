@@ -189,19 +189,19 @@ void EditorController::OnDraw2D()
         (int) screenPosition.x - Siege::Window::GetTextWidth(nameLabel, 20) / 2,
         (int) screenPosition.y,
         20,
-        Siege::IPink);
+        Siege::IColour::Pink);
     Siege::Statics::Render().DrawText2D(
         posLabel,
         (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
         (int) screenPosition.y + 20,
         18,
-        currentMode == POSITION ? BRIGHT_PINK : Siege::IPink);
+        currentMode == POSITION ? BRIGHT_PINK : Siege::IColour::Pink);
     Siege::Statics::Render().DrawText2D(
         rotLabel,
         (int) screenPosition.x - Siege::Window::GetTextWidth(posLabel, 18) / 2,
         (int) screenPosition.y + 40,
         18,
-        currentMode == ROTATION ? BRIGHT_PINK : Siege::IPink);
+        currentMode == ROTATION ? BRIGHT_PINK : Siege::IColour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)
