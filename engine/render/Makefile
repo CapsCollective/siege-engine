@@ -34,7 +34,8 @@ else ifeq ($(platform), macos)
 	volkDefines = VK_USE_PLATFORM_MACOS_MVK
 	glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
 endif
-compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/tinyobjloader
+compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
+				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image
 
 .PHONY: all vulkan-libs
 
