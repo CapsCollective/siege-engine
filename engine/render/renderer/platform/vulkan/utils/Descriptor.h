@@ -78,6 +78,10 @@ public:
                           const VkCopyDescriptorSet* copies = nullptr,
                           uint32_t copyCount = 0);
 
+    static VkSamplerCreateInfo SamplerCreateInfo(
+        VkFilter filters,
+        VkSamplerAddressMode samplerAddressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
 private:
 };
 } // namespace Siege

@@ -99,4 +99,29 @@ void Descriptor::WriteSets(VkDevice device,
 {
     vkUpdateDescriptorSets(device, setCount, sets, copyCount, copies);
 }
+
+VkSamplerCreateInfo Descriptor::SamplerCreateInfo(
+    VkFilter filters,
+    VkSamplerAddressMode samplerAddressMode)
+{
+    VkSamplerCreateInfo info = {};
+    info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    info.pNext = nullptr;
+
+    info.magFilter = filters;
+    info.minFilter = filters;
+    info.addressModeU = samplerAddressMode;
+    info.addressModeV = samplerAddressMode;
+    info.addressModeW = samplerAddressMode;
+    info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    info.unnormalizedCoordinates = VK_FALSE;
+    info.compareEnable = VK_FALSE;
+    info.compareOp = VK_COMPARE_OP_ALWAYS;
+    info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    info.mipLodBias = 0.0f;
+    info.minLod = 0.0f;
+    info.maxLod = 0.0f;
+
+    return info;
+}
 } // namespace Siege

@@ -16,7 +16,7 @@
 
 namespace Siege::Vulkan
 {
-Image::Image(const Config& config)
+Image::Image(const Config& config) : extent {config.imageExtent}
 {
     auto device = Context::GetCurrentDevice()->GetDevice();
 
@@ -27,7 +27,7 @@ Image::Image(const Config& config)
     CreateImageView(config);
 }
 
-Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}
+Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}, extent {config.imageExtent}
 {
     CreateImageView(config);
 }
@@ -69,7 +69,7 @@ void Image::CreateImageView(const Config& config)
         static_cast<VkImageViewType>(((config.layers > 1) * VK_IMAGE_VIEW_TYPE_2D_ARRAY) +
                                      ((config.layers == 1) * VK_IMAGE_VIEW_TYPE_2D));
 
-    imageView = Utils::Image::CreateImageView(image,
+    info.view = Utils::Image::CreateImageView(image,
                                               viewType,
                                               Utils::ToVkFormat(config.imageFormat),
                                               {},
@@ -78,7 +78,7 @@ void Image::CreateImageView(const Config& config)
 
 Image::Image(Image&& other)
 {
-    Move(other);
+    Swap(other);
 }
 
 Image::~Image()
@@ -91,9 +91,9 @@ Image::~Image()
 
 Image& Image::operator=(Image&& other)
 {
-    if (imageView) Free();
+    if (info.view) Free();
 
-    Move(other);
+    Swap(other);
     return *this;
 }
 
@@ -101,7 +101,7 @@ void Image::Free()
 {
     auto device = Context::GetCurrentDevice()->GetDevice();
 
-    vkDestroyImageView(device, imageView, nullptr);
+    vkDestroyImageView(device, info.view, nullptr);
 
     if (HasInfo())
     {
@@ -115,7 +115,7 @@ void Image::Free()
 void Image::Invalidate()
 {
     image = nullptr;
-    imageView = nullptr;
+    info.view = nullptr;
     memory = nullptr;
 }
 
@@ -126,18 +126,95 @@ bool Image::HasInfo()
 
 bool Image::IsValid()
 {
-    return imageView && image;
+    return info.view && image;
 }
 
-void Image::Move(Image& other)
+// TODO: we'll likely need to send some sort of config object into this to get better config options
+void Image::CopyBuffer(VkBuffer buffer)
 {
-    image = other.image;
-    imageView = other.imageView;
-    memory = other.memory;
+    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer) {
+        VkImageSubresourceRange range {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
-    other.image = nullptr;
-    other.imageView = nullptr;
-    other.memory = nullptr;
+        VkImageMemoryBarrier toTransferBarrier {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                                                nullptr,
+                                                0,
+                                                VK_ACCESS_TRANSFER_WRITE_BIT,
+                                                Utils::ToVkImageLayout(info.layout),
+                                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                0,
+                                                0,
+                                                image,
+                                                range};
+
+        vkCmdPipelineBarrier(commandBuffer,
+                             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             0,
+                             0,
+                             nullptr,
+                             0,
+                             nullptr,
+                             1,
+                             &toTransferBarrier);
+
+        VkBufferImageCopy copyRegion = {};
+        copyRegion.bufferOffset = 0;
+        copyRegion.bufferRowLength = 0;
+        copyRegion.bufferImageHeight = 0;
+
+        copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        copyRegion.imageSubresource.mipLevel = 0;
+        copyRegion.imageSubresource.baseArrayLayer = 0;
+        copyRegion.imageSubresource.layerCount = 1;
+        copyRegion.imageOffset = {0, 0, 0};
+        copyRegion.imageExtent = {extent.width, extent.height, 1};
+
+        vkCmdCopyBufferToImage(commandBuffer,
+                               buffer,
+                               image,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               1,
+                               &copyRegion);
+
+        VkImageMemoryBarrier toReadableBarrier = toTransferBarrier;
+
+        toReadableBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        toReadableBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        toReadableBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        toReadableBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        vkCmdPipelineBarrier(commandBuffer,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                             0,
+                             0,
+                             nullptr,
+                             0,
+                             nullptr,
+                             1,
+                             &toReadableBarrier);
+
+        info.layout = Utils::ImageLayout::LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    });
+}
+
+void Image::Swap(Image& other)
+{
+    auto tmpImage = image;
+    auto tmpImageInfo = info;
+    auto tmpMemory = memory;
+    auto tmpExtent = extent;
+
+    image = other.image;
+    info = other.info;
+    memory = other.memory;
+    extent = other.extent;
+
+    other.image = tmpImage;
+    other.info = tmpImageInfo;
+    other.memory = tmpMemory;
+    other.extent = tmpExtent;
 }
 
 bool Image::IsDepthFormat(Utils::ImageFormat format)
@@ -156,7 +233,8 @@ uint32_t Image::GetVkUsageFlag(Utils::ImageUsage usage, Utils::ImageFormat forma
             return ((isDepthFormat * VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) +
                     (!isDepthFormat * VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
         case Utils::USAGE_TEXTURE:
-            return VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+            return VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+                   VK_IMAGE_USAGE_SAMPLED_BIT;
         case Utils::USAGE_STORAGE:
             return VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
         default:

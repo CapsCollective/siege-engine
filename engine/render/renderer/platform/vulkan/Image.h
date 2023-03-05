@@ -28,6 +28,12 @@ public:
         uint32_t layers;
     };
 
+    struct Info
+    {
+        VkImageView view {nullptr};
+        Utils::ImageLayout layout {Utils::ImageLayout::LAYOUT_UNDEFINED};
+    };
+
     Image() = default;
     Image(const Config& config);
     Image(VkImage swapchainImage, const Config& config);
@@ -36,9 +42,14 @@ public:
 
     Image& operator=(Image&& other);
 
+    const Info& GetInfo() const
+    {
+        return info;
+    }
+
     VkImageView GetView()
     {
-        return imageView;
+        return info.view;
     }
 
     const VkImage& GetImage() const
@@ -51,7 +62,7 @@ public:
     }
     const VkImageView GetView() const
     {
-        return imageView;
+        return info.view;
     }
 
     void Free();
@@ -60,21 +71,24 @@ public:
     bool IsValid();
     bool HasInfo();
 
+    void CopyBuffer(VkBuffer buffer);
+
 private:
 
     static bool IsDepthFormat(Utils::ImageFormat format);
     static uint32_t GetVkUsageFlag(Utils::ImageUsage usage, Utils::ImageFormat format);
-
-    void Move(Image& other);
 
     void CreateImage(const Config& config);
     void AllocateMemory();
     void BindImageMemory(VkDevice);
     void CreateImageView(const Config& config);
 
+    void Swap(Image& other);
+
     VkImage image {nullptr};
     VkDeviceMemory memory {nullptr};
-    VkImageView imageView {nullptr};
+    Utils::Extent3D extent {0, 0, 0};
+    Info info;
 };
 } // namespace Siege::Vulkan
 

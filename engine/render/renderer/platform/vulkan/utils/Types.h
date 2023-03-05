@@ -34,6 +34,7 @@ struct VkFence_T;
 struct VkShaderModule_T;
 struct VkPipelineLayout_T;
 struct VkPipeline_T;
+struct VkSampler_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -54,6 +55,7 @@ typedef VkFence_T* VkFence;
 typedef VkShaderModule_T* VkShaderModule;
 typedef VkPipelineLayout_T* VkPipelineLayout;
 typedef VkPipeline_T* VkPipeline;
+typedef VkSampler_T* VkSampler;
 
 namespace Siege::Vulkan::Utils
 {
@@ -75,6 +77,7 @@ enum ImageFormat
     RED8UN = 9,
     RED8UI = 13,
     RG8 = 16,
+    RGBASRGB = 43,
     RGBA = 44,
     BGRA = 50,
     RED16UI = 74,
@@ -140,6 +143,13 @@ enum PipelineTopology
     TOPOLOGY_POINT_LIST = 0,
     TOPOLOGY_LINE_LIST = 1,
     TOPOLOGY_TRIANGLE_LIST = 3
+};
+
+enum ImageLayout
+{
+    LAYOUT_UNDEFINED = 0,
+    LAYOUT_TRANSFER_DST_OPTIMAL = 2,
+    LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
 };
 
 //----------------------------------------- Structs -----------------------------------------------

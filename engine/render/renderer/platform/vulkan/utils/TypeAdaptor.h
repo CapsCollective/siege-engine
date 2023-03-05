@@ -71,6 +71,7 @@ DECL_VULKAN_SWITCH_FUN(
                 SWITCH_MEM(ImageFormat, RED32UI, VK_FORMAT_R32_UINT)
                     SWITCH_MEM(ImageFormat, RED32F, VK_FORMAT_R32_SFLOAT)
                         SWITCH_MEM(ImageFormat, RG8, VK_FORMAT_R8G8_UNORM)
+                            SWITCH_MEM(ImageFormat, RGBASRGB, VK_FORMAT_R8G8B8A8_SRGB)
                             SWITCH_MEM(ImageFormat, RG16F, VK_FORMAT_R16G16_SFLOAT)
                                 SWITCH_MEM(ImageFormat, RG32F, VK_FORMAT_R32G32_SFLOAT)
                                     SWITCH_MEM(ImageFormat, RGBA, VK_FORMAT_R8G8B8A8_UNORM)
@@ -101,6 +102,7 @@ DECL_VULKAN_SWITCH_FUN(
                 SWITCH_MEM(VkFormat, VK_FORMAT_R32_SFLOAT, RED32F) SWITCH_MEM(VkFormat,
                                                                               VK_FORMAT_R8G8_UNORM,
                                                                               RG8)
+                    SWITCH_MEM(VkFormat, VK_FORMAT_R8G8B8A8_SRGB, RGBASRGB)
                     SWITCH_MEM(VkFormat, VK_FORMAT_R16G16_SFLOAT, RG16F)
                         SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, RG32F)
                             SWITCH_MEM(VkFormat, VK_FORMAT_R8G8B8A8_UNORM, RGBA)
@@ -179,6 +181,24 @@ DECL_VULKAN_SWITCH_FUN(
                        TOPOLOGY_TRIANGLE_LIST,
                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
                 SWITCH_DEFAULT(VK_PRIMITIVE_TOPOLOGY_POINT_LIST))
+
+DECL_VULKAN_SWITCH_FUN(
+    ImageLayout,
+    VkImageLayout,
+    SWITCH_MEM(VkImageLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, LAYOUT_TRANSFER_DST_OPTIMAL)
+        SWITCH_MEM(VkImageLayout,
+                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                   LAYOUT_SHADER_READ_ONLY_OPTIMAL) SWITCH_DEFAULT(LAYOUT_UNDEFINED))
+
+DECL_VULKAN_SWITCH_FUN(VkImageLayout,
+                       ImageLayout,
+                       SWITCH_MEM(ImageLayout,
+                                  LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+                           SWITCH_MEM(ImageLayout,
+                                      LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+                               SWITCH_DEFAULT(VK_IMAGE_LAYOUT_UNDEFINED))
 
 //----------------------------------------- Structs -----------------------------------------------
 
