@@ -19,6 +19,9 @@
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
 
+// TODO(Aryeh): Create a method for adding textures to our texture info array
+// TODO(Aryeh): Change the Renderer2D to batch quad calls using our new textures
+
 namespace Siege::Vulkan
 {
 Material::Material(Shader vertShader, Shader fragShader) :
@@ -56,7 +59,8 @@ Material::Material(Shader vertShader, Shader fragShader) :
         auto& properties = slot.properties;
 
         properties.MForEachI([&](Property& prop, size_t j) {
-            bindings.Append(Descriptor::CreateLayoutBinding(j, 1, prop.type, prop.shaderStage));
+            bindings.Append(
+                Descriptor::CreateLayoutBinding(j, prop.count, prop.type, prop.shaderStage));
         });
 
         CC_ASSERT(Descriptor::CreateLayout(Vulkan::Context::GetVkLogicalDevice(),
@@ -76,6 +80,12 @@ Material::Material(Shader vertShader, Shader fragShader) :
             });
 
         WriteSet(i, slot);
+    });
+
+    using Vulkan::Context;
+
+    writes.MForEach([&](::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>& writeSets) {
+        Descriptor::WriteSets(Context::GetVkLogicalDevice(), writeSets.Data(), writeSets.Count());
     });
 
     // Create Pipeline
@@ -160,6 +170,7 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
         properties.Append({
             uniform.id,
             uniform.slot,
+            uniform.count,
             offset,
             uniform.totalSize,
             uniform.type,
@@ -173,6 +184,18 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
                       ((uniform.type == UniformType::UNIFORM) *
                        Buffer::PadUniformBufferSize(uniform.totalSize));
         offset += uniform.totalSize;
+
+        if (uniform.type == Utils::TEXTURE2D)
+        {
+            auto& defaultTexture2DInfo = shader.GetDefaultTexture2DInfo();
+            for (size_t i = 0; i < uniform.count; i++)
+            {
+                texture2DInfos.Append(
+                    {defaultTexture2DInfo.sampler,
+                     defaultTexture2DInfo.imageInfo.view,
+                     Utils::ToVkImageLayout(defaultTexture2DInfo.imageInfo.layout)});
+            }
+        }
     }
 }
 
@@ -232,18 +255,26 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
         bufferInfos.Append(Descriptor::CreateBufferInfo(buffer.buffer, prop.offset, prop.size));
         perFrameDescriptorSets.ForEachI(
             [&](::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>& sets, size_t j) {
-                writes[j].Append(Descriptor::CreateWriteSet(i,
-                                                            sets[set],
-                                                            1,
-                                                            Utils::ToVkDescriptorType(prop.type),
-                                                            &bufferInfos[i]));
+                if (prop.type == Utils::TEXTURE2D)
+                {
+                    writes[j].Append(
+                        Descriptor::WriteDescriptorImage(Utils::ToVkDescriptorType(prop.type),
+                                                         sets[set],
+                                                         texture2DInfos.Data(),
+                                                         i,
+                                                         MAX_TEXTURES,
+                                                         0));
+                }
+                else
+                {
+                    writes[j].Append(
+                        Descriptor::CreateWriteSet(i,
+                                                   sets[set],
+                                                   1,
+                                                   Utils::ToVkDescriptorType(prop.type),
+                                                   &bufferInfos[i]));
+                }
             });
-    });
-
-    using Vulkan::Context;
-
-    writes.MForEach([&](::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>& writeSets) {
-        Descriptor::WriteSets(Context::GetVkLogicalDevice(), writeSets.Data(), writeSets.Count());
     });
 }
 
@@ -258,6 +289,7 @@ void Material::Swap(Material& other)
     auto tmpPerFrameDescriptors = std::move(perFrameDescriptorSets);
     auto tmpWrites = std::move(writes);
     auto tmpBufferInfos = std::move(bufferInfos);
+    auto tmpTexture2DInfos = std::move(texture2DInfos);
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
@@ -268,6 +300,7 @@ void Material::Swap(Material& other)
     perFrameDescriptorSets = std::move(other.perFrameDescriptorSets);
     writes = std::move(other.writes);
     bufferInfos = std::move(other.bufferInfos);
+    texture2DInfos = std::move(other.texture2DInfos);
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
@@ -278,5 +311,15 @@ void Material::Swap(Material& other)
     other.perFrameDescriptorSets = std::move(tmpPerFrameDescriptors);
     other.writes = std::move(tmpWrites);
     other.bufferInfos = std::move(tmpBufferInfos);
+    other.texture2DInfos = std::move(tmpTexture2DInfos);
+
+    propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
+        slot.properties.MForEachI([&](Property& prop, size_t j) {
+            writes.MForEach([&](::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>& writeSets) {
+                if (prop.type == Utils::TEXTURE2D) writeSets[j].pImageInfo = texture2DInfos.Data();
+                else writeSets[j].pBufferInfo = &bufferInfos[j];
+            });
+        });
+    });
 }
 } // namespace Siege::Vulkan

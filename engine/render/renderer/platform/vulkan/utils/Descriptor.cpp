@@ -121,9 +121,8 @@ VkWriteDescriptorSet Descriptor::WriteDescriptorImage(VkDescriptorType type,
     return write;
 }
 
-VkSamplerCreateInfo Descriptor::SamplerCreateInfo(
-    VkFilter filters,
-    VkSamplerAddressMode samplerAddressMode)
+VkSamplerCreateInfo Descriptor::SamplerCreateInfo(VkFilter filters,
+                                                  VkSamplerAddressMode samplerAddressMode)
 {
     VkSamplerCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

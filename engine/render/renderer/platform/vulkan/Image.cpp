@@ -27,7 +27,9 @@ Image::Image(const Config& config) : extent {config.imageExtent}
     CreateImageView(config);
 }
 
-Image::Image(VkImage swapchainImage, const Config& config) : image {swapchainImage}, extent {config.imageExtent}
+Image::Image(VkImage swapchainImage, const Config& config) :
+    image {swapchainImage},
+    extent {config.imageExtent}
 {
     CreateImageView(config);
 }

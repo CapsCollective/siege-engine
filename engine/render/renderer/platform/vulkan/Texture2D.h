@@ -9,19 +9,16 @@
 #ifndef SIEGE_ENGINE_TEXTURE2D_H
 #define SIEGE_ENGINE_TEXTURE2D_H
 
+#include <utils/String.h>
+
 #include "Image.h"
 #include "utils/Types.h"
-
-#include <utils/String.h>
 
 namespace Siege::Vulkan
 {
 class Texture2D
 {
 public:
-
-    static uint8_t DEFAULT_TEX[1024];
-
     // Structs
 
     struct Info
@@ -52,15 +49,18 @@ public:
     {
         return info;
     }
+
 private:
+
     void LoadFromFile(const String& filePath);
-    void LoadTexture(uint8_t* pixels, size_t size, uint32_t width, uint32_t height);
+    void LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height);
     void Swap(Texture2D& other);
+
     Hash::StringId id {};
     Image image;
     Info info {};
     Utils::Extent2D extent;
 };
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_TEXTURE2D_H

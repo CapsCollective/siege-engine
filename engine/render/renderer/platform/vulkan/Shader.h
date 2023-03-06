@@ -13,9 +13,9 @@
 #include <utils/collections/HeapArray.h>
 #include <utils/collections/StackArray.h>
 
+#include "Texture2D.h"
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Types.h"
-#include "Texture2D.h"
 
 namespace Siege::Vulkan
 {

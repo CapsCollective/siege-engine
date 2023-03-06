@@ -11,6 +11,7 @@
 
 #include "../Core.h"
 #include "../model/Model.h"
+#include "render/renderer/platform/vulkan/Texture2D.h"
 
 namespace Siege
 {
@@ -24,34 +25,47 @@ public:
     };
 
     static void Initialise();
+    static void DestroyRenderer2D();
 
-    static void DrawModel(Model* model,
-                          const Vec2& position,
-                          const Vec2& scale,
-                          float rotation,
-                          float zIndex);
-    static void DrawModel(Model* model, const Vec2& position, const Vec2& scale, float zIndex);
-    static void DrawModel(Model* model, const Vec2& position);
+    static void DrawQuad(const Vec2& position,
+                         const Vec2& scale,
+                         const IColour& colour,
+                         const float& rotation,
+                         const float& zIndex,
+                         Vulkan::Texture2D* texture = nullptr);
 
     static void RecreateMaterials();
 
     static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
+    static void Update();
     static void Flush();
 
 private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
+    static constexpr size_t VERTICES_PER_QUAD = 4;
+    static constexpr size_t INDICES_PER_QUAD = 6;
+    static constexpr size_t MAX_TEXTURES = 16;
 
-    static Utils::MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
-
-    static uint64_t transformSize;
+    struct QuadVertex
+    {
+        Vec2 position;
+        FColour colour;
+        Vec2 uv;
+        uint32_t texIdx;
+    };
 
     static Hash::StringId transformId;
     static Hash::StringId globalDataId;
 
-    static Vulkan::Material* currentMaterial;
-    static Model* currentModel;
+    static Utils::MSArray<QuadVertex, MAX_OBJECT_TRANSFORMS * VERTICES_PER_QUAD> vertices;
+    static Utils::MSArray<uint32_t, MAX_OBJECT_TRANSFORMS * INDICES_PER_QUAD> indices;
+    static Utils::MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static Utils::MSArray<Vulkan::Texture2D*, MAX_TEXTURES> textures;
+
+    static Vulkan::Texture2D defaultTexture;
+    static Vulkan::Material defaultMaterial;
+    static Model quadModel;
 };
 } // namespace Siege
 

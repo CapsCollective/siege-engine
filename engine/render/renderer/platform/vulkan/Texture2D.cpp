@@ -7,7 +7,10 @@
 //
 
 #include "Texture2D.h"
+
 #include "Context.h"
+#include "Constants.h"
+
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Descriptor.h"
 
@@ -17,12 +20,9 @@
 
 namespace Siege::Vulkan
 {
-
-uint8_t Texture2D::DEFAULT_TEX[1024] {};
-
 Texture2D::Texture2D(const String& name)
 {
-    LoadTexture(DEFAULT_TEX, sizeof(uint8_t) * 1024, 16, 16);
+    LoadTexture(Constants::DEFAULT_TEXTURE_2D, Constants::DEFAULT_TEXTURE_SIZE, 16, 16);
 
     VkSamplerCreateInfo samplerInfo = Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
 
@@ -111,7 +111,7 @@ void Texture2D::LoadFromFile(const String& filePath)
     Buffer::DestroyBuffer(stagingBuffer);
 }
 
-void Texture2D::LoadTexture(uint8_t* pixels, size_t size, uint32_t width, uint32_t height)
+void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height)
 {
     Buffer::Buffer stagingBuffer;
     Buffer::CreateBuffer(size,
@@ -127,7 +127,7 @@ void Texture2D::LoadTexture(uint8_t* pixels, size_t size, uint32_t width, uint32
 
     extent = {width, height};
 
-    Utils::Extent3D imageExtent {width,height,1};
+    Utils::Extent3D imageExtent {width, height, 1};
 
     image = Image({Utils::RGBASRGB, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
 
@@ -139,16 +139,19 @@ void Texture2D::LoadTexture(uint8_t* pixels, size_t size, uint32_t width, uint32
 void Texture2D::Swap(Texture2D& other)
 {
     auto tmpId = id;
-    auto tmpInfo = info;
     auto tmpImage = std::move(image);
+    auto tmpInfo = info;
+    auto tmpExtent = extent;
 
     id = other.id;
-    info = other.info;
     image = std::move(other.image);
+    info = other.info;
+    extent = other.extent;
 
     other.id = tmpId;
-    other.info = tmpInfo;
     other.image = std::move(tmpImage);
+    other.info = tmpInfo;
+    other.extent = tmpExtent;
 }
 
-} // namespace Siege
+} // namespace Siege::Vulkan

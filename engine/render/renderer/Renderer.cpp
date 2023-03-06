@@ -47,6 +47,7 @@ Renderer::~Renderer()
     CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
+    Renderer2D::DestroyRenderer2D();
 }
 
 void Renderer::DrawFrame()
@@ -111,6 +112,8 @@ bool Renderer::StartFrame()
 
 void Renderer::EndFrame()
 {
+    Renderer2D::Update();
+
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 
     auto& swapchain = context.GetSwapchain();

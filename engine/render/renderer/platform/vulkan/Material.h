@@ -12,6 +12,7 @@
 #include "CommandBuffer.h"
 #include "Pipeline.h"
 #include "Shader.h"
+#include "Texture2D.h"
 
 namespace Siege::Vulkan
 {
@@ -38,6 +39,7 @@ class Material
 public:
 
     static constexpr uint32_t MAX_UNIFORM_SETS = 2;
+    static constexpr uint32_t MAX_TEXTURES = 16;
     /**
      * An empty default constructor for the Material class
      */
@@ -115,6 +117,7 @@ private:
     {
         Hash::StringId id {0};
         uint32_t binding {0};
+        uint32_t count {0};
         uint64_t offset {0};
         uint64_t size {0};
         Utils::UniformType type {Utils::UNKNOWN};
@@ -168,6 +171,8 @@ private:
     ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>>
         perFrameDescriptorSets;
     ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>> writes;
+
+    ::Siege::Utils::MSArray<VkDescriptorImageInfo, MAX_TEXTURES> texture2DInfos;
 };
 } // namespace Siege::Vulkan
 
