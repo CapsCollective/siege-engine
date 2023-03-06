@@ -78,6 +78,12 @@ public:
      */
     void SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data);
 
+    /**
+     * TODO(Aryeh): Document this
+     * @param id
+     * @param index
+     * @param textureInfo
+     */
     void SetTexture(Hash::StringId id, uint32_t index, const Texture2D::Info& textureInfo);
 
     /**
@@ -139,6 +145,11 @@ private:
         VkDescriptorSetLayout layout {VK_NULL_HANDLE};
         ::Siege::Utils::MSArray<Property, 10> properties;
     };
+
+    // TODO(Aryeh): Create the following utility functions:
+    // TODO(Aryeh): 1) FindProperty(Hash::StringId) -> bool
+
+    int32_t PropertyExists(Hash::StringId id, PropertiesSlot& slot);
 
     /**
      * Swaps the contents of two Materials

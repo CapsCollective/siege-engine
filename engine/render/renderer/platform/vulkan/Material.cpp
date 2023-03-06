@@ -156,22 +156,24 @@ void Material::SetTexture(Hash::StringId id, uint32_t index, const Texture2D::In
 
     propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
         auto& properties = slot.properties;
-        properties.MForEachI([&](Property& prop, size_t j) {
-            if (prop.id == id)
-            {
-                texture2DInfos[index] = {textureInfo.sampler,
-                                         textureInfo.imageInfo.view,
-                                         Utils::ToVkImageLayout(textureInfo.imageInfo.layout)};
-                writeSets[j] =
-                    Descriptor::WriteDescriptorImage(Utils::ToVkDescriptorType(prop.type),
-                                                     descriptors[i],
-                                                     texture2DInfos.Data(),
-                                                     prop.binding,
-                                                     prop.count,
-                                                     0);
-                return;
-            }
-        });
+        auto propIdx = PropertyExists(id, slot);
+
+        if (propIdx == -1) return;
+
+        texture2DInfos[index] = {textureInfo.sampler,
+                                 textureInfo.imageInfo.view,
+                                 Utils::ToVkImageLayout(textureInfo.imageInfo.layout)};
+
+        if (writeSets.Count() > 0) return;
+
+        auto prop = properties[propIdx];
+
+        writeSets.Append(Descriptor::WriteDescriptorImage(Utils::ToVkDescriptorType(prop.type),
+                                                          descriptors[i],
+                                                          texture2DInfos.Data(),
+                                                          prop.binding,
+                                                          prop.count,
+                                                          0));
     });
 }
 
@@ -251,12 +253,16 @@ void Material::Recreate()
 
 void Material::Update()
 {
+    auto currentFrameIdx = Renderer::GetCurrentFrameIndex();
+
     // TODO(Aryeh): Get this to only update sets which have been changed
-    auto& targetSets = writes[Renderer::GetCurrentFrameIndex()];
+    auto& targetSets = writes[currentFrameIdx];
 
     using Vulkan::Context;
 
     Descriptor::WriteSets(Context::GetVkLogicalDevice(), targetSets.Data(), targetSets.Count());
+
+    targetSets.Clear();
 }
 
 void Material::Update(Hash::StringId id)
@@ -306,6 +312,19 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
     });
 }
 
+int32_t Material::PropertyExists(Hash::StringId id, PropertiesSlot& slot)
+{
+    uint32_t foundIdx {0};
+    slot.properties.MForEachI([&](Property& property, size_t i){
+        if (property.id == id)
+        {
+            foundIdx = i;
+            return;
+        }
+    });
+    return foundIdx;
+}
+
 void Material::Swap(Material& other)
 {
     auto tmpVertexShader = std::move(vertexShader);
@@ -341,6 +360,7 @@ void Material::Swap(Material& other)
     other.bufferInfos = std::move(tmpBufferInfos);
     other.texture2DInfos = std::move(tmpTexture2DInfos);
 
+    // Need to reset our pointer references in the writes array (if there are any)
     propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
         slot.properties.MForEachI([&](Property& prop, size_t j) {
             writes.MForEach([&](::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>& writeSets) {

@@ -449,6 +449,7 @@ public:
     inline void Clear()
     {
         bitField.Clear();
+        memset(data, 0, sizeof(T) * S);
         count = 0;
     }
 
