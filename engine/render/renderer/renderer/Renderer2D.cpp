@@ -68,39 +68,24 @@ void Renderer2D::DrawQuad(const Siege::Vec2& position,
     auto targetTexture = texture == nullptr ? &defaultTexture : texture;
 
     uint32_t texIdx = 0;
+    bool found = false;
 
-    // TODO(Aryeh): Find a better way to search over all our textures. The texture array is just
-    // TODO(Aryeh): taking up space at this point
-    //    auto found = textures.Find(
-    //        [&](Vulkan::Texture* tex) {
-    //            if (targetTexture->GetId() == tex->GetId())
-    //            {
-    //                texIdx++;
-    //                return true;
-    //            }
-    //            else return false;
-    //        },
-    //        textures.begin(),
-    //        textures.end());
+    // TODO(Aryeh): Would be nice if we had a cleaner way of searching for these textures
+    textures.MForEachI([&](Vulkan::Texture2D* tex, size_t i) {
+        if (tex->GetId() == targetTexture->GetId())
+        {
+            texIdx = i;
+            found = true;
+            return;
+        }
+    });
 
-    //    // TODO: Add some form of check to make sure we don't go over the maximum number of
-    //    textures
-    //    if (found == textures.end())
-    //    {
-    //        texIdx = textures.Count();
-    //        textures.Append(targetTexture);
-    //
-    //        auto& texInfo = targetTexture->GetInfo();
-    //
-    //        imageInfos[texIdx] = {texInfo.sampler,
-    //                              texInfo.imageInfo.view,
-    //                              Vulkan::Utils::ToVkImageLayout(texInfo.imageInfo.layout)};
-    //
-    //        defaultMaterial.SetUniformTexture(INTERN_STR("texture"),
-    //                                          imageInfos.Data(),
-    //                                          imageInfos.Count(),
-    //                                          0);
-    //    }
+    if (!found)
+    {
+        texIdx = textures.Count();
+        textures.Append(targetTexture);
+        defaultMaterial.SetTexture(INTERN_STR("texture"), texIdx, targetTexture->GetInfo());
+    }
 
     vertices.Append({{1.f, 1.f}, ToFColour(colour), {1.f, 1.f}, texIdx});
     vertices.Append({{1.f, -1.f}, ToFColour(colour), {1.f, 0.f}, texIdx});

@@ -19,7 +19,6 @@
 
 #include "Camera.h"
 #include "GameObject.h"
-#include "utils/collections/HeapArray.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -74,6 +73,7 @@ int main()
     Camera camera;
 
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
+    auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
 
     // Shader Declaration
 
@@ -117,6 +117,7 @@ int main()
     // Create shapes for use
     Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
                                                    GameObject(&cubeObjModel),
+                                                   GameObject(&cubeObjModel),
                                                    GameObject(&vaseObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
@@ -128,9 +129,14 @@ int main()
     objects3D[1].SetColour({128, 0, 0, 255});
     objects3D[1].SetRotationX(1.570796f);
 
-    objects3D[2].SetPosition({0.f, -1.f, 0.f});
-    objects3D[2].SetScale({2.f, 2.f, 2.f});
+    objects3D[2].SetPosition({0.f, -2.f, 3.f});
+    objects3D[2].SetScale({3.f, 2.f, 0.001f});
     objects3D[2].SetColour({128, 0, 0, 255});
+    objects3D[2].SetRotationX(0.f);
+
+    objects3D[3].SetPosition({0.f, -1.f, 0.f});
+    objects3D[3].SetScale({2.f, 2.f, 2.f});
+    objects3D[3].SetColour({128, 0, 0, 255});
 
     camera.SetPosition({0.f, -1.f, -2.5f});
 
@@ -175,9 +181,9 @@ int main()
         {
             GameObject obj = *it;
             Siege::Renderer3D::DrawModel(obj.GetModel(),
-                                     obj.GetPosition(),
-                                     obj.GetScale(),
-                                     obj.GetRotation());
+                                         obj.GetPosition(),
+                                         obj.GetScale(),
+                                         obj.GetRotation());
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
@@ -191,7 +197,19 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
-        Siege::Renderer2D::DrawQuad({0.f, -1.f}, {1.f, 1.f}, {255, 0, 0, 255}, 0.f, 1.f);
+        Siege::Renderer2D::DrawQuad({-1.95f, -1.5f},
+                                    {1.f, .5f},
+                                    {255, 255, 255, 255},
+                                    0.f,
+                                    2.95f,
+                                    &aryehthulu);
+        Siege::Renderer2D::DrawQuad({0.f, -1.5f}, {.5f, .5f}, {0, 255, 0, 255}, 0.f, 2.95f);
+        Siege::Renderer2D::DrawQuad({1.95f, -1.5f},
+                                    {1.f, 1.f},
+                                    {255, 255, 255, 255},
+                                    0.f,
+                                    2.95f,
+                                    &cappy);
 
         renderer.EndFrame();
     }

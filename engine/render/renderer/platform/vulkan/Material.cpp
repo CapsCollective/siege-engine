@@ -61,6 +61,7 @@ Material::Material(Shader vertShader, Shader fragShader) :
         properties.MForEachI([&](Property& prop, size_t j) {
             bindings.Append(
                 Descriptor::CreateLayoutBinding(j, prop.count, prop.type, prop.shaderStage));
+            prop.binding = j;
         });
 
         CC_ASSERT(Descriptor::CreateLayout(Vulkan::Context::GetVkLogicalDevice(),
@@ -148,6 +149,32 @@ void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* 
     }
 }
 
+void Material::SetTexture(Hash::StringId id, uint32_t index, const Texture2D::Info& textureInfo)
+{
+    auto& writeSets = writes[Renderer::GetCurrentFrameIndex()];
+    auto& descriptors = perFrameDescriptorSets[Renderer::GetCurrentFrameIndex()];
+
+    propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
+        auto& properties = slot.properties;
+        properties.MForEachI([&](Property& prop, size_t j) {
+            if (prop.id == id)
+            {
+                texture2DInfos[index] = {textureInfo.sampler,
+                                         textureInfo.imageInfo.view,
+                                         Utils::ToVkImageLayout(textureInfo.imageInfo.layout)};
+                writeSets[j] =
+                    Descriptor::WriteDescriptorImage(Utils::ToVkDescriptorType(prop.type),
+                                                     descriptors[i],
+                                                     texture2DInfos.Data(),
+                                                     prop.binding,
+                                                     prop.count,
+                                                     0);
+                return;
+            }
+        });
+    });
+}
+
 void Material::AddShader(const Shader& shader, uint64_t& offset)
 {
     using Utils::ShaderType;
@@ -169,7 +196,7 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
 
         properties.Append({
             uniform.id,
-            uniform.slot,
+            static_cast<uint32_t>(properties.Count()),
             uniform.count,
             offset,
             uniform.totalSize,
@@ -224,6 +251,7 @@ void Material::Recreate()
 
 void Material::Update()
 {
+    // TODO(Aryeh): Get this to only update sets which have been changed
     auto& targetSets = writes[Renderer::GetCurrentFrameIndex()];
 
     using Vulkan::Context;

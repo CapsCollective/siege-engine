@@ -19,6 +19,7 @@ namespace Siege::Vulkan
 class Texture2D
 {
 public:
+
     // Structs
 
     struct Info

@@ -78,6 +78,8 @@ public:
      */
     void SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data);
 
+    void SetTexture(Hash::StringId id, uint32_t index, const Texture2D::Info& textureInfo);
+
     /**
      * Binds the Material for rendering (also binds the stored Pipeline)
      * @param commandBuffer the command buffer being used to record rendering information
