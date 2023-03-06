@@ -77,7 +77,6 @@ void Renderer3D::Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& 
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
 
-    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
     lightRenderer.Render(commandBuffer, globalDataSize, &global3DData);
     debugRenderer.Render(commandBuffer, globalDataSize, &global3DData);
     billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData);
@@ -85,6 +84,8 @@ void Renderer3D::Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& 
 #ifdef ENABLE_GRID
     RenderGrid(commandBuffer, global3DData);
 #endif
+
+    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
 }
 
 void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour)
