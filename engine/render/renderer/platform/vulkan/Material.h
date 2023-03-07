@@ -84,7 +84,7 @@ public:
      * @param index
      * @param textureInfo
      */
-    void SetTexture(Hash::StringId id, uint32_t index, const Texture2D::Info& textureInfo);
+    void SetTexture(Hash::StringId id, uint32_t index, Texture2D* texture);
 
     /**
      * Binds the Material for rendering (also binds the stored Pipeline)
@@ -146,10 +146,8 @@ private:
         ::Siege::Utils::MSArray<Property, 10> properties;
     };
 
-    // TODO(Aryeh): Create the following utility functions:
-    // TODO(Aryeh): 1) FindProperty(Hash::StringId) -> bool
-
     int32_t FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot);
+    int32_t FindTextureIndex(Hash::StringId id);
 
     /**
      * Swaps the contents of two Materials
@@ -179,13 +177,16 @@ private:
 
     // TODO: Can probably bundle this into a struct?
     ::Siege::Utils::MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
-    ::Siege::Utils::MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfos;
 
+    // Descriptor set data
+    ::Siege::Utils::MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfos;
     ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>>
         perFrameDescriptorSets;
     ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>> writes;
 
+    // Texture data
     ::Siege::Utils::MSArray<VkDescriptorImageInfo, MAX_TEXTURES> texture2DInfos;
+    ::Siege::Utils::MSArray<Texture2D*, MAX_TEXTURES> textures;
 };
 } // namespace Siege::Vulkan
 

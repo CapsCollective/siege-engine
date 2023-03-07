@@ -23,7 +23,7 @@ Texture2D::Texture2D(const String& name)
 {
     LoadTexture(Constants::DEFAULT_TEXTURE_2D, Constants::DEFAULT_TEXTURE_SIZE, 16, 16);
 
-    VkSamplerCreateInfo samplerInfo = Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
+    VkSamplerCreateInfo samplerInfo = Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
 
     info = {image.GetInfo()};
 
@@ -37,7 +37,7 @@ Texture2D::Texture2D(const String& name, const String& filePath)
 {
     LoadFromFile(filePath);
 
-    VkSamplerCreateInfo samplerInfo = Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
+    VkSamplerCreateInfo samplerInfo = Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
 
     info = {image.GetInfo()};
 

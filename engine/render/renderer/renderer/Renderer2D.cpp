@@ -84,7 +84,7 @@ void Renderer2D::DrawQuad(const Siege::Vec2& position,
     {
         texIdx = textures.Count();
         textures.Append(targetTexture);
-        defaultMaterial.SetTexture(INTERN_STR("texture"), texIdx, targetTexture->GetInfo());
+        defaultMaterial.SetTexture(INTERN_STR("texture"), texIdx, targetTexture);
     }
 
     vertices.Append({{1.f, 1.f}, ToFColour(colour), {1.f, 1.f}, texIdx});

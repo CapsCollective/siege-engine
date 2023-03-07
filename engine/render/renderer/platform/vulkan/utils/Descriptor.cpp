@@ -8,33 +8,33 @@
 
 #include "Descriptor.h"
 
-namespace Siege
+namespace Siege::Vulkan::Utils::Descriptor
 {
-VkDescriptorSetLayoutBinding Descriptor::CreateLayoutBinding(uint32_t binding,
-                                                             uint32_t count,
-                                                             uint32_t type,
-                                                             VkShaderStageFlags stageFlags,
-                                                             const VkSampler* sampler)
+VkDescriptorSetLayoutBinding CreateLayoutBinding(uint32_t binding,
+                                                 uint32_t count,
+                                                 uint32_t type,
+                                                 VkShaderStageFlags stageFlags,
+                                                 const VkSampler* sampler)
 {
     return {binding, (VkDescriptorType) type, count, stageFlags, sampler};
 }
 
-bool Descriptor::CreateLayout(VkDevice device,
-                              VkDescriptorSetLayout& layout,
-                              VkDescriptorSetLayoutBinding* bindings,
-                              uint32_t bindingCount,
-                              VkDescriptorSetLayoutCreateFlags flags,
-                              const void* pNext)
+bool CreateLayout(VkDevice device,
+                  VkDescriptorSetLayout& layout,
+                  VkDescriptorSetLayoutBinding* bindings,
+                  uint32_t bindingCount,
+                  VkDescriptorSetLayoutCreateFlags flags,
+                  const void* pNext)
 {
     auto createInfo = CreateLayoutInfo(bindings, bindingCount, flags, pNext);
 
     return vkCreateDescriptorSetLayout(device, &createInfo, nullptr, &layout) == VK_SUCCESS;
 }
 
-VkDescriptorSetLayoutCreateInfo Descriptor::CreateLayoutInfo(VkDescriptorSetLayoutBinding* bindings,
-                                                             uint32_t bindingCount,
-                                                             VkDescriptorSetLayoutCreateFlags flags,
-                                                             const void* pNext)
+VkDescriptorSetLayoutCreateInfo CreateLayoutInfo(VkDescriptorSetLayoutBinding* bindings,
+                                                 uint32_t bindingCount,
+                                                 VkDescriptorSetLayoutCreateFlags flags,
+                                                 const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
             pNext,
@@ -43,41 +43,39 @@ VkDescriptorSetLayoutCreateInfo Descriptor::CreateLayoutInfo(VkDescriptorSetLayo
             bindings};
 }
 
-void Descriptor::AllocateSets(VkDevice device,
-                              VkDescriptorSet* descriptorSets,
-                              VkDescriptorPool descriptorPool,
-                              uint32_t setCount,
-                              const VkDescriptorSetLayout* layouts,
-                              const void* pNext)
+void AllocateSets(VkDevice device,
+                  VkDescriptorSet* descriptorSets,
+                  VkDescriptorPool descriptorPool,
+                  uint32_t setCount,
+                  const VkDescriptorSetLayout* layouts,
+                  const void* pNext)
 {
     auto allocateInfo = CreateAllocateInfo(descriptorPool, setCount, layouts, pNext);
 
     VkResult r = vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
 }
 
-VkDescriptorSetAllocateInfo Descriptor::CreateAllocateInfo(VkDescriptorPool pool,
-                                                           uint32_t setCount,
-                                                           const VkDescriptorSetLayout* layouts,
-                                                           const void* pNext)
+VkDescriptorSetAllocateInfo CreateAllocateInfo(VkDescriptorPool pool,
+                                               uint32_t setCount,
+                                               const VkDescriptorSetLayout* layouts,
+                                               const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, pNext, pool, setCount, layouts};
 }
 
-VkDescriptorBufferInfo Descriptor::CreateBufferInfo(VkBuffer buffer,
-                                                    VkDeviceSize offset,
-                                                    VkDeviceSize size)
+VkDescriptorBufferInfo CreateBufferInfo(VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size)
 {
     return {buffer, offset, size};
 }
 
-VkWriteDescriptorSet Descriptor::CreateWriteSet(uint32_t dstBinding,
-                                                VkDescriptorSet& dstSet,
-                                                uint32_t descriptorCount,
-                                                VkDescriptorType type,
-                                                const VkDescriptorBufferInfo* bufferInfo,
-                                                const VkDescriptorImageInfo* imageInfos,
-                                                const VkBufferView* texelBufferView,
-                                                const void* pNext)
+VkWriteDescriptorSet CreateWriteSet(uint32_t dstBinding,
+                                    VkDescriptorSet& dstSet,
+                                    uint32_t descriptorCount,
+                                    VkDescriptorType type,
+                                    const VkDescriptorBufferInfo* bufferInfo,
+                                    const VkDescriptorImageInfo* imageInfos,
+                                    const VkBufferView* texelBufferView,
+                                    const void* pNext)
 {
     return {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
             pNext,
@@ -91,21 +89,21 @@ VkWriteDescriptorSet Descriptor::CreateWriteSet(uint32_t dstBinding,
             texelBufferView};
 }
 
-void Descriptor::WriteSets(VkDevice device,
-                           const VkWriteDescriptorSet* sets,
-                           uint32_t setCount,
-                           const VkCopyDescriptorSet* copies,
-                           uint32_t copyCount)
+void WriteSets(VkDevice device,
+               const VkWriteDescriptorSet* sets,
+               uint32_t setCount,
+               const VkCopyDescriptorSet* copies,
+               uint32_t copyCount)
 {
     vkUpdateDescriptorSets(device, setCount, sets, copyCount, copies);
 }
 
-VkWriteDescriptorSet Descriptor::WriteDescriptorImage(VkDescriptorType type,
-                                                      VkDescriptorSet& dstSet,
-                                                      VkDescriptorImageInfo* imageInfo,
-                                                      uint32_t binding,
-                                                      uint32_t count,
-                                                      uint32_t index)
+VkWriteDescriptorSet WriteDescriptorImage(VkDescriptorType type,
+                                          VkDescriptorSet& dstSet,
+                                          VkDescriptorImageInfo* imageInfo,
+                                          uint32_t binding,
+                                          uint32_t count,
+                                          uint32_t index)
 {
     VkWriteDescriptorSet write = {};
     write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -121,8 +119,7 @@ VkWriteDescriptorSet Descriptor::WriteDescriptorImage(VkDescriptorType type,
     return write;
 }
 
-VkSamplerCreateInfo Descriptor::SamplerCreateInfo(VkFilter filters,
-                                                  VkSamplerAddressMode samplerAddressMode)
+VkSamplerCreateInfo SamplerCreateInfo(VkFilter filters, VkSamplerAddressMode samplerAddressMode)
 {
     VkSamplerCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -144,4 +141,4 @@ VkSamplerCreateInfo Descriptor::SamplerCreateInfo(VkFilter filters,
 
     return info;
 }
-} // namespace Siege
+} // namespace Siege::Vulkan::Utils::Descriptor
