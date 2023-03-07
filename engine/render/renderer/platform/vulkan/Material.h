@@ -149,7 +149,7 @@ private:
     // TODO(Aryeh): Create the following utility functions:
     // TODO(Aryeh): 1) FindProperty(Hash::StringId) -> bool
 
-    int32_t PropertyExists(Hash::StringId id, PropertiesSlot& slot);
+    int32_t FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot);
 
     /**
      * Swaps the contents of two Materials

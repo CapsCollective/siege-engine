@@ -133,19 +133,15 @@ Material& Material::operator=(Material&& other)
 
 void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data)
 {
-    // TODO: Clean this up.
     for (auto it = propertiesSlots.CreateIterator(); it; ++it)
     {
         auto slot = *it;
-        for (auto slotIt = slot.properties.CreateIterator(); slotIt; ++slotIt)
-        {
-            auto prop = *slotIt;
-            if (prop.id == id)
-            {
-                Buffer::CopyData(buffer, dataSize, data, prop.offset);
-                return;
-            }
-        }
+
+        auto propertyIndex = FindPropertyIndex(id, slot);
+
+        if (propertyIndex == -1) return;
+
+        Buffer::CopyData(buffer, dataSize, data, slot.properties[propertyIndex].offset);
     }
 }
 
@@ -156,7 +152,7 @@ void Material::SetTexture(Hash::StringId id, uint32_t index, const Texture2D::In
 
     propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
         auto& properties = slot.properties;
-        auto propIdx = PropertyExists(id, slot);
+        auto propIdx = FindPropertyIndex(id, slot);
 
         if (propIdx == -1) return;
 
@@ -186,15 +182,16 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
     {
         auto uniform = *it;
         if (uniform.set >= propertiesSlots.Count()) propertiesSlots.Append({});
+
+        int32_t propertyIndex = FindPropertyIndex(uniform.id, propertiesSlots[uniform.set]);
         auto& properties = propertiesSlots[uniform.set].properties;
 
-        properties.ForEach([&](Property& prop) {
-            if (prop.id == uniform.id)
-            {
-                prop.shaderStage = (ShaderType) (prop.shaderStage | shader.GetShaderType());
-                return;
-            }
-        });
+        if (propertyIndex > -1)
+        {
+            auto& prop = properties[propertyIndex];
+            prop.shaderStage = (ShaderType) (prop.shaderStage | shader.GetShaderType());
+            return;
+        }
 
         properties.Append({
             uniform.id,
@@ -255,7 +252,6 @@ void Material::Update()
 {
     auto currentFrameIdx = Renderer::GetCurrentFrameIndex();
 
-    // TODO(Aryeh): Get this to only update sets which have been changed
     auto& targetSets = writes[currentFrameIdx];
 
     using Vulkan::Context;
@@ -268,16 +264,12 @@ void Material::Update()
 void Material::Update(Hash::StringId id)
 {
     propertiesSlots.ForEachI([&](PropertiesSlot& slot, size_t i) {
-        auto& properties = slot.properties;
+        auto propertyIndex = FindPropertyIndex(id, slot);
 
-        properties.ForEachI([&](Property& prop, size_t j) {
-            if (prop.id == id)
-            {
-                auto& setsToWrite = writes[Renderer::GetCurrentFrameIndex()];
-                Descriptor::WriteSets(Context::GetVkLogicalDevice(), &setsToWrite[j], 1);
-                return;
-            }
-        });
+        if (propertyIndex == -1) return;
+
+        auto& setsToWrite = writes[Renderer::GetCurrentFrameIndex()];
+        Descriptor::WriteSets(Context::GetVkLogicalDevice(), &setsToWrite[propertyIndex], 1);
     });
 }
 
@@ -312,9 +304,9 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
     });
 }
 
-int32_t Material::PropertyExists(Hash::StringId id, PropertiesSlot& slot)
+int32_t Material::FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot)
 {
-    uint32_t foundIdx {0};
+    int32_t foundIdx {-1};
     slot.properties.MForEachI([&](Property& property, size_t i){
         if (property.id == id)
         {
