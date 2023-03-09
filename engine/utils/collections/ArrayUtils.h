@@ -18,6 +18,8 @@
 #include <initializer_list>
 #include <utility>
 
+#define LAMBDA(...) [&](__VA_ARGS__)
+
 namespace Siege
 {
 class ArrayUtils

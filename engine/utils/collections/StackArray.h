@@ -14,6 +14,10 @@
 #include "BitSet.h"
 #include "Iterators.h"
 
+#define MSA(type, count) Siege::MSArray<type, count>
+#define MSA_IT(type, count, name) LAMBDA(MSA(type, count)& name)
+#define MSA_IT_I(type, count, name, idxName) LAMBDA(MSA(type, count)& name, size_t idxName)
+
 namespace Siege
 {
 /**
