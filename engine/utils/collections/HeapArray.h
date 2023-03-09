@@ -14,7 +14,7 @@
 #include "BitSet.h"
 #include "Iterators.h"
 
-namespace Siege::Utils
+namespace Siege
 {
 /**
  * @brief The HeapArray is a managed heap-allocated array type. The HeapArray is intended to be
@@ -323,7 +323,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<MHArray<T>, T> CreateIterator()
+    inline MIter<MHArray<T>, T> CreateIterator()
     {
         return {this};
     }
@@ -334,7 +334,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::CMIter<MHArray<T>, T> CreateIterator() const
+    inline CMIter<MHArray<T>, T> CreateIterator() const
     {
         return {this};
     }
@@ -345,7 +345,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    inline Utils::ConstIter<MHArray<T>, T> CreateFIterator() const
+    inline ConstIter<MHArray<T>, T> CreateFIterator() const
     {
         return {this};
     }
@@ -356,7 +356,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    inline Utils::Iter<MHArray<T>, T> CreateFIterator()
+    inline Iter<MHArray<T>, T> CreateFIterator()
     {
         return {this};
     }
@@ -583,6 +583,6 @@ private:
     T* data {nullptr};
 };
 
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_HEAP_ARRAY_H

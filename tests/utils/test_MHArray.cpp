@@ -11,7 +11,7 @@
 
 #include <utility>
 
-using Siege::Utils::MHArray;
+using Siege::MHArray;
 
 UTEST(test_HeapArray, CreateEmptyHeapArray)
 {
@@ -43,7 +43,7 @@ UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
 UTEST(test_MSArray, CreateHeapArrayFromRawArray)
 {
     uint32_t values[] = {1, 2, 3, 4};
-    Siege::Utils::MHArray<uint32_t> array(values, 4);
+    Siege::MHArray<uint32_t> array(values, 4);
 
     ASSERT_EQ(array.Count(), 4);
     ASSERT_EQ(array.Size(), 4);

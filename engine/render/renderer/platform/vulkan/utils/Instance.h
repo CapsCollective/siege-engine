@@ -41,8 +41,8 @@ VkInstance CreateInstance(VkApplicationInfo appInfo,
                           const char* const* layers,
                           VkDebugUtilsMessengerCreateInfoEXT* debugUils = nullptr);
 
-Siege::Utils::MHArray<VkLayerProperties> GetInstanceLayerProperties();
-Siege::Utils::MHArray<VkExtensionProperties> GetInstanceExtensionProperties();
+Siege::MHArray<VkLayerProperties> GetInstanceLayerProperties();
+Siege::MHArray<VkExtensionProperties> GetInstanceExtensionProperties();
 } // namespace Siege::Vulkan::VulkanInstance
 
 #endif // SIEGE_ENGINE_VULKAN_INSTANCE_H

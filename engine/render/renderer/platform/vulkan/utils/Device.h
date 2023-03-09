@@ -127,11 +127,11 @@ public:
         static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkPhysicalDevice device,
                                                                VkSurfaceKHR surface);
 
-        static Siege::Utils::MHArray<VkSurfaceFormatKHR> GetSurfaceFormats(VkPhysicalDevice device,
-                                                                           VkSurfaceKHR surface);
+        static Siege::MHArray<VkSurfaceFormatKHR> GetSurfaceFormats(VkPhysicalDevice device,
+                                                                    VkSurfaceKHR surface);
 
-        static Siege::Utils::MHArray<VkPresentModeKHR> GetPresentModes(VkPhysicalDevice device,
-                                                                       VkSurfaceKHR surface);
+        static Siege::MHArray<VkPresentModeKHR> GetPresentModes(VkPhysicalDevice device,
+                                                                VkSurfaceKHR surface);
 
         static uint32_t FindMemoryType(VkPhysicalDevice device,
                                        uint32_t typeFilter,
@@ -158,7 +158,7 @@ public:
 
         static VkPhysicalDeviceProperties GetDeviceProperties(VkPhysicalDevice device);
 
-        static Siege::Utils::MHArray<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(
+        static Siege::MHArray<VkQueueFamilyProperties> GetDeviceQueueFamilyIndices(
             VkPhysicalDevice device);
 
         static int32_t GetMatchingQueueFamilyIndex(VkPhysicalDevice device,

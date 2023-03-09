@@ -104,7 +104,7 @@ public:
          * @param layouts an array of descriptor set layouts for the pipeline
          * @return a reference to the current builder instance
          */
-        Builder& WithProperties(const ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10>& layouts);
+        Builder& WithProperties(const MSArray<VkDescriptorSetLayout, 10>& layouts);
 
         /**
          * Builds a new graphics Pipeline and returns the newly created instance
@@ -115,8 +115,8 @@ public:
         const Shader* vertexShader;
         const Shader* fragmentShader;
 
-        ::Siege::Utils::MSArray<DynamicState, 2> dynamicStates;
-        ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> descriptorLayouts;
+        MSArray<DynamicState, 2> dynamicStates;
+        MSArray<VkDescriptorSetLayout, 10> descriptorLayouts;
 
         Utils::PipelineTopology topology {Utils::TOPOLOGY_TRIANGLE_LIST};
         PipelineFillMode fillMode {PipelineFillMode::FILL_MODE_FILL};
@@ -167,8 +167,7 @@ public:
      * @param commandBuffer the commandBuffer being recorded. Must be active for rendering
      */
     void Bind(const CommandBuffer& commandBuffer);
-    void BindSets(const CommandBuffer& commandBuffer,
-                  ::Siege::Utils::MSArray<VkDescriptorSet, 2> sets);
+    void BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptorSet, 2> sets);
 
 private:
 

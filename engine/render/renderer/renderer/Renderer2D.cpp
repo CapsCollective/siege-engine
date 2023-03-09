@@ -15,13 +15,12 @@ namespace Siege
 Hash::StringId Renderer2D::transformId;
 Hash::StringId Renderer2D::globalDataId;
 
-Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
-Utils::MSArray<uint32_t, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::INDICES_PER_QUAD>
+MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
+MSArray<uint32_t, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::INDICES_PER_QUAD>
     Renderer2D::indices;
-Utils::MSArray<Renderer2D::QuadVertex,
-               Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::VERTICES_PER_QUAD>
+MSArray<Renderer2D::QuadVertex, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::VERTICES_PER_QUAD>
     Renderer2D::vertices;
-Utils::MSArray<Vulkan::Texture2D*, Renderer2D::MAX_TEXTURES> Renderer2D::textures;
+MSArray<Vulkan::Texture2D*, Renderer2D::MAX_TEXTURES> Renderer2D::textures;
 
 Model Renderer2D::quadModel;
 Vulkan::Material Renderer2D::defaultMaterial;

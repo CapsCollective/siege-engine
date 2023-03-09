@@ -48,7 +48,7 @@ Pipeline::Builder& Pipeline::Builder::WithFragmentShader(const Shader* fragShade
 }
 
 Pipeline::Builder& Pipeline::Builder::WithProperties(
-    const ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10>& layouts)
+    const MSArray<VkDescriptorSetLayout, 10>& layouts)
 {
     descriptorLayouts = layouts;
     return *this;
@@ -74,7 +74,7 @@ Pipeline Pipeline::Builder::Build()
 
     // Get shader number and their stages.
 
-    ::Siege::Utils::MSArray<VkPipelineShaderStageCreateInfo, 5> shaderStages {
+    MSArray<VkPipelineShaderStageCreateInfo, 5> shaderStages {
         CreateVertexShaderStage(vertexShader->GetShaderModule()),
         CreateFragmentShaderStage(fragmentShader->GetShaderModule()),
     };
@@ -165,8 +165,7 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
     vkCmdBindPipeline(commandBuffer.Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 }
 
-void Pipeline::BindSets(const CommandBuffer& commandBuffer,
-                        ::Siege::Utils::MSArray<VkDescriptorSet, 2> sets)
+void Pipeline::BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptorSet, 2> sets)
 {
     vkCmdBindDescriptorSets(commandBuffer.Get(),
                             VK_PIPELINE_BIND_POINT_GRAPHICS,

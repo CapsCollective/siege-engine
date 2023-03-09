@@ -11,7 +11,7 @@
 #define SIEGE_ENGINE_ITERATORS_H
 
 #include <cstddef>
-namespace Siege::Utils
+namespace Siege
 {
 /**
  * A standard linear iterator. This iterator always iterates over every element of the array
@@ -380,6 +380,6 @@ private:
     size_t index {0};
     const A* ptr {nullptr};
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ITERATORS_H

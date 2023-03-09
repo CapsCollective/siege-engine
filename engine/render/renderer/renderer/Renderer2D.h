@@ -58,10 +58,10 @@ private:
     static Hash::StringId transformId;
     static Hash::StringId globalDataId;
 
-    static Utils::MSArray<QuadVertex, MAX_OBJECT_TRANSFORMS * VERTICES_PER_QUAD> vertices;
-    static Utils::MSArray<uint32_t, MAX_OBJECT_TRANSFORMS * INDICES_PER_QUAD> indices;
-    static Utils::MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static Utils::MSArray<Vulkan::Texture2D*, MAX_TEXTURES> textures;
+    static MSArray<QuadVertex, MAX_OBJECT_TRANSFORMS * VERTICES_PER_QUAD> vertices;
+    static MSArray<uint32_t, MAX_OBJECT_TRANSFORMS * INDICES_PER_QUAD> indices;
+    static MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static MSArray<Vulkan::Texture2D*, MAX_TEXTURES> textures;
 
     static Vulkan::Texture2D defaultTexture;
     static Vulkan::Material defaultMaterial;

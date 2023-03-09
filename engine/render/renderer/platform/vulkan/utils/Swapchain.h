@@ -52,9 +52,8 @@ struct SwapchainBuilder
     VkSwapchainKHR oldSwapchain {VK_NULL_HANDLE};
 };
 
-VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
-    const ::Siege::Utils::MHArray<VkSurfaceFormatKHR>& formats);
-VkPresentModeKHR ChoosePresentMode(const ::Siege::Utils::MHArray<VkPresentModeKHR>& presentModes);
+VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const MHArray<VkSurfaceFormatKHR>& formats);
+VkPresentModeKHR ChoosePresentMode(const MHArray<VkPresentModeKHR>& presentModes);
 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
                             const VkExtent2D& windowExtent);
 } // namespace Siege::Vulkan::Utils

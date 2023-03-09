@@ -13,7 +13,7 @@
 
 #include "utils/collections/StackArray.h"
 
-using Siege::Utils::MSArray;
+using Siege::MSArray;
 
 UTEST(test_MSArray, CreateEmptyMSArray)
 {

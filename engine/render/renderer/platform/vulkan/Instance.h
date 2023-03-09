@@ -19,7 +19,7 @@ class Instance
 {
 public:
 
-    typedef Siege::Utils::MHArray<const char*> (*surfaceCallback)(void);
+    typedef Siege::MHArray<const char*> (*surfaceCallback)(void);
     typedef surfaceCallback GetSurfaceExtensionsCallback;
 
     Instance() = default;
@@ -36,12 +36,11 @@ public:
 
 private:
 
-    void CreateInstance(const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions);
+    void CreateInstance(const Siege::MHArray<const char*>& requiredSurfaceExtensions);
     void SetupDebugMessenger();
 
     bool ValidateLayersExist();
-    void CheckInstanceExtensionsExist(
-        const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions);
+    void CheckInstanceExtensionsExist(const Siege::MHArray<const char*>& requiredSurfaceExtensions);
 
     void Move(Instance& other);
     void DestroyDependentObjects();

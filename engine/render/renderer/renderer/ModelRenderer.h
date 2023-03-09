@@ -42,8 +42,8 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId transformId;
 
-    Utils::MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-    Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
+    MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Vulkan::Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};

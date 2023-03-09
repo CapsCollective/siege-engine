@@ -12,8 +12,7 @@
 
 namespace Siege::Vulkan::Utils::Pipeline
 {
-VkPipelineLayout CreatePipelineLayout(VkDevice device,
-                                      ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts)
+VkPipelineLayout CreatePipelineLayout(VkDevice device, MSArray<VkDescriptorSetLayout, 10> layouts)
 {
     auto createInfo = defaultPipelineLayoutCreateInfo;
     createInfo.setLayoutCount = layouts.Count();

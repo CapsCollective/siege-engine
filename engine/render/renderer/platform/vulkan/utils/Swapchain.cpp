@@ -147,8 +147,7 @@ VkSwapchainKHR SwapchainBuilder::Build()
     return swapchain;
 }
 
-VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
-    const ::Siege::Utils::MHArray<VkSurfaceFormatKHR>& formats)
+VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const MHArray<VkSurfaceFormatKHR>& formats)
 {
     // Ideally, we want to support colors in 4 dimensional vectors (R, G, B, A) in SRGB colour
     // space.
@@ -164,7 +163,7 @@ VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
     return formats[0];
 }
 
-VkPresentModeKHR ChoosePresentMode(const ::Siege::Utils::MHArray<VkPresentModeKHR>& presentModes)
+VkPresentModeKHR ChoosePresentMode(const MHArray<VkPresentModeKHR>& presentModes)
 {
     for (auto it = presentModes.CreateFIterator(); it; ++it)
     {

@@ -29,7 +29,7 @@ void Framebuffer::DestroyFramebuffer(VkDevice const& device)
 
 void Framebuffer::Initialise(const Framebuffer::Config& config, const VkDevice& device)
 {
-    framebuffers = Utils::MHArray<VkFramebuffer>(IMAGE_COUNT);
+    framebuffers = MHArray<VkFramebuffer>(IMAGE_COUNT);
 
     auto* colorAttachments = config.GetColorAttachments();
     auto* depthAttachments = config.GetDepthAttachments();

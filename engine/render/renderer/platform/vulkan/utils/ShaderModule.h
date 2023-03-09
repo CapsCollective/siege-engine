@@ -19,7 +19,7 @@ namespace Siege::Vulkan::Utils::Shader
  * @param binary an array of bytes
  * @return a newly created VkShaderModule
  */
-VkShaderModule CreateShaderModule(::Siege::Utils::MHArray<char> binary);
+VkShaderModule CreateShaderModule(MHArray<char> binary);
 
 /**
  * Destroys a Vulkan ShaderModule object

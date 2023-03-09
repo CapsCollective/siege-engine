@@ -14,7 +14,7 @@
 #include "BitSet.h"
 #include "Iterators.h"
 
-namespace Siege::Utils
+namespace Siege
 {
 /**
  * The Array (StackArray) is a simple wrapper around C arrays which adds some convenience (such
@@ -145,7 +145,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::Iter<SArray<T, S>, T> CreateIterator()
+    constexpr inline Iter<SArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -155,7 +155,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::ConstIter<SArray<T, S>, T> CreateIterator() const
+    constexpr inline ConstIter<SArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -459,7 +459,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<MSArray<T, S>, T> CreateIterator()
+    inline MIter<MSArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -470,7 +470,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::CMIter<MSArray<T, S>, T> CreateIterator() const
+    inline CMIter<MSArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -481,7 +481,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    Utils::Iter<MSArray<T, S>, T> CreateFIterator()
+    Iter<MSArray<T, S>, T> CreateFIterator()
     {
         return {this};
     }
@@ -492,7 +492,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::ConstIter<MSArray<T, S>, T> CreateFIterator() const
+    inline ConstIter<MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
     }
@@ -641,6 +641,6 @@ private:
     BitUtils::SBitSet<(S / BitUtils::BYTE_SIZE_IN_BITS) + 1> bitField;
     size_t count {0};
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_STACK_ARRAY_H

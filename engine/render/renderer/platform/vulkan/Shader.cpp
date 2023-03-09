@@ -140,8 +140,8 @@ Shader::Shader(const Shader& other) :
 Shader::Shader(const String& filePath,
                Utils::ShaderType type,
                Utils::PipelineTopology expectedTopology,
-               ::Siege::Utils::MSArray<Uniform, 10> uniforms,
-               ::Siege::Utils::MSArray<VertexBinding, 5> vertices,
+               MSArray<Uniform, 10> uniforms,
+               MSArray<VertexBinding, 5> vertices,
                Texture2D::Info tex2DInfo,
                size_t totalSize,
                uint32_t totalVertexAttributes) :
@@ -167,7 +167,7 @@ void Shader::Destroy()
     Utils::Shader::DestroyShaderModule(shaderModule);
 }
 
-::Siege::Utils::MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
+MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
@@ -178,7 +178,7 @@ void Shader::Destroy()
     // the file stream is reading from (which presumably is at the end of the file).
     uint32_t size = static_cast<uint32_t>(file.tellg());
 
-    ::Siege::Utils::MHArray<char> buffer(size);
+    MHArray<char> buffer(size);
 
     // Move to the beginning of the file.
     file.seekg(0);

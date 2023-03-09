@@ -13,7 +13,7 @@
 
 #include "../Branchless.h"
 
-namespace Siege::Utils
+namespace Siege
 {
 void ArrayUtils::AssertIsInBounds(const unsigned long& index, const unsigned long& size)
 {
@@ -28,4 +28,4 @@ unsigned long ArrayUtils::SetCount(const unsigned long& size,
     return IF(size <= max THEN IF(size > 0 THEN size ELSE 0) ELSE max);
 }
 
-} // namespace Siege::Utils
+} // namespace Siege

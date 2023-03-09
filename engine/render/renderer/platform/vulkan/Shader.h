@@ -97,7 +97,7 @@ public:
         VertexBinding& AddU32Attribute();
 
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
-        ::Siege::Utils::MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
         uint32_t stride {0};
     };
 
@@ -248,8 +248,8 @@ public:
         String filePath {""};
         Utils::PipelineTopology expectedTopology {Utils::PipelineTopology::TOPOLOGY_TRIANGLE_LIST};
         Utils::ShaderType type {Utils::ALL_GRAPHICS};
-        ::Siege::Utils::MSArray<Uniform, 10> uniforms;
-        ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+        MSArray<Uniform, 10> uniforms;
+        MSArray<VertexBinding, 5> vertexBindings;
         Texture2D::Info defaultTextureInfo;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
@@ -280,8 +280,8 @@ public:
     Shader(const String& filePath,
            Utils::ShaderType type,
            Utils::PipelineTopology expectedTopology,
-           ::Siege::Utils::MSArray<Uniform, 10> uniforms,
-           ::Siege::Utils::MSArray<VertexBinding, 5> vertices,
+           MSArray<Uniform, 10> uniforms,
+           MSArray<VertexBinding, 5> vertices,
            Texture2D::Info tex2DInfo,
            size_t totalSize,
            uint32_t totalVertexAttributes);
@@ -302,7 +302,7 @@ public:
 
     void Destroy();
 
-    static ::Siege::Utils::MHArray<char> ReadFileAsBinary(const String& filePath);
+    static MHArray<char> ReadFileAsBinary(const String& filePath);
 
     /**
      * A move assignment operator
@@ -339,12 +339,12 @@ public:
      * Returns all vertex bindings held by the Shader
      * @return a StackArray containing all VertexBindings
      */
-    inline const ::Siege::Utils::MSArray<VertexBinding, 5>& GetVertexBindings() const
+    inline const MSArray<VertexBinding, 5>& GetVertexBindings() const
     {
         return vertexBindings;
     }
 
-    inline const ::Siege::Utils::MSArray<Uniform, 10>& GetUniforms() const
+    inline const MSArray<Uniform, 10>& GetUniforms() const
     {
         return expectedUniforms;
     }
@@ -413,8 +413,8 @@ private:
     Utils::ShaderType type {Utils::ShaderType::EMPTY};
     Utils::PipelineTopology expectedTopology {Utils::PipelineTopology::TOPOLOGY_TRIANGLE_LIST};
     VkShaderModule shaderModule {nullptr};
-    ::Siege::Utils::MSArray<Uniform, 10> expectedUniforms;
-    ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+    MSArray<Uniform, 10> expectedUniforms;
+    MSArray<VertexBinding, 5> vertexBindings;
     Texture2D::Info defaultTextureInfo {};
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};

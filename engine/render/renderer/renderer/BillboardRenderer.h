@@ -56,9 +56,9 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId positionsId;
 
-    Utils::MSArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
-    Utils::MSArray<uint32_t, Mesh::MAX_INDICES> indices;
-    Utils::MSArray<BillboardUBO, 1000> positions;
+    MSArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
+    MSArray<uint32_t, Mesh::MAX_INDICES> indices;
+    MSArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege
 

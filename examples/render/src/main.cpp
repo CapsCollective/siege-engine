@@ -115,10 +115,10 @@ int main()
     vaseObjModel.SetMaterial(&testMaterial);
 
     // Create shapes for use
-    Siege::Utils::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
-                                                   GameObject(&cubeObjModel),
-                                                   GameObject(&cubeObjModel),
-                                                   GameObject(&vaseObjModel)};
+    Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
+                                            GameObject(&cubeObjModel),
+                                            GameObject(&cubeObjModel),
+                                            GameObject(&vaseObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});
