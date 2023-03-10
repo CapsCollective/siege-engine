@@ -15,8 +15,8 @@
 #include "Iterators.h"
 
 #define MSA(type, count) Siege::MSArray<type, count>
-#define MSA_IT(type, count, name) LAMBDA(MSA(type, count)& name)
-#define MSA_IT_I(type, count, name, idxName) LAMBDA(MSA(type, count)& name, size_t idxName)
+#define MSA_IT(type, count, name) LAMBDA(MSA(type, count) & name)
+#define MSA_IT_I(type, count, name, idxName) LAMBDA(MSA(type, count) & name, size_t idxName)
 
 namespace Siege
 {
@@ -501,6 +501,12 @@ public:
         return {this};
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -513,6 +519,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -524,6 +536,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -536,6 +554,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -547,6 +571,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -559,6 +589,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -570,6 +606,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -582,6 +624,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -591,6 +639,24 @@ public:
         {
             func(*it);
         }
+    }
+
+    /**
+     * Returns the element in the MSArray
+     * @return the last element in the array
+     */
+    inline const T& Back() const
+    {
+        return data[bitField.LeftMostBit() - 1];
+    }
+
+    /**
+     * Returns the element in the MSArray
+     * @return the last element in the array
+     */
+    inline T& Back()
+    {
+        return data[bitField.LeftMostBit() - 1];
     }
 
 private:

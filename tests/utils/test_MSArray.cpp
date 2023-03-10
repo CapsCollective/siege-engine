@@ -886,3 +886,13 @@ UTEST(test_MSArray, IterateOverEmptyArrayWithManagedFunctionAndIndex)
 
     ASSERT_EQ(0, iterations);
 }
+
+UTEST(test_MSArray, GetItemAtBackOfMSArray)
+{
+    MSArray<uint32_t, 5> arrayA {0, 1, 2, 3, 4};
+    const MSArray<uint32_t, 5> arrayB {0, 1, 2, 3, 4};
+
+    ASSERT_EQ(4, arrayA.Back());
+
+    ASSERT_EQ(4, arrayB.Back());
+}

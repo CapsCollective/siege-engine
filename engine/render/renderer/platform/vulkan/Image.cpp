@@ -103,6 +103,8 @@ void Image::Free()
 {
     auto device = Context::GetCurrentDevice()->GetDevice();
 
+    if (device == nullptr) return;
+
     vkDestroyImageView(device, info.view, nullptr);
 
     if (HasInfo())

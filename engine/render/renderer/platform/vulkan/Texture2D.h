@@ -9,16 +9,16 @@
 #ifndef SIEGE_ENGINE_TEXTURE2D_H
 #define SIEGE_ENGINE_TEXTURE2D_H
 
+#include <utils/String.h>
+
 #include "Image.h"
 #include "utils/Types.h"
-
-#include <utils/String.h>
 
 namespace Siege::Vulkan
 {
 /**
- * The Texture2D class represents a texture which is intended to wrap over a 2D primitive (typically)
- * a quad.This is the primary texture type used for 2D operations
+ * The Texture2D class represents a texture which is intended to wrap over a 2D primitive
+ * (typically) a quad.This is the primary texture type used for 2D operations
  */
 class Texture2D
 {

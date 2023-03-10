@@ -831,3 +831,13 @@ UTEST(test_MHArray, IterateOverEmptyArrayWithManagedFunctionAndIndex)
 
     ASSERT_EQ(0, iterations);
 }
+
+UTEST(test_MHArray, GetItemAtBackOfMHArray)
+{
+    MHArray<uint32_t> arrayA {0, 1, 2, 3, 4};
+    const MHArray<uint32_t> arrayB {0, 1, 2, 3, 4};
+
+    ASSERT_EQ(4, arrayA.Back());
+
+    ASSERT_EQ(4, arrayB.Back());
+}

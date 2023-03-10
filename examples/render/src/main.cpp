@@ -35,29 +35,6 @@
 static const constexpr int WIDTH = 800;
 static const constexpr int HEIGHT = 600;
 
-Siege::Vertex2D triangleVerts[] = {{{0.f, -1.f}, {1.f, 0.f, 0.f, 1.f}},
-                                   {{1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}},
-                                   {{-1.f, 1.f}, {0.f, 0.f, 1.f, 1.f}}};
-
-Siege::Mesh::MeshData triangleMeshData {
-    sizeof(Siege::Vertex2D),
-    triangleVerts, // Vertex array
-    3, // 3 vertices
-    0, // no indices
-    0 // no indices specified
-};
-
-Siege::Vertex2D squareVerts[] = {
-    {{1.f, 1.f}, {1.f, 0.f, 0.f, 1.f}}, // top right
-    {{1.f, -1.f}, {1.f, 0.f, 0.f, 1.f}}, // bottom right
-    {{-1.f, -1.f}, {1.f, 0.f, 0.f, 1.f}}, // bottom left
-    {{-1.f, 1.f}, {1.f, 0.f, 0.f, 1.f}}, // top left
-};
-
-uint32_t squareIndices[] = {0, 1, 3, 1, 2, 3};
-
-Siege::Mesh::MeshData squareMeshData {sizeof(Siege::Vertex2D), squareVerts, 4, squareIndices, 6};
-
 int main()
 {
     WINDOWS_ATTACH_CONSOLE
@@ -97,11 +74,6 @@ int main()
                                     .Build());
 
     // Generate models
-
-    // Generating models from raw vertices
-
-    Siege::Model triangleModel(triangleMeshData);
-    Siege::Model squareModel(squareMeshData);
 
     // Load textures
 

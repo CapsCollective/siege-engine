@@ -33,6 +33,8 @@ namespace Siege::Vulkan
  * @param bufferInfos an array holding buffer access information
  * @param writes an array holding uniform update structs. These are cached to avoid potentially
  * remaking every them every frame
+ * @param texture2DInfos a list of texture 2D rendering infos used in textures
+ * @param textureIds a list of texture IDs (used for checking the existence of textures)
  */
 class Material
 {
@@ -84,7 +86,7 @@ public:
      * @param index
      * @param textureInfo
      */
-    void SetTexture(Hash::StringId id, uint32_t index, Texture2D* texture);
+    uint32_t SetTexture(Hash::StringId id, Texture2D* texture);
 
     /**
      * Binds the Material for rendering (also binds the stored Pipeline)
@@ -224,6 +226,26 @@ private:
         return type == Utils::TEXTURE2D;
     }
 
+    /**
+     * Checks if a descriptor is a uniform
+     * @param type the property's type
+     * @return true if the type is a Texture2D, false if it isn't
+     */
+    inline bool IsUniform(Utils::UniformType type)
+    {
+        return type == Utils::UNIFORM;
+    }
+
+    /**
+     * Checks if a descriptor is a storage uniform
+     * @param type the property's type
+     * @return true if the type is a Texture2D, false if it isn't
+     */
+    inline bool IsStorage(Utils::UniformType type)
+    {
+        return type == Utils::STORAGE;
+    }
+
     Pipeline graphicsPipeline;
 
     Shader vertexShader;
@@ -232,7 +254,6 @@ private:
     uint64_t bufferSize {0};
     Buffer::Buffer buffer;
 
-    // TODO: Can probably bundle this into a struct?
     MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
 
     // Descriptor set data

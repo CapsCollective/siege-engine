@@ -20,7 +20,6 @@ MSArray<uint32_t, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::INDICES_PER_QU
     Renderer2D::indices;
 MSArray<Renderer2D::QuadVertex, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::VERTICES_PER_QUAD>
     Renderer2D::vertices;
-MSArray<Vulkan::Texture2D*, Renderer2D::MAX_TEXTURES> Renderer2D::textures;
 
 Model Renderer2D::quadModel;
 Vulkan::Material Renderer2D::defaultMaterial;
@@ -66,30 +65,12 @@ void Renderer2D::DrawQuad(const Siege::Vec2& position,
 {
     auto targetTexture = texture == nullptr ? &defaultTexture : texture;
 
-    uint32_t texIdx = 0;
-    bool found = false;
+    auto texIndex = defaultMaterial.SetTexture(INTERN_STR("texture"), targetTexture);
 
-    // TODO(Aryeh): Would be nice if we had a cleaner way of searching for these textures
-    textures.MForEachI([&](Vulkan::Texture2D* tex, size_t i) {
-        if (tex->GetId() == targetTexture->GetId())
-        {
-            texIdx = i;
-            found = true;
-            return;
-        }
-    });
-
-    if (!found)
-    {
-        texIdx = textures.Count();
-        textures.Append(targetTexture);
-        defaultMaterial.SetTexture(INTERN_STR("texture"), texIdx, targetTexture);
-    }
-
-    vertices.Append({{1.f, 1.f}, ToFColour(colour), {1.f, 1.f}, texIdx});
-    vertices.Append({{1.f, -1.f}, ToFColour(colour), {1.f, 0.f}, texIdx});
-    vertices.Append({{-1.f, -1.f}, ToFColour(colour), {0.f, 0.f}, texIdx});
-    vertices.Append({{-1.f, 1.f}, ToFColour(colour), {0.f, 1.f}, texIdx});
+    vertices.Append({{1.f, 1.f}, ToFColour(colour), {1.f, 1.f}, texIndex});
+    vertices.Append({{1.f, -1.f}, ToFColour(colour), {1.f, 0.f}, texIndex});
+    vertices.Append({{-1.f, -1.f}, ToFColour(colour), {0.f, 0.f}, texIndex});
+    vertices.Append({{-1.f, 1.f}, ToFColour(colour), {0.f, 1.f}, texIndex});
 
     // Pattern: 0, 1, 3, 1, 2, 3
     indices.Append(vertices.Count() - 4);
@@ -135,8 +116,8 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalD
 void Renderer2D::DestroyRenderer2D()
 {
     quadModel.DestroyModel();
-    defaultTexture.~Texture2D();
-    defaultMaterial.~Material();
+    defaultTexture.Free();
+    defaultMaterial.Destroy();
 }
 
 void Renderer2D::Flush()
@@ -144,7 +125,6 @@ void Renderer2D::Flush()
     transforms.Clear();
     vertices.Clear();
     indices.Clear();
-    textures.Clear();
 }
 
 void Renderer2D::Update()

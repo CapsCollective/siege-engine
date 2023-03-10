@@ -86,7 +86,7 @@ Model::Model(const String& filePath)
 
 Model::Model() {}
 
-// Destroy the vertex buffer and free the memory
+// Free the vertex buffer and free the memory
 Model::~Model() {}
 
 void Model::DestroyModel()

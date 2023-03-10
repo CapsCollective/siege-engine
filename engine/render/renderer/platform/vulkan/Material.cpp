@@ -8,6 +8,7 @@
 
 #include "Material.h"
 
+#include <utils/Branchless.h>
 #include <utils/Logging.h>
 
 #include <utility>
@@ -28,6 +29,8 @@ Material::Material(Shader vertShader, Shader fragShader) :
     using Vulkan::Context;
     using namespace Vulkan::Utils::Descriptor;
 
+    auto device = Context::GetVkLogicalDevice();
+
     // Separate uniforms into unique properties
 
     uint64_t offset {0};
@@ -35,7 +38,7 @@ Material::Material(Shader vertShader, Shader fragShader) :
     AddShader(vertexShader, OUT offset);
     AddShader(fragmentShader, OUT offset);
 
-    auto framesCount = Context::GetSwapchain().MAX_FRAMES_IN_FLIGHT;
+    auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
     // TODO: Make a standalone buffer class
     // Allocate buffer which can store all the data we need
@@ -61,16 +64,13 @@ Material::Material(Shader vertShader, Shader fragShader) :
             prop.binding = j;
         });
 
-        CC_ASSERT(CreateLayout(Context::GetVkLogicalDevice(),
-                               OUT slot.layout,
-                               bindings.Data(),
-                               properties.Count()),
+        CC_ASSERT(CreateLayout(device, OUT slot.layout, bindings.Data(), properties.Count()),
                   "Failed to create descriptor set!")
 
         perFrameDescriptorSets.ForEach(MSA_IT(VkDescriptorSet, MAX_UNIFORM_SETS, sets) {
             sets.Append(VK_NULL_HANDLE);
-            AllocateSets(Context::GetVkLogicalDevice(),
-                         OUT & sets[sets.Count() - 1],
+            AllocateSets(device,
+                         OUT & sets.Back(),
                          DescriptorPool::GetDescriptorPool(),
                          1,
                          &slot.layout);
@@ -137,14 +137,18 @@ void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* 
     }
 }
 
-void Material::SetTexture(Hash::StringId id, uint32_t index, Texture2D* texture)
+uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
 {
     using namespace Utils;
     using namespace Descriptor;
 
     auto& writeSets = writes[Renderer::GetCurrentFrameIndex()];
 
-    if (FindTextureIndex(texture->GetId()) > -1) return;
+    auto texIndex = FindTextureIndex(texture->GetId());
+
+    if (texIndex > -1) return texIndex;
+
+    texIndex = textureIds.Count();
     textureIds.Append(texture->GetId());
 
     propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
@@ -155,9 +159,9 @@ void Material::SetTexture(Hash::StringId id, uint32_t index, Texture2D* texture)
 
         auto info = texture->GetInfo();
 
-        texture2DInfos[index] = {info.sampler,
-                                 info.imageInfo.view,
-                                 ToVkImageLayout(info.imageInfo.layout)};
+        texture2DInfos[texIndex] = {info.sampler,
+                                    info.imageInfo.view,
+                                    ToVkImageLayout(info.imageInfo.layout)};
 
         if (writeSets.Count() > 0) return;
 
@@ -167,11 +171,16 @@ void Material::SetTexture(Hash::StringId id, uint32_t index, Texture2D* texture)
             QueueImageUpdate(sets, perFrameDescriptorSets[j][i], prop.binding, prop.count, 0);
         });
     });
+
+    return texIndex;
 }
 
 void Material::AddShader(const Shader& shader, uint64_t& offset)
 {
     using Utils::ShaderType;
+    using Utils::UniformType;
+    using namespace Buffer;
+
     auto uniforms = shader.GetUniforms();
 
     for (auto it = uniforms.CreateIterator(); it; ++it)
@@ -199,12 +208,10 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
             shader.GetShaderType(),
         });
 
-        using Vulkan::Utils::UniformType;
+        bufferSize +=
+            IF(IsStorage(uniform.type) THEN PadStorageBufferSize(uniform.totalSize) ELSE IF(
+                IsUniform(uniform.type) THEN PadUniformBufferSize(uniform.totalSize) ELSE 0));
 
-        bufferSize += ((uniform.type == UniformType::STORAGE) *
-                       Buffer::PadStorageBufferSize(uniform.totalSize)) +
-                      ((uniform.type == UniformType::UNIFORM) *
-                       Buffer::PadUniformBufferSize(uniform.totalSize));
         offset += uniform.totalSize;
 
         if (IsTexture2D(uniform.type))
@@ -225,7 +232,7 @@ void Material::Bind(const CommandBuffer& commandBuffer)
 {
     auto frameIndex = Renderer::GetCurrentFrameIndex();
     graphicsPipeline.Bind(commandBuffer);
-    graphicsPipeline.BindSets(commandBuffer,perFrameDescriptorSets[frameIndex]);
+    graphicsPipeline.BindSets(commandBuffer, perFrameDescriptorSets[frameIndex]);
 }
 
 void Material::Recreate()
@@ -277,9 +284,9 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
     properties.MForEachI([&](Property& prop, size_t i) {
         bufferInfos.Append(CreateBufferInfo(buffer.buffer, prop.offset, prop.size));
         perFrameDescriptorSets.ForEachI(MSA_IT_I(VkDescriptorSet, MAX_UNIFORM_SETS, sets, j) {
-                if (IsTexture2D(prop.type)) QueueImageUpdate(writes[j], sets[set], i);
-                else QueuePropertyUpdate(writes[j], sets[set], prop.type, i, 1);
-            });
+            if (IsTexture2D(prop.type)) QueueImageUpdate(writes[j], sets[set], i);
+            else QueuePropertyUpdate(writes[j], sets[set], prop.type, i, 1);
+        });
     });
 }
 

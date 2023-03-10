@@ -42,7 +42,7 @@ public:
 
     Image& operator=(Image&& other);
 
-    const Info& GetInfo() const
+    const Info GetInfo() const
     {
         return info;
     }
