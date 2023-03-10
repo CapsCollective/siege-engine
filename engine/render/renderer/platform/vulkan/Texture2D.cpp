@@ -53,13 +53,7 @@ Texture2D::Texture2D(Texture2D&& other)
 
 Texture2D::~Texture2D()
 {
-    auto device = Context::GetVkLogicalDevice();
-
-    if (device == nullptr) return;
-
-    vkDestroySampler(device, info.sampler, nullptr);
-
-    info = {{}, nullptr};
+    Free();
 }
 
 Texture2D& Texture2D::operator=(Texture2D&& other)
@@ -133,6 +127,19 @@ void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, 
     image.CopyBuffer(stagingBuffer.buffer);
 
     Buffer::DestroyBuffer(stagingBuffer);
+}
+
+void Texture2D::Free()
+{
+    auto device = Context::GetVkLogicalDevice();
+
+    if (device == nullptr) return;
+
+    vkDestroySampler(device, info.sampler, nullptr);
+
+    image.Free();
+
+    info = {{}, nullptr};
 }
 
 void Texture2D::Swap(Texture2D& other)
