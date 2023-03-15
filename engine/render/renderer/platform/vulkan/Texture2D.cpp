@@ -19,7 +19,7 @@
 
 namespace Siege::Vulkan
 {
-Texture2D::Texture2D(const String& name)
+Texture2D::Texture2D(const char* name)
 {
     LoadTexture(Constants::DEFAULT_TEXTURE_2D, Constants::DEFAULT_TEXTURE_SIZE, 16, 16);
 
@@ -33,7 +33,7 @@ Texture2D::Texture2D(const String& name)
     id = INTERN_STR(name);
 }
 
-Texture2D::Texture2D(const String& name, const String& filePath)
+Texture2D::Texture2D(const char* name, const char* filePath)
 {
     LoadFromFile(filePath);
 
@@ -62,7 +62,7 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
     return *this;
 }
 
-void Texture2D::LoadFromFile(const String& filePath)
+void Texture2D::LoadFromFile(const char* filePath)
 {
     int texWidth, texHeight, texChannels;
 
@@ -72,7 +72,7 @@ void Texture2D::LoadFromFile(const String& filePath)
 
     uint64_t imageSize = texWidth * texHeight * 4;
 
-    uint8_t pixelPtr[imageSize];
+    uint8_t* pixelPtr = new uint8_t[imageSize];
 
     // Set the image to 0 so that we get no garbage data in the pixel array
     memset(pixelPtr, 0, imageSize);
@@ -102,6 +102,8 @@ void Texture2D::LoadFromFile(const String& filePath)
     image.CopyBuffer(stagingBuffer.buffer);
 
     Buffer::DestroyBuffer(stagingBuffer);
+
+    delete [] pixelPtr;
 }
 
 void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height)

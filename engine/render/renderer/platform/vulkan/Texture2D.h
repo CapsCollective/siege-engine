@@ -47,7 +47,7 @@ public:
      * default white texture
      * @param name the name of the texture being created
      */
-    Texture2D(const String& name);
+    Texture2D(const char* name);
 
     /**
      * The texture constructor used for loading a texture from file. This loads data from a given
@@ -55,7 +55,7 @@ public:
      * @param name the name of the texture
      * @param filePath the path of the PNG or JPG file
      */
-    Texture2D(const String& name, const String& filePath);
+    Texture2D(const char* name, const char* filePath);
 
     /**
      * A move constructor for the Texture2D class
@@ -108,7 +108,7 @@ private:
      * Loads pixel information from a PNG or JPG file located on disk
      * @param filePath the path of the file
      */
-    void LoadFromFile(const String& filePath);
+    void LoadFromFile(const char* filePath);
 
     /**
      * Loads a texture from a pixel buffer. Useful if you already have pixel info loaded into a
