@@ -225,6 +225,9 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
                      Utils::ToVkImageLayout(defaultTexture2DInfo.imageInfo.layout)});
             }
         }
+
+        if (shader.HasPushConstant())
+            pushConstant = {shader.GetPushConstant().size, shader.GetShaderType()};
     }
 }
 
@@ -233,6 +236,11 @@ void Material::Bind(const CommandBuffer& commandBuffer)
     auto frameIndex = Renderer::GetCurrentFrameIndex();
     graphicsPipeline.Bind(commandBuffer);
     graphicsPipeline.BindSets(commandBuffer, perFrameDescriptorSets[frameIndex]);
+}
+
+void Material::BindPushConstant(const CommandBuffer& buffer, const void* values)
+{
+    graphicsPipeline.PushConstants(buffer, pushConstant.type, pushConstant.size, values);
 }
 
 void Material::Recreate()
@@ -245,6 +253,7 @@ void Material::Recreate()
                            .WithRenderPass(Context::GetSwapchain().GetRenderPass())
                            .WithDynamicViewport()
                            .WithDynamicScissor()
+                           .WithPushConstant(pushConstant.size, pushConstant.type)
                            .WithVertexShader(&vertexShader)
                            .WithFragmentShader(&fragmentShader)
                            .WithProperties(layouts)
@@ -363,6 +372,7 @@ void Material::Swap(Material& other)
     auto tmpWrites = std::move(writes);
     auto tmpBufferInfos = std::move(bufferInfos);
     auto tmpTexture2DInfos = std::move(texture2DInfos);
+    auto tmpPushConstant = pushConstant;
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
@@ -374,6 +384,7 @@ void Material::Swap(Material& other)
     writes = std::move(other.writes);
     bufferInfos = std::move(other.bufferInfos);
     texture2DInfos = std::move(other.texture2DInfos);
+    pushConstant = other.pushConstant;
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
@@ -385,5 +396,6 @@ void Material::Swap(Material& other)
     other.writes = std::move(tmpWrites);
     other.bufferInfos = std::move(tmpBufferInfos);
     other.texture2DInfos = std::move(tmpTexture2DInfos);
+    other.pushConstant = tmpPushConstant;
 }
 } // namespace Siege::Vulkan

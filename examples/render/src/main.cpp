@@ -49,6 +49,7 @@ int main()
 
     Camera camera;
 
+    // Load textures
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
     auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
 
@@ -56,26 +57,27 @@ int main()
 
     using Siege::Vulkan::Material;
     using Siege::Vulkan::Shader;
+    using Siege::Vulkan::Texture2D;
+
+    // Shader Declaration
 
     auto testMaterial =
-        Siege::Vulkan::Material(Shader::Builder()
-                                    .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-                                    .WithVertexBinding(Shader::VertexBinding()
-                                                           .AddFloatVec3Attribute()
-                                                           .AddFloatVec4Attribute()
-                                                           .AddFloatVec3Attribute()
-                                                           .AddFloatVec2Attribute())
-                                    .WithTransform3DStorage(0, 1000)
-                                    .WithGlobalData3DUniform()
-                                    .Build(),
-                                Shader::Builder()
-                                    .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
-                                    .WithGlobalData3DUniform()
-                                    .Build());
+        Material(Shader::Builder()
+                     .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+                     .WithVertexBinding(Shader::VertexBinding()
+                                            .AddFloatVec3Attribute()
+                                            .AddFloatVec4Attribute()
+                                            .AddFloatVec3Attribute()
+                                            .AddFloatVec2Attribute())
+                     .WithTransform3DStorage(0, 1000)
+                     .WithGlobalData3DUniform()
+                     .Build(),
+                 Shader::Builder()
+                     .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+                     .WithGlobalData3DUniform()
+                     .Build());
 
     // Generate models
-
-    // Load textures
 
     // Generating models from .obj files
 

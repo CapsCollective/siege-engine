@@ -62,6 +62,12 @@ Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t 
     return WithStorage<Siege::Model::Transform2D>("transforms", set, size);
 }
 
+Shader::Builder& Shader::Builder::WithPushConstant(uint64_t size)
+{
+    pushConstant.size = size;
+    return *this;
+}
+
 Shader::Builder& Shader::Builder::WithTransform3DStorage(uint32_t set, uint64_t size)
 {
     return WithStorage<Siege::Model::Transform>("transforms", set, size);
@@ -122,6 +128,7 @@ Shader Shader::Builder::Build() const
                   uniforms,
                   vertexBindings,
                   defaultTextureInfo,
+                  pushConstant,
                   totalUniformSize,
                   attributeCount);
 }
@@ -132,6 +139,7 @@ Shader::Shader(const Shader& other) :
     expectedUniforms {other.expectedUniforms},
     vertexBindings {other.vertexBindings},
     defaultTextureInfo {other.defaultTextureInfo},
+    pushConstant {other.pushConstant},
     totalUniformSize {other.totalUniformSize}
 {
     CreateShaderModule();
@@ -143,6 +151,7 @@ Shader::Shader(const String& filePath,
                MSArray<Uniform, 10> uniforms,
                MSArray<VertexBinding, 5> vertices,
                Texture2D::Info tex2DInfo,
+               PushConstant pushConstant,
                size_t totalSize,
                uint32_t totalVertexAttributes) :
     filePath {filePath},
@@ -151,6 +160,7 @@ Shader::Shader(const String& filePath,
     expectedUniforms {uniforms},
     vertexBindings {vertices},
     defaultTextureInfo {tex2DInfo},
+    pushConstant {pushConstant},
     totalUniformSize {totalSize},
     totalVertexAttributeCount {totalVertexAttributes}
 {
@@ -210,6 +220,7 @@ void Shader::Swap(Shader& other)
     auto tmpTotalAttributeCount = totalVertexAttributeCount;
     auto tmpExpectedTopology = expectedTopology;
     auto tmpDefaultTexture2DInfo = defaultTextureInfo;
+    auto tmpPushConstant = pushConstant;
 
     filePath = other.filePath;
     type = other.type;
@@ -220,6 +231,7 @@ void Shader::Swap(Shader& other)
     totalVertexAttributeCount = other.totalVertexAttributeCount;
     expectedTopology = other.expectedTopology;
     defaultTextureInfo = other.defaultTextureInfo;
+    pushConstant = other.pushConstant;
 
     other.filePath = tmpFilePath;
     other.type = tmpShaderType;
@@ -230,5 +242,6 @@ void Shader::Swap(Shader& other)
     other.totalVertexAttributeCount = tmpTotalAttributeCount;
     other.expectedTopology = tmpExpectedTopology;
     other.defaultTextureInfo = tmpDefaultTexture2DInfo;
+    other.pushConstant = tmpPushConstant;
 }
 } // namespace Siege::Vulkan

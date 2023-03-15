@@ -101,6 +101,11 @@ public:
         uint32_t stride {0};
     };
 
+    struct PushConstant
+    {
+        uint32_t size {0};
+    };
+
     /**
      * A helper struct for configuring a shader. Contains helper methods to easily string together
      * shader configuration functions. Makes shader creation a little more streamlined and easier to
@@ -228,6 +233,8 @@ public:
          */
         Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
 
+        Builder& WithPushConstant(uint64_t size);
+
         /**
          * Specifies the expected vertex topology (triangle list, line list...etc)
          * @param topology an enum specifying the vertex topology
@@ -251,6 +258,7 @@ public:
         MSArray<Uniform, 10> uniforms;
         MSArray<VertexBinding, 5> vertexBindings;
         Texture2D::Info defaultTextureInfo;
+        PushConstant pushConstant;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
     };
@@ -283,6 +291,7 @@ public:
            MSArray<Uniform, 10> uniforms,
            MSArray<VertexBinding, 5> vertices,
            Texture2D::Info tex2DInfo,
+           PushConstant pushConstant,
            size_t totalSize,
            uint32_t totalVertexAttributes);
 
@@ -331,6 +340,7 @@ public:
         vertexBindings = other.vertexBindings;
         totalUniformSize = other.totalUniformSize;
         defaultTextureInfo = other.defaultTextureInfo;
+        pushConstant = other.pushConstant;
 
         return *this;
     }
@@ -395,6 +405,16 @@ public:
         return defaultTextureInfo;
     }
 
+    inline const PushConstant GetPushConstant() const
+    {
+        return pushConstant;
+    }
+
+    inline const bool HasPushConstant() const
+    {
+        return pushConstant.size > 0;
+    }
+
 private:
 
     /**
@@ -416,6 +436,7 @@ private:
     MSArray<Uniform, 10> expectedUniforms;
     MSArray<VertexBinding, 5> vertexBindings;
     Texture2D::Info defaultTextureInfo {};
+    PushConstant pushConstant;
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};
 };

@@ -54,6 +54,12 @@ Pipeline::Builder& Pipeline::Builder::WithProperties(
     return *this;
 }
 
+Pipeline::Builder& Pipeline::Builder::WithPushConstant(uint32_t size, Utils::ShaderType type)
+{
+    pushConstant = {size, type};
+    return *this;
+}
+
 Pipeline Pipeline::Builder::Build()
 {
     Pipeline newPipeline;
@@ -62,7 +68,13 @@ Pipeline Pipeline::Builder::Build()
 
     using namespace Utils::Pipeline;
 
-    newPipeline.layout = CreatePipelineLayout(device, descriptorLayouts);
+    // We're assuming for now that we'll only ever have one push constant at any point in time
+    VkPushConstantRange range {Utils::ToVkShaderStageFlagBits(pushConstant.type),
+                               0,
+                               pushConstant.size};
+
+    newPipeline.layout =
+        CreatePipelineLayout(device, descriptorLayouts, &range, pushConstant.size > 0);
 
     auto inputAssembly =
         CreateInputAssembly(ToVkPrimitiveTopology(vertexShader->GetVertexTopology()));
@@ -175,6 +187,19 @@ void Pipeline::BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptor
                             sets.Data(),
                             0,
                             nullptr);
+}
+
+void Pipeline::PushConstants(const CommandBuffer& commandBuffer,
+                             Utils::ShaderType type,
+                             uint32_t size,
+                             const void* values)
+{
+    vkCmdPushConstants(commandBuffer.Get(),
+                       layout,
+                       Utils::ToVkShaderStageFlagBits(type),
+                       0,
+                       size,
+                       values);
 }
 
 void Pipeline::Swap(Pipeline& other)

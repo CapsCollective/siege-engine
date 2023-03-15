@@ -6,7 +6,7 @@ layout (location = 2) in flat uint texId;
 
 layout (location = 0) out vec4 outColour;
 
-layout(binding = 2) uniform sampler2D tex[16];
+layout(binding = 1) uniform sampler2D tex[16];
 
 void main() {
     vec4 sampled = vec4(texture(tex[texId], uv));

@@ -42,6 +42,12 @@ public:
 
 private:
 
+    struct QuadPushConstant
+    {
+        Mat4 transform;
+        uint32_t textureIndex;
+    };
+
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
     static constexpr size_t VERTICES_PER_QUAD = 4;
     static constexpr size_t INDICES_PER_QUAD = 6;
@@ -52,7 +58,6 @@ private:
         Vec2 position;
         FColour colour;
         Vec2 uv;
-        uint32_t texIdx;
     };
 
     static Hash::StringId transformId;
@@ -60,7 +65,7 @@ private:
 
     static MSArray<QuadVertex, MAX_OBJECT_TRANSFORMS * VERTICES_PER_QUAD> vertices;
     static MSArray<uint32_t, MAX_OBJECT_TRANSFORMS * INDICES_PER_QUAD> indices;
-    static MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
+    static MSArray<QuadPushConstant, MAX_OBJECT_TRANSFORMS> pushConstants;
 
     static Vulkan::Texture2D defaultTexture;
     static Vulkan::Material defaultMaterial;

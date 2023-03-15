@@ -94,6 +94,8 @@ public:
      */
     void Bind(const CommandBuffer& commandBuffer);
 
+    void BindPushConstant(const CommandBuffer& buffer, const void* values);
+
     /**
      *  Recreates the Material pipeline (used primarily for window size changes)
      */
@@ -146,6 +148,12 @@ private:
     {
         VkDescriptorSetLayout layout {VK_NULL_HANDLE};
         MSArray<Property, 10> properties;
+    };
+
+    struct PushConstant
+    {
+        uint32_t size {0};
+        Utils::ShaderType type {Utils::EMPTY};
     };
 
     /**
@@ -253,6 +261,8 @@ private:
 
     uint64_t bufferSize {0};
     Buffer::Buffer buffer;
+
+    PushConstant pushConstant;
 
     MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
 
