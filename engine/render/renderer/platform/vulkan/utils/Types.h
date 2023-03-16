@@ -117,7 +117,7 @@ enum Result
 enum UniformType
 {
     UNKNOWN = 0,
-    TEXTURE = 1,
+    TEXTURE2D = 1,
     UNIFORM = 6,
     STORAGE = 7
 };
@@ -133,6 +133,7 @@ enum ShaderType
 enum VertexAttributeType
 {
     VERTEX_UNDEFINED = 0,
+    VERTEX_UINT_32 = 98,
     VERTEX_FLOAT_VEC2 = 103,
     VERTEX_FLOAT_VEC3 = 106,
     VERTEX_FLOAT_VEC4 = 109

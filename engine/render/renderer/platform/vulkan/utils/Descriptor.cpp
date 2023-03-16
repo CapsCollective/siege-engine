@@ -52,7 +52,7 @@ void Descriptor::AllocateSets(VkDevice device,
 {
     auto allocateInfo = CreateAllocateInfo(descriptorPool, setCount, layouts, pNext);
 
-    vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
+    VkResult r = vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
 }
 
 VkDescriptorSetAllocateInfo Descriptor::CreateAllocateInfo(VkDescriptorPool pool,
@@ -98,6 +98,27 @@ void Descriptor::WriteSets(VkDevice device,
                            uint32_t copyCount)
 {
     vkUpdateDescriptorSets(device, setCount, sets, copyCount, copies);
+}
+
+VkWriteDescriptorSet Descriptor::WriteDescriptorImage(VkDescriptorType type,
+                                                      VkDescriptorSet& dstSet,
+                                                      VkDescriptorImageInfo* imageInfo,
+                                                      uint32_t binding,
+                                                      uint32_t count,
+                                                      uint32_t index)
+{
+    VkWriteDescriptorSet write = {};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.pNext = nullptr;
+
+    write.dstBinding = binding;
+    write.dstSet = dstSet;
+    write.dstArrayElement = index;
+    write.descriptorCount = count;
+    write.descriptorType = type;
+    write.pImageInfo = imageInfo;
+
+    return write;
 }
 
 VkSamplerCreateInfo Descriptor::SamplerCreateInfo(

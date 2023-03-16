@@ -20,6 +20,8 @@ class Texture2D
 {
 public:
 
+    static uint8_t DEFAULT_TEX[1024];
+
     // Structs
 
     struct Info
@@ -31,6 +33,7 @@ public:
     // 'Structors
 
     Texture2D() = default;
+    Texture2D(const String& name);
     Texture2D(const String& name, const String& filePath);
     Texture2D(Texture2D&& other);
     ~Texture2D();
@@ -50,10 +53,13 @@ public:
         return info;
     }
 private:
+    void LoadFromFile(const String& filePath);
+    void LoadTexture(uint8_t* pixels, size_t size, uint32_t width, uint32_t height);
     void Swap(Texture2D& other);
     Hash::StringId id {};
     Image image;
     Info info {};
+    Utils::Extent2D extent;
 };
 } // namespace Siege
 

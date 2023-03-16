@@ -11,6 +11,7 @@
 #include <render/renderer/model/Model.h>
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
+#include <render/renderer/platform/vulkan/Texture2D.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
 
@@ -72,9 +73,30 @@ int main()
 
     Camera camera;
 
+    auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
+    auto defaultTex = Siege::Vulkan::Texture2D("default");
+
     // Shader Declaration
 
     using Siege::Vulkan::Shader;
+    using Siege::Vulkan::Material;
+
+    auto texturedQuadMat = Material(Shader::Builder()
+                                                .FromVertexShader("assets/shaders/texturedQuad.vert.spv")
+                                                .WithVertexBinding(
+                                                   Shader::VertexBinding()
+                                                       .AddFloatVec2Attribute()
+                                                       .AddFloatVec4Attribute()
+                                                       .AddFloatVec2Attribute()
+                                                       .AddU32Attribute())
+                                                .WithTransform2DStorage(0, 1000)
+                                                .WithGlobalData2DUniform()
+                                                .Build(),
+                                                Shader::Builder()
+                                                .FromFragmentShader("assets/shaders/texturedQuad.frag.spv")
+                                                .WithTexture("quadTexture", 0, 16)
+                                                .WithDefaultTexture(&defaultTex)
+                                                .Build());
 
     auto testMaterial =
         Siege::Vulkan::Material(Shader::Builder()
@@ -108,6 +130,8 @@ int main()
 
     Siege::Model triangleModel(triangleMeshData);
     Siege::Model squareModel(squareMeshData);
+
+    // Load textures
 
     // Generating models from .obj files
 

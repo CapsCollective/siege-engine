@@ -122,7 +122,7 @@ DECL_VULKAN_SWITCH_FUN(
 
 DECL_VULKAN_SWITCH_FUN(VkDescriptorType,
                        UniformType,
-                       SWITCH_MEM(UniformType, TEXTURE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+                       SWITCH_MEM(UniformType, TEXTURE2D, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
                            SWITCH_MEM(UniformType, STORAGE, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
                                SWITCH_MEM(UniformType, UNIFORM, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
                                    SWITCH_DEFAULT(VK_DESCRIPTOR_TYPE_MAX_ENUM))
@@ -130,7 +130,7 @@ DECL_VULKAN_SWITCH_FUN(VkDescriptorType,
 DECL_VULKAN_SWITCH_FUN(
     UniformType,
     VkDescriptorType,
-    SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, TEXTURE)
+    SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, TEXTURE2D)
         SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, STORAGE)
             SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, UNIFORM)
                 SWITCH_DEFAULT(UNKNOWN))
@@ -151,6 +151,7 @@ DECL_VULKAN_SWITCH_FUN(
     VkFormat,
     VertexAttributeType,
     SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC2, VK_FORMAT_R32G32_SFLOAT)
+        SWITCH_MEM(VertexAttributeType, VERTEX_UINT_32, VK_FORMAT_R32_UINT)
         SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC3, VK_FORMAT_R32G32B32_SFLOAT)
             SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC4, VK_FORMAT_R32G32B32A32_SFLOAT)
                 SWITCH_DEFAULT(VK_FORMAT_UNDEFINED))
@@ -158,6 +159,7 @@ DECL_VULKAN_SWITCH_FUN(
 DECL_VULKAN_SWITCH_FUN(VertexAttributeType,
                        VkFormat,
                        SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, VERTEX_FLOAT_VEC2)
+                           SWITCH_MEM(VkFormat, VK_FORMAT_R32_UINT, VERTEX_UINT_32)
                            SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32_SFLOAT, VERTEX_FLOAT_VEC3)
                                SWITCH_MEM(VkFormat,
                                           VK_FORMAT_R32G32B32A32_SFLOAT,

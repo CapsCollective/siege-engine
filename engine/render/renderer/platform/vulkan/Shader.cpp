@@ -40,6 +40,13 @@ Shader::VertexBinding& Shader::VertexBinding::AddFloatVec2Attribute()
     return *this;
 }
 
+Shader::VertexBinding& Shader::VertexBinding::AddU32Attribute()
+{
+    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_UINT_32});
+    stride += sizeof(uint32_t);
+    return *this;
+}
+
 Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)
 {
     return WithUniform<Siege::Renderer3D::GlobalData>("globalData", set);
@@ -63,6 +70,24 @@ Shader::Builder& Shader::Builder::WithTransform3DStorage(uint32_t set, uint64_t 
 Shader::Builder& Shader::Builder::WithVertexTopology(Utils::PipelineTopology topology)
 {
     expectedTopology = topology;
+    return *this;
+}
+
+Shader::Builder& Shader::Builder::WithTexture(const String& name, uint32_t set, uint32_t count)
+{
+    uniforms.Append({INTERN_STR(name.Str()),
+                     0,
+                     set,
+                     static_cast<uint32_t>(uniforms.Count()),
+                     count,
+                     Utils::TEXTURE2D});
+
+    return *this;
+}
+
+Shader::Builder& Shader::Builder::WithDefaultTexture(const Texture2D* texture)
+{
+    defaultTextureInfo = texture->GetInfo();
     return *this;
 }
 
@@ -96,6 +121,7 @@ Shader Shader::Builder::Build() const
                   expectedTopology,
                   uniforms,
                   vertexBindings,
+                  defaultTextureInfo,
                   totalUniformSize,
                   attributeCount);
 }
@@ -105,6 +131,7 @@ Shader::Shader(const Shader& other) :
     type {other.type},
     expectedUniforms {other.expectedUniforms},
     vertexBindings {other.vertexBindings},
+    defaultTextureInfo {other.defaultTextureInfo},
     totalUniformSize {other.totalUniformSize}
 {
     CreateShaderModule();
@@ -115,6 +142,7 @@ Shader::Shader(const String& filePath,
                Utils::PipelineTopology expectedTopology,
                ::Siege::Utils::MSArray<Uniform, 10> uniforms,
                ::Siege::Utils::MSArray<VertexBinding, 5> vertices,
+               Texture2D::Info tex2DInfo,
                size_t totalSize,
                uint32_t totalVertexAttributes) :
     filePath {filePath},
@@ -122,6 +150,7 @@ Shader::Shader(const String& filePath,
     expectedTopology {expectedTopology},
     expectedUniforms {uniforms},
     vertexBindings {vertices},
+    defaultTextureInfo {tex2DInfo},
     totalUniformSize {totalSize},
     totalVertexAttributeCount {totalVertexAttributes}
 {
@@ -180,6 +209,7 @@ void Shader::Swap(Shader& other)
     auto tmpTotalUniformSize = totalUniformSize;
     auto tmpTotalAttributeCount = totalVertexAttributeCount;
     auto tmpExpectedTopology = expectedTopology;
+    auto tmpDefaultTexture2DInfo = defaultTextureInfo;
 
     filePath = other.filePath;
     type = other.type;
@@ -189,6 +219,7 @@ void Shader::Swap(Shader& other)
     totalUniformSize = other.totalUniformSize;
     totalVertexAttributeCount = other.totalVertexAttributeCount;
     expectedTopology = other.expectedTopology;
+    defaultTextureInfo = other.defaultTextureInfo;
 
     other.filePath = tmpFilePath;
     other.type = tmpShaderType;
@@ -198,5 +229,6 @@ void Shader::Swap(Shader& other)
     other.totalUniformSize = tmpTotalUniformSize;
     other.totalVertexAttributeCount = tmpTotalAttributeCount;
     other.expectedTopology = tmpExpectedTopology;
+    other.defaultTextureInfo = tmpDefaultTexture2DInfo;
 }
 } // namespace Siege::Vulkan

@@ -78,6 +78,13 @@ public:
                           const VkCopyDescriptorSet* copies = nullptr,
                           uint32_t copyCount = 0);
 
+    static VkWriteDescriptorSet WriteDescriptorImage(VkDescriptorType type,
+                                                     VkDescriptorSet& dstSet,
+                                                     VkDescriptorImageInfo* imageInfo,
+                                                     uint32_t binding,
+                                                     uint32_t count,
+                                                     uint32_t index = 0);
+
     static VkSamplerCreateInfo SamplerCreateInfo(
         VkFilter filters,
         VkSamplerAddressMode samplerAddressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);

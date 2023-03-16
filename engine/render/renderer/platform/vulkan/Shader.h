@@ -15,6 +15,7 @@
 
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Types.h"
+#include "Texture2D.h"
 
 namespace Siege::Vulkan
 {
@@ -44,6 +45,7 @@ public:
         uint32_t totalSize {0};
         uint32_t set {0};
         uint32_t slot {0};
+        uint32_t count {0};
         Utils::UniformType type {Utils::UNKNOWN};
     };
 
@@ -91,6 +93,8 @@ public:
          * @return a reference to the VertexBinding type
          */
         VertexBinding& AddFloatVec2Attribute();
+
+        VertexBinding& AddU32Attribute();
 
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
         ::Siege::Utils::MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
@@ -155,6 +159,7 @@ public:
                              static_cast<uint32_t>(bufferSize * size),
                              set,
                              static_cast<uint32_t>(uniforms.Count()),
+                             count,
                              Utils::UNIFORM});
 
             totalUniformSize += (bufferSize * size) * count;
@@ -183,6 +188,7 @@ public:
                              static_cast<uint32_t>(bufferSize * size),
                              set,
                              static_cast<uint32_t>(uniforms.Count()),
+                             count,
                              Utils::STORAGE});
 
             totalUniformSize += (bufferSize * size) * count;
@@ -229,6 +235,10 @@ public:
          */
         Builder& WithVertexTopology(Utils::PipelineTopology topology);
 
+        Builder& WithTexture(const String& name, uint32_t set = 1, uint32_t count = 1);
+
+        Builder& WithDefaultTexture(const Texture2D* texture);
+
         /**
          * Builds a Shader and returns it (destroys the Builder in the process)
          * @return a new Shader with all configured data within
@@ -240,6 +250,7 @@ public:
         Utils::ShaderType type {Utils::ALL_GRAPHICS};
         ::Siege::Utils::MSArray<Uniform, 10> uniforms;
         ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+        Texture2D::Info defaultTextureInfo;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
     };
@@ -271,6 +282,7 @@ public:
            Utils::PipelineTopology expectedTopology,
            ::Siege::Utils::MSArray<Uniform, 10> uniforms,
            ::Siege::Utils::MSArray<VertexBinding, 5> vertices,
+           Texture2D::Info tex2DInfo,
            size_t totalSize,
            uint32_t totalVertexAttributes);
 
@@ -318,6 +330,7 @@ public:
         expectedUniforms = other.expectedUniforms;
         vertexBindings = other.vertexBindings;
         totalUniformSize = other.totalUniformSize;
+        defaultTextureInfo = other.defaultTextureInfo;
 
         return *this;
     }
@@ -372,6 +385,16 @@ public:
         return type;
     }
 
+    inline const Texture2D::Info& GetDefaultTexture2DInfo() const
+    {
+        return defaultTextureInfo;
+    }
+
+    inline Texture2D::Info& GetDefaultTexture2DInfo()
+    {
+        return defaultTextureInfo;
+    }
+
 private:
 
     /**
@@ -392,6 +415,7 @@ private:
     VkShaderModule shaderModule {nullptr};
     ::Siege::Utils::MSArray<Uniform, 10> expectedUniforms;
     ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+    Texture2D::Info defaultTextureInfo {};
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};
 };
