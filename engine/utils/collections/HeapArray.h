@@ -69,6 +69,11 @@ public:
         count = size;
     }
 
+    /**
+     * Creates a HeapArray from a raw array pointer
+     * @param rawPtr the pointer to copy data from
+     * @param ptrSize the size of the array
+     */
     MHArray(const T* rawPtr, const size_t ptrSize)
     {
         size = ptrSize;
@@ -82,6 +87,24 @@ public:
         ArrayUtils::CopyData(data, rawPtr, sizeof(T) * size);
 
         count = size;
+    }
+
+    /**
+     * Creates an array with a pre-allocated number of indices set to active
+     * @param arraySize the size of the array
+     * @param allocations the number of allocations to make
+     */
+    MHArray(size_t arraySize, size_t allocations)
+    {
+        size = arraySize;
+        data = ArrayUtils::Allocate<T>(sizeof(T) * size);
+
+        size_t newByteCount = BitUtils::CalculateBitSetSize(size);
+
+        bitField = BitUtils::BitSet(newByteCount);
+        bitField.SetBitsToOne(allocations);
+
+        count = allocations;
     }
 
     /**
@@ -212,8 +235,7 @@ public:
      */
     void Insert(size_t index, const T& element)
     {
-        count += !bitField.IsSet(index + 1);
-        bitField.SetBit(index + 1);
+        SetActive(index);
 
         Set(index, element);
     }
@@ -560,6 +582,12 @@ private:
     void Set(size_t index, const T& value)
     {
         data[index] = value;
+    }
+
+    void SetActive(uint32_t index)
+    {
+        count += !bitField.IsSet(index+1);
+        bitField.SetBit(index+1);
     }
 
     /**

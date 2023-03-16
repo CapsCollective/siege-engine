@@ -12,6 +12,7 @@
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
+#include <render/renderer/platform/vulkan/Mesh.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
 

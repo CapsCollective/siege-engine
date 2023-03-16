@@ -40,7 +40,7 @@ UTEST(test_HeapArray, CreateHeapArrayWithInitializerList)
     ASSERT_EQ(array[1], 1);
 }
 
-UTEST(test_MSArray, CreateHeapArrayFromRawArray)
+UTEST(test_HeapArray, CreateHeapArrayFromRawArray)
 {
     uint32_t values[] = {1, 2, 3, 4};
     Siege::MHArray<uint32_t> array(values, 4);
@@ -58,6 +58,18 @@ UTEST(test_MSArray, CreateHeapArrayFromRawArray)
     ASSERT_EQ(array[1], 2);
     ASSERT_EQ(array[2], 3);
     ASSERT_EQ(array[3], 4);
+}
+
+UTEST(test_HeapArray, CreateHeapArrayWithDefaultValue)
+{
+    Siege::MHArray<uint32_t> array(5, 5);
+
+    ASSERT_TRUE(array.IsActive(0));
+    ASSERT_TRUE(array.IsActive(1));
+    ASSERT_TRUE(array.IsActive(2));
+    ASSERT_TRUE(array.IsActive(3));
+    ASSERT_TRUE(array.IsActive(4));
+    ASSERT_EQ(array.Count(), 5);
 }
 
 UTEST(test_HeapArray, CreateHeapArrayFromCopyConstructor)

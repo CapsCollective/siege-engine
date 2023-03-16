@@ -153,6 +153,12 @@ enum ImageLayout
     LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
 };
 
+enum BufferType
+{
+    VERTEX_BUFFER = 0x00000080,
+    INDEX_BUFFER = 0x00000040
+};
+
 //----------------------------------------- Structs -----------------------------------------------
 
 struct Extent2D

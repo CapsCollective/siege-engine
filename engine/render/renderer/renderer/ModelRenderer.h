@@ -18,7 +18,6 @@ namespace Siege
 class ModelRenderer
 {
 public:
-
     ModelRenderer();
     ~ModelRenderer();
 
@@ -28,7 +27,8 @@ public:
 
     void Render(Vulkan::CommandBuffer& buffer,
                 const uint64_t& globalDataSize,
-                const void* globalData);
+                const void* globalData,
+                uint32_t currentFrame);
 
     void Flush();
 

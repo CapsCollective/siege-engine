@@ -54,8 +54,8 @@ void Renderer::DrawFrame()
 {
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(commandBuffers, projection);
-    Renderer2D::Render(commandBuffers, global2DData);
+    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
+    Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
 }
 
 void Renderer::RecreateSwapChain()

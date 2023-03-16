@@ -13,6 +13,8 @@
 #include "../model/Model.h"
 #include "render/renderer/platform/vulkan/Texture2D.h"
 
+#include <utils/Colour.h>
+
 namespace Siege
 {
 class Renderer2D
@@ -36,7 +38,7 @@ public:
 
     static void RecreateMaterials();
 
-    static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
+    static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData, uint32_t frameIndex);
     static void Update();
     static void Flush();
 
@@ -60,11 +62,8 @@ private:
         Vec2 uv;
     };
 
-    static Hash::StringId transformId;
     static Hash::StringId globalDataId;
 
-    static MSArray<QuadVertex, MAX_OBJECT_TRANSFORMS * VERTICES_PER_QUAD> vertices;
-    static MSArray<uint32_t, MAX_OBJECT_TRANSFORMS * INDICES_PER_QUAD> indices;
     static MSArray<QuadPushConstant, MAX_OBJECT_TRANSFORMS> pushConstants;
 
     static Vulkan::Texture2D defaultTexture;

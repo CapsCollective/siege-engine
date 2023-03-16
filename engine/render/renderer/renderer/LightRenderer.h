@@ -12,6 +12,8 @@
 #include "../Core.h"
 #include "../model/Model.h"
 
+#include <utils/Colour.h>
+
 namespace Siege
 {
 class LightRenderer
@@ -29,7 +31,8 @@ public:
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
-                const void* globalData);
+                const void* globalData,
+                uint32_t currentFrame);
 
     void Flush();
 
@@ -42,8 +45,8 @@ private:
 
     Hash::StringId globalDataId;
 
-    MSArray<Vec2, Mesh::MAX_VERTICES> pointLightVertices;
-    MSArray<uint32_t, Mesh::MAX_INDICES> pointLightIndices;
+    MSArray<Vec2, Vulkan::Mesh::MAX_VERTICES> pointLightVertices;
+    MSArray<uint32_t, Vulkan::Mesh::MAX_INDICES> pointLightIndices;
 };
 } // namespace Siege
 

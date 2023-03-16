@@ -12,14 +12,9 @@
 
 namespace Siege
 {
-Hash::StringId Renderer2D::transformId;
 Hash::StringId Renderer2D::globalDataId;
 
 MSArray<Renderer2D::QuadPushConstant, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::pushConstants;
-MSArray<uint32_t, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::INDICES_PER_QUAD>
-    Renderer2D::indices;
-MSArray<Renderer2D::QuadVertex, Renderer2D::MAX_OBJECT_TRANSFORMS * Renderer2D::VERTICES_PER_QUAD>
-    Renderer2D::vertices;
 
 Model Renderer2D::quadModel;
 Vulkan::Material Renderer2D::defaultMaterial;
@@ -27,11 +22,11 @@ Vulkan::Texture2D Renderer2D::defaultTexture;
 
 void Renderer2D::Initialise()
 {
-    transformId = INTERN_STR("transforms");
     globalDataId = INTERN_STR("globalData");
 
     using Vulkan::Material;
     using Vulkan::Shader;
+    using Vulkan::Mesh;
 
     defaultTexture = Siege::Vulkan::Texture2D("default");
 
@@ -57,7 +52,7 @@ void Renderer2D::Initialise()
 
     uint32_t quadIndices[] = {0, 1, 3, 1, 2, 3};
 
-    quadModel.SetMesh({sizeof(QuadVertex), quadVertices, 4, quadIndices, 6});
+    quadModel.SetMesh(Mesh({sizeof(QuadVertex), quadVertices, 4}, {quadIndices, 6}));
 
     quadModel.SetMaterial(&defaultMaterial);
 }
@@ -84,11 +79,13 @@ void Renderer2D::RecreateMaterials()
     defaultMaterial.Recreate();
 }
 
-void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData)
+void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData, uint32_t frameIndex)
 {
     if (pushConstants.Count() == 0) return;
 
     defaultMaterial.SetUniformData(globalDataId, sizeof(GlobalData), &globalData);
+
+    quadModel.BindIndexed(buffer, frameIndex);
 
     for (uint32_t i = 0; i < pushConstants.Count(); i++)
     {
@@ -96,8 +93,7 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalD
 
         defaultMaterial.Bind(buffer);
 
-        quadModel.Bind(buffer);
-        quadModel.Draw(buffer, i);
+        quadModel.DrawIndexed(buffer, frameIndex, i);
     }
 }
 
@@ -111,8 +107,6 @@ void Renderer2D::DestroyRenderer2D()
 void Renderer2D::Flush()
 {
     pushConstants.Clear();
-    vertices.Clear();
-    indices.Clear();
 }
 
 void Renderer2D::Update()

@@ -13,10 +13,11 @@
 #include <utils/math/mat/Mat4.h>
 
 #include <unordered_map>
+#include <utils/Colour.h>
 
 #include "../buffer/Buffer.h"
-#include "../mesh/Mesh.h"
 #include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/Mesh.h"
 
 namespace Siege
 {
@@ -27,6 +28,15 @@ namespace Siege
 class Model
 {
 public:
+    // TODO(Aryeh): Move model loading into a separate file? That way we can separate the Vertex
+    // TODO(Aryeh): from this class
+    struct ModelVertex3D
+    {
+        Vec3 position;
+        FColour color;
+        Vec3 normal;
+        Vec2 uv;
+    };
 
     struct Transform
     {
@@ -40,7 +50,8 @@ public:
         Mat4 transform;
     };
 
-    Model(const Mesh::MeshData& meshData);
+    Model(const Vulkan::Mesh::VertexData& vertices, const Vulkan::Mesh::IndexData& indices);
+    Model(Vulkan::Mesh&& newMesh);
     Model(const String& filePath);
     Model();
     ~Model();
@@ -51,39 +62,38 @@ public:
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
 
-    void Bind(Vulkan::CommandBuffer& commandBuffer);
+    void Bind(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex);
+    void BindIndexed(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex);
 
-    /**
-     * @brief Draws the current set vertices (and writes them to the currently bound vertex buffer).
-     *
-     * @param commandBuffer The command buffer being used to draw the image
-     */
-    void Draw(Vulkan::CommandBuffer& commandBuffer, const uint32_t& instance = 0);
+    void Draw(Vulkan::CommandBuffer& commandBuffer, uint32_t currentFrame, const uint32_t& instances = 0);
+    void DrawIndexed(Vulkan::CommandBuffer& commandBuffer, const uint32_t frameIndex, const uint32_t& instance = 0);
 
     Vulkan::Material* GetMaterial()
     {
         return material;
     }
 
-    void UpdateMesh(const Mesh::MeshData& meshData);
-    void SetMesh(const Mesh::MeshData& meshData);
+    void UpdateMeshIndexed(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData, const Vulkan::Mesh::IndexData& indices);
+    void UpdateMesh(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData);
+    void SetMesh(Vulkan::Mesh&& newMesh);
     void SetMaterial(Vulkan::Material* newMaterial)
     {
         material = newMaterial;
-    }
-
-    bool IsIndexed()
-    {
-        return modelMesh.HasIndexBuffer();
     }
 
 private:
 
     void LoadModelFromFile(const String& filePath);
 
-    Mesh modelMesh;
+    Vulkan::Mesh mesh;
     Vulkan::Material* material {nullptr};
 };
+
+inline bool operator==(const Model::ModelVertex3D& left, const Model::ModelVertex3D& right)
+{
+    return left.position == right.position && left.color == right.color &&
+           left.normal == right.normal && left.uv == right.uv;
+}
 } // namespace Siege
 
 #endif
