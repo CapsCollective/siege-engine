@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_POINT_LIGHT_H
 #define SIEGE_ENGINE_POINT_LIGHT_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
-
-#include <utils/Colour.h>
 
 namespace Siege
 {

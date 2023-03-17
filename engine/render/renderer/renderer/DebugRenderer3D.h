@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_DEBUG_RENDERER3D_H
 #define SIEGE_ENGINE_DEBUG_RENDERER3D_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
-
-#include <utils/Colour.h>
 
 namespace Siege
 {

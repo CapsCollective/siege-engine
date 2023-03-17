@@ -103,7 +103,7 @@ void Texture2D::LoadFromFile(const char* filePath)
 
     Buffer::DestroyBuffer(stagingBuffer);
 
-    delete [] pixelPtr;
+    delete[] pixelPtr;
 }
 
 void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height)

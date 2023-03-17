@@ -25,30 +25,29 @@ void Renderer2D::Initialise()
     globalDataId = INTERN_STR("globalData");
 
     using Vulkan::Material;
-    using Vulkan::Shader;
     using Vulkan::Mesh;
+    using Vulkan::Shader;
 
     defaultTexture = Siege::Vulkan::Texture2D("default");
 
-    defaultMaterial = Material(Shader::Builder()
-                                   .FromVertexShader("assets/shaders/texturedQuad.vert.spv")
-                                   .WithVertexBinding(Shader::VertexBinding()
-                                                          .AddFloatVec2Attribute()
-                                                          .AddFloatVec4Attribute()
-                                                          .AddFloatVec2Attribute())
-                                   .WithGlobalData2DUniform()
-                                   .WithPushConstant(sizeof(QuadPushConstant))
-                                   .Build(),
-                               Shader::Builder()
-                                   .FromFragmentShader("assets/shaders/texturedQuad.frag.spv")
-                                   .WithTexture("texture", 0, 16)
-                                   .WithDefaultTexture(&defaultTexture)
-                                   .Build());
+    defaultMaterial =
+        Material(Shader::Builder()
+                     .FromVertexShader("assets/shaders/texturedQuad.vert.spv")
+                     .WithVertexBinding(
+                         Shader::VertexBinding().AddFloatVec2Attribute().AddFloatVec2Attribute())
+                     .WithGlobalData2DUniform()
+                     .WithPushConstant(sizeof(QuadPushConstant))
+                     .Build(),
+                 Shader::Builder()
+                     .FromFragmentShader("assets/shaders/texturedQuad.frag.spv")
+                     .WithTexture("texture", 0, 16)
+                     .WithDefaultTexture(&defaultTexture)
+                     .Build());
 
-    QuadVertex quadVertices[] = {{{1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 1.f}},
-                                 {{1.f, -1.f}, {1.f, 1.f, 1.f, 1.f}, {1.f, 0.f}},
-                                 {{-1.f, -1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 0.f}},
-                                 {{-1.f, 1.f}, {1.f, 1.f, 1.f, 1.f}, {0.f, 1.f}}};
+    QuadVertex quadVertices[] = {{{1.f, 1.f}, {1.f, 1.f}},
+                                 {{1.f, -1.f}, {1.f, 0.f}},
+                                 {{-1.f, -1.f}, {0.f, 0.f}},
+                                 {{-1.f, 1.f}, {0.f, 1.f}}};
 
     uint32_t quadIndices[] = {0, 1, 3, 1, 2, 3};
 
@@ -71,7 +70,7 @@ void Renderer2D::DrawQuad(const Siege::Vec2& position,
     auto transform = Graphics::CalculateTransform3D({position.x, position.y, zIndex},
                                                     {0.f, 0.f, rotation},
                                                     {scale.x, scale.y, 0.f});
-    pushConstants.Append({transform, texIndex});
+    pushConstants.Append({transform, ToFColour(colour), texIndex});
 }
 
 void Renderer2D::RecreateMaterials()
@@ -79,7 +78,9 @@ void Renderer2D::RecreateMaterials()
     defaultMaterial.Recreate();
 }
 
-void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData, uint32_t frameIndex)
+void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
+                        const GlobalData& globalData,
+                        uint32_t frameIndex)
 {
     if (pushConstants.Count() == 0) return;
 

@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_LIGHT_RENDERER_H
 #define SIEGE_ENGINE_LIGHT_RENDERER_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
-
-#include <utils/Colour.h>
 
 namespace Siege
 {

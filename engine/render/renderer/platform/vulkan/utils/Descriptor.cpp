@@ -52,7 +52,7 @@ void AllocateSets(VkDevice device,
 {
     auto allocateInfo = CreateAllocateInfo(descriptorPool, setCount, layouts, pNext);
 
-    VkResult r = vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
+    vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets);
 }
 
 VkDescriptorSetAllocateInfo CreateAllocateInfo(VkDescriptorPool pool,

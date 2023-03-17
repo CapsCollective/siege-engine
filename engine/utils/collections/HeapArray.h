@@ -104,6 +104,8 @@ public:
         bitField = BitUtils::BitSet(newByteCount);
         bitField.SetBitsToOne(allocations);
 
+        memset(data, 0, sizeof(T) * allocations);
+
         count = allocations;
     }
 
@@ -586,8 +588,8 @@ private:
 
     void SetActive(uint32_t index)
     {
-        count += !bitField.IsSet(index+1);
-        bitField.SetBit(index+1);
+        count += !bitField.IsSet(index + 1);
+        bitField.SetBit(index + 1);
     }
 
     /**

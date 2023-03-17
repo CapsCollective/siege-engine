@@ -18,6 +18,7 @@ namespace Siege
 class ModelRenderer
 {
 public:
+
     ModelRenderer();
     ~ModelRenderer();
 

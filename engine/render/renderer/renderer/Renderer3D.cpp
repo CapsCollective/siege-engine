@@ -72,7 +72,9 @@ void Renderer3D::DrawPointLight(const Vec3& position,
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
 
-void Renderer3D::Render(uint32_t currentFrame, Vulkan::CommandBuffer& commandBuffer, const CameraData& cameraData)
+void Renderer3D::Render(uint32_t currentFrame,
+                        Vulkan::CommandBuffer& commandBuffer,
+                        const CameraData& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);

@@ -9,11 +9,11 @@
 #ifndef SIEGE_ENGINE_RENDERER2D_H
 #define SIEGE_ENGINE_RENDERER2D_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
 #include "render/renderer/platform/vulkan/Texture2D.h"
-
-#include <utils/Colour.h>
 
 namespace Siege
 {
@@ -38,27 +38,26 @@ public:
 
     static void RecreateMaterials();
 
-    static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData, uint32_t frameIndex);
+    static void Render(Vulkan::CommandBuffer& commandBuffer,
+                       const GlobalData& globalData,
+                       uint32_t frameIndex);
     static void Update();
     static void Flush();
 
 private:
 
+    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
+
     struct QuadPushConstant
     {
         Mat4 transform;
+        FColour textureColour;
         uint32_t textureIndex;
     };
-
-    static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-    static constexpr size_t VERTICES_PER_QUAD = 4;
-    static constexpr size_t INDICES_PER_QUAD = 6;
-    static constexpr size_t MAX_TEXTURES = 16;
 
     struct QuadVertex
     {
         Vec2 position;
-        FColour colour;
         Vec2 uv;
     };
 

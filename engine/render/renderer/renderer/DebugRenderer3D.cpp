@@ -17,7 +17,6 @@ DebugRenderer3D::~DebugRenderer3D() {}
 void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
                                  const uint64_t& globalDataSize)
 {
-
     using Vulkan::Mesh;
 
     globalDataId = INTERN_STR(globalDataAttributeName);
@@ -72,9 +71,8 @@ void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
     lineMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lineMaterial.Bind(buffer);
 
-    lineModel.UpdateMesh(
-        currentFrame,
-        {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count())});
+    lineModel.UpdateMesh(currentFrame,
+                         {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count())});
 
     lineModel.Bind(buffer, currentFrame);
     lineModel.Draw(buffer, currentFrame);

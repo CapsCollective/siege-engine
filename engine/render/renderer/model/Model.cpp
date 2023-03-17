@@ -144,13 +144,14 @@ void Model::LoadModelFromFile(const String& filePath)
 
     using Vulkan::Mesh;
 
-    SetMesh(Mesh({sizeof(ModelVertex3D),
-                                 objVertices.data(),
-                                 static_cast<uint32_t>(objVertices.size())},{objIndices.data(),
-                                 static_cast<uint32_t>(objIndices.size())}));
+    SetMesh(
+        Mesh({sizeof(ModelVertex3D), objVertices.data(), static_cast<uint32_t>(objVertices.size())},
+             {objIndices.data(), static_cast<uint32_t>(objIndices.size())}));
 }
 
-void Model::UpdateMeshIndexed(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData, const Vulkan::Mesh::IndexData& indices)
+void Model::UpdateMeshIndexed(uint32_t currentFrame,
+                              const Vulkan::Mesh::VertexData& vertexData,
+                              const Vulkan::Mesh::IndexData& indices)
 {
     mesh.UpdateIndexed(vertexData, indices, currentFrame);
 }
@@ -175,12 +176,16 @@ void Model::BindIndexed(Vulkan::CommandBuffer& commandBuffer, uint32_t frameInde
     mesh.BindIndexed(commandBuffer, frameIndex);
 }
 
-void Model::Draw(Vulkan::CommandBuffer& commandBuffer, uint32_t currentFrame, const uint32_t& instances)
+void Model::Draw(Vulkan::CommandBuffer& commandBuffer,
+                 uint32_t currentFrame,
+                 const uint32_t& instances)
 {
     vkCmdDraw(commandBuffer.Get(), mesh.GetVertexCount(currentFrame), 1, 0, instances);
 }
 
-void Model::DrawIndexed(Vulkan::CommandBuffer& commandBuffer, const uint32_t frameIndex, const uint32_t& instances)
+void Model::DrawIndexed(Vulkan::CommandBuffer& commandBuffer,
+                        const uint32_t frameIndex,
+                        const uint32_t& instances)
 {
     vkCmdDrawIndexed(commandBuffer.Get(), mesh.GetIndexCount(frameIndex), 1, 0, 0, instances);
 }

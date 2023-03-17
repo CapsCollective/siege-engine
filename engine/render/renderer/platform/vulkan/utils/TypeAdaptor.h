@@ -204,8 +204,15 @@ DECL_VULKAN_SWITCH_FUN(VkImageLayout,
                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
                                SWITCH_DEFAULT(VK_IMAGE_LAYOUT_UNDEFINED))
 
-DECL_VULKAN_SWITCH_FUN(BufferType, VkBufferUsageFlagBits, SWITCH_MEM(VkBufferUsageFlagBits, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, INDEX_BUFFER) SWITCH_DEFAULT(VERTEX_BUFFER))
-DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits, BufferType, SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT) SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
+DECL_VULKAN_SWITCH_FUN(BufferType,
+                       VkBufferUsageFlagBits,
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                  INDEX_BUFFER) SWITCH_DEFAULT(VERTEX_BUFFER))
+DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits,
+                       BufferType,
+                       SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+                           SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
 
 //----------------------------------------- Structs -----------------------------------------------
 

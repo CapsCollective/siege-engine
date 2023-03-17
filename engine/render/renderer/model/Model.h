@@ -9,11 +9,11 @@
 #ifndef SIEGE_ENGINE_MODEL_H
 #define SIEGE_ENGINE_MODEL_H
 
+#include <utils/Colour.h>
 #include <utils/Hash.h>
 #include <utils/math/mat/Mat4.h>
 
 #include <unordered_map>
-#include <utils/Colour.h>
 
 #include "../buffer/Buffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
@@ -28,6 +28,7 @@ namespace Siege
 class Model
 {
 public:
+
     // TODO(Aryeh): Move model loading into a separate file? That way we can separate the Vertex
     // TODO(Aryeh): from this class
     struct ModelVertex3D
@@ -65,15 +66,21 @@ public:
     void Bind(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex);
     void BindIndexed(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex);
 
-    void Draw(Vulkan::CommandBuffer& commandBuffer, uint32_t currentFrame, const uint32_t& instances = 0);
-    void DrawIndexed(Vulkan::CommandBuffer& commandBuffer, const uint32_t frameIndex, const uint32_t& instance = 0);
+    void Draw(Vulkan::CommandBuffer& commandBuffer,
+              uint32_t currentFrame,
+              const uint32_t& instances = 0);
+    void DrawIndexed(Vulkan::CommandBuffer& commandBuffer,
+                     const uint32_t frameIndex,
+                     const uint32_t& instance = 0);
 
     Vulkan::Material* GetMaterial()
     {
         return material;
     }
 
-    void UpdateMeshIndexed(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData, const Vulkan::Mesh::IndexData& indices);
+    void UpdateMeshIndexed(uint32_t currentFrame,
+                           const Vulkan::Mesh::VertexData& vertexData,
+                           const Vulkan::Mesh::IndexData& indices);
     void UpdateMesh(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData);
     void SetMesh(Vulkan::Mesh&& newMesh);
     void SetMaterial(Vulkan::Material* newMaterial)
