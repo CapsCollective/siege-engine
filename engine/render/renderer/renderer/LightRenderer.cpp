@@ -13,6 +13,8 @@ namespace Siege
 void LightRenderer::Initialise(const String& globalDataAttributeName,
                                const uint64_t& globalDataSize)
 {
+    using Vulkan::Mesh;
+
     globalDataId = INTERN_STR(globalDataAttributeName);
 
     lightMaterial = Vulkan::Material(
@@ -26,7 +28,7 @@ void LightRenderer::Initialise(const String& globalDataAttributeName,
             .WithGlobalData3DUniform()
             .Build());
 
-    lightModel.SetMesh({sizeof(Vec2), nullptr, 0, nullptr, 0});
+    lightModel.SetMesh(Mesh({sizeof(Vec2), nullptr, 0}, {nullptr, 0}));
 
     lightModel.SetMaterial(&lightMaterial);
 }
@@ -59,21 +61,24 @@ void LightRenderer::DrawPointLight(const Vec3& position,
 
 void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
-                           const void* globalData)
+                           const void* globalData,
+                           uint32_t currentFrame)
 {
     if (pointLightVertices.Count() == 0) return;
 
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lightMaterial.Bind(buffer);
 
-    lightModel.UpdateMesh({sizeof(Vec2),
-                           pointLightVertices.Data(),
-                           static_cast<uint32_t>(pointLightVertices.Count()),
-                           pointLightIndices.Data(),
-                           static_cast<uint32_t>(pointLightIndices.Count())});
+    lightModel.UpdateMeshIndexed(
+        currentFrame,
+        {sizeof(Vec2),
+         pointLightVertices.Data(),
+         static_cast<uint32_t>(pointLightVertices.Count())},
+        {pointLightIndices.Data(), static_cast<uint32_t>(pointLightIndices.Count())});
 
-    lightModel.Bind(buffer);
-    lightModel.Draw(buffer, 0);
+    lightModel.BindIndexed(buffer, currentFrame);
+
+    lightModel.DrawIndexed(buffer, currentFrame, 0);
 }
 
 void LightRenderer::Flush()

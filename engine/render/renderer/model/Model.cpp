@@ -17,9 +17,9 @@ namespace std
 // We need to use the Siege namespace here since the Hash functions only operate in the std
 // namespace
 template<>
-struct hash<Siege::Vertex>
+struct hash<Siege::Model::ModelVertex3D>
 {
-    size_t operator()(const Siege::Vertex& vertex) const
+    size_t operator()(const Siege::Model::ModelVertex3D& vertex) const
     {
         size_t seed = 0;
         Siege::Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
@@ -59,24 +59,18 @@ struct hash<Siege::Vec4>
         return seed;
     };
 };
-
-template<>
-struct hash<Siege::Vertex2D>
-{
-    size_t operator()(const Siege::Vertex2D& vertex) const
-    {
-        size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.position, vertex.color);
-        return seed;
-    };
-};
 } // namespace std
 
 namespace Siege
 {
-Model::Model(const Mesh::MeshData& meshData)
+Model::Model(const Vulkan::Mesh::VertexData& vertices, const Vulkan::Mesh::IndexData& indices)
 {
-    modelMesh.LoadVertices(meshData);
+    mesh = Vulkan::Mesh(vertices, indices);
+}
+
+Model::Model(Vulkan::Mesh&& newMesh)
+{
+    mesh = std::move(newMesh);
 }
 
 Model::Model(const String& filePath)
@@ -86,12 +80,12 @@ Model::Model(const String& filePath)
 
 Model::Model() {}
 
-// Destroy the vertex buffer and free the memory
+// Free the vertex buffer and free the memory
 Model::~Model() {}
 
 void Model::DestroyModel()
 {
-    modelMesh.DestroyMesh();
+    mesh.Free();
 }
 
 void Model::LoadModelFromFile(const String& filePath)
@@ -104,15 +98,15 @@ void Model::LoadModelFromFile(const String& filePath)
     CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath),
               (warn + err).c_str())
 
-    std::vector<Vertex> objVertices;
+    std::vector<ModelVertex3D> objVertices;
     std::vector<uint32_t> objIndices;
-    std::unordered_map<Vertex, uint32_t> uniqueVertices {};
+    std::unordered_map<ModelVertex3D, uint32_t> uniqueVertices {};
 
     for (const auto& shape : shapes)
     {
         for (const auto& index : shape.mesh.indices)
         {
-            Vertex vertex {};
+            ModelVertex3D vertex {};
 
             if (index.vertex_index >= 0)
             {
@@ -148,32 +142,51 @@ void Model::LoadModelFromFile(const String& filePath)
         }
     }
 
-    modelMesh.LoadVertices({sizeof(Vertex),
-                            objVertices.data(),
-                            static_cast<uint32_t>(objVertices.size()),
-                            objIndices.data(),
-                            static_cast<uint32_t>(objIndices.size())});
+    using Vulkan::Mesh;
+
+    SetMesh(
+        Mesh({sizeof(ModelVertex3D), objVertices.data(), static_cast<uint32_t>(objVertices.size())},
+             {objIndices.data(), static_cast<uint32_t>(objIndices.size())}));
 }
 
-void Model::UpdateMesh(const Mesh::MeshData& meshData)
+void Model::UpdateMeshIndexed(uint32_t currentFrame,
+                              const Vulkan::Mesh::VertexData& vertexData,
+                              const Vulkan::Mesh::IndexData& indices)
 {
-    modelMesh.UpdateVertices(meshData);
+    mesh.UpdateIndexed(vertexData, indices, currentFrame);
 }
 
-void Model::SetMesh(const Mesh::MeshData& meshData)
+void Model::UpdateMesh(uint32_t currentFrame, const Vulkan::Mesh::VertexData& vertexData)
 {
-    modelMesh.LoadVertices(meshData);
+    mesh.Update(vertexData, currentFrame);
 }
 
-void Model::Bind(Vulkan::CommandBuffer& commandBuffer)
+void Model::SetMesh(Vulkan::Mesh&& newMesh)
 {
-    modelMesh.Bind(commandBuffer);
+    mesh = std::move(newMesh);
 }
 
-void Model::Draw(Vulkan::CommandBuffer& commandBuffer, const uint32_t& instance)
+void Model::Bind(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex)
 {
-    if (modelMesh.HasIndexBuffer())
-        vkCmdDrawIndexed(commandBuffer.Get(), modelMesh.GetIndexCount(), 1, 0, 0, instance);
-    else vkCmdDraw(commandBuffer.Get(), modelMesh.GetVertexCount(), 1, 0, instance);
+    mesh.Bind(commandBuffer, frameIndex);
+}
+
+void Model::BindIndexed(Vulkan::CommandBuffer& commandBuffer, uint32_t frameIndex)
+{
+    mesh.BindIndexed(commandBuffer, frameIndex);
+}
+
+void Model::Draw(Vulkan::CommandBuffer& commandBuffer,
+                 uint32_t currentFrame,
+                 const uint32_t& instances)
+{
+    vkCmdDraw(commandBuffer.Get(), mesh.GetVertexCount(currentFrame), 1, 0, instances);
+}
+
+void Model::DrawIndexed(Vulkan::CommandBuffer& commandBuffer,
+                        const uint32_t frameIndex,
+                        const uint32_t& instances)
+{
+    vkCmdDrawIndexed(commandBuffer.Get(), mesh.GetIndexCount(frameIndex), 1, 0, 0, instances);
 }
 } // namespace Siege

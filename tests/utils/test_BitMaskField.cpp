@@ -14,26 +14,26 @@
 
 UTEST(test_BitSet, CreateBitSet)
 {
-    Siege::Utils::BitUtils::BitSet bitMask;
+    Siege::BitUtils::BitSet bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 }
 
 UTEST(test_BitSet, CreateBitMaskFieldWithSize)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(3);
+    Siege::BitUtils::BitSet bitMask(3);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 }
 
 UTEST(test_BitSet, CreateBitMaskWithCopyConstructor)
 {
-    Siege::Utils::BitUtils::BitSet bitMaskA(3);
+    Siege::BitUtils::BitSet bitMaskA(3);
 
     bitMaskA.SetBit(1);
     bitMaskA.SetBit(10);
 
-    Siege::Utils::BitUtils::BitSet bitMaskB(bitMaskA);
+    Siege::BitUtils::BitSet bitMaskB(bitMaskA);
 
     ASSERT_EQ(10, bitMaskB.LeftMostBit());
     ASSERT_TRUE(bitMaskB.IsSet(1));
@@ -42,12 +42,12 @@ UTEST(test_BitSet, CreateBitMaskWithCopyConstructor)
 
 UTEST(test_BitSet, CreateBitMaskFieldWithMoveConstructor)
 {
-    Siege::Utils::BitUtils::BitSet bitMaskA(3);
+    Siege::BitUtils::BitSet bitMaskA(3);
 
     bitMaskA.SetBit(1);
     bitMaskA.SetBit(10);
 
-    Siege::Utils::BitUtils::BitSet bitMaskB(std::move(bitMaskA));
+    Siege::BitUtils::BitSet bitMaskB(std::move(bitMaskA));
 
     ASSERT_EQ(10, bitMaskB.LeftMostBit());
     ASSERT_TRUE(bitMaskB.IsSet(1));
@@ -56,7 +56,7 @@ UTEST(test_BitSet, CreateBitMaskFieldWithMoveConstructor)
 
 UTEST(test_BitSet, AddValueToFirstBit)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -68,7 +68,7 @@ UTEST(test_BitSet, AddValueToFirstBit)
 
 UTEST(test_BitSet, AddValueToLastBit)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -80,7 +80,7 @@ UTEST(test_BitSet, AddValueToLastBit)
 
 UTEST(test_BitSet, AddValueToBitMask)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -92,7 +92,7 @@ UTEST(test_BitSet, AddValueToBitMask)
 
 UTEST(test_BitSet, GetLeftMostBit)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -113,7 +113,7 @@ UTEST(test_BitSet, GetLeftMostBit)
 
 UTEST(test_BitSet, RemoveBit)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -131,7 +131,7 @@ UTEST(test_BitSet, RemoveBit)
 
 UTEST(test_BitSet, RemoveBitFromAnotherByte)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(2);
+    Siege::BitUtils::BitSet bitMask(2);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -156,7 +156,7 @@ UTEST(test_BitSet, RemoveBitFromAnotherByte)
 UTEST(test_BitSet, RemoveBitFromALargeMask)
 {
     // 0000 0000 | 0100 0000 | 0000 1000 | 0100 0000 | 0001 0000
-    Siege::Utils::BitUtils::BitSet bitMask(5);
+    Siege::BitUtils::BitSet bitMask(5);
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -188,7 +188,7 @@ UTEST(test_BitSet, RemoveBitFromALargeMask)
 
 UTEST(test_BitSet, SetBitsToOne)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(1);
+    Siege::BitUtils::BitSet bitMask(1);
 
     bitMask.SetBitsToOne(2);
 
@@ -198,7 +198,7 @@ UTEST(test_BitSet, SetBitsToOne)
 
 UTEST(test_BitSet, SetLargeBitSetToOne)
 {
-    Siege::Utils::BitUtils::BitSet bitMask(3);
+    Siege::BitUtils::BitSet bitMask(3);
 
     // 0000 1111 1111 1111 1111 1111
     bitMask.SetBitsToOne(20);
@@ -211,8 +211,8 @@ UTEST(test_BitSet, SetLargeBitSetToOne)
 
 UTEST(test_BitSet, CopyBitField)
 {
-    Siege::Utils::BitUtils::BitSet bitMaskA(3);
-    Siege::Utils::BitUtils::BitSet bitMaskB(3);
+    Siege::BitUtils::BitSet bitMaskA(3);
+    Siege::BitUtils::BitSet bitMaskB(3);
 
     // BitMask: 0000 0001 0010 0000 0000 1010
     bitMaskA.SetBit(2);
@@ -235,8 +235,8 @@ UTEST(test_BitSet, CopyBitField)
 
 UTEST(test_BitSet, MoveBitField)
 {
-    Siege::Utils::BitUtils::BitSet bitMaskA(3);
-    Siege::Utils::BitUtils::BitSet bitMaskB(3);
+    Siege::BitUtils::BitSet bitMaskA(3);
+    Siege::BitUtils::BitSet bitMaskB(3);
 
     // BitMask: 0000 0001 0010 0000 0000 1010
     bitMaskA.SetBit(2);
@@ -263,14 +263,14 @@ UTEST(test_BitSet, MoveBitField)
 
 UTEST(test_SBitSet, CreateBitSet)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 }
 
 UTEST(test_SBitSet, AddValueToFirstBit)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -282,7 +282,7 @@ UTEST(test_SBitSet, AddValueToFirstBit)
 
 UTEST(test_SBitSet, AddValueToBitMask)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -294,7 +294,7 @@ UTEST(test_SBitSet, AddValueToBitMask)
 
 UTEST(test_SBitSet, GetLeftMostBit)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -315,7 +315,7 @@ UTEST(test_SBitSet, GetLeftMostBit)
 
 UTEST(test_SBitSet, RemoveBit)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -333,7 +333,7 @@ UTEST(test_SBitSet, RemoveBit)
 
 UTEST(test_SBitSet, RemoveBitFromAnotherByte)
 {
-    Siege::Utils::BitUtils::SBitSet<2> bitMask;
+    Siege::BitUtils::SBitSet<2> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -358,7 +358,7 @@ UTEST(test_SBitSet, RemoveBitFromAnotherByte)
 UTEST(test_SBitSet, RemoveBitFromALargeMask)
 {
     // 0000 0000 | 0100 0000 | 0000 1000 | 0100 0000 | 0001 0000
-    Siege::Utils::BitUtils::SBitSet<5> bitMask;
+    Siege::BitUtils::SBitSet<5> bitMask;
 
     ASSERT_EQ(0, bitMask.LeftMostBit());
 
@@ -390,7 +390,7 @@ UTEST(test_SBitSet, RemoveBitFromALargeMask)
 
 UTEST(test_SBitSet, SetBitsToOne)
 {
-    Siege::Utils::BitUtils::SBitSet<1> bitMask;
+    Siege::BitUtils::SBitSet<1> bitMask;
 
     bitMask.SetBitsToOne(2);
 
@@ -400,7 +400,7 @@ UTEST(test_SBitSet, SetBitsToOne)
 
 UTEST(test_SBitSet, SetLargeBitSetToOne)
 {
-    Siege::Utils::BitUtils::SBitSet<3> bitMask;
+    Siege::BitUtils::SBitSet<3> bitMask;
 
     // 0000 1111 1111 1111 1111 1111
     bitMask.SetBitsToOne(20);
@@ -413,8 +413,8 @@ UTEST(test_SBitSet, SetLargeBitSetToOne)
 
 UTEST(test_SBitSet, CopyBitField)
 {
-    Siege::Utils::BitUtils::SBitSet<3> bitMaskA;
-    Siege::Utils::BitUtils::SBitSet<3> bitMaskB;
+    Siege::BitUtils::SBitSet<3> bitMaskA;
+    Siege::BitUtils::SBitSet<3> bitMaskB;
 
     // BitMask: 0000 0001 0010 0000 0000 1010
     bitMaskA.SetBit(2);

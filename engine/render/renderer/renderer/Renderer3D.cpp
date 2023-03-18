@@ -72,19 +72,22 @@ void Renderer3D::DrawPointLight(const Vec3& position,
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
 
-void Renderer3D::Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& cameraData)
+void Renderer3D::Render(uint32_t currentFrame,
+                        Vulkan::CommandBuffer& commandBuffer,
+                        const CameraData& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
 
-    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
-    lightRenderer.Render(commandBuffer, globalDataSize, &global3DData);
-    debugRenderer.Render(commandBuffer, globalDataSize, &global3DData);
-    billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData);
+    lightRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    debugRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
 
 #ifdef ENABLE_GRID
     RenderGrid(commandBuffer, global3DData);
 #endif
+
+    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
 }
 
 void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour)

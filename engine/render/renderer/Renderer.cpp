@@ -32,6 +32,7 @@ Renderer::Renderer(Window& window) : window {window}
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1024);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1024);
+    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024);
 
     DescriptorPool::BuildPool();
 
@@ -46,14 +47,15 @@ Renderer::~Renderer()
     CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
+    Renderer2D::DestroyRenderer2D();
 }
 
 void Renderer::DrawFrame()
 {
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(commandBuffers, projection);
-    Renderer2D::Render(commandBuffers, global2DData);
+    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
+    Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
 }
 
 void Renderer::RecreateSwapChain()
@@ -110,6 +112,8 @@ bool Renderer::StartFrame()
 
 void Renderer::EndFrame()
 {
+    Renderer2D::Update();
+
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 
     auto& swapchain = context.GetSwapchain();

@@ -28,11 +28,10 @@ VkCommandBuffer CommandBuffer::AllocateCommandBuffer(VkDevice device, VkCommandP
     return commandBuffer;
 }
 
-::Siege::Utils::MHArray<VkCommandBuffer> CommandBuffer::AllocateCommandBuffers(VkDevice device,
-                                                                               VkCommandPool pool,
-                                                                               uint32_t count)
+MHArray<VkCommandBuffer> CommandBuffer::AllocateCommandBuffers(VkDevice device,
+                                                               VkCommandPool pool,
+                                                               uint32_t count)
 {
-    using ::Siege::Utils::MHArray;
     MHArray<VkCommandBuffer> buffers(count);
 
     VkCommandBufferAllocateInfo allocInfo {};

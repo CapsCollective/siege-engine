@@ -54,7 +54,9 @@ public:
 
     static void RecreateMaterials();
 
-    static void Render(Vulkan::CommandBuffer& commandBuffer, const CameraData& globalData);
+    static void Render(uint32_t currentFrame,
+                       Vulkan::CommandBuffer& commandBuffer,
+                       const CameraData& globalData);
     static void Flush();
 
     static void DestroyRenderer3D();

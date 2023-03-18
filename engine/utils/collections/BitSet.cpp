@@ -20,7 +20,7 @@
 // Macro for translating a byte value into an index position.
 #define GET_BIT_POS(pos) static_cast<size_t>(BitUtils::BIT_POSITION_##pos)
 
-namespace Siege::Utils::BitUtils
+namespace Siege::BitUtils
 {
 
 unsigned long UnsetBit(unsigned char* bitfield,
@@ -133,7 +133,7 @@ void AssertIsSet(const unsigned char* bitField, const unsigned long& index)
 BitSet::BitSet(const unsigned long& bytes) : leftMostBit {0}, size {bytes}
 {
     bitfield = static_cast<uint8_t*>(malloc(BYTE_MASK_SIZE * bytes));
-    ::Siege::Utils::BitUtils::Clear(bitfield, size);
+    ::Siege::BitUtils::Clear(bitfield, size);
 }
 
 BitSet::BitSet(const BitSet& other) : leftMostBit {other.leftMostBit}, size {other.size}
@@ -189,28 +189,28 @@ BitSet& BitSet::operator=(BitSet&& other)
 
 void BitSet::SetBit(const unsigned long& bit)
 {
-    leftMostBit = ::Siege::Utils::BitUtils::SetBit(bitfield, bit, leftMostBit);
+    leftMostBit = ::Siege::BitUtils::SetBit(bitfield, bit, leftMostBit);
 }
 
 bool BitSet::IsSet(const unsigned long& bit) const
 {
-    return ::Siege::Utils::BitUtils::IsSet(bitfield, bit);
+    return ::Siege::BitUtils::IsSet(bitfield, bit);
 }
 
 void BitSet::UnsetBit(const unsigned long& bit)
 {
-    leftMostBit = ::Siege::Utils::BitUtils::UnsetBit(bitfield, bit, leftMostBit, size);
+    leftMostBit = ::Siege::BitUtils::UnsetBit(bitfield, bit, leftMostBit, size);
 }
 
 void BitSet::SetBitsToOne(const unsigned long& bits)
 {
-    ::Siege::Utils::BitUtils::SetBitsToOne(bitfield, bits);
+    ::Siege::BitUtils::SetBitsToOne(bitfield, bits);
     leftMostBit = bits;
 }
 
 void BitSet::Clear()
 {
-    ::Siege::Utils::BitUtils::Clear(bitfield, size);
+    ::Siege::BitUtils::Clear(bitfield, size);
     leftMostBit = size = 0;
 }
 
@@ -247,4 +247,4 @@ void BitSet::ResetValues()
     bitfield = nullptr;
     leftMostBit = size = 0;
 }
-} // namespace Siege::Utils::BitUtils
+} // namespace Siege::BitUtils

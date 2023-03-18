@@ -36,7 +36,8 @@ void ModelRenderer::DrawModel(Model* model,
 
 void ModelRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
-                           const void* globalData)
+                           const void* globalData,
+                           uint32_t currentFrame)
 {
     if (models.Count() == 0) return;
 
@@ -57,10 +58,10 @@ void ModelRenderer::Render(Vulkan::CommandBuffer& buffer,
         if (currentModel != model)
         {
             currentModel = model;
-            currentModel->Bind(buffer);
+            currentModel->BindIndexed(buffer, currentFrame);
         }
 
-        model->Draw(buffer, i);
+        model->DrawIndexed(buffer, currentFrame, i);
     }
 
     currentModel = nullptr;

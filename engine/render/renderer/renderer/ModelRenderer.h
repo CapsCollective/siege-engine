@@ -28,7 +28,8 @@ public:
 
     void Render(Vulkan::CommandBuffer& buffer,
                 const uint64_t& globalDataSize,
-                const void* globalData);
+                const void* globalData,
+                uint32_t currentFrame);
 
     void Flush();
 
@@ -42,8 +43,8 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId transformId;
 
-    Utils::MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
-    Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    MSArray<Model::Transform, MAX_OBJECT_TRANSFORMS> transforms;
+    MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
 
     Vulkan::Material* currentMaterial {nullptr};
     Model* currentModel {nullptr};

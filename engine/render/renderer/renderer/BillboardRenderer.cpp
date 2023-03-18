@@ -16,6 +16,8 @@ BillboardRenderer::~BillboardRenderer() {}
 void BillboardRenderer::Initialise(const String& globalDataAttributeName,
                                    const uint64_t& globalDataSize)
 {
+    using Vulkan::Mesh;
+
     globalDataId = INTERN_STR(globalDataAttributeName);
     positionsId = INTERN_STR("positions");
 
@@ -29,7 +31,7 @@ void BillboardRenderer::Initialise(const String& globalDataAttributeName,
             .Build(),
         Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/billboard.frag.spv").Build());
 
-    billboardModel.SetMesh({sizeof(BillboardVertex), nullptr, 0, nullptr, 0});
+    billboardModel.SetMesh(Mesh({sizeof(BillboardVertex), nullptr, 0}, {nullptr, 0}));
 
     billboardModel.SetMaterial(&billboardMaterial);
 }
@@ -69,7 +71,8 @@ void BillboardRenderer::DrawBillboard(const Vec3& position,
 
 void BillboardRenderer::Render(Vulkan::CommandBuffer& buffer,
                                const uint64_t& globalDataSize,
-                               const void* globalData)
+                               const void* globalData,
+                               uint32_t currentFrame)
 {
     if (vertices.Count() == 0) return;
 
@@ -79,14 +82,13 @@ void BillboardRenderer::Render(Vulkan::CommandBuffer& buffer,
                                      positions.Data());
     billboardMaterial.Bind(buffer);
 
-    billboardModel.UpdateMesh({sizeof(BillboardVertex),
-                               vertices.Data(),
-                               static_cast<uint32_t>(vertices.Count()),
-                               indices.Data(),
-                               static_cast<uint32_t>(indices.Count())});
+    billboardModel.UpdateMeshIndexed(
+        currentFrame,
+        {sizeof(BillboardVertex), vertices.Data(), static_cast<uint32_t>(vertices.Count())},
+        {indices.Data(), static_cast<uint32_t>(indices.Count())});
 
-    billboardModel.Bind(buffer);
-    billboardModel.Draw(buffer);
+    billboardModel.BindIndexed(buffer, currentFrame);
+    billboardModel.DrawIndexed(buffer, currentFrame);
 }
 
 void BillboardRenderer::Flush()

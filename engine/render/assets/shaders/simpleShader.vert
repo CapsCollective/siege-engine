@@ -40,7 +40,7 @@ layout (binding = 1) uniform GlobalData {
 
 void main() {
 
-    ObjectData object = objectBuffer.objects[gl_BaseInstance];
+    ObjectData object = objectBuffer.objects[gl_InstanceIndex];
 
     vec4 positionWorld = object.transform * vec4(position, 1.0);
 

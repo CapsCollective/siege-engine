@@ -14,7 +14,7 @@
 
 namespace Siege::Vulkan::Utils::Shader
 {
-VkShaderModule CreateShaderModule(::Siege::Utils::MHArray<char> binary)
+VkShaderModule CreateShaderModule(MHArray<char> binary)
 {
     VkShaderModule shaderModule {nullptr};
 

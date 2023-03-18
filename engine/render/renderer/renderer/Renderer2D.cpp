@@ -12,84 +12,106 @@
 
 namespace Siege
 {
-Hash::StringId Renderer2D::transformId;
 Hash::StringId Renderer2D::globalDataId;
 
-uint64_t Renderer2D::transformSize = sizeof(Model::Transform2D) * MAX_OBJECT_TRANSFORMS;
+MSArray<Renderer2D::QuadPushConstant, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::pushConstants;
 
-Utils::MSArray<Model::Transform2D, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::transforms;
-Utils::MSArray<Model*, Renderer2D::MAX_OBJECT_TRANSFORMS> Renderer2D::models;
-
-Vulkan::Material* Renderer2D::currentMaterial = nullptr;
-Model* Renderer2D::currentModel = nullptr;
+Model Renderer2D::quadModel;
+Vulkan::Material Renderer2D::defaultMaterial;
+Vulkan::Texture2D Renderer2D::defaultTexture;
 
 void Renderer2D::Initialise()
 {
-    transformId = INTERN_STR("transforms");
     globalDataId = INTERN_STR("globalData");
+
+    using Vulkan::Material;
+    using Vulkan::Mesh;
+    using Vulkan::Shader;
+
+    defaultTexture = Siege::Vulkan::Texture2D("default");
+
+    defaultMaterial =
+        Material(Shader::Builder()
+                     .FromVertexShader("assets/shaders/texturedQuad.vert.spv")
+                     .WithVertexBinding(
+                         Shader::VertexBinding().AddFloatVec2Attribute().AddFloatVec2Attribute())
+                     .WithGlobalData2DUniform()
+                     .WithPushConstant(sizeof(QuadPushConstant))
+                     .Build(),
+                 Shader::Builder()
+                     .FromFragmentShader("assets/shaders/texturedQuad.frag.spv")
+                     .WithTexture("texture", 0, 16)
+                     .WithDefaultTexture(&defaultTexture)
+                     .Build());
+
+    QuadVertex quadVertices[] = {{{1.f, 1.f}, {1.f, 1.f}},
+                                 {{1.f, -1.f}, {1.f, 0.f}},
+                                 {{-1.f, -1.f}, {0.f, 0.f}},
+                                 {{-1.f, 1.f}, {0.f, 1.f}}};
+
+    uint32_t quadIndices[] = {0, 1, 3, 1, 2, 3};
+
+    quadModel.SetMesh(Mesh({sizeof(QuadVertex), quadVertices, 4}, {quadIndices, 6}));
+
+    quadModel.SetMaterial(&defaultMaterial);
 }
 
-void Renderer2D::DrawModel(Model* model,
-                           const Vec2& position,
-                           const Vec2& scale,
-                           float rotation,
-                           float zIndex)
+void Renderer2D::DrawQuad(const Siege::Vec2& position,
+                          const Siege::Vec2& scale,
+                          const IColour& colour,
+                          const float& rotation,
+                          const float& zIndex,
+                          Vulkan::Texture2D* texture)
 {
-    models.Append(model);
+    auto targetTexture = texture == nullptr ? &defaultTexture : texture;
+
+    auto texIndex = defaultMaterial.SetTexture(INTERN_STR("texture"), targetTexture);
 
     auto transform = Graphics::CalculateTransform3D({position.x, position.y, zIndex},
                                                     {0.f, 0.f, rotation},
                                                     {scale.x, scale.y, 0.f});
-    transforms.Append({transform});
-}
-
-void Renderer2D::DrawModel(Model* model, const Vec2& position, const Vec2& scale, float zIndex)
-{
-    DrawModel(model, position, scale, 0.f, zIndex);
-}
-
-void Renderer2D::DrawModel(Model* model, const Vec2& position)
-{
-    DrawModel(model, position, {1.f, 1.f}, 0.f, 0.f);
+    pushConstants.Append({transform, ToFColour(colour), texIndex});
 }
 
 void Renderer2D::RecreateMaterials()
 {
-    if (currentMaterial) currentMaterial->Recreate();
+    defaultMaterial.Recreate();
 }
 
-void Renderer2D::Render(Vulkan::CommandBuffer& buffer, const GlobalData& globalData)
+void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
+                        const GlobalData& globalData,
+                        uint32_t frameIndex)
 {
-    if (models.Count() == 0) return;
+    if (pushConstants.Count() == 0) return;
 
-    for (size_t i = 0; i < models.Count(); i++)
+    defaultMaterial.SetUniformData(globalDataId, sizeof(GlobalData), &globalData);
+
+    quadModel.BindIndexed(buffer, frameIndex);
+
+    for (uint32_t i = 0; i < pushConstants.Count(); i++)
     {
-        auto model = models[i];
+        defaultMaterial.BindPushConstant(buffer, &pushConstants[i]);
 
-        if (currentMaterial != model->GetMaterial())
-        {
-            currentMaterial = model->GetMaterial();
-            currentMaterial->SetUniformData(transformId, transformSize, transforms.Data());
-            currentMaterial->SetUniformData(globalDataId, sizeof(globalData), &globalData);
-            currentMaterial->Bind(buffer);
-        }
+        defaultMaterial.Bind(buffer);
 
-        if (currentModel != model)
-        {
-            currentModel = model;
-            currentModel->Bind(buffer);
-        }
-
-        model->Draw(buffer, i);
+        quadModel.DrawIndexed(buffer, frameIndex, i);
     }
+}
 
-    currentModel = nullptr;
-    currentMaterial = nullptr;
+void Renderer2D::DestroyRenderer2D()
+{
+    quadModel.DestroyModel();
+    defaultTexture.Free();
+    defaultMaterial.Destroy();
 }
 
 void Renderer2D::Flush()
 {
-    models.Clear();
-    transforms.Clear();
+    pushConstants.Clear();
+}
+
+void Renderer2D::Update()
+{
+    defaultMaterial.Update();
 }
 } // namespace Siege

@@ -13,11 +13,15 @@
 namespace Siege::Vulkan::Utils::Pipeline
 {
 VkPipelineLayout CreatePipelineLayout(VkDevice device,
-                                      ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts)
+                                      MSArray<VkDescriptorSetLayout, 10> layouts,
+                                      VkPushConstantRange* range,
+                                      uint32_t pushConstantCount)
 {
     auto createInfo = defaultPipelineLayoutCreateInfo;
     createInfo.setLayoutCount = layouts.Count();
     createInfo.pSetLayouts = layouts.Data();
+    createInfo.pPushConstantRanges = range;
+    createInfo.pushConstantRangeCount = pushConstantCount;
 
     VkPipelineLayout layout {VK_NULL_HANDLE};
 

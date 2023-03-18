@@ -17,6 +17,8 @@ DebugRenderer3D::~DebugRenderer3D() {}
 void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
                                  const uint64_t& globalDataSize)
 {
+    using Vulkan::Mesh;
+
     globalDataId = INTERN_STR(globalDataAttributeName);
 
     lineMaterial = Vulkan::Material(
@@ -30,7 +32,7 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
         Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/line.frag.spv").Build());
 
     // Set empty mesh
-    lineModel.SetMesh({sizeof(LineVertex), nullptr, 0, nullptr, 0});
+    lineModel.SetMesh(Mesh({sizeof(LineVertex), nullptr, 0}));
 
     lineModel.SetMaterial(&lineMaterial);
 }
@@ -61,24 +63,26 @@ void DebugRenderer3D::Flush()
 
 void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
                                   const uint64_t& globalDataSize,
-                                  const void* globalData)
+                                  const void* globalData,
+                                  uint32_t currentFrame)
 {
     if (lines.Count() == 0) return;
 
     lineMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lineMaterial.Bind(buffer);
 
-    lineModel.UpdateMesh(
-        {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count()), nullptr, 0});
+    lineModel.UpdateMesh(currentFrame,
+                         {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count())});
 
-    lineModel.Bind(buffer);
-    lineModel.Draw(buffer, 0);
+    lineModel.Bind(buffer, currentFrame);
+    lineModel.Draw(buffer, currentFrame);
 }
 
 void DebugRenderer3D::Render(Vulkan::CommandBuffer& commandBuffer,
                              const uint64_t& globalDataSize,
-                             const void* globalData)
+                             const void* globalData,
+                             uint32_t currentFrame)
 {
-    RenderLines(commandBuffer, globalDataSize, globalData);
+    RenderLines(commandBuffer, globalDataSize, globalData, currentFrame);
 }
 } // namespace Siege

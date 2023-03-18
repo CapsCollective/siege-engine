@@ -12,6 +12,7 @@
 #include "CommandBuffer.h"
 #include "Pipeline.h"
 #include "Shader.h"
+#include "Texture2D.h"
 
 namespace Siege::Vulkan
 {
@@ -32,12 +33,15 @@ namespace Siege::Vulkan
  * @param bufferInfos an array holding buffer access information
  * @param writes an array holding uniform update structs. These are cached to avoid potentially
  * remaking every them every frame
+ * @param texture2DInfos a list of texture 2D rendering infos used in textures
+ * @param textureIds a list of texture IDs (used for checking the existence of textures)
  */
 class Material
 {
 public:
 
     static constexpr uint32_t MAX_UNIFORM_SETS = 2;
+    static constexpr uint32_t MAX_TEXTURES = 16;
     /**
      * An empty default constructor for the Material class
      */
@@ -77,10 +81,20 @@ public:
     void SetUniformData(Hash::StringId id, uint64_t dataSize, const void* data);
 
     /**
+     * TODO(Aryeh): Document this
+     * @param id
+     * @param index
+     * @param textureInfo
+     */
+    uint32_t SetTexture(Hash::StringId id, Texture2D* texture);
+
+    /**
      * Binds the Material for rendering (also binds the stored Pipeline)
      * @param commandBuffer the command buffer being used to record rendering information
      */
     void Bind(const CommandBuffer& commandBuffer);
+
+    void BindPushConstant(const CommandBuffer& buffer, const void* values);
 
     /**
      *  Recreates the Material pipeline (used primarily for window size changes)
@@ -115,6 +129,7 @@ private:
     {
         Hash::StringId id {0};
         uint32_t binding {0};
+        uint32_t count {0};
         uint64_t offset {0};
         uint64_t size {0};
         Utils::UniformType type {Utils::UNKNOWN};
@@ -132,8 +147,30 @@ private:
     struct PropertiesSlot
     {
         VkDescriptorSetLayout layout {VK_NULL_HANDLE};
-        ::Siege::Utils::MSArray<Property, 10> properties;
+        MSArray<Property, 10> properties;
     };
+
+    struct PushConstant
+    {
+        uint32_t size {0};
+        Utils::ShaderType type {Utils::EMPTY};
+    };
+
+    /**
+     * Finds a Property's index based on a provided ID
+     * @param id the ID to search for
+     * @param slot the slot to iterate through
+     * @return the index of the property, or -1 if the property wasn't found
+     */
+    int32_t FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot);
+
+    /**
+     * Finds a Texture's index based on a provided ID
+     * @param id the ID to search for
+     * @param slot the slot to iterate through
+     * @return the index of the texture, or -1 if the property wasn't found
+     */
+    int32_t FindTextureIndex(Hash::StringId id);
 
     /**
      * Swaps the contents of two Materials
@@ -153,6 +190,70 @@ private:
      */
     void WriteSet(uint32_t set, PropertiesSlot& slot);
 
+    /**
+     * Writes every set in the provided array
+     * @param sets an array of all sets to write to
+     */
+    void Write(MSArray<VkWriteDescriptorSet, 10>& sets);
+
+    /**
+     * Queues an image update to be written to at the end of the frame
+     * @param writeQueue the collection of write sets to queue into
+     * @param set the descriptor set to be written to
+     * @param binding the binding to write to
+     * @param count the number of descriptors to update
+     * @param index the index to start from
+     */
+    void QueueImageUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+                          VkDescriptorSet& set,
+                          uint32_t binding,
+                          uint32_t count = MAX_TEXTURES,
+                          uint32_t index = 0);
+
+    /**
+     * Queues a generic property update to be written to at the end of the frame
+     * @param writeQueue the collection of write sets to queue into
+     * @param set the descriptor set to be written to
+     * @param type the type of descriptor tio update
+     * @param binding the binding to write to
+     * @param count the number of descriptors to update
+     */
+    void QueuePropertyUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+                             VkDescriptorSet& set,
+                             Utils::UniformType type,
+                             uint32_t binding,
+                             uint32_t count);
+
+    /**
+     * Checks if a descriptor is a 2D texture
+     * @param type the property's type
+     * @return true if the type is a Texture2D, false if it isn't
+     */
+    inline bool IsTexture2D(Utils::UniformType type)
+    {
+        return type == Utils::TEXTURE2D;
+    }
+
+    /**
+     * Checks if a descriptor is a uniform
+     * @param type the property's type
+     * @return true if the type is a Texture2D, false if it isn't
+     */
+    inline bool IsUniform(Utils::UniformType type)
+    {
+        return type == Utils::UNIFORM;
+    }
+
+    /**
+     * Checks if a descriptor is a storage uniform
+     * @param type the property's type
+     * @return true if the type is a Texture2D, false if it isn't
+     */
+    inline bool IsStorage(Utils::UniformType type)
+    {
+        return type == Utils::STORAGE;
+    }
+
     Pipeline graphicsPipeline;
 
     Shader vertexShader;
@@ -161,13 +262,18 @@ private:
     uint64_t bufferSize {0};
     Buffer::Buffer buffer;
 
-    // TODO: Can probably bundle this into a struct?
-    ::Siege::Utils::MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
-    ::Siege::Utils::MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfos;
+    PushConstant pushConstant;
 
-    ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>>
-        perFrameDescriptorSets;
-    ::Siege::Utils::MHArray<::Siege::Utils::MSArray<VkWriteDescriptorSet, 10>> writes;
+    MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
+
+    // Descriptor set data
+    MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfos;
+    MHArray<MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>> perFrameDescriptorSets;
+    MHArray<MSArray<VkWriteDescriptorSet, 10>> writes;
+
+    // Texture data
+    MSArray<VkDescriptorImageInfo, MAX_TEXTURES> texture2DInfos;
+    MSArray<Hash::StringId, MAX_TEXTURES> textureIds;
 };
 } // namespace Siege::Vulkan
 

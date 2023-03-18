@@ -10,7 +10,7 @@
 #ifndef SIEGE_ENGINE_BITSET_H
 #define SIEGE_ENGINE_BITSET_H
 
-namespace Siege::Utils::BitUtils
+namespace Siege::BitUtils
 {
 /**
  * A set of enums representing the exact positions of specific bits in a byte based on their
@@ -352,7 +352,7 @@ public:
      */
     void UnsetBit(const unsigned long& bit)
     {
-        leftMostBit = ::Siege::Utils::BitUtils::UnsetBit(bitfield, bit, leftMostBit, S);
+        leftMostBit = BitUtils::UnsetBit(bitfield, bit, leftMostBit, S);
     }
 
     /**
@@ -361,7 +361,7 @@ public:
      */
     void SetBit(const unsigned long& bit)
     {
-        leftMostBit = ::Siege::Utils::BitUtils::SetBit(bitfield, bit, leftMostBit);
+        leftMostBit = BitUtils::SetBit(bitfield, bit, leftMostBit);
     }
 
     /**
@@ -371,7 +371,7 @@ public:
      */
     bool IsSet(const unsigned long& bit) const
     {
-        return ::Siege::Utils::BitUtils::IsSet(bitfield, bit);
+        return BitUtils::IsSet(bitfield, bit);
     }
 
     /**
@@ -381,7 +381,7 @@ public:
      */
     inline constexpr void SetBitsToOne(const unsigned long& bits)
     {
-        ::Siege::Utils::BitUtils::SetBitsToOne(bitfield, bits);
+        BitUtils::SetBitsToOne(bitfield, bits);
         leftMostBit = bits;
     }
 
@@ -391,7 +391,7 @@ public:
      * @return the position of the largest set bit (starting from 1). A 0 indicates that no
      * bits have been set.
      */
-    inline const unsigned long& LeftMostBit()
+    inline const unsigned long& LeftMostBit() const
     {
         return leftMostBit;
     }
@@ -401,7 +401,7 @@ public:
      */
     inline constexpr void Clear()
     {
-        ::Siege::Utils::BitUtils::Clear(bitfield, S);
+        BitUtils::Clear(bitfield, S);
         leftMostBit = 0;
     }
 
@@ -419,6 +419,6 @@ private:
     unsigned char bitfield[S] {0};
     unsigned long leftMostBit {0};
 };
-} // namespace Siege::Utils::BitUtils
+} // namespace Siege::BitUtils
 
 #endif // SIEGE_ENGINE_BITSET_H

@@ -106,7 +106,7 @@ public:
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
-    static Utils::MHArray<const char*> GetRequiredExtensions();
+    static MHArray<const char*> GetRequiredExtensions();
 
     void ToggleCursor(bool state)
     {

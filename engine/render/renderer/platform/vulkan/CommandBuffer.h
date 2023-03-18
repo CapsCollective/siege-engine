@@ -144,7 +144,7 @@ private:
      */
     void Swap(CommandBuffer& other);
 
-    ::Siege::Utils::MHArray<VkCommandBuffer> commandBuffers;
+    MHArray<VkCommandBuffer> commandBuffers;
     VkCommandBuffer activeCommandBuffer {nullptr};
     uint32_t currentActiveBufferIndex {0};
 };

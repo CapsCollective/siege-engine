@@ -21,8 +21,8 @@
 #ifdef __APPLE__
 #define REQUIRES_PORTABILITY_EXTENSION 1
 
-#define GET_MACOS_REQUIRED_EXTENSIONS(collection)                                              \
-    collection = Siege::Utils::MHArray<const char*>(collection.Data(), collection.Size() + 1); \
+#define GET_MACOS_REQUIRED_EXTENSIONS(collection)                                       \
+    collection = Siege::MHArray<const char*>(collection.Data(), collection.Size() + 1); \
     collection[collection.Size() - 1] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #else
 #define REQUIRES_PORTABILITY_EXTENSION 0
@@ -35,8 +35,8 @@
 
 #define SETUP_UTILS_MESSENGER SetupDebugMessenger();
 
-#define DEBUG_EXTENSIONS(name, extensions)                                               \
-    name = Siege::Utils::MHArray<const char*>(extensions.Data(), extensions.Size() + 1); \
+#define DEBUG_EXTENSIONS(name, extensions)                                        \
+    name = Siege::MHArray<const char*>(extensions.Data(), extensions.Size() + 1); \
     name[name.Size() - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
 #define CREATE_VULKAN_INSTANCE(appInfo, extensionCount, extensions, layerCount, layers, flags) \
@@ -53,7 +53,7 @@
 
 #define ASSERT_LAYERS_EXIST(...)
 #define DEBUG_EXTENSIONS(name, extensions) \
-    name = Siege::Utils::MHArray<const char*>(extensions.Data(), extensions.Size());
+    name = Siege::MHArray<const char*>(extensions.Data(), extensions.Size());
 
 #define SETUP_UTILS_MESSENGER
 
@@ -96,7 +96,7 @@ Instance& Instance::operator=(Instance&& other)
     return *this;
 }
 
-void Instance::CreateInstance(const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions)
+void Instance::CreateInstance(const Siege::MHArray<const char*>& requiredSurfaceExtensions)
 {
     ASSERT_LAYERS_EXIST(ValidateLayersExist)
 
@@ -107,7 +107,7 @@ void Instance::CreateInstance(const Siege::Utils::MHArray<const char*>& required
                                            VK_MAKE_API_VERSION(1, 0, 0, 0),
                                            VK_API_VERSION_1_3);
 
-    Siege::Utils::MHArray<const char*> extensions(requiredSurfaceExtensions.Size());
+    Siege::MHArray<const char*> extensions(requiredSurfaceExtensions.Size());
     DEBUG_EXTENSIONS(extensions, requiredSurfaceExtensions)
     GET_MACOS_REQUIRED_EXTENSIONS(extensions)
 
@@ -172,7 +172,7 @@ bool Instance::ValidateLayersExist()
 }
 
 void Instance::CheckInstanceExtensionsExist(
-    const Siege::Utils::MHArray<const char*>& requiredSurfaceExtensions)
+    const Siege::MHArray<const char*>& requiredSurfaceExtensions)
 {
     auto extensions = VulkanInstance::GetInstanceExtensionProperties();
 

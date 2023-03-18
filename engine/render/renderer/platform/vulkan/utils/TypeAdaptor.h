@@ -67,10 +67,12 @@ DECL_VULKAN_SWITCH_FUN(
     ImageFormat,
     SWITCH_MEM(ImageFormat, RED8UN, VK_FORMAT_R8_UNORM)
         SWITCH_MEM(ImageFormat, RED8UI, VK_FORMAT_R8_UINT)
-            SWITCH_MEM(ImageFormat, RED16UI, VK_FORMAT_R16_UINT)
-                SWITCH_MEM(ImageFormat, RED32UI, VK_FORMAT_R32_UINT)
-                    SWITCH_MEM(ImageFormat, RED32F, VK_FORMAT_R32_SFLOAT)
-                        SWITCH_MEM(ImageFormat, RG8, VK_FORMAT_R8G8_UNORM)
+            SWITCH_MEM(ImageFormat, RED16UI, VK_FORMAT_R16_UINT) SWITCH_MEM(ImageFormat,
+                                                                            RED32UI,
+                                                                            VK_FORMAT_R32_UINT)
+                SWITCH_MEM(ImageFormat, RED32F, VK_FORMAT_R32_SFLOAT)
+                    SWITCH_MEM(ImageFormat, RG8, VK_FORMAT_R8G8_UNORM)
+                        SWITCH_MEM(ImageFormat, RGBASRGB, VK_FORMAT_R8G8B8A8_SRGB)
                             SWITCH_MEM(ImageFormat, RG16F, VK_FORMAT_R16G16_SFLOAT)
                                 SWITCH_MEM(ImageFormat, RG32F, VK_FORMAT_R32G32_SFLOAT)
                                     SWITCH_MEM(ImageFormat, RGBA, VK_FORMAT_R8G8B8A8_UNORM)
@@ -97,10 +99,12 @@ DECL_VULKAN_SWITCH_FUN(
     VkFormat,
     SWITCH_MEM(VkFormat, VK_FORMAT_R8_UNORM, RED8UN) SWITCH_MEM(VkFormat, VK_FORMAT_R8_UINT, RED8UI)
         SWITCH_MEM(VkFormat, VK_FORMAT_R16_UINT, RED16UI)
-            SWITCH_MEM(VkFormat, VK_FORMAT_R32_UINT, RED32UI)
-                SWITCH_MEM(VkFormat, VK_FORMAT_R32_SFLOAT, RED32F) SWITCH_MEM(VkFormat,
-                                                                              VK_FORMAT_R8G8_UNORM,
-                                                                              RG8)
+            SWITCH_MEM(VkFormat, VK_FORMAT_R32_UINT, RED32UI) SWITCH_MEM(VkFormat,
+                                                                         VK_FORMAT_R32_SFLOAT,
+                                                                         RED32F)
+                SWITCH_MEM(VkFormat, VK_FORMAT_R8G8_UNORM, RG8) SWITCH_MEM(VkFormat,
+                                                                           VK_FORMAT_R8G8B8A8_SRGB,
+                                                                           RGBASRGB)
                     SWITCH_MEM(VkFormat, VK_FORMAT_R16G16_SFLOAT, RG16F)
                         SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, RG32F)
                             SWITCH_MEM(VkFormat, VK_FORMAT_R8G8B8A8_UNORM, RGBA)
@@ -120,7 +124,7 @@ DECL_VULKAN_SWITCH_FUN(
 
 DECL_VULKAN_SWITCH_FUN(VkDescriptorType,
                        UniformType,
-                       SWITCH_MEM(UniformType, TEXTURE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+                       SWITCH_MEM(UniformType, TEXTURE2D, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
                            SWITCH_MEM(UniformType, STORAGE, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
                                SWITCH_MEM(UniformType, UNIFORM, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
                                    SWITCH_DEFAULT(VK_DESCRIPTOR_TYPE_MAX_ENUM))
@@ -128,7 +132,7 @@ DECL_VULKAN_SWITCH_FUN(VkDescriptorType,
 DECL_VULKAN_SWITCH_FUN(
     UniformType,
     VkDescriptorType,
-    SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, TEXTURE)
+    SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, TEXTURE2D)
         SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, STORAGE)
             SWITCH_MEM(VkDescriptorType, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, UNIFORM)
                 SWITCH_DEFAULT(UNKNOWN))
@@ -149,17 +153,19 @@ DECL_VULKAN_SWITCH_FUN(
     VkFormat,
     VertexAttributeType,
     SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC2, VK_FORMAT_R32G32_SFLOAT)
-        SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC3, VK_FORMAT_R32G32B32_SFLOAT)
-            SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC4, VK_FORMAT_R32G32B32A32_SFLOAT)
-                SWITCH_DEFAULT(VK_FORMAT_UNDEFINED))
+        SWITCH_MEM(VertexAttributeType, VERTEX_UINT_32, VK_FORMAT_R32_UINT)
+            SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC3, VK_FORMAT_R32G32B32_SFLOAT)
+                SWITCH_MEM(VertexAttributeType, VERTEX_FLOAT_VEC4, VK_FORMAT_R32G32B32A32_SFLOAT)
+                    SWITCH_DEFAULT(VK_FORMAT_UNDEFINED))
 
 DECL_VULKAN_SWITCH_FUN(VertexAttributeType,
                        VkFormat,
                        SWITCH_MEM(VkFormat, VK_FORMAT_R32G32_SFLOAT, VERTEX_FLOAT_VEC2)
-                           SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32_SFLOAT, VERTEX_FLOAT_VEC3)
-                               SWITCH_MEM(VkFormat,
-                                          VK_FORMAT_R32G32B32A32_SFLOAT,
-                                          VERTEX_FLOAT_VEC4) SWITCH_DEFAULT(VERTEX_UNDEFINED))
+                           SWITCH_MEM(VkFormat, VK_FORMAT_R32_UINT, VERTEX_UINT_32)
+                               SWITCH_MEM(VkFormat, VK_FORMAT_R32G32B32_SFLOAT, VERTEX_FLOAT_VEC3)
+                                   SWITCH_MEM(VkFormat,
+                                              VK_FORMAT_R32G32B32A32_SFLOAT,
+                                              VERTEX_FLOAT_VEC4) SWITCH_DEFAULT(VERTEX_UNDEFINED))
 
 DECL_VULKAN_SWITCH_FUN(
     PipelineTopology,
@@ -179,6 +185,34 @@ DECL_VULKAN_SWITCH_FUN(
                        TOPOLOGY_TRIANGLE_LIST,
                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
                 SWITCH_DEFAULT(VK_PRIMITIVE_TOPOLOGY_POINT_LIST))
+
+DECL_VULKAN_SWITCH_FUN(
+    ImageLayout,
+    VkImageLayout,
+    SWITCH_MEM(VkImageLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, LAYOUT_TRANSFER_DST_OPTIMAL)
+        SWITCH_MEM(VkImageLayout,
+                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                   LAYOUT_SHADER_READ_ONLY_OPTIMAL) SWITCH_DEFAULT(LAYOUT_UNDEFINED))
+
+DECL_VULKAN_SWITCH_FUN(VkImageLayout,
+                       ImageLayout,
+                       SWITCH_MEM(ImageLayout,
+                                  LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+                           SWITCH_MEM(ImageLayout,
+                                      LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+                               SWITCH_DEFAULT(VK_IMAGE_LAYOUT_UNDEFINED))
+
+DECL_VULKAN_SWITCH_FUN(BufferType,
+                       VkBufferUsageFlagBits,
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                  INDEX_BUFFER) SWITCH_DEFAULT(VERTEX_BUFFER))
+DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits,
+                       BufferType,
+                       SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+                           SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
 
 //----------------------------------------- Structs -----------------------------------------------
 

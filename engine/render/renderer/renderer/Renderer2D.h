@@ -9,8 +9,11 @@
 #ifndef SIEGE_ENGINE_RENDERER2D_H
 #define SIEGE_ENGINE_RENDERER2D_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
+#include "render/renderer/platform/vulkan/Texture2D.h"
 
 namespace Siege
 {
@@ -24,34 +27,47 @@ public:
     };
 
     static void Initialise();
+    static void DestroyRenderer2D();
 
-    static void DrawModel(Model* model,
-                          const Vec2& position,
-                          const Vec2& scale,
-                          float rotation,
-                          float zIndex);
-    static void DrawModel(Model* model, const Vec2& position, const Vec2& scale, float zIndex);
-    static void DrawModel(Model* model, const Vec2& position);
+    static void DrawQuad(const Vec2& position,
+                         const Vec2& scale,
+                         const IColour& colour,
+                         const float& rotation,
+                         const float& zIndex,
+                         Vulkan::Texture2D* texture = nullptr);
 
     static void RecreateMaterials();
 
-    static void Render(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
+    static void Render(Vulkan::CommandBuffer& commandBuffer,
+                       const GlobalData& globalData,
+                       uint32_t frameIndex);
+    static void Update();
     static void Flush();
 
 private:
 
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
 
-    static Utils::MSArray<Model::Transform2D, MAX_OBJECT_TRANSFORMS> transforms;
-    static Utils::MSArray<Model*, MAX_OBJECT_TRANSFORMS> models;
+    struct QuadPushConstant
+    {
+        Mat4 transform;
+        FColour textureColour;
+        uint32_t textureIndex;
+    };
 
-    static uint64_t transformSize;
+    struct QuadVertex
+    {
+        Vec2 position;
+        Vec2 uv;
+    };
 
-    static Hash::StringId transformId;
     static Hash::StringId globalDataId;
 
-    static Vulkan::Material* currentMaterial;
-    static Model* currentModel;
+    static MSArray<QuadPushConstant, MAX_OBJECT_TRANSFORMS> pushConstants;
+
+    static Vulkan::Texture2D defaultTexture;
+    static Vulkan::Material defaultMaterial;
+    static Model quadModel;
 };
 } // namespace Siege
 

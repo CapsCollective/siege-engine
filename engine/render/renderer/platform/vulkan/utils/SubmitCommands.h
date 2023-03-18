@@ -77,10 +77,10 @@ struct SubmitGraphicsCommand
     void Submit(VkFence inFlightFence);
 
     VkQueue queue {VK_NULL_HANDLE};
-    ::Siege::Utils::MSArray<VkSemaphore, MAX_SEMAPHORES> waitSemaphores;
-    ::Siege::Utils::MSArray<VkCommandBuffer, MAX_COMMAND_BUFFERS> commandBuffers;
-    ::Siege::Utils::MSArray<VkSemaphore, MAX_SEMAPHORES> signalSemaphores;
-    ::Siege::Utils::MSArray<VkPipelineStageFlags, MAX_SEMAPHORES> waitDstStageMask;
+    MSArray<VkSemaphore, MAX_SEMAPHORES> waitSemaphores;
+    MSArray<VkCommandBuffer, MAX_COMMAND_BUFFERS> commandBuffers;
+    MSArray<VkSemaphore, MAX_SEMAPHORES> signalSemaphores;
+    MSArray<VkPipelineStageFlags, MAX_SEMAPHORES> waitDstStageMask;
 };
 
 /**
@@ -139,9 +139,9 @@ struct SubmitPresentCommand
     Utils::Result Submit();
 
     VkQueue queue {VK_NULL_HANDLE};
-    ::Siege::Utils::MSArray<VkSemaphore, MAX_SEMAPHORES> signalSemaphores;
-    ::Siege::Utils::MSArray<VkSwapchainKHR, MAX_SWAPCHAINS> swapchains;
-    ::Siege::Utils::MSArray<uint32_t, MAX_INDICES> indices;
+    MSArray<VkSemaphore, MAX_SEMAPHORES> signalSemaphores;
+    MSArray<VkSwapchainKHR, MAX_SWAPCHAINS> swapchains;
+    MSArray<uint32_t, MAX_INDICES> indices;
 };
 } // namespace Siege::Vulkan::Utils
 

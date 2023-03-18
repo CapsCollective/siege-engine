@@ -230,25 +230,24 @@ VkSurfaceCapabilitiesKHR Device::Physical::GetSurfaceCapabilities(VkPhysicalDevi
     return capabilities;
 }
 
-Siege::Utils::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(
-    VkPhysicalDevice device,
-    VkSurfaceKHR surface)
+Siege::MHArray<VkSurfaceFormatKHR> Device::Physical::GetSurfaceFormats(VkPhysicalDevice device,
+                                                                       VkSurfaceKHR surface)
 {
     uint32_t formatCount = GetSurfaceFormatCount(device, surface);
 
-    Siege::Utils::MHArray<VkSurfaceFormatKHR> formats(formatCount);
+    Siege::MHArray<VkSurfaceFormatKHR> formats(formatCount);
 
     Vulkan::Device::Physical::GetSurfaceFormats(device, surface, formatCount, formats.Data());
 
     return formats;
 }
 
-Siege::Utils::MHArray<VkPresentModeKHR> Device::Physical::GetPresentModes(VkPhysicalDevice device,
-                                                                          VkSurfaceKHR surface)
+Siege::MHArray<VkPresentModeKHR> Device::Physical::GetPresentModes(VkPhysicalDevice device,
+                                                                   VkSurfaceKHR surface)
 {
     uint32_t presentModeCount = Vulkan::Device::Physical::GetPresentModeCount(device, surface);
 
-    Siege::Utils::MHArray<VkPresentModeKHR> modes(presentModeCount);
+    Siege::MHArray<VkPresentModeKHR> modes(presentModeCount);
 
     Vulkan::Device::Physical::GetPresentModes(device, surface, presentModeCount, modes.Data());
 
@@ -337,7 +336,7 @@ VkPhysicalDeviceProperties Device::Physical::GetDeviceProperties(VkPhysicalDevic
     return properties;
 }
 
-Utils::MHArray<VkQueueFamilyProperties> Device::Physical::GetDeviceQueueFamilyIndices(
+MHArray<VkQueueFamilyProperties> Device::Physical::GetDeviceQueueFamilyIndices(
     VkPhysicalDevice device)
 {
     uint32_t queueFamilyCount = 0;
@@ -346,7 +345,7 @@ Utils::MHArray<VkQueueFamilyProperties> Device::Physical::GetDeviceQueueFamilyIn
     VkQueueFamilyProperties queueFamilies[queueFamilyCount];
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, OUT queueFamilies);
 
-    return Utils::MHArray<VkQueueFamilyProperties>(queueFamilies, queueFamilyCount);
+    return MHArray<VkQueueFamilyProperties>(queueFamilies, queueFamilyCount);
 }
 
 int32_t Device::Physical::GetMatchingQueueFamilyIndex(VkPhysicalDevice device,

@@ -71,7 +71,7 @@ VkInstanceCreateInfo CreateInfo(const VkApplicationInfo* appInfo,
             enabledExtensions};
 }
 
-Utils::MHArray<VkLayerProperties> GetInstanceLayerProperties()
+MHArray<VkLayerProperties> GetInstanceLayerProperties()
 {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(OUT & layerCount, nullptr);
@@ -79,10 +79,10 @@ Utils::MHArray<VkLayerProperties> GetInstanceLayerProperties()
     VkLayerProperties availableLayers[layerCount];
     vkEnumerateInstanceLayerProperties(&layerCount, OUT availableLayers);
 
-    return Utils::MHArray<VkLayerProperties>(availableLayers, layerCount);
+    return MHArray<VkLayerProperties>(availableLayers, layerCount);
 }
 
-Utils::MHArray<VkExtensionProperties> GetInstanceExtensionProperties()
+MHArray<VkExtensionProperties> GetInstanceExtensionProperties()
 {
     // Get an array of all available instance extensions.
     uint32_t extensionCount = 0;
@@ -90,7 +90,7 @@ Utils::MHArray<VkExtensionProperties> GetInstanceExtensionProperties()
     VkExtensionProperties extensions[extensionCount];
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, OUT extensions);
 
-    return Utils::MHArray<VkExtensionProperties>(extensions, extensionCount);
+    return MHArray<VkExtensionProperties>(extensions, extensionCount);
 }
 
 void Create(const VkInstanceCreateInfo* createInfo,

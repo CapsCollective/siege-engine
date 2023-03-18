@@ -14,7 +14,11 @@
 #include "BitSet.h"
 #include "Iterators.h"
 
-namespace Siege::Utils
+#define MSA(type, count) Siege::MSArray<type, count>
+#define MSA_IT(type, count, name) LAMBDA(MSA(type, count) & name)
+#define MSA_IT_I(type, count, name, idxName) LAMBDA(MSA(type, count) & name, size_t idxName)
+
+namespace Siege
 {
 /**
  * The Array (StackArray) is a simple wrapper around C arrays which adds some convenience (such
@@ -145,7 +149,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::Iter<SArray<T, S>, T> CreateIterator()
+    constexpr inline Iter<SArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -155,7 +159,7 @@ public:
      * array, regardless of whether they have been assigned to.
      * @return an Iter instance to iterate over the array
      */
-    constexpr inline Utils::ConstIter<SArray<T, S>, T> CreateIterator() const
+    constexpr inline ConstIter<SArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -449,6 +453,7 @@ public:
     inline void Clear()
     {
         bitField.Clear();
+        memset(data, 0, sizeof(T) * S);
         count = 0;
     }
 
@@ -458,7 +463,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::MIter<MSArray<T, S>, T> CreateIterator()
+    inline MIter<MSArray<T, S>, T> CreateIterator()
     {
         return {this};
     }
@@ -469,7 +474,7 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::CMIter<MSArray<T, S>, T> CreateIterator() const
+    inline CMIter<MSArray<T, S>, T> CreateIterator() const
     {
         return {this};
     }
@@ -480,7 +485,7 @@ public:
      * default iterator but is less safe
      * @return an Iter instance to iterate over the array
      */
-    Utils::Iter<MSArray<T, S>, T> CreateFIterator()
+    Iter<MSArray<T, S>, T> CreateFIterator()
     {
         return {this};
     }
@@ -491,11 +496,17 @@ public:
      * no garbage data is accessed
      * @return a MIter to iterate over the array
      */
-    inline Utils::ConstIter<MSArray<T, S>, T> CreateFIterator() const
+    inline ConstIter<MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -508,6 +519,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -519,6 +536,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -531,6 +554,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -542,6 +571,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -554,6 +589,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every single element - not just those that were assigned to
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -565,6 +606,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element-index pair. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -577,6 +624,12 @@ public:
         }
     }
 
+    /**
+     * Iterates over the array and runs the provided function for each element. This
+     * iterator works over every assigned element in the array
+     * @tparam F the function type
+     * @param func the function to run over every element
+     */
     template<typename F,
              typename = typename std::enable_if<
                  std::is_function<typename std::remove_reference<F>::type>::value>>
@@ -586,6 +639,24 @@ public:
         {
             func(*it);
         }
+    }
+
+    /**
+     * Returns the element in the MSArray
+     * @return the last element in the array
+     */
+    inline const T& Back() const
+    {
+        return data[bitField.LeftMostBit() - 1];
+    }
+
+    /**
+     * Returns the element in the MSArray
+     * @return the last element in the array
+     */
+    inline T& Back()
+    {
+        return data[bitField.LeftMostBit() - 1];
     }
 
 private:
@@ -640,6 +711,6 @@ private:
     BitUtils::SBitSet<(S / BitUtils::BYTE_SIZE_IN_BITS) + 1> bitField;
     size_t count {0};
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_STACK_ARRAY_H

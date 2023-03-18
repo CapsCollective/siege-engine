@@ -13,7 +13,7 @@
 
 #include "utils/collections/StackArray.h"
 
-using Siege::Utils::MSArray;
+using Siege::MSArray;
 
 UTEST(test_MSArray, CreateEmptyMSArray)
 {
@@ -885,4 +885,14 @@ UTEST(test_MSArray, IterateOverEmptyArrayWithManagedFunctionAndIndex)
     array.MForEachI([&](uint32_t& val, size_t i) { iterations++; });
 
     ASSERT_EQ(0, iterations);
+}
+
+UTEST(test_MSArray, GetItemAtBackOfMSArray)
+{
+    MSArray<uint32_t, 5> arrayA {0, 1, 2, 3, 4};
+    const MSArray<uint32_t, 5> arrayB {0, 1, 2, 3, 4};
+
+    ASSERT_EQ(4, arrayA.Back());
+
+    ASSERT_EQ(4, arrayB.Back());
 }

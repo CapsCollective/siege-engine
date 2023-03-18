@@ -13,6 +13,7 @@
 #include <utils/collections/HeapArray.h>
 #include <utils/collections/StackArray.h>
 
+#include "Texture2D.h"
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Types.h"
 
@@ -44,6 +45,7 @@ public:
         uint32_t totalSize {0};
         uint32_t set {0};
         uint32_t slot {0};
+        uint32_t count {0};
         Utils::UniformType type {Utils::UNKNOWN};
     };
 
@@ -92,9 +94,16 @@ public:
          */
         VertexBinding& AddFloatVec2Attribute();
 
+        VertexBinding& AddU32Attribute();
+
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
-        ::Siege::Utils::MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
         uint32_t stride {0};
+    };
+
+    struct PushConstant
+    {
+        uint32_t size {0};
     };
 
     /**
@@ -155,6 +164,7 @@ public:
                              static_cast<uint32_t>(bufferSize * size),
                              set,
                              static_cast<uint32_t>(uniforms.Count()),
+                             count,
                              Utils::UNIFORM});
 
             totalUniformSize += (bufferSize * size) * count;
@@ -183,6 +193,7 @@ public:
                              static_cast<uint32_t>(bufferSize * size),
                              set,
                              static_cast<uint32_t>(uniforms.Count()),
+                             count,
                              Utils::STORAGE});
 
             totalUniformSize += (bufferSize * size) * count;
@@ -222,12 +233,18 @@ public:
          */
         Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
 
+        Builder& WithPushConstant(uint64_t size);
+
         /**
          * Specifies the expected vertex topology (triangle list, line list...etc)
          * @param topology an enum specifying the vertex topology
          * @return a reference to the current Builder object
          */
         Builder& WithVertexTopology(Utils::PipelineTopology topology);
+
+        Builder& WithTexture(const String& name, uint32_t set = 1, uint32_t count = 1);
+
+        Builder& WithDefaultTexture(const Texture2D* texture);
 
         /**
          * Builds a Shader and returns it (destroys the Builder in the process)
@@ -238,8 +255,10 @@ public:
         String filePath {""};
         Utils::PipelineTopology expectedTopology {Utils::PipelineTopology::TOPOLOGY_TRIANGLE_LIST};
         Utils::ShaderType type {Utils::ALL_GRAPHICS};
-        ::Siege::Utils::MSArray<Uniform, 10> uniforms;
-        ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+        MSArray<Uniform, 10> uniforms;
+        MSArray<VertexBinding, 5> vertexBindings;
+        Texture2D::Info defaultTextureInfo;
+        PushConstant pushConstant;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
     };
@@ -269,8 +288,10 @@ public:
     Shader(const String& filePath,
            Utils::ShaderType type,
            Utils::PipelineTopology expectedTopology,
-           ::Siege::Utils::MSArray<Uniform, 10> uniforms,
-           ::Siege::Utils::MSArray<VertexBinding, 5> vertices,
+           MSArray<Uniform, 10> uniforms,
+           MSArray<VertexBinding, 5> vertices,
+           Texture2D::Info tex2DInfo,
+           PushConstant pushConstant,
            size_t totalSize,
            uint32_t totalVertexAttributes);
 
@@ -290,7 +311,7 @@ public:
 
     void Destroy();
 
-    static ::Siege::Utils::MHArray<char> ReadFileAsBinary(const String& filePath);
+    static MHArray<char> ReadFileAsBinary(const String& filePath);
 
     /**
      * A move assignment operator
@@ -318,6 +339,8 @@ public:
         expectedUniforms = other.expectedUniforms;
         vertexBindings = other.vertexBindings;
         totalUniformSize = other.totalUniformSize;
+        defaultTextureInfo = other.defaultTextureInfo;
+        pushConstant = other.pushConstant;
 
         return *this;
     }
@@ -326,12 +349,12 @@ public:
      * Returns all vertex bindings held by the Shader
      * @return a StackArray containing all VertexBindings
      */
-    inline const ::Siege::Utils::MSArray<VertexBinding, 5>& GetVertexBindings() const
+    inline const MSArray<VertexBinding, 5>& GetVertexBindings() const
     {
         return vertexBindings;
     }
 
-    inline const ::Siege::Utils::MSArray<Uniform, 10>& GetUniforms() const
+    inline const MSArray<Uniform, 10>& GetUniforms() const
     {
         return expectedUniforms;
     }
@@ -372,6 +395,26 @@ public:
         return type;
     }
 
+    inline const Texture2D::Info& GetDefaultTexture2DInfo() const
+    {
+        return defaultTextureInfo;
+    }
+
+    inline Texture2D::Info& GetDefaultTexture2DInfo()
+    {
+        return defaultTextureInfo;
+    }
+
+    inline const PushConstant GetPushConstant() const
+    {
+        return pushConstant;
+    }
+
+    inline const bool HasPushConstant() const
+    {
+        return pushConstant.size > 0;
+    }
+
 private:
 
     /**
@@ -390,8 +433,10 @@ private:
     Utils::ShaderType type {Utils::ShaderType::EMPTY};
     Utils::PipelineTopology expectedTopology {Utils::PipelineTopology::TOPOLOGY_TRIANGLE_LIST};
     VkShaderModule shaderModule {nullptr};
-    ::Siege::Utils::MSArray<Uniform, 10> expectedUniforms;
-    ::Siege::Utils::MSArray<VertexBinding, 5> vertexBindings;
+    MSArray<Uniform, 10> expectedUniforms;
+    MSArray<VertexBinding, 5> vertexBindings;
+    Texture2D::Info defaultTextureInfo {};
+    PushConstant pushConstant;
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};
 };

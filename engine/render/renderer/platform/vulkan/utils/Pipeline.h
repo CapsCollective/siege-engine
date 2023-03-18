@@ -134,7 +134,9 @@ inline constexpr VkPipelineShaderStageCreateInfo defaultFragmentShaderStageCreat
  * @return the newly created PipelineLayout
  */
 VkPipelineLayout CreatePipelineLayout(VkDevice device,
-                                      ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10> layouts);
+                                      MSArray<VkDescriptorSetLayout, 10> layouts,
+                                      VkPushConstantRange* range,
+                                      uint32_t pushConstantCount);
 /**
  * Creates a configured InputAssemblyInfo struct. This struct specifies how we expect the vertices
  * received by the shader to be formatted and linked

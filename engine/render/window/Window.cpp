@@ -29,12 +29,12 @@ bool Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
     return glfwCreateWindowSurface(instance, window, nullptr, surface) == VK_SUCCESS;
 }
 
-Utils::MHArray<const char*> Window::GetRequiredExtensions()
+MHArray<const char*> Window::GetRequiredExtensions()
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-    return Utils::MHArray<const char*>(glfwExtensions, glfwExtensionCount);
+    return MHArray<const char*>(glfwExtensions, glfwExtensionCount);
 }
 
 void Window::ResizeCallback(GLFWwindow* windowPtr, int width, int height)

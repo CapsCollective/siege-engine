@@ -18,7 +18,9 @@
 #include <initializer_list>
 #include <utility>
 
-namespace Siege::Utils
+#define LAMBDA(...) [&](__VA_ARGS__)
+
+namespace Siege
 {
 class ArrayUtils
 {
@@ -83,6 +85,6 @@ public:
                                   const unsigned long& min,
                                   const unsigned long& max);
 };
-} // namespace Siege::Utils
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_ARRAYUTILS_H

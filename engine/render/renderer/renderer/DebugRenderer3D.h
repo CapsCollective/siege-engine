@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_DEBUG_RENDERER3D_H
 #define SIEGE_ENGINE_DEBUG_RENDERER3D_H
 
+#include <utils/Colour.h>
+
 #include "../Core.h"
 #include "../model/Model.h"
 
@@ -26,11 +28,11 @@ public:
 
     // Wire primitives
     void DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour);
-    void DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& scale);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
-                const void* globalData);
+                const void* globalData,
+                uint32_t currentFrame);
 
     void Flush();
 
@@ -46,7 +48,8 @@ private:
 
     void RenderLines(Vulkan::CommandBuffer& commandBuffer,
                      const uint64_t& globalDataSize,
-                     const void* globalData);
+                     const void* globalData,
+                     uint32_t currentFrame);
 
     Vec3 lineColor;
 
@@ -55,8 +58,7 @@ private:
 
     Hash::StringId globalDataId;
 
-    Utils::MSArray<LineVertex, Mesh::MAX_VERTICES> lines;
-    Utils::MSArray<Vec3, Mesh::MAX_VERTICES> rects;
+    MSArray<LineVertex, Vulkan::Mesh::MAX_VERTICES> lines;
 };
 } // namespace Siege
 

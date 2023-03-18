@@ -48,9 +48,15 @@ Pipeline::Builder& Pipeline::Builder::WithFragmentShader(const Shader* fragShade
 }
 
 Pipeline::Builder& Pipeline::Builder::WithProperties(
-    const ::Siege::Utils::MSArray<VkDescriptorSetLayout, 10>& layouts)
+    const MSArray<VkDescriptorSetLayout, 10>& layouts)
 {
     descriptorLayouts = layouts;
+    return *this;
+}
+
+Pipeline::Builder& Pipeline::Builder::WithPushConstant(uint32_t size, Utils::ShaderType type)
+{
+    pushConstant = {size, type};
     return *this;
 }
 
@@ -62,7 +68,13 @@ Pipeline Pipeline::Builder::Build()
 
     using namespace Utils::Pipeline;
 
-    newPipeline.layout = CreatePipelineLayout(device, descriptorLayouts);
+    // We're assuming for now that we'll only ever have one push constant at any point in time
+    VkPushConstantRange range {Utils::ToVkShaderStageFlagBits(pushConstant.type),
+                               0,
+                               pushConstant.size};
+
+    newPipeline.layout =
+        CreatePipelineLayout(device, descriptorLayouts, &range, pushConstant.size > 0);
 
     auto inputAssembly =
         CreateInputAssembly(ToVkPrimitiveTopology(vertexShader->GetVertexTopology()));
@@ -74,7 +86,7 @@ Pipeline Pipeline::Builder::Build()
 
     // Get shader number and their stages.
 
-    ::Siege::Utils::MSArray<VkPipelineShaderStageCreateInfo, 5> shaderStages {
+    MSArray<VkPipelineShaderStageCreateInfo, 5> shaderStages {
         CreateVertexShaderStage(vertexShader->GetShaderModule()),
         CreateFragmentShaderStage(fragmentShader->GetShaderModule()),
     };
@@ -165,8 +177,7 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
     vkCmdBindPipeline(commandBuffer.Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 }
 
-void Pipeline::BindSets(const CommandBuffer& commandBuffer,
-                        ::Siege::Utils::MSArray<VkDescriptorSet, 2> sets)
+void Pipeline::BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptorSet, 2> sets)
 {
     vkCmdBindDescriptorSets(commandBuffer.Get(),
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -176,6 +187,19 @@ void Pipeline::BindSets(const CommandBuffer& commandBuffer,
                             sets.Data(),
                             0,
                             nullptr);
+}
+
+void Pipeline::PushConstants(const CommandBuffer& commandBuffer,
+                             Utils::ShaderType type,
+                             uint32_t size,
+                             const void* values)
+{
+    vkCmdPushConstants(commandBuffer.Get(),
+                       layout,
+                       Utils::ToVkShaderStageFlagBits(type),
+                       0,
+                       size,
+                       values);
 }
 
 void Pipeline::Swap(Pipeline& other)

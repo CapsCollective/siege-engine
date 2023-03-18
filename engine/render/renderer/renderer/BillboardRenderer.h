@@ -30,7 +30,8 @@ public:
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
-                const void* globalData);
+                const void* globalData,
+                uint32_t currentFrame);
 
     void Flush();
 
@@ -56,9 +57,9 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId positionsId;
 
-    Utils::MSArray<BillboardVertex, Mesh::MAX_VERTICES> vertices;
-    Utils::MSArray<uint32_t, Mesh::MAX_INDICES> indices;
-    Utils::MSArray<BillboardUBO, 1000> positions;
+    MSArray<BillboardVertex, Vulkan::Mesh::MAX_VERTICES> vertices;
+    MSArray<uint32_t, Vulkan::Mesh::MAX_INDICES> indices;
+    MSArray<BillboardUBO, 1000> positions;
 };
 } // namespace Siege
 
