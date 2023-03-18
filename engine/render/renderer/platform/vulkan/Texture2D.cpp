@@ -15,6 +15,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <utils/Defer.h>
 #include <utils/Logging.h>
 
 namespace Siege::Vulkan
@@ -73,6 +74,7 @@ void Texture2D::LoadFromFile(const char* filePath)
     uint64_t imageSize = texWidth * texHeight * 4;
 
     uint8_t* pixelPtr = new uint8_t[imageSize];
+    defer([pixelPtr] { delete[] pixelPtr; });
 
     // Set the image to 0 so that we get no garbage data in the pixel array
     memset(pixelPtr, 0, imageSize);
@@ -102,8 +104,6 @@ void Texture2D::LoadFromFile(const char* filePath)
     image.CopyBuffer(stagingBuffer.buffer);
 
     Buffer::DestroyBuffer(stagingBuffer);
-
-    delete[] pixelPtr;
 }
 
 void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height)
