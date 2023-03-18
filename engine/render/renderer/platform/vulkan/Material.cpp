@@ -54,32 +54,40 @@ Material::Material(Shader vertShader, Shader fragShader) :
     writes = MHArray<MSArray<VkWriteDescriptorSet, 10>>(framesCount);
 
     // Create Descriptor Set Layout for Sets
-    propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
+    for (auto slotIt = propertiesSlots.CreateIterator(); slotIt; ++slotIt)
+    {
         MSArray<VkDescriptorSetLayoutBinding, 10> bindings;
+
+        auto& slot = *slotIt;
 
         auto& properties = slot.properties;
 
-        properties.MForEachI([&](Property& prop, size_t j) {
-            bindings.Append(CreateLayoutBinding(j, prop.count, prop.type, prop.shaderStage));
-            prop.binding = j;
-        });
+        for (auto propIt = properties.CreateIterator(); propIt; ++propIt)
+        {
+            auto& prop = *propIt;
+            bindings.Append(
+                CreateLayoutBinding(propIt.GetIndex(), prop.count, prop.type, prop.shaderStage));
+            prop.binding = propIt.GetIndex();
+        }
 
         CC_ASSERT(CreateLayout(device, OUT slot.layout, bindings.Data(), properties.Count()),
                   "Failed to create descriptor set!")
 
-        perFrameDescriptorSets.ForEach(MSA_IT(VkDescriptorSet, MAX_UNIFORM_SETS, sets) {
+        for (auto setIt = perFrameDescriptorSets.CreateFIterator(); setIt; ++setIt)
+        {
+            auto& sets = *setIt;
             sets.Append(VK_NULL_HANDLE);
             AllocateSets(device,
                          OUT & sets.Back(),
                          DescriptorPool::GetDescriptorPool(),
                          1,
                          &slot.layout);
-        });
+        }
 
-        WriteSet(i, slot);
-    });
+        WriteSet(slotIt.GetIndex(), slot);
+    }
 
-    writes.MForEach(MSA_IT(VkWriteDescriptorSet, 10, sets) { Write(sets); });
+    for (auto writeIt = writes.CreateIterator(); writeIt; ++writeIt) Write(*writeIt);
 
     // Create Pipeline
     Recreate();
@@ -97,20 +105,23 @@ Material::~Material()
 
     Buffer::DestroyBuffer(buffer);
 
-    propertiesSlots.ForEach(
-        [&](PropertiesSlot& prop) { vkDestroyDescriptorSetLayout(device, prop.layout, nullptr); });
+    for (auto it = propertiesSlots.CreateFIterator(); it; ++it)
+    {
+        vkDestroyDescriptorSetLayout(device, it->layout, nullptr);
+    }
 }
 
-void Material::Destroy()
+void Material::Free()
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
     Buffer::DestroyBuffer(buffer);
 
-    propertiesSlots.MForEach([&](PropertiesSlot& prop) {
-        vkDestroyDescriptorSetLayout(device, prop.layout, nullptr);
-        prop.layout = nullptr;
-    });
+    for (auto it = propertiesSlots.CreateFIterator(); it; ++it)
+    {
+        vkDestroyDescriptorSetLayout(device, it->layout, nullptr);
+        it->layout = nullptr;
+    }
 
     vertexShader.Destroy();
     fragmentShader.Destroy();
@@ -151,11 +162,14 @@ uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
     texIndex = textureIds.Count();
     textureIds.Append(texture->GetId());
 
-    propertiesSlots.MForEachI([&](PropertiesSlot& slot, size_t i) {
+    for (auto it = propertiesSlots.CreateIterator(); it; ++it)
+    {
+        auto& slot = *it;
         auto& properties = slot.properties;
+
         auto propIdx = FindPropertyIndex(id, slot);
 
-        if (propIdx == -1) return;
+        if (propIdx == -1) continue;
 
         auto info = texture->GetInfo();
 
@@ -163,14 +177,19 @@ uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
                                     info.imageInfo.view,
                                     ToVkImageLayout(info.imageInfo.layout)};
 
-        if (writeSets.Count() > 0) return;
+        if (writeSets.Count() > 0) break;
 
         auto prop = properties[propIdx];
 
-        writes.ForEachI(MSA_IT_I(VkWriteDescriptorSet, 10, sets, j) {
-            QueueImageUpdate(sets, perFrameDescriptorSets[j][i], prop.binding, prop.count, 0);
-        });
-    });
+        for (auto write = writes.CreateFIterator(); write; ++write)
+        {
+            QueueImageUpdate(*write,
+                             perFrameDescriptorSets[write.GetIndex()][it.GetIndex()],
+                             prop.binding,
+                             prop.count,
+                             0);
+        }
+    }
 
     return texIndex;
 }
@@ -238,16 +257,19 @@ void Material::Bind(const CommandBuffer& commandBuffer)
     graphicsPipeline.BindSets(commandBuffer, perFrameDescriptorSets[frameIndex]);
 }
 
-void Material::BindPushConstant(const CommandBuffer& buffer, const void* values)
+void Material::BindPushConstant(const CommandBuffer& commandBuffer, const void* values)
 {
-    graphicsPipeline.PushConstants(buffer, pushConstant.type, pushConstant.size, values);
+    graphicsPipeline.PushConstants(commandBuffer, pushConstant.type, pushConstant.size, values);
 }
 
 void Material::Recreate()
 {
     MSArray<VkDescriptorSetLayout, 10> layouts;
 
-    propertiesSlots.MForEach([&](PropertiesSlot& slot) { layouts.Append(slot.layout); });
+    for (auto it = propertiesSlots.CreateIterator(); it; ++it)
+    {
+        layouts.Append((*it).layout);
+    }
 
     graphicsPipeline = Pipeline::Builder()
                            .WithRenderPass(Context::GetSwapchain().GetRenderPass())
@@ -273,14 +295,15 @@ void Material::Update()
 
 void Material::Update(Hash::StringId id)
 {
-    propertiesSlots.ForEachI([&](PropertiesSlot& slot, size_t i) {
-        auto propertyIndex = FindPropertyIndex(id, slot);
+    for (auto it = propertiesSlots.CreateFIterator(); it; ++it)
+    {
+        auto propertyIndex = FindPropertyIndex(id, *it);
 
         if (propertyIndex == -1) return;
 
         auto& setsToWrite = writes[Renderer::GetCurrentFrameIndex()];
         Write(setsToWrite);
-    });
+    }
 }
 
 void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
@@ -290,13 +313,23 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
 
     auto& properties = slot.properties;
 
-    properties.MForEachI([&](Property& prop, size_t i) {
+    for (auto propIt = properties.CreateIterator(); propIt; ++propIt)
+    {
+        auto prop = *propIt;
         bufferInfos.Append(CreateBufferInfo(buffer.buffer, prop.offset, prop.size));
-        perFrameDescriptorSets.ForEachI(MSA_IT_I(VkDescriptorSet, MAX_UNIFORM_SETS, sets, j) {
-            if (IsTexture2D(prop.type)) QueueImageUpdate(writes[j], sets[set], i);
-            else QueuePropertyUpdate(writes[j], sets[set], prop.type, i, 1);
-        });
-    });
+        for (auto setIt = perFrameDescriptorSets.CreateFIterator(); setIt; ++setIt)
+        {
+            auto sets = *setIt;
+            if (IsTexture2D(prop.type))
+                QueueImageUpdate(writes[setIt.GetIndex()], sets[set], propIt.GetIndex());
+            else
+                QueuePropertyUpdate(writes[setIt.GetIndex()],
+                                    sets[set],
+                                    prop.type,
+                                    propIt.GetIndex(),
+                                    1);
+        }
+    }
 }
 
 void Material::Write(MSArray<VkWriteDescriptorSet, 10>& sets)
@@ -337,26 +370,28 @@ void Material::QueuePropertyUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue
 int32_t Material::FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot)
 {
     int32_t foundIdx {-1};
-    slot.properties.MForEachI([&](Property& property, size_t i) {
-        if (property.id == id)
+    for (auto it = slot.properties.CreateIterator(); it; ++it)
+    {
+        if (it->id == id)
         {
-            foundIdx = i;
-            return;
+            foundIdx = it.GetIndex();
+            break;
         }
-    });
+    }
     return foundIdx;
 }
 
 int32_t Material::FindTextureIndex(Hash::StringId id)
 {
     int32_t texExists = -1;
-    textureIds.MForEachI([&](Hash::StringId& texId, size_t i) {
-        if (id == texId)
+    for (auto it = textureIds.CreateIterator(); it; ++it)
+    {
+        if (id == *it)
         {
-            texExists = i;
-            return;
+            texExists = it.GetIndex();
+            break;
         }
-    });
+    }
     return texExists;
 }
 

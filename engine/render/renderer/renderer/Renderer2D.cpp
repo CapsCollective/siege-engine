@@ -102,7 +102,7 @@ void Renderer2D::DestroyRenderer2D()
 {
     quadModel.DestroyModel();
     defaultTexture.Free();
-    defaultMaterial.Destroy();
+    defaultMaterial.Free();
 }
 
 void Renderer2D::Flush()
