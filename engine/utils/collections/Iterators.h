@@ -88,6 +88,15 @@ public:
         return ptr->Data() != other.ptr->Data() && index != other.index;
     }
 
+    /**
+     * Returns the index currently held by the iterator
+     * @return returns the current index the iterator is on
+     */
+    inline constexpr size_t GetIndex() const
+    {
+        return index;
+    }
+
 private:
 
     /**
@@ -172,6 +181,15 @@ public:
     inline constexpr bool operator!=(const ConstIter& other) const
     {
         return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+    /**
+     * Returns the index currently held by the iterator
+     * @return returns the current index the iterator is on
+     */
+    inline constexpr size_t GetIndex() const
+    {
+        return index;
     }
 
 private:
@@ -270,6 +288,15 @@ public:
         return ptr->Data() != other.ptr->Data() && index != other.index;
     }
 
+    /**
+     * Returns the index currently held by the iterator
+     * @return returns the current index the iterator is on
+     */
+    inline constexpr size_t GetIndex() const
+    {
+        return index;
+    }
+
 private:
 
     /**
@@ -366,6 +393,15 @@ public:
     inline constexpr bool operator!=(const CMIter& other) const
     {
         return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+    /**
+     * Returns the index currently held by the iterator
+     * @return returns the current index the iterator is on
+     */
+    inline constexpr size_t GetIndex() const
+    {
+        return index;
     }
 
 private:

@@ -94,7 +94,7 @@ public:
      */
     void Bind(const CommandBuffer& commandBuffer);
 
-    void BindPushConstant(const CommandBuffer& buffer, const void* values);
+    void BindPushConstant(const CommandBuffer& commandBuffer, const void* values);
 
     /**
      *  Recreates the Material pipeline (used primarily for window size changes)

@@ -99,24 +99,30 @@ Pipeline Pipeline::Builder::Build()
     VkVertexInputAttributeDescription attributeDescriptions[vertexShader->GetTotalAttributeCount()];
 
     uint32_t processedAttributes = 0;
-    vertShaderVertices.MForEachI([&](const Shader::VertexBinding& binding, size_t i) {
-        inputDescriptions[i] = {static_cast<uint32_t>(i),
-                                binding.stride,
-                                VK_VERTEX_INPUT_RATE_VERTEX};
+
+    for (auto vertIt = vertShaderVertices.CreateIterator(); vertIt; ++vertIt)
+    {
+        auto index = vertIt.GetIndex();
+        auto& binding = *vertIt;
+        inputDescriptions[index] = {static_cast<uint32_t>(index),
+                                    binding.stride,
+                                    VK_VERTEX_INPUT_RATE_VERTEX};
 
         auto& attributes = binding.attributes;
 
-        attributes.MForEachI([&](const Shader::VertexAttribute& vertex, size_t j) {
-            size_t attributeIndex = j + processedAttributes;
+        for (auto attrIt = attributes.CreateIterator(); attrIt; ++attrIt)
+        {
+            auto& vertex = *attrIt;
+            auto attributeIndex = attrIt.GetIndex() + processedAttributes;
 
-            attributeDescriptions[attributeIndex] = {static_cast<uint32_t>(j),
-                                                     static_cast<uint32_t>(i),
+            attributeDescriptions[attributeIndex] = {static_cast<uint32_t>(attrIt.GetIndex()),
+                                                     static_cast<uint32_t>(vertIt.GetIndex()),
                                                      Utils::ToVkFormat(vertex.type),
                                                      vertex.offset};
-        });
+        }
 
         processedAttributes += attributes.Count();
-    });
+    }
 
     auto vertexInputCreateInfo =
         CreateVertexInputInfo(static_cast<uint32_t>(vertexShader->GetTotalAttributeCount()),
