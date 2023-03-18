@@ -107,11 +107,11 @@ Material::~Material()
 
     for (auto it = propertiesSlots.CreateFIterator(); it; ++it)
     {
-        vkDestroyDescriptorSetLayout(device, (*it).layout, nullptr);
+        vkDestroyDescriptorSetLayout(device, it->layout, nullptr);
     }
 }
 
-void Material::Destroy()
+void Material::Free()
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -119,9 +119,8 @@ void Material::Destroy()
 
     for (auto it = propertiesSlots.CreateFIterator(); it; ++it)
     {
-        auto& prop = *it;
-        vkDestroyDescriptorSetLayout(device, prop.layout, nullptr);
-        prop.layout = nullptr;
+        vkDestroyDescriptorSetLayout(device, it->layout, nullptr);
+        it->layout = nullptr;
     }
 
     vertexShader.Destroy();
@@ -373,7 +372,7 @@ int32_t Material::FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot)
     int32_t foundIdx {-1};
     for (auto it = slot.properties.CreateIterator(); it; ++it)
     {
-        if ((*it).id == id)
+        if (it->id == id)
         {
             foundIdx = it.GetIndex();
             break;

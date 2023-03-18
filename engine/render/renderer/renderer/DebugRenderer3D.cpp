@@ -39,7 +39,7 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
 
 void DebugRenderer3D::Destroy()
 {
-    lineMaterial.Destroy();
+    lineMaterial.Free();
     lineModel.DestroyModel();
 }
 

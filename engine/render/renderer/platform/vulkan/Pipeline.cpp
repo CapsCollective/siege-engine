@@ -102,11 +102,10 @@ Pipeline Pipeline::Builder::Build()
 
     for (auto vertIt = vertShaderVertices.CreateIterator(); vertIt; ++vertIt)
     {
-        auto index = vertIt.GetIndex();
         auto& binding = *vertIt;
-        inputDescriptions[index] = {static_cast<uint32_t>(index),
-                                    binding.stride,
-                                    VK_VERTEX_INPUT_RATE_VERTEX};
+        inputDescriptions[vertIt.GetIndex()] = {static_cast<uint32_t>(vertIt.GetIndex()),
+                                                binding.stride,
+                                                VK_VERTEX_INPUT_RATE_VERTEX};
 
         auto& attributes = binding.attributes;
 

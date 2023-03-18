@@ -89,6 +89,15 @@ public:
     }
 
     /**
+     * A de-referencing operator. Accesses a pointer to the current element
+     * @return a pointer to the element pointed to by the iterator
+     */
+    inline constexpr T* operator->() const
+    {
+        return ptr->Data() + index;
+    }
+
+    /**
      * Returns the index currently held by the iterator
      * @return returns the current index the iterator is on
      */
@@ -181,6 +190,15 @@ public:
     inline constexpr bool operator!=(const ConstIter& other) const
     {
         return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+    /**
+     * A de-referencing operator. Accesses a pointer to the current element
+     * @return a pointer to the element pointed to by the iterator
+     */
+    inline constexpr const T* operator->() const
+    {
+        return ptr->Data() + index;
     }
 
     /**
@@ -289,6 +307,15 @@ public:
     }
 
     /**
+     * A de-referencing operator. Accesses a pointer to the current element
+     * @return a pointer to the element pointed to by the iterator
+     */
+    inline constexpr T* operator->() const
+    {
+        return ptr->Data() + index;
+    }
+
+    /**
      * Returns the index currently held by the iterator
      * @return returns the current index the iterator is on
      */
@@ -393,6 +420,15 @@ public:
     inline constexpr bool operator!=(const CMIter& other) const
     {
         return ptr->Data() != other.ptr->Data() && index != other.index;
+    }
+
+    /**
+     * A de-referencing operator. Accesses a pointer to the current element
+     * @return a pointer to the element pointed to by the iterator
+     */
+    inline constexpr const T* operator->() const
+    {
+        return ptr->Data() + index;
     }
 
     /**

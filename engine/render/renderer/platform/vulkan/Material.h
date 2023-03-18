@@ -63,7 +63,7 @@ public:
      */
     ~Material();
 
-    void Destroy();
+    void Free();
 
     /**
      * A movement assignment operator
