@@ -14,10 +14,6 @@
 #include "BitSet.h"
 #include "Iterators.h"
 
-#define MSA(type, count) Siege::MSArray<type, count>
-#define MSA_IT(type, count, name) LAMBDA(MSA(type, count) & name)
-#define MSA_IT_I(type, count, name, idxName) LAMBDA(MSA(type, count) & name, size_t idxName)
-
 namespace Siege
 {
 /**
@@ -162,44 +158,6 @@ public:
     constexpr inline ConstIter<SArray<T, S>, T> CreateIterator() const
     {
         return {this};
-    }
-
-    template<typename F>
-    inline void ForEachI(F&& func)
-    {
-        size_t i = 0;
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    template<typename F>
-    inline void ForEach(F&& func)
-    {
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it);
-        }
-    }
-
-    template<typename F>
-    inline void ForEachI(F&& func) const
-    {
-        size_t i = 0;
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    template<typename F>
-    inline void ForEach(F&& func) const
-    {
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it);
-        }
     }
 
     T data[S];
@@ -499,146 +457,6 @@ public:
     inline ConstIter<MSArray<T, S>, T> CreateFIterator() const
     {
         return {this};
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element-index pair. This
-     * iterator works over every single element - not just those that were assigned to
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void ForEachI(F&& func)
-    {
-        size_t i = 0;
-        for (auto it = CreateFIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element. This
-     * iterator works over every single element - not just those that were assigned to
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void ForEach(F&& func)
-    {
-        for (auto it = CreateFIterator(); it; ++it)
-        {
-            func(*it);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element-index pair. This
-     * iterator works over every assigned element in the array
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void MForEachI(F&& func)
-    {
-        size_t i = 0;
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element. This
-     * iterator works over every assigned element in the array
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void MForEach(F&& func)
-    {
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element-index pair. This
-     * iterator works over every single element - not just those that were assigned to
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void ForEachI(F&& func) const
-    {
-        size_t i = 0;
-        for (auto it = CreateFIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element. This
-     * iterator works over every single element - not just those that were assigned to
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void ForEach(F&& func) const
-    {
-        for (auto it = CreateFIterator(); it; ++it)
-        {
-            func(*it);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element-index pair. This
-     * iterator works over every assigned element in the array
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void MForEachI(F&& func) const
-    {
-        size_t i = 0;
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it, i++);
-        }
-    }
-
-    /**
-     * Iterates over the array and runs the provided function for each element. This
-     * iterator works over every assigned element in the array
-     * @tparam F the function type
-     * @param func the function to run over every element
-     */
-    template<typename F,
-             typename = typename std::enable_if<
-                 std::is_function<typename std::remove_reference<F>::type>::value>>
-    inline void MForEach(F&& func) const
-    {
-        for (auto it = CreateIterator(); it; ++it)
-        {
-            func(*it);
-        }
     }
 
     /**
