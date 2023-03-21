@@ -51,6 +51,15 @@ CALL :SetupVulkanHeaders
 echo "Setting up Vulkan Loader"
 CALL :SetupVulkanLoader
 
+echo "Setting up ZLib"
+CALL :SetupZlib
+
+echo "Setting up LibPng"
+CALL :SetupLibPng
+
+echo "Setting up freeType"
+CALL :SetupFreeType
+
 echo "%*"| find "--include-validation-layers" >nul
 
 IF "%ERRORLEVEL%" EQU "0" CALL :SetupVulkanValidationLayers
@@ -127,6 +136,47 @@ EXIT /B 0
     mkdir %VULKAN_INCLUDE_DIR%
 
     robocopy %VULKAN_VENDOR_DIR%\Vulkan-Headers\include\vulkan %VULKAN_INCLUDE_DIR% **.h
+EXIT /B 0
+
+:SetupFreeType
+    echo "Cloning freeType..."
+
+    CALL :UpdateSubmodule freetype
+
+    set BUILD_DIR=%VENDOR_DIR%\freetype\build
+    set ZLIB_BUILD_DIR=%VENDOR_DIR%\zlib\build
+    set LIBPNG_BUILD_DIR=%VENDOR_DIR%\libpng
+
+    cmake -G "%GENERATOR%" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DCMAKE_INSTALL_PREFIX=%BUILD_DIR% -DZLIB_LIBRARY=%ZLIB_BUILD_DIR%\lib\libz.a -DZLIB_INCLUDE_DIR=%ZLIB_BUILD_DIR%\include -DPNG_LIBRARY=%LIBPNG_BUILD_DIR%\libpng.a -DPNG_PNG_INCLUDE_DIR=%LIBPNG_BUILD_DIR% -B%BUILD_DIR% -S%VENDOR_DIR%\freetype -DCMAKE_SH="CMAKE_SH-NOTFOUND"
+    cmake --build %BUILD_DIR% --config Release --target install
+
+    mkdir %VENDOR_DIR%\include\freetype
+
+    XCopy %BUILD_DIR%\include\freetype2 %VENDOR_DIR%\include\freetype /s /i /y
+EXIT /B 0
+
+:SetupZlib
+    echo "Cloning zlib..."
+
+    CALL :UpdateSubmodule zlib
+
+    set BUILD_DIR=%VENDOR_DIR%\zlib\build
+
+    mkdir %BUILD_DIR%
+
+    make -C %VENDOR_DIR%\zlib -f %VENDOR_DIR%\zlib\win32\Makefile.gcc install INCLUDE_PATH=%BUILD_DIR%\include LIBRARY_PATH=%BUILD_DIR%\lib BINARY_PATH=%BUILD_DIR%\bin
+EXIT /B 0
+
+:SetupLibPng
+    echo "Cloning libpng..."
+
+    CALL :UpdateSubmodule libpng
+
+    set BUILD_DIR=%VENDOR_DIR%\libpng\build
+
+    mkdir %BUILD_DIR%
+
+    make -C %VENDOR_DIR%\libpng -f %VENDOR_DIR%\libpng\scripts\makefile.gcc ZLIBINC=%VENDOR_DIR%\zlib\build\include ZLIBLIB=%VENDOR_DIR%\zlib\build\lib
 EXIT /B 0
 
 :SetupVulkanLoader
