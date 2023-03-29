@@ -11,7 +11,6 @@
 #include <utils/Logging.h>
 
 #include "Swapchain.h"
-#include "utils/TypeAdaptor.h"
 
 namespace Siege::Vulkan
 {
@@ -21,26 +20,13 @@ Mesh::Mesh(uint32_t vertexSize, uint32_t vertexCount, uint32_t indexCount)
 
     auto frames = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
-    perFrameIndexBuffers = MHArray<IndexBufferUpdate>(frames, frames);
-
+    perFrameIndexBuffers = MHArray<IndexBuffer>(frames, frames);
     perFrameVertexBuffers = MHArray<VertexBuffer>(frames, frames);
-
-    if (vertexCount == 0) return;
 
     for (size_t i = 0; i < frames; i++)
     {
-        auto& indexBufferUpdate = perFrameIndexBuffers[i];
-
-        auto& vertexBufferUpdate = perFrameVertexBuffers[i];
-
-        Buffer::DestroyBuffer(indexBufferUpdate.updateBuffer);
-        AllocateBuffer(indexBufferUpdate.updateBuffer,
-                       sizeof(uint32_t) * indexCount,
-                       Utils::BufferType::INDEX_BUFFER);
-
-        vertexBufferUpdate = VertexBuffer(vertexSize, vertexCount);
-
-        indexBufferUpdate.size = indexCount;
+        perFrameIndexBuffers[i] = IndexBuffer(indexCount);
+        perFrameVertexBuffers[i] = VertexBuffer(vertexSize, vertexCount);
     }
 }
 
@@ -63,7 +49,7 @@ Mesh::Mesh(const VertexData& vertices, const IndexData& indices) : Mesh(vertices
 
     auto frames = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
-    perFrameIndexBuffers = MHArray<IndexBufferUpdate>(frames, frames);
+    perFrameIndexBuffers = MHArray<IndexBuffer>(frames, frames);
 
     if (indices.count == 0) return;
 
@@ -91,7 +77,7 @@ void Mesh::Free()
 {
     for (auto it = perFrameIndexBuffers.CreateIterator(); it; ++it)
     {
-        Buffer::DestroyBuffer((*it).updateBuffer);
+        it->Free();
     }
 
     for (auto it = perFrameVertexBuffers.CreateIterator(); it; ++it)
@@ -101,16 +87,6 @@ void Mesh::Free()
 
     perFrameIndexBuffers.Clear();
     perFrameVertexBuffers.Clear();
-}
-
-void Mesh::AllocateBuffer(Buffer::Buffer& buffer, uint32_t size, Utils::BufferType bufferType)
-{
-    Buffer::CreateBuffer(size,
-                         Utils::ToVkBufferUsageFlagBits(bufferType),
-                         // specifies that data is accessible on the CPU.
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                         OUT buffer.buffer,
-                         OUT buffer.bufferMemory);
 }
 
 void Mesh::SetVertexBuffers(const VertexData& vertices, uint32_t currentFrame)
@@ -124,21 +100,7 @@ void Mesh::SetIndexBuffers(const IndexData& indices, uint32_t currentFrame)
 {
     auto& indexBufferUpdate = perFrameIndexBuffers[currentFrame];
 
-    if (indices.count > indexBufferUpdate.size)
-    {
-        Buffer::DestroyBuffer(indexBufferUpdate.updateBuffer);
-        AllocateBuffer(indexBufferUpdate.updateBuffer,
-                       sizeof(uint32_t) * indices.count,
-                       Utils::BufferType::INDEX_BUFFER);
-
-        indexBufferUpdate.size = indices.count;
-    }
-
-    Buffer::CopyData(indexBufferUpdate.updateBuffer,
-                     indices.count * sizeof(uint32_t),
-                     indices.indices);
-
-    indexBufferUpdate.count = indices.count;
+    indexBufferUpdate.Update(indices.indices, indices.count);
 }
 
 void Mesh::Bind(CommandBuffer& commandBuffer, uint32_t frameIndex)
@@ -149,8 +111,7 @@ void Mesh::Bind(CommandBuffer& commandBuffer, uint32_t frameIndex)
 void Mesh::BindIndexed(CommandBuffer& commandBuffer, uint32_t frameIndex)
 {
     Bind(commandBuffer, frameIndex);
-    auto& buffer = perFrameIndexBuffers[frameIndex].updateBuffer;
-    vkCmdBindIndexBuffer(commandBuffer.Get(), buffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    perFrameIndexBuffers[frameIndex].Bind(commandBuffer);
 }
 
 void Mesh::Update(const VertexData& vertices, uint32_t currentFrameIndex)
