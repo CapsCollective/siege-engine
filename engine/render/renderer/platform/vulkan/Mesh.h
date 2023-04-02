@@ -14,8 +14,8 @@
 #include <cstdint>
 
 #include "CommandBuffer.h"
-#include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexBuffer.h"
 #include "utils/Types.h"
 
 namespace Siege::Vulkan

@@ -31,7 +31,7 @@ void Renderer3D::Initialise(const char* defaultTextPath)
     debugRenderer.Initialise("globalData", sizeof(GlobalData));
     billboardRenderer.Initialise("globalData", sizeof(GlobalData));
     lightRenderer.Initialise("globalData", sizeof(GlobalData));
-    textRenderer.Initialise(defaultTextPath, "globalData", sizeof(GlobalData));
+    textRenderer.Initialise(defaultTextPath, "globalData");
 
     gridMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
@@ -74,9 +74,14 @@ void Renderer3D::DrawPointLight(const Vec3& position,
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
 
-void Renderer3D::DrawText(const char* text, const Vec3 position, const Vec2 scale, const IColour& colour, Vulkan::Font* font)
+void Renderer3D::DrawText3D(const char* text,
+                            const Vec3 position,
+                            const Vec3 rotation,
+                            const Vec2 scale,
+                            const IColour& colour,
+                            Vulkan::Font* font)
 {
-    textRenderer.DrawFont(text, position, scale, colour, font);
+    textRenderer.DrawFont(text, position, rotation, scale, colour, font);
 }
 
 void Renderer3D::Render(uint32_t currentFrame,
@@ -136,7 +141,7 @@ void Renderer3D::DestroyRenderer3D()
     debugRenderer.Destroy();
     billboardRenderer.Destroy();
     lightRenderer.Destroy();
-    textRenderer.DestroyTextRenderer();
+    textRenderer.Free();
 
     gridMaterial.~Material();
 }

@@ -9,11 +9,11 @@
 #ifndef SIEGE_ENGINE_FONT_H
 #define SIEGE_ENGINE_FONT_H
 
-#include "Texture2D.h"
-
 #include <freetype/freetype.h>
 #include <utils/Hash.h>
 #include <utils/collections/StackArray.h>
+
+#include "Texture2D.h"
 
 namespace Siege::Vulkan
 {
@@ -21,6 +21,7 @@ namespace Siege::Vulkan
 class Font
 {
 public:
+
     // Constexpr declarations
     static constexpr uint32_t INITIAL_FONT_ATLAS_WIDTH {512};
     static constexpr uint32_t INITIAL_FONT_ATLAS_HEIGHT {512};
@@ -34,7 +35,6 @@ public:
     // Structs
     struct Glyph
     {
-
         float uvxMin {0};
         float uvyMin {0};
         float uvxMax {0};
@@ -52,7 +52,10 @@ public:
 
     Font() = default;
     Font(const char* filePath);
-    inline Font(Font&& other) { Swap(other); }
+    inline Font(Font&& other)
+    {
+        Swap(other);
+    }
     ~Font();
 
     // Operators
@@ -70,15 +73,25 @@ public:
     static void InitialiseFontLibs();
     static void DestroyFontLibs();
 
-    inline const Texture2D* GetTexture() const { return &texture; }
-    inline Texture2D* GetTexture() { return &texture; }
+    inline const Texture2D* GetTexture() const
+    {
+        return &texture;
+    }
+    inline Texture2D* GetTexture()
+    {
+        return &texture;
+    }
     const inline Glyph& GetGlyph(const unsigned char c)
     {
         return glyphs[c];
     }
-    inline SArray<Glyph, 256>& GetGlyphs() { return glyphs; }
+    inline SArray<Glyph, 256>& GetGlyphs()
+    {
+        return glyphs;
+    }
 
 private:
+
     void Swap(Font& other);
     void AddChar(const unsigned char c);
 
@@ -100,6 +113,6 @@ private:
     Info info {};
 };
 
-} // namespace Siege
+} // namespace Siege::Vulkan
 
 #endif // SIEGE_ENGINE_FONT_H

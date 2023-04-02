@@ -175,8 +175,8 @@ int main()
                                           {255, 0, 0, (uint8_t) (alpha * 255.f)},
                                           {0, 0, 255, 5});
 
-//        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
-//        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
+        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
@@ -194,13 +194,68 @@ int main()
                                     2.95f,
                                     &cappy);
 
-        Siege::Renderer3D::DrawText("Random Vase",
-                                    {0.f, -.85f, -.51f},
-                                    {.13f, .13f},
-                                    Siege::IColour::White);
-        Siege::Renderer3D::DrawText("AryehThulu", {-1.95f, -.75f, 2.95f}, {.25f, .25f},Siege::IColour::Green, &meslo);
-        Siege::Renderer3D::DrawText("Cappy", {2.f, -.75f, 2.95f}, {.25f, .25f},Siege::IColour::Blue);
-        Siege::Renderer3D::DrawText("Default Texture", {0.f, -.8f, 2.95f}, {.1f, .1f},Siege::IColour::Red);
+        Siege::Renderer3D::DrawText3D("Random Vase",
+                                      {0.f, -.85f, -.51f},
+                                      {},
+                                      {.13f, .13f},
+                                      Siege::IColour::White);
+        Siege::Renderer3D::DrawText3D("AryehThulu",
+                                      {-1.95f, -.75f, 2.95f},
+                                      {},
+                                      {.25f, .25f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Cappy",
+                                      {2.f, -.75f, 2.95f},
+                                      {},
+                                      {.25f, .25f},
+                                      Siege::IColour::Blue);
+        Siege::Renderer3D::DrawText3D("Default Texture",
+                                      {0.f, -.8f, 2.95f},
+                                      {},
+                                      {.1f, .1f},
+                                      Siege::IColour::Red);
+
+        Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
+                                      {2.99f, -3.f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("It only took you a few months...",
+                                      {2.99f, -2.4f, 0.f},
+                                      {0.f, 1.5707963268f, 0.1f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Red);
+        Siege::Renderer3D::DrawText3D("Yeah but it was like... hard",
+                                      {2.99f, -2.f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("I had to learn instanced rendering",
+                                      {2.99f, -1.5f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Which, btw, is not that",
+                                      {2.99f, -1.f, 0.f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Easy",
+                                      {2.99f, -1.2f, -1.7f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.25f, .25f},
+                                      Siege::IColour::Blue);
+
+        Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
+                                      {2.99f, -.5f, 0.f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.25f, .25f},
+                                      Siege::IColour::White);
 
         renderer.EndFrame();
     }

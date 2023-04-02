@@ -10,8 +10,8 @@
 
 #include "Renderer.h"
 
-#include "platform/vulkan/utils/Types.h"
 #include "platform/vulkan/Font.h"
+#include "platform/vulkan/utils/Types.h"
 
 namespace Siege
 {

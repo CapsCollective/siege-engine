@@ -64,7 +64,12 @@ public:
      */
     Texture2D(const char* name, const char* filePath);
 
-    Texture2D(const char* name, const uint8_t* pixels, size_t size, uint32_t width, uint32_t height, Usage texUsage = Usage::TEX_USAGE_TEX2D);
+    Texture2D(const char* name,
+              const uint8_t* pixels,
+              size_t size,
+              uint32_t width,
+              uint32_t height,
+              Usage texUsage = Usage::TEX_USAGE_TEX2D);
 
     /**
      * A move constructor for the Texture2D class
@@ -88,7 +93,10 @@ public:
 
     // Functions
 
-    void CopyToRegion(uint8_t* pixels, unsigned long size, Utils::Extent3D copyExtent, Utils::Offset3D copyOffset);
+    void CopyToRegion(uint8_t* pixels,
+                      unsigned long size,
+                      Utils::Extent3D copyExtent,
+                      Utils::Offset3D copyOffset);
 
     /**
      * Frees all memory held by the Texture2D
@@ -134,7 +142,11 @@ private:
      * @param width the image width
      * @param height the image height
      */
-    void LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height, Usage texUsage);
+    void LoadTexture(const uint8_t* pixels,
+                     size_t size,
+                     uint32_t width,
+                     uint32_t height,
+                     Usage texUsage);
 
     /**
      * Swaps the values of two Texture2Ds

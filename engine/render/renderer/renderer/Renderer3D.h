@@ -53,7 +53,12 @@ public:
                                const IColour& colour,
                                const IColour& ambientColor);
 
-    static void DrawText(const char* text, const Vec3 position, const Vec2 scale, const IColour& colour, Vulkan::Font* font = nullptr);
+    static void DrawText3D(const char* text,
+                           const Vec3 position,
+                           const Vec3 rotation,
+                           const Vec2 scale,
+                           const IColour& colour,
+                           Vulkan::Font* font = nullptr);
 
     static void RecreateMaterials();
 

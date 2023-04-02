@@ -7,13 +7,14 @@
 //
 
 #include "Font.h"
+
 #include "Context.h"
-#include "utils/TypeAdaptor.h"
 #include "utils/Descriptor.h"
+#include "utils/TypeAdaptor.h"
 #include FT_FREETYPE_H
 
-#include <utils/Logging.h>
 #include <utils/Defer.h>
+#include <utils/Logging.h>
 
 namespace Siege::Vulkan
 {
@@ -26,21 +27,27 @@ Font::Font(const char* filePath)
 
     CC_ASSERT(!FT_New_Face(freetype, filePath, 0, &fontFace), "Failed to load font!")
 
-    uint8_t* buffer = new uint8_t[width*height];
-    defer([buffer](){ delete [] buffer; });
+    uint8_t* buffer = new uint8_t[width * height];
+    defer([buffer]() { delete[] buffer; });
 
     memset(buffer, 0, sizeof(uint8_t) * width * height);
 
-    texture = Texture2D(filePath, buffer, sizeof(uint8_t) * width * height, width, height, Texture2D::Usage::TEX_USAGE_FONT);
+    texture = Texture2D(filePath,
+                        buffer,
+                        sizeof(uint8_t) * width * height,
+                        width,
+                        height,
+                        Texture2D::Usage::TEX_USAGE_FONT);
 
     VkSamplerCreateInfo samplerInfo =
-        Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+        Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR,
+                                             VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 
     vkCreateSampler(device->GetDevice(), &samplerInfo, nullptr, &info.sampler);
 
     id = INTERN_STR(filePath);
 
-    for(size_t i = 32; i < 126; i++)
+    for (size_t i = 32; i < 126; i++)
     {
         AddChar(static_cast<unsigned char>(i));
     }
@@ -139,11 +146,10 @@ void Font::AddChar(const unsigned char c)
                                  static_cast<uint32_t>(glyph->bitmap.rows),
                                  1};
 
-    texture.CopyToRegion(glyph->bitmap.buffer, size, imageExtent, {positionXInAtlas + 1, positionYInAtlas + 2});
-
-    CC_LOG_INFO("GLYPH CREATED WITH UV COORDINATES: X: {} Y: {}",
-                glyphs[c].uvxMin,
-                glyphs[c].uvxMax)
+    texture.CopyToRegion(glyph->bitmap.buffer,
+                         size,
+                         imageExtent,
+                         {positionXInAtlas + 1, positionYInAtlas + 2});
 
     CC_ASSERT(!exceededWidth || !exceededHeight, "Cannot add any more images to the atlas!")
 
@@ -154,8 +160,6 @@ void Font::AddChar(const unsigned char c)
                     (exceededWidth * glyph->bitmap.width)) +
                    1;
     spaceFilledY += (exceededWidth * (maxHeight + 2));
-
-    CC_LOG_INFO("FONT ATLAS FILLED: X: {}/{} Y: {}/{}", spaceFilledX, width, spaceFilledY, height)
 }
 
 void Font::InitialiseFontLibs()
@@ -168,4 +172,4 @@ void Font::DestroyFontLibs()
     FT_Done_FreeType(freetype);
 }
 
-} // namespace Siege
+} // namespace Siege::Vulkan

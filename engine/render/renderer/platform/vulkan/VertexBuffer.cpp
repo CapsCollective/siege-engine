@@ -13,7 +13,7 @@
 
 namespace Siege::Vulkan
 {
-VertexBuffer::VertexBuffer(uint32_t newSize) : size{newSize}
+VertexBuffer::VertexBuffer(uint32_t newSize) : size {newSize}
 {
     if (newSize == 0) return;
 
@@ -74,7 +74,10 @@ void VertexBuffer::Free()
     size = 0;
 }
 
-void VertexBuffer::Update(uint32_t vertexSize, void* vertices, uint32_t vertexCount, uint32_t offset)
+void VertexBuffer::Update(uint32_t vertexSize,
+                          void* vertices,
+                          uint32_t vertexCount,
+                          uint32_t offset)
 {
     auto device = Context::GetVkLogicalDevice();
 
@@ -90,7 +93,11 @@ void VertexBuffer::Update(uint32_t vertexSize, void* vertices, uint32_t vertexCo
     Copy(device, newSize, vertices, offset);
 }
 
-void VertexBuffer::Bind(CommandBuffer& commandBuffer, uint64_t* offsets, uint32_t offsetCount, uint32_t binding, uint64_t firstOffset)
+void VertexBuffer::Bind(CommandBuffer& commandBuffer,
+                        uint64_t* offsets,
+                        uint32_t offsetCount,
+                        uint32_t binding,
+                        uint64_t firstOffset)
 {
     VkBuffer buffers[offsetCount];
 
@@ -136,7 +143,7 @@ void VertexBuffer::Allocate(VkDevice device)
 
 void VertexBuffer::Copy(VkDevice device, uint32_t dataSize, void* data, uint32_t offset)
 {
-    void* dst = (char*)rawBuffer + offset;
+    void* dst = (char*) rawBuffer + offset;
     memcpy(dst, data, dataSize);
     Utils::CopyData(device, memory, dataSize, dst, offset);
 }

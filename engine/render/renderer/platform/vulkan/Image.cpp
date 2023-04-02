@@ -136,10 +136,11 @@ bool Image::IsValid()
 // TODO: we'll likely need to send some sort of config object into this to get better config options
 void Image::CopyBuffer(VkBuffer buffer, Utils::Extent3D bufferExtent, Utils::Offset3D offset)
 {
-    TransitionLayout(Utils::STAGE_TRANSFER_BIT, Utils::LAYOUT_TRANSFER_DST_OPTIMAL, Utils::ACCESS_TRANSFER_WRITE);
+    TransitionLayout(Utils::STAGE_TRANSFER_BIT,
+                     Utils::LAYOUT_TRANSFER_DST_OPTIMAL,
+                     Utils::ACCESS_TRANSFER_WRITE);
 
     CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer) {
-
         VkBufferImageCopy copyRegion = {};
         copyRegion.bufferOffset = 0;
         copyRegion.bufferRowLength = 0;
@@ -149,7 +150,7 @@ void Image::CopyBuffer(VkBuffer buffer, Utils::Extent3D bufferExtent, Utils::Off
         copyRegion.imageSubresource.mipLevel = 0;
         copyRegion.imageSubresource.baseArrayLayer = 0;
         copyRegion.imageSubresource.layerCount = 1;
-        copyRegion.imageOffset = { offset.width, offset.height, offset.depth};
+        copyRegion.imageOffset = {offset.width, offset.height, offset.depth};
         copyRegion.imageExtent = {bufferExtent.width, bufferExtent.height, 1};
 
         vkCmdCopyBufferToImage(commandBuffer,
@@ -160,17 +161,20 @@ void Image::CopyBuffer(VkBuffer buffer, Utils::Extent3D bufferExtent, Utils::Off
                                &copyRegion);
     });
 
-    TransitionLayout(Utils::STAGE_FRAGMENT_SHADER, Utils::LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utils::ACCESS_SHADER_READ);
+    TransitionLayout(Utils::STAGE_FRAGMENT_SHADER,
+                     Utils::LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                     Utils::ACCESS_SHADER_READ);
 
     info.layout = Utils::ImageLayout::LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     info.access = Utils::MemoryAccess::ACCESS_SHADER_READ;
     info.stage = Utils::PipelineStage::STAGE_FRAGMENT_SHADER;
 }
 
-void Image::TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout newLayout, Utils::MemoryAccess newAccess)
+void Image::TransitionLayout(Utils::PipelineStage newStage,
+                             Utils::ImageLayout newLayout,
+                             Utils::MemoryAccess newAccess)
 {
-    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer)
-    {
+    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer) {
         auto range = Utils::Image::SubResourceRange()
                          .WithAspect(VK_IMAGE_ASPECT_COLOR_BIT)
                          .WithMipLevel(0)
@@ -189,16 +193,15 @@ void Image::TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout n
                            .Build();
 
         vkCmdPipelineBarrier(commandBuffer,
-                                 Utils::ToVkPipelineStageFlagBits(info.stage),
-                                 Utils::ToVkPipelineStageFlagBits(newStage),
-                                 0,
-                                 0,
-                                 nullptr,
-                                 0,
-                                 nullptr,
-                                 1,
-                                 &barrier);
-
+                             Utils::ToVkPipelineStageFlagBits(info.stage),
+                             Utils::ToVkPipelineStageFlagBits(newStage),
+                             0,
+                             0,
+                             nullptr,
+                             0,
+                             nullptr,
+                             1,
+                             &barrier);
 
         info.access = newAccess;
         info.layout = newLayout;

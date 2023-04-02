@@ -73,8 +73,12 @@ public:
     bool IsValid();
     bool HasInfo();
 
-    void CopyBuffer(VkBuffer buffer, Utils::Extent3D bufferExtent, Utils::Offset3D offset = {0, 0, 0});
-    void TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout newLayout, Utils::MemoryAccess newAccess);
+    void CopyBuffer(VkBuffer buffer,
+                    Utils::Extent3D bufferExtent,
+                    Utils::Offset3D offset = {0, 0, 0});
+    void TransitionLayout(Utils::PipelineStage newStage,
+                          Utils::ImageLayout newLayout,
+                          Utils::MemoryAccess newAccess);
 
 private:
 

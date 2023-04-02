@@ -49,7 +49,12 @@ Texture2D::Texture2D(const char* name, const char* filePath)
     id = INTERN_STR(name);
 }
 
-Texture2D::Texture2D(const char* name, const uint8_t* pixels, size_t size, uint32_t width, uint32_t height, Usage texUsage)
+Texture2D::Texture2D(const char* name,
+                     const uint8_t* pixels,
+                     size_t size,
+                     uint32_t width,
+                     uint32_t height,
+                     Usage texUsage)
 {
     LoadTexture(pixels, size, width, height, texUsage);
 
@@ -123,7 +128,11 @@ void Texture2D::LoadFromFile(const char* filePath)
     Buffer::DestroyBuffer(stagingBuffer);
 }
 
-void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height, Usage texUsage)
+void Texture2D::LoadTexture(const uint8_t* pixels,
+                            size_t size,
+                            uint32_t width,
+                            uint32_t height,
+                            Usage texUsage)
 {
     Buffer::Buffer stagingBuffer;
     Buffer::CreateBuffer(size,
@@ -141,17 +150,20 @@ void Texture2D::LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, 
 
     Utils::Extent3D imageExtent {width, height, 1};
 
-    image = Image({(Utils::ImageFormat)texUsage, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
+    image = Image({(Utils::ImageFormat) texUsage, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
 
     image.CopyBuffer(stagingBuffer.buffer, imageExtent);
 
     Buffer::DestroyBuffer(stagingBuffer);
 }
 
-void Texture2D::CopyToRegion(uint8_t* pixels, unsigned long size, Utils::Extent3D copyExtent, Utils::Offset3D copyOffset)
+void Texture2D::CopyToRegion(uint8_t* pixels,
+                             unsigned long size,
+                             Utils::Extent3D copyExtent,
+                             Utils::Offset3D copyOffset)
 {
     Buffer::Buffer stagingBuffer;
-    defer([&stagingBuffer](){ Buffer::DestroyBuffer(stagingBuffer); });
+    defer([&stagingBuffer]() { Buffer::DestroyBuffer(stagingBuffer); });
     Buffer::CreateBuffer(size,
                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          // specifies that data is accessible on the CPU.
@@ -163,7 +175,7 @@ void Texture2D::CopyToRegion(uint8_t* pixels, unsigned long size, Utils::Extent3
 
     Buffer::CopyData(stagingBuffer, size, pixels);
 
-    image.CopyBuffer(stagingBuffer.buffer, copyExtent,  copyOffset);
+    image.CopyBuffer(stagingBuffer.buffer, copyExtent, copyOffset);
 }
 
 void Texture2D::Free()

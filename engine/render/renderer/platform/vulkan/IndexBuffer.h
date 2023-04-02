@@ -9,14 +9,15 @@
 #ifndef SIEGE_ENGINE_INDEXBUFFER_H
 #define SIEGE_ENGINE_INDEXBUFFER_H
 
-#include "utils/Types.h"
 #include "CommandBuffer.h"
+#include "utils/Types.h"
 
 namespace Siege::Vulkan
 {
 class IndexBuffer
 {
 public:
+
     // 'Structors
 
     IndexBuffer() = default;
@@ -26,7 +27,10 @@ public:
     {
         Swap(other);
     }
-    inline ~IndexBuffer() { Free(); }
+    inline ~IndexBuffer()
+    {
+        Free();
+    }
 
     // Operator Overloads
 
@@ -44,8 +48,13 @@ public:
 
     // Getters
 
-    inline unsigned long GetCount() const { return count; }
+    inline unsigned long GetCount() const
+    {
+        return count;
+    }
+
 private:
+
     static constexpr size_t INDEX_BUFFER_ELEMENT_SIZE = sizeof(unsigned int);
 
     void Swap(IndexBuffer& other);

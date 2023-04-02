@@ -8,10 +8,10 @@
 
 #include "IndexBuffer.h"
 
+#include <cstdint>
+
 #include "Context.h"
 #include "utils/Buffer.h"
-
-#include <cstdint>
 
 namespace Siege::Vulkan
 {
@@ -125,4 +125,4 @@ void IndexBuffer::Copy(VkDevice device, unsigned int newSize, const unsigned int
     memcpy(rawBuffer, data, newSize);
     Utils::CopyData(device, memory, newSize, rawBuffer, 0);
 }
-} // namespace Siege
+} // namespace Siege::Vulkan
