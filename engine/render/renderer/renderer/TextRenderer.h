@@ -68,7 +68,7 @@ private:
 
     MSArray<MHArray<QuadData>, MAX_FONTS> characters;
 
-    Vulkan::VertexBuffer vertexBuffer;
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
     Vulkan::IndexBuffer indexBuffer;
 
     Vulkan::Font defaultFont;

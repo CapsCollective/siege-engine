@@ -50,11 +50,6 @@ public:
 
     // Getters
 
-    //    inline uint32_t GetCount() const
-    //    {
-    //        return count;
-    //    }
-
 private:
 
     void Swap(VertexBuffer& other);
@@ -65,7 +60,6 @@ private:
     VkBuffer buffer {nullptr};
     VkDeviceMemory memory {nullptr};
     uint32_t size {0};
-    // uint32_t count {0};
 };
 
 } // namespace Siege::Vulkan

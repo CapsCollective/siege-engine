@@ -211,7 +211,7 @@ void BitSet::SetBitsToOne(const unsigned long& bits)
 void BitSet::Clear()
 {
     ::Siege::BitUtils::Clear(bitfield, size);
-    leftMostBit = size = 0;
+    leftMostBit = 0;
 }
 
 void BitSet::UnsetPostBits(const unsigned long& bit)

@@ -314,6 +314,7 @@ public:
     void Clear()
     {
         count = 0;
+        memset(data, 0, sizeof(T) * size);
         bitField.Clear();
     }
 

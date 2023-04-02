@@ -10,6 +10,8 @@
 
 #include <utils/math/Graphics.h>
 
+#include "render/renderer/platform/vulkan/Swapchain.h"
+
 namespace Siege
 {
 
@@ -47,7 +49,13 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
-    vertexBuffer = Vulkan::VertexBuffer(size);
+    perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(size);
+    }
+
     indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
 }
 
@@ -55,7 +63,7 @@ void TextRenderer::Free()
 {
     defaultFont.Free();
     defaultMaterial.Free();
-    vertexBuffer.Free();
+    for (auto it = perFrameVertexBuffers.CreateIterator(); it; ++it) it->Free();
     indexBuffer.Free();
 }
 
@@ -123,6 +131,8 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
         defaultMaterial.Bind(buffer);
 
         uint64_t fontOffset = (i * OFFSET_PER_FONT);
+
+        auto& vertexBuffer = perFrameVertexBuffers[frameIndex];
 
         vertexBuffer.Update(sizeof(QuadData),
                             characters[i].Data(),
