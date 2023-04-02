@@ -23,7 +23,7 @@ public:
     BillboardRenderer();
     ~BillboardRenderer();
 
-    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
+    void Initialise(const String& globalDataAttributeName);
     void Destroy();
 
     void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);

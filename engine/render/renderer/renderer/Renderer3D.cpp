@@ -27,10 +27,10 @@ void Renderer3D::Initialise(const char* defaultTextPath)
 {
     globalDataId = INTERN_STR("globalData");
 
-    modelRenderer.Initialise("globalData", sizeof(GlobalData));
-    debugRenderer.Initialise("globalData", sizeof(GlobalData));
-    billboardRenderer.Initialise("globalData", sizeof(GlobalData));
-    lightRenderer.Initialise("globalData", sizeof(GlobalData));
+    modelRenderer.Initialise("globalData");
+    debugRenderer.Initialise("globalData");
+    billboardRenderer.Initialise("globalData");
+    lightRenderer.Initialise("globalData");
     textRenderer.Initialise(defaultTextPath, "globalData");
 
     gridMaterial = Vulkan::Material(

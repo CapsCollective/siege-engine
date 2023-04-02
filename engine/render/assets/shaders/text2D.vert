@@ -1,10 +1,18 @@
+//
+//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+//
+//  This code is released under an unmodified zlib license.
+//  For conditions of distribution and use, please see:
+//      https://opensource.org/licenses/Zlib
+//
+
 #version 450
 
 // Per instance data
 layout(location = 0) in mat4 transform;
-layout(location = 4) in vec4 texData;
+layout(location = 4) in vec4 texData; // Stores the minimum x and y values for the glyph in the texture + the glyph's dimensions in the texture
 layout(location = 5) in vec4 colour;
-layout(location = 6) in vec4 coordinates;
+layout(location = 6) in vec4 coordinates; // stores x and y coordinates in space + the glyph's dimensions in space
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 outUv;
@@ -31,11 +39,13 @@ void main() {
     vec2 coords = vec2(texData.xy);
     vec2 dimensions = vec2(texData.zw);
 
+    // Find the UV based on the vertex index - max values = coordinate + dimension
     float uvx = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (texData.x + texData.z))
         + (float(gl_VertexIndex == 2 || gl_VertexIndex == 3) * (texData.x));
     float uvy = (float(gl_VertexIndex == 0 || gl_VertexIndex == 3) * (texData.y + texData.w))
         + (float(gl_VertexIndex == 1 || gl_VertexIndex == 2) * (texData.y));
 
+    // Find the vertex position based off the vertex index - max values = coordinate + dimension
     float posX = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (coordinates.x + coordinates.z))
         + (float(gl_VertexIndex == 2 || gl_VertexIndex == 3) * coordinates.x);
     float posY = (float(gl_VertexIndex == 0 || gl_VertexIndex == 3) * (coordinates.y + coordinates.w))

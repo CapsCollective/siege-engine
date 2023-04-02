@@ -13,8 +13,7 @@ namespace Siege
 BillboardRenderer::BillboardRenderer() {}
 BillboardRenderer::~BillboardRenderer() {}
 
-void BillboardRenderer::Initialise(const String& globalDataAttributeName,
-                                   const uint64_t& globalDataSize)
+void BillboardRenderer::Initialise(const String& globalDataAttributeName)
 {
     using Vulkan::Mesh;
 

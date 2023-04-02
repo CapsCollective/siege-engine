@@ -153,7 +153,7 @@ void TextRenderer::Update()
 
 void TextRenderer::Flush()
 {
-    characters.Clear();
+    for (size_t i = 0; i < characters.Count(); i++) characters[i].Clear();
 }
 
 float TextRenderer::GetTotalTextWidth(const char* text,

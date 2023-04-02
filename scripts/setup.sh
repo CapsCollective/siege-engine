@@ -223,7 +223,7 @@ setup_freetype() {
   update_submodules freetype
   local BUILD_DIR="${VULKAN_DIR}"/freetype
   mkdir -p "${BUILD_DIR}"
-  cmake -G "${GENERATOR}" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DFT_DISABLE_HARFBUZZ -B"${VENDOR_DIR}"/freetype/build -S"${VENDOR_DIR}"/freetype
+  cmake -G "${GENERATOR}" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DFT_DISABLE_HARFBUZZ=TRUE -B"${VENDOR_DIR}"/freetype/build -S"${VENDOR_DIR}"/freetype
   make -C "${VENDOR_DIR}"/freetype/build -j"${NUMBER_OF_PROCESSORS}"
 
   mkdir -p "${VENDOR_DIR}"/include/freetype

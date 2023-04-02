@@ -113,6 +113,7 @@ void SetBitsToOne(unsigned char* bitfield, const unsigned long& bits)
 
 void Clear(unsigned char* bitfield, const unsigned long& size)
 {
+    if (bitfield == nullptr) return;
     memset(bitfield, 0, BYTE_MASK_SIZE * size);
 }
 

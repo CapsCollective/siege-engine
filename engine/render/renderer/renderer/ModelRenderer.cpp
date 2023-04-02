@@ -15,8 +15,7 @@ namespace Siege
 ModelRenderer::ModelRenderer() {}
 ModelRenderer::~ModelRenderer() {}
 
-void ModelRenderer::Initialise(const String& globalDataAttributeName,
-                               const uint64_t& globalDataSize)
+void ModelRenderer::Initialise(const String& globalDataAttributeName)
 {
     globalDataId = INTERN_STR(globalDataAttributeName);
     transformId = INTERN_STR("transforms");

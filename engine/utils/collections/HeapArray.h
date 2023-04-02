@@ -142,6 +142,7 @@ public:
      */
     ~MHArray()
     {
+        if (data == nullptr) return;
         Destroy();
     }
 

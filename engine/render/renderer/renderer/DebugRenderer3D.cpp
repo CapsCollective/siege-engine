@@ -14,8 +14,7 @@ DebugRenderer3D::DebugRenderer3D() {}
 
 DebugRenderer3D::~DebugRenderer3D() {}
 
-void DebugRenderer3D::Initialise(const String& globalDataAttributeName,
-                                 const uint64_t& globalDataSize)
+void DebugRenderer3D::Initialise(const String& globalDataAttributeName)
 {
     using Vulkan::Mesh;
 
