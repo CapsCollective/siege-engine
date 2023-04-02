@@ -70,7 +70,7 @@ void TextRenderer::DrawFont(const char* text,
 
     auto texIndex = defaultMaterial.SetTexture(textureId, targetFont->GetTexture());
 
-    if (texIndex >= characters.Count()) characters.Append({});
+    if (texIndex >= characters.Count()) characters.Append(MHArray<QuadData>(OFFSET_PER_FONT));
 
     auto& fontTexts = characters[texIndex];
 

@@ -53,10 +53,10 @@ private:
 
     struct QuadData
     {
-        Mat4 transform;
-        Vec4 uvData;
-        FColour colour;
-        Vec4 position;
+        Mat4 transform {};
+        Vec4 uvData {};
+        FColour colour {};
+        Vec4 position {};
     };
 
     float GetTotalTextWidth(const char* text,
@@ -66,7 +66,7 @@ private:
     Hash::StringId globalDataId;
     Hash::StringId textureId;
 
-    MSArray<MSArray<QuadData, OFFSET_PER_FONT>, MAX_FONTS> characters;
+    MSArray<MHArray<QuadData>, MAX_FONTS> characters;
 
     Vulkan::VertexBuffer vertexBuffer;
     Vulkan::IndexBuffer indexBuffer;
