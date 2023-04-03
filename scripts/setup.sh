@@ -201,9 +201,8 @@ setup_zlib() {
     update_submodules zlib
 
     mkdir -p "${VENDOR_DIR}"/zlib/build
-    cd "${VENDOR_DIR}"/zlib; ./configure
-    cd "${VENDOR_DIR}"/zlib; make install prefix="${VENDOR_DIR}"/zlib/build
-    cd "${ROOT_DIR}"
+    (cd "${VENDOR_DIR}"/zlib && ./configure --prefix="${VENDOR_DIR}"/zlib/build --static)
+    make -f "${VENDOR_DIR}"/zlib/Makefile -C "${VENDOR_DIR}"/zlib  install prefix="${VENDOR_DIR}"/zlib/build -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_libpng() {
@@ -211,10 +210,8 @@ setup_libpng() {
   update_submodules libpng
 
   mkdir -p "${VENDOR_DIR}"/libpng/build
-  cd "${VENDOR_DIR}"/libpng; cmake . -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/libpng/build
-  cd "${VENDOR_DIR}"/libpng; make
-  cd "${VENDOR_DIR}"/libpng; make install
-  cd "${ROOT_DIR}"
+  cmake "${VENDOR_DIR}"/libpng -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/libpng/build -S "${VENDOR_DIR}"/libpng -B"${VENDOR_DIR}"/libpng/build
+  make -C "${VENDOR_DIR}"/libpng/build install -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_freetype() {
@@ -228,7 +225,6 @@ setup_freetype() {
 
   mkdir -p "${VENDOR_DIR}"/include/freetype
   cp -R "${VENDOR_DIR}"/freetype/include/** "${VENDOR_DIR}"/include/freetype
-  cd "${ROOT_DIR}"
 }
 
 echo "OS detected: ${OS}"
@@ -256,7 +252,7 @@ setup_volk
 echo "Setting up Vulkan Headers"
 setup_vulkan_headers
 
-cho "Setting up zlib"
+echo "Setting up zlib"
 setup_zlib
 
 echo "Setting up libpng"

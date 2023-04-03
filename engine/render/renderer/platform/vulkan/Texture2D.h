@@ -24,10 +24,12 @@ class Texture2D
 {
 public:
 
+    // Enum dictating which texture colour channel will be used. Currently only supports full RGBA
+    // and single unsigned integers (the red channel).
     enum Usage
     {
         TEX_USAGE_TEX2D = Utils::RGBASRGB,
-        TEX_USAGE_FONT = Utils::RED8UN
+        TEX_USAGE_FONT = Utils::RED8UN // Fonts only take data from the red channel
     };
 
     // Structs

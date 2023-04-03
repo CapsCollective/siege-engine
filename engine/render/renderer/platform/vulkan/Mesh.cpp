@@ -64,7 +64,7 @@ Mesh::Mesh(const VertexData& vertices, const IndexData& indices) : Mesh(vertices
 
 void Mesh::Swap(Mesh& other)
 {
-    auto tmpPerFrameVertexBuffers2 = std::move(perFrameVertexBuffers);
+    auto tmpPerFrameVertexBuffers = std::move(perFrameVertexBuffers);
     auto tmpPerFrameIndexBuffers = std::move(perFrameIndexBuffers);
     auto tmpVertexCount = vertexCount;
 
@@ -72,7 +72,7 @@ void Mesh::Swap(Mesh& other)
     perFrameIndexBuffers = std::move(other.perFrameIndexBuffers);
     vertexCount = other.vertexCount;
 
-    other.perFrameVertexBuffers = std::move(tmpPerFrameVertexBuffers2);
+    other.perFrameVertexBuffers = std::move(tmpPerFrameVertexBuffers);
     other.perFrameIndexBuffers = std::move(tmpPerFrameIndexBuffers);
     other.vertexCount = tmpVertexCount;
 }

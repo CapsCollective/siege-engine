@@ -113,7 +113,8 @@ void Font::AddChar(const unsigned char c)
 {
     FT_Set_Pixel_Sizes(fontFace, 0, 64);
 
-    CC_ASSERT(!FT_Load_Char(fontFace, c, FT_LOAD_RENDER), "Unable to load char")
+    CC_ASSERT(!FT_Load_Char(fontFace, c, FT_LOAD_RENDER),
+              String("Unable to load char: ") + String(c))
 
     auto glyph = fontFace->glyph;
 
