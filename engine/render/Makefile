@@ -26,24 +26,16 @@ linkFlags += -l utils
 # Set build vars
 ifeq ($(platform), windows)
     volkDefines = VK_USE_PLATFORM_WIN32_KHR
-    glslangValidator := $(vendorDir)\glslang\build\install\bin\glslangValidator.exe
-    libpngBuildDir := $(vendorDir)/libpng/libpng.a
-    freetypeLibDir := $(vendorDir)/freetype/build/lib/libfreetype.a
-    objExtension := *.obj *.o
+    glslangValidator := $(vendorDir)\glslang\build\StandAlone\glslangValidator.exe
 else ifeq ($(platform), linux)
 	volkDefines = VK_USE_PLATFORM_XLIB_KHR
 	glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-	libpngBuildDir := $(vendorDir)/libpng/build/lib/libpng.a
-	freetypeLibDir := $(vendorDir)/freetype/build/libfreetype.a
-	objExtension := *.o
 else ifeq ($(platform), macos)
 	volkDefines = VK_USE_PLATFORM_MACOS_MVK
 	glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-	libpngBuildDir := $(vendorDir)/libpng/build/lib/libpng.a
-	freetypeLibDir := $(vendorDir)/freetype/build/libfreetype.a
-	objExtension := *.o
 	symdefDelete = cd $(libDir) $(THEN) rm *".SYMDEF SORTED"
 endif
+
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
 				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image -I $(vendorDir)/zlib/build/include \
 				-I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
@@ -54,16 +46,9 @@ all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
 
 # Build the static library
 $(renderLib): $(renderObjects)
-	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(renderLib))
+	powershell $(scriptsDir)/Combine-Libs.ps1 --src_libs $(vendorDir)/glfw/build/src/libglfw3.a $(vendorDir)/zlib/build/lib/zlib.a $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a --src_objs $(renderObjects) --output_dir $(libDir) --output_name render
 
-	cd $(libDir) $(THEN) ar -x $(vendorDir)/glfw/src/libglfw3.a
-	cd $(libDir) $(THEN) ar -x $(vendorDir)/zlib/build/lib/libz.a
-	cd $(libDir) $(THEN) ar -x $(libpngBuildDir)
-	cd $(libDir) $(THEN) ar -x $(freetypeLibDir)
-
-	cd $(libDir) $(THEN) ar -qc $(renderLib) $(renderObjects) $(objExtension)
-	cd $(libDir) $(THEN) rm $(objExtension)
 	$(symdefDelete)
 
 # Add all rules from dependency files

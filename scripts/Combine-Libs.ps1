@@ -1,10 +1,3 @@
-param (
-    [string[]] $Src_Libs=@(),
-    [string[]] $Src_Objs=@(),
-    [string] $Extraction_Dir=@(),
-    [string] $Output_Name=@()
-)
-
 [string[]] $targets = "*.obj", "*.o"
 
 function Make-Dir {
@@ -21,27 +14,46 @@ function Get-Files {
 
 function Append-To-Lib {
     param ([string] $Dst_Lib=@(), [string[]] $Src_Files=@())
-    ar -rcs "$Dst_Lib.a" $Src_Files
+    ar -q "$Dst_Lib" $Src_Files
 }
 
 function Extract-Lib {
-    param ([string] $Src_Lib=@())
-    ar -x $Src_Lib --output $Extraction_Dir
+    param ([string] $Src_Lib=@(), [string] $Output_Dir=@(), [string] $Lib_Name=@())
 
-    Append-To-Lib $Extraction_Dir/$Output_Name (Get-Files -path $Extraction_Dir -extensions $targets)
-    Remove-Item -Path $Extraction_Dir/* -Include $targets
+    ar -x $Src_Lib --output $Output_Dir
+
+    Append-To-Lib "$Output_Dir/lib$Lib_Name.a" (Get-Files -path $Output_Dir -extensions $targets)
+    Remove-Item -Path $Output_Dir/* -Include $targets
 }
 
-function Combine-Libs {
-    [string[]] $Extracted_Objs
-    foreach($obj_src in $Src_Objs) { $Extracted_Objs += Get-ChildItem -Path $obj_src/* -Include $targets -Recurse }
-    Append-To-Lib $Extraction_Dir/$Output_Name $Extracted_Objs
+[string[]] $libs = @()
+[string[]] $objs = @()
+[string] $output_dir = @()
+[string] $output_name = @()
+
+[string] $current_arg = @()
+
+foreach($arg in $args)
+{
+    [string] $val = $arg
+    if ($val.Contains("--")) {
+        if ($current_arg -ne $val) { $current_arg = $val }
+        continue
+    }
+
+    if ($current_arg -eq "--src_libs") { $libs += $val }
+    elseif ($current_arg -eq "--src_objs") { $objs += $val }
+    elseif ($current_arg -eq "--output_name") { $output_name = $val }
+    elseif ($current_arg -eq "--output_dir") { $output_dir = $val }
 }
 
-Make-Dir $Extraction_Dir
+Write-Output LIBS [$libs]
+Write-Output OBJS [$objs]
 
-Copy-Item -Path $Src_Libs[0] -Destination $Extraction_Dir/$Output_Name.a
+Write-Output OUTPUT [$output_dir]
 
-foreach($src in $Src_Libs | select -Skip 1) { Extract-Lib -src_lib $src }
+Make-Dir $output_dir
 
-Combine-Libs
+ar -crs "$output_dir/lib$output_name.a" $objs
+
+foreach($src in $libs) { Extract-Lib -Src_Lib $src -Output_Dir $output_dir -Lib_Name $output_name }
