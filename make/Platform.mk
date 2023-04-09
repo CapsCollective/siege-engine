@@ -17,6 +17,7 @@ ifeq ($(OS), Windows_NT)
 	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
 	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
+	COMBINE_LIBS = $(scriptsDir)/Combine-Libs.ps1 -Src_Libs $1 -Src_Objs $2 -Extraction_Dir $3 -Output_Name $4
 else
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
