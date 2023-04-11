@@ -47,11 +47,6 @@ foreach($arg in $args)
     elseif ($current_arg -eq "--output_dir") { $output_dir = $val }
 }
 
-Write-Output LIBS [$libs]
-Write-Output OBJS [$objs]
-
-Write-Output OUTPUT [$output_dir]
-
 Make-Dir $output_dir
 
 ar -crs "$output_dir/lib$output_name.a" $objs

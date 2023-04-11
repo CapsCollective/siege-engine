@@ -49,7 +49,7 @@ function Setup-Zlib {
 
     make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
-    if(!(Test-Path "$build_dir/lib/libz.a")) {Rename-Item -Path "$build_dir/lib/libzlibstatic.a" -NewName "zlib.a"}
+    if(!(Test-Path "$build_dir/lib/libz.a")) {Rename-Item -Path "$build_dir/lib/libzlibstatic.a" -NewName "libz.a"}
 }
 
 function Setup-LibPng {

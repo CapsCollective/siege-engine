@@ -48,9 +48,11 @@ setup_glfw() {
     echo "Cloning GLFW..."
     update_submodules glfw
 
+    local BUILD_DIR="${VENDOR_DIR}"/glfw/build
+
     echo "Setting up GLFW..."
-    cmake -G "${GENERATOR}" -B"${VENDOR_DIR}"/glfw -S"${VENDOR_DIR}"/glfw
-    make -C "${VENDOR_DIR}"/glfw -j"${NUMBER_OF_PROCESSORS}"
+    cmake -G "${GENERATOR}" -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" -B"${BUILD_DIR}" -S"${VENDOR_DIR}"/glfw
+    make -C "${BUILD_DIR}" -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_glslang() {

@@ -13,22 +13,28 @@ ifeq ($(OS), Windows_NT)
 	PATHSEP := \$(BLANK)
 	MKDIR = $(scriptsDir)/mkdir.bat
 	RM := rm -r -f
+	EXE_NAME := .exe
+	VOLK_OS := WIN32_KHR
 	COPY = $(scriptsDir)/copy.bat $1 $2 $3
 	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
 	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
+	COMBINE_LIBS = powershell $(scriptsDir)/Combine-Libs.ps1 --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 else
+	COMBINE_LIBS = $(scriptsDir)/combine-libs.sh --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
 		# Set Linux macros
 		platform := linux
 		CXX ?= g++
+		VOLK_OS := XLIB_KHR
 	endif
 	ifeq ($(UNAMEOS), Darwin)
 		# Set macOS macros
 		platform := macos
 		CXX ?= clang++
+		VOLK_OS := MACOS_MVK
 	endif
 
 	# Set UNIX macros

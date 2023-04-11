@@ -14,6 +14,8 @@ renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
 renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
 renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
+renderLibs := $(vendorDir)/glfw/build/src/libglfw3.a $(vendorDir)/zlib/build/lib/libz.a \
+$(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
 
 # Set shader build vars
 vertSources := $(call rwildcard,assets/shaders,*.vert)
@@ -22,19 +24,6 @@ vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
 fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
 linkFlags += -l utils
-
-# Set build vars
-ifeq ($(platform), windows)
-    volkDefines = VK_USE_PLATFORM_WIN32_KHR
-    glslangValidator := $(vendorDir)\glslang\build\StandAlone\glslangValidator.exe
-else ifeq ($(platform), linux)
-	volkDefines = VK_USE_PLATFORM_XLIB_KHR
-	glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-else ifeq ($(platform), macos)
-	volkDefines = VK_USE_PLATFORM_MACOS_MVK
-	glslangValidator := $(vendorDir)/glslang/build/install/bin/glslangValidator
-	symdefDelete = cd $(libDir) $(THEN) rm *".SYMDEF SORTED"
-endif
 
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
 				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image -I $(vendorDir)/zlib/build/include \
@@ -47,9 +36,7 @@ all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
 # Build the static library
 $(renderLib): $(renderObjects)
 	$(RM) $(call platformpth, $(renderLib))
-	powershell $(scriptsDir)/Combine-Libs.ps1 --src_libs $(vendorDir)/glfw/build/src/libglfw3.a $(vendorDir)/zlib/build/lib/zlib.a $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a --src_objs $(renderObjects) --output_dir $(libDir) --output_name render
-
-	$(symdefDelete)
+	$(call COMBINE_LIBS, $(renderLibs), $(renderObjects), $(libDir), render)
 
 # Add all rules from dependency files
 -include $(renderDepends)
@@ -57,12 +44,12 @@ $(renderLib): $(renderObjects)
 # Compile object files to the bin directory
 $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS) -D$(volkDefines)
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS) -DVK_USE_PLATFORM_$(VOLK_OS)
 
 # Compile shaders to the build directory
 $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 	$(MKDIR) $(call platformpth, $(@D))
-	$(call platformpth,$(glslangValidator)) $< -V -o $@
+	$(call platformpth,$(vendorDir)/glslang/build/StandAlone/glslangValidator$(EXE_NAME)) $< -V -o $@
 
 # Copy Vulkan libraries to the build directory
 vulkan-libs:
