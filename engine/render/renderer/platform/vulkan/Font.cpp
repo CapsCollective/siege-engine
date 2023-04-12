@@ -8,24 +8,26 @@
 
 #include "Font.h"
 
-#include "Context.h"
-#include "utils/Descriptor.h"
-#include "utils/TypeAdaptor.h"
-#include FT_FREETYPE_H
-
+#include <freetype/freetype.h>
 #include <utils/Defer.h>
 #include <utils/Logging.h>
 
+#include "Context.h"
+#include "render/renderer/statics/Statics.h"
+#include "utils/Descriptor.h"
+#include "utils/TypeAdaptor.h"
+
 namespace Siege::Vulkan
 {
-
-FT_Library Font::freetype = nullptr;
-
 Font::Font(const char* filePath)
 {
     auto device = Context::GetCurrentDevice();
 
-    CC_ASSERT(!FT_New_Face(freetype, filePath, 0, &fontFace), "Failed to load font!")
+    auto ft = Statics::GetFontLib();
+
+    FT_Face fontFace;
+
+    CC_ASSERT(!FT_New_Face(ft, filePath, 0, &fontFace), "Failed to load font!")
 
     uint8_t* buffer = new uint8_t[width * height];
     defer([buffer]() { delete[] buffer; });
@@ -49,7 +51,7 @@ Font::Font(const char* filePath)
 
     for (size_t i = 32; i < 126; i++)
     {
-        AddChar(static_cast<unsigned char>(i));
+        AddChar(static_cast<unsigned char>(i), fontFace);
     }
 
     info.textureInfo = texture.GetInfo();
@@ -75,7 +77,6 @@ void Font::Free()
 
 void Font::Swap(Font& other)
 {
-    auto tmpFontFace = fontFace;
     auto tmpId = id;
     auto tmpWidth = width;
     auto tmpHeight = height;
@@ -86,7 +87,6 @@ void Font::Swap(Font& other)
     auto tmpInfo = info;
     auto tmpTexture = std::move(texture);
 
-    fontFace = other.fontFace;
     id = other.id;
     width = other.width;
     height = other.height;
@@ -97,7 +97,6 @@ void Font::Swap(Font& other)
     info = other.info;
     texture = std::move(other.texture);
 
-    other.fontFace = tmpFontFace;
     other.id = tmpId;
     other.width = tmpWidth;
     other.height = tmpHeight;
@@ -109,7 +108,7 @@ void Font::Swap(Font& other)
     other.texture = std::move(tmpTexture);
 }
 
-void Font::AddChar(const unsigned char c)
+void Font::AddChar(const unsigned char c, FontFace fontFace)
 {
     FT_Set_Pixel_Sizes(fontFace, 0, 64);
 
@@ -161,16 +160,6 @@ void Font::AddChar(const unsigned char c)
                     (exceededWidth * glyph->bitmap.width)) +
                    1;
     spaceFilledY += (exceededWidth * (maxHeight + 2));
-}
-
-void Font::InitialiseFontLibs()
-{
-    CC_ASSERT(!FT_Init_FreeType(&freetype), "Failed to initialise freetype!")
-}
-
-void Font::DestroyFontLibs()
-{
-    FT_Done_FreeType(freetype);
 }
 
 } // namespace Siege::Vulkan

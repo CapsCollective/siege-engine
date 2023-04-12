@@ -9,11 +9,13 @@
 #ifndef SIEGE_ENGINE_FONT_H
 #define SIEGE_ENGINE_FONT_H
 
-#include <freetype/freetype.h>
 #include <utils/Hash.h>
 #include <utils/collections/StackArray.h>
 
 #include "Texture2D.h"
+
+struct FT_FaceRec_;
+typedef struct FT_FaceRec_* FontFace;
 
 namespace Siege::Vulkan
 {
@@ -110,18 +112,6 @@ public:
      */
     void Free();
 
-    /**
-     * Initialises the dependent libs (FreeType). This function should only be called once when the
-     * engine starts up
-     */
-    static void InitialiseFontLibs();
-
-    /**
-     * Destroys the dependent font libs. This function should only be called when the engine shuts
-     * down
-     */
-    static void DestroyFontLibs();
-
     // Getters
 
     /**
@@ -173,10 +163,7 @@ private:
      * Adds a character glyph to the font atlas
      * @param c the character to add
      */
-    void AddChar(const unsigned char c);
-
-    static FT_Library freetype;
-    FT_Face fontFace {nullptr};
+    void AddChar(const unsigned char c, FontFace fontFace);
 
     uint32_t width {INITIAL_FONT_ATLAS_WIDTH};
     uint32_t height {INITIAL_FONT_ATLAS_HEIGHT};

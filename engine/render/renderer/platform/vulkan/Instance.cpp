@@ -194,7 +194,7 @@ void Instance::CheckInstanceExtensionsExist(
     {
         auto required = *it;
         requiredExtensionsMsg += String("\n\t %s").Formatted(required);
-        CC_ASSERT(available.find(required) != available.end(), "Failed to find GLFW Extensions!")
+        CC_ASSERT(available.find(required) != available.end(), "Failed to find Window Extensions!")
     }
 
     CC_LOG_INFO("Required Extensions: {}", requiredExtensionsMsg)

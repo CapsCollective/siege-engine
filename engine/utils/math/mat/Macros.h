@@ -47,10 +47,12 @@
 #define MAT3_LOGIC_OP(op, logic, bLogic, body) \
     MAT2_LOGIC_OP(op, logic, bLogic, body) bLogic body(op, logic, 2)
 
-#define MAT3_BODY_FUNC(op, sep, idx) DEFINE_MAT_VEC_OP(op, sep, idx, X, 3) \
+#define MAT3_BODY_FUNC(op, sep, idx)      \
+    DEFINE_MAT_VEC_OP(op, sep, idx, X, 3) \
     sep DEFINE_MAT_VEC_OP(op, sep, idx, Y, 3) sep DEFINE_MAT_VEC_OP(op, sep, idx, Z, 3)
 
-#define MAT3_BODY_SCALAR_FUNC(op, sep, idx) DEFINE_SCALAR_OP(op, sep, idx, X, 3)    \
+#define MAT3_BODY_SCALAR_FUNC(op, sep, idx) \
+    DEFINE_SCALAR_OP(op, sep, idx, X, 3)    \
     sep DEFINE_SCALAR_OP(op, sep, idx, Y, 3) sep DEFINE_SCALAR_OP(op, sep, idx, Z, 3)
 
 #define GET_ROW3(varX, varY, varZ, idx) \
@@ -68,12 +70,14 @@
 #define MAT4_LOGIC_OP(op, logic, bLogic, body) \
     MAT3_LOGIC_OP(op, logic, bLogic, body) bLogic body(op, logic, 3)
 
-#define MAT4_BODY_FUNC(op, sep, idx) DEFINE_MAT_VEC_OP(op, sep, idx, X, 4)                  \
+#define MAT4_BODY_FUNC(op, sep, idx)                                                        \
+    DEFINE_MAT_VEC_OP(op, sep, idx, X, 4)                                                   \
     sep DEFINE_MAT_VEC_OP(op, sep, idx, Y, 4) sep DEFINE_MAT_VEC_OP(op, sep, idx, Z, 4) sep \
     DEFINE_MAT_VEC_OP(op, sep, idx, W, 4)
 
-#define MAT4_BODY_SCALAR_FUNC(op, sep, idx) DEFINE_SCALAR_OP(op, sep, idx, X, 4)            \
-    sep DEFINE_SCALAR_OP(op, sep, idx, Y, 4) sep DEFINE_SCALAR_OP(op, sep, idx, Z, 4) sep   \
+#define MAT4_BODY_SCALAR_FUNC(op, sep, idx)                                               \
+    DEFINE_SCALAR_OP(op, sep, idx, X, 4)                                                  \
+    sep DEFINE_SCALAR_OP(op, sep, idx, Y, 4) sep DEFINE_SCALAR_OP(op, sep, idx, Z, 4) sep \
     DEFINE_SCALAR_OP(op, sep, idx, W, 4)
 
 #define GET_ROW4(varX, varY, varZ, varW, idx) \

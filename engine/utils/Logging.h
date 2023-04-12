@@ -41,7 +41,8 @@
         std::cout << _CC_LOG_FMT_STR << std::endl;                                              \
     }
 #define DEFINE_VARIANT_TYPE(type, transform) \
-    VariantContainer(type) : data(transform) {}
+    VariantContainer(type) : data(transform) \
+    {}
 
 // Assert macros
 #define REPORT_ASSERT_FAILURE(expr, file, line, message)                          \
