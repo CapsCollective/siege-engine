@@ -23,7 +23,7 @@ TextRenderer Renderer3D::textRenderer;
 
 Renderer3D::GlobalData Renderer3D::global3DData;
 
-void Renderer3D::Initialise(const char* defaultTextPath)
+void Renderer3D::Initialise()
 {
     globalDataId = INTERN_STR("globalData");
 
@@ -31,7 +31,7 @@ void Renderer3D::Initialise(const char* defaultTextPath)
     debugRenderer.Initialise("globalData");
     billboardRenderer.Initialise("globalData");
     lightRenderer.Initialise("globalData");
-    textRenderer.Initialise(defaultTextPath, "globalData");
+    textRenderer.Initialise("globalData");
 
     gridMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()

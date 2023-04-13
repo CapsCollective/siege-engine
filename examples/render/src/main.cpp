@@ -46,7 +46,7 @@ int main()
 
     Siege::Input::SetWindowPointer(&window);
 
-    Siege::Renderer renderer(window, "assets/fonts/PublicPixel.ttf");
+    Siege::Renderer renderer(window);
 
     Camera camera;
 
@@ -55,6 +55,7 @@ int main()
     auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
 
     auto meslo = Siege::Vulkan::Font("assets/fonts/meslo-lg/MesloLGS-Regular.ttf");
+    auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
 
     // Shader Declaration
 
@@ -198,7 +199,8 @@ int main()
                                       {0.f, -.85f, -.51f},
                                       {},
                                       {.13f, .13f},
-                                      Siege::IColour::White);
+                                      Siege::IColour::White,
+                                      &pixel);
         Siege::Renderer3D::DrawText3D("AryehThulu",
                                       {-1.95f, -.75f, 2.95f},
                                       {},
@@ -209,12 +211,14 @@ int main()
                                       {2.f, -.75f, 2.95f},
                                       {},
                                       {.25f, .25f},
-                                      Siege::IColour::Blue);
+                                      Siege::IColour::Blue,
+                                      &pixel);
         Siege::Renderer3D::DrawText3D("Default Texture",
                                       {0.f, -.8f, 2.95f},
                                       {},
                                       {.1f, .1f},
-                                      Siege::IColour::Red);
+                                      Siege::IColour::Red,
+                                      &pixel);
 
         Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
                                       {2.99f, -3.f, 0.f},
@@ -226,7 +230,8 @@ int main()
                                       {2.99f, -2.4f, 0.f},
                                       {0.f, 1.5707963268f, 0.1f},
                                       {.25f, .25f},
-                                      Siege::IColour::Red);
+                                      Siege::IColour::Red,
+                                      &pixel);
         Siege::Renderer3D::DrawText3D("Yeah but it was like... hard",
                                       {2.99f, -2.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
@@ -249,13 +254,15 @@ int main()
                                       {2.99f, -1.2f, -1.7f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.25f, .25f},
-                                      Siege::IColour::Blue);
+                                      Siege::IColour::Blue,
+                                      &pixel);
 
         Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
                                       {2.99f, -.5f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.25f, .25f},
-                                      Siege::IColour::White);
+                                      Siege::IColour::White,
+                                      &pixel);
 
         renderer.EndFrame();
     }

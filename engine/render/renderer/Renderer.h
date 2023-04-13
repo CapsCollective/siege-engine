@@ -26,7 +26,7 @@ class Renderer
 {
 public:
 
-    explicit Renderer(Window& window, const char* defaultFontPath);
+    explicit Renderer(Window& window);
 
     ~Renderer();
 

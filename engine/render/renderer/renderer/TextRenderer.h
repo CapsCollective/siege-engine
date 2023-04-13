@@ -23,7 +23,7 @@ class TextRenderer
 {
 public:
 
-    void Initialise(const char* defaultTextPath, const String& globalDataAttributeName);
+    void Initialise(const String& globalDataAttributeName);
     void Free();
 
     void DrawFont(const char* text,
@@ -31,7 +31,7 @@ public:
                   const Vec3& rotation,
                   const Vec2 scale,
                   const IColour& colour,
-                  Vulkan::Font* font = nullptr);
+                  Vulkan::Font* font);
 
     void RecreateMaterials();
 
@@ -67,11 +67,11 @@ private:
     Hash::StringId textureId;
 
     MSArray<MHArray<QuadData>, MAX_FONTS> characters;
-
     MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
+
     Vulkan::IndexBuffer indexBuffer;
 
-    Vulkan::Font defaultFont;
+    Vulkan::Texture2D defaultTexture;
     Vulkan::Material defaultMaterial;
 };
 

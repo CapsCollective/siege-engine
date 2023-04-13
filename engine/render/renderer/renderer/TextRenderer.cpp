@@ -15,7 +15,7 @@
 namespace Siege
 {
 
-void TextRenderer::Initialise(const char* defaultTextPath, const String& globalDataAttributeName)
+void TextRenderer::Initialise(const String& globalDataAttributeName)
 {
     using Vulkan::Material;
     using Vulkan::Mesh;
@@ -23,7 +23,7 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
 
     globalDataId = INTERN_STR(globalDataAttributeName);
 
-    defaultFont = Vulkan::Font(defaultTextPath);
+    defaultTexture = Vulkan::Texture2D("default");
 
     defaultMaterial =
         Material(Shader::Builder()
@@ -40,7 +40,7 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
                  Shader::Builder()
                      .FromFragmentShader("assets/shaders/text2D.frag.spv")
                      .WithTexture("texture", 0, 16)
-                     .WithDefaultTexture(defaultFont.GetTexture())
+                     .WithDefaultTexture(&defaultTexture)
                      .Build());
 
     textureId = INTERN_STR("texture");
@@ -61,7 +61,7 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
 
 void TextRenderer::Free()
 {
-    defaultFont.Free();
+    defaultTexture.Free();
     defaultMaterial.Free();
     for (auto it = perFrameVertexBuffers.CreateIterator(); it; ++it) it->Free();
     indexBuffer.Free();
@@ -74,9 +74,9 @@ void TextRenderer::DrawFont(const char* text,
                             const IColour& colour,
                             Vulkan::Font* font)
 {
-    auto targetFont = font == nullptr ? &defaultFont : font;
+    if (font == nullptr) return;
 
-    auto texIndex = defaultMaterial.SetTexture(textureId, targetFont->GetTexture());
+    auto texIndex = defaultMaterial.SetTexture(textureId, font->GetTexture());
 
     if (texIndex >= characters.Count()) characters.Append(MHArray<QuadData>(OFFSET_PER_FONT));
 
@@ -85,14 +85,14 @@ void TextRenderer::DrawFont(const char* text,
     size_t textSize = strlen(text);
     float textScale = 64.f;
 
-    float totalWidth = (GetTotalTextWidth(text, textSize, targetFont->GetGlyphs()));
+    float totalWidth = (GetTotalTextWidth(text, textSize, font->GetGlyphs()));
 
     float x = 0 - (totalWidth / 2.f);
     float y = 0;
 
     for (size_t i = 0; i < textSize; i++)
     {
-        auto glyph = targetFont->GetGlyph(text[i]);
+        auto glyph = font->GetGlyph(text[i]);
 
         float height = glyph.height;
 

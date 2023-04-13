@@ -33,7 +33,7 @@ public:
         PointLight::Data lightData;
     };
 
-    static void Initialise(const char* defaulTextPath);
+    static void Initialise();
 
     static void DrawModel(Model* model,
                           const Vec3& position,
@@ -58,7 +58,7 @@ public:
                            const Vec3 rotation,
                            const Vec2 scale,
                            const IColour& colour,
-                           Vulkan::Font* font = nullptr);
+                           Vulkan::Font* font);
 
     static void RecreateMaterials();
 

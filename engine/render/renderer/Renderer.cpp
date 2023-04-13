@@ -20,7 +20,7 @@ Renderer* Renderer::instance {nullptr};
 Vulkan::CommandBuffer Renderer::commandBuffers;
 uint32_t Renderer::currentFrameIndex = 0;
 
-Renderer::Renderer(Window& window, const char* defaultFontPath) : window {window}
+Renderer::Renderer(Window& window) : window {window}
 {
     Statics::Initialise();
 
@@ -40,7 +40,7 @@ Renderer::Renderer(Window& window, const char* defaultFontPath) : window {window
 
     DescriptorPool::BuildPool();
 
-    Renderer3D::Initialise(defaultFontPath);
+    Renderer3D::Initialise();
     Renderer2D::Initialise();
 
     commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
