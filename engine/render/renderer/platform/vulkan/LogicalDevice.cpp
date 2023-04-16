@@ -128,7 +128,7 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
 void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size)
 {
     CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer buffer) {
-        Utils::Buffer::CopyBuffer(buffer, srcBuffer, dstBuffer, Utils::Buffer::CopyRegion(size), 1);
+        Utils::CopyBuffer(buffer, srcBuffer, dstBuffer, Utils::CopyRegion(size), 1);
     });
 }
 

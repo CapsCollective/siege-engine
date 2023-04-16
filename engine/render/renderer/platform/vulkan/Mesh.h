@@ -14,6 +14,7 @@
 #include <cstdint>
 
 #include "CommandBuffer.h"
+#include "VertexBuffer.h"
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Types.h"
 
@@ -33,7 +34,7 @@ public:
     struct VertexData
     {
         uint64_t vertexSize {0};
-        const void* vertices {nullptr};
+        void* vertices {nullptr};
         uint32_t count {0};
     };
 
@@ -58,6 +59,8 @@ public:
      * A default constructor for the Mesh class
      */
     Mesh() = default;
+
+    Mesh(uint32_t vertexSize, uint32_t vertexCount, uint32_t indexCount);
 
     /**
      * A non-indexed Mesh class. This only creates a vertex buffer and uses no index buffers
@@ -156,19 +159,10 @@ public:
      */
     const uint32_t GetVertexCount(uint32_t frameIndex) const
     {
-        return perFrameVertexBuffers[frameIndex].count;
+        return perFrameVertexBuffers[frameIndex].GetCount();
     }
 
 private:
-
-    /**
-     * A struct storing our vertex buffer data
-     */
-    struct VertexBufferUpdate
-    {
-        Buffer::Buffer updateBuffer {};
-        uint32_t count {0};
-    };
 
     /**
      * A struct storing our index buffer data
@@ -177,6 +171,7 @@ private:
     {
         Buffer::Buffer updateBuffer {0};
         uint32_t count {0};
+        uint32_t size {0};
     };
 
     /**
@@ -211,10 +206,11 @@ private:
     void SetIndexBuffers(const IndexData& indices, uint32_t currentFrame);
 
     // NOTE: Because Vulkan is multithreaded we need to store a buffer for every frame. Since we
-    // don't want to wait on a frame to release it's resources, we simply switch between our buffers
+    // don't want to wait on a frame to release its resources, we simply switch between our buffers
     // for every frame in flight
-    MHArray<VertexBufferUpdate> perFrameVertexBuffers;
     MHArray<IndexBufferUpdate> perFrameIndexBuffers;
+
+    MHArray<VertexBuffer> perFrameVertexBuffers;
 };
 
 } // namespace Siege::Vulkan
