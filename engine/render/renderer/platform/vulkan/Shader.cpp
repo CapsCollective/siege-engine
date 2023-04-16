@@ -19,32 +19,46 @@
 
 namespace Siege::Vulkan
 {
+Shader::VertexBinding& Shader::VertexBinding::WithInputRate(Utils::VertexInputRate rate)
+{
+    inputRate = rate;
+    return *this;
+}
+
 Shader::VertexBinding& Shader::VertexBinding::AddFloatVec3Attribute()
 {
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC3});
+    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC3, inputRate});
     stride += sizeof(float) * 3;
     return *this;
 }
 
 Shader::VertexBinding& Shader::VertexBinding::AddFloatVec4Attribute()
 {
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC4});
+    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC4, inputRate});
     stride += sizeof(float) * 4;
     return *this;
 }
 
 Shader::VertexBinding& Shader::VertexBinding::AddFloatVec2Attribute()
 {
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC2});
+    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_FLOAT_VEC2, inputRate});
     stride += sizeof(float) * 2;
     return *this;
 }
 
 Shader::VertexBinding& Shader::VertexBinding::AddU32Attribute()
 {
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_UINT_32});
+    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_UINT_32, inputRate});
     stride += sizeof(uint32_t);
     return *this;
+}
+
+Shader::VertexBinding& Shader::VertexBinding::AddMat4Attribute()
+{
+    return AddFloatVec4Attribute()
+        .AddFloatVec4Attribute()
+        .AddFloatVec4Attribute()
+        .AddFloatVec4Attribute();
 }
 
 Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)

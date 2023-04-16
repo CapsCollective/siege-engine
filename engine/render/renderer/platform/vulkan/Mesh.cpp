@@ -14,7 +14,7 @@
 
 namespace Siege::Vulkan
 {
-Mesh::Mesh(uint32_t vertexSize, uint32_t vertexCount, uint32_t indexCount)
+Mesh::Mesh(uint32_t vertexSize, uint32_t vertCount, uint32_t indexCount)
 {
     CC_ASSERT(vertexCount < MAX_VERTICES, "The provided model has too many vertices!")
 
@@ -28,6 +28,8 @@ Mesh::Mesh(uint32_t vertexSize, uint32_t vertexCount, uint32_t indexCount)
         perFrameIndexBuffers[i] = IndexBuffer(indexCount);
         perFrameVertexBuffers[i] = VertexBuffer(vertexSize, vertexCount);
     }
+
+    vertexCount = vertCount;
 }
 
 Mesh::Mesh(const VertexData& vertices)
@@ -41,6 +43,8 @@ Mesh::Mesh(const VertexData& vertices)
     if (vertices.count == 0) return;
 
     for (size_t i = 0; i < frames; i++) SetVertexBuffers(vertices, i);
+
+    vertexCount = vertices.count;
 }
 
 Mesh::Mesh(const VertexData& vertices, const IndexData& indices) : Mesh(vertices)
@@ -54,18 +58,23 @@ Mesh::Mesh(const VertexData& vertices, const IndexData& indices) : Mesh(vertices
     if (indices.count == 0) return;
 
     for (size_t i = 0; i < frames; i++) SetIndexBuffers(indices, i);
+
+    vertexCount = vertices.count;
 }
 
 void Mesh::Swap(Mesh& other)
 {
     auto tmpPerFrameVertexBuffers2 = std::move(perFrameVertexBuffers);
     auto tmpPerFrameIndexBuffers = std::move(perFrameIndexBuffers);
+    auto tmpVertexCount = vertexCount;
 
     perFrameVertexBuffers = std::move(other.perFrameVertexBuffers);
     perFrameIndexBuffers = std::move(other.perFrameIndexBuffers);
+    vertexCount = other.vertexCount;
 
     other.perFrameVertexBuffers = std::move(tmpPerFrameVertexBuffers2);
     other.perFrameIndexBuffers = std::move(tmpPerFrameIndexBuffers);
+    other.vertexCount = tmpVertexCount;
 }
 
 Mesh::~Mesh()
@@ -87,6 +96,7 @@ void Mesh::Free()
 
     perFrameIndexBuffers.Clear();
     perFrameVertexBuffers.Clear();
+    vertexCount = 0;
 }
 
 void Mesh::SetVertexBuffers(const VertexData& vertices, uint32_t currentFrame)

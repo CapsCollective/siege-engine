@@ -44,36 +44,34 @@ private:
 
     static constexpr size_t MAX_FONTS = 16;
     static constexpr size_t MAX_OBJECT_TRANSFORMS = 1000;
-    static constexpr size_t MAX_VERTICES_PER_FONT = 4000;
-    static constexpr size_t MAX_INDICES_PER_FONT = 6000;
+
+    static constexpr size_t MAX_CHARS_PER_TEXT = 256;
+    static constexpr size_t MAX_TEXT_OBJS_PER_FONT = 100;
+
+    struct PerInstanceData
+    {
+        Mat4 transform;
+        Vec4 uvData;
+        FColour colour;
+        Vec4 position;
+    };
 
     struct FontPushConstant
     {
         uint32_t textureIndex;
     };
 
-    struct FontVertex
-    {
-        Vec3 position;
-        FColour colour;
-        Vec2 uv;
-    };
-
     float GetTotalTextWidth(const char* text, size_t textLength, SArray<Vulkan::Font::Glyph, 256>& glyphs, Vec2 scale);
 
     Hash::StringId globalDataId;
 
-    MSArray<FontPushConstant, MAX_OBJECT_TRANSFORMS> pushConstants;
+    MSArray<MSArray<PerInstanceData, MAX_TEXT_OBJS_PER_FONT * MAX_CHARS_PER_TEXT>, MAX_FONTS> instanceData;
 
-    MSArray<MSArray<FontVertex, MAX_VERTICES_PER_FONT>, MAX_FONTS> perFontVertices;
-    MSArray<MSArray<uint32_t, MAX_INDICES_PER_FONT>, MAX_FONTS> perFontIndices;
-
-    MSArray<FontVertex, Vulkan::Mesh::MAX_VERTICES> vertices;
-    MSArray<uint32_t, Vulkan::Mesh::MAX_INDICES> indices;
+    Vulkan::VertexBuffer vertexBuffer;
+    Vulkan::IndexBuffer indexBuffer;
 
     Vulkan::Font defaultFont;
     Vulkan::Material defaultMaterial;
-    Model model;
 };
 
 } // namespace Siege

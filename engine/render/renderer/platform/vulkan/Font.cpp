@@ -104,7 +104,7 @@ void Font::Swap(Font& other)
 
 void Font::AddChar(const unsigned char c)
 {
-    FT_Set_Pixel_Sizes(fontFace, 0, 48);
+    FT_Set_Pixel_Sizes(fontFace, 0, 64);
 
     CC_ASSERT(!FT_Load_Char(fontFace, c, FT_LOAD_RENDER), "Unable to load char")
 
@@ -116,7 +116,7 @@ void Font::AddChar(const unsigned char c)
     int32_t positionXInAtlas = (spaceFilledX) * !exceededWidth;
     int32_t positionYInAtlas = spaceFilledY + static_cast<int32_t>(exceededWidth * maxHeight);
 
-    unsigned long size = glyph->bitmap.width * glyph->bitmap.rows * 4;
+    unsigned long size = glyph->bitmap.width * glyph->bitmap.rows;
 
     glyphs[c] = {
         static_cast<float>(static_cast<float>(positionXInAtlas + 1) / static_cast<float>(width)),
@@ -127,6 +127,8 @@ void Font::AddChar(const unsigned char c)
                            static_cast<float>(height)),
         static_cast<float>(glyph->bitmap.width),
         static_cast<float>(glyph->bitmap.rows),
+        static_cast<float>(glyph->bitmap.width) / static_cast<float>(width),
+        static_cast<float>(glyph->bitmap.rows) / static_cast<float>(height),
         static_cast<float>(glyph->bitmap_left),
         static_cast<float>(glyph->bitmap_top),
         static_cast<unsigned int>(glyph->advance.x)};

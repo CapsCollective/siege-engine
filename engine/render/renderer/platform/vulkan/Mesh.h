@@ -159,7 +159,7 @@ public:
      */
     const uint32_t GetVertexCount(uint32_t frameIndex) const
     {
-        return perFrameVertexBuffers[frameIndex].GetCount();
+        return vertexCount;
     }
 
 private:
@@ -191,6 +191,7 @@ private:
     // for every frame in flight
     MHArray<IndexBuffer> perFrameIndexBuffers;
     MHArray<VertexBuffer> perFrameVertexBuffers;
+    uint32_t vertexCount {0};
 };
 
 } // namespace Siege::Vulkan

@@ -13,9 +13,17 @@
 
 namespace Siege::Vulkan
 {
+VertexBuffer::VertexBuffer(uint32_t newSize) : size{newSize}
+{
+    if (newSize == 0) return;
+
+    auto device = Context::GetVkLogicalDevice();
+
+    Allocate(device);
+}
+
 VertexBuffer::VertexBuffer(uint32_t vertexSize, void* vertices, uint32_t vertexCount) :
-    size {vertexSize * vertexCount},
-    count {vertexCount}
+    size {vertexSize * vertexCount}
 {
     if (vertexCount == 0) return;
 
@@ -29,8 +37,7 @@ VertexBuffer::VertexBuffer(uint32_t vertexSize, void* vertices, uint32_t vertexC
 }
 
 VertexBuffer::VertexBuffer(uint32_t vertexSize, uint32_t vertexCount) :
-    size {vertexSize * vertexCount},
-    count {vertexCount}
+    size {vertexSize * vertexCount}
 {
     if (vertexCount == 0) return;
 
@@ -65,10 +72,9 @@ void VertexBuffer::Free()
     rawBuffer = nullptr;
 
     size = 0;
-    count = 0;
 }
 
-void VertexBuffer::Update(uint32_t vertexSize, void* vertices, uint32_t vertexCount)
+void VertexBuffer::Update(uint32_t vertexSize, void* vertices, uint32_t vertexCount, uint32_t offset)
 {
     auto device = Context::GetVkLogicalDevice();
 
@@ -81,16 +87,18 @@ void VertexBuffer::Update(uint32_t vertexSize, void* vertices, uint32_t vertexCo
         Allocate(device);
     }
 
-    Copy(device, size, vertices);
-
-    count = vertexCount;
+    Copy(device, newSize, vertices, offset);
 }
 
-void VertexBuffer::Bind(CommandBuffer& commandBuffer)
+void VertexBuffer::Bind(CommandBuffer& commandBuffer, uint64_t* offsets, uint32_t offsetCount, uint32_t binding, uint64_t firstOffset)
 {
-    VkBuffer buffers[] = {buffer};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer.Get(), 0, 1, buffers, offsets);
+    VkBuffer buffers[offsetCount];
+
+    for (size_t i = 0; i < offsetCount; i++) buffers[i] = buffer;
+
+    uint64_t* vertOffsets = offsets == nullptr ? &firstOffset : offsets;
+
+    vkCmdBindVertexBuffers(commandBuffer.Get(), binding, offsetCount, buffers, vertOffsets);
 }
 
 void VertexBuffer::Swap(VertexBuffer& other)
@@ -99,19 +107,16 @@ void VertexBuffer::Swap(VertexBuffer& other)
     auto tmpSize = size;
     auto tmpBuffer = buffer;
     auto tmpMemory = memory;
-    auto tmpCount = count;
 
     rawBuffer = other.rawBuffer;
     size = other.size;
     buffer = other.buffer;
     memory = other.memory;
-    count = other.count;
 
     other.rawBuffer = tmpRawBuffer;
     other.size = tmpSize;
     other.buffer = tmpBuffer;
     other.memory = tmpMemory;
-    other.count = tmpCount;
 }
 
 void VertexBuffer::Allocate(VkDevice device)
@@ -129,9 +134,10 @@ void VertexBuffer::Allocate(VkDevice device)
                         OUT memory);
 }
 
-void VertexBuffer::Copy(VkDevice device, uint32_t dataSize, void* data)
+void VertexBuffer::Copy(VkDevice device, uint32_t dataSize, void* data, uint32_t offset)
 {
-    memcpy(rawBuffer, data, dataSize);
-    Utils::CopyData(device, memory, dataSize, rawBuffer, 0);
+    void* dst = (char*)rawBuffer + offset;
+    memcpy(dst, data, dataSize);
+    Utils::CopyData(device, memory, dataSize, dst, offset);
 }
 } // namespace Siege::Vulkan

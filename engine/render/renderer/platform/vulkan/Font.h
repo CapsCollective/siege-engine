@@ -34,12 +34,15 @@ public:
     // Structs
     struct Glyph
     {
+
         float uvxMin {0};
         float uvyMin {0};
         float uvxMax {0};
         float uvyMax {0};
         float width {0};
         float height {0};
+        float widthNormalised {0};
+        float heightNormalised {0};
         float bearingX {0};
         float bearingY {0};
         unsigned int advance {0};

@@ -270,6 +270,12 @@ DECL_VULKAN_SWITCH_FUN(VkImageAspectFlagBits,
                                           VK_IMAGE_ASPECT_STENCIL_BIT)
                                    SWITCH_DEFAULT(VK_IMAGE_ASPECT_NONE))
 
+DECL_VULKAN_SWITCH_FUN(VkVertexInputRate, VertexInputRate, SWITCH_MEM(VertexInputRate, INPUT_RATE_INSTANCE, VK_VERTEX_INPUT_RATE_INSTANCE)
+                                                               SWITCH_DEFAULT(VK_VERTEX_INPUT_RATE_VERTEX))
+
+DECL_VULKAN_SWITCH_FUN(VertexInputRate, VkVertexInputRate, SWITCH_MEM(VkVertexInputRate, VK_VERTEX_INPUT_RATE_INSTANCE, INPUT_RATE_INSTANCE)
+                                                               SWITCH_DEFAULT(INPUT_RATE_VERTEX))
+
 //----------------------------------------- Structs -----------------------------------------------
 
 DECL_CONVERSION_FUN(VkExtent2D, Extent2D, {GET_MEMBER(width), GET_MEMBER(height)})

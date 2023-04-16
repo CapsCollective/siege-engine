@@ -94,7 +94,7 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
 
         defaultMaterial.Bind(buffer);
 
-        quadModel.DrawIndexed(buffer, frameIndex, i);
+        quadModel.DrawIndexed(buffer, frameIndex, 0);
     }
 }
 

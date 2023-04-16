@@ -185,6 +185,12 @@ enum ImageAspect
     ASPECT_STENCIL_BIT = 0x00000004
 };
 
+enum VertexInputRate
+{
+    INPUT_RATE_VERTEX = 0,
+    INPUT_RATE_INSTANCE = 1
+};
+
 //----------------------------------------- Structs -----------------------------------------------
 
 struct Extent2D

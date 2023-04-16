@@ -100,12 +100,13 @@ Pipeline Pipeline::Builder::Build()
 
     uint32_t processedAttributes = 0;
 
+    uint32_t currentLocation = 0;
     for (auto vertIt = vertShaderVertices.CreateIterator(); vertIt; ++vertIt)
     {
         auto& binding = *vertIt;
         inputDescriptions[vertIt.GetIndex()] = {static_cast<uint32_t>(vertIt.GetIndex()),
                                                 binding.stride,
-                                                VK_VERTEX_INPUT_RATE_VERTEX};
+                                                Utils::ToVkVertexInputRate(binding.inputRate)};
 
         auto& attributes = binding.attributes;
 
@@ -114,10 +115,11 @@ Pipeline Pipeline::Builder::Build()
             auto& vertex = *attrIt;
             auto attributeIndex = attrIt.GetIndex() + processedAttributes;
 
-            attributeDescriptions[attributeIndex] = {static_cast<uint32_t>(attrIt.GetIndex()),
+            attributeDescriptions[attributeIndex] = {currentLocation,
                                                      static_cast<uint32_t>(vertIt.GetIndex()),
                                                      Utils::ToVkFormat(vertex.type),
                                                      vertex.offset};
+            currentLocation++;
         }
 
         processedAttributes += attributes.Count();

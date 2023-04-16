@@ -113,6 +113,11 @@ public:
         return info;
     }
 
+    inline const Utils::Extent2D& GetExtent() const
+    {
+        return extent;
+    }
+
 private:
 
     /**

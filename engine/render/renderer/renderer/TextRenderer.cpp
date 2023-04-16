@@ -27,9 +27,11 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
                      .FromVertexShader("assets/shaders/text2D.vert.spv")
                      .WithVertexBinding(
                          Shader::VertexBinding()
-                             .AddFloatVec3Attribute()
-                             .AddFloatVec4Attribute()
-                             .AddFloatVec2Attribute())
+                                .WithInputRate(Vulkan::Utils::INPUT_RATE_INSTANCE)
+                                .AddMat4Attribute()
+                                .AddFloatVec4Attribute()
+                                .AddFloatVec4Attribute()
+                                .AddFloatVec4Attribute())
                      .WithGlobalData3DUniform()
                      .WithPushConstant(sizeof(FontPushConstant))
                      .Build(),
@@ -39,16 +41,18 @@ void TextRenderer::Initialise(const char* defaultTextPath, const String& globalD
                      .WithDefaultTexture(defaultFont.GetTexture())
                      .Build());
 
-    model.SetMesh(Mesh({sizeof(FontVertex), nullptr, 0}, {nullptr, 0}));
+    auto size = (sizeof(PerInstanceData) * MAX_FONTS * MAX_TEXT_OBJS_PER_FONT * MAX_CHARS_PER_TEXT);
 
-    model.SetMaterial(&defaultMaterial);
+    uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
+
+    vertexBuffer = Vulkan::VertexBuffer(size);
+    indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
 }
 
 void TextRenderer::DestroyTextRenderer()
 {
     defaultFont.Free();
     defaultMaterial.Free();
-    model.DestroyModel();
 }
 
 void TextRenderer::DrawFont(const char* text, const Vec3& position, const Vec2 scale, const IColour& colour,  Vulkan::Font* font)
@@ -58,50 +62,43 @@ void TextRenderer::DrawFont(const char* text, const Vec3& position, const Vec2 s
 
     auto texIndex = defaultMaterial.SetTexture(INTERN_STR("texture"), targetFont->GetTexture());
 
-    if (texIndex >= perFontVertices.Count())
+    if (texIndex >= instanceData.Count())
     {
-        perFontVertices.Append({});
-        perFontIndices.Append({});
-        pushConstants.Append({texIndex});
+        instanceData.Append({});
     }
 
-    auto& fontVertices = perFontVertices[texIndex];
-    auto& fontIndices = perFontIndices[texIndex];
+    auto& fontTexts = instanceData[texIndex];
 
-    float textSize = strlen(text);
+    size_t textSize = strlen(text);
     float textScale = 64.f;
 
     float totalWidth = (GetTotalTextWidth(text, textSize, targetFont->GetGlyphs(), scale)/textScale);
 
-    float x = position.x - (totalWidth / 2.f) * scale.x;
-    float y = position.y;
+    float x = 0 - (totalWidth / 2.f);
+    float y = 0;
 
     for (size_t i = 0; i < textSize; i++)
     {
         auto glyph = targetFont->GetGlyph(text[i]);
 
-        float width = (glyph.width/textScale) * scale.x;
-        float height = (glyph.height/textScale) * scale.y;
+        float width = (glyph.width/textScale);
+        float height = (glyph.height/textScale);
 
-        float yOffset = ((glyph.bearingY != glyph.height) * ((glyph.bearingY - glyph.height/textScale)));
+        float yOffset = ((glyph.bearingY != glyph.height) * ((glyph.bearingY - glyph.height)/textScale));
 
-        float xPos = x + glyph.bearingX/textScale * scale.x;
+        float xPos = x + glyph.bearingX/textScale;
         float yPos = y - (height + yOffset);
 
-        fontVertices.Append({{xPos + width, yPos + height, position.z}, ToFColour(colour), {glyph.uvxMax, glyph.uvyMax}});
-        fontVertices.Append({{xPos + width, yPos, position.z}, ToFColour(colour), {glyph.uvxMax, glyph.uvyMin}});
-        fontVertices.Append({{xPos, yPos, position.z}, ToFColour(colour), {glyph.uvxMin, glyph.uvyMin}});
-        fontVertices.Append({{xPos, yPos + height, position.z}, ToFColour(colour), {glyph.uvxMin, glyph.uvyMax}});
+        x += glyph.bearingX/textScale;
 
-        fontIndices.Append(fontVertices.Count() - 4);
-        fontIndices.Append(fontVertices.Count() - 3);
-        fontIndices.Append(fontVertices.Count() - 1);
+        fontTexts.Append({Graphics::CalculateTransform3D({position.x, position.y, position.z},
+                                                         {0.f, 0.f, 0.f},
+                                                         {scale.x, scale.y, 0.f}),
+                          {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
+                          ToFColour(colour),
+                          {xPos, yPos , width, height}});
 
-        fontIndices.Append(fontVertices.Count() - 3);
-        fontIndices.Append(fontVertices.Count() - 2);
-        fontIndices.Append(fontVertices.Count() - 1);
-
-        x += ((glyph.advance >> 6)/textScale) * scale.x;
+        x += ((glyph.advance >> 6)/textScale);
     }
 }
 
@@ -115,25 +112,25 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
                           const void* globalData,
                           uint32_t frameIndex)
 {
-    if (pushConstants.Count() == 0) return;
+    defaultMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
 
-    for(size_t i = 0 ; i < perFontVertices.Count(); i++)
+    for(uint32_t i = 0; i < instanceData.Count(); i++)
     {
-        auto& fontVertices = perFontVertices[i];
-        auto& fontIndices = perFontIndices[i];
+        FontPushConstant push = {i};
 
-        defaultMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
-
-        defaultMaterial.BindPushConstant(buffer, &pushConstants[i]);
+        defaultMaterial.BindPushConstant(buffer, &push);
 
         defaultMaterial.Bind(buffer);
 
-        model.UpdateMeshIndexed(frameIndex,
-                                {sizeof(FontVertex), fontVertices.Data(), static_cast<uint32_t>(fontVertices.Count())},
-                                {fontIndices.Data(), static_cast<uint32_t>(fontIndices.Count())});
+        uint64_t fontOffset = (i * MAX_CHARS_PER_TEXT * MAX_TEXT_OBJS_PER_FONT);
 
-        model.BindIndexed(buffer, frameIndex);
-        model.DrawIndexed(buffer, frameIndex);
+        vertexBuffer.Update(sizeof(PerInstanceData), instanceData[i].Data(), instanceData[i].Count(), fontOffset);
+
+        uint64_t offsets[] = {fontOffset};
+        vertexBuffer.Bind(buffer, offsets, 1);
+        indexBuffer.Bind(buffer);
+
+        vkCmdDrawIndexed(buffer.Get(), 6, instanceData[i].Count(), 0, 0, 0);
     }
 }
 
@@ -144,13 +141,7 @@ void TextRenderer::Update()
 
 void TextRenderer::Flush()
 {
-    pushConstants.Clear();
-    vertices.Clear();
-    indices.Clear();
-    for (auto it = perFontIndices.CreateIterator(); it; ++it) it->Clear();
-    for (auto it = perFontVertices.CreateIterator(); it; ++it) it->Clear();
-    perFontVertices.Clear();
-    perFontIndices.Clear();
+    instanceData.Clear();
 }
 
 float TextRenderer::GetTotalTextWidth(const char* text, size_t textLength, SArray<Vulkan::Font::Glyph, 256>& glyphs, Vec2 scale)
@@ -160,7 +151,7 @@ float TextRenderer::GetTotalTextWidth(const char* text, size_t textLength, SArra
     for (size_t i = 0; i < textLength; i++)
     {
         auto glyph = glyphs[text[i]];
-        texWidth += glyph.advance >> 6;
+        texWidth += glyph.bearingX + (glyph.advance >> 6);
     }
 
     return texWidth;

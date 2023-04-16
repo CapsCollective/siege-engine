@@ -117,6 +117,7 @@ bool Renderer::StartFrame()
 void Renderer::EndFrame()
 {
     Renderer2D::Update();
+    Renderer3D::Update();
 
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 

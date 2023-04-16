@@ -54,6 +54,8 @@ int main()
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
     auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
 
+    auto meslo = Siege::Vulkan::Font("assets/fonts/meslo-lg/MesloLGS-Regular.ttf");
+
     // Shader Declaration
 
     using Siege::Vulkan::Material;
@@ -93,6 +95,7 @@ int main()
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
+                                            GameObject(&cubeObjModel),
                                             GameObject(&vaseObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
@@ -109,9 +112,14 @@ int main()
     objects3D[2].SetColour({128, 0, 0, 255});
     objects3D[2].SetRotationX(0.f);
 
-    objects3D[3].SetPosition({0.f, -1.f, 0.f});
-    objects3D[3].SetScale({2.f, 2.f, 2.f});
+    objects3D[3].SetPosition({3.f, -2.f, 0.f});
+    objects3D[3].SetScale({3.f, 2.f, 0.001f});
     objects3D[3].SetColour({128, 0, 0, 255});
+    objects3D[3].SetRotationY(1.5707963268f);
+
+    objects3D[4].SetPosition({0.f, -1.f, 0.f});
+    objects3D[4].SetScale({2.f, 2.f, 2.f});
+    objects3D[4].SetColour({128, 0, 0, 255});
 
     camera.SetPosition({0.f, -1.f, -2.5f});
 
@@ -186,10 +194,13 @@ int main()
                                     2.95f,
                                     &cappy);
 
-        Siege::Renderer3D::DrawText("Random Vase", {0.f, -.8f, -.51f}, {.2f, .2f},Siege::IColour::White);
-        Siege::Renderer3D::DrawText("Default Texture", {0.f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::White);
-        Siege::Renderer3D::DrawText("AryehThulu", {-1.95f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::Green);
-        Siege::Renderer3D::DrawText("Cappy", {2.f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::Blue);
+        Siege::Renderer3D::DrawText("Random Vase",
+                                    {0.f, -.85f, -.51f},
+                                    {.13f, .13f},
+                                    Siege::IColour::White);
+        Siege::Renderer3D::DrawText("AryehThulu", {-1.95f, -.75f, 2.95f}, {.25f, .25f},Siege::IColour::Green, &meslo);
+        Siege::Renderer3D::DrawText("Cappy", {2.f, -.75f, 2.95f}, {.25f, .25f},Siege::IColour::Blue);
+        Siege::Renderer3D::DrawText("Default Texture", {0.f, -.8f, 2.95f}, {.1f, .1f},Siege::IColour::Red);
 
         renderer.EndFrame();
     }
