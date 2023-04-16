@@ -10,6 +10,8 @@
 
 #include <set>
 
+static constexpr uint32_t UNFOUND_DEVICE_ITEM_IDX = -1;
+
 namespace Siege::Vulkan
 {
 // Device
@@ -47,6 +49,7 @@ uint32_t Device::Physical::GetGraphicsQueue(VkPhysicalDevice device)
     }
 
     CC_ASSERT(false, "No Graphics queue found for device!")
+    return UNFOUND_DEVICE_ITEM_IDX;
 }
 
 uint32_t Device::Physical::GetPresentQueue(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -65,6 +68,7 @@ uint32_t Device::Physical::GetPresentQueue(VkPhysicalDevice device, VkSurfaceKHR
     }
 
     CC_ASSERT(false, "No Present queue found for device!")
+    return UNFOUND_DEVICE_ITEM_IDX;
 }
 
 void Device::Physical::GetDevices(VkInstance instance, VkPhysicalDevice* devices)
@@ -270,6 +274,7 @@ uint32_t Device::Physical::FindMemoryType(VkPhysicalDevice device,
     }
 
     CC_ASSERT(false, "Failed to find suitable memory type!")
+    return UNFOUND_DEVICE_ITEM_IDX;
 }
 
 VkFormat Device::Physical::FindSupportedFormat(VkPhysicalDevice device,
@@ -295,6 +300,7 @@ VkFormat Device::Physical::FindSupportedFormat(VkPhysicalDevice device,
         }
     }
     CC_ASSERT(false, "Failed to find a supported format!")
+    return {};
 }
 
 bool Device::Physical::HasFormats(VkPhysicalDevice device, VkSurfaceKHR surface)

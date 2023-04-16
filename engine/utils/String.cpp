@@ -97,7 +97,7 @@ static char* GetFromFormat(const char* format, T value)
 {
     size_t len = snprintf(nullptr, 0, format, value);
     char* cstr = Allocate(len);
-    sprintf(cstr, format, value);
+    snprintf(cstr, len + 1, format, value);
     cstr[len] = '\0';
     return cstr;
 }
