@@ -13,6 +13,7 @@
 #include <render/renderer/platform/vulkan/Mesh.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
+#include <render/renderer/platform/vulkan/Font.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
 
@@ -112,6 +113,8 @@ int main()
     objects3D[3].SetPosition({0.f, -1.f, 0.f});
     objects3D[3].SetScale({2.f, 2.f, 2.f});
     objects3D[3].SetColour({128, 0, 0, 255});
+
+    Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
 
     camera.SetPosition({0.f, -1.f, -2.5f});
 

@@ -11,6 +11,7 @@
 #include "Renderer.h"
 
 #include "platform/vulkan/utils/Types.h"
+#include "platform/vulkan/Font.h"
 
 namespace Siege
 {
@@ -36,6 +37,8 @@ Renderer::Renderer(Window& window) : window {window}
 
     DescriptorPool::BuildPool();
 
+    Vulkan::Font::InitialiseFontLibs();
+
     Renderer3D::Initialise();
     Renderer2D::Initialise();
 
@@ -46,6 +49,7 @@ Renderer::~Renderer()
 {
     CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
+    Vulkan::Font::DestroyFontLibs();
     Renderer3D::DestroyRenderer3D();
     Renderer2D::DestroyRenderer2D();
 }

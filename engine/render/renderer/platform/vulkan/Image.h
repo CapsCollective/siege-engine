@@ -32,6 +32,8 @@ public:
     {
         VkImageView view {nullptr};
         Utils::ImageLayout layout {Utils::ImageLayout::LAYOUT_UNDEFINED};
+        Utils::PipelineStage stage {Utils::PipelineStage::STAGE_NONE};
+        Utils::MemoryAccess access {Utils::MemoryAccess::ACCESS_NONE};
     };
 
     Image() = default;
@@ -72,6 +74,7 @@ public:
     bool HasInfo();
 
     void CopyBuffer(VkBuffer buffer);
+    void TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout newLayout, Utils::MemoryAccess newAccess);
 
 private:
 

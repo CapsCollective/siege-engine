@@ -200,6 +200,47 @@ void Image::CopyBuffer(VkBuffer buffer)
                              &toReadableBarrier);
 
         info.layout = Utils::ImageLayout::LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        info.access = Utils::MemoryAccess::ACCESS_SHADER_READ;
+        info.stage = Utils::PipelineStage::STAGE_FRAGMENT_SHADER;
+    });
+}
+
+void Image::TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout newLayout, Utils::MemoryAccess newAccess)
+{
+    CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer)
+    {
+        auto range = Utils::Image::SubResourceRange()
+                         .WithAspect(VK_IMAGE_ASPECT_COLOR_BIT)
+                         .WithMipLevel(0)
+                         .WithLevelCount(1)
+                         .WithLayerCount(1)
+                         .WithArrayLayer(0)
+                         .Build();
+
+        auto barrier = Utils::Image::Barrier()
+                           .ToAccessMask(newAccess)
+                           .FromAccessMask(info.access)
+                           .FromLayout(Utils::ToVkImageLayout(info.layout))
+                           .ToLayout(Utils::ToVkImageLayout(newLayout))
+                           .WithImage(image)
+                           .WithSubResourceRange(range)
+                           .Build();
+
+        vkCmdPipelineBarrier(commandBuffer,
+                                 Utils::ToVkPipelineStageFlagBits(info.stage),
+                                 Utils::ToVkPipelineStageFlagBits(newStage),
+                                 0,
+                                 0,
+                                 nullptr,
+                                 0,
+                                 nullptr,
+                                 1,
+                                 &barrier);
+
+
+        info.access = newAccess;
+        info.layout = newLayout;
+        info.stage = newStage;
     });
 }
 

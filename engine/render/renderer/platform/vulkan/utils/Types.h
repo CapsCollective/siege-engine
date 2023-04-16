@@ -159,6 +159,32 @@ enum BufferType
     INDEX_BUFFER = 0x00000040
 };
 
+enum PipelineStage
+{
+    STAGE_NONE = 0,
+    STAGE_TOP_OF_PIPE = 0x00000001,
+    STAGE_VERTEX_SHADER = 0x00000008,
+    STAGE_FRAGMENT_SHADER = 0x00000080,
+    STAGE_TRANSFER_BIT = 0x00001000
+};
+
+enum MemoryAccess
+{
+    ACCESS_NONE = 0,
+    ACCESS_TRANSFER_WRITE = 0x00001000,
+    ACCESS_TRANSFER_READ = 0x00000800,
+    ACCESS_SHADER_READ = 0x00000020,
+    ACCESS_SHADER_WRITE = 0x00000040
+};
+
+enum ImageAspect
+{
+    ASPECT_NONE = 0,
+    ASPECT_COLOUR_BIT = 0x00000001,
+    ASPECT_DEPTH_BIT = 0x00000002,
+    ASPECT_STENCIL_BIT = 0x00000004
+};
+
 //----------------------------------------- Structs -----------------------------------------------
 
 struct Extent2D
