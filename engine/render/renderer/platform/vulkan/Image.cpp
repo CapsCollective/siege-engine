@@ -134,32 +134,11 @@ bool Image::IsValid()
 }
 
 // TODO: we'll likely need to send some sort of config object into this to get better config options
-void Image::CopyBuffer(VkBuffer buffer)
+void Image::CopyBuffer(VkBuffer buffer, Utils::Extent3D bufferExtent, Utils::Offset3D offset)
 {
+    TransitionLayout(Utils::STAGE_TRANSFER_BIT, Utils::LAYOUT_TRANSFER_DST_OPTIMAL, Utils::ACCESS_TRANSFER_WRITE);
+
     CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer commandBuffer) {
-        VkImageSubresourceRange range {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-
-        VkImageMemoryBarrier toTransferBarrier {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                                                nullptr,
-                                                0,
-                                                VK_ACCESS_TRANSFER_WRITE_BIT,
-                                                Utils::ToVkImageLayout(info.layout),
-                                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                                0,
-                                                0,
-                                                image,
-                                                range};
-
-        vkCmdPipelineBarrier(commandBuffer,
-                             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                             VK_PIPELINE_STAGE_TRANSFER_BIT,
-                             0,
-                             0,
-                             nullptr,
-                             0,
-                             nullptr,
-                             1,
-                             &toTransferBarrier);
 
         VkBufferImageCopy copyRegion = {};
         copyRegion.bufferOffset = 0;
@@ -170,8 +149,8 @@ void Image::CopyBuffer(VkBuffer buffer)
         copyRegion.imageSubresource.mipLevel = 0;
         copyRegion.imageSubresource.baseArrayLayer = 0;
         copyRegion.imageSubresource.layerCount = 1;
-        copyRegion.imageOffset = {0, 0, 0};
-        copyRegion.imageExtent = {extent.width, extent.height, 1};
+        copyRegion.imageOffset = { offset.width, offset.height, offset.depth};
+        copyRegion.imageExtent = {bufferExtent.width, bufferExtent.height, 1};
 
         vkCmdCopyBufferToImage(commandBuffer,
                                buffer,
@@ -179,30 +158,13 @@ void Image::CopyBuffer(VkBuffer buffer)
                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                1,
                                &copyRegion);
-
-        VkImageMemoryBarrier toReadableBarrier = toTransferBarrier;
-
-        toReadableBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        toReadableBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-        toReadableBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        toReadableBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        vkCmdPipelineBarrier(commandBuffer,
-                             VK_PIPELINE_STAGE_TRANSFER_BIT,
-                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                             0,
-                             0,
-                             nullptr,
-                             0,
-                             nullptr,
-                             1,
-                             &toReadableBarrier);
-
-        info.layout = Utils::ImageLayout::LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        info.access = Utils::MemoryAccess::ACCESS_SHADER_READ;
-        info.stage = Utils::PipelineStage::STAGE_FRAGMENT_SHADER;
     });
+
+    TransitionLayout(Utils::STAGE_FRAGMENT_SHADER, Utils::LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utils::ACCESS_SHADER_READ);
+
+    info.layout = Utils::ImageLayout::LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    info.access = Utils::MemoryAccess::ACCESS_SHADER_READ;
+    info.stage = Utils::PipelineStage::STAGE_FRAGMENT_SHADER;
 }
 
 void Image::TransitionLayout(Utils::PipelineStage newStage, Utils::ImageLayout newLayout, Utils::MemoryAccess newAccess)

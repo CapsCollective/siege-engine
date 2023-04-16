@@ -16,6 +16,7 @@
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
+#include "TextRenderer.h"
 
 // TODO(Aryeh): Convert this class into a normal class and remove the statics. Their existence is a
 // TODO(Aryeh): blight on humanity and ends up really messing with Vulkan's memory management
@@ -32,7 +33,7 @@ public:
         PointLight::Data lightData;
     };
 
-    static void Initialise();
+    static void Initialise(const char* defaulTextPath);
 
     static void DrawModel(Model* model,
                           const Vec3& position,
@@ -52,6 +53,8 @@ public:
                                const IColour& colour,
                                const IColour& ambientColor);
 
+    static void DrawText(const char* text, const Vec3 position, const Vec2 scale, const IColour& colour, Vulkan::Font* font = nullptr);
+
     static void RecreateMaterials();
 
     static void Render(uint32_t currentFrame,
@@ -60,6 +63,8 @@ public:
     static void Flush();
 
     static void DestroyRenderer3D();
+
+    static void Update();
 
 private:
 
@@ -74,6 +79,7 @@ private:
     static DebugRenderer3D debugRenderer;
     static BillboardRenderer billboardRenderer;
     static LightRenderer lightRenderer;
+    static TextRenderer textRenderer;
 
     static Vulkan::Material gridMaterial;
 

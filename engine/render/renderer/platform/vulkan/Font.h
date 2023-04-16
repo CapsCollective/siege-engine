@@ -13,6 +13,7 @@
 
 #include <freetype/freetype.h>
 #include <utils/Hash.h>
+#include <utils/collections/StackArray.h>
 
 namespace Siege::Vulkan
 {
@@ -26,7 +27,7 @@ public:
 
     struct Info
     {
-        Image::Info imageInfo {};
+        Texture2D::Info textureInfo {};
         VkSampler sampler {nullptr};
     };
 
@@ -66,8 +67,17 @@ public:
     static void InitialiseFontLibs();
     static void DestroyFontLibs();
 
+    inline const Texture2D* GetTexture() const { return &texture; }
+    inline Texture2D* GetTexture() { return &texture; }
+    const inline Glyph& GetGlyph(const unsigned char c)
+    {
+        return glyphs[c];
+    }
+    inline SArray<Glyph, 256>& GetGlyphs() { return glyphs; }
+
 private:
     void Swap(Font& other);
+    void AddChar(const unsigned char c);
 
     static FT_Library freetype;
     FT_Face fontFace {nullptr};
@@ -75,8 +85,15 @@ private:
     uint32_t width {INITIAL_FONT_ATLAS_WIDTH};
     uint32_t height {INITIAL_FONT_ATLAS_HEIGHT};
 
+    SArray<Glyph, 256> glyphs;
+
+    int32_t spaceFilledX {0};
+    int32_t spaceFilledY {0};
+
+    uint32_t maxHeight {0};
+
     Hash::StringId id {0};
-    Image image;
+    Texture2D texture;
     Info info {};
 };
 

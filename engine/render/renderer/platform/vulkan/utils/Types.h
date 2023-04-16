@@ -200,6 +200,13 @@ struct Extent3D
     uint32_t depth {0};
 };
 
+struct Offset3D
+{
+    int32_t width {0};
+    int32_t height {0};
+    int32_t depth {0};
+};
+
 struct Image2DConfig
 {
     ImageFormat format;

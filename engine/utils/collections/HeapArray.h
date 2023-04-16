@@ -243,6 +243,18 @@ public:
     }
 
     /**
+     * Appends a value to the end of the collection
+     * @param element the value to add
+     */
+    inline void Append(const T& element)
+    {
+        ArrayUtils::AssertIsInBounds(count, size);
+        Set(count, element);
+        count += !bitField.IsSet(count + 1);
+        bitField.SetBit(count);
+    }
+
+    /**
      * @brief Removes the element at the specified position from the array
      * is larger than the array's size, an exception will be thrown
      * @param index the index of the element we want to remove

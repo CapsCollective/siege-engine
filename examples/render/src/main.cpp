@@ -13,7 +13,6 @@
 #include <render/renderer/platform/vulkan/Mesh.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
-#include <render/renderer/platform/vulkan/Font.h>
 #include <render/window/Window.h>
 #include <utils/math/Float.h>
 
@@ -47,7 +46,7 @@ int main()
 
     Siege::Input::SetWindowPointer(&window);
 
-    Siege::Renderer renderer(window);
+    Siege::Renderer renderer(window, "assets/fonts/PublicPixel.ttf");
 
     Camera camera;
 
@@ -114,8 +113,6 @@ int main()
     objects3D[3].SetScale({2.f, 2.f, 2.f});
     objects3D[3].SetColour({128, 0, 0, 255});
 
-    Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
-
     camera.SetPosition({0.f, -1.f, -2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -170,8 +167,8 @@ int main()
                                           {255, 0, 0, (uint8_t) (alpha * 255.f)},
                                           {0, 0, 255, 5});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
-        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
+//        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
+//        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
@@ -182,12 +179,17 @@ int main()
                                     2.95f,
                                     &aryehthulu);
         Siege::Renderer2D::DrawQuad({0.f, -1.5f}, {.5f, .5f}, {0, 255, 0, 255}, 0.f, 2.95f);
-        Siege::Renderer2D::DrawQuad({1.95f, -1.5f},
-                                    {1.f, 1.f},
+        Siege::Renderer2D::DrawQuad({2.f, -1.5f},
+                                    {.5f, .5f},
                                     {255, 255, 255, 255},
                                     0.f,
                                     2.95f,
                                     &cappy);
+
+        Siege::Renderer3D::DrawText("Random Vase", {0.f, -.8f, -.51f}, {.2f, .2f},Siege::IColour::White);
+        Siege::Renderer3D::DrawText("Default Texture", {0.f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::White);
+        Siege::Renderer3D::DrawText("AryehThulu", {-1.95f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::Green);
+        Siege::Renderer3D::DrawText("Cappy", {2.f, -.8f, 2.95f}, {.25f, .25f},Siege::IColour::Blue);
 
         renderer.EndFrame();
     }

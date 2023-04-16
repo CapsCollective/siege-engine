@@ -19,7 +19,7 @@ Renderer* Renderer::instance {nullptr};
 Vulkan::CommandBuffer Renderer::commandBuffers;
 uint32_t Renderer::currentFrameIndex = 0;
 
-Renderer::Renderer(Window& window) : window {window}
+Renderer::Renderer(Window& window, const char* defaultFontPath) : window {window}
 {
     if (instance == nullptr) instance = this;
 
@@ -39,7 +39,7 @@ Renderer::Renderer(Window& window) : window {window}
 
     Vulkan::Font::InitialiseFontLibs();
 
-    Renderer3D::Initialise();
+    Renderer3D::Initialise(defaultFontPath);
     Renderer2D::Initialise();
 
     commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
@@ -58,8 +58,8 @@ void Renderer::DrawFrame()
 {
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
     Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
+    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
 }
 
 void Renderer::RecreateSwapChain()
