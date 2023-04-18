@@ -12,47 +12,40 @@
 #include <utils/Defer.h>
 #include <utils/Logging.h>
 
-#include "Context.h"
 #include "render/renderer/statics/Statics.h"
 #include "utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
+
+#define CAST_F(val) static_cast<float>(val)
 
 namespace Siege::Vulkan
 {
 Font::Font(const char* filePath)
 {
-    auto device = Context::GetCurrentDevice();
-
-    auto ft = Statics::GetFontLib();
-
     FT_Face fontFace;
 
-    CC_ASSERT(!FT_New_Face(ft, filePath, 0, &fontFace), "Failed to load font!")
+    CC_ASSERT(!FT_New_Face(Statics::GetFontLib(), filePath, 0, &fontFace), "Failed to load font!")
 
-    uint8_t* buffer = new uint8_t[width * height];
+    FT_Set_Pixel_Sizes(fontFace, 0, 64);
+
+    Utils::Offset2D textPadding = {1, 2};
+
+    uint8_t* buffer = new uint8_t[MAX_ATLAS_WIDTH * MAX_ATLAS_HEIGHT];
     defer([buffer]() { delete[] buffer; });
+    memset(buffer, 0, sizeof(uint8_t) * MAX_ATLAS_WIDTH * MAX_ATLAS_HEIGHT);
 
-    memset(buffer, 0, sizeof(uint8_t) * width * height);
+    extent = PopulateGlyphs(fontFace, textPadding, buffer);
 
     texture = Texture2D(filePath,
                         buffer,
-                        sizeof(uint8_t) * width * height,
-                        width,
-                        height,
+                        sizeof(uint8_t) * extent.width * extent.height,
+                        extent.width,
+                        extent.height,
                         Texture2D::Usage::TEX_USAGE_FONT);
 
-    VkSamplerCreateInfo samplerInfo =
-        Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR,
-                                             VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-
-    vkCreateSampler(device->GetDevice(), &samplerInfo, nullptr, &info.sampler);
+    PopulateTextureAtlas(buffer);
 
     id = INTERN_STR(filePath);
-
-    for (size_t i = 32; i < 126; i++)
-    {
-        AddChar(static_cast<unsigned char>(i), fontFace);
-    }
 
     info.textureInfo = texture.GetInfo();
 }
@@ -64,102 +57,102 @@ Font::~Font()
 
 void Font::Free()
 {
-    auto device = Context::GetVkLogicalDevice();
-
-    if (device == nullptr) return;
-
-    vkDestroySampler(device, info.sampler, nullptr);
-
     texture.Free();
 
-    info = {{}, nullptr};
+    info = {{}};
 }
 
 void Font::Swap(Font& other)
 {
     auto tmpId = id;
-    auto tmpWidth = width;
-    auto tmpHeight = height;
+    auto tmpAtlasExtent = extent;
     auto tmpGlyphs = glyphs;
-    auto tmpSpaceFilledX = spaceFilledX;
-    auto tmpSpaceFilledY = spaceFilledY;
-    auto tmpMaxHeight = maxHeight;
     auto tmpInfo = info;
     auto tmpTexture = std::move(texture);
 
     id = other.id;
-    width = other.width;
-    height = other.height;
-    spaceFilledX = other.spaceFilledX;
-    spaceFilledY = other.spaceFilledY;
-    maxHeight = other.maxHeight;
+    extent = other.extent;
     glyphs = other.glyphs;
     info = other.info;
     texture = std::move(other.texture);
 
     other.id = tmpId;
-    other.width = tmpWidth;
-    other.height = tmpHeight;
-    other.spaceFilledX = tmpSpaceFilledX;
-    other.spaceFilledY = tmpSpaceFilledY;
-    other.maxHeight = tmpMaxHeight;
+    other.extent = tmpAtlasExtent;
     other.glyphs = tmpGlyphs;
     other.info = tmpInfo;
     other.texture = std::move(tmpTexture);
 }
 
-void Font::AddChar(const unsigned char c, FontFace fontFace)
+Utils::Extent2D Font::PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer)
 {
-    FT_Set_Pixel_Sizes(fontFace, 0, 64);
+    float x {0.f}, y {0.f}, rowHeight {0.f}, maxX {0.f}, maxY {0.f};
 
-    CC_ASSERT(!FT_Load_Char(fontFace, c, FT_LOAD_RENDER),
-              String("Unable to load char: ") + String(c))
+    uint32_t offset {0};
 
-    auto glyph = fontFace->glyph;
+    for (unsigned char c = 32; c < 126; c++)
+    {
+        auto message = String("Unable to load char: ") + String(c);
+        CC_ASSERT(!FT_Load_Char(fontFace, c, FT_LOAD_RENDER), message.Str())
 
-    bool exceededWidth = (glyph->bitmap.width + spaceFilledX) >= width;
-    bool exceededHeight = (glyph->bitmap.rows + spaceFilledY) >= height;
+        auto glyph = fontFace->glyph;
 
-    int32_t positionXInAtlas = (spaceFilledX) * !exceededWidth;
-    int32_t positionYInAtlas = spaceFilledY + static_cast<int32_t>(exceededWidth * maxHeight);
+        uint32_t width {glyph->bitmap.width}, height {glyph->bitmap.rows};
 
-    unsigned long size = glyph->bitmap.width * glyph->bitmap.rows;
+        bool exceededWidth = (width + x) >= MAX_ATLAS_WIDTH;
 
-    glyphs[c] = {
-        static_cast<float>(static_cast<float>(positionXInAtlas + 1) / static_cast<float>(width)),
-        static_cast<float>(static_cast<float>(positionYInAtlas + 2) / static_cast<float>(height)),
-        static_cast<float>(static_cast<float>(glyph->bitmap.width + positionXInAtlas + 1) /
-                           static_cast<float>(width)),
-        static_cast<float>(static_cast<float>(glyph->bitmap.rows + positionYInAtlas + 2) /
-                           static_cast<float>(height)),
-        static_cast<float>(glyph->bitmap.width),
-        static_cast<float>(glyph->bitmap.rows),
-        static_cast<float>(glyph->bitmap.width) / static_cast<float>(width),
-        static_cast<float>(glyph->bitmap.rows) / static_cast<float>(height),
-        static_cast<float>(glyph->bitmap_left),
-        static_cast<float>(glyph->bitmap_top),
-        static_cast<unsigned int>(glyph->advance.x)};
+        float atlasX = x * !exceededWidth;
+        float atlasY = y + (exceededWidth * rowHeight);
 
-    if (size == 0) return;
+        glyphs[c] = {atlasX + padding.width,
+                     atlasY + padding.height,
+                     CAST_F(width),
+                     CAST_F(height),
+                     CAST_F(width),
+                     CAST_F(height),
+                     CAST_F(glyph->bitmap_left),
+                     CAST_F(glyph->bitmap_top),
+                     glyph->advance.x,
+                     offset};
 
-    Utils::Extent3D imageExtent {static_cast<uint32_t>(glyph->bitmap.width),
-                                 static_cast<uint32_t>(glyph->bitmap.rows),
-                                 1};
+        rowHeight = (height > rowHeight) * height + (height <= rowHeight) * rowHeight;
 
-    texture.CopyToRegion(glyph->bitmap.buffer,
-                         size,
-                         imageExtent,
-                         {positionXInAtlas + 1, positionYInAtlas + 2});
+        x = ((!exceededWidth * (width + x)) + (exceededWidth * width)) + padding.width;
+        y += (exceededWidth * (rowHeight + padding.height));
 
-    CC_ASSERT(!exceededWidth || !exceededHeight, "Cannot add any more images to the atlas!")
+        maxX = (x > maxX) * x + (x <= maxX) * maxX;
+        maxY = (y > maxY) * (y + rowHeight + padding.height) + (y <= maxY) * maxY;
 
-    maxHeight = ((glyph->bitmap.rows > maxHeight) * glyph->bitmap.rows) +
-                ((glyph->bitmap.rows <= maxHeight) * maxHeight);
+        auto size = sizeof(uint8_t) * width * height;
 
-    spaceFilledX = ((!exceededWidth * (glyph->bitmap.width + spaceFilledX)) +
-                    (exceededWidth * glyph->bitmap.width)) +
-                   1;
-    spaceFilledY += (exceededWidth * (maxHeight + 2));
+        memcpy(buffer + offset, glyph->bitmap.buffer, size);
+        offset += size;
+    }
+
+    return {(uint32_t) maxX + padding.width, (uint32_t) maxY + padding.height};
 }
 
+void Font::PopulateTextureAtlas(uint8_t* buffer)
+{
+    for (unsigned char c = 32; c < 126; c++)
+    {
+        auto& glyph = glyphs[c];
+        float xPos {glyph.uvxMin}, yPos {glyph.uvyMin};
+
+        glyph.uvxMin /= CAST_F(extent.width);
+        glyph.uvyMin /= CAST_F(extent.height);
+
+        glyph.widthNormalised /= CAST_F(extent.width);
+        glyph.heightNormalised /= CAST_F(extent.height);
+
+        Utils::Extent3D imageExtent {(uint32_t) glyph.width, (uint32_t) glyph.height, 1};
+
+        size_t size = sizeof(uint8_t) * glyph.width * glyph.height;
+        if (size == 0) continue;
+
+        texture.CopyToRegion(buffer + glyph.bufferOffset,
+                             size,
+                             imageExtent,
+                             {int32_t(xPos), int32_t(yPos)});
+    }
+}
 } // namespace Siege::Vulkan

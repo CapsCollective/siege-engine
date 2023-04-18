@@ -29,10 +29,6 @@ class Font
 {
 public:
 
-    // Constexpr declarations
-    static constexpr uint32_t INITIAL_FONT_ATLAS_WIDTH {512};
-    static constexpr uint32_t INITIAL_FONT_ATLAS_HEIGHT {512};
-
     // Structs
 
     /**
@@ -41,7 +37,6 @@ public:
     struct Info
     {
         Texture2D::Info textureInfo {};
-        VkSampler sampler {nullptr};
     };
 
     /**
@@ -53,15 +48,14 @@ public:
     {
         float uvxMin {0};
         float uvyMin {0};
-        float uvxMax {0};
-        float uvyMax {0};
         float width {0};
         float height {0};
         float widthNormalised {0};
         float heightNormalised {0};
         float bearingX {0};
         float bearingY {0};
-        unsigned int advance {0};
+        signed long advance {0};
+        unsigned long bufferOffset {0};
     };
 
     // 'Structors
@@ -153,6 +147,10 @@ public:
 
 private:
 
+    // Constexpr declarations
+    static constexpr uint32_t MAX_ATLAS_WIDTH {512};
+    static constexpr uint32_t MAX_ATLAS_HEIGHT {1024};
+
     /**
      * Swaps the values of two Fonts
      * @param other the Font to swap values with
@@ -160,20 +158,23 @@ private:
     void Swap(Font& other);
 
     /**
-     * Adds a character glyph to the font atlas
-     * @param c the character to add
+     * Populates the font with all glyphs stored in the ttf file
+     * @param fontFace the font face used to render the characters
+     * @param padding padding between the characters in the font
+     * @param buffer a buffer of pixels to copy data from the font face into
+     * @return the width and height of the texture
      */
-    void AddChar(const unsigned char c, FontFace fontFace);
+    Utils::Extent2D PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer);
 
-    uint32_t width {INITIAL_FONT_ATLAS_WIDTH};
-    uint32_t height {INITIAL_FONT_ATLAS_HEIGHT};
+    /**
+     * Populates the texture atlas with the glyphs collected from PopulateGlyphs
+     * @param buffer the pixel buffer storing our glyph pixels
+     */
+    void PopulateTextureAtlas(uint8_t* buffer);
+
+    Utils::Extent2D extent {};
 
     SArray<Glyph, 256> glyphs;
-
-    int32_t spaceFilledX {0};
-    int32_t spaceFilledY {0};
-
-    uint32_t maxHeight {0};
 
     Hash::StringId id {0};
     Texture2D texture;
