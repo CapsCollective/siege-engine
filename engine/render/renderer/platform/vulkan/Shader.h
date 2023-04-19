@@ -61,6 +61,7 @@ public:
     {
         uint32_t offset {0};
         Utils::VertexAttributeType type {Utils::VertexAttributeType::VERTEX_UNDEFINED};
+        Utils::VertexInputRate inputRate;
     };
 
     /**
@@ -76,6 +77,7 @@ public:
     {
     public:
 
+        VertexBinding& WithInputRate(Utils::VertexInputRate rate);
         /**
          * Specifies a 3D vector vertex attribute
          * @return a reference to the VertexBinding type
@@ -96,8 +98,11 @@ public:
 
         VertexBinding& AddU32Attribute();
 
+        VertexBinding& AddMat4Attribute();
+
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
         MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
+        Utils::VertexInputRate inputRate {Utils::VertexInputRate::INPUT_RATE_VERTEX};
         uint32_t stride {0};
     };
 

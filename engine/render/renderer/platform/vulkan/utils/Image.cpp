@@ -14,6 +14,103 @@
 
 namespace Siege::Vulkan::Utils
 {
+Image::SubResourceRange Image::SubResourceRange::WithAspect(const VkImageAspectFlagBits& aspectFlag)
+{
+    aspect = aspectFlag;
+    return *this;
+}
+
+Image::SubResourceRange Image::SubResourceRange::WithMipLevel(const uint32_t& newMipLevel)
+{
+    mipLevel = newMipLevel;
+    return *this;
+}
+
+Image::SubResourceRange Image::SubResourceRange::WithLevelCount(const uint32_t& newLevelCount)
+{
+    levelCount = newLevelCount;
+    return *this;
+}
+
+Image::SubResourceRange Image::SubResourceRange::WithArrayLayer(const uint32_t& newArrayLayer)
+{
+    arrayLayer = newArrayLayer;
+    return *this;
+}
+
+Image::SubResourceRange Image::SubResourceRange::WithLayerCount(const uint32_t& newLayerCount)
+{
+    layerCount = newLayerCount;
+    return *this;
+}
+
+VkImageSubresourceRange Image::SubResourceRange::Build()
+{
+    return {aspect, mipLevel, levelCount, arrayLayer, layerCount};
+}
+
+Image::Barrier& Image::Barrier::FromAccessMask(const VkAccessFlags& mask)
+{
+    srcAccessMask = mask;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::ToAccessMask(const VkAccessFlags& mask)
+{
+    dstAccessMask = mask;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::FromLayout(const VkImageLayout& layout)
+{
+    oldLayout = layout;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::ToLayout(const VkImageLayout& layout)
+{
+    newLayout = layout;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::FromQueueFamilyIndex(const uint32_t& index)
+{
+    srcQueueFamilyIndex = index;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::ToQueueFamilyIndex(const uint32_t& index)
+{
+    dstQueueFamilyIndex = index;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::WithImage(const VkImage& targetImage)
+{
+    image = targetImage;
+    return *this;
+}
+
+Image::Barrier& Image::Barrier::WithSubResourceRange(const VkImageSubresourceRange& range)
+{
+    subresourceRange = range;
+    return *this;
+}
+
+VkImageMemoryBarrier Image::Barrier::Build()
+{
+    return {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+            nullptr,
+            srcAccessMask,
+            dstAccessMask,
+            oldLayout,
+            newLayout,
+            srcQueueFamilyIndex,
+            dstQueueFamilyIndex,
+            image,
+            subresourceRange};
+}
+
 VkImageView Image::CreateImageView(VkImage image,
                                    VkImageViewType viewType,
                                    VkFormat format,

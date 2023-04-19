@@ -13,20 +13,30 @@
 
 namespace Siege::Vulkan::Utils
 {
-class Buffer
-{
-public:
 
-    static VkBufferCopy CopyRegion(VkDeviceSize size,
-                                   VkDeviceSize srcOffset = 0,
-                                   VkDeviceSize dstOffset = 0);
+VkBufferCopy CopyRegion(VkDeviceSize size, VkDeviceSize srcOffset = 0, VkDeviceSize dstOffset = 0);
 
-    static void CopyBuffer(VkCommandBuffer commandBuffer,
-                           VkBuffer srcBuffer,
-                           VkBuffer dstBuffer,
-                           const VkBufferCopy& copyRegions,
-                           uint32_t regionCount = 1);
-};
+void CopyBuffer(VkCommandBuffer commandBuffer,
+                VkBuffer srcBuffer,
+                VkBuffer dstBuffer,
+                const VkBufferCopy& copyRegions,
+                uint32_t regionCount = 1);
+
+void CreateBuffer(VkDevice logicalDevice,
+                  VkPhysicalDevice physicalDevice,
+                  VkDeviceSize size,
+                  VkBufferUsageFlags usage,
+                  VkMemoryPropertyFlags properties,
+                  VkBuffer& buffer,
+                  VkDeviceMemory& bufferMemory);
+
+void CopyData(VkDevice device,
+              VkDeviceMemory& memory,
+              VkDeviceSize size,
+              const void* bufferData,
+              VkDeviceSize offset);
+
+void FreeBuffer(VkDevice device, VkBuffer buffer, VkDeviceMemory memory);
 
 } // namespace Siege::Vulkan::Utils
 

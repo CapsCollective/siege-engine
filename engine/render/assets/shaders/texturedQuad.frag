@@ -9,6 +9,6 @@ layout (location = 0) out vec4 outColour;
 layout(binding = 1) uniform sampler2D tex[16];
 
 void main() {
-    vec4 sampled = vec4(texture(tex[texId], uv));
-    outColour = vec4(fragColour, 1.0) * sampled;
+    vec3 sampled = texture(tex[texId], uv).rgb;
+    outColour = vec4(fragColour * sampled, 1.0);
 }

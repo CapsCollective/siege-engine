@@ -54,6 +54,9 @@ int main()
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
     auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
 
+    auto meslo = Siege::Vulkan::Font("assets/fonts/meslo-lg/MesloLGS-Regular.ttf");
+    auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
+
     // Shader Declaration
 
     using Siege::Vulkan::Material;
@@ -93,6 +96,7 @@ int main()
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
+                                            GameObject(&cubeObjModel),
                                             GameObject(&vaseObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
@@ -109,9 +113,14 @@ int main()
     objects3D[2].SetColour({128, 0, 0, 255});
     objects3D[2].SetRotationX(0.f);
 
-    objects3D[3].SetPosition({0.f, -1.f, 0.f});
-    objects3D[3].SetScale({2.f, 2.f, 2.f});
+    objects3D[3].SetPosition({3.f, -2.f, 0.f});
+    objects3D[3].SetScale({3.f, 2.f, 0.001f});
     objects3D[3].SetColour({128, 0, 0, 255});
+    objects3D[3].SetRotationY(1.5707963268f);
+
+    objects3D[4].SetPosition({0.f, -1.f, 0.f});
+    objects3D[4].SetScale({2.f, 2.f, 2.f});
+    objects3D[4].SetColour({128, 0, 0, 255});
 
     camera.SetPosition({0.f, -1.f, -2.5f});
 
@@ -179,12 +188,81 @@ int main()
                                     2.95f,
                                     &aryehthulu);
         Siege::Renderer2D::DrawQuad({0.f, -1.5f}, {.5f, .5f}, {0, 255, 0, 255}, 0.f, 2.95f);
-        Siege::Renderer2D::DrawQuad({1.95f, -1.5f},
-                                    {1.f, 1.f},
+        Siege::Renderer2D::DrawQuad({2.f, -1.5f},
+                                    {.5f, .5f},
                                     {255, 255, 255, 255},
                                     0.f,
                                     2.95f,
                                     &cappy);
+
+        Siege::Renderer3D::DrawText3D("Random Vase",
+                                      {0.f, -.85f, -.51f},
+                                      {},
+                                      {.075f, .075f},
+                                      Siege::IColour::White,
+                                      &pixel);
+        Siege::Renderer3D::DrawText3D("AryehThulu",
+                                      {-1.95f, -.8f, 2.95f},
+                                      {},
+                                      {.15f, .15f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Cappy",
+                                      {2.f, -.75f, 2.95f},
+                                      {},
+                                      {.2f, .2f},
+                                      Siege::IColour::Blue,
+                                      &pixel);
+        Siege::Renderer3D::DrawText3D("Default Texture",
+                                      {0.f, -.8f, 2.95f},
+                                      {},
+                                      {.1f, .1f},
+                                      Siege::IColour::Red,
+                                      &pixel);
+
+        Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
+                                      {2.99f, -3.f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("It only took you a few months...",
+                                      {2.99f, -2.4f, 0.f},
+                                      {0.f, 1.5707963268f, 0.1f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Red,
+                                      &pixel);
+        Siege::Renderer3D::DrawText3D("Yeah but it was like... hard",
+                                      {2.99f, -2.f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("I had to learn instanced rendering",
+                                      {2.99f, -1.5f, 0.f},
+                                      {0.f, 1.5707963268f, 0.f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Which, btw, is not that",
+                                      {2.99f, -1.f, 0.f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Green,
+                                      &meslo);
+        Siege::Renderer3D::DrawText3D("Easy",
+                                      {2.99f, -1.2f, -1.7f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.175f, .175f},
+                                      Siege::IColour::Blue,
+                                      &pixel);
+
+        Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
+                                      {2.99f, -.5f, 0.f},
+                                      {0.f, 1.5707963268f, -0.1f},
+                                      {.17f, .17f},
+                                      Siege::IColour::White,
+                                      &pixel);
 
         renderer.EndFrame();
     }

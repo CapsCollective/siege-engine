@@ -10,8 +10,7 @@
 
 namespace Siege
 {
-void LightRenderer::Initialise(const String& globalDataAttributeName,
-                               const uint64_t& globalDataSize)
+void LightRenderer::Initialise(const String& globalDataAttributeName)
 {
     using Vulkan::Mesh;
 

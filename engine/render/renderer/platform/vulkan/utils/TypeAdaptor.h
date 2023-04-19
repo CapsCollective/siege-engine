@@ -214,6 +214,75 @@ DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits,
                        SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
                            SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
 
+DECL_VULKAN_SWITCH_FUN(
+    PipelineStage,
+    VkPipelineStageFlagBits,
+    SWITCH_MEM(VkPipelineStageFlagBits, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, STAGE_TOP_OF_PIPE)
+        SWITCH_MEM(VkPipelineStageFlagBits,
+                   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+                   STAGE_VERTEX_SHADER) SWITCH_MEM(VkPipelineStageFlagBits,
+                                                   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                                   STAGE_FRAGMENT_SHADER)
+            SWITCH_MEM(VkPipelineStageFlagBits, VK_PIPELINE_STAGE_TRANSFER_BIT, STAGE_TRANSFER_BIT)
+                SWITCH_DEFAULT(STAGE_NONE))
+
+DECL_VULKAN_SWITCH_FUN(
+    VkPipelineStageFlagBits,
+    PipelineStage,
+    SWITCH_MEM(PipelineStage, STAGE_TOP_OF_PIPE, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT)
+        SWITCH_MEM(PipelineStage, STAGE_VERTEX_SHADER, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT)
+            SWITCH_MEM(PipelineStage, STAGE_FRAGMENT_SHADER, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
+                SWITCH_MEM(PipelineStage, STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT)
+                    SWITCH_DEFAULT(VK_PIPELINE_STAGE_NONE))
+
+DECL_VULKAN_SWITCH_FUN(
+    VkAccessFlagBits,
+    MemoryAccess,
+    SWITCH_MEM(MemoryAccess, ACCESS_SHADER_READ, VK_ACCESS_SHADER_READ_BIT)
+        SWITCH_MEM(MemoryAccess, ACCESS_SHADER_WRITE, VK_ACCESS_SHADER_WRITE_BIT)
+            SWITCH_MEM(MemoryAccess, ACCESS_TRANSFER_READ, VK_ACCESS_TRANSFER_READ_BIT)
+                SWITCH_MEM(MemoryAccess, ACCESS_TRANSFER_WRITE, VK_ACCESS_TRANSFER_WRITE_BIT)
+                    SWITCH_DEFAULT(VK_ACCESS_NONE))
+
+DECL_VULKAN_SWITCH_FUN(
+    MemoryAccess,
+    VkAccessFlagBits,
+    SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_SHADER_READ_BIT, ACCESS_SHADER_READ)
+        SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_SHADER_WRITE_BIT, ACCESS_SHADER_WRITE)
+            SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_TRANSFER_READ_BIT, ACCESS_TRANSFER_READ)
+                SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_TRANSFER_WRITE_BIT, ACCESS_TRANSFER_WRITE)
+                    SWITCH_DEFAULT(ACCESS_NONE))
+
+DECL_VULKAN_SWITCH_FUN(
+    ImageAspect,
+    VkImageAspectFlagBits,
+    SWITCH_MEM(VkImageAspectFlagBits, VK_IMAGE_ASPECT_COLOR_BIT, ASPECT_COLOUR_BIT)
+        SWITCH_MEM(VkImageAspectFlagBits, VK_IMAGE_ASPECT_DEPTH_BIT, ASPECT_DEPTH_BIT)
+            SWITCH_MEM(VkImageAspectFlagBits, VK_IMAGE_ASPECT_STENCIL_BIT, ASPECT_STENCIL_BIT)
+                SWITCH_DEFAULT(ASPECT_NONE))
+
+DECL_VULKAN_SWITCH_FUN(VkImageAspectFlagBits,
+                       ImageAspect,
+                       SWITCH_MEM(ImageAspect, ASPECT_COLOUR_BIT, VK_IMAGE_ASPECT_COLOR_BIT)
+                           SWITCH_MEM(ImageAspect, ASPECT_DEPTH_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)
+                               SWITCH_MEM(ImageAspect,
+                                          ASPECT_STENCIL_BIT,
+                                          VK_IMAGE_ASPECT_STENCIL_BIT)
+                                   SWITCH_DEFAULT(VK_IMAGE_ASPECT_NONE))
+
+DECL_VULKAN_SWITCH_FUN(VkVertexInputRate,
+                       VertexInputRate,
+                       SWITCH_MEM(VertexInputRate,
+                                  INPUT_RATE_INSTANCE,
+                                  VK_VERTEX_INPUT_RATE_INSTANCE)
+                           SWITCH_DEFAULT(VK_VERTEX_INPUT_RATE_VERTEX))
+
+DECL_VULKAN_SWITCH_FUN(VertexInputRate,
+                       VkVertexInputRate,
+                       SWITCH_MEM(VkVertexInputRate,
+                                  VK_VERTEX_INPUT_RATE_INSTANCE,
+                                  INPUT_RATE_INSTANCE) SWITCH_DEFAULT(INPUT_RATE_VERTEX))
+
 //----------------------------------------- Structs -----------------------------------------------
 
 DECL_CONVERSION_FUN(VkExtent2D, Extent2D, {GET_MEMBER(width), GET_MEMBER(height)})

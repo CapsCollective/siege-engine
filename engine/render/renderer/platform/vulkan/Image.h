@@ -32,6 +32,8 @@ public:
     {
         VkImageView view {nullptr};
         Utils::ImageLayout layout {Utils::ImageLayout::LAYOUT_UNDEFINED};
+        Utils::PipelineStage stage {Utils::PipelineStage::STAGE_TOP_OF_PIPE};
+        Utils::MemoryAccess access {Utils::MemoryAccess::ACCESS_NONE};
     };
 
     Image() = default;
@@ -71,7 +73,19 @@ public:
     bool IsValid();
     bool HasInfo();
 
-    void CopyBuffer(VkBuffer buffer);
+    void CopyBuffer(VkBuffer buffer,
+                    Utils::Extent3D bufferExtent,
+                    Utils::Offset3D offset = {0, 0, 0});
+
+    /**
+     * Transitions an image from one layout to another
+     * @param newStage the stage in the pipeline to transition to image to
+     * @param newLayout the layout you want to transition into
+     * @param newAccess the new access rules we want to transition into
+     */
+    void TransitionLayout(Utils::PipelineStage newStage,
+                          Utils::ImageLayout newLayout,
+                          Utils::MemoryAccess newAccess);
 
 private:
 

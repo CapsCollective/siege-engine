@@ -14,7 +14,8 @@
 #include <cstdint>
 
 #include "CommandBuffer.h"
-#include "render/renderer/buffer/Buffer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 #include "utils/Types.h"
 
 namespace Siege::Vulkan
@@ -33,7 +34,7 @@ public:
     struct VertexData
     {
         uint64_t vertexSize {0};
-        const void* vertices {nullptr};
+        void* vertices {nullptr};
         uint32_t count {0};
     };
 
@@ -58,6 +59,8 @@ public:
      * A default constructor for the Mesh class
      */
     Mesh() = default;
+
+    Mesh(uint32_t vertexSize, uint32_t vertexCount, uint32_t indexCount);
 
     /**
      * A non-indexed Mesh class. This only creates a vertex buffer and uses no index buffers
@@ -146,7 +149,7 @@ public:
      */
     const uint32_t GetIndexCount(uint32_t frameIndex) const
     {
-        return perFrameIndexBuffers[frameIndex].count;
+        return perFrameIndexBuffers[frameIndex].GetCount();
     }
 
     /**
@@ -156,43 +159,16 @@ public:
      */
     const uint32_t GetVertexCount(uint32_t frameIndex) const
     {
-        return perFrameVertexBuffers[frameIndex].count;
+        return vertexCount;
     }
 
 private:
-
-    /**
-     * A struct storing our vertex buffer data
-     */
-    struct VertexBufferUpdate
-    {
-        Buffer::Buffer updateBuffer {};
-        uint32_t count {0};
-    };
-
-    /**
-     * A struct storing our index buffer data
-     */
-    struct IndexBufferUpdate
-    {
-        Buffer::Buffer updateBuffer {0};
-        uint32_t count {0};
-    };
 
     /**
      * Swaps the values of two Mesh classes
      * @param other the Mesh to swap values with
      */
     void Swap(Mesh& other);
-
-    /**
-     * Allocates memory for either an index or vertex buffer
-     * // TODO(Aryeh): Remove this once we have a stand alone buffer class
-     * @param buffer the buffer to allocate
-     * @param size the size to allocate
-     * @param bufferType the type of buffer to allocate (vertex or index)
-     */
-    void AllocateBuffer(Buffer::Buffer& buffer, uint32_t size, Utils::BufferType bufferType);
 
     /**
      * Sets the data in our vertex buffer. If the provided vertices is larger than what is stored, a
@@ -211,10 +187,11 @@ private:
     void SetIndexBuffers(const IndexData& indices, uint32_t currentFrame);
 
     // NOTE: Because Vulkan is multithreaded we need to store a buffer for every frame. Since we
-    // don't want to wait on a frame to release it's resources, we simply switch between our buffers
+    // don't want to wait on a frame to release its resources, we simply switch between our buffers
     // for every frame in flight
-    MHArray<VertexBufferUpdate> perFrameVertexBuffers;
-    MHArray<IndexBufferUpdate> perFrameIndexBuffers;
+    MHArray<IndexBuffer> perFrameIndexBuffers;
+    MHArray<VertexBuffer> perFrameVertexBuffers;
+    uint32_t vertexCount {0};
 };
 
 } // namespace Siege::Vulkan

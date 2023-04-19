@@ -20,7 +20,7 @@ class LightRenderer
 {
 public:
 
-    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
+    void Initialise(const String& globalDataAttributeName);
 
     void Destroy();
 

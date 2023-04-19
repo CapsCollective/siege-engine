@@ -19,6 +19,7 @@ ModelRenderer Renderer3D::modelRenderer;
 DebugRenderer3D Renderer3D::debugRenderer;
 BillboardRenderer Renderer3D::billboardRenderer;
 LightRenderer Renderer3D::lightRenderer;
+TextRenderer Renderer3D::textRenderer;
 
 Renderer3D::GlobalData Renderer3D::global3DData;
 
@@ -26,10 +27,11 @@ void Renderer3D::Initialise()
 {
     globalDataId = INTERN_STR("globalData");
 
-    modelRenderer.Initialise("globalData", sizeof(GlobalData));
-    debugRenderer.Initialise("globalData", sizeof(GlobalData));
-    billboardRenderer.Initialise("globalData", sizeof(GlobalData));
-    lightRenderer.Initialise("globalData", sizeof(GlobalData));
+    modelRenderer.Initialise("globalData");
+    debugRenderer.Initialise("globalData");
+    billboardRenderer.Initialise("globalData");
+    lightRenderer.Initialise("globalData");
+    textRenderer.Initialise("globalData");
 
     gridMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
@@ -72,6 +74,16 @@ void Renderer3D::DrawPointLight(const Vec3& position,
     lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
 }
 
+void Renderer3D::DrawText3D(const char* text,
+                            const Vec3 position,
+                            const Vec3 rotation,
+                            const Vec2 scale,
+                            const IColour& colour,
+                            Vulkan::Font* font)
+{
+    textRenderer.DrawFont(text, position, rotation, scale, colour, font);
+}
+
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
                         const CameraData& cameraData)
@@ -79,15 +91,16 @@ void Renderer3D::Render(uint32_t currentFrame,
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
 
-    lightRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
-    debugRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
-    billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
 
 #ifdef ENABLE_GRID
     RenderGrid(commandBuffer, global3DData);
 #endif
 
-    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    lightRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    debugRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    textRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
 }
 
 void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour)
@@ -109,6 +122,7 @@ void Renderer3D::RecreateMaterials()
     debugRenderer.RecreateMaterials();
     billboardRenderer.RecreateMaterials();
     lightRenderer.RecreateMaterials();
+    textRenderer.RecreateMaterials();
 
     gridMaterial.Recreate();
 }
@@ -119,6 +133,7 @@ void Renderer3D::Flush()
     debugRenderer.Flush();
     billboardRenderer.Flush();
     lightRenderer.Flush();
+    textRenderer.Flush();
 }
 
 void Renderer3D::DestroyRenderer3D()
@@ -126,7 +141,13 @@ void Renderer3D::DestroyRenderer3D()
     debugRenderer.Destroy();
     billboardRenderer.Destroy();
     lightRenderer.Destroy();
+    textRenderer.Free();
 
     gridMaterial.~Material();
+}
+
+void Renderer3D::Update()
+{
+    textRenderer.Update();
 }
 } // namespace Siege

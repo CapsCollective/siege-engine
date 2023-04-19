@@ -142,6 +142,7 @@ public:
      */
     ~MHArray()
     {
+        if (data == nullptr) return;
         Destroy();
     }
 
@@ -240,6 +241,18 @@ public:
         SetActive(index);
 
         Set(index, element);
+    }
+
+    /**
+     * Appends a value to the end of the collection
+     * @param element the value to add
+     */
+    inline void Append(const T& element)
+    {
+        ArrayUtils::AssertIsInBounds(count, size);
+        Set(count, element);
+        count += !bitField.IsSet(count + 1);
+        bitField.SetBit(count);
     }
 
     /**

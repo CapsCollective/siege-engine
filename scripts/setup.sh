@@ -48,9 +48,11 @@ setup_glfw() {
     echo "Cloning GLFW..."
     update_submodules glfw
 
+    local BUILD_DIR="${VENDOR_DIR}"/glfw/build
+
     echo "Setting up GLFW..."
-    cmake -G "${GENERATOR}" -B"${VENDOR_DIR}"/glfw -S"${VENDOR_DIR}"/glfw
-    make -C "${VENDOR_DIR}"/glfw -j"${NUMBER_OF_PROCESSORS}"
+    cmake -G "${GENERATOR}" -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" -B"${BUILD_DIR}" -S"${VENDOR_DIR}"/glfw
+    make -C "${BUILD_DIR}" -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_glslang() {
@@ -196,6 +198,37 @@ setup_validation_layers() {
     cp "${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers/build/layers/**${LIB_SUFFIX} "${VULKAN_LIB_DIR}"/explicit_layer.d
 }
 
+setup_zlib() {
+    echo "Cloning zLib..."
+    update_submodules zlib
+
+    mkdir -p "${VENDOR_DIR}"/zlib/build
+    (cd "${VENDOR_DIR}"/zlib && ./configure --prefix="${VENDOR_DIR}"/zlib/build --static)
+    make -f "${VENDOR_DIR}"/zlib/Makefile -C "${VENDOR_DIR}"/zlib  install prefix="${VENDOR_DIR}"/zlib/build -j"${NUMBER_OF_PROCESSORS}"
+}
+
+setup_libpng() {
+  echo "Cloning libPng..."
+  update_submodules libpng
+
+  mkdir -p "${VENDOR_DIR}"/libpng/build
+  cmake "${VENDOR_DIR}"/libpng -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/libpng/build -S "${VENDOR_DIR}"/libpng -B"${VENDOR_DIR}"/libpng/build
+  make -C "${VENDOR_DIR}"/libpng/build install -j"${NUMBER_OF_PROCESSORS}"
+}
+
+setup_freetype() {
+  echo "Cloning FreeType..."
+
+  update_submodules freetype
+  local BUILD_DIR="${VULKAN_DIR}"/freetype
+  mkdir -p "${BUILD_DIR}"
+  cmake -G "${GENERATOR}" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DFT_DISABLE_HARFBUZZ=TRUE -B"${VENDOR_DIR}"/freetype/build -S"${VENDOR_DIR}"/freetype
+  make -C "${VENDOR_DIR}"/freetype/build -j"${NUMBER_OF_PROCESSORS}"
+
+  mkdir -p "${VENDOR_DIR}"/include/freetype
+  cp -R "${VENDOR_DIR}"/freetype/include/** "${VENDOR_DIR}"/include/freetype
+}
+
 echo "OS detected: ${OS}"
 
 echo "Setting up raylib..."
@@ -220,6 +253,15 @@ setup_volk
 
 echo "Setting up Vulkan Headers"
 setup_vulkan_headers
+
+echo "Setting up zlib"
+setup_zlib
+
+echo "Setting up libpng"
+setup_libpng
+
+echo "Setting up FreeType"
+setup_freetype
 
 echo "Setting up Vulkan Loader"
 setup_vulkan_loader

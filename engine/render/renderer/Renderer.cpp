@@ -10,7 +10,9 @@
 
 #include "Renderer.h"
 
+#include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
+#include "statics/Statics.h"
 
 namespace Siege
 {
@@ -20,6 +22,8 @@ uint32_t Renderer::currentFrameIndex = 0;
 
 Renderer::Renderer(Window& window) : window {window}
 {
+    Statics::Initialise();
+
     if (instance == nullptr) instance = this;
 
     auto extent = window.GetExtent();
@@ -48,14 +52,15 @@ Renderer::~Renderer()
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
     Renderer2D::DestroyRenderer2D();
+    Statics::Free();
 }
 
 void Renderer::DrawFrame()
 {
     Renderer2D::GlobalData global2DData = {projection};
 
-    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
     Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
+    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
 }
 
 void Renderer::RecreateSwapChain()
@@ -113,6 +118,7 @@ bool Renderer::StartFrame()
 void Renderer::EndFrame()
 {
     Renderer2D::Update();
+    Renderer3D::Update();
 
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 

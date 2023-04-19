@@ -24,6 +24,14 @@ class Texture2D
 {
 public:
 
+    // Enum dictating which texture colour channel will be used. Currently only supports full RGBA
+    // and single unsigned integers (the red channel).
+    enum Usage
+    {
+        TEX_USAGE_TEX2D = Utils::RGBASRGB,
+        TEX_USAGE_FONT = Utils::RED8UN // Fonts only take data from the red channel
+    };
+
     // Structs
 
     /**
@@ -33,6 +41,7 @@ public:
     {
         Image::Info imageInfo {};
         VkSampler sampler {nullptr};
+        Usage usage {TEX_USAGE_TEX2D};
     };
 
     // 'Structors
@@ -47,7 +56,7 @@ public:
      * default white texture
      * @param name the name of the texture being created
      */
-    Texture2D(const char* name);
+    Texture2D(const char* name, Usage texUsage = TEX_USAGE_TEX2D);
 
     /**
      * The texture constructor used for loading a texture from file. This loads data from a given
@@ -56,6 +65,13 @@ public:
      * @param filePath the path of the PNG or JPG file
      */
     Texture2D(const char* name, const char* filePath);
+
+    Texture2D(const char* name,
+              const uint8_t* pixels,
+              size_t size,
+              uint32_t width,
+              uint32_t height,
+              Usage texUsage = Usage::TEX_USAGE_TEX2D);
 
     /**
      * A move constructor for the Texture2D class
@@ -78,6 +94,11 @@ public:
     Texture2D& operator=(Texture2D&& other);
 
     // Functions
+
+    void CopyToRegion(uint8_t* pixels,
+                      unsigned long size,
+                      Utils::Extent3D copyExtent,
+                      Utils::Offset3D copyOffset);
 
     /**
      * Frees all memory held by the Texture2D
@@ -102,6 +123,11 @@ public:
         return info;
     }
 
+    inline const Utils::Extent2D& GetExtent() const
+    {
+        return extent;
+    }
+
 private:
 
     /**
@@ -118,7 +144,11 @@ private:
      * @param width the image width
      * @param height the image height
      */
-    void LoadTexture(const uint8_t* pixels, size_t size, uint32_t width, uint32_t height);
+    void LoadTexture(const uint8_t* pixels,
+                     size_t size,
+                     uint32_t width,
+                     uint32_t height,
+                     Usage texUsage);
 
     /**
      * Swaps the values of two Texture2Ds

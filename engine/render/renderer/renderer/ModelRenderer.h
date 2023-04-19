@@ -22,7 +22,7 @@ public:
     ModelRenderer();
     ~ModelRenderer();
 
-    void Initialise(const String& globalDataAttributeName, const uint64_t& globalDataSize);
+    void Initialise(const String& globalDataAttributeName);
 
     void DrawModel(Model* model, const Vec3& position, const Vec3& scale, const Vec3& rotation);
 
