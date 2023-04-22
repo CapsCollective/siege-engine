@@ -181,18 +181,19 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
-        Siege::Renderer2D::DrawQuad({-1.95f, -1.5f},
+        Siege::Renderer3D::DrawQuad({-1.95f, -1.5f, 2.95f},
                                     {1.f, .5f},
-                                    {255, 255, 255, 255},
-                                    0.f,
-                                    2.95f,
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::White,
                                     &aryehthulu);
-        Siege::Renderer2D::DrawQuad({0.f, -1.5f}, {.5f, .5f}, {0, 255, 0, 255}, 0.f, 2.95f);
-        Siege::Renderer2D::DrawQuad({2.f, -1.5f},
+        Siege::Renderer3D::DrawQuad({0.f, -1.5f, 2.95f},
                                     {.5f, .5f},
-                                    {255, 255, 255, 255},
-                                    0.f,
-                                    2.95f,
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::White);
+        Siege::Renderer3D::DrawQuad({2.f, -1.5f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::White,
                                     &cappy);
 
         Siege::Renderer3D::DrawText3D("Random Vase",

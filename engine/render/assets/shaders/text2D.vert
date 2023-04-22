@@ -39,13 +39,13 @@ void main() {
     vec2 coords = vec2(texData.xy);
     vec2 dimensions = vec2(texData.zw);
 
-    // Find the UV based on the vertex index - max values = coordinate + dimension
+    // Find the UV based on the vertex index + min values = coordinate + dimension
     float uvx = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (texData.x + texData.z))
         + (float(gl_VertexIndex == 2 || gl_VertexIndex == 3) * (texData.x));
     float uvy = (float(gl_VertexIndex == 0 || gl_VertexIndex == 3) * (texData.y + texData.w))
         + (float(gl_VertexIndex == 1 || gl_VertexIndex == 2) * (texData.y));
 
-    // Find the vertex position based off the vertex index - max values = coordinate + dimension
+    // Find the vertex position based off the vertex index + min values = coordinate + dimension
     float posX = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (coordinates.x + coordinates.z))
         + (float(gl_VertexIndex == 2 || gl_VertexIndex == 3) * coordinates.x);
     float posY = (float(gl_VertexIndex == 0 || gl_VertexIndex == 3) * (coordinates.y + coordinates.w))

@@ -16,6 +16,7 @@
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
+#include "QuadRenderer3D.h"
 #include "TextRenderer.h"
 
 // TODO(Aryeh): Convert this class into a normal class and remove the statics. Their existence is a
@@ -60,6 +61,12 @@ public:
                            const IColour& colour,
                            Vulkan::Font* font);
 
+    static void DrawQuad(const Vec3 position,
+                         const Vec2 scale,
+                         const Vec3 rotation,
+                         IColour colour,
+                         Vulkan::Texture2D* texture = nullptr);
+
     static void RecreateMaterials();
 
     static void Render(uint32_t currentFrame,
@@ -85,6 +92,7 @@ private:
     static BillboardRenderer billboardRenderer;
     static LightRenderer lightRenderer;
     static TextRenderer textRenderer;
+    static QuadRenderer3D quadRenderer3D;
 
     static Vulkan::Material gridMaterial;
 
