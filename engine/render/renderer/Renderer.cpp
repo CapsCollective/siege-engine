@@ -41,7 +41,6 @@ Renderer::Renderer(Window& window) : window {window}
     DescriptorPool::BuildPool();
 
     Renderer3D::Initialise();
-    Renderer2D::Initialise();
 
     commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 }
@@ -51,15 +50,11 @@ Renderer::~Renderer()
     CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
-    Renderer2D::DestroyRenderer2D();
     Statics::Free();
 }
 
 void Renderer::DrawFrame()
 {
-    Renderer2D::GlobalData global2DData = {projection};
-
-    Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
     Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
 }
 
@@ -85,7 +80,6 @@ void Renderer::RecreateSwapChain()
     if (!swapchain.IsSameSwapFormat(oldImageFormat, oldDepthFormat))
     {
         Renderer3D::RecreateMaterials();
-        Renderer2D::RecreateMaterials();
     }
 }
 
@@ -117,7 +111,6 @@ bool Renderer::StartFrame()
 
 void Renderer::EndFrame()
 {
-    Renderer2D::Update();
     Renderer3D::Update();
 
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
@@ -144,7 +137,6 @@ void Renderer::EndFrame()
     currentFrameIndex = (currentFrameIndex + 1) % Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT;
 
     Renderer3D::Flush();
-    Renderer2D::Flush();
 }
 
 void Renderer::BeginSwapChainRenderPass()

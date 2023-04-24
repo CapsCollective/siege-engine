@@ -215,14 +215,6 @@ public:
         Builder& WithGlobalData3DUniform(uint32_t set = 0);
 
         /**
-         * Adds a uniform type with Global 2D per-scene data. In this case, the struct stores
-         * camera information
-         * @param set the descriptorSet the uniform is stored in
-         * @return a reference to the current Builder object
-         */
-        Builder& WithGlobalData2DUniform(uint32_t set = 0);
-
-        /**
          * Adds a storage buffer type with all configured 3D transforms
          * @param set the descriptorSet the storage buffer is stored in
          * @param size the number of elements in the buffer
