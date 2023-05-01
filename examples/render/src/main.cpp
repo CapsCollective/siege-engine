@@ -276,14 +276,11 @@ int main()
 
         if (Siege::Input::IsKeyJustPressed(KEY_BACKTICK)) isPanelOpen = !isPanelOpen;
 
-        if (isPanelOpen)
-        {
-
-        }
-
         if (isPanelOpen) renderer.DrawQuad({panelWidth / 2, panelHeight-1}, {panelWidth / 2, panelHeight}, Siege::IColour::Black);
         renderer.DrawQuad({50, 500}, {50, 50}, Siege::IColour::White, 0, 0, &cappy);
-        renderer.DrawQuad({750, 500}, {50, 50}, Siege::IColour::White, 0, 0, &aryehthulu);
+        renderer.DrawQuad({700, 500}, {100, 50}, Siege::IColour::White, 0, 0, &aryehthulu);
+
+        renderer.DrawText2D({200.f, 50.f}, pixel);
 
         renderer.EndFrame();
     }

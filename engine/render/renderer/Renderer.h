@@ -59,6 +59,7 @@ public:
     }
 
     void DrawQuad(const Vec2 position, const Vec2 scale = {1.f, 1.f}, const IColour colour = IColour::White, float rotation = 0.f, const uint8_t zIndex = 0, Vulkan::Texture2D* texture = nullptr);
+    void DrawText2D(const Vec2 position, Vulkan::Font& font);
 
     static Vulkan::Context& Context()
     {
