@@ -41,6 +41,7 @@ Renderer::Renderer(Window& window) : window {window}
     DescriptorPool::BuildPool();
 
     Renderer3D::Initialise();
+    renderer2D.Initialise("globalData");
 
     commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 }
@@ -56,6 +57,7 @@ Renderer::~Renderer()
 void Renderer::DrawFrame()
 {
     Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
+    renderer2D.Render(commandBuffers, sizeof(uiCamera), &uiCamera, currentFrameIndex);
 }
 
 void Renderer::RecreateSwapChain()
@@ -109,9 +111,15 @@ bool Renderer::StartFrame()
     return true;
 }
 
+void Renderer::DrawQuad(const Vec2 position, const Vec2 scale, const IColour colour, float rotation, const uint8_t zIndex, Vulkan::Texture2D* texture)
+{
+    renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
+}
+
 void Renderer::EndFrame()
 {
     Renderer3D::Update();
+    renderer2D.Update();
 
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 
@@ -137,6 +145,7 @@ void Renderer::EndFrame()
     currentFrameIndex = (currentFrameIndex + 1) % Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT;
 
     Renderer3D::Flush();
+    renderer2D.Flush();
 }
 
 void Renderer::BeginSwapChainRenderPass()

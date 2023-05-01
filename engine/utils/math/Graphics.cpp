@@ -142,14 +142,17 @@ Mat4 CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3
             {position.x, position.y, position.z, 1.0f}};
 }
 
-Mat2 CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale)
+Mat3 CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale)
 {
     const float s = Float::Sin(rotation);
     const float c = Float::Cos(rotation);
-    Siege::Mat2 rotMatrix {{c, s}, {-s, c}};
-
-    Siege::Mat2 scaleMat {{scale.x, .0f}, {.0f, scale.y}};
-    return rotMatrix * scaleMat;
+    Siege::Mat3 rotMatrix {{c, s, 0.f}, {-s, c, 0.f}, {0.f, 0.f, 0.f}};
+    Siege::Mat3 scaleMat {{scale.x, .0f, 0.f}, {.0f, scale.y, 0.f}, {}};
+    Siege::Mat3 combined = rotMatrix * scaleMat;
+    combined[6] = position.x;
+    combined[7] = position.y;
+    combined[8] = 1.f;
+    return combined;
 }
 
 Mat3 CalculateNormal(const Vec3& rotation, const Vec3& scale)

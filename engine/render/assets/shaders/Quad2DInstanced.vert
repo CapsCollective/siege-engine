@@ -6,9 +6,9 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#version 450
+#version 460
 
-// Per instance data
+// Per-instance vertex data
 layout (location = 0) in mat4 inTransform;
 layout (location = 4) in vec4 inColour;
 layout (location = 5) in vec4 inUv;
@@ -21,27 +21,22 @@ layout (push_constant) uniform PushConstant {
     uint textureIndex;
 } pushConstant;
 
-vec3 quadVertices[4] = {
-    vec3(1.0, 1.0, 0),
-    vec3(1.0, -1.0, 0),
-    vec3(-1.0, -1.0, 0),
-    vec3(-1.0, 1.0, 0)
+vec2 quadVertices[4] = {
+    vec2(1.0, 1.0),
+    vec2(1.0, -1.0),
+    vec2(-1.0, -1.0),
+    vec2(-1.0, 1.0)
 };
 
-struct CameraData
-{
+layout (binding = 0) uniform CameraData {
     mat4 projectionMatrix;
     mat4 viewMatrix;
-};
-
-layout (binding = 0) uniform GlobalData {
-    CameraData cameraData;
-} globalData;
-
-CameraData camera = globalData.cameraData;
+} cameraData;
 
 void main() {
-    gl_Position = camera.projectionMatrix * camera.viewMatrix * inTransform * vec4(quadVertices[gl_VertexIndex], 1.0);
+
+    vec4 vertexPosition = inTransform * vec4(quadVertices[gl_VertexIndex], 0.0, 1.0);
+    gl_Position = cameraData.projectionMatrix * cameraData.viewMatrix * vertexPosition;
 
     float uvx = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (inUv.x + inUv.z))
     + (float(gl_VertexIndex == 2 || gl_VertexIndex == 3) * (inUv.x));

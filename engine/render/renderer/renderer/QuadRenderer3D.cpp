@@ -43,15 +43,13 @@ void QuadRenderer3D::Initialise(const String& globalDataAttributeName)
 
     textureId = INTERN_STR("texture");
 
-    auto size = sizeof(QuadVertex) * VERTEX_BUFFER_SIZE;
-
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
     perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
     {
-        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(size);
+        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(sizeof(QuadVertex) * VERTEX_BUFFER_SIZE);
     }
 
     indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
@@ -90,9 +88,7 @@ void QuadRenderer3D::Render(Vulkan::CommandBuffer& buffer,
 
     for (uint32_t i = 0; i < quads.Count(); i++)
     {
-        uint32_t texIndex = i;
-
-        defaultMaterial.BindPushConstant(buffer, &texIndex);
+        defaultMaterial.BindPushConstant(buffer, &i);
 
         defaultMaterial.Bind(buffer);
 

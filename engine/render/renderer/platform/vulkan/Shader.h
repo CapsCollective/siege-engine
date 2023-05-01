@@ -100,6 +100,10 @@ public:
 
         VertexBinding& AddMat4Attribute();
 
+        VertexBinding& AddMat3Attribute();
+
+        VertexBinding& AddMat2Attribute();
+
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
         MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
         Utils::VertexInputRate inputRate {Utils::VertexInputRate::INPUT_RATE_VERTEX};

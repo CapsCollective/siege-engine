@@ -49,6 +49,7 @@ int main()
     Siege::Renderer renderer(window);
 
     Camera camera;
+    Camera camera2;
 
     // Load textures
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
@@ -68,11 +69,12 @@ int main()
     auto testMaterial =
         Material(Shader::Builder()
                      .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-                     .WithVertexBinding(Shader::VertexBinding()
-                                            .AddFloatVec3Attribute()
-                                            .AddFloatVec4Attribute()
-                                            .AddFloatVec3Attribute()
-                                            .AddFloatVec2Attribute())
+                     .WithVertexBinding(
+                         Shader::VertexBinding()
+                                .AddFloatVec3Attribute()
+                                .AddFloatVec4Attribute()
+                                .AddFloatVec3Attribute()
+                                .AddFloatVec2Attribute())
                      .WithTransform3DStorage(0, 1000)
                      .WithGlobalData3DUniform()
                      .Build(),
@@ -123,10 +125,12 @@ int main()
     objects3D[4].SetColour({128, 0, 0, 255});
 
     camera.SetPosition({0.f, -1.f, -2.5f});
+    camera2.SetPosition({0.f, -1.f, -2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
+    bool isPanelOpen {false};
 
     while (!window.WindowShouldClose())
     {
@@ -148,7 +152,12 @@ int main()
 
         float aspect = renderer.GetAspectRatio();
 
+        float panelWidth = window.GetWidth();
+        float panelHeight = 50.f;
+
         camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
+
+        camera2.UpdateOthrographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
 
         if (inputEnabled)
         {
@@ -156,10 +165,12 @@ int main()
         }
 
         renderer.SetProjection(camera.GetProjection(), camera.GetView());
+        renderer.SetUiProjection(camera2.GetProjection(), camera2.GetView());
 
         if (!renderer.StartFrame()) continue;
 
         camera.Update();
+        camera2.Update();
 
         for (auto it = objects3D.CreateFIterator(); it; ++it)
         {
@@ -189,7 +200,7 @@ int main()
         Siege::Renderer3D::DrawQuad({0.f, -1.5f, 2.95f},
                                     {.5f, .5f},
                                     Siege::Vec3::Zero,
-                                    Siege::IColour::White);
+                                    Siege::IColour::Green);
         Siege::Renderer3D::DrawQuad({2.f, -1.5f, 2.95f},
                                     {.5f, .5f},
                                     Siege::Vec3::Zero,
@@ -220,7 +231,6 @@ int main()
                                       {.1f, .1f},
                                       Siege::IColour::Red,
                                       &pixel);
-
         Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
                                       {2.99f, -3.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
@@ -257,13 +267,23 @@ int main()
                                       {.175f, .175f},
                                       Siege::IColour::Blue,
                                       &pixel);
-
         Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
                                       {2.99f, -.5f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.17f, .17f},
                                       Siege::IColour::White,
                                       &pixel);
+
+        if (Siege::Input::IsKeyJustPressed(KEY_BACKTICK)) isPanelOpen = !isPanelOpen;
+
+        if (isPanelOpen)
+        {
+
+        }
+
+        if (isPanelOpen) renderer.DrawQuad({panelWidth / 2, panelHeight-1}, {panelWidth / 2, panelHeight}, Siege::IColour::Black);
+        renderer.DrawQuad({50, 500}, {50, 50}, Siege::IColour::White, 0, 0, &cappy);
+        renderer.DrawQuad({750, 500}, {50, 50}, Siege::IColour::White, 0, 0, &aryehthulu);
 
         renderer.EndFrame();
     }
