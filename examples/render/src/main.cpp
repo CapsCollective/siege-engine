@@ -208,7 +208,7 @@ int main()
                                     &cappy);
 
         Siege::Renderer3D::DrawText3D("Random Vase",
-                                      {0.f, -.85f, -.51f},
+                                      {0.f, -.85f, -.515f},
                                       {},
                                       {.075f, .075f},
                                       Siege::IColour::White,
@@ -232,43 +232,43 @@ int main()
                                       Siege::IColour::Red,
                                       &pixel);
         Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
-                                      {2.99f, -3.f, 0.f},
+                                      {2.98f, -3.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("It only took you a few months...",
-                                      {2.99f, -2.4f, 0.f},
+                                      {2.98f, -2.4f, 0.f},
                                       {0.f, 1.5707963268f, 0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Red,
                                       &pixel);
         Siege::Renderer3D::DrawText3D("Yeah but it was like... hard",
-                                      {2.99f, -2.f, 0.f},
+                                      {2.98f, -2.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("I had to learn instanced rendering",
-                                      {2.99f, -1.5f, 0.f},
+                                      {2.98f, -1.5f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("Which, btw, is not that",
-                                      {2.99f, -1.f, 0.f},
+                                      {2.98f, -1.f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("Easy",
-                                      {2.99f, -1.2f, -1.7f},
+                                      {2.98f, -1.2f, -1.7f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Blue,
                                       &pixel);
         Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
-                                      {2.99f, -.5f, 0.f},
+                                      {2.98f, -.5f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.17f, .17f},
                                       Siege::IColour::White,
@@ -276,11 +276,16 @@ int main()
 
         if (Siege::Input::IsKeyJustPressed(KEY_BACKTICK)) isPanelOpen = !isPanelOpen;
 
-        if (isPanelOpen) renderer.DrawQuad({panelWidth / 2, panelHeight-1}, {panelWidth / 2, panelHeight}, Siege::IColour::Black);
+        if (isPanelOpen)
+        {
+            renderer.DrawQuad({panelWidth / 2, panelHeight - 1},
+                              {panelWidth / 2, panelHeight},
+                              Siege::IColour::Black,
+                              0, 2);
+            renderer.DrawText2D("Hello World", pixel, {300.f, 75.f}, {50.f, 50.f}, 0.f, Siege::IColour::Red, 3);
+        }
         renderer.DrawQuad({50, 500}, {50, 50}, Siege::IColour::White, 0, 0, &cappy);
         renderer.DrawQuad({700, 500}, {100, 50}, Siege::IColour::White, 0, 0, &aryehthulu);
-
-        renderer.DrawText2D({200.f, 50.f}, pixel);
 
         renderer.EndFrame();
     }

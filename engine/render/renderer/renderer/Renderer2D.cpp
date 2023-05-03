@@ -80,9 +80,9 @@ void Renderer2D::DrawQuad(const Vec2 position, const Vec2 scale, IColour colour,
 
     auto& layerQuads = quads[zIndex];
 
-    if (texIndex >= layerQuads.Count()) layerQuads.Append(MHArray<QuadVertex>(MAX_QUADS_PER_LAYER));
+    if (texIndex >= layerQuads.Count()) layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
 
-    layerQuads[texIndex].Append({Graphics::CalculateTransform3D(position, {0.f, 0.f, rotation}, scale), ToFColour(colour), {0.f, 0.f, 1.f, 1.f}});
+    layerQuads[texIndex].Append({Graphics::CalculateTransform3D(Vec3(position.x, position.y, zIndex), {0.f, 0.f, rotation}, scale), ToFColour(colour), {0.f, 0.f, 1.f, 1.f}});
 }
 
 void Renderer2D::DrawText2D(const char* const text, const Vec2 position, const Vec2 scale, Vulkan::Font& font, IColour colour, float rotation, uint8_t zIndex)
@@ -93,7 +93,7 @@ void Renderer2D::DrawText2D(const char* const text, const Vec2 position, const V
 
     auto& layerQuads = characters[zIndex];
 
-    if (texIndex >= layerQuads.Count()) layerQuads.Append(MHArray<FontData>(MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT));
+    if (texIndex >= layerQuads.Count()) layerQuads[texIndex] = MHArray<FontData>(MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
 
     auto& fontTexts = layerQuads[texIndex];
 
@@ -116,7 +116,7 @@ void Renderer2D::DrawText2D(const char* const text, const Vec2 position, const V
         Vec4 coordinates = {x + glyph.bearingX, y - (height + yOffset), glyph.width, height};
 
         fontTexts.Append(
-            {Graphics::CalculateTransform3D(position, {0.f, 0.f, rotation}, scale),
+            {Graphics::CalculateTransform3D(Vec3(position.x, position.y, zIndex), {0.f, 0.f, rotation}, scale),
              {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              ToFColour(colour),
              coordinates / textScale});
@@ -132,6 +132,7 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
 {
     quadMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     textMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
+    quadIndexBuffer.Bind(buffer);
 
     for (int i = MAX_LAYERS-1; i >= 0; i--)
     {
@@ -179,7 +180,6 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
             textVertexBuffer.Update(sizeof(FontData), quadArr.Data(), quadArr.Count(), vertexBufferOffset);
 
             textVertexBuffer.Bind(buffer, &vertexBufferOffset);
-            quadIndexBuffer.Bind(buffer);
 
             vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
         }

@@ -17,6 +17,9 @@ layout (location = 0) out vec4 outColour;
 layout(binding = 1) uniform sampler2D tex[16];
 
 void main() {
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(tex[texId], uv).r);
-    outColour = fragColour * sampled;
+    float distance = texture(tex[texId], uv).r;
+    float smoothWidth = fwidth(distance);
+    float alpha = smoothstep(0.5 - smoothWidth, 0.5 + smoothWidth, distance);
+
+    outColour = mix(vec4(fragColour.rgb, 0.0), fragColour, alpha);
 }

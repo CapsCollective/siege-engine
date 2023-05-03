@@ -56,8 +56,8 @@ Renderer::~Renderer()
 
 void Renderer::DrawFrame()
 {
-    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
     renderer2D.Render(commandBuffers, sizeof(uiCamera), &uiCamera, currentFrameIndex);
+    Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
 }
 
 void Renderer::RecreateSwapChain()
@@ -116,9 +116,9 @@ void Renderer::DrawQuad(const Vec2 position, const Vec2 scale, const IColour col
     renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
 }
 
-void Renderer::DrawText2D(const Vec2 position, Vulkan::Font& font)
+void Renderer::DrawText2D(const char* const text, Vulkan::Font& font, const Vec2 position, const Vec2 scale, float rotation, const IColour colour, const uint8_t zIndex)
 {
-    renderer2D.DrawText2D("Aryeh", position, {50.f, 50.f}, font);
+    renderer2D.DrawText2D(text, position, scale, font, colour);
 }
 
 void Renderer::EndFrame()
