@@ -111,12 +111,23 @@ bool Renderer::StartFrame()
     return true;
 }
 
-void Renderer::DrawQuad(const Vec2 position, const Vec2 scale, const IColour colour, float rotation, const uint8_t zIndex, Vulkan::Texture2D* texture)
+void Renderer::DrawQuad(const Vec2 position,
+                        const Vec2 scale,
+                        const IColour colour,
+                        float rotation,
+                        const uint8_t zIndex,
+                        Vulkan::Texture2D* texture)
 {
     renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
 }
 
-void Renderer::DrawText2D(const char* const text, Vulkan::Font& font, const Vec2 position, const Vec2 scale, float rotation, const IColour colour, const uint8_t zIndex)
+void Renderer::DrawText2D(const char* const text,
+                          Vulkan::Font& font,
+                          const Vec2 position,
+                          const Vec2 scale,
+                          float rotation,
+                          const IColour colour,
+                          const uint8_t zIndex)
 {
     renderer2D.DrawText2D(text, position, scale, font, colour);
 }

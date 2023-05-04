@@ -62,12 +62,12 @@ Shader::VertexBinding& Shader::VertexBinding::AddMat4Attribute()
 
 Shader::VertexBinding& Shader::VertexBinding::AddMat2Attribute()
 {
-        return AddFloatVec4Attribute().AddFloatVec4Attribute();
+    return AddFloatVec4Attribute().AddFloatVec4Attribute();
 }
 
 Shader::VertexBinding& Shader::VertexBinding::AddMat3Attribute()
 {
-        return AddFloatVec4Attribute().AddFloatVec4Attribute().AddFloatVec4Attribute();
+    return AddFloatVec4Attribute().AddFloatVec4Attribute().AddFloatVec4Attribute();
 }
 
 Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)

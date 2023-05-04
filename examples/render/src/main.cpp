@@ -69,12 +69,11 @@ int main()
     auto testMaterial =
         Material(Shader::Builder()
                      .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-                     .WithVertexBinding(
-                         Shader::VertexBinding()
-                                .AddFloatVec3Attribute()
-                                .AddFloatVec4Attribute()
-                                .AddFloatVec3Attribute()
-                                .AddFloatVec2Attribute())
+                     .WithVertexBinding(Shader::VertexBinding()
+                                            .AddFloatVec3Attribute()
+                                            .AddFloatVec4Attribute()
+                                            .AddFloatVec3Attribute()
+                                            .AddFloatVec2Attribute())
                      .WithTransform3DStorage(0, 1000)
                      .WithGlobalData3DUniform()
                      .Build(),
@@ -157,7 +156,8 @@ int main()
 
         camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
 
-        camera2.UpdateOthrographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
+        camera2
+            .UpdateOthrographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
 
         if (inputEnabled)
         {
@@ -208,7 +208,7 @@ int main()
                                     &cappy);
 
         Siege::Renderer3D::DrawText3D("Random Vase",
-                                      {0.f, -.85f, -.515f},
+                                      {0.f, -.85f, -.5175f},
                                       {},
                                       {.075f, .075f},
                                       Siege::IColour::White,
@@ -278,14 +278,31 @@ int main()
 
         if (isPanelOpen)
         {
-            renderer.DrawQuad({panelWidth / 2, panelHeight - 1},
+            renderer.DrawQuad({0.f, -1.f},
                               {panelWidth / 2, panelHeight},
                               Siege::IColour::Black,
-                              0, 2);
-            renderer.DrawText2D("Hello World", pixel, {300.f, 75.f}, {50.f, 50.f}, 0.f, Siege::IColour::Red, 3);
+                              0,
+                              2);
+            renderer.DrawText2D("Hello World",
+                                pixel,
+                                {25.f, 25.f},
+                                {50.f, 50.f},
+                                0.f,
+                                Siege::IColour::White,
+                                3);
         }
-        renderer.DrawQuad({50, 500}, {50, 50}, Siege::IColour::White, 0, 0, &cappy);
-        renderer.DrawQuad({700, 500}, {100, 50}, Siege::IColour::White, 0, 0, &aryehthulu);
+        renderer.DrawQuad({0, window.GetHeight() - 100.f},
+                          {50, 50},
+                          Siege::IColour::White,
+                          0,
+                          0,
+                          &cappy);
+        renderer.DrawQuad({window.GetWidth() - 200.f, window.GetHeight() - 100.f},
+                          {100, 50},
+                          Siege::IColour::White,
+                          0,
+                          0,
+                          &aryehthulu);
 
         renderer.EndFrame();
     }

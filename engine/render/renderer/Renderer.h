@@ -17,8 +17,8 @@
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/window/Window.h"
-#include "renderer/Renderer3D.h"
 #include "renderer/Renderer2D.h"
+#include "renderer/Renderer3D.h"
 
 namespace Siege
 {
@@ -58,8 +58,19 @@ public:
         clearValue = {{r, g, b, a}};
     }
 
-    void DrawQuad(const Vec2 position, const Vec2 scale = {1.f, 1.f}, const IColour colour = IColour::White, float rotation = 0.f, const uint8_t zIndex = 0, Vulkan::Texture2D* texture = nullptr);
-    void DrawText2D(const char* const text, Vulkan::Font& font, const Vec2 position, const Vec2 scale, float rotation = 0.f, const IColour colour = IColour::White, const uint8_t zIndex = 0);
+    void DrawQuad(const Vec2 position,
+                  const Vec2 scale = {1.f, 1.f},
+                  const IColour colour = IColour::White,
+                  float rotation = 0.f,
+                  const uint8_t zIndex = 0,
+                  Vulkan::Texture2D* texture = nullptr);
+    void DrawText2D(const char* const text,
+                    Vulkan::Font& font,
+                    const Vec2 position,
+                    const Vec2 scale,
+                    float rotation = 0.f,
+                    const IColour colour = IColour::White,
+                    const uint8_t zIndex = 0);
 
     static Vulkan::Context& Context()
     {
