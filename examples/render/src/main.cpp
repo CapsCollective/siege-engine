@@ -140,6 +140,7 @@ int main()
         currentTime = newTime;
 
         auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
+        auto blink = std::clamp<float>(abs(sin(glfwGetTime() * 2.f)), 0.001f, 1.f);
 
         window.Update();
 
@@ -283,13 +284,17 @@ int main()
                               Siege::IColour::Black,
                               0,
                               2);
-            renderer.DrawText2D("Hello World",
-                                pixel,
-                                {25.f, 25.f},
-                                {50.f, 50.f},
-                                0.f,
-                                Siege::IColour::White,
-                                3);
+
+            if (blink > 0.5)
+            {
+                renderer.DrawText2D("_",
+                                    pixel,
+                                    {25.f, 25.f},
+                                    {50.f, 50.f},
+                                    0.f,
+                                    Siege::IColour::White,
+                                    3);
+            }
         }
         renderer.DrawQuad({0, window.GetHeight() - 100.f},
                           {50, 50},

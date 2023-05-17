@@ -56,8 +56,8 @@ Renderer::~Renderer()
 
 void Renderer::DrawFrame()
 {
-    renderer2D.Render(commandBuffers, sizeof(uiCamera), &uiCamera, currentFrameIndex);
     Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
+    renderer2D.Render(commandBuffers, sizeof(uiCamera), &uiCamera, currentFrameIndex);
 }
 
 void Renderer::RecreateSwapChain()

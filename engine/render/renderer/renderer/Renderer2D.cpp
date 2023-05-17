@@ -150,6 +150,8 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
 
     for (int i = MAX_LAYERS - 1; i >= 0; i--)
     {
+        // Render 2D quads for this layer
+
         if (quads[i].Count() == 0) continue;
 
         auto& perTextureQuads = quads[i];
@@ -175,17 +177,16 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
 
             vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
         }
-    }
 
-    for (int i = MAX_LAYERS - 1; i >= 0; i--)
-    {
+        // Render text for this layer
+
         if (characters[i].Count() == 0) continue;
 
-        auto& perTextureQuads = characters[i];
+        auto& perFontQuads = characters[i];
 
-        for (size_t j = 0; j < perTextureQuads.Count(); j++)
+        for (size_t j = 0; j < perFontQuads.Count(); j++)
         {
-            auto& quadArr = perTextureQuads[j];
+            auto& quadArr = perFontQuads[j];
 
             if (quadArr.Count() == 0) continue;
 

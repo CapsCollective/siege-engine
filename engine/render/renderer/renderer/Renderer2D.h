@@ -75,6 +75,9 @@ private:
     static constexpr size_t TEXT_VERTEX_BUFFER_SIZE =
         MAX_TEXTURES * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT;
 
+    // NOTE(Aryeh): This function isn't being used right now. It was useful for centering text on a
+    // coordinate and can be re-used when we add text formatting. As such, I don't want to remove it
+    // just yet.
     float GetTotalTextWidth(const char* text,
                             size_t textLength,
                             SArray<Vulkan::Font::Glyph, 256>& glyphs);
