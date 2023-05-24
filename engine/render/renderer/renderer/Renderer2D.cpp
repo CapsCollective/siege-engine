@@ -60,12 +60,11 @@ void Renderer2D::Initialise(const char* const globalDataName)
 
     gridMaterial =
         Material(Shader::Builder()
-                    .FromVertexShader("assets/shaders/Grid2D.vert.spv")
-                    .WithPushConstant(sizeof(GridData))
-                    .Build(),
-                Shader::Builder()
-                    .FromFragmentShader("assets/shaders/Grid2D.frag.spv")
-                    .Build());
+                     .FromVertexShader("assets/shaders/Grid2D.vert.spv")
+                     .WithPushConstant(sizeof(GridData))
+                     .WithDepthWrite(false)
+                     .Build(),
+                 Shader::Builder().FromFragmentShader("assets/shaders/Grid2D.frag.spv").Build());
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
@@ -148,9 +147,15 @@ void Renderer2D::DrawText2D(const char* const text,
     }
 }
 
-void Renderer2D::DrawGrid2D(float spacing, const Vec3& lineColouring, float scale,  float lineWidth, float fadeFactor, float cellMultiple)
+void Renderer2D::DrawGrid2D(float spacing,
+                            const Vec3& lineColouring,
+                            float scale,
+                            float lineWidth,
+                            float fadeFactor,
+                            float cellMultiple)
 {
-    grid[0] = {{lineColouring.x, lineColouring.y, lineColouring.z, fadeFactor}, {spacing, cellMultiple, scale, lineWidth}};
+    grid[0] = {{lineColouring.x, lineColouring.y, lineColouring.z, fadeFactor},
+               {spacing, cellMultiple, scale, lineWidth}};
 }
 
 void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
@@ -162,6 +167,8 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
     textMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     quadIndexBuffer.Bind(buffer);
 
+    RenderGrid(buffer);
+
     for (int i = MAX_LAYERS - 1; i >= 0; i--)
     {
         // Render 2D quads for this layer
@@ -172,8 +179,6 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
 
         RenderText(buffer, i);
     }
-
-    RenderGrid(buffer);
 }
 
 void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)

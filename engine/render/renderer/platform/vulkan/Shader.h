@@ -152,6 +152,9 @@ public:
          */
         Builder& WithVertexBinding(const VertexBinding& binding);
 
+        // TODO(Aryeh): This should be moved to the Material since the shader doesn't control this
+        Builder& WithDepthWrite(bool state = true);
+
         /**
          * Specifies a uniform type to be added to the shader
          * @tparam T the type of uniform (i.e: the data type being loaded to the GPU)
@@ -262,6 +265,7 @@ public:
         PushConstant pushConstant;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
+        bool isWritingDepth {true};
     };
 
     /**
@@ -294,7 +298,8 @@ public:
            Texture2D::Info tex2DInfo,
            PushConstant pushConstant,
            size_t totalSize,
-           uint32_t totalVertexAttributes);
+           uint32_t totalVertexAttributes,
+           bool isWritingDepth);
 
     /**
      * A move constructor for the Shader
@@ -342,6 +347,7 @@ public:
         totalUniformSize = other.totalUniformSize;
         defaultTextureInfo = other.defaultTextureInfo;
         pushConstant = other.pushConstant;
+        isWritingDepth = other.isWritingDepth;
 
         return *this;
     }
@@ -416,6 +422,11 @@ public:
         return pushConstant.size > 0;
     }
 
+    inline const bool IsWritingDepth() const
+    {
+        return isWritingDepth;
+    }
+
 private:
 
     /**
@@ -440,6 +451,7 @@ private:
     PushConstant pushConstant;
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};
+    bool isWritingDepth {true};
 };
 } // namespace Siege::Vulkan
 

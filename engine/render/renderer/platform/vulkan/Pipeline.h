@@ -105,6 +105,8 @@ public:
          */
         Builder& WithFragmentShader(const Shader* fragShader);
 
+        Builder& WithDepthWriting(bool state);
+
         /**
          * Specifies the descriptor set layouts used by the pipeline
          * @param layouts an array of descriptor set layouts for the pipeline
@@ -134,6 +136,7 @@ public:
 
         bool usingDepthTest {true};
         bool usingDepthWrite {true};
+        bool isWritingDepth {true};
 
         RenderPass* renderPass {nullptr};
     };

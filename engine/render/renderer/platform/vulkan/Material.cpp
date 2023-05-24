@@ -40,7 +40,6 @@ Material::Material(Shader vertShader, Shader fragShader) :
 
     auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
-
     // Allocate buffer which can store all the data we need
     Buffer::CreateBuffer(bufferSize,
                          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -278,6 +277,7 @@ void Material::Recreate()
                            .WithPushConstant(pushConstant.size, pushConstant.type)
                            .WithVertexShader(&vertexShader)
                            .WithFragmentShader(&fragmentShader)
+                           .WithDepthWriting(vertexShader.IsWritingDepth())
                            .WithProperties(layouts)
                            .Build();
 }

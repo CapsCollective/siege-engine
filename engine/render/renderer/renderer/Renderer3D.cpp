@@ -39,6 +39,7 @@ void Renderer3D::Initialise()
         Vulkan::Shader::Builder()
             .FromVertexShader("assets/shaders/grid.vert.spv")
             .WithGlobalData3DUniform()
+            .WithDepthWrite(false)
             .Build(),
         Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build());
 }

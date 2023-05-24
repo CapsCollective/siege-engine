@@ -47,6 +47,12 @@ Pipeline::Builder& Pipeline::Builder::WithFragmentShader(const Shader* fragShade
     return *this;
 }
 
+Pipeline::Builder& Pipeline::Builder::WithDepthWriting(bool state)
+{
+    isWritingDepth = state;
+    return *this;
+}
+
 Pipeline::Builder& Pipeline::Builder::WithProperties(
     const MSArray<VkDescriptorSetLayout, 10>& layouts)
 {
@@ -142,7 +148,9 @@ Pipeline Pipeline::Builder::Build()
     pipelineCreateInfo.pMultisampleState = &Utils::Pipeline::defaultMultiSampleState;
     pipelineCreateInfo.pColorBlendState = &Utils::Pipeline::defaultColourBlendStateCreate;
     pipelineCreateInfo.pDynamicState = &dynamicStateCreateInfos;
-    pipelineCreateInfo.pDepthStencilState = &Utils::Pipeline::defaultStencilCreateState;
+    pipelineCreateInfo.pDepthStencilState =
+        isWritingDepth ? &Utils::Pipeline::defaultStencilCreateState :
+                         &Utils::Pipeline::defaultTransluscentStencilCreateState;
 
     pipelineCreateInfo.layout = newPipeline.layout;
     pipelineCreateInfo.renderPass = renderPass->GetRenderPass();
