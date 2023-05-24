@@ -38,11 +38,15 @@ public:
                     IColour colour = IColour::White,
                     float rotation = 0.f,
                     uint8_t zIndex = 0);
-    void DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness);
+    void DrawGrid2D(float spacing, const Vec3& lineColouring, float scale, float lineWidth, float fadeFactor, float cellMultiple);
     void Render(Vulkan::CommandBuffer& buffer,
                 const uint64_t& globalDataSize,
                 const void* globalData,
                 uint32_t frameIndex);
+    void RenderText(Vulkan::CommandBuffer& buffer, size_t index);
+    void RenderQuads(Vulkan::CommandBuffer& buffer, size_t index);
+    void RenderGrid(Vulkan::CommandBuffer& buffer);
+
     void Update();
     void Flush();
 
@@ -65,8 +69,8 @@ private:
 
     struct GridData
     {
-        Vec4 lineColourAndThickness {};
-        alignas(16) Vec4 cellDimensionsAndResolution {};
+        FColour cellColouring {}; // The Colour of the grids cells with the alpha specifying the fade factor for sub-grids
+        Vec4 cellDimensions {}; // The cell dimensions. X = cell area, Y = number of cells between primary cells, Z = DPI scale, W = cell line width
     };
 
     static constexpr size_t MAX_LAYERS = 5;

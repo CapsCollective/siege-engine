@@ -148,9 +148,9 @@ void Renderer2D::DrawText2D(const char* const text,
     }
 }
 
-void Renderer2D::DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness)
+void Renderer2D::DrawGrid2D(float spacing, const Vec3& lineColouring, float scale,  float lineWidth, float fadeFactor, float cellMultiple)
 {
-    grid[0] = {{lineColour.x, lineColour.y, lineColour.z, thickness}, {cellSize.x, cellSize.y, resolution.x, resolution.y}};
+    grid[0] = {{lineColouring.x, lineColouring.y, lineColouring.z, fadeFactor}, {spacing, cellMultiple, scale, lineWidth}};
 }
 
 void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
@@ -166,64 +166,78 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
     {
         // Render 2D quads for this layer
 
-        if (quads[i].Count() == 0) continue;
-
-        auto& perTextureQuads = quads[i];
-
-        for (size_t j = 0; j < perTextureQuads.Count(); j++)
-        {
-            auto& quadArr = perTextureQuads[j];
-
-            if (quadArr.Count() == 0) continue;
-
-            quadMaterial.BindPushConstant(buffer, &j);
-            quadMaterial.Bind(buffer);
-
-            uint64_t vertexBufferOffset = (i * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
-
-            quadVertexBuffer.Update(sizeof(QuadVertex),
-                                    quadArr.Data(),
-                                    quadArr.Count(),
-                                    vertexBufferOffset);
-
-            quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
-            quadIndexBuffer.Bind(buffer);
-
-            vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
-        }
+        RenderQuads(buffer, i);
 
         // Render text for this layer
 
-        if (characters[i].Count() == 0) continue;
-
-        auto& perFontQuads = characters[i];
-
-        for (size_t j = 0; j < perFontQuads.Count(); j++)
-        {
-            auto& quadArr = perFontQuads[j];
-
-            if (quadArr.Count() == 0) continue;
-
-            textMaterial.BindPushConstant(buffer, &j);
-            textMaterial.Bind(buffer);
-
-            uint64_t vertexBufferOffset =
-                (i * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
-
-            textVertexBuffer.Update(sizeof(FontData),
-                                    quadArr.Data(),
-                                    quadArr.Count(),
-                                    vertexBufferOffset);
-
-            textVertexBuffer.Bind(buffer, &vertexBufferOffset);
-
-            vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
-        }
+        RenderText(buffer, i);
     }
 
-    for(size_t i = 0; i < grid.Count(); i++)
+    RenderGrid(buffer);
+}
+
+void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
+{
+    if (characters[index].Count() == 0) return;
+
+    auto& perFontQuads = characters[index];
+
+    for (size_t j = 0; j < perFontQuads.Count(); j++)
     {
-        gridMaterial.BindPushConstant(buffer, &grid[i]);
+        auto& quadArr = perFontQuads[j];
+
+        if (quadArr.Count() == 0) continue;
+
+        textMaterial.BindPushConstant(buffer, &j);
+        textMaterial.Bind(buffer);
+
+        uint64_t vertexBufferOffset =
+            (index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
+
+        textVertexBuffer.Update(sizeof(FontData),
+                                quadArr.Data(),
+                                quadArr.Count(),
+                                vertexBufferOffset);
+
+        textVertexBuffer.Bind(buffer, &vertexBufferOffset);
+
+        vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
+    }
+}
+
+void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
+{
+    if (quads[index].Count() == 0) return;
+
+    auto& perTextureQuads = quads[index];
+
+    for (size_t j = 0; j < perTextureQuads.Count(); j++)
+    {
+        auto& quadArr = perTextureQuads[j];
+
+        if (quadArr.Count() == 0) continue;
+
+        quadMaterial.BindPushConstant(buffer, &j);
+        quadMaterial.Bind(buffer);
+
+        uint64_t vertexBufferOffset = (index * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
+
+        quadVertexBuffer.Update(sizeof(QuadVertex),
+                                quadArr.Data(),
+                                quadArr.Count(),
+                                vertexBufferOffset);
+
+        quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
+
+        vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
+    }
+}
+
+void Renderer2D::RenderGrid(Vulkan::CommandBuffer& buffer)
+{
+    for (size_t j = 0; j < grid.Count(); j++)
+    {
+        gridMaterial.BindPushConstant(buffer, &grid[j]);
         gridMaterial.Bind(buffer);
 
         vkCmdDrawIndexed(buffer.Get(), 6, 1, 0, 0, 0);
@@ -234,6 +248,7 @@ void Renderer2D::Update()
 {
     quadMaterial.Update();
     textMaterial.Update();
+    gridMaterial.Update();
 }
 
 void Renderer2D::Flush()

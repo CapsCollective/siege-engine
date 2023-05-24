@@ -70,6 +70,12 @@ public:
         return width;
     }
 
+    const uint32_t GetDPI() const
+    {
+        // NOTE(Need to find a better solution when the DPI in different axes are not the same)
+        return DPI.width;
+    }
+
     const uint32_t GetScaledWidth() const
     {
         return width * DPI.width;

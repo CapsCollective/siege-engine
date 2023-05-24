@@ -71,7 +71,7 @@ public:
                     float rotation = 0.f,
                     const IColour colour = IColour::White,
                     const uint8_t zIndex = 0);
-    void DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness);
+    void DrawGrid2D(float spacing, const Vec3& lineColouring, float scale,  float lineWidth = 1.f, float fadeFactor = 0.5f, float cellMultiple = 2.f);
 
     static Vulkan::Context& Context()
     {

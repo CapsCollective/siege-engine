@@ -132,9 +132,9 @@ void Renderer::DrawText2D(const char* const text,
     renderer2D.DrawText2D(text, position, scale, font, colour);
 }
 
-void Renderer::DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness)
+void Renderer::DrawGrid2D(float spacing, const Vec3& lineColouring, float scale,  float lineWidth, float fadeFactor, float cellMultiple)
 {
-    renderer2D.DrawGrid2D(cellSize, lineColour, resolution, thickness);
+    renderer2D.DrawGrid2D(spacing, lineColouring, scale, lineWidth, fadeFactor, cellMultiple);
 }
 
 void Renderer::EndFrame()

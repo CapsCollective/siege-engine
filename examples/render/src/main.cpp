@@ -283,7 +283,7 @@ int main()
                               {panelWidth / 2, panelHeight},
                               Siege::IColour::Black,
                               0,
-                              2);
+                              3);
 
             if (blink > 0.5)
             {
@@ -295,9 +295,9 @@ int main()
                                     Siege::IColour::White,
                                     3);
             }
-        }
 
-        renderer.DrawGrid2D({100.f, 100.f}, {.2f, .2f, .2f}, {(float)window.GetScaledWidth(), (float)window.GetScaledHeight()}, 1.f);
+            renderer.DrawGrid2D(100.f, {.2f, .2f, .2f}, window.GetDPI());
+        }
 
         renderer.DrawQuad({0, window.GetHeight() - 100.f},
                           {50, 50},
