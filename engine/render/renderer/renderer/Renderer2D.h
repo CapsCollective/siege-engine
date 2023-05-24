@@ -38,6 +38,7 @@ public:
                     IColour colour = IColour::White,
                     float rotation = 0.f,
                     uint8_t zIndex = 0);
+    void DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness);
     void Render(Vulkan::CommandBuffer& buffer,
                 const uint64_t& globalDataSize,
                 const void* globalData,
@@ -60,6 +61,12 @@ private:
         Vec4 uvData {};
         FColour colour {};
         Vec4 position {};
+    };
+
+    struct GridData
+    {
+        Vec4 lineColourAndThickness {};
+        alignas(16) Vec4 cellDimensionsAndResolution {};
     };
 
     static constexpr size_t MAX_LAYERS = 5;
@@ -101,6 +108,11 @@ private:
     Vulkan::VertexBuffer textVertexBuffer;
 
     SArray<MSArray<MHArray<FontData>, MAX_TEXTURES>, MAX_LAYERS> characters;
+
+    // 2D grid
+
+    Vulkan::Material gridMaterial;
+    MSArray<GridData, 1> grid;
 };
 } // namespace Siege
 

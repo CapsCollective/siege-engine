@@ -132,6 +132,11 @@ void Renderer::DrawText2D(const char* const text,
     renderer2D.DrawText2D(text, position, scale, font, colour);
 }
 
+void Renderer::DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness)
+{
+    renderer2D.DrawGrid2D(cellSize, lineColour, resolution, thickness);
+}
+
 void Renderer::EndFrame()
 {
     Renderer3D::Update();

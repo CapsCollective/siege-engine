@@ -186,6 +186,7 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
 
 void Pipeline::BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptorSet, 2> sets)
 {
+    if (sets.Count() == 0) return;
     vkCmdBindDescriptorSets(commandBuffer.Get(),
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
                             layout,

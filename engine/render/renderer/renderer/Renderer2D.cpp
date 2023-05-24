@@ -58,6 +58,15 @@ void Renderer2D::Initialise(const char* const globalDataName)
                      .WithDefaultTexture(&defaultTexture)
                      .Build());
 
+    gridMaterial =
+        Material(Shader::Builder()
+                    .FromVertexShader("assets/shaders/Grid2D.vert.spv")
+                    .WithPushConstant(sizeof(GridData))
+                    .Build(),
+                Shader::Builder()
+                    .FromFragmentShader("assets/shaders/Grid2D.frag.spv")
+                    .Build());
+
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
     quadIndexBuffer = Vulkan::IndexBuffer(6, fontIndices);
@@ -139,6 +148,11 @@ void Renderer2D::DrawText2D(const char* const text,
     }
 }
 
+void Renderer2D::DrawGrid2D(Vec2 cellSize, Vec3 lineColour, Vec2 resolution, float thickness)
+{
+    grid[0] = {{lineColour.x, lineColour.y, lineColour.z, thickness}, {cellSize.x, cellSize.y, resolution.x, resolution.y}};
+}
+
 void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
                         const uint64_t& globalDataSize,
                         const void* globalData,
@@ -206,6 +220,14 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
             vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
         }
     }
+
+    for(size_t i = 0; i < grid.Count(); i++)
+    {
+        gridMaterial.BindPushConstant(buffer, &grid[i]);
+        gridMaterial.Bind(buffer);
+
+        vkCmdDrawIndexed(buffer.Get(), 6, 1, 0, 0, 0);
+    }
 }
 
 void Renderer2D::Update()
@@ -224,6 +246,8 @@ void Renderer2D::Flush()
     {
         for (size_t j = 0; j < characters[i].Count(); j++) characters[i][j].Clear();
     }
+
+    grid.Clear();
 }
 
 float Renderer2D::GetTotalTextWidth(const char* text,

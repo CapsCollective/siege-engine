@@ -296,6 +296,9 @@ int main()
                                     3);
             }
         }
+
+        renderer.DrawGrid2D({100.f, 100.f}, {.2f, .2f, .2f}, {(float)window.GetScaledWidth(), (float)window.GetScaledHeight()}, 1.f);
+
         renderer.DrawQuad({0, window.GetHeight() - 100.f},
                           {50, 50},
                           Siege::IColour::White,

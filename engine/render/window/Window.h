@@ -46,6 +46,8 @@ public:
         glfwSetWindowUserPointer(window, this);
         glfwSetWindowSizeCallback(window, ResizeCallback);
         glfwWindows++;
+
+        glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &DPI.width, &DPI.height);
     }
 
     Window() : Window("Window", 800, 600) {}
@@ -66,6 +68,16 @@ public:
     const int& GetWidth() const
     {
         return width;
+    }
+
+    const uint32_t GetScaledWidth() const
+    {
+        return width * DPI.width;
+    }
+
+    const uint32_t GetScaledHeight() const
+    {
+        return height * DPI.height;
     }
 
     VkExtent2D GetExtent() const
@@ -120,6 +132,12 @@ public:
 
 private:
 
+    struct MonitorPixelScale
+    {
+        float width {0};
+        float height {0};
+    };
+
     static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
 
     // Private static variables
@@ -133,6 +151,8 @@ private:
 
     int width;
     int height;
+
+    MonitorPixelScale DPI = {};
     bool wasResized = false;
 };
 } // namespace Siege

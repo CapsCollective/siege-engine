@@ -40,7 +40,7 @@ Material::Material(Shader vertShader, Shader fragShader) :
 
     auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
-    // TODO: Make a standalone buffer class
+
     // Allocate buffer which can store all the data we need
     Buffer::CreateBuffer(bufferSize,
                          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -244,10 +244,10 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
                      Utils::ToVkImageLayout(defaultTexture2DInfo.imageInfo.layout)});
             }
         }
-
-        if (shader.HasPushConstant())
-            pushConstant = {shader.GetPushConstant().size, shader.GetShaderType()};
     }
+
+    if (shader.HasPushConstant())
+        pushConstant = {shader.GetPushConstant().size, shader.GetShaderType()};
 }
 
 void Material::Bind(const CommandBuffer& commandBuffer)
