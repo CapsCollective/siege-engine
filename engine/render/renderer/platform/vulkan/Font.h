@@ -149,7 +149,7 @@ private:
 
     // Constexpr declarations
     static constexpr uint32_t MAX_ATLAS_WIDTH {512};
-    static constexpr uint32_t MAX_ATLAS_HEIGHT {5096};
+    static constexpr uint32_t MAX_ATLAS_HEIGHT {8192};
 
     /**
      * Swaps the values of two Fonts
