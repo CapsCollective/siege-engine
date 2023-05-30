@@ -49,7 +49,7 @@ Pipeline::Builder& Pipeline::Builder::WithFragmentShader(const Shader* fragShade
 
 Pipeline::Builder& Pipeline::Builder::WithDepthWriting(bool state)
 {
-    isWritingDepth = state;
+    usingDepthWrite = state;
     return *this;
 }
 
@@ -89,6 +89,8 @@ Pipeline Pipeline::Builder::Build()
 
     auto dynamicStateCreateInfos =
         CreateDynamicStates(viewportCount + scissorCount, (VkDynamicState*) dynamicStates.Data());
+
+    auto depthState = Utils::Pipeline::CreateStencilState(usingDepthWrite);
 
     // Get shader number and their stages.
 
@@ -148,9 +150,7 @@ Pipeline Pipeline::Builder::Build()
     pipelineCreateInfo.pMultisampleState = &Utils::Pipeline::defaultMultiSampleState;
     pipelineCreateInfo.pColorBlendState = &Utils::Pipeline::defaultColourBlendStateCreate;
     pipelineCreateInfo.pDynamicState = &dynamicStateCreateInfos;
-    pipelineCreateInfo.pDepthStencilState =
-        isWritingDepth ? &Utils::Pipeline::defaultStencilCreateState :
-                         &Utils::Pipeline::defaultTransluscentStencilCreateState;
+    pipelineCreateInfo.pDepthStencilState = &depthState;
 
     pipelineCreateInfo.layout = newPipeline.layout;
     pipelineCreateInfo.renderPass = renderPass->GetRenderPass();

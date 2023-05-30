@@ -45,29 +45,12 @@ Shader::VertexBinding& Shader::VertexBinding::AddFloatVec2Attribute()
     return *this;
 }
 
-Shader::VertexBinding& Shader::VertexBinding::AddU32Attribute()
-{
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_UINT_32, inputRate});
-    stride += sizeof(uint32_t);
-    return *this;
-}
-
 Shader::VertexBinding& Shader::VertexBinding::AddMat4Attribute()
 {
     return AddFloatVec4Attribute()
         .AddFloatVec4Attribute()
         .AddFloatVec4Attribute()
         .AddFloatVec4Attribute();
-}
-
-Shader::VertexBinding& Shader::VertexBinding::AddMat2Attribute()
-{
-    return AddFloatVec4Attribute().AddFloatVec4Attribute();
-}
-
-Shader::VertexBinding& Shader::VertexBinding::AddMat3Attribute()
-{
-    return AddFloatVec4Attribute().AddFloatVec4Attribute().AddFloatVec4Attribute();
 }
 
 Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)
@@ -138,12 +121,6 @@ Shader::Builder& Shader::Builder::WithVertexBinding(const Shader::VertexBinding&
     return *this;
 }
 
-Shader::Builder& Shader::Builder::WithDepthWrite(bool state)
-{
-    isWritingDepth = state;
-    return *this;
-}
-
 Shader Shader::Builder::Build() const
 {
     return Shader(filePath,
@@ -154,8 +131,7 @@ Shader Shader::Builder::Build() const
                   defaultTextureInfo,
                   pushConstant,
                   totalUniformSize,
-                  attributeCount,
-                  isWritingDepth);
+                  attributeCount);
 }
 
 Shader::Shader(const Shader& other) :
@@ -165,8 +141,7 @@ Shader::Shader(const Shader& other) :
     vertexBindings {other.vertexBindings},
     defaultTextureInfo {other.defaultTextureInfo},
     pushConstant {other.pushConstant},
-    totalUniformSize {other.totalUniformSize},
-    isWritingDepth {other.isWritingDepth}
+    totalUniformSize {other.totalUniformSize}
 {
     CreateShaderModule();
 }
@@ -179,8 +154,7 @@ Shader::Shader(const String& filePath,
                Texture2D::Info tex2DInfo,
                PushConstant pushConstant,
                size_t totalSize,
-               uint32_t totalVertexAttributes,
-               bool isWritingDepth) :
+               uint32_t totalVertexAttributes) :
     filePath {filePath},
     type {type},
     expectedTopology {expectedTopology},
@@ -189,8 +163,7 @@ Shader::Shader(const String& filePath,
     defaultTextureInfo {tex2DInfo},
     pushConstant {pushConstant},
     totalUniformSize {totalSize},
-    totalVertexAttributeCount {totalVertexAttributes},
-    isWritingDepth {isWritingDepth}
+    totalVertexAttributeCount {totalVertexAttributes}
 {
     CreateShaderModule();
 }
@@ -249,7 +222,6 @@ void Shader::Swap(Shader& other)
     auto tmpExpectedTopology = expectedTopology;
     auto tmpDefaultTexture2DInfo = defaultTextureInfo;
     auto tmpPushConstant = pushConstant;
-    auto tmpIsWritingDepth = isWritingDepth;
 
     filePath = other.filePath;
     type = other.type;
@@ -261,7 +233,6 @@ void Shader::Swap(Shader& other)
     expectedTopology = other.expectedTopology;
     defaultTextureInfo = other.defaultTextureInfo;
     pushConstant = other.pushConstant;
-    isWritingDepth = other.isWritingDepth;
 
     other.filePath = tmpFilePath;
     other.type = tmpShaderType;
@@ -273,6 +244,5 @@ void Shader::Swap(Shader& other)
     other.expectedTopology = tmpExpectedTopology;
     other.defaultTextureInfo = tmpDefaultTexture2DInfo;
     other.pushConstant = tmpPushConstant;
-    other.isWritingDepth = tmpIsWritingDepth;
 }
 } // namespace Siege::Vulkan

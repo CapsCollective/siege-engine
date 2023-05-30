@@ -15,16 +15,16 @@ vec2 quadVertices[4] = {
     vec2(-1.0, 1.0)
 };
 
-layout(location=0) out vec3 cellColour;
-layout(location=1) out flat float cellSpacing;
-layout(location=2) out flat float lineWidth;
-layout(location=3) out flat float cellMultiple;
-layout(location=4) out flat float fadeFactor;
-layout(location=5) out flat float scale;
+layout(location=0) out vec3 cellColour; // The colour of our grid lines
+layout(location=1) out flat float cellSpacing; // the spacing between lines in pixels
+layout(location=2) out flat float lineWidth; // the width of our lines
+layout(location=3) out flat float cellMultiple; // determines how many cells will be encompassed in a sub-grid
+layout(location=4) out flat float fadeFactor; // determines how much sub-cells are faded
+layout(location=5) out flat float scale; // the DPI scale of the screen
 
 layout (push_constant) uniform PushConstant {
-    vec4 cellColouring;
-    vec4 cellDimensions;
+    vec4 cellColouring; // Stores the cellColour in xyz and fadeFactor in w
+    vec4 cellDimensions; // Stores the cell spacing in x, multiple in y, dimensions in z, and width in w
 } pushConstant;
 
 void main()

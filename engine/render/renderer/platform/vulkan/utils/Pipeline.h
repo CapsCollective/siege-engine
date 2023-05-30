@@ -102,20 +102,6 @@ inline constexpr VkPipelineDepthStencilStateCreateInfo defaultStencilCreateState
     0.f,
     1.f};
 
-inline constexpr VkPipelineDepthStencilStateCreateInfo defaultTransluscentStencilCreateState {
-    VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-    nullptr,
-    0,
-    VK_TRUE,
-    VK_FALSE,
-    VK_COMPARE_OP_LESS,
-    VK_FALSE,
-    VK_FALSE,
-    {},
-    {},
-    0.f,
-    1.f};
-
 inline constexpr VkPipelineDynamicStateCreateInfo defaultDynamicStateCreateInfos {
     VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
     nullptr,
@@ -190,6 +176,18 @@ VkPipelineShaderStageCreateInfo CreateVertexShaderStage(VkShaderModule shaderMod
  * @return a newly created VkPipelineShaderStageCreateInfo struct
  */
 VkPipelineShaderStageCreateInfo CreateFragmentShaderStage(VkShaderModule shaderModule);
+
+/**
+ * Creates a new depth stencil state info struct for the pipeline
+ * @param isWritingDepth specifies if the pipeline is writing to the depth buffer
+ * @return a new VkPipelineDepthStencilStateCreateInfo with the configured data
+ */
+inline constexpr VkPipelineDepthStencilStateCreateInfo CreateStencilState(bool isWritingDepth)
+{
+    auto depthWriteState = Utils::Pipeline::defaultStencilCreateState;
+    depthWriteState.depthWriteEnable = isWritingDepth;
+    return depthWriteState;
+}
 
 /**
  * Creates a vertex input state object for the Pipeline

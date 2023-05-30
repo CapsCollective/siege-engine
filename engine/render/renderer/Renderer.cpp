@@ -64,7 +64,8 @@ void Renderer::RecreateSwapChain()
 {
     ClearDeviceQueue();
     auto extent = window.GetExtent();
-    while (extent.width == 0 || extent.height == 0)
+
+    while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
     {
         extent = window.GetExtent();
         window.WaitEvents();
@@ -82,6 +83,7 @@ void Renderer::RecreateSwapChain()
     if (!swapchain.IsSameSwapFormat(oldImageFormat, oldDepthFormat))
     {
         Renderer3D::RecreateMaterials();
+        renderer2D.RecreateMaterials();
     }
 }
 
@@ -93,7 +95,7 @@ bool Renderer::StartFrame()
 
     auto result = swapchain.AcquireNextImage(&currentImageIndex);
 
-    if (result == Vulkan::Utils::ERROR_OUT_OF_DATE)
+    if (result == Vulkan::Utils::ERROR_OUT_OF_DATE || !window.IsVisible())
     {
         RecreateSwapChain();
         return false;
@@ -161,7 +163,7 @@ void Renderer::EndFrame()
 
     auto result = swapchain.SubmitCommandBuffers(commandBuffers, currentImageIndex);
 
-    if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized())
+    if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized() || !window.IsVisible())
     {
         window.ResetWindowResized();
         RecreateSwapChain();

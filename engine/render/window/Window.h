@@ -43,6 +43,11 @@ public:
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
 
+        glfwSetWindowIconifyCallback(window, [](GLFWwindow* window, int iconified) {
+            auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+            windowContext->isVisible = !iconified;
+        });
+
         glfwSetWindowUserPointer(window, this);
         glfwSetWindowSizeCallback(window, ResizeCallback);
         glfwWindows++;
@@ -60,19 +65,25 @@ public:
 
     // Public Getters
 
-    const int& GetHeight() const
+    const int GetHeight() const
     {
         return height;
     }
 
-    const int& GetWidth() const
+    const int GetWidth() const
     {
         return width;
     }
 
+    const bool IsVisible() const
+    {
+        return isVisible;
+    }
+
     const uint32_t GetDPI() const
     {
-        // NOTE(Need to find a better solution when the DPI in different axes are not the same)
+        // NOTE(Aryeh): Need to find a better solution when the DPI in different axes are not the
+        // same
         return DPI.width;
     }
 
@@ -158,8 +169,9 @@ private:
     int width;
     int height;
 
-    MonitorPixelScale DPI = {};
-    bool wasResized = false;
+    MonitorPixelScale DPI {};
+    bool wasResized {false};
+    bool isVisible {true};
 };
 } // namespace Siege
 

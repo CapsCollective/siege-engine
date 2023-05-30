@@ -105,6 +105,11 @@ public:
          */
         Builder& WithFragmentShader(const Shader* fragShader);
 
+        /**
+         * Specifies if the pipeline is writing to the depth buffer
+         * @param state the state of depth buffer writing
+         * @return a reference to the current builder instance
+         */
         Builder& WithDepthWriting(bool state);
 
         /**
@@ -114,6 +119,12 @@ public:
          */
         Builder& WithProperties(const MSArray<VkDescriptorSetLayout, 10>& layouts);
 
+        /**
+         * Specifies a push constant to be used by the pipeline
+         * @param size the size of the push constant
+         * @param type the shader that the push constant will be pushed to
+         * @return a reference to the current builder instance
+         */
         Builder& WithPushConstant(uint32_t size, Utils::ShaderType type);
 
         /**
@@ -136,7 +147,6 @@ public:
 
         bool usingDepthTest {true};
         bool usingDepthWrite {true};
-        bool isWritingDepth {true};
 
         RenderPass* renderPass {nullptr};
     };

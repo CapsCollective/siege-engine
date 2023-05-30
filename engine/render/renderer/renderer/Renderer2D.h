@@ -51,9 +51,9 @@ public:
     void RenderText(Vulkan::CommandBuffer& buffer, size_t index);
     void RenderQuads(Vulkan::CommandBuffer& buffer, size_t index);
     void RenderGrid(Vulkan::CommandBuffer& buffer);
-
     void Update();
     void Flush();
+    void RecreateMaterials();
 
 private:
 

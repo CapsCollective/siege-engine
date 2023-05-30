@@ -62,9 +62,9 @@ void Renderer2D::Initialise(const char* const globalDataName)
         Material(Shader::Builder()
                      .FromVertexShader("assets/shaders/Grid2D.vert.spv")
                      .WithPushConstant(sizeof(GridData))
-                     .WithDepthWrite(false)
                      .Build(),
-                 Shader::Builder().FromFragmentShader("assets/shaders/Grid2D.frag.spv").Build());
+                 Shader::Builder().FromFragmentShader("assets/shaders/Grid2D.frag.spv").Build(),
+                 false);
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
@@ -268,6 +268,13 @@ void Renderer2D::Flush()
     }
 
     grid.Clear();
+}
+
+void Renderer2D::RecreateMaterials()
+{
+    quadMaterial.Recreate();
+    textMaterial.Recreate();
+    gridMaterial.Recreate();
 }
 
 float Renderer2D::GetTotalTextWidth(const char* text,

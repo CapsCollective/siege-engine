@@ -96,13 +96,11 @@ public:
          */
         VertexBinding& AddFloatVec2Attribute();
 
-        VertexBinding& AddU32Attribute();
-
+        /**
+         * Specifies a 4 dimensional matrix vertex attribute
+         * @return a reference to the VertexBinding type
+         */
         VertexBinding& AddMat4Attribute();
-
-        VertexBinding& AddMat3Attribute();
-
-        VertexBinding& AddMat2Attribute();
 
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
         MSArray<VertexAttribute, MAX_VERTEX_ATTRIBUTES> attributes;
@@ -110,6 +108,10 @@ public:
         uint32_t stride {0};
     };
 
+    /**
+     * A struct representing a push constant
+     * @param size the size of the push constant
+     */
     struct PushConstant
     {
         uint32_t size {0};
@@ -151,9 +153,6 @@ public:
          * @return a reference to the current Builder object
          */
         Builder& WithVertexBinding(const VertexBinding& binding);
-
-        // TODO(Aryeh): This should be moved to the Material since the shader doesn't control this
-        Builder& WithDepthWrite(bool state = true);
 
         /**
          * Specifies a uniform type to be added to the shader
@@ -237,6 +236,11 @@ public:
          */
         Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
 
+        /**
+         * Specifies that this shader uses a push constant
+         * @param size the size of the push constant
+         * @return a reference to the current Builder object
+         */
         Builder& WithPushConstant(uint64_t size);
 
         /**
@@ -246,8 +250,20 @@ public:
          */
         Builder& WithVertexTopology(Utils::PipelineTopology topology);
 
+        /**
+         * Specifies that this shader uses a texture
+         * @param name the name of the texture
+         * @param set the descriptor set to store the texture in
+         * @param count the number of textures to be stored
+         * @return a reference to the current Builder object
+         */
         Builder& WithTexture(const String& name, uint32_t set = 1, uint32_t count = 1);
 
+        /**
+         * Sets a default texture to use when none are specified
+         * @param texture the default texture
+         * @return a reference to the current Builder object
+         */
         Builder& WithDefaultTexture(const Texture2D* texture);
 
         /**
@@ -265,7 +281,6 @@ public:
         PushConstant pushConstant;
         uint64_t totalUniformSize {0};
         uint32_t attributeCount {0};
-        bool isWritingDepth {true};
     };
 
     /**
@@ -298,8 +313,7 @@ public:
            Texture2D::Info tex2DInfo,
            PushConstant pushConstant,
            size_t totalSize,
-           uint32_t totalVertexAttributes,
-           bool isWritingDepth);
+           uint32_t totalVertexAttributes);
 
     /**
      * A move constructor for the Shader
@@ -347,7 +361,6 @@ public:
         totalUniformSize = other.totalUniformSize;
         defaultTextureInfo = other.defaultTextureInfo;
         pushConstant = other.pushConstant;
-        isWritingDepth = other.isWritingDepth;
 
         return *this;
     }
@@ -422,11 +435,6 @@ public:
         return pushConstant.size > 0;
     }
 
-    inline const bool IsWritingDepth() const
-    {
-        return isWritingDepth;
-    }
-
 private:
 
     /**
@@ -451,7 +459,6 @@ private:
     PushConstant pushConstant;
     size_t totalUniformSize {0};
     uint32_t totalVertexAttributeCount {0};
-    bool isWritingDepth {true};
 };
 } // namespace Siege::Vulkan
 
