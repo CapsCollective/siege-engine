@@ -158,7 +158,7 @@ int main()
         camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
 
         camera2
-            .UpdateOthrographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
+            .UpdateOrthographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
 
         if (inputEnabled)
         {

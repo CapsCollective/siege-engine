@@ -25,7 +25,7 @@ public:
                                      const float& near,
                                      const float& far);
 
-    void UpdateOthrographicProjection(const float& left,
+    void UpdateOrthographicProjection(const float& left,
                                       const float& right,
                                       const float& top,
                                       const float& bottom,

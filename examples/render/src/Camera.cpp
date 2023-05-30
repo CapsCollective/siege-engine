@@ -20,7 +20,7 @@ void Camera::UpdatePerspectiveProjection(const float& fovy,
     projectionMatrix = Siege::Graphics::Perspective(fovy, aspect, near, far);
 }
 
-void Camera::UpdateOthrographicProjection(const float& left,
+void Camera::UpdateOrthographicProjection(const float& left,
                                           const float& right,
                                           const float& top,
                                           const float& bottom,
