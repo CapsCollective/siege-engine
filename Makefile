@@ -12,7 +12,7 @@ DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     override CXXFLAGS += -g -DDEBUG -DCC_LOG_LEVEL=2
 else
-    override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0
+    override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0 -O3
 endif
 
 # Set platform vars
