@@ -7,10 +7,13 @@
 include make/Functions.mk
 include make/Platform.mk
 
+optimisation := -O3
+
 # Set debugging build flags
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)
     override CXXFLAGS += -g -DDEBUG -DCC_LOG_LEVEL=2
+    optimisation :=
 else
     override CXXFLAGS += -DNDEBUG -DCC_LOG_LEVEL=0 -O3
 endif
@@ -49,7 +52,7 @@ export exampleGameApp := $(binDir)/examples/game/build/app
 export exampleRenderApp := $(binDir)/examples/render/build/app
 
 # Set build vars
-export compileFlags := -Wall -std=c++17
+export compileFlags := -Wall -std=c++17 $(optimisation)
 export linkFlags += -L $(libDir)
 buildFlagsFile:=.buildflags
 
