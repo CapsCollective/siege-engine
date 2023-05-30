@@ -26,7 +26,7 @@ namespace Siege::Graphics
  * @param far the far clipping range.
  * @return a 4x4 perspective projection matrix.
  */
-Mat4 Perspective(const float& fovy, const float& aspect, const float& near, const float& far);
+Mat4 Perspective(float fovy, float aspect, float near, float far);
 
 /**
  * Returns a 4x4 orthographic projection (typically used for 2D projections)
@@ -38,12 +38,7 @@ Mat4 Perspective(const float& fovy, const float& aspect, const float& near, cons
  * @param far the far clipping range.
  * @return a 4x4 orthographic projection matrix.
  */
-Mat4 Orthographic(const float& left,
-                  const float& right,
-                  const float& top,
-                  const float& bottom,
-                  const float& near,
-                  const float& far);
+Mat4 Orthographic(float left, float right, float top, float bottom, float near, float far);
 
 /**
  * Creates a projection matrix that's looking at a specific directioin.
@@ -89,7 +84,7 @@ Mat4 CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3
  * @param scale the scale of the object.
  * @return the transform matrix of the object's spatial positioning.
  */
-Mat3 CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale);
+Mat3 CalculateTransform2D(const Vec2& position, float rotation, const Vec2& scale);
 
 /**
  * Calculates the normal matrix of a 3D object.

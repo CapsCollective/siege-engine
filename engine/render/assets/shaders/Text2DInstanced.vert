@@ -10,8 +10,8 @@
 
 // Per instance data
 layout(location = 0) in mat4 transform;
-layout(location = 4) in vec4 texData; // Stores the minimum x and y values for the glyph in the texture + the glyph's dimensions in the texture
-layout(location = 5) in vec4 colour;
+layout(location = 4) in vec4 colour;
+layout(location = 5) in vec4 texData; // Stores the minimum x and y values for the glyph in the texture + the glyph's dimensions in the texture
 layout(location = 6) in vec4 coordinates; // stores x and y coordinates in space + the glyph's dimensions in space
 
 layout(location = 0) out vec4 fragColor;
@@ -44,7 +44,7 @@ void main() {
     float posY = (float(gl_VertexIndex == 0 || gl_VertexIndex == 3) * (coordinates.y + coordinates.w))
     + (float(gl_VertexIndex == 1 || gl_VertexIndex == 2) * coordinates.y);
 
-    gl_Position = cameraData.projectionMatrix * cameraData.viewMatrix * transform * vec4(posX, posY, 0, 1.0);
+    gl_Position = cameraData.projectionMatrix * cameraData.viewMatrix * transform * vec4(posX, posY, 1.0, 1.0);
 
     fragColor = colour;
     outUv = vec2(uvx, uvy);

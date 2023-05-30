@@ -35,7 +35,7 @@ layout (binding = 0) uniform CameraData {
 
 void main() {
 
-    vec4 vertexPosition = inTransform * vec4(quadVertices[gl_VertexIndex], 0.0, 1.0);
+    vec4 vertexPosition = inTransform * vec4(quadVertices[gl_VertexIndex], 1.0, 1.0);
     gl_Position = cameraData.projectionMatrix * cameraData.viewMatrix * vertexPosition;
 
     float uvx = (float(gl_VertexIndex == 0 || gl_VertexIndex == 1) * (inUv.x + inUv.z))

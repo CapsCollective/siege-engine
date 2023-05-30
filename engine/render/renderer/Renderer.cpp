@@ -131,7 +131,7 @@ void Renderer::DrawText2D(const char* const text,
                           const IColour colour,
                           const uint8_t zIndex)
 {
-    renderer2D.DrawText2D(text, position, scale, font, colour);
+    renderer2D.DrawText2D(text, position, scale, font, colour, rotation, zIndex);
 }
 
 void Renderer::DrawGrid2D(float spacing,

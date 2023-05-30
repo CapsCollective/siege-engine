@@ -12,20 +12,17 @@
 #include <render/input/Input.h>
 #include <utils/math/Float.h>
 
-void Camera::UpdatePerspectiveProjection(const float& fovy,
-                                         const float& aspect,
-                                         const float& near,
-                                         const float& far)
+void Camera::UpdatePerspectiveProjection(float fovy, float aspect, float near, float far)
 {
     projectionMatrix = Siege::Graphics::Perspective(fovy, aspect, near, far);
 }
 
-void Camera::UpdateOrthographicProjection(const float& left,
-                                          const float& right,
-                                          const float& top,
-                                          const float& bottom,
-                                          const float& near,
-                                          const float& far)
+void Camera::UpdateOrthographicProjection(float left,
+                                          float right,
+                                          float top,
+                                          float bottom,
+                                          float near,
+                                          float far)
 {
     projectionMatrix = Siege::Graphics::Orthographic(left, right, top, bottom, near, far);
 }

@@ -20,17 +20,14 @@ public:
     Camera() = default;
     ~Camera() = default;
 
-    void UpdatePerspectiveProjection(const float& fovy,
-                                     const float& aspect,
-                                     const float& near,
-                                     const float& far);
+    void UpdatePerspectiveProjection(float fovy, float aspect, float near, float far);
 
-    void UpdateOrthographicProjection(const float& left,
-                                      const float& right,
-                                      const float& top,
-                                      const float& bottom,
-                                      const float& near,
-                                      const float& far);
+    void UpdateOrthographicProjection(float left,
+                                      float right,
+                                      float top,
+                                      float bottom,
+                                      float near,
+                                      float far);
 
     void SetView(const Siege::Vec3& position, const Siege::Vec3& rotation);
     void Update();

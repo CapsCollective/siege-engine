@@ -14,7 +14,7 @@
 namespace Siege::Graphics
 {
 
-Mat4 Perspective(const float& fovy, const float& aspect, const float& near, const float& far)
+Mat4 Perspective(float fovy, float aspect, float near, float far)
 {
     const float tanHalfFovy = tan(fovy / 2.f);
 
@@ -29,12 +29,7 @@ Mat4 Perspective(const float& fovy, const float& aspect, const float& near, cons
     return projectionMatrix;
 }
 
-Mat4 Orthographic(const float& left,
-                  const float& right,
-                  const float& top,
-                  const float& bottom,
-                  const float& near,
-                  const float& far)
+Mat4 Orthographic(float left, float right, float top, float bottom, float near, float far)
 {
     Mat4 projectionMatrix = Siege::Mat4::Identity;
 
@@ -142,7 +137,7 @@ Mat4 CalculateTransform3D(const Vec3& position, const Vec3& rotation, const Vec3
             {position.x, position.y, position.z, 1.0f}};
 }
 
-Mat3 CalculateTransform2D(const Vec2& position, const float& rotation, const Vec2& scale)
+Mat3 CalculateTransform2D(const Vec2& position, float rotation, const Vec2& scale)
 {
     const float s = Float::Sin(rotation);
     const float c = Float::Cos(rotation);

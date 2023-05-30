@@ -64,11 +64,11 @@ private:
         Vec4 uvData {};
     };
 
-    struct FontData
+    struct FontVertex
     {
         Mat4 transform {};
-        Vec4 uvData {};
         FColour colour {};
+        Vec4 uvData {};
         Vec4 position {};
     };
 
@@ -118,7 +118,7 @@ private:
     Vulkan::Material textMaterial;
     Vulkan::VertexBuffer textVertexBuffer;
 
-    SArray<MSArray<MHArray<FontData>, MAX_TEXTURES>, MAX_LAYERS> characters;
+    SArray<MSArray<MHArray<FontVertex>, MAX_TEXTURES>, MAX_LAYERS> characters;
 
     // 2D grid
 

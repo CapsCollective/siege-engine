@@ -150,9 +150,9 @@ void Font::PopulateTextureAtlas(uint8_t* buffer)
         glyph.widthNormalised /= extent.width;
         glyph.heightNormalised /= extent.height;
 
-        Utils::Extent3D imageExtent {(uint32_t) glyph.width, (uint32_t) glyph.height, 1};
+        Utils::Extent3D imageExtent {(uint32_t) (glyph.width), (uint32_t) (glyph.height), 1};
 
-        size_t size = sizeof(uint8_t) * glyph.width * glyph.height;
+        size_t size = sizeof(uint8_t) * (glyph.width * glyph.height);
         if (size == 0) continue;
 
         texture.CopyToRegion(buffer + glyph.bufferOffset,

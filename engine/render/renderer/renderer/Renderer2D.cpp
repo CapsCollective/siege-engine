@@ -71,7 +71,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
     quadIndexBuffer = Vulkan::IndexBuffer(6, fontIndices);
 
     quadVertexBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
-    textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontData) * TEXT_VERTEX_BUFFER_SIZE);
+    textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
 }
 
 void Renderer2D::DrawQuad(const Vec2 position,
@@ -93,7 +93,7 @@ void Renderer2D::DrawQuad(const Vec2 position,
         layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
 
     layerQuads[texIndex].Append(
-        {Graphics::CalculateTransform3D(Vec3(position.x + scale.x, position.y + scale.y, zIndex),
+        {Graphics::CalculateTransform3D(Vec3(position.x + scale.x, position.y + scale.y, 1.f),
                                         {0.f, 0.f, rotation},
                                         scale),
          ToFColour(colour),
@@ -115,7 +115,7 @@ void Renderer2D::DrawText2D(const char* const text,
     auto& layerQuads = characters[zIndex];
 
     if (texIndex >= layerQuads.Count())
-        layerQuads[texIndex] = MHArray<FontData>(MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
+        layerQuads[texIndex] = MHArray<FontVertex>(MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
 
     auto& fontTexts = layerQuads[texIndex];
 
@@ -136,11 +136,11 @@ void Renderer2D::DrawText2D(const char* const text,
         Vec4 coordinates = {x + glyph.bearingX, y - (height + yOffset), glyph.width, height};
 
         fontTexts.Append(
-            {Graphics::CalculateTransform3D(Vec3(position.x, position.y + scale.y, zIndex),
+            {Graphics::CalculateTransform3D(Vec3(position.x, position.y + scale.y, 1.f),
                                             {0.f, 0.f, rotation},
                                             scale),
-             {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              ToFColour(colour),
+             {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              coordinates / textScale});
 
         x += glyph.advance >> 6;
@@ -199,7 +199,7 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
         uint64_t vertexBufferOffset =
             (index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
 
-        textVertexBuffer.Update(sizeof(FontData),
+        textVertexBuffer.Update(sizeof(FontVertex),
                                 quadArr.Data(),
                                 quadArr.Count(),
                                 vertexBufferOffset);
