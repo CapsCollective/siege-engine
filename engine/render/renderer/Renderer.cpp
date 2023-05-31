@@ -41,7 +41,7 @@ Renderer::Renderer(Window& window) : window {window}
     DescriptorPool::BuildPool();
 
     Renderer3D::Initialise();
-    Renderer2D::Initialise();
+    renderer2D.Initialise("globalData");
 
     commandBuffers = Vulkan::CommandBuffer(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 }
@@ -51,23 +51,21 @@ Renderer::~Renderer()
     CC_LOG_INFO("Destroying renderer")
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
-    Renderer2D::DestroyRenderer2D();
     Statics::Free();
 }
 
 void Renderer::DrawFrame()
 {
-    Renderer2D::GlobalData global2DData = {projection};
-
-    Renderer2D::Render(commandBuffers, global2DData, currentFrameIndex);
     Renderer3D::Render(currentFrameIndex, commandBuffers, projection);
+    renderer2D.Render(commandBuffers, sizeof(uiCamera), &uiCamera, currentFrameIndex);
 }
 
 void Renderer::RecreateSwapChain()
 {
     ClearDeviceQueue();
     auto extent = window.GetExtent();
-    while (extent.width == 0 || extent.height == 0)
+
+    while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
     {
         extent = window.GetExtent();
         window.WaitEvents();
@@ -85,7 +83,7 @@ void Renderer::RecreateSwapChain()
     if (!swapchain.IsSameSwapFormat(oldImageFormat, oldDepthFormat))
     {
         Renderer3D::RecreateMaterials();
-        Renderer2D::RecreateMaterials();
+        renderer2D.RecreateMaterials();
     }
 }
 
@@ -97,7 +95,7 @@ bool Renderer::StartFrame()
 
     auto result = swapchain.AcquireNextImage(&currentImageIndex);
 
-    if (result == Vulkan::Utils::ERROR_OUT_OF_DATE)
+    if (result == Vulkan::Utils::ERROR_OUT_OF_DATE || !window.IsVisible())
     {
         RecreateSwapChain();
         return false;
@@ -115,10 +113,41 @@ bool Renderer::StartFrame()
     return true;
 }
 
+void Renderer::DrawQuad(const Vec2 position,
+                        const Vec2 scale,
+                        const IColour colour,
+                        float rotation,
+                        const uint8_t zIndex,
+                        Vulkan::Texture2D* texture)
+{
+    renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
+}
+
+void Renderer::DrawText2D(const char* const text,
+                          Vulkan::Font& font,
+                          const Vec2 position,
+                          const Vec2 scale,
+                          float rotation,
+                          const IColour colour,
+                          const uint8_t zIndex)
+{
+    renderer2D.DrawText2D(text, position, scale, font, colour, rotation, zIndex);
+}
+
+void Renderer::DrawGrid2D(float spacing,
+                          const Vec3& lineColouring,
+                          float scale,
+                          float lineWidth,
+                          float fadeFactor,
+                          float cellMultiple)
+{
+    renderer2D.DrawGrid2D(spacing, lineColouring, scale, lineWidth, fadeFactor, cellMultiple);
+}
+
 void Renderer::EndFrame()
 {
-    Renderer2D::Update();
     Renderer3D::Update();
+    renderer2D.Update();
 
     CC_ASSERT(isFrameStarted, "Can't end frame while frame is not in progress!")
 
@@ -134,7 +163,7 @@ void Renderer::EndFrame()
 
     auto result = swapchain.SubmitCommandBuffers(commandBuffers, currentImageIndex);
 
-    if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized())
+    if (result == Vulkan::Utils::ERROR_RESIZED || window.WasResized() || !window.IsVisible())
     {
         window.ResetWindowResized();
         RecreateSwapChain();
@@ -144,7 +173,7 @@ void Renderer::EndFrame()
     currentFrameIndex = (currentFrameIndex + 1) % Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT;
 
     Renderer3D::Flush();
-    Renderer2D::Flush();
+    renderer2D.Flush();
 }
 
 void Renderer::BeginSwapChainRenderPass()

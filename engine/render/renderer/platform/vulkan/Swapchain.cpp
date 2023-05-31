@@ -120,13 +120,15 @@ Utils::Result Swapchain::AcquireNextImage(uint32_t* imageIndex)
     // Wait for the image of the current frame to become available
     inFlightFences.Wait(currentFrame);
 
+    auto result = vkAcquireNextImageKHR(device,
+                                        swapchain,
+                                        std::numeric_limits<uint64_t>::max(),
+                                        imageAvailableSemaphores[currentFrame],
+                                        VK_NULL_HANDLE,
+                                        imageIndex);
+
     // Once available, Add it to our available images semaphor for usage
-    return static_cast<Utils::Result>(vkAcquireNextImageKHR(device,
-                                                            swapchain,
-                                                            std::numeric_limits<uint64_t>::max(),
-                                                            imageAvailableSemaphores[currentFrame],
-                                                            VK_NULL_HANDLE,
-                                                            imageIndex));
+    return static_cast<Utils::Result>(result);
 }
 
 void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,

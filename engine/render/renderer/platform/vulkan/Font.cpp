@@ -83,7 +83,7 @@ void Font::Swap(Font& other)
     other.texture = std::move(tmpTexture);
 }
 
-Utils::Extent2D Font::PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer)
+Utils::Extent2DF Font::PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer)
 {
     float x {0.f}, y {0.f}, rowHeight {0.f}, maxX {0.f}, maxY {0.f};
 
@@ -96,39 +96,43 @@ Utils::Extent2D Font::PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding,
 
         auto glyph = fontFace->glyph;
 
-        uint32_t width {glyph->bitmap.width}, height {glyph->bitmap.rows};
+        float width {CAST_F(glyph->bitmap.width)}, height {CAST_F(glyph->bitmap.rows)};
 
         bool exceededWidth = (width + x) >= MAX_ATLAS_WIDTH;
 
-        float atlasX = x * !exceededWidth;
-        float atlasY = y + (exceededWidth * rowHeight);
+        float atlasX = (x * !exceededWidth);
+        float atlasY = (y + (exceededWidth * rowHeight));
 
-        glyphs[c] = {atlasX + padding.width,
-                     atlasY + padding.height,
-                     CAST_F(width),
-                     CAST_F(height),
-                     CAST_F(width),
-                     CAST_F(height),
+        glyphs[c] = {atlasX,
+                     atlasY,
+                     width,
+                     height,
+                     width,
+                     height,
                      CAST_F(glyph->bitmap_left),
                      CAST_F(glyph->bitmap_top),
                      glyph->advance.x,
                      offset};
 
-        rowHeight = (height > rowHeight) * height + (height <= rowHeight) * rowHeight;
+        rowHeight =
+            ((height > rowHeight) * height + (height <= rowHeight) * rowHeight) + padding.height;
 
-        x = ((!exceededWidth * (width + x)) + (exceededWidth * width)) + padding.width;
-        y += (exceededWidth * (rowHeight + padding.height));
+        x = ((!exceededWidth * (width + x)) + (exceededWidth * width)) + glyph->bitmap_left +
+            padding.width;
+        y += (exceededWidth * (rowHeight)) + glyph->bitmap_top + padding.height;
 
-        maxX = (x > maxX) * x + (x <= maxX) * maxX;
-        maxY = (y > maxY) * (y + rowHeight + padding.height) + (y <= maxY) * maxY;
+        maxX = ((x > maxX) * x + (x <= maxX) * maxX);
+        maxY = ((y > maxY) * (y + rowHeight) + (y <= maxY) * maxY);
 
         auto size = sizeof(uint8_t) * width * height;
+
+        x += (glyph->advance.x >> 6) + padding.width;
 
         memcpy(buffer + offset, glyph->bitmap.buffer, size);
         offset += size;
     }
 
-    return {(uint32_t) maxX + padding.width, (uint32_t) maxY + padding.height};
+    return {maxX + padding.width, maxY + padding.height};
 }
 
 void Font::PopulateTextureAtlas(uint8_t* buffer)
@@ -138,15 +142,17 @@ void Font::PopulateTextureAtlas(uint8_t* buffer)
         auto& glyph = glyphs[c];
         float xPos {glyph.uvxMin}, yPos {glyph.uvyMin};
 
-        glyph.uvxMin /= CAST_F(extent.width);
-        glyph.uvyMin /= CAST_F(extent.height);
+        // TODO:  Add an extent type which uses floating point numbers
 
-        glyph.widthNormalised /= CAST_F(extent.width);
-        glyph.heightNormalised /= CAST_F(extent.height);
+        glyph.uvxMin /= extent.width;
+        glyph.uvyMin /= extent.height;
 
-        Utils::Extent3D imageExtent {(uint32_t) glyph.width, (uint32_t) glyph.height, 1};
+        glyph.widthNormalised /= extent.width;
+        glyph.heightNormalised /= extent.height;
 
-        size_t size = sizeof(uint8_t) * glyph.width * glyph.height;
+        Utils::Extent3D imageExtent {(uint32_t) (glyph.width), (uint32_t) (glyph.height), 1};
+
+        size_t size = sizeof(uint8_t) * (glyph.width * glyph.height);
         if (size == 0) continue;
 
         texture.CopyToRegion(buffer + glyph.bufferOffset,

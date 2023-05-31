@@ -96,8 +96,10 @@ public:
          */
         VertexBinding& AddFloatVec2Attribute();
 
-        VertexBinding& AddU32Attribute();
-
+        /**
+         * Specifies a 4 dimensional matrix vertex attribute
+         * @return a reference to the VertexBinding type
+         */
         VertexBinding& AddMat4Attribute();
 
         static constexpr uint64_t MAX_VERTEX_ATTRIBUTES {10};
@@ -106,6 +108,10 @@ public:
         uint32_t stride {0};
     };
 
+    /**
+     * A struct representing a push constant
+     * @param size the size of the push constant
+     */
     struct PushConstant
     {
         uint32_t size {0};
@@ -215,14 +221,6 @@ public:
         Builder& WithGlobalData3DUniform(uint32_t set = 0);
 
         /**
-         * Adds a uniform type with Global 2D per-scene data. In this case, the struct stores
-         * camera information
-         * @param set the descriptorSet the uniform is stored in
-         * @return a reference to the current Builder object
-         */
-        Builder& WithGlobalData2DUniform(uint32_t set = 0);
-
-        /**
          * Adds a storage buffer type with all configured 3D transforms
          * @param set the descriptorSet the storage buffer is stored in
          * @param size the number of elements in the buffer
@@ -238,6 +236,11 @@ public:
          */
         Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
 
+        /**
+         * Specifies that this shader uses a push constant
+         * @param size the size of the push constant
+         * @return a reference to the current Builder object
+         */
         Builder& WithPushConstant(uint64_t size);
 
         /**
@@ -247,8 +250,20 @@ public:
          */
         Builder& WithVertexTopology(Utils::PipelineTopology topology);
 
+        /**
+         * Specifies that this shader uses a texture
+         * @param name the name of the texture
+         * @param set the descriptor set to store the texture in
+         * @param count the number of textures to be stored
+         * @return a reference to the current Builder object
+         */
         Builder& WithTexture(const String& name, uint32_t set = 1, uint32_t count = 1);
 
+        /**
+         * Sets a default texture to use when none are specified
+         * @param texture the default texture
+         * @return a reference to the current Builder object
+         */
         Builder& WithDefaultTexture(const Texture2D* texture);
 
         /**

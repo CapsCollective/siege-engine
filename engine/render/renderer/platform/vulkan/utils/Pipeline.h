@@ -178,6 +178,18 @@ VkPipelineShaderStageCreateInfo CreateVertexShaderStage(VkShaderModule shaderMod
 VkPipelineShaderStageCreateInfo CreateFragmentShaderStage(VkShaderModule shaderModule);
 
 /**
+ * Creates a new depth stencil state info struct for the pipeline
+ * @param isWritingDepth specifies if the pipeline is writing to the depth buffer
+ * @return a new VkPipelineDepthStencilStateCreateInfo with the configured data
+ */
+inline constexpr VkPipelineDepthStencilStateCreateInfo CreateStencilState(bool isWritingDepth)
+{
+    auto depthWriteState = Utils::Pipeline::defaultStencilCreateState;
+    depthWriteState.depthWriteEnable = isWritingDepth;
+    return depthWriteState;
+}
+
+/**
  * Creates a vertex input state object for the Pipeline
  * @param attributeCount the number of vertex attributes expected by the Pipeline
  * @param bindingCount the number of bindings expected by the Pipeline

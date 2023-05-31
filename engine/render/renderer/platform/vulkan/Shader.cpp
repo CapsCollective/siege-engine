@@ -13,7 +13,6 @@
 #include <fstream>
 
 #include "render/renderer/model/Model.h"
-#include "render/renderer/renderer/Renderer2D.h"
 #include "render/renderer/renderer/Renderer3D.h"
 #include "utils/ShaderModule.h"
 
@@ -46,13 +45,6 @@ Shader::VertexBinding& Shader::VertexBinding::AddFloatVec2Attribute()
     return *this;
 }
 
-Shader::VertexBinding& Shader::VertexBinding::AddU32Attribute()
-{
-    attributes.Append({stride, Utils::VertexAttributeType::VERTEX_UINT_32, inputRate});
-    stride += sizeof(uint32_t);
-    return *this;
-}
-
 Shader::VertexBinding& Shader::VertexBinding::AddMat4Attribute()
 {
     return AddFloatVec4Attribute()
@@ -64,11 +56,6 @@ Shader::VertexBinding& Shader::VertexBinding::AddMat4Attribute()
 Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)
 {
     return WithUniform<Siege::Renderer3D::GlobalData>("globalData", set);
-}
-
-Shader::Builder& Shader::Builder::WithGlobalData2DUniform(uint32_t set)
-{
-    return WithUniform<Siege::Renderer2D::GlobalData>("globalData", set);
 }
 
 Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t size)

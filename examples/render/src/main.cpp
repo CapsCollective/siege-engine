@@ -49,6 +49,7 @@ int main()
     Siege::Renderer renderer(window);
 
     Camera camera;
+    Camera camera2;
 
     // Load textures
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
@@ -123,10 +124,12 @@ int main()
     objects3D[4].SetColour({128, 0, 0, 255});
 
     camera.SetPosition({0.f, -1.f, -2.5f});
+    camera2.SetPosition({0.f, -1.f, -2.5f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
+    bool isPanelOpen {false};
 
     while (!window.WindowShouldClose())
     {
@@ -137,6 +140,7 @@ int main()
         currentTime = newTime;
 
         auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
+        auto blink = std::clamp<float>(abs(sin(glfwGetTime() * 2.f)), 0.001f, 1.f);
 
         window.Update();
 
@@ -148,7 +152,13 @@ int main()
 
         float aspect = renderer.GetAspectRatio();
 
+        float panelWidth = window.GetWidth();
+        float panelHeight = 50.f;
+
         camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
+
+        camera2
+            .UpdateOrthographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
 
         if (inputEnabled)
         {
@@ -156,10 +166,12 @@ int main()
         }
 
         renderer.SetProjection(camera.GetProjection(), camera.GetView());
+        renderer.SetUiProjection(camera2.GetProjection(), camera2.GetView());
 
         if (!renderer.StartFrame()) continue;
 
         camera.Update();
+        camera2.Update();
 
         for (auto it = objects3D.CreateFIterator(); it; ++it)
         {
@@ -181,22 +193,23 @@ int main()
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
-        Siege::Renderer2D::DrawQuad({-1.95f, -1.5f},
+        Siege::Renderer3D::DrawQuad({-1.95f, -1.5f, 2.95f},
                                     {1.f, .5f},
-                                    {255, 255, 255, 255},
-                                    0.f,
-                                    2.95f,
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::White,
                                     &aryehthulu);
-        Siege::Renderer2D::DrawQuad({0.f, -1.5f}, {.5f, .5f}, {0, 255, 0, 255}, 0.f, 2.95f);
-        Siege::Renderer2D::DrawQuad({2.f, -1.5f},
+        Siege::Renderer3D::DrawQuad({0.f, -1.5f, 2.95f},
                                     {.5f, .5f},
-                                    {255, 255, 255, 255},
-                                    0.f,
-                                    2.95f,
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::Green);
+        Siege::Renderer3D::DrawQuad({2.f, -1.5f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero,
+                                    Siege::IColour::White,
                                     &cappy);
 
         Siege::Renderer3D::DrawText3D("Random Vase",
-                                      {0.f, -.85f, -.51f},
+                                      {0.f, -.85f, -.5175f},
                                       {},
                                       {.075f, .075f},
                                       Siege::IColour::White,
@@ -219,50 +232,85 @@ int main()
                                       {.1f, .1f},
                                       Siege::IColour::Red,
                                       &pixel);
-
         Siege::Renderer3D::DrawText3D("Wow, isn't it great that we can finally render text?",
-                                      {2.99f, -3.f, 0.f},
+                                      {2.98f, -3.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("It only took you a few months...",
-                                      {2.99f, -2.4f, 0.f},
+                                      {2.98f, -2.4f, 0.f},
                                       {0.f, 1.5707963268f, 0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Red,
                                       &pixel);
         Siege::Renderer3D::DrawText3D("Yeah but it was like... hard",
-                                      {2.99f, -2.f, 0.f},
+                                      {2.98f, -2.f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("I had to learn instanced rendering",
-                                      {2.99f, -1.5f, 0.f},
+                                      {2.98f, -1.5f, 0.f},
                                       {0.f, 1.5707963268f, 0.f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("Which, btw, is not that",
-                                      {2.99f, -1.f, 0.f},
+                                      {2.98f, -1.f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Green,
                                       &meslo);
         Siege::Renderer3D::DrawText3D("Easy",
-                                      {2.99f, -1.2f, -1.7f},
+                                      {2.98f, -1.2f, -1.7f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.175f, .175f},
                                       Siege::IColour::Blue,
                                       &pixel);
-
         Siege::Renderer3D::DrawText3D("But hey, at least it's done, right?",
-                                      {2.99f, -.5f, 0.f},
+                                      {2.98f, -.5f, 0.f},
                                       {0.f, 1.5707963268f, -0.1f},
                                       {.17f, .17f},
                                       Siege::IColour::White,
                                       &pixel);
+
+        if (Siege::Input::IsKeyJustPressed(KEY_BACKTICK)) isPanelOpen = !isPanelOpen;
+
+        if (isPanelOpen)
+        {
+            renderer.DrawQuad({0.f, -1.f},
+                              {panelWidth / 2, panelHeight},
+                              Siege::IColour::Black,
+                              0,
+                              0);
+
+            if (blink > 0.5)
+            {
+                renderer.DrawText2D("_",
+                                    pixel,
+                                    {25.f, 25.f},
+                                    {50.f, 50.f},
+                                    0.f,
+                                    Siege::IColour::White,
+                                    1);
+            }
+
+            renderer.DrawGrid2D(100.f, {.2f, .2f, .2f}, window.GetDPI());
+        }
+
+        renderer.DrawQuad({0, window.GetHeight() - 100.f},
+                          {50, 50},
+                          Siege::IColour::White,
+                          0,
+                          0,
+                          &cappy);
+        renderer.DrawQuad({window.GetWidth() - 200.f, window.GetHeight() - 100.f},
+                          {100, 50},
+                          Siege::IColour::White,
+                          0,
+                          0,
+                          &aryehthulu);
 
         renderer.EndFrame();
     }

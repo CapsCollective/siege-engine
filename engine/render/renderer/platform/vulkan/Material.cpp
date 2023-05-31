@@ -22,9 +22,10 @@
 
 namespace Siege::Vulkan
 {
-Material::Material(Shader vertShader, Shader fragShader) :
+Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
     vertexShader {std::move(vertShader)},
-    fragmentShader {std::move(fragShader)}
+    fragmentShader {std::move(fragShader)},
+    isWritingDepth {isWritingDepth}
 {
     using Vulkan::Context;
     using namespace Vulkan::Utils::Descriptor;
@@ -40,7 +41,6 @@ Material::Material(Shader vertShader, Shader fragShader) :
 
     auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
 
-    // TODO: Make a standalone buffer class
     // Allocate buffer which can store all the data we need
     Buffer::CreateBuffer(bufferSize,
                          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -244,10 +244,10 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
                      Utils::ToVkImageLayout(defaultTexture2DInfo.imageInfo.layout)});
             }
         }
-
-        if (shader.HasPushConstant())
-            pushConstant = {shader.GetPushConstant().size, shader.GetShaderType()};
     }
+
+    if (shader.HasPushConstant())
+        pushConstant = {shader.GetPushConstant().size, shader.GetShaderType()};
 }
 
 void Material::Bind(const CommandBuffer& commandBuffer)
@@ -278,6 +278,7 @@ void Material::Recreate()
                            .WithPushConstant(pushConstant.size, pushConstant.type)
                            .WithVertexShader(&vertexShader)
                            .WithFragmentShader(&fragmentShader)
+                           .WithDepthWriting(isWritingDepth)
                            .WithProperties(layouts)
                            .Build();
 }
@@ -408,6 +409,7 @@ void Material::Swap(Material& other)
     auto tmpBufferInfos = std::move(bufferInfos);
     auto tmpTexture2DInfos = std::move(texture2DInfos);
     auto tmpPushConstant = pushConstant;
+    auto tmpIsWritingDepth = isWritingDepth;
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
@@ -420,6 +422,7 @@ void Material::Swap(Material& other)
     bufferInfos = std::move(other.bufferInfos);
     texture2DInfos = std::move(other.texture2DInfos);
     pushConstant = other.pushConstant;
+    isWritingDepth = other.isWritingDepth;
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
@@ -432,5 +435,6 @@ void Material::Swap(Material& other)
     other.bufferInfos = std::move(tmpBufferInfos);
     other.texture2DInfos = std::move(tmpTexture2DInfos);
     other.pushConstant = tmpPushConstant;
+    other.isWritingDepth = tmpIsWritingDepth;
 }
 } // namespace Siege::Vulkan

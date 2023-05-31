@@ -219,6 +219,12 @@ struct Offset2D
     int32_t height {0};
 };
 
+struct Extent2DF
+{
+    float width {0};
+    float height {0};
+};
+
 struct Image2DConfig
 {
     ImageFormat format;

@@ -20,6 +20,7 @@ DebugRenderer3D Renderer3D::debugRenderer;
 BillboardRenderer Renderer3D::billboardRenderer;
 LightRenderer Renderer3D::lightRenderer;
 TextRenderer Renderer3D::textRenderer;
+QuadRenderer3D Renderer3D::quadRenderer3D;
 
 Renderer3D::GlobalData Renderer3D::global3DData;
 
@@ -32,13 +33,15 @@ void Renderer3D::Initialise()
     billboardRenderer.Initialise("globalData");
     lightRenderer.Initialise("globalData");
     textRenderer.Initialise("globalData");
+    quadRenderer3D.Initialise("globalData");
 
     gridMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
             .FromVertexShader("assets/shaders/grid.vert.spv")
             .WithGlobalData3DUniform()
             .Build(),
-        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build());
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build(),
+        false);
 }
 
 void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour)
@@ -84,6 +87,15 @@ void Renderer3D::DrawText3D(const char* text,
     textRenderer.DrawFont(text, position, rotation, scale, colour, font);
 }
 
+void Renderer3D::DrawQuad(const Vec3 position,
+                          const Vec2 scale,
+                          const Vec3 rotation,
+                          IColour colour,
+                          Vulkan::Texture2D* texture)
+{
+    quadRenderer3D.DrawQuad(position, scale, rotation, colour, texture);
+}
+
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
                         const CameraData& cameraData)
@@ -100,6 +112,7 @@ void Renderer3D::Render(uint32_t currentFrame,
     lightRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
     debugRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
     billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    quadRenderer3D.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
     textRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
 }
 
@@ -122,6 +135,7 @@ void Renderer3D::RecreateMaterials()
     debugRenderer.RecreateMaterials();
     billboardRenderer.RecreateMaterials();
     lightRenderer.RecreateMaterials();
+    quadRenderer3D.RecreateMaterials();
     textRenderer.RecreateMaterials();
 
     gridMaterial.Recreate();
@@ -133,6 +147,7 @@ void Renderer3D::Flush()
     debugRenderer.Flush();
     billboardRenderer.Flush();
     lightRenderer.Flush();
+    quadRenderer3D.Flush();
     textRenderer.Flush();
 }
 
@@ -141,6 +156,7 @@ void Renderer3D::DestroyRenderer3D()
     debugRenderer.Destroy();
     billboardRenderer.Destroy();
     lightRenderer.Destroy();
+    quadRenderer3D.Free();
     textRenderer.Free();
 
     gridMaterial.~Material();
@@ -148,6 +164,7 @@ void Renderer3D::DestroyRenderer3D()
 
 void Renderer3D::Update()
 {
+    quadRenderer3D.Update();
     textRenderer.Update();
 }
 } // namespace Siege

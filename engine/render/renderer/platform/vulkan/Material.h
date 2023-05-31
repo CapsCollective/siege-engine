@@ -35,6 +35,8 @@ namespace Siege::Vulkan
  * remaking every them every frame
  * @param texture2DInfos a list of texture 2D rendering infos used in textures
  * @param textureIds a list of texture IDs (used for checking the existence of textures)
+ * @param isWritingDepth a boolean specifying if the material pipeline is writing to the depth
+ * buffer
  */
 class Material
 {
@@ -50,8 +52,9 @@ public:
      * A constructor for the material which expects a vertex and fragment shader at minimum
      * @param vertShader the vertex shader to be used by the Material
      * @param fragShader the fragment shader to be used by the Material
+     * @param isWritingDepth specifies if the material pipeline is writing to the depth buffer
      */
-    Material(Shader vertShader, Shader fragShader);
+    Material(Shader vertShader, Shader fragShader, bool isWritingDepth = true);
     /**
      * A move constructor for the Material class
      * @param other the Material to be moved
@@ -63,6 +66,9 @@ public:
      */
     ~Material();
 
+    /**
+     * Frees the memory held by the material
+     */
     void Free();
 
     /**
@@ -150,6 +156,9 @@ private:
         MSArray<Property, 10> properties;
     };
 
+    /**
+     * A struct specifying a push constant type
+     */
     struct PushConstant
     {
         uint32_t size {0};
@@ -274,6 +283,8 @@ private:
     // Texture data
     MSArray<VkDescriptorImageInfo, MAX_TEXTURES> texture2DInfos;
     MSArray<Hash::StringId, MAX_TEXTURES> textureIds;
+
+    bool isWritingDepth {true};
 };
 } // namespace Siege::Vulkan
 

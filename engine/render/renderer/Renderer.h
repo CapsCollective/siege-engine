@@ -40,6 +40,11 @@ public:
         projection = {projectionMat, viewMat};
     }
 
+    void SetUiProjection(const Mat4& projectionMat, const Mat4& viewMat)
+    {
+        uiCamera = {projectionMat, viewMat};
+    }
+
     bool StartFrame();
     void EndFrame();
 
@@ -52,6 +57,26 @@ public:
     {
         clearValue = {{r, g, b, a}};
     }
+
+    void DrawQuad(const Vec2 position,
+                  const Vec2 scale = {1.f, 1.f},
+                  const IColour colour = IColour::White,
+                  float rotation = 0.f,
+                  const uint8_t zIndex = 0,
+                  Vulkan::Texture2D* texture = nullptr);
+    void DrawText2D(const char* const text,
+                    Vulkan::Font& font,
+                    const Vec2 position,
+                    const Vec2 scale,
+                    float rotation = 0.f,
+                    const IColour colour = IColour::White,
+                    const uint8_t zIndex = 0);
+    void DrawGrid2D(float spacing,
+                    const Vec3& lineColouring,
+                    float scale,
+                    float lineWidth = 1.f,
+                    float fadeFactor = 0.5f,
+                    float cellMultiple = 2.f);
 
     static Vulkan::Context& Context()
     {
@@ -74,8 +99,6 @@ private:
     static Vulkan::CommandBuffer commandBuffers;
     static uint32_t currentFrameIndex;
 
-    Vulkan::Context context;
-
     // Make this adjustable in the window, not the renderer.
     VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
@@ -86,12 +109,15 @@ private:
 
     void DrawFrame();
 
+    Vulkan::Context context;
+    Renderer2D renderer2D;
+
     Window& window;
 
     uint32_t currentImageIndex;
     bool isFrameStarted {false};
-
     CameraData projection;
+    CameraData uiCamera;
 };
 } // namespace Siege
 

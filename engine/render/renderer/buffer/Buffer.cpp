@@ -24,6 +24,8 @@ void CreateBuffer(VkDeviceSize size,
                   VkBuffer& buffer,
                   VkDeviceMemory& bufferMemory)
 {
+    if (size == 0) return;
+
     VkBufferCreateInfo bufferInfo {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;

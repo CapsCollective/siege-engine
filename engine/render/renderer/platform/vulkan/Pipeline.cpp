@@ -47,6 +47,12 @@ Pipeline::Builder& Pipeline::Builder::WithFragmentShader(const Shader* fragShade
     return *this;
 }
 
+Pipeline::Builder& Pipeline::Builder::WithDepthWriting(bool state)
+{
+    usingDepthWrite = state;
+    return *this;
+}
+
 Pipeline::Builder& Pipeline::Builder::WithProperties(
     const MSArray<VkDescriptorSetLayout, 10>& layouts)
 {
@@ -83,6 +89,8 @@ Pipeline Pipeline::Builder::Build()
 
     auto dynamicStateCreateInfos =
         CreateDynamicStates(viewportCount + scissorCount, (VkDynamicState*) dynamicStates.Data());
+
+    auto depthState = Utils::Pipeline::CreateStencilState(usingDepthWrite);
 
     // Get shader number and their stages.
 
@@ -142,7 +150,7 @@ Pipeline Pipeline::Builder::Build()
     pipelineCreateInfo.pMultisampleState = &Utils::Pipeline::defaultMultiSampleState;
     pipelineCreateInfo.pColorBlendState = &Utils::Pipeline::defaultColourBlendStateCreate;
     pipelineCreateInfo.pDynamicState = &dynamicStateCreateInfos;
-    pipelineCreateInfo.pDepthStencilState = &Utils::Pipeline::defaultStencilCreateState;
+    pipelineCreateInfo.pDepthStencilState = &depthState;
 
     pipelineCreateInfo.layout = newPipeline.layout;
     pipelineCreateInfo.renderPass = renderPass->GetRenderPass();
@@ -186,6 +194,7 @@ void Pipeline::Bind(const CommandBuffer& commandBuffer)
 
 void Pipeline::BindSets(const CommandBuffer& commandBuffer, MSArray<VkDescriptorSet, 2> sets)
 {
+    if (sets.Count() == 0) return;
     vkCmdBindDescriptorSets(commandBuffer.Get(),
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
                             layout,

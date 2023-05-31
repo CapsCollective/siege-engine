@@ -149,7 +149,7 @@ private:
 
     // Constexpr declarations
     static constexpr uint32_t MAX_ATLAS_WIDTH {512};
-    static constexpr uint32_t MAX_ATLAS_HEIGHT {1024};
+    static constexpr uint32_t MAX_ATLAS_HEIGHT {8192};
 
     /**
      * Swaps the values of two Fonts
@@ -164,7 +164,7 @@ private:
      * @param buffer a buffer of pixels to copy data from the font face into
      * @return the width and height of the texture
      */
-    Utils::Extent2D PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer);
+    Utils::Extent2DF PopulateGlyphs(FontFace fontFace, Utils::Offset2D padding, uint8_t* buffer);
 
     /**
      * Populates the texture atlas with the glyphs collected from PopulateGlyphs
@@ -172,7 +172,7 @@ private:
      */
     void PopulateTextureAtlas(uint8_t* buffer);
 
-    Utils::Extent2D extent {};
+    Utils::Extent2DF extent {};
 
     SArray<Glyph, 256> glyphs;
 

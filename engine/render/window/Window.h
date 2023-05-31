@@ -43,9 +43,16 @@ public:
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
 
+        glfwSetWindowIconifyCallback(window, [](GLFWwindow* window, int iconified) {
+            auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+            windowContext->isVisible = !iconified;
+        });
+
         glfwSetWindowUserPointer(window, this);
         glfwSetWindowSizeCallback(window, ResizeCallback);
         glfwWindows++;
+
+        glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &DPI.width, &DPI.height);
     }
 
     Window() : Window("Window", 800, 600) {}
@@ -58,14 +65,36 @@ public:
 
     // Public Getters
 
-    const int& GetHeight() const
+    const int GetHeight() const
     {
         return height;
     }
 
-    const int& GetWidth() const
+    const int GetWidth() const
     {
         return width;
+    }
+
+    const bool IsVisible() const
+    {
+        return isVisible;
+    }
+
+    const uint32_t GetDPI() const
+    {
+        // NOTE(Aryeh): Need to find a better solution when the DPI in different axes are not the
+        // same
+        return DPI.width;
+    }
+
+    const uint32_t GetScaledWidth() const
+    {
+        return width * DPI.width;
+    }
+
+    const uint32_t GetScaledHeight() const
+    {
+        return height * DPI.height;
     }
 
     VkExtent2D GetExtent() const
@@ -120,6 +149,12 @@ public:
 
 private:
 
+    struct MonitorPixelScale
+    {
+        float width {0};
+        float height {0};
+    };
+
     static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
 
     // Private static variables
@@ -133,7 +168,10 @@ private:
 
     int width;
     int height;
-    bool wasResized = false;
+
+    MonitorPixelScale DPI {};
+    bool wasResized {false};
+    bool isVisible {true};
 };
 } // namespace Siege
 
