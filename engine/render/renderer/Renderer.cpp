@@ -14,6 +14,15 @@
 #include "platform/vulkan/utils/Types.h"
 #include "statics/Statics.h"
 
+// TODO look into why including via GLFW header + volk isn't defining this - JDM
+extern "C"
+{
+    GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
+                                             GLFWwindow* window,
+                                             const VkAllocationCallbacks* allocator,
+                                             VkSurfaceKHR* surface);
+}
+
 namespace Siege
 {
 Renderer* Renderer::instance {nullptr};
@@ -27,13 +36,12 @@ Renderer::Renderer(Window& window) : window {window}
     if (instance == nullptr) instance = this;
 
     auto createWindowSurface = [&window](VkInstance instance, VkSurfaceKHR* surface) -> bool {
-        return glfwCreateWindowSurface(instance, window.GetGlfwWindow(), nullptr, surface) == VK_SUCCESS;
+        return glfwCreateWindowSurface(instance, window.GetGlfwWindow(), nullptr, surface) ==
+               VK_SUCCESS;
     };
 
     auto extent = window.GetExtents();
-    context.Init({extent.width, extent.height},
-                 Window::GetRequiredExtensions,
-                 createWindowSurface);
+    context.Init({extent.width, extent.height}, Window::GetRequiredExtensions, createWindowSurface);
 
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);

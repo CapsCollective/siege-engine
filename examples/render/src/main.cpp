@@ -6,15 +6,15 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <render/input/Input.h>
 #include <render/renderer/Renderer.h>
 #include <render/renderer/model/Model.h>
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Mesh.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
-#include <render/window/Window.h>
 #include <utils/math/Float.h>
+#include <window/Input.h>
+#include <window/Window.h>
 
 #include <chrono>
 

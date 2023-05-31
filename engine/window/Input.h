@@ -11,7 +11,7 @@
 
 #include <map>
 
-#include "../window/Window.h"
+#include "Window.h"
 
 #define KEY_W GLFW_KEY_W
 #define KEY_A GLFW_KEY_A

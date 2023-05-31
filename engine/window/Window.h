@@ -9,14 +9,13 @@
 #ifndef SIEGE_ENGINE_RENDERER_WINDOW_H
 #define SIEGE_ENGINE_RENDERER_WINDOW_H
 
-#include <cstdint>
-
 #include <GLFW/glfw3.h>
 #include <utils/collections/HeapArray.h>
 
+#include <cstdint>
+
 namespace Siege
 {
-
 
 struct WindowExtents
 {
@@ -41,7 +40,10 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        if (!window) window = glfwCreateWindow(extents.width, extents.height, name, nullptr, nullptr);
+        if (!window)
+        {
+            window = glfwCreateWindow(extents.width, extents.height, name, nullptr, nullptr);
+        }
 
         if (glfwRawMouseMotionSupported())
         {

@@ -10,13 +10,13 @@
 #define SIEGE_ENGINE_RENDERER_H
 
 #include <utils/Logging.h>
+#include <window/Window.h>
 
 #include "descriptor/DescriptorPool.h"
 #include "lights/PointLight.h"
 #include "model/Model.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
-#include "render/window/Window.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 
