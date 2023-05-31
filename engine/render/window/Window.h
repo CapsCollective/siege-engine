@@ -13,19 +13,26 @@
 
 #include <cstdint>
 
-// Include Vulkan headers through GLFW
 #include <GLFW/glfw3.h>
 #include <utils/collections/HeapArray.h>
 
 namespace Siege
 {
+
+
+struct WindowExtents
+{
+    uint32_t width {0};
+    uint32_t height {0};
+};
+
 class Window
 {
 public:
 
     // 'Structors
 
-    Window(char const* name, int width, int height) : width(width), height(height)
+    Window(char const* name, WindowExtents extents) : extents(extents)
     {
         if (!glfwInitialised)
         {
@@ -36,7 +43,7 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        if (!window) window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+        if (!window) window = glfwCreateWindow(extents.width, extents.height, name, nullptr, nullptr);
 
         if (glfwRawMouseMotionSupported())
         {
@@ -55,7 +62,7 @@ public:
         glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &DPI.width, &DPI.height);
     }
 
-    Window() : Window("Window", 800, 600) {}
+    Window() : Window("Window", {800, 600}) {}
 
     ~Window()
     {
@@ -67,12 +74,12 @@ public:
 
     const int GetHeight() const
     {
-        return height;
+        return extents.height;
     }
 
     const int GetWidth() const
     {
-        return width;
+        return extents.width;
     }
 
     const bool IsVisible() const
@@ -89,17 +96,17 @@ public:
 
     const uint32_t GetScaledWidth() const
     {
-        return width * DPI.width;
+        return extents.width * DPI.width;
     }
 
     const uint32_t GetScaledHeight() const
     {
-        return height * DPI.height;
+        return extents.height * DPI.height;
     }
 
-    VkExtent2D GetExtent() const
+    WindowExtents GetExtents() const
     {
-        return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        return extents;
     }
 
     GLFWwindow* GetGlfwWindow()
@@ -166,8 +173,7 @@ private:
 
     static GLFWwindow* window;
 
-    int width;
-    int height;
+    WindowExtents extents;
 
     MonitorPixelScale DPI {};
     bool wasResized {false};

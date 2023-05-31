@@ -40,10 +40,7 @@ MHArray<const char*> Window::GetRequiredExtensions()
 void Window::ResizeCallback(GLFWwindow* windowPtr, int width, int height)
 {
     auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(windowPtr));
-
     windowContext->wasResized = true;
-
-    windowContext->width = width;
-    windowContext->height = height;
+    windowContext->extents = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 }
 } // namespace Siege

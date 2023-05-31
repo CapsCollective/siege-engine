@@ -26,7 +26,7 @@ Renderer::Renderer(Window& window) : window {window}
 
     if (instance == nullptr) instance = this;
 
-    auto extent = window.GetExtent();
+    auto extent = window.GetExtents();
 
     context.Init({extent.width, extent.height},
                  Window::GetRequiredExtensions,
@@ -63,11 +63,11 @@ void Renderer::DrawFrame()
 void Renderer::RecreateSwapChain()
 {
     ClearDeviceQueue();
-    auto extent = window.GetExtent();
+    auto extent = window.GetExtents();
 
     while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
     {
-        extent = window.GetExtent();
+        extent = window.GetExtents();
         window.WaitEvents();
     }
 

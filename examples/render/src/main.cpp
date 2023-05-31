@@ -40,7 +40,7 @@ int main()
 {
     WINDOWS_ATTACH_CONSOLE
 
-    Siege::Window window("Render Example", WIDTH, HEIGHT);
+    Siege::Window window("Render Example", {WIDTH, HEIGHT});
 
     window.DisableCursor();
 
