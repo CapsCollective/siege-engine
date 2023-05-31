@@ -9,8 +9,6 @@
 #ifndef SIEGE_ENGINE_RENDERER_WINDOW_H
 #define SIEGE_ENGINE_RENDERER_WINDOW_H
 
-#include <volk/volk.h>
-
 #include <cstdint>
 
 #include <GLFW/glfw3.h>
@@ -119,8 +117,6 @@ public:
     void Update();
 
     bool WindowShouldClose();
-
-    static bool CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
     bool WasResized() const
     {

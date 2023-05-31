@@ -25,7 +25,7 @@ Context::~Context()
 
 void Context::Init(const Utils::Extent2D& extent,
                    Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-                   GetWindowSurfaceCallBack windowSurfaceCallback)
+                   const GetWindowSurfaceCallBack& windowSurfaceCallback)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 

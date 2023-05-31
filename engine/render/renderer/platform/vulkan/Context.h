@@ -20,7 +20,7 @@ class Context
 {
 public:
 
-    typedef bool (*getSurfaceCallback)(VkInstance, Surface*);
+    typedef std::function<bool(VkInstance, VkSurfaceKHR*)> getSurfaceCallback;
     typedef getSurfaceCallback GetWindowSurfaceCallBack;
 
     Context() = default;
@@ -28,7 +28,7 @@ public:
 
     void Init(const Utils::Extent2D& extent,
               Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-              GetWindowSurfaceCallBack windowSurfaceCallback);
+              const GetWindowSurfaceCallBack& windowSurfaceCallback);
 
     static Context& Get();
 
