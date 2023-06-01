@@ -13,6 +13,7 @@
 #include "LogicalDevice.h"
 #include "PhysicalDevice.h"
 #include "Swapchain.h"
+#include "window/Window.h"
 
 namespace Siege::Vulkan
 {
@@ -20,15 +21,10 @@ class Context
 {
 public:
 
-    typedef std::function<bool(VkInstance, VkSurfaceKHR*)> getSurfaceCallback;
-    typedef getSurfaceCallback GetWindowSurfaceCallBack;
-
     Context() = default;
     ~Context();
 
-    void Init(const Utils::Extent2D& extent,
-              Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-              const GetWindowSurfaceCallBack& windowSurfaceCallback);
+    void Init(Window& window);
 
     static Context& Get();
 

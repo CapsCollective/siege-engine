@@ -19,11 +19,8 @@ class Instance
 {
 public:
 
-    typedef Siege::MHArray<const char*> (*surfaceCallback)(void);
-    typedef surfaceCallback GetSurfaceExtensionsCallback;
-
     Instance() = default;
-    Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback);
+    Instance(MHArray<const char*> surfaceExtensions);
     Instance(Instance&& other);
     ~Instance();
 

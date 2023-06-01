@@ -8,38 +8,37 @@
 
 #include "Input.h"
 
-#include <GLFW/glfw3.h>
-#include <utils/math/Float.h>
-
-static Siege::Window* windowPtr = nullptr;
-
-static Siege::Input::MouseCoordinates currentMouseCoordinates;
-
-static std::map<int, int> keyMap;
-
-static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    currentMouseCoordinates.x = static_cast<float>(xpos);
-    currentMouseCoordinates.y = static_cast<float>(ypos);
-}
-
-static GLFWwindow* AsGlfwWindow(void* window)
-{
-    return reinterpret_cast<GLFWwindow*>(window);
-}
+#include "window/platform/glfw/Input.h"
 
 namespace Siege
 {
-
-void Input::SetWindowPointer(Window* window)
+Glfw::Window Input::primaryWindow = nullptr;
+int Input::latestKey {-1};
+int Input::latestChar {-1};
+bool Input::keyUpdated {false};
+bool Input::charUpdated {false};
+std::map<int, int> Input::keyMap;
+void Input::SetInputWindowSource(Glfw::Window window)
 {
-    // TODO: Fail if inputted pointer is nullptr
-    windowPtr = window;
-    glfwSetCursorPosCallback(AsGlfwWindow(window->GetWindow()), GetCursorPositionCallback);
+    primaryWindow = window;
+
+    using namespace Glfw;
+
+    SetOnTextKeyPressedCallback(window, [](Window, unsigned int key) {
+        latestChar = key;
+        charUpdated = true;
+    });
+
+    SetOnKeyPressedCallback(window, [](Window, int key, int scancode, int action, int mod) {
+        latestKey = ((action == ACTION_PRESSED || action == ACTION_REPEAT) * key) +
+                    (action == ACTION_RELEASED * -1);
+        keyUpdated = true;
+    });
 }
+
 bool Input::IsKeyDown(int key)
 {
-    bool hasKey = (glfwGetKey(AsGlfwWindow(windowPtr->GetWindow()), key) == GLFW_PRESS);
+    bool hasKey = Glfw::IsKeyDown(primaryWindow, key);
 
     if (keyMap.find(key) != keyMap.end())
     {
@@ -54,8 +53,7 @@ bool Input::IsKeyDown(int key)
 
 bool Input::IsKeyJustPressed(int key)
 {
-    bool hasKey =
-        glfwGetKey(reinterpret_cast<GLFWwindow*>(windowPtr->GetWindow()), key) == GLFW_PRESS;
+    bool hasKey = Glfw::IsKeyDown(primaryWindow, key);
 
     bool keyEntryExists = keyMap.find(key) != keyMap.end();
     if (keyEntryExists && hasKey)
@@ -77,20 +75,22 @@ bool Input::IsKeyJustPressed(int key)
     return false;
 }
 
-const Input::MouseCoordinates& Input::GetCursorPosition()
+const MousePosition Input::GetCursorPosition()
 {
-    return currentMouseCoordinates;
+    return Glfw::GetMousePosition(primaryWindow);
 }
 
-Input::MouseCoordinates Input::GetNormalisedMousePosition()
+int Input::GetLatestKey()
 {
-    using namespace Siege::Float;
-    return {Float::Clamp(Float::Normalise(currentMouseCoordinates.x, 0, windowPtr->GetWidth()),
-                         -1.f,
-                         1.f),
-            Float::Clamp(Float::Normalise(currentMouseCoordinates.y, 0, windowPtr->GetHeight()),
-                         -1.f,
-                         1.f)};
+    auto key = (keyUpdated * latestKey) + (!keyUpdated * -1);
+    keyUpdated = false;
+    return key;
 }
 
+int Input::GetLatestChar()
+{
+    auto key = (charUpdated * latestChar) + (!charUpdated * -1);
+    charUpdated = false;
+    return key;
+}
 } // namespace Siege

@@ -10,8 +10,6 @@
 
 #include "Renderer.h"
 
-#include <GLFW/glfw3.h>
-
 #include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
 #include "statics/Statics.h"
@@ -28,15 +26,9 @@ Renderer::Renderer(Window& window) : window {window}
 
     if (instance == nullptr) instance = this;
 
-    auto createWindowSurface = [&window](VkInstance instance, VkSurfaceKHR* surface) -> bool {
-        return glfwCreateWindowSurface(instance,
-                                       reinterpret_cast<GLFWwindow*>(window.GetWindow()),
-                                       nullptr,
-                                       surface) == VK_SUCCESS;
-    };
-
     auto extent = window.GetExtents();
-    context.Init({extent.width, extent.height}, Window::GetRequiredExtensions, createWindowSurface);
+
+    context.Init(window);
 
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);
@@ -129,7 +121,7 @@ void Renderer::DrawQuad(const Vec2 position,
     renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
 }
 
-void Renderer::DrawText2D(const char* const text,
+void Renderer::DrawText2D(const char* text,
                           Vulkan::Font& font,
                           const Vec2 position,
                           const Vec2 scale,

@@ -38,7 +38,8 @@ void Renderer2D::Initialise(const char* const globalDataName)
                      .FromFragmentShader("assets/shaders/Quad2DInstanced.frag.spv")
                      .WithTexture("texture", 0, 16)
                      .WithDefaultTexture(&defaultTexture)
-                     .Build());
+                     .Build(),
+                 false);
 
     textMaterial =
         Material(Shader::Builder()
@@ -56,7 +57,8 @@ void Renderer2D::Initialise(const char* const globalDataName)
                      .FromFragmentShader("assets/shaders/Text2DInstanced.frag.spv")
                      .WithTexture("texture", 0, 16)
                      .WithDefaultTexture(&defaultTexture)
-                     .Build());
+                     .Build(),
+                 false);
 
     gridMaterial =
         Material(Shader::Builder()

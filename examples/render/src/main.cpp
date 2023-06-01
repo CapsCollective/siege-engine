@@ -9,7 +9,6 @@
 #include <render/renderer/Renderer.h>
 #include <render/renderer/model/Model.h>
 #include <render/renderer/platform/vulkan/Material.h>
-#include <render/renderer/platform/vulkan/Mesh.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
 #include <utils/math/Float.h>
@@ -44,7 +43,7 @@ int main()
 
     window.DisableCursor();
 
-    Siege::Input::SetWindowPointer(&window);
+    Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
 
     Siege::Renderer renderer(window);
 
@@ -130,6 +129,12 @@ int main()
 
     bool inputEnabled = true;
     bool isPanelOpen {false};
+    bool isPanelJustOpened {false};
+
+    size_t panelInputCharCount = 1;
+
+    const size_t PANEL_INPUT_CHAR_MAX = 15;
+    Siege::String panelInput = "_";
 
     while (!window.WindowShouldClose())
     {
@@ -145,7 +150,7 @@ int main()
 
         window.Update();
 
-        if (Siege::Input::IsKeyJustPressed(KEY_ESCAPE))
+        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE))
         {
             inputEnabled = !inputEnabled;
             window.ToggleCursor(inputEnabled);
@@ -161,7 +166,7 @@ int main()
         camera2
             .UpdateOrthographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
 
-        if (inputEnabled)
+        if (inputEnabled && !isPanelOpen)
         {
             camera.MoveCamera(frameTime);
         }
@@ -186,7 +191,7 @@ int main()
         // TODO(Aryeh): This will eventually need to take in multiple lights.
         Siege::Renderer3D::DrawPointLight({0.0f, -1.f, -1.5f},
                                           0.05f,
-                                          {255, 0, 0, (uint8_t) (alpha * 255.f)},
+                                          {255, 0, 0, (uint8_t) 255.f},
                                           {0, 0, 255, 5});
 
         Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
@@ -276,7 +281,11 @@ int main()
                                       Siege::IColour::White,
                                       &pixel);
 
-        if (Siege::Input::IsKeyJustPressed(KEY_BACKTICK)) isPanelOpen = !isPanelOpen;
+        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_GRAVE_ACCENT))
+        {
+            isPanelOpen = !isPanelOpen;
+            isPanelJustOpened = isPanelOpen;
+        }
 
         if (isPanelOpen)
         {
@@ -284,20 +293,37 @@ int main()
                               {panelWidth / 2, panelHeight},
                               Siege::IColour::Black,
                               0,
-                              0);
+                              1);
 
-            if (blink > 0.5)
-            {
-                renderer.DrawText2D("_",
-                                    pixel,
-                                    {25.f, 25.f},
-                                    {50.f, 50.f},
-                                    0.f,
-                                    Siege::IColour::White,
-                                    1);
-            }
+            renderer.DrawText2D(panelInput.Str(),
+                                pixel,
+                                {25.f, 25.f},
+                                {50.f, 50.f},
+                                0.f,
+                                Siege::IColour::White,
+                                0);
 
             renderer.DrawGrid2D(100.f, {.2f, .2f, .2f}, window.GetDPI());
+
+            int latestChar = Siege::Input::GetLatestChar();
+
+            if (latestChar != -1 && panelInputCharCount < PANEL_INPUT_CHAR_MAX &&
+                !isPanelJustOpened)
+            {
+                panelInput[panelInputCharCount - 1] = static_cast<char>(latestChar);
+                panelInput[panelInputCharCount] += '_';
+                panelInputCharCount++;
+            }
+
+            if (Siege::Input::GetLatestKey() == Siege::KEY_BACKSPACE && panelInputCharCount > 1)
+            {
+                panelInput[panelInputCharCount - 1] = '\0';
+                panelInput[panelInputCharCount - 2] = '_';
+
+                panelInputCharCount--;
+            }
+
+            isPanelJustOpened = false;
         }
 
         renderer.DrawQuad({0, window.GetHeight() - 100.f},

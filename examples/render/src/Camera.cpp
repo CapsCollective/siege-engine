@@ -64,13 +64,13 @@ void Camera::MoveCamera(float deltaTime)
     const Siege::Vec3 upDir {0.f, -1.f, 0.f};
 
     Siege::Vec3 moveDir = Siege::Vec3::Zero;
-    if (Input::IsKeyDown(KEY_W)) moveDir += forwardDir;
-    if (Input::IsKeyDown(KEY_S)) moveDir -= forwardDir;
-    if (Input::IsKeyDown(KEY_A)) moveDir -= rightDir;
-    if (Input::IsKeyDown(KEY_D)) moveDir += rightDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_W)) moveDir += forwardDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_S)) moveDir -= forwardDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_A)) moveDir -= rightDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_D)) moveDir += rightDir;
 
-    if (Input::IsKeyDown(KEY_E)) moveDir += upDir;
-    if (Input::IsKeyDown(KEY_Q)) moveDir -= upDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_E)) moveDir += upDir;
+    if (Input::IsKeyDown(Siege::Key::KEY_Q)) moveDir -= upDir;
 
     float moveSpeed = 2.f;
 

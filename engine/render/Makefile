@@ -14,8 +14,7 @@ renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
 renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
 renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
-renderLibs := $(vendorDir)/zlib/build/lib/libz.a $(vendorDir)/libpng/build/libpng.a \
-$(vendorDir)/freetype/build/libfreetype.a
+renderLibs := $(vendorDir)/zlib/build/lib/libz.a $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
 
 # Set shader build vars
 vertSources := $(call rwildcard,assets/shaders,*.vert)
