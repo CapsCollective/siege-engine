@@ -10,18 +10,11 @@
 
 #include "Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 #include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
 #include "statics/Statics.h"
-
-// TODO look into why including via GLFW header + volk isn't defining this - JDM
-extern "C"
-{
-    GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
-                                             GLFWwindow* window,
-                                             const VkAllocationCallbacks* allocator,
-                                             VkSurfaceKHR* surface);
-}
 
 namespace Siege
 {
@@ -36,8 +29,10 @@ Renderer::Renderer(Window& window) : window {window}
     if (instance == nullptr) instance = this;
 
     auto createWindowSurface = [&window](VkInstance instance, VkSurfaceKHR* surface) -> bool {
-        return glfwCreateWindowSurface(instance, window.GetGlfwWindow(), nullptr, surface) ==
-               VK_SUCCESS;
+        return glfwCreateWindowSurface(instance,
+                                       reinterpret_cast<GLFWwindow*>(window.GetWindow()),
+                                       nullptr,
+                                       surface) == VK_SUCCESS;
     };
 
     auto extent = window.GetExtents();

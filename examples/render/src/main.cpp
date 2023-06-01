@@ -139,8 +139,9 @@ int main()
                 .count();
         currentTime = newTime;
 
-        auto alpha = std::clamp<float>(abs(sin(glfwGetTime())), 0.001f, 1.f);
-        auto blink = std::clamp<float>(abs(sin(glfwGetTime() * 2.f)), 0.001f, 1.f);
+        auto time = std::time(nullptr);
+        auto alpha = std::clamp<float>(abs(sin(time)), 0.001f, 1.f);
+        auto blink = std::clamp<float>(abs(sin(time * 2.f)), 0.001f, 1.f);
 
         window.Update();
 

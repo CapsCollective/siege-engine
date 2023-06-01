@@ -13,20 +13,20 @@
 
 #include "Window.h"
 
-#define KEY_W GLFW_KEY_W
-#define KEY_A GLFW_KEY_A
-#define KEY_S GLFW_KEY_S
-#define KEY_D GLFW_KEY_D
-#define KEY_Q GLFW_KEY_Q
-#define KEY_E GLFW_KEY_E
-#define KEY_UP GLFW_KEY_UP
-#define KEY_DOWN GLFW_KEY_DOWN
-#define KEY_RIGHT GLFW_KEY_RIGHT
-#define KEY_LEFT GLFW_KEY_LEFT
-#define KEY_BACKTICK GLFW_KEY_GRAVE_ACCENT
-#define KEY_LEFT_SHIFT GLFW_KEY_LEFT_SHIFT
+#define KEY_W 87
+#define KEY_A 65
+#define KEY_S 83
+#define KEY_D 68
+#define KEY_Q 81
+#define KEY_E 69
+#define KEY_UP 265
+#define KEY_DOWN 264
+#define KEY_RIGHT 262
+#define KEY_LEFT 263
+#define KEY_BACKTICK 96
+#define KEY_LEFT_SHIFT 340
 
-#define KEY_ESCAPE GLFW_KEY_ESCAPE
+#define KEY_ESCAPE 256
 
 namespace Siege
 {
@@ -45,15 +45,6 @@ public:
 
     static const MouseCoordinates& GetCursorPosition();
     static MouseCoordinates GetNormalisedMousePosition();
-
-private:
-
-    static Window* windowPtr;
-    static bool movedLastFrame;
-    static MouseCoordinates currentMouseCoordinates;
-    static std::map<int, int> keyMap;
-
-    static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 };
 } // namespace Siege
 

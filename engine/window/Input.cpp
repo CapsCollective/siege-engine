@@ -8,24 +8,38 @@
 
 #include "Input.h"
 
+#include <GLFW/glfw3.h>
 #include <utils/math/Float.h>
+
+static Siege::Window* windowPtr = nullptr;
+
+static Siege::Input::MouseCoordinates currentMouseCoordinates;
+
+static std::map<int, int> keyMap;
+
+static void GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    currentMouseCoordinates.x = static_cast<float>(xpos);
+    currentMouseCoordinates.y = static_cast<float>(ypos);
+}
+
+static GLFWwindow* AsGlfwWindow(void* window)
+{
+    return reinterpret_cast<GLFWwindow*>(window);
+}
 
 namespace Siege
 {
-Window* Input::windowPtr = nullptr;
-Input::MouseCoordinates Input::currentMouseCoordinates;
-
-std::map<int, int> Input::keyMap;
 
 void Input::SetWindowPointer(Window* window)
 {
     // TODO: Fail if inputted pointer is nullptr
     windowPtr = window;
-    glfwSetCursorPosCallback(window->GetGlfwWindow(), GetCursorPositionCallback);
+    glfwSetCursorPosCallback(AsGlfwWindow(window->GetWindow()), GetCursorPositionCallback);
 }
 bool Input::IsKeyDown(int key)
 {
-    bool hasKey = (glfwGetKey(windowPtr->GetGlfwWindow(), key) == GLFW_PRESS);
+    bool hasKey = (glfwGetKey(AsGlfwWindow(windowPtr->GetWindow()), key) == GLFW_PRESS);
 
     if (keyMap.find(key) != keyMap.end())
     {
@@ -40,7 +54,8 @@ bool Input::IsKeyDown(int key)
 
 bool Input::IsKeyJustPressed(int key)
 {
-    bool hasKey = glfwGetKey(windowPtr->GetGlfwWindow(), key) == GLFW_PRESS;
+    bool hasKey =
+        glfwGetKey(reinterpret_cast<GLFWwindow*>(windowPtr->GetWindow()), key) == GLFW_PRESS;
 
     bool keyEntryExists = keyMap.find(key) != keyMap.end();
     if (keyEntryExists && hasKey)
@@ -78,9 +93,4 @@ Input::MouseCoordinates Input::GetNormalisedMousePosition()
                          1.f)};
 }
 
-void Input::GetCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    currentMouseCoordinates.x = static_cast<float>(xpos);
-    currentMouseCoordinates.y = static_cast<float>(ypos);
-}
 } // namespace Siege

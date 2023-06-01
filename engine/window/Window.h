@@ -9,7 +9,6 @@
 #ifndef SIEGE_ENGINE_RENDERER_WINDOW_H
 #define SIEGE_ENGINE_RENDERER_WINDOW_H
 
-#include <GLFW/glfw3.h>
 #include <utils/collections/HeapArray.h>
 
 #include <cstdint>
@@ -29,90 +28,29 @@ public:
 
     // 'Structors
 
-    Window(char const* name, WindowExtents extents) : extents(extents)
-    {
-        if (!glfwInitialised)
-        {
-            glfwInit();
-            glfwInitialised = true;
-        }
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-        if (!window)
-        {
-            window = glfwCreateWindow(extents.width, extents.height, name, nullptr, nullptr);
-        }
-
-        if (glfwRawMouseMotionSupported())
-        {
-            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-        }
-
-        glfwSetWindowIconifyCallback(window, [](GLFWwindow* window, int iconified) {
-            auto windowContext = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-            windowContext->isVisible = !iconified;
-        });
-
-        glfwSetWindowUserPointer(window, this);
-        glfwSetWindowSizeCallback(window, ResizeCallback);
-        glfwWindows++;
-
-        glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &DPI.width, &DPI.height);
-    }
+    Window(char const* name, WindowExtents extents);
 
     Window() : Window("Window", {800, 600}) {}
 
-    ~Window()
-    {
-        glfwDestroyWindow(window);
-        if (--glfwWindows <= 0) glfwTerminate();
-    }
+    ~Window();
 
     // Public Getters
 
-    const int GetHeight() const
-    {
-        return extents.height;
-    }
+    int GetHeight() const;
 
-    const int GetWidth() const
-    {
-        return extents.width;
-    }
+    int GetWidth() const;
 
-    const bool IsVisible() const
-    {
-        return isVisible;
-    }
+    bool IsVisible() const;
 
-    const uint32_t GetDPI() const
-    {
-        // NOTE(Aryeh): Need to find a better solution when the DPI in different axes are not the
-        // same
-        return DPI.width;
-    }
+    uint32_t GetDPI() const;
 
-    const uint32_t GetScaledWidth() const
-    {
-        return extents.width * DPI.width;
-    }
+    uint32_t GetScaledWidth() const;
 
-    const uint32_t GetScaledHeight() const
-    {
-        return extents.height * DPI.height;
-    }
+    uint32_t GetScaledHeight() const;
 
-    WindowExtents GetExtents() const
-    {
-        return extents;
-    }
+    WindowExtents GetExtents() const;
 
-    GLFWwindow* GetGlfwWindow()
-    {
-        return window;
-    }
+    void* GetWindow();
 
     // Public Functions
 
@@ -120,37 +58,21 @@ public:
 
     bool WindowShouldClose();
 
-    bool WasResized() const
-    {
-        return wasResized;
-    }
+    void ResizeWindow(WindowExtents newExtents);
 
-    void ResetWindowResized()
-    {
-        wasResized = false;
-    }
+    bool WasResized() const;
 
-    void EnableCursor()
-    {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
+    void ResetWindowResized();
 
-    void DisableCursor()
-    {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+    void EnableCursor();
+
+    void DisableCursor();
 
     static MHArray<const char*> GetRequiredExtensions();
 
-    void ToggleCursor(bool state)
-    {
-        state ? DisableCursor() : EnableCursor();
-    }
+    void ToggleCursor(bool state);
 
-    void WaitEvents()
-    {
-        glfwWaitEvents();
-    }
+    void WaitEvents();
 
 private:
 
@@ -160,21 +82,14 @@ private:
         float height {0};
     };
 
-    static void ResizeCallback(GLFWwindow* windowPtr, int width, int height);
-
-    // Private static variables
-
-    static bool glfwInitialised;
-    static size_t glfwWindows;
-
     // Private variables
-
-    static GLFWwindow* window;
 
     WindowExtents extents;
 
     MonitorPixelScale DPI {};
+
     bool wasResized {false};
+
     bool isVisible {true};
 };
 } // namespace Siege
