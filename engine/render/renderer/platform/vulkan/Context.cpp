@@ -9,8 +9,8 @@
 
 #include "Context.h"
 
-#include <utils/Logging.h>
 #include <GLFW/glfw3.h>
+#include <utils/Logging.h>
 
 #include "render/renderer/Renderer.h"
 
