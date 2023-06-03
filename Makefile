@@ -42,6 +42,7 @@ export examplesDir := $(abspath examples)
 
 # Set top level targets
 export utilsLib := $(libDir)/libutils.a
+export windowLib := $(libDir)/libwindow.a
 export coreLib := $(libDir)/libcore.a
 export renderLib := $(libDir)/librender.a
 export testApp := $(binDir)/tests/build/app
@@ -60,10 +61,13 @@ all: testapp package-gameapp package-renderapp
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
+$(windowLib): buildFlags $(utilsLib)
+	"$(MAKE)" -C $(engineDir)/window CXXFLAGS="$(CXXFLAGS)"
+
 $(coreLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
-$(renderLib): buildFlags $(utilsLib)
+$(renderLib): buildFlags $(utilsLib) $(windowLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
 $(testApp): buildFlags $(utilsLib) $(coreLib)

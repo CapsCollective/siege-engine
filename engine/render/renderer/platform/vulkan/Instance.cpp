@@ -64,9 +64,9 @@
 
 namespace Siege::Vulkan
 {
-Instance::Instance(GetSurfaceExtensionsCallback surfaceExtensionsCallback)
+Instance::Instance(MHArray<const char*> surfaceExtensions)
 {
-    CreateInstance(surfaceExtensionsCallback());
+    CreateInstance(surfaceExtensions);
 
     SETUP_UTILS_MESSENGER
 }

@@ -9,6 +9,7 @@
 
 #include "Context.h"
 
+#include <GLFW/glfw3.h>
 #include <utils/Logging.h>
 
 #include "render/renderer/Renderer.h"
@@ -23,22 +24,24 @@ Context::~Context()
     vulkanInstance.~Instance();
 }
 
-void Context::Init(const Utils::Extent2D& extent,
-                   Instance::GetSurfaceExtensionsCallback surfaceExtensionsCallback,
-                   GetWindowSurfaceCallBack windowSurfaceCallback)
+void Context::Init(Window& window)
 {
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
-    vulkanInstance = Instance(surfaceExtensionsCallback);
+    vulkanInstance = Instance(window.GetRequiredExtensions());
+    glfwCreateWindowSurface(vulkanInstance.GetInstance(),
+                            reinterpret_cast<GLFWwindow*>(window.GetRawWindow()),
+                            nullptr,
+                            &surface);
 
-    CC_ASSERT(windowSurfaceCallback(vulkanInstance.GetInstance(), &surface),
-              "Unable to create window surface!")
+    CC_ASSERT(surface != VK_NULL_HANDLE, "Unable to create surface!")
 
     physicalDevice = PhysicalDevice(surface, vulkanInstance);
 
     logicalDevice = LogicalDevice(surface, physicalDevice);
 
-    swapchain = Swapchain(extent);
+    auto extents = window.GetExtents();
+    swapchain = Swapchain({extents.width, extents.height});
 }
 
 Context& Context::Get()

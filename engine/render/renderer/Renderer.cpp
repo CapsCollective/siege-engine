@@ -26,11 +26,9 @@ Renderer::Renderer(Window& window) : window {window}
 
     if (instance == nullptr) instance = this;
 
-    auto extent = window.GetExtent();
+    auto extent = window.GetExtents();
 
-    context.Init({extent.width, extent.height},
-                 Window::GetRequiredExtensions,
-                 Window::CreateWindowSurface);
+    context.Init(window);
 
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024);
     DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);
@@ -63,11 +61,11 @@ void Renderer::DrawFrame()
 void Renderer::RecreateSwapChain()
 {
     ClearDeviceQueue();
-    auto extent = window.GetExtent();
+    auto extent = window.GetExtents();
 
     while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
     {
-        extent = window.GetExtent();
+        extent = window.GetExtents();
         window.WaitEvents();
     }
 
@@ -123,7 +121,7 @@ void Renderer::DrawQuad(const Vec2 position,
     renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
 }
 
-void Renderer::DrawText2D(const char* const text,
+void Renderer::DrawText2D(const char* text,
                           Vulkan::Font& font,
                           const Vec2 position,
                           const Vec2 scale,

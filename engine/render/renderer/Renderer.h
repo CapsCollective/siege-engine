@@ -10,13 +10,13 @@
 #define SIEGE_ENGINE_RENDERER_H
 
 #include <utils/Logging.h>
+#include <window/Window.h>
 
 #include "descriptor/DescriptorPool.h"
 #include "lights/PointLight.h"
 #include "model/Model.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
-#include "render/window/Window.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 
@@ -64,7 +64,7 @@ public:
                   float rotation = 0.f,
                   const uint8_t zIndex = 0,
                   Vulkan::Texture2D* texture = nullptr);
-    void DrawText2D(const char* const text,
+    void DrawText2D(const char* text,
                     Vulkan::Font& font,
                     const Vec2 position,
                     const Vec2 scale,

@@ -14,8 +14,7 @@ renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
 renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
 renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
-renderLibs := $(vendorDir)/glfw/build/src/libglfw3.a $(vendorDir)/zlib/build/lib/libz.a \
-$(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
+renderLibs := $(vendorDir)/zlib/build/lib/libz.a $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
 
 # Set shader build vars
 vertSources := $(call rwildcard,assets/shaders,*.vert)
@@ -23,7 +22,7 @@ fragSources := $(call rwildcard,assets/shaders,*.frag)
 vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
 fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
-linkFlags += -l utils
+linkFlags += -l utils -l window
 
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
 				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image -I $(vendorDir)/zlib/build/include \
