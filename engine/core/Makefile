@@ -20,14 +20,11 @@ ifeq ($(platform), windows)
 else ifeq ($(platform), macos)
     libGenDir := src
 endif
-raylibIncludeDir := $(vendorDir)/include/raylib
-raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 
 # Build the static library
-$(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
+$(coreLib): $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
-	$(RM) $(call platformpth, $(coreLib))
-	$(call COMBINE_LIBS, $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a, $(coreObjects), $(libDir), core)
+	ar -crs $(coreLib) $(coreObjects)
 
 # Add all rules from dependency files
 -include $(coreDepends)
@@ -35,16 +32,4 @@ $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 # Compile object files to the bin directory
 $(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
-	$(CXX) -MMD -MP -c $(compileFlags) -I $(raylibIncludeDir) -I $(engineDir) $< -o $@ $(CXXFLAGS)
-
-# TODO move this into setup file
-# Copy the relevant header files into includes
-$(raylibIncludeDir):
-	$(MKDIR) $(call platformpth, $(raylibIncludeDir)/raylib)
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raylib.h,**)
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raymath.h,**)
-	$(call COPY,$(vendorDir)/raylib-cpp/include,$(raylibIncludeDir)/raylib,*.hpp)
-
-# Build the raylib static library file
-$(raylibLib):
-	"$(MAKE)" -C $(vendorDir)/raylib-cpp/vendor/raylib/src PLATFORM=PLATFORM_DESKTOP
+	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
