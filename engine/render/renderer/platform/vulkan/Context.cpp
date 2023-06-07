@@ -1,5 +1,4 @@
 //
-//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -7,12 +6,13 @@
 //      https://opensource.org/licenses/Zlib
 //
 
+#define VOLK_IMPLEMENTATION
+
 #include "Context.h"
+#include "render/renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 #include <utils/Logging.h>
-
-#include "render/renderer/Renderer.h"
 
 namespace Siege::Vulkan
 {

@@ -12,9 +12,9 @@
 #include <utils/Logging.h>
 #include <window/Window.h>
 
-#include "descriptor/DescriptorPool.h"
 #include "lights/PointLight.h"
 #include "model/Model.h"
+#include "render/renderer/platform/vulkan/DescriptorPool.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
 #include "renderer/Renderer2D.h"

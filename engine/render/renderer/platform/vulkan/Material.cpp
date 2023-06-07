@@ -16,7 +16,7 @@
 #include "Pipeline.h"
 #include "Swapchain.h"
 #include "render/renderer/Renderer.h"
-#include "render/renderer/descriptor/DescriptorPool.h"
+#include "render/renderer/platform/vulkan/DescriptorPool.h"
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
 

@@ -35,6 +35,7 @@ struct VkShaderModule_T;
 struct VkPipelineLayout_T;
 struct VkPipeline_T;
 struct VkSampler_T;
+struct VkDescriptorPool_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -59,6 +60,7 @@ typedef VkSampler_T* VkSampler;
 
 namespace Siege::Vulkan::Utils
 {
+typedef VkDescriptorPool_T* UniformAllocator;
 // ----------------------------------------- Enums ------------------------------------------------
 
 enum DepthFormat
@@ -119,7 +121,9 @@ enum UniformType
     UNKNOWN = 0,
     TEXTURE2D = 1,
     UNIFORM = 6,
-    STORAGE = 7
+    STORAGE = 7,
+    UNIFORM_DYNAMIC = 8,
+    STORAGE_DYNAMIC = 9
 };
 
 enum ShaderType
@@ -228,6 +232,12 @@ struct Extent2DF
 struct Image2DConfig
 {
     ImageFormat format;
+};
+
+struct UniformAllocation
+{
+    UniformType type;
+    uint32_t uniformCount;
 };
 
 } // namespace Siege::Vulkan::Utils
