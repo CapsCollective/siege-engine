@@ -43,7 +43,7 @@ Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
 
     // Allocate buffer which can store all the data we need
     Buffer::CreateBuffer(bufferSize,
-                         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                         Vulkan::Utils::STORAGE_BUFFER | Vulkan::Utils::UNIFORM_BUFFER,
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                          OUT buffer.buffer,
                          OUT buffer.bufferMemory);

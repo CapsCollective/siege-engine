@@ -159,8 +159,12 @@ enum ImageLayout
 
 enum BufferType
 {
+    TRANSFER_SRC_BUFFER = 0x00000001,
+    TRANSFER_DST_BUFFER = 0x00000002,
+    UNIFORM_BUFFER = 0x00000010,
+    STORAGE_BUFFER = 0x00000020,
+    INDEX_BUFFER = 0x00000040,
     VERTEX_BUFFER = 0x00000080,
-    INDEX_BUFFER = 0x00000040
 };
 
 enum PipelineStage
@@ -193,6 +197,13 @@ enum VertexInputRate
 {
     INPUT_RATE_VERTEX = 0,
     INPUT_RATE_INSTANCE = 1
+};
+
+enum MemoryProperty
+{
+    MEMORY_DEVICE_LOCAL = 0x00000001,
+    MEMORY_HOST_COHERENT = 0x00000002,
+    MEMORY_HOST_VISIBLE = 0x00000004
 };
 
 //----------------------------------------- Structs -----------------------------------------------

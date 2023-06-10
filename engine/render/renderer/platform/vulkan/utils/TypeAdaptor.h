@@ -207,12 +207,68 @@ DECL_VULKAN_SWITCH_FUN(VkImageLayout,
 DECL_VULKAN_SWITCH_FUN(BufferType,
                        VkBufferUsageFlagBits,
                        SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                  TRANSFER_SRC_BUFFER)
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                  TRANSFER_DST_BUFFER)
+                       SWITCH_MEM(VkBufferUsageFlagBits,
                                   VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                                  INDEX_BUFFER) SWITCH_DEFAULT(VERTEX_BUFFER))
+                                  INDEX_BUFFER)
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                  VERTEX_BUFFER)
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                  UNIFORM_BUFFER)
+                       SWITCH_MEM(VkBufferUsageFlagBits,
+                                  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                  STORAGE_BUFFER)
+                       SWITCH_DEFAULT(TRANSFER_SRC_BUFFER))
 DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits,
                        BufferType,
-                       SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
-                           SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
+                       SWITCH_MEM(BufferType,
+                                  TRANSFER_SRC_BUFFER,
+                                  VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+                       SWITCH_MEM(BufferType,
+                                  TRANSFER_DST_BUFFER,
+                                  VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+                       SWITCH_MEM(BufferType,
+                                  INDEX_BUFFER,
+                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+                       SWITCH_MEM(BufferType,
+                                  VERTEX_BUFFER,
+                                  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+                       SWITCH_MEM(BufferType,
+                                  UNIFORM_BUFFER,
+                                  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+                       SWITCH_MEM(BufferType,
+                                  STORAGE_BUFFER,
+                                  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
+                       SWITCH_DEFAULT(VK_BUFFER_USAGE_TRANSFER_SRC_BIT))
+
+DECL_VULKAN_SWITCH_FUN(MemoryProperty, VkMemoryPropertyFlagBits,
+                       SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                  MEMORY_DEVICE_LOCAL)
+                       SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                  MEMORY_HOST_COHERENT)
+                       SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+                                  MEMORY_HOST_VISIBLE)
+                       SWITCH_DEFAULT(MEMORY_DEVICE_LOCAL))
+
+DECL_VULKAN_SWITCH_FUN(VkMemoryPropertyFlagBits, MemoryProperty,
+                       SWITCH_MEM(MemoryProperty,
+                                  MEMORY_DEVICE_LOCAL,
+                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+                       SWITCH_MEM(MemoryProperty,
+                                  MEMORY_HOST_COHERENT,
+                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+                       SWITCH_MEM(MemoryProperty,
+                                  MEMORY_HOST_VISIBLE,
+                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
 
 DECL_VULKAN_SWITCH_FUN(
     PipelineStage,
