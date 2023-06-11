@@ -9,10 +9,11 @@
 #define VOLK_IMPLEMENTATION
 
 #include "Context.h"
-#include "render/renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 #include <utils/Logging.h>
+
+#include "render/renderer/Renderer.h"
 
 namespace Siege::Vulkan
 {

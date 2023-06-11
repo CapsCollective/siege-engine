@@ -10,8 +10,9 @@
 #define SIEGE_ENGINE_RENDERER2D_H
 
 #include <utils/Colour.h>
-#include <utils/math/mat/Mat2.h>
+#include <utils/math/mat/Mat4.h>
 
+#include "../Core.h"
 #include "render/renderer/platform/vulkan/Font.h"
 #include "render/renderer/platform/vulkan/IndexBuffer.h"
 #include "render/renderer/platform/vulkan/Material.h"

@@ -153,7 +153,7 @@ Pipeline Pipeline::Builder::Build()
     pipelineCreateInfo.pDepthStencilState = &depthState;
 
     pipelineCreateInfo.layout = newPipeline.layout;
-    pipelineCreateInfo.renderPass = renderPass->GetRenderPass();
+    pipelineCreateInfo.renderPass = renderPass->GetRawRenderPass();
     pipelineCreateInfo.subpass = 0;
 
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;

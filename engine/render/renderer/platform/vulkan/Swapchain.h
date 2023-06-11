@@ -12,8 +12,8 @@
 #include "Fence.h"
 #include "Semaphore.h"
 #include "render/renderer/image/FrameImages.h"
-#include "render/renderer/pass/RenderPass.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
+#include "render/renderer/platform/vulkan/RenderPass.h"
 #include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege::Vulkan
@@ -156,7 +156,7 @@ public:
 
     void BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                          uint32_t imageIndex,
-                         std::initializer_list<VkClearValue> clearValues);
+                         FColour clearColour);
 
     void EndRenderPass(Vulkan::CommandBuffer& commandBuffer);
 

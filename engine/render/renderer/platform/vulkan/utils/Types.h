@@ -36,6 +36,8 @@ struct VkPipelineLayout_T;
 struct VkPipeline_T;
 struct VkSampler_T;
 struct VkDescriptorPool_T;
+struct VkRenderPass_T;
+struct VkFramebuffer_T;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -57,6 +59,7 @@ typedef VkShaderModule_T* VkShaderModule;
 typedef VkPipelineLayout_T* VkPipelineLayout;
 typedef VkPipeline_T* VkPipeline;
 typedef VkSampler_T* VkSampler;
+typedef VkFramebuffer_T* VkFramebuffer;
 
 namespace Siege::Vulkan::Utils
 {
@@ -92,7 +95,11 @@ enum ImageFormat
     B10R11G11UF = 122,
     DEPTH32FSTENCIL8UINT = 130,
     DEPTH32F = 126,
-    DEPTH24STENCIL8
+    DEPTH24STENCIL8,
+    DEPTH24US8UI = 129,
+    DEPTH32FS8UI = 130,
+    DEPTH16US8UI = 128,
+    DEPTH16U = 125
 };
 
 enum ImageUsage
@@ -153,8 +160,10 @@ enum PipelineTopology
 enum ImageLayout
 {
     LAYOUT_UNDEFINED = 0,
-    LAYOUT_TRANSFER_DST_OPTIMAL = 2,
+    LAYOUT_COLOUR_ATTACHMENT = 2,
+    LAYOUT_DEPTH_STENCIL_ATTACHMENT = 3,
     LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
+    LAYOUT_TRANSFER_DST_OPTIMAL = 7,
 };
 
 enum BufferType
@@ -173,7 +182,9 @@ enum PipelineStage
     STAGE_TOP_OF_PIPE = 0x00000001,
     STAGE_VERTEX_SHADER = 0x00000008,
     STAGE_FRAGMENT_SHADER = 0x00000080,
-    STAGE_TRANSFER_BIT = 0x00001000
+    STAGE_EARLY_FRAGMENT_TEST = 0x00000100,
+    STAGE_COLOUR_ATTACHMENT_OUTPUT = 0x00000400,
+    STAGE_TRANSFER_BIT = 0x00001000,
 };
 
 enum MemoryAccess
@@ -182,7 +193,9 @@ enum MemoryAccess
     ACCESS_TRANSFER_WRITE = 0x00001000,
     ACCESS_TRANSFER_READ = 0x00000800,
     ACCESS_SHADER_READ = 0x00000020,
-    ACCESS_SHADER_WRITE = 0x00000040
+    ACCESS_SHADER_WRITE = 0x00000040,
+    ACCESS_COLOUR_ATTACHMENT_WRITE = 0x00000100,
+    ACCESS_DEPTH_ATTACHMENT_WRITE = 0x00000400,
 };
 
 enum ImageAspect

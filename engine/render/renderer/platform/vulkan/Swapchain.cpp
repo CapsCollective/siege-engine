@@ -133,15 +133,13 @@ Utils::Result Swapchain::AcquireNextImage(uint32_t* imageIndex)
 
 void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
                                 uint32_t imageIndex,
-                                std::initializer_list<VkClearValue> clearValues)
+                                FColour clearColour)
 {
-    RenderPass::Begin(renderPass.GetRenderPass(),
-                      OUT commandBuffer,
-                      swapChainFrameBuffers[imageIndex],
-                      {0, 0},
-                      {swapchainExtent.width, swapchainExtent.height},
-                      std::data(clearValues),
-                      clearValues.size());
+    renderPass.Begin(commandBuffer,
+                     swapchainExtent.width,
+                     swapchainExtent.height,
+                     clearColour,
+                     swapChainFrameBuffers[imageIndex]);
 }
 
 void Swapchain::EndRenderPass(Vulkan::CommandBuffer& commandBuffer)
@@ -188,31 +186,18 @@ bool Swapchain::IsSameSwapFormat(Utils::ImageFormat oldImageFormat,
 
 void Swapchain::CreateRenderPass()
 {
+    using namespace Siege::Vulkan;
     swapChainImageFormat = swapchainImages.GetFormat();
     swapChainDepthFormat = Vulkan::Context::Get().GetPhysicalDevice()->GetDepthFormat();
-    RenderPass::Initialise(
-        OUT renderPass,
-        RenderPass::CreateConfig()
-            .WithAttachment(
-                Attachments::CreateColorAttachment(Vulkan::Utils::ToVkFormat(swapChainImageFormat)))
-            .WithAttachment(
-                Attachments::CreateDepthAttachment(Vulkan::Utils::ToVkFormat(swapChainDepthFormat)))
-            .WithSubPass(
-                Attachments::CreateSubPass()
-                    .WithColorReference(Attachments::CreateColorAttachmentReference(0))
-                    .WithDepthReference(Attachments::CreateDepthStencilAttachmentReference(1))
-                    .BuildGraphicsSubPass())
-            .WithDependency(Attachments::CreateSubPassDependency()
-                                .WithSrcSubPass(VK_SUBPASS_EXTERNAL)
-                                .WithDstSubPass(0)
-                                .WithSrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                .WithDstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-                                                  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
-                                .WithSrcAccessMask(0)
-                                .WithDstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-                                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
-                                .Build()));
+    renderPass = RenderPass::Builder()
+                     .WithAttachments(2)
+                     .WithColourAttachment(swapChainImageFormat)
+                     .WithDepthAttachment(swapChainDepthFormat)
+                     .WithSubpasses(1)
+                     .WithSubpass({0}, 1)
+                     .WithDependencies(1)
+                     .WithDependency(VK_SUBPASS_EXTERNAL, 0)
+                     .Build();
 }
 
 void Swapchain::CreateDepthResources()
@@ -246,7 +231,7 @@ void Swapchain::CreateFrameBuffers()
         // Populate the creation struct
         VkFramebufferCreateInfo frameBufferInfo {};
         frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        frameBufferInfo.renderPass = renderPass.GetRenderPass();
+        frameBufferInfo.renderPass = renderPass.GetRawRenderPass();
         frameBufferInfo.attachmentCount = attachmentCount;
         frameBufferInfo.pAttachments = attachments;
         frameBufferInfo.width = swapChainExtent.width;

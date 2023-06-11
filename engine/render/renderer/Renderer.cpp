@@ -181,7 +181,7 @@ void Renderer::BeginSwapChainRenderPass()
 
     auto swapExtent = swapchain.GetExtent();
 
-    swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {{clearValue}, {{{1.f, 0.f}}}});
+    swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {0.96f, 0.96f, 0.96f, 1.f});
 
     VkViewport viewport {};
     viewport.x = 0.0f;
