@@ -7,11 +7,12 @@
 //
 
 #include "Renderer2D.h"
-#include "render/renderer/platform/vulkan/utils/Draw.h"
-#include "render/renderer/Renderer.h"
 
 #include <utils/Logging.h>
 #include <utils/math/Graphics.h>
+
+#include "render/renderer/Renderer.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
 {

@@ -13,11 +13,11 @@
 #include <utils/Hash.h>
 #include <utils/math/mat/Mat4.h>
 
+#include <unordered_map>
+
 #include "../buffer/Buffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
 #include "render/renderer/platform/vulkan/Mesh.h"
-
-#include <unordered_map>
 
 namespace Siege
 {

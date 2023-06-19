@@ -14,11 +14,21 @@
 namespace Siege::Vulkan::Utils
 {
 
-void SetViewport(VkCommandBuffer buffer, float width, float height, float x, float y, float minDepth, float maxDepth);
+void SetViewport(VkCommandBuffer buffer,
+                 float width,
+                 float height,
+                 float x,
+                 float y,
+                 float minDepth,
+                 float maxDepth);
 void SetViewport(VkCommandBuffer buffer, float width, float height, float x, float y);
 void SetViewport(VkCommandBuffer buffer, float width, float height);
 
-void SetScissor(VkCommandBuffer buffer, int offsetX, unsigned int offsetY, unsigned int width, unsigned int height);
+void SetScissor(VkCommandBuffer buffer,
+                int offsetX,
+                unsigned int offsetY,
+                unsigned int width,
+                unsigned int height);
 void SetScissor(VkCommandBuffer buffer, unsigned int width, unsigned int height);
 
 } // namespace Siege::Vulkan::Utils

@@ -39,7 +39,7 @@ Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
     bufferUpdates = MHArray<MHArray<UniformBufferUpdate>>(framesCount);
     imageUpdates = MHArray<MHArray<UniformImageUpdate>>(framesCount);
 
-    for(size_t i = 0; i < framesCount; i++)
+    for (size_t i = 0; i < framesCount; i++)
     {
         bufferUpdates.Append(MHArray<UniformBufferUpdate>(10));
         imageUpdates.Append(MHArray<UniformImageUpdate>(MAX_TEXTURES));
@@ -96,7 +96,7 @@ Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
         WriteSet(slotIt.GetIndex(), slot);
     }
 
-    for(size_t i = 0; i < framesCount; i++) UpdateUniforms(bufferUpdates[i], imageUpdates[i]);
+    for (size_t i = 0; i < framesCount; i++) UpdateUniforms(bufferUpdates[i], imageUpdates[i]);
 
     // Create Pipeline
     Recreate();
@@ -294,7 +294,7 @@ void Material::Update()
 
     using Vulkan::Context;
 
-//    Write(targetSets);
+    //    Write(targetSets);
     UpdateUniforms(targetBuffers, targetImages);
 
     targetBuffers.Clear();
@@ -310,7 +310,7 @@ void Material::Update(Hash::StringId id)
 
         auto& buffersToWrite = bufferUpdates[Renderer::GetCurrentFrameIndex()];
         auto& imagesToWrite = imageUpdates[Renderer::GetCurrentFrameIndex()];
-//        Write(setsToWrite);
+        //        Write(setsToWrite);
         UpdateUniforms(buffersToWrite, imagesToWrite);
 
         buffersToWrite.Clear();
@@ -331,7 +331,6 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
 
         for (auto setIt = perFrameDescriptorSets.CreateFIterator(); setIt; ++setIt)
         {
-
             auto sets = *setIt;
             if (IsTexture2D(prop.type))
                 QueueImageUpdate(imageUpdates[setIt.GetIndex()], sets[set], propIt.GetIndex());
@@ -346,7 +345,8 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
     }
 }
 
-void Material::UpdateUniforms(MHArray<UniformBufferUpdate>& buffers, MHArray<UniformImageUpdate>& images)
+void Material::UpdateUniforms(MHArray<UniformBufferUpdate>& buffers,
+                              MHArray<UniformImageUpdate>& images)
 {
     using namespace Vulkan::Utils::Descriptor;
 
@@ -354,28 +354,39 @@ void Material::UpdateUniforms(MHArray<UniformBufferUpdate>& buffers, MHArray<Uni
     MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfs;
     MSArray<VkDescriptorImageInfo, MAX_TEXTURES> imageInfos;
 
-    for(auto it = buffers.CreateIterator(); it; ++it)
+    for (auto it = buffers.CreateIterator(); it; ++it)
     {
         auto& update = it->update;
         auto& bufferInfo = it->bufferUpdate;
 
         bufferInfs.Append({bufferInfo.buffer, bufferInfo.offset, bufferInfo.range});
-        writeSets.Append(CreateWriteSet(update.dstBinding, update.set, update.descriptors, Utils::ToVkDescriptorType(update.type), &bufferInfs.Back()));
+        writeSets.Append(CreateWriteSet(update.dstBinding,
+                                        update.set,
+                                        update.descriptors,
+                                        Utils::ToVkDescriptorType(update.type),
+                                        &bufferInfs.Back()));
     }
 
-    for(auto it = textureInfos.CreateIterator(); it; ++it)
+    for (auto it = textureInfos.CreateIterator(); it; ++it)
     {
         imageInfos.Append({it->sampler, it->view, Utils::ToVkImageLayout(it->layout)});
     }
 
-    for(auto it = images.CreateIterator(); it; ++it)
+    for (auto it = images.CreateIterator(); it; ++it)
     {
         auto& update = it->update;
 
-        writeSets.Append(WriteDescriptorImage(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, update.set, imageInfos.Data(), update.dstBinding, update.descriptors, update.dstIndex));
+        writeSets.Append(WriteDescriptorImage(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                              update.set,
+                                              imageInfos.Data(),
+                                              update.dstBinding,
+                                              update.descriptors,
+                                              update.dstIndex));
     }
 
-    Utils::Descriptor::WriteSets(Context::GetVkLogicalDevice(), writeSets.Data(), writeSets.Count());
+    Utils::Descriptor::WriteSets(Context::GetVkLogicalDevice(),
+                                 writeSets.Data(),
+                                 writeSets.Count());
     buffers.Clear();
     images.Clear();
 }

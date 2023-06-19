@@ -12,12 +12,12 @@
 #include "../lights/PointLight.h"
 #include "../model/Model.h"
 #include "BillboardRenderer.h"
+#include "Common.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
 #include "QuadRenderer3D.h"
 #include "TextRenderer.h"
-#include "Common.h"
 
 // TODO(Aryeh): Convert this class into a normal class and remove the statics. Their existence is a
 // TODO(Aryeh): blight on humanity and ends up really messing with Vulkan's memory management

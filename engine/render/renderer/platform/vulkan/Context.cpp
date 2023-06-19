@@ -32,7 +32,7 @@ void Context::Init(Window& window)
 
     vulkanInstance = Instance(window.GetRequiredExtensions());
 
-    surface = (VkSurfaceKHR)Siege::Window::GetWindowSurface(window, vulkanInstance.GetInstance());
+    surface = (VkSurfaceKHR) Siege::Window::GetWindowSurface(window, vulkanInstance.GetInstance());
 
     CC_ASSERT(surface != VK_NULL_HANDLE, "Unable to create surface!")
 

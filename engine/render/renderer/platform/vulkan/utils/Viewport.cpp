@@ -11,7 +11,13 @@
 namespace Siege::Vulkan::Utils
 {
 
-void SetViewport(VkCommandBuffer buffer, float width, float height, float x, float y, float minDepth, float maxDepth)
+void SetViewport(VkCommandBuffer buffer,
+                 float width,
+                 float height,
+                 float x,
+                 float y,
+                 float minDepth,
+                 float maxDepth)
 {
     VkViewport viewport {};
     viewport.x = x;
@@ -34,7 +40,11 @@ void SetViewport(VkCommandBuffer buffer, float width, float height)
     SetViewport(buffer, width, height, 0.f, 0.f);
 }
 
-void SetScissor(VkCommandBuffer buffer, int offsetX, int offsetY, unsigned int width, unsigned int height)
+void SetScissor(VkCommandBuffer buffer,
+                int offsetX,
+                int offsetY,
+                unsigned int width,
+                unsigned int height)
 {
     VkRect2D scissor {{offsetX, offsetY}, {width, height}};
 

@@ -10,8 +10,8 @@
 
 #include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
-#include "statics/Statics.h"
 #include "platform/vulkan/utils/Viewport.h"
+#include "statics/Statics.h"
 
 namespace Siege
 {
@@ -191,7 +191,9 @@ void Renderer::BeginSwapChainRenderPass()
 
     using namespace Vulkan::Utils;
 
-    SetViewport(commandBuffers.GetActiveCommandBuffer(), static_cast<float>(swapExtent.width), static_cast<float>(swapExtent.height));
+    SetViewport(commandBuffers.GetActiveCommandBuffer(),
+                static_cast<float>(swapExtent.width),
+                static_cast<float>(swapExtent.height));
     SetScissor(commandBuffers.GetActiveCommandBuffer(), swapExtent.width, swapExtent.height);
 }
 

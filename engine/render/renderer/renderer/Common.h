@@ -13,11 +13,11 @@
 
 namespace Siege
 {
-    struct CameraData
-    {
-        Mat4 projectionMatrix;
-        Mat4 viewMatrix;
-    };
-}
+struct CameraData
+{
+    Mat4 projectionMatrix;
+    Mat4 viewMatrix;
+};
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_RENDERER_COMMON_H

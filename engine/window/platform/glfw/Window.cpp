@@ -102,7 +102,7 @@ MHArray<const char*> GetRequiredExtensions()
 void* GetWindowSurface(Window window, void* instance)
 {
     VkSurfaceKHR surface = nullptr;
-    glfwCreateWindowSurface((VkInstance)instance, window, nullptr, &surface);
+    glfwCreateWindowSurface((VkInstance) instance, window, nullptr, &surface);
     return surface;
 }
 
