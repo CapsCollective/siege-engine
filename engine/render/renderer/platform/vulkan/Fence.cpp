@@ -8,6 +8,8 @@
 
 #include "Fence.h"
 
+#include "utils/TypeAdaptor.h"
+
 #include <utils/Logging.h>
 
 #include "Context.h"

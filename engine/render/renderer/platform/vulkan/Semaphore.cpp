@@ -12,6 +12,8 @@
 
 #include "Context.h"
 
+#include "utils/TypeAdaptor.h"
+
 namespace Siege::Vulkan
 {
 Semaphore::Semaphore(size_t semaphoreCount) : size {semaphoreCount}

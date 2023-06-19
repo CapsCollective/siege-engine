@@ -43,6 +43,8 @@ public:
         return device;
     }
 
+    void WaitIdle();
+
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size);
     void CopyBufferToImage(VkBuffer buffer,
                            VkImage image,

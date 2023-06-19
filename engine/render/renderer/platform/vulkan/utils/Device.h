@@ -209,6 +209,11 @@ public:
                 vkCreateDevice(physicalDevice, createInfo, callbacks, OUT device) == VK_SUCCESS,
                 "failed to create logical device!")
         }
+
+        static inline void WaitIdle(VkDevice device)
+        {
+            vkDeviceWaitIdle(device);
+        }
     };
 };
 

@@ -125,6 +125,11 @@ LogicalDevice& LogicalDevice::operator=(LogicalDevice&& other)
     return *this;
 }
 
+void LogicalDevice::WaitIdle()
+{
+    vkDeviceWaitIdle(device);
+}
+
 void LogicalDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t size)
 {
     CommandBuffer::ExecuteSingleTimeCommand([&](VkCommandBuffer buffer) {

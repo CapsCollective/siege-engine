@@ -50,15 +50,7 @@ public:
     bool StartFrame();
     void EndFrame();
 
-    void ClearDeviceQueue()
-    {
-        vkDeviceWaitIdle(Context().GetVkLogicalDevice());
-    }
-
-    void SetClearValue(float r, float g, float b, float a)
-    {
-        clearValue = {{r, g, b, a}};
-    }
+    void ClearDeviceQueue();
 
     void DrawQuad(const Vec2 position,
                   const Vec2 scale = {1.f, 1.f},
@@ -100,9 +92,6 @@ private:
     static Renderer* instance;
     static Vulkan::CommandBuffer commandBuffers;
     static uint32_t currentFrameIndex;
-
-    // Make this adjustable in the window, not the renderer.
-    VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
     void RecreateSwapChain();
 

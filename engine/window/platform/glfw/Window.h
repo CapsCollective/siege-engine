@@ -45,6 +45,7 @@ void SetIsMouseMotionRaw(Window window, bool state);
 bool WindowShouldClose(Window window);
 
 MHArray<const char*> GetRequiredExtensions();
+void* GetWindowSurface(Window window, void* instance);
 
 void FreeWindow(Window window);
 void FreeGlfw();

@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_FRAME_IMAGES_H
 
 #include "render/renderer/platform/vulkan/Image.h"
-#include "render/renderer/platform/vulkan/utils/Image.h"
 
 namespace Siege
 {

@@ -11,6 +11,7 @@
 #include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
 #include "statics/Statics.h"
+#include "platform/vulkan/utils/Viewport.h"
 
 namespace Siege
 {
@@ -173,6 +174,11 @@ void Renderer::EndFrame()
     renderer2D.Flush();
 }
 
+void Renderer::ClearDeviceQueue()
+{
+    Vulkan::Context::GetCurrentDevice()->WaitIdle();
+}
+
 void Renderer::BeginSwapChainRenderPass()
 {
     auto& swapchain = context.GetSwapchain();
@@ -183,17 +189,10 @@ void Renderer::BeginSwapChainRenderPass()
 
     swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {0.96f, 0.96f, 0.96f, 1.f});
 
-    VkViewport viewport {};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapExtent.width);
-    viewport.height = static_cast<float>(swapExtent.height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    VkRect2D scissor {{0, 0}, {swapExtent.width, swapExtent.height}};
+    using namespace Vulkan::Utils;
 
-    vkCmdSetViewport(commandBuffers.GetActiveCommandBuffer(), 0, 1, &viewport);
-    vkCmdSetScissor(commandBuffers.GetActiveCommandBuffer(), 0, 1, &scissor);
+    SetViewport(commandBuffers.GetActiveCommandBuffer(), static_cast<float>(swapExtent.width), static_cast<float>(swapExtent.height));
+    SetScissor(commandBuffers.GetActiveCommandBuffer(), swapExtent.width, swapExtent.height);
 }
 
 void Renderer::EndSwapChainRenderPass()

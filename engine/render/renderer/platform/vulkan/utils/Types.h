@@ -69,6 +69,7 @@ typedef VkDescriptorSetLayout_T* VkDescriptorSetLayout;
 namespace Siege::Vulkan::Utils
 {
 typedef VkDescriptorPool_T* UniformAllocator;
+typedef VkRenderPass_T* RenderPass;
 // ----------------------------------------- Enums ------------------------------------------------
 
 enum DepthFormat

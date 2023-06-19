@@ -14,6 +14,7 @@
 #include <utils/Logging.h>
 
 #include "render/renderer/Renderer.h"
+#include "utils/TypeAdaptor.h"
 
 namespace Siege::Vulkan
 {
@@ -30,10 +31,8 @@ void Context::Init(Window& window)
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
     vulkanInstance = Instance(window.GetRequiredExtensions());
-    glfwCreateWindowSurface(vulkanInstance.GetInstance(),
-                            reinterpret_cast<GLFWwindow*>(window.GetRawWindow()),
-                            nullptr,
-                            &surface);
+
+    surface = (VkSurfaceKHR)Siege::Window::GetWindowSurface(window, vulkanInstance.GetInstance());
 
     CC_ASSERT(surface != VK_NULL_HANDLE, "Unable to create surface!")
 

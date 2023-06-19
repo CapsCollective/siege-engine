@@ -8,6 +8,7 @@
 
 #include "Window.h"
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "window/Window.h"
@@ -96,6 +97,13 @@ MHArray<const char*> GetRequiredExtensions()
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     return MHArray<const char*>(glfwExtensions, glfwExtensionCount);
+}
+
+void* GetWindowSurface(Window window, void* instance)
+{
+    VkSurfaceKHR surface = nullptr;
+    glfwCreateWindowSurface((VkInstance)instance, window, nullptr, &surface);
+    return surface;
 }
 
 void FreeWindow(Window window)

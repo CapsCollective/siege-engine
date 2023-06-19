@@ -200,7 +200,7 @@ private:
     VkSwapchainKHR swapchain {nullptr};
 
     // TODO: Need to catch up with main so that we can replace this with the Framebuffer class
-    VkFramebuffer* swapChainFrameBuffers {VK_NULL_HANDLE};
+    VkFramebuffer* swapChainFrameBuffers {nullptr};
 
     FrameImages swapchainImages;
     FrameImages depthImages;
