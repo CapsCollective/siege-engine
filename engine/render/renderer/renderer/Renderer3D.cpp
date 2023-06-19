@@ -7,6 +7,7 @@
 //
 
 #include "Renderer3D.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
 {
@@ -98,7 +99,7 @@ void Renderer3D::DrawQuad(const Vec3 position,
 
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
-                        const CameraData& cameraData)
+                        CameraData cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
@@ -126,7 +127,7 @@ void Renderer3D::RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalDa
     gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
     gridMaterial.Bind(commandBuffer);
 
-    vkCmdDraw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
+    Vulkan::Utils::Draw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
 }
 
 void Renderer3D::RecreateMaterials()

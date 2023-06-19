@@ -116,8 +116,8 @@ void IndexBuffer::Allocate(VkDevice device)
                         size,
                         VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                        OUT buffer,
-                        OUT memory);
+                        buffer,
+                        memory);
 }
 
 void IndexBuffer::Copy(VkDevice device, unsigned int newSize, const unsigned int* data)

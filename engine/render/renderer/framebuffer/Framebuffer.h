@@ -9,8 +9,9 @@
 #ifndef SIEGE_ENGINE_FRAMEBUFFER_H
 #define SIEGE_ENGINE_FRAMEBUFFER_H
 
-#include "../Core.h"
 #include "../image/FrameImages.h"
+
+#include <utils/collections/HeapArray.h>
 
 namespace Siege
 {

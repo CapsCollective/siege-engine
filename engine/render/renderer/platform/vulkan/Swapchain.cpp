@@ -144,7 +144,7 @@ void Swapchain::BeginRenderPass(Vulkan::CommandBuffer& commandBuffer,
 
 void Swapchain::EndRenderPass(Vulkan::CommandBuffer& commandBuffer)
 {
-    vkCmdEndRenderPass(OUT commandBuffer.GetActiveCommandBuffer());
+    renderPass.End(commandBuffer);
 }
 
 Utils::Result Swapchain::SubmitCommandBuffers(const CommandBuffer& buffers, uint32_t imageIndex)

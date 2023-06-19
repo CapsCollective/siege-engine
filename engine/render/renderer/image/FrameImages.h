@@ -9,7 +9,6 @@
 #ifndef SIEGE_ENGINE_FRAME_IMAGES_H
 #define SIEGE_ENGINE_FRAME_IMAGES_H
 
-#include "../Core.h"
 #include "render/renderer/platform/vulkan/Image.h"
 #include "render/renderer/platform/vulkan/utils/Image.h"
 

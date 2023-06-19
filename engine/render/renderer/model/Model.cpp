@@ -7,6 +7,7 @@
 //
 
 #include "Model.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -180,13 +181,15 @@ void Model::Draw(Vulkan::CommandBuffer& commandBuffer,
                  uint32_t currentFrame,
                  const uint32_t& instances)
 {
-    vkCmdDraw(commandBuffer.Get(), mesh.GetVertexCount(currentFrame), 1, 0, instances);
+    using namespace Vulkan;
+    Utils::Draw(commandBuffer.Get(), mesh.GetVertexCount(currentFrame), 1, 0, instances);
 }
 
 void Model::DrawIndexed(Vulkan::CommandBuffer& commandBuffer,
                         const uint32_t frameIndex,
                         const uint32_t& instances)
 {
-    vkCmdDrawIndexed(commandBuffer.Get(), mesh.GetIndexCount(frameIndex), 1, 0, 0, instances);
+    using namespace Vulkan;
+    Utils::DrawIndexed(commandBuffer.Get(), mesh.GetIndexCount(frameIndex), 1, 0, 0, instances);
 }
 } // namespace Siege

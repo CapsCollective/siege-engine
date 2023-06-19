@@ -152,7 +152,7 @@ private:
      */
     struct PropertiesSlot
     {
-        VkDescriptorSetLayout layout {VK_NULL_HANDLE};
+        VkDescriptorSetLayout layout {nullptr};
         MSArray<Property, 10> properties;
     };
 
@@ -163,6 +163,41 @@ private:
     {
         uint32_t size {0};
         Utils::ShaderType type {Utils::EMPTY};
+    };
+
+    struct UniformUpdate
+    {
+        VkDescriptorSet set {nullptr};
+        unsigned int dstBinding {0};
+        unsigned int dstIndex {0};
+        unsigned int descriptors {0};
+        Utils::UniformType type;
+    };
+
+    struct ImageData
+    {
+        VkSampler sampler {nullptr};
+        VkImageView view {nullptr};
+        Utils::ImageLayout layout {Utils::LAYOUT_UNDEFINED};
+    };
+
+    struct UniformImageUpdate
+    {
+        UniformUpdate update;
+        MHArray<ImageData> imageUpdates;
+    };
+
+    struct BufferData
+    {
+        VkBuffer buffer;
+        unsigned long offset;
+        unsigned long range;
+    };
+
+    struct UniformBufferUpdate
+    {
+        UniformUpdate update;
+        BufferData bufferUpdate;
     };
 
     /**
@@ -199,11 +234,7 @@ private:
      */
     void WriteSet(uint32_t set, PropertiesSlot& slot);
 
-    /**
-     * Writes every set in the provided array
-     * @param sets an array of all sets to write to
-     */
-    void Write(MSArray<VkWriteDescriptorSet, 10>& sets);
+    void UpdateUniforms(MHArray<UniformBufferUpdate>& updates, MHArray<UniformImageUpdate>& images);
 
     /**
      * Queues an image update to be written to at the end of the frame
@@ -213,7 +244,7 @@ private:
      * @param count the number of descriptors to update
      * @param index the index to start from
      */
-    void QueueImageUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+    void QueueImageUpdate(MHArray<UniformImageUpdate>& imageUpdate,
                           VkDescriptorSet& set,
                           uint32_t binding,
                           uint32_t count = MAX_TEXTURES,
@@ -227,11 +258,12 @@ private:
      * @param binding the binding to write to
      * @param count the number of descriptors to update
      */
-    void QueuePropertyUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+    void QueuePropertyUpdate(MHArray<UniformBufferUpdate>& bufferUpdateQueue,
                              VkDescriptorSet& set,
                              Utils::UniformType type,
                              uint32_t binding,
-                             uint32_t count);
+                             uint32_t count,
+                             BufferData bufferInfo);
 
     /**
      * Checks if a descriptor is a 2D texture
@@ -276,12 +308,13 @@ private:
     MSArray<PropertiesSlot, MAX_UNIFORM_SETS> propertiesSlots;
 
     // Descriptor set data
-    MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfos;
     MHArray<MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>> perFrameDescriptorSets;
-    MHArray<MSArray<VkWriteDescriptorSet, 10>> writes;
+
+    MHArray<MHArray<UniformBufferUpdate>> bufferUpdates;
+    MHArray<MHArray<UniformImageUpdate>> imageUpdates;
+    MHArray<ImageData> textureInfos;
 
     // Texture data
-    MSArray<VkDescriptorImageInfo, MAX_TEXTURES> texture2DInfos;
     MSArray<Hash::StringId, MAX_TEXTURES> textureIds;
 
     bool isWritingDepth {true};

@@ -38,6 +38,9 @@ struct VkSampler_T;
 struct VkDescriptorPool_T;
 struct VkRenderPass_T;
 struct VkFramebuffer_T;
+struct VkDescriptorSet_T;
+struct VkDescriptorSetLayout_T;
+struct VkWriteDescriptorSet;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -60,6 +63,8 @@ typedef VkPipelineLayout_T* VkPipelineLayout;
 typedef VkPipeline_T* VkPipeline;
 typedef VkSampler_T* VkSampler;
 typedef VkFramebuffer_T* VkFramebuffer;
+typedef VkDescriptorSet_T* VkDescriptorSet;
+typedef VkDescriptorSetLayout_T* VkDescriptorSetLayout;
 
 namespace Siege::Vulkan::Utils
 {

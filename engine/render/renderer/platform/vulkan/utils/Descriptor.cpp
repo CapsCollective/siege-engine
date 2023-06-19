@@ -168,4 +168,6 @@ VkSamplerCreateInfo SamplerCreateInfo(VkFilter filters, VkSamplerAddressMode sam
 
     return info;
 }
+
+
 } // namespace Siege::Vulkan::Utils::Descriptor

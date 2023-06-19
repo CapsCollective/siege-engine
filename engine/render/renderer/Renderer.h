@@ -19,9 +19,11 @@
 #include "render/renderer/platform/vulkan/DescriptorPool.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
+#include "renderer/Common.h"
 
 namespace Siege
 {
+
 class Renderer
 {
 public:

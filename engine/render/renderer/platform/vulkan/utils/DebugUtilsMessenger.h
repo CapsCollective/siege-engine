@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 #define SIEGE_ENGINE_DEBUG_UTILS_MESSENGER_H
 
-#include "render/renderer/Core.h"
+#include <volk/volk.h>
 
 #if ENABLE_VALIDATION_LAYERS == 1
 #define CREATE_DEBUG_MESSENGER(debugInfo) DebugUtilsMessenger::PopulateCreateInfo(debugCreateInfo);

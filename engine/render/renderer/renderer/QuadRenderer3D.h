@@ -11,7 +11,6 @@
 
 #include <utils/Colour.h>
 
-#include "../Core.h"
 #include "../model/Model.h"
 #include "render/renderer/platform/vulkan/Texture2D.h"
 
@@ -20,11 +19,6 @@ namespace Siege
 class QuadRenderer3D
 {
 public:
-
-    struct GlobalData
-    {
-        CameraData cameraData;
-    };
 
     void Initialise(const String& globalDataAttributeName);
     void Free();
