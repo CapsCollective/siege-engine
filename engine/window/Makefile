@@ -16,7 +16,7 @@ windowDepends := $(patsubst %.o, %.d, $(call rwildcard,$(windowBinDir)/,*.o))
 windowLibs := $(vendorDir)/glfw/build/src/libglfw3.a
 
 linkFlags += -l utils
-compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/vulkan/include
+compileFlags += -I $(vendorDir)/glfw/include
 
 # Build the static library
 $(windowLib): $(windowObjects)

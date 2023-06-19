@@ -115,11 +115,6 @@ MHArray<const char*> Window::GetRequiredExtensions()
     return Glfw::GetRequiredExtensions();
 }
 
-void* Window::GetWindowSurface(Window& window, void* instance)
-{
-    return Glfw::GetWindowSurface((Glfw::Window) window.GetRawWindow(), instance);
-}
-
 void Window::ToggleCursor(bool state)
 {
     state ? DisableCursor() : EnableCursor();

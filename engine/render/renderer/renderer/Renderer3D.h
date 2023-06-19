@@ -12,7 +12,7 @@
 #include "../lights/PointLight.h"
 #include "../model/Model.h"
 #include "BillboardRenderer.h"
-#include "Common.h"
+#include "CameraData.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
@@ -71,7 +71,7 @@ public:
 
     static void Render(uint32_t currentFrame,
                        Vulkan::CommandBuffer& commandBuffer,
-                       CameraData cameraData);
+                       const CameraData& cameraData);
     static void Flush();
 
     static void DestroyRenderer3D();

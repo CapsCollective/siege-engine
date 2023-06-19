@@ -57,7 +57,6 @@ public:
     void DisableCursor();
 
     static MHArray<const char*> GetRequiredExtensions();
-    static void* GetWindowSurface(Window& window, void* instance);
 
     void ToggleCursor(bool state);
 

@@ -7,14 +7,18 @@
 //
 
 #define VOLK_IMPLEMENTATION
+#define GLFW_INCLUDE_VULKAN
 
 #include "Context.h"
 
-#include <GLFW/glfw3.h>
 #include <utils/Logging.h>
 
 #include "render/renderer/Renderer.h"
 #include "utils/TypeAdaptor.h"
+
+// clang-format off
+#include <GLFW/glfw3.h> // Must be final include
+// clang-format on
 
 namespace Siege::Vulkan
 {
@@ -32,7 +36,10 @@ void Context::Init(Window& window)
 
     vulkanInstance = Instance(window.GetRequiredExtensions());
 
-    surface = (VkSurfaceKHR) Siege::Window::GetWindowSurface(window, vulkanInstance.GetInstance());
+    glfwCreateWindowSurface(vulkanInstance.GetInstance(),
+                            reinterpret_cast<GLFWwindow*>(window.GetRawWindow()),
+                            nullptr,
+                            &surface);
 
     CC_ASSERT(surface != VK_NULL_HANDLE, "Unable to create surface!")
 

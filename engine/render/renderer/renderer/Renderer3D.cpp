@@ -100,7 +100,7 @@ void Renderer3D::DrawQuad(const Vec3 position,
 
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
-                        CameraData cameraData)
+                        const CameraData& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
