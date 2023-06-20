@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_RENDERER3D_H
 #define SIEGE_ENGINE_RENDERER3D_H
 
-#include "../Core.h"
 #include "../lights/PointLight.h"
 #include "../model/Model.h"
 #include "BillboardRenderer.h"
+#include "CameraData.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
@@ -71,7 +71,7 @@ public:
 
     static void Render(uint32_t currentFrame,
                        Vulkan::CommandBuffer& commandBuffer,
-                       const CameraData& globalData);
+                       const CameraData& cameraData);
     static void Flush();
 
     static void DestroyRenderer3D();

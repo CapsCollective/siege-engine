@@ -6,12 +6,11 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#define VOLK_IMPLEMENTATION
-
 #include "Renderer.h"
 
 #include "platform/vulkan/Font.h"
 #include "platform/vulkan/utils/Types.h"
+#include "platform/vulkan/utils/Viewport.h"
 #include "statics/Statics.h"
 
 namespace Siege
@@ -22,19 +21,20 @@ uint32_t Renderer::currentFrameIndex = 0;
 
 Renderer::Renderer(Window& window) : window {window}
 {
+    using namespace Vulkan::Utils;
     Statics::Initialise();
 
     if (instance == nullptr) instance = this;
 
-    auto extent = window.GetExtents();
-
     context.Init(window);
 
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1024);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1024);
-    DescriptorPool::AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024);
+    DescriptorPool::Initialise();
+
+    DescriptorPool::AddPoolSize(UNIFORM, 1024);
+    DescriptorPool::AddPoolSize(UNIFORM_DYNAMIC, 1024);
+    DescriptorPool::AddPoolSize(STORAGE, 1024);
+    DescriptorPool::AddPoolSize(STORAGE_DYNAMIC, 1024);
+    DescriptorPool::AddPoolSize(TEXTURE2D, 1024);
 
     DescriptorPool::BuildPool();
 
@@ -174,6 +174,11 @@ void Renderer::EndFrame()
     renderer2D.Flush();
 }
 
+void Renderer::ClearDeviceQueue()
+{
+    Vulkan::Context::GetCurrentDevice()->WaitIdle();
+}
+
 void Renderer::BeginSwapChainRenderPass()
 {
     auto& swapchain = context.GetSwapchain();
@@ -182,19 +187,14 @@ void Renderer::BeginSwapChainRenderPass()
 
     auto swapExtent = swapchain.GetExtent();
 
-    swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {{clearValue}, {{{1.f, 0.f}}}});
+    swapchain.BeginRenderPass(commandBuffers, currentImageIndex, {0.96f, 0.96f, 0.96f, 1.f});
 
-    VkViewport viewport {};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapExtent.width);
-    viewport.height = static_cast<float>(swapExtent.height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    VkRect2D scissor {{0, 0}, {swapExtent.width, swapExtent.height}};
+    using namespace Vulkan::Utils;
 
-    vkCmdSetViewport(commandBuffers.GetActiveCommandBuffer(), 0, 1, &viewport);
-    vkCmdSetScissor(commandBuffers.GetActiveCommandBuffer(), 0, 1, &scissor);
+    SetViewport(commandBuffers.GetActiveCommandBuffer(),
+                static_cast<float>(swapExtent.width),
+                static_cast<float>(swapExtent.height));
+    SetScissor(commandBuffers.GetActiveCommandBuffer(), swapExtent.width, swapExtent.height);
 }
 
 void Renderer::EndSwapChainRenderPass()

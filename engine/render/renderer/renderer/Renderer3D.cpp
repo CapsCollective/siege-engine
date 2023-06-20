@@ -8,6 +8,8 @@
 
 #include "Renderer3D.h"
 
+#include "render/renderer/platform/vulkan/utils/Draw.h"
+
 namespace Siege
 {
 // static initialisation
@@ -126,7 +128,7 @@ void Renderer3D::RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalDa
     gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
     gridMaterial.Bind(commandBuffer);
 
-    vkCmdDraw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
+    Vulkan::Utils::Draw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
 }
 
 void Renderer3D::RecreateMaterials()

@@ -11,6 +11,9 @@
 #include <utils/Logging.h>
 #include <utils/math/Graphics.h>
 
+#include "render/renderer/Renderer.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
+
 namespace Siege
 {
 void Renderer2D::Initialise(const char* const globalDataName)
@@ -208,7 +211,7 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
 
         textVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
-        vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
+        Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }
 }
 
@@ -236,7 +239,7 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
 
         quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
-        vkCmdDrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
+        Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }
 }
 
@@ -247,7 +250,7 @@ void Renderer2D::RenderGrid(Vulkan::CommandBuffer& buffer)
         gridMaterial.BindPushConstant(buffer, &grid[j]);
         gridMaterial.Bind(buffer);
 
-        vkCmdDrawIndexed(buffer.Get(), 6, 1, 0, 0, 0);
+        Vulkan::Utils::DrawIndexed(buffer.Get(), 6, 1, 0, 0, 0);
     }
 }
 

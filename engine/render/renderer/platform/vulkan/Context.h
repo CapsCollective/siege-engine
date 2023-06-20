@@ -61,7 +61,7 @@ private:
     static inline Instance vulkanInstance;
 
     PhysicalDevice physicalDevice;
-    Surface surface {VK_NULL_HANDLE};
+    Surface surface {nullptr};
     LogicalDevice logicalDevice;
     Swapchain swapchain;
 };

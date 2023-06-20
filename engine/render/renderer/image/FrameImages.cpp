@@ -42,13 +42,13 @@ FrameImages::FrameImages(VkSwapchainKHR swapchain,
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
-    vkGetSwapchainImagesKHR(device, swapchain, OUT & imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device, swapchain, &imageCount, nullptr);
 
     FrameImages::SetImageCount(imageCount);
 
     VkImage swapchainImages[imageCount];
 
-    vkGetSwapchainImagesKHR(device, swapchain, &imageCount, OUT swapchainImages);
+    vkGetSwapchainImagesKHR(device, swapchain, &imageCount, swapchainImages);
 
     Siege::Vulkan::Image::Config config = {imageFormat,
                                            imageExtent,

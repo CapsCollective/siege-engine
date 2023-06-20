@@ -11,6 +11,7 @@
 #include <utils/Logging.h>
 
 #include "Context.h"
+#include "utils/TypeAdaptor.h"
 
 namespace Siege::Vulkan
 {

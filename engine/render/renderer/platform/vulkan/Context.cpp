@@ -1,5 +1,4 @@
 //
-//
 //  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 //  This code is released under an unmodified zlib license.
@@ -7,12 +6,19 @@
 //      https://opensource.org/licenses/Zlib
 //
 
+#define VOLK_IMPLEMENTATION
+#define GLFW_INCLUDE_VULKAN
+
 #include "Context.h"
 
-#include <GLFW/glfw3.h>
 #include <utils/Logging.h>
 
 #include "render/renderer/Renderer.h"
+#include "utils/TypeAdaptor.h"
+
+// clang-format off
+#include <GLFW/glfw3.h> // Must be final include
+// clang-format on
 
 namespace Siege::Vulkan
 {
@@ -29,6 +35,7 @@ void Context::Init(Window& window)
     CC_ASSERT(volkInitialize() == VK_SUCCESS, "Unable to initialise Volk!")
 
     vulkanInstance = Instance(window.GetRequiredExtensions());
+
     glfwCreateWindowSurface(vulkanInstance.GetInstance(),
                             reinterpret_cast<GLFWwindow*>(window.GetRawWindow()),
                             nullptr,

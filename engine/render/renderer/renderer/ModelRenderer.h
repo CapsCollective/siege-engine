@@ -9,7 +9,6 @@
 #ifndef SIEGE_ENGINE_MODEL_RENDERER_H
 #define SIEGE_ENGINE_MODEL_RENDERER_H
 
-#include "../Core.h"
 #include "../model/Model.h"
 #include "render/renderer/platform/vulkan/Material.h"
 

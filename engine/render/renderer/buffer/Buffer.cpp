@@ -12,15 +12,16 @@
 
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/utils/Device.h"
+#include "render/renderer/platform/vulkan/utils/TypeAdaptor.h"
 
 namespace Siege::Buffer
 {
 // TODO: Wrap this in a static class 'BufferAllocator' so that we
 // don't need to keep a static instance.
 
-void CreateBuffer(VkDeviceSize size,
-                  VkBufferUsageFlags usage,
-                  VkMemoryPropertyFlags properties,
+void CreateBuffer(unsigned long size,
+                  unsigned int usage,
+                  unsigned int properties,
                   VkBuffer& buffer,
                   VkDeviceMemory& bufferMemory)
 {
@@ -54,7 +55,7 @@ void CreateBuffer(VkDeviceSize size,
     vkBindBufferMemory(device, buffer, bufferMemory, 0);
 };
 
-void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDeviceSize offset)
+void CopyData(Buffer& dstBuffer, unsigned long size, const void* bufferData, unsigned long offset)
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -64,7 +65,7 @@ void CopyData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData, VkDe
     vkUnmapMemory(device, dstBuffer.bufferMemory);
 }
 
-void AppendData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData)
+void AppendData(Buffer& dstBuffer, unsigned long size, const void* bufferData)
 {
     auto device = Vulkan::Context::GetVkLogicalDevice();
 
@@ -76,7 +77,7 @@ void AppendData(Buffer& dstBuffer, VkDeviceSize size, const void* bufferData)
     dstBuffer.size = dstBuffer.size + size;
 }
 
-void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size)
+void CopyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, unsigned long size)
 {
     Vulkan::Context::GetCurrentDevice()->CopyBuffer(srcBuffer, dstBuffer, size);
 }

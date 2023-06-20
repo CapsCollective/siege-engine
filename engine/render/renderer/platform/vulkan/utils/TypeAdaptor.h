@@ -191,49 +191,109 @@ DECL_VULKAN_SWITCH_FUN(
     VkImageLayout,
     SWITCH_MEM(VkImageLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, LAYOUT_TRANSFER_DST_OPTIMAL)
         SWITCH_MEM(VkImageLayout,
-                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                   LAYOUT_SHADER_READ_ONLY_OPTIMAL) SWITCH_DEFAULT(LAYOUT_UNDEFINED))
-
-DECL_VULKAN_SWITCH_FUN(VkImageLayout,
-                       ImageLayout,
-                       SWITCH_MEM(ImageLayout,
-                                  LAYOUT_TRANSFER_DST_OPTIMAL,
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-                           SWITCH_MEM(ImageLayout,
-                                      LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-                               SWITCH_DEFAULT(VK_IMAGE_LAYOUT_UNDEFINED))
-
-DECL_VULKAN_SWITCH_FUN(BufferType,
-                       VkBufferUsageFlagBits,
-                       SWITCH_MEM(VkBufferUsageFlagBits,
-                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                                  INDEX_BUFFER) SWITCH_DEFAULT(VERTEX_BUFFER))
-DECL_VULKAN_SWITCH_FUN(VkBufferUsageFlagBits,
-                       BufferType,
-                       SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
-                           SWITCH_DEFAULT(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT))
+                   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                   LAYOUT_COLOUR_ATTACHMENT)
+            SWITCH_MEM(VkImageLayout,
+                       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                       LAYOUT_DEPTH_STENCIL_ATTACHMENT)
+                SWITCH_MEM(VkImageLayout,
+                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                           LAYOUT_SHADER_READ_ONLY_OPTIMAL) SWITCH_DEFAULT(LAYOUT_UNDEFINED))
 
 DECL_VULKAN_SWITCH_FUN(
-    PipelineStage,
-    VkPipelineStageFlagBits,
-    SWITCH_MEM(VkPipelineStageFlagBits, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, STAGE_TOP_OF_PIPE)
-        SWITCH_MEM(VkPipelineStageFlagBits,
-                   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-                   STAGE_VERTEX_SHADER) SWITCH_MEM(VkPipelineStageFlagBits,
-                                                   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                                   STAGE_FRAGMENT_SHADER)
-            SWITCH_MEM(VkPipelineStageFlagBits, VK_PIPELINE_STAGE_TRANSFER_BIT, STAGE_TRANSFER_BIT)
-                SWITCH_DEFAULT(STAGE_NONE))
+    VkImageLayout,
+    ImageLayout,
+    SWITCH_MEM(ImageLayout, LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+        SWITCH_MEM(ImageLayout, LAYOUT_COLOUR_ATTACHMENT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+            SWITCH_MEM(ImageLayout,
+                       LAYOUT_DEPTH_STENCIL_ATTACHMENT,
+                       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+                SWITCH_MEM(ImageLayout,
+                           LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+                    SWITCH_DEFAULT(VK_IMAGE_LAYOUT_UNDEFINED))
+
+DECL_VULKAN_SWITCH_FUN(
+    BufferType,
+    VkBufferUsageFlagBits,
+    SWITCH_MEM(VkBufferUsageFlagBits, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, TRANSFER_SRC_BUFFER)
+        SWITCH_MEM(VkBufferUsageFlagBits, VK_BUFFER_USAGE_TRANSFER_DST_BIT, TRANSFER_DST_BUFFER)
+            SWITCH_MEM(VkBufferUsageFlagBits, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, INDEX_BUFFER)
+                SWITCH_MEM(VkBufferUsageFlagBits, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VERTEX_BUFFER)
+                    SWITCH_MEM(VkBufferUsageFlagBits,
+                               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                               UNIFORM_BUFFER) SWITCH_MEM(VkBufferUsageFlagBits,
+                                                          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                                          STORAGE_BUFFER)
+                        SWITCH_DEFAULT(TRANSFER_SRC_BUFFER))
+DECL_VULKAN_SWITCH_FUN(
+    VkBufferUsageFlagBits,
+    BufferType,
+    SWITCH_MEM(BufferType, TRANSFER_SRC_BUFFER, VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+        SWITCH_MEM(BufferType, TRANSFER_DST_BUFFER, VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+            SWITCH_MEM(BufferType, INDEX_BUFFER, VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+                SWITCH_MEM(BufferType, VERTEX_BUFFER, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+                    SWITCH_MEM(BufferType, UNIFORM_BUFFER, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+                        SWITCH_MEM(BufferType, STORAGE_BUFFER, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
+                            SWITCH_DEFAULT(VK_BUFFER_USAGE_TRANSFER_SRC_BIT))
+
+DECL_VULKAN_SWITCH_FUN(MemoryProperty,
+                       VkMemoryPropertyFlagBits,
+                       SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                  MEMORY_DEVICE_LOCAL)
+                           SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                      VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                      MEMORY_HOST_COHERENT)
+                               SWITCH_MEM(VkMemoryPropertyFlagBits,
+                                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+                                          MEMORY_HOST_VISIBLE) SWITCH_DEFAULT(MEMORY_DEVICE_LOCAL))
+
+DECL_VULKAN_SWITCH_FUN(
+    VkMemoryPropertyFlagBits,
+    MemoryProperty,
+    SWITCH_MEM(MemoryProperty, MEMORY_DEVICE_LOCAL, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+        SWITCH_MEM(MemoryProperty, MEMORY_HOST_COHERENT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            SWITCH_MEM(MemoryProperty, MEMORY_HOST_VISIBLE, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
+
+DECL_VULKAN_SWITCH_FUN(PipelineStage,
+                       VkPipelineStageFlagBits,
+                       SWITCH_MEM(VkPipelineStageFlagBits,
+                                  VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                  STAGE_TOP_OF_PIPE) SWITCH_MEM(VkPipelineStageFlagBits,
+                                                                VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+                                                                STAGE_VERTEX_SHADER)
+                           SWITCH_MEM(VkPipelineStageFlagBits,
+                                      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                      STAGE_FRAGMENT_SHADER)
+                               SWITCH_MEM(VkPipelineStageFlagBits,
+                                          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                          STAGE_COLOUR_ATTACHMENT_OUTPUT)
+                                   SWITCH_MEM(VkPipelineStageFlagBits,
+                                              VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+                                              STAGE_EARLY_FRAGMENT_TEST)
+                                       SWITCH_MEM(VkPipelineStageFlagBits,
+                                                  VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                                  STAGE_TRANSFER_BIT) SWITCH_DEFAULT(STAGE_NONE))
 
 DECL_VULKAN_SWITCH_FUN(
     VkPipelineStageFlagBits,
     PipelineStage,
     SWITCH_MEM(PipelineStage, STAGE_TOP_OF_PIPE, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT)
         SWITCH_MEM(PipelineStage, STAGE_VERTEX_SHADER, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT)
-            SWITCH_MEM(PipelineStage, STAGE_FRAGMENT_SHADER, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
-                SWITCH_MEM(PipelineStage, STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT)
-                    SWITCH_DEFAULT(VK_PIPELINE_STAGE_NONE))
+            SWITCH_MEM(PipelineStage,
+                       STAGE_COLOUR_ATTACHMENT_OUTPUT,
+                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
+                SWITCH_MEM(PipelineStage,
+                           STAGE_EARLY_FRAGMENT_TEST,
+                           VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT)
+                    SWITCH_MEM(PipelineStage,
+                               STAGE_FRAGMENT_SHADER,
+                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
+                        SWITCH_MEM(PipelineStage,
+                                   STAGE_TRANSFER_BIT,
+                                   VK_PIPELINE_STAGE_TRANSFER_BIT)
+                            SWITCH_DEFAULT(VK_PIPELINE_STAGE_NONE))
 
 DECL_VULKAN_SWITCH_FUN(
     VkAccessFlagBits,
@@ -242,7 +302,13 @@ DECL_VULKAN_SWITCH_FUN(
         SWITCH_MEM(MemoryAccess, ACCESS_SHADER_WRITE, VK_ACCESS_SHADER_WRITE_BIT)
             SWITCH_MEM(MemoryAccess, ACCESS_TRANSFER_READ, VK_ACCESS_TRANSFER_READ_BIT)
                 SWITCH_MEM(MemoryAccess, ACCESS_TRANSFER_WRITE, VK_ACCESS_TRANSFER_WRITE_BIT)
-                    SWITCH_DEFAULT(VK_ACCESS_NONE))
+                    SWITCH_MEM(MemoryAccess,
+                               ACCESS_COLOUR_ATTACHMENT_WRITE,
+                               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
+                        SWITCH_MEM(MemoryAccess,
+                                   ACCESS_DEPTH_ATTACHMENT_WRITE,
+                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT)
+                            SWITCH_DEFAULT(VK_ACCESS_NONE))
 
 DECL_VULKAN_SWITCH_FUN(
     MemoryAccess,
@@ -251,7 +317,12 @@ DECL_VULKAN_SWITCH_FUN(
         SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_SHADER_WRITE_BIT, ACCESS_SHADER_WRITE)
             SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_TRANSFER_READ_BIT, ACCESS_TRANSFER_READ)
                 SWITCH_MEM(VkAccessFlagBits, VK_ACCESS_TRANSFER_WRITE_BIT, ACCESS_TRANSFER_WRITE)
-                    SWITCH_DEFAULT(ACCESS_NONE))
+                    SWITCH_MEM(VkAccessFlagBits,
+                               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                               ACCESS_COLOUR_ATTACHMENT_WRITE)
+                        SWITCH_MEM(VkAccessFlagBits,
+                                   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+                                   ACCESS_DEPTH_ATTACHMENT_WRITE) SWITCH_DEFAULT(ACCESS_NONE))
 
 DECL_VULKAN_SWITCH_FUN(
     ImageAspect,

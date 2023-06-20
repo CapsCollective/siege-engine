@@ -11,6 +11,7 @@
 #include <utils/math/Graphics.h>
 
 #include "render/renderer/platform/vulkan/Swapchain.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
 {
@@ -142,7 +143,7 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
         vertexBuffer.Bind(buffer, &fontOffset);
         indexBuffer.Bind(buffer);
 
-        vkCmdDrawIndexed(buffer.Get(), 6, characters[i].Count(), 0, 0, 0);
+        Vulkan::Utils::DrawIndexed(buffer.Get(), 6, characters[i].Count(), 0, 0, 0);
     }
 }
 

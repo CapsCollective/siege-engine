@@ -11,7 +11,6 @@
 
 #include <utils/Colour.h>
 
-#include "../Core.h"
 #include "../model/Model.h"
 
 namespace Siege

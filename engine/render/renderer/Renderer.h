@@ -12,16 +12,18 @@
 #include <utils/Logging.h>
 #include <window/Window.h>
 
-#include "descriptor/DescriptorPool.h"
 #include "lights/PointLight.h"
 #include "model/Model.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
+#include "render/renderer/platform/vulkan/DescriptorPool.h"
+#include "renderer/CameraData.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 
 namespace Siege
 {
+
 class Renderer
 {
 public:
@@ -48,15 +50,7 @@ public:
     bool StartFrame();
     void EndFrame();
 
-    void ClearDeviceQueue()
-    {
-        vkDeviceWaitIdle(Context().GetVkLogicalDevice());
-    }
-
-    void SetClearValue(float r, float g, float b, float a)
-    {
-        clearValue = {{r, g, b, a}};
-    }
+    void ClearDeviceQueue();
 
     void DrawQuad(const Vec2 position,
                   const Vec2 scale = {1.f, 1.f},
@@ -98,9 +92,6 @@ private:
     static Renderer* instance;
     static Vulkan::CommandBuffer commandBuffers;
     static uint32_t currentFrameIndex;
-
-    // Make this adjustable in the window, not the renderer.
-    VkClearColorValue clearValue {{0.96f, 0.96f, 0.96f, 1.f}};
 
     void RecreateSwapChain();
 

@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_VULKAN_UTILS_IMAGE_H
 #define SIEGE_ENGINE_VULKAN_UTILS_IMAGE_H
 
-#include "render/renderer/Core.h"
+#include <volk/volk.h>
 
 namespace Siege::Vulkan::Utils
 {

@@ -16,7 +16,7 @@
 #include "Pipeline.h"
 #include "Swapchain.h"
 #include "render/renderer/Renderer.h"
-#include "render/renderer/descriptor/DescriptorPool.h"
+#include "render/renderer/platform/vulkan/DescriptorPool.h"
 #include "render/renderer/platform/vulkan/utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
 
@@ -32,26 +32,35 @@ Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
 
     auto device = Context::GetVkLogicalDevice();
 
+    const auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
+
     // Separate uniforms into unique properties
+
+    bufferUpdates = MHArray<MHArray<UniformBufferUpdate>>(framesCount);
+    imageUpdates = MHArray<MHArray<UniformImageUpdate>>(framesCount);
+
+    for (size_t i = 0; i < framesCount; i++)
+    {
+        bufferUpdates.Append(MHArray<UniformBufferUpdate>(10));
+        imageUpdates.Append(MHArray<UniformImageUpdate>(MAX_TEXTURES));
+    }
+
+    textureInfos = MHArray<ImageData>(MAX_TEXTURES);
 
     uint64_t offset {0};
 
     AddShader(vertexShader, OUT offset);
     AddShader(fragmentShader, OUT offset);
 
-    auto framesCount = Swapchain::MAX_FRAMES_IN_FLIGHT;
-
     // Allocate buffer which can store all the data we need
     Buffer::CreateBuffer(bufferSize,
-                         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                         Vulkan::Utils::STORAGE_BUFFER | Vulkan::Utils::UNIFORM_BUFFER,
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                          OUT buffer.buffer,
                          OUT buffer.bufferMemory);
 
     // Set the number of frames
     perFrameDescriptorSets = MHArray<MSArray<VkDescriptorSet, MAX_UNIFORM_SETS>>(framesCount);
-
-    writes = MHArray<MSArray<VkWriteDescriptorSet, 10>>(framesCount);
 
     // Create Descriptor Set Layout for Sets
     for (auto slotIt = propertiesSlots.CreateIterator(); slotIt; ++slotIt)
@@ -87,7 +96,7 @@ Material::Material(Shader vertShader, Shader fragShader, bool isWritingDepth) :
         WriteSet(slotIt.GetIndex(), slot);
     }
 
-    for (auto writeIt = writes.CreateIterator(); writeIt; ++writeIt) Write(*writeIt);
+    for (size_t i = 0; i < framesCount; i++) UpdateUniforms(bufferUpdates[i], imageUpdates[i]);
 
     // Create Pipeline
     Recreate();
@@ -153,8 +162,6 @@ uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
     using namespace Utils;
     using namespace Descriptor;
 
-    auto& writeSets = writes[Renderer::GetCurrentFrameIndex()];
-
     auto texIndex = FindTextureIndex(texture->GetId());
 
     if (texIndex > -1) return texIndex;
@@ -173,15 +180,11 @@ uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
 
         auto info = texture->GetInfo();
 
-        texture2DInfos[texIndex] = {info.sampler,
-                                    info.imageInfo.view,
-                                    ToVkImageLayout(info.imageInfo.layout)};
-
-        if (writeSets.Count() > 0) break;
+        textureInfos[texIndex] = {info.sampler, info.imageInfo.view, info.imageInfo.layout};
 
         auto prop = properties[propIdx];
 
-        for (auto write = writes.CreateFIterator(); write; ++write)
+        for (auto write = imageUpdates.CreateFIterator(); write; ++write)
         {
             QueueImageUpdate(*write,
                              perFrameDescriptorSets[write.GetIndex()][it.GetIndex()],
@@ -238,10 +241,9 @@ void Material::AddShader(const Shader& shader, uint64_t& offset)
             auto& defaultTexture2DInfo = shader.GetDefaultTexture2DInfo();
             for (size_t i = 0; i < uniform.count; i++)
             {
-                texture2DInfos.Append(
-                    {defaultTexture2DInfo.sampler,
-                     defaultTexture2DInfo.imageInfo.view,
-                     Utils::ToVkImageLayout(defaultTexture2DInfo.imageInfo.layout)});
+                textureInfos.Append({defaultTexture2DInfo.sampler,
+                                     defaultTexture2DInfo.imageInfo.view,
+                                     defaultTexture2DInfo.imageInfo.layout});
             }
         }
     }
@@ -287,11 +289,15 @@ void Material::Update()
 {
     auto currentFrameIdx = Renderer::GetCurrentFrameIndex();
 
-    auto& targetSets = writes[currentFrameIdx];
+    auto& targetBuffers = bufferUpdates[currentFrameIdx];
+    auto& targetImages = imageUpdates[currentFrameIdx];
 
     using Vulkan::Context;
 
-    Write(targetSets);
+    //    Write(targetSets);
+    UpdateUniforms(targetBuffers, targetImages);
+
+    targetBuffers.Clear();
 }
 
 void Material::Update(Hash::StringId id)
@@ -302,8 +308,13 @@ void Material::Update(Hash::StringId id)
 
         if (propertyIndex == -1) return;
 
-        auto& setsToWrite = writes[Renderer::GetCurrentFrameIndex()];
-        Write(setsToWrite);
+        auto& buffersToWrite = bufferUpdates[Renderer::GetCurrentFrameIndex()];
+        auto& imagesToWrite = imageUpdates[Renderer::GetCurrentFrameIndex()];
+        //        Write(setsToWrite);
+        UpdateUniforms(buffersToWrite, imagesToWrite);
+
+        buffersToWrite.Clear();
+        imagesToWrite.Clear();
     }
 }
 
@@ -317,30 +328,70 @@ void Material::WriteSet(uint32_t set, PropertiesSlot& slot)
     for (auto propIt = properties.CreateIterator(); propIt; ++propIt)
     {
         auto prop = *propIt;
-        bufferInfos.Append(CreateBufferInfo(buffer.buffer, prop.offset, prop.size));
+
         for (auto setIt = perFrameDescriptorSets.CreateFIterator(); setIt; ++setIt)
         {
             auto sets = *setIt;
             if (IsTexture2D(prop.type))
-                QueueImageUpdate(writes[setIt.GetIndex()], sets[set], propIt.GetIndex());
+                QueueImageUpdate(imageUpdates[setIt.GetIndex()], sets[set], propIt.GetIndex());
             else
-                QueuePropertyUpdate(writes[setIt.GetIndex()],
+                QueuePropertyUpdate(bufferUpdates[setIt.GetIndex()],
                                     sets[set],
                                     prop.type,
                                     propIt.GetIndex(),
-                                    1);
+                                    1,
+                                    {buffer.buffer, prop.offset, prop.size});
         }
     }
 }
 
-void Material::Write(MSArray<VkWriteDescriptorSet, 10>& sets)
+void Material::UpdateUniforms(MHArray<UniformBufferUpdate>& buffers,
+                              MHArray<UniformImageUpdate>& images)
 {
-    Utils::Descriptor::WriteSets(Context::GetVkLogicalDevice(), sets.Data(), sets.Count());
+    using namespace Vulkan::Utils::Descriptor;
 
-    sets.Clear();
+    MSArray<VkWriteDescriptorSet, 10> writeSets;
+    MSArray<VkDescriptorBufferInfo, MAX_UNIFORM_SETS * 10> bufferInfs;
+    MSArray<VkDescriptorImageInfo, MAX_TEXTURES> imageInfos;
+
+    for (auto it = buffers.CreateIterator(); it; ++it)
+    {
+        auto& update = it->update;
+        auto& bufferInfo = it->bufferUpdate;
+
+        bufferInfs.Append({bufferInfo.buffer, bufferInfo.offset, bufferInfo.range});
+        writeSets.Append(CreateWriteSet(update.dstBinding,
+                                        update.set,
+                                        update.descriptors,
+                                        Utils::ToVkDescriptorType(update.type),
+                                        &bufferInfs.Back()));
+    }
+
+    for (auto it = textureInfos.CreateIterator(); it; ++it)
+    {
+        imageInfos.Append({it->sampler, it->view, Utils::ToVkImageLayout(it->layout)});
+    }
+
+    for (auto it = images.CreateIterator(); it; ++it)
+    {
+        auto& update = it->update;
+
+        writeSets.Append(WriteDescriptorImage(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                              update.set,
+                                              imageInfos.Data(),
+                                              update.dstBinding,
+                                              update.descriptors,
+                                              update.dstIndex));
+    }
+
+    Utils::Descriptor::WriteSets(Context::GetVkLogicalDevice(),
+                                 writeSets.Data(),
+                                 writeSets.Count());
+    buffers.Clear();
+    images.Clear();
 }
 
-void Material::QueueImageUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+void Material::QueueImageUpdate(MHArray<UniformImageUpdate>& imageUpdate,
                                 VkDescriptorSet& set,
                                 uint32_t binding,
                                 uint32_t count,
@@ -348,24 +399,19 @@ void Material::QueueImageUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
 {
     using namespace Vulkan::Utils::Descriptor;
 
-    writeQueue.Append(WriteDescriptorImage(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                           set,
-                                           texture2DInfos.Data(),
-                                           binding,
-                                           count,
-                                           index));
+    imageUpdate.Append({{set, binding, index, count, Utils::UniformType::TEXTURE2D}, textureInfos});
 }
 
-void Material::QueuePropertyUpdate(MSArray<VkWriteDescriptorSet, 10>& writeQueue,
+void Material::QueuePropertyUpdate(MHArray<UniformBufferUpdate>& bufferUpdateQueue,
                                    VkDescriptorSet& set,
                                    Utils::UniformType type,
                                    uint32_t binding,
-                                   uint32_t count)
+                                   uint32_t count,
+                                   BufferData bufferInfo)
 {
     using namespace Vulkan::Utils::Descriptor;
 
-    writeQueue.Append(
-        CreateWriteSet(binding, set, count, ToVkDescriptorType(type), &bufferInfos[binding]));
+    bufferUpdateQueue.Append({{set, binding, 0, count, type}, bufferInfo});
 }
 
 int32_t Material::FindPropertyIndex(Hash::StringId id, PropertiesSlot& slot)
@@ -405,11 +451,12 @@ void Material::Swap(Material& other)
     auto tmpGraphicsPipeline = std::move(graphicsPipeline);
     auto tmpPropertiesSlots = propertiesSlots;
     auto tmpPerFrameDescriptors = std::move(perFrameDescriptorSets);
-    auto tmpWrites = std::move(writes);
-    auto tmpBufferInfos = std::move(bufferInfos);
-    auto tmpTexture2DInfos = std::move(texture2DInfos);
     auto tmpPushConstant = pushConstant;
     auto tmpIsWritingDepth = isWritingDepth;
+
+    auto tmpTextureInfos = std::move(textureInfos);
+    auto tmpImageUpdates = std::move(imageUpdates);
+    auto tmpBufferUpdates = std::move(bufferUpdates);
 
     vertexShader = std::move(other.vertexShader);
     fragmentShader = std::move(other.fragmentShader);
@@ -418,11 +465,11 @@ void Material::Swap(Material& other)
     graphicsPipeline = std::move(other.graphicsPipeline);
     propertiesSlots = other.propertiesSlots;
     perFrameDescriptorSets = std::move(other.perFrameDescriptorSets);
-    writes = std::move(other.writes);
-    bufferInfos = std::move(other.bufferInfos);
-    texture2DInfos = std::move(other.texture2DInfos);
     pushConstant = other.pushConstant;
     isWritingDepth = other.isWritingDepth;
+    textureInfos = std::move(other.textureInfos);
+    imageUpdates = std::move(other.imageUpdates);
+    bufferUpdates = std::move(other.bufferUpdates);
 
     other.vertexShader = std::move(tmpVertexShader);
     other.fragmentShader = std::move(tmpFragmentShader);
@@ -431,10 +478,11 @@ void Material::Swap(Material& other)
     other.graphicsPipeline = std::move(tmpGraphicsPipeline);
     other.propertiesSlots = tmpPropertiesSlots;
     other.perFrameDescriptorSets = std::move(tmpPerFrameDescriptors);
-    other.writes = std::move(tmpWrites);
-    other.bufferInfos = std::move(tmpBufferInfos);
-    other.texture2DInfos = std::move(tmpTexture2DInfos);
     other.pushConstant = tmpPushConstant;
     other.isWritingDepth = tmpIsWritingDepth;
+
+    other.textureInfos = std::move(tmpTextureInfos);
+    other.imageUpdates = std::move(tmpImageUpdates);
+    other.bufferUpdates = std::move(tmpBufferUpdates);
 }
 } // namespace Siege::Vulkan

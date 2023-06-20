@@ -8,8 +8,35 @@
 
 #include "Descriptor.h"
 
+#include <utils/Logging.h>
+
 namespace Siege::Vulkan::Utils::Descriptor
 {
+VkDescriptorPool CreateDescriptorPool(VkDevice device,
+                                      UniformAllocation* sizes,
+                                      unsigned int sizeCount)
+{
+    VkDescriptorPool pool {VK_NULL_HANDLE};
+
+    VkDescriptorPoolCreateInfo poolCreateInfo {};
+    poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolCreateInfo.flags = 0;
+    poolCreateInfo.maxSets = MAX_DESCRIPTOR_POOL_SIZES;
+    poolCreateInfo.poolSizeCount = sizeCount;
+    poolCreateInfo.pPoolSizes = reinterpret_cast<VkDescriptorPoolSize*>(sizes);
+
+    CC_ASSERT(vkCreateDescriptorPool(device, &poolCreateInfo, nullptr, &pool) == VK_SUCCESS,
+              "Unable to create descriptor pool!")
+
+    return pool;
+}
+
+void DestroyDescriptorPool(VkDevice device, VkDescriptorPool pool)
+{
+    if (pool == nullptr) return;
+    vkDestroyDescriptorPool(device, pool, nullptr);
+}
+
 VkDescriptorSetLayoutBinding CreateLayoutBinding(uint32_t binding,
                                                  uint32_t count,
                                                  uint32_t type,
@@ -141,4 +168,5 @@ VkSamplerCreateInfo SamplerCreateInfo(VkFilter filters, VkSamplerAddressMode sam
 
     return info;
 }
+
 } // namespace Siege::Vulkan::Utils::Descriptor

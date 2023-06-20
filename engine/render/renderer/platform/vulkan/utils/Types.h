@@ -35,6 +35,12 @@ struct VkShaderModule_T;
 struct VkPipelineLayout_T;
 struct VkPipeline_T;
 struct VkSampler_T;
+struct VkDescriptorPool_T;
+struct VkRenderPass_T;
+struct VkFramebuffer_T;
+struct VkDescriptorSet_T;
+struct VkDescriptorSetLayout_T;
+struct VkWriteDescriptorSet;
 
 typedef VkInstance_T* VkInstance;
 typedef VkSurfaceKHR_T* Surface;
@@ -56,9 +62,14 @@ typedef VkShaderModule_T* VkShaderModule;
 typedef VkPipelineLayout_T* VkPipelineLayout;
 typedef VkPipeline_T* VkPipeline;
 typedef VkSampler_T* VkSampler;
+typedef VkFramebuffer_T* VkFramebuffer;
+typedef VkDescriptorSet_T* VkDescriptorSet;
+typedef VkDescriptorSetLayout_T* VkDescriptorSetLayout;
 
 namespace Siege::Vulkan::Utils
 {
+typedef VkDescriptorPool_T* UniformAllocator;
+typedef VkRenderPass_T* RenderPass;
 // ----------------------------------------- Enums ------------------------------------------------
 
 enum DepthFormat
@@ -90,7 +101,11 @@ enum ImageFormat
     B10R11G11UF = 122,
     DEPTH32FSTENCIL8UINT = 130,
     DEPTH32F = 126,
-    DEPTH24STENCIL8
+    DEPTH24STENCIL8,
+    DEPTH24US8UI = 129,
+    DEPTH32FS8UI = 130,
+    DEPTH16US8UI = 128,
+    DEPTH16U = 125
 };
 
 enum ImageUsage
@@ -119,7 +134,9 @@ enum UniformType
     UNKNOWN = 0,
     TEXTURE2D = 1,
     UNIFORM = 6,
-    STORAGE = 7
+    STORAGE = 7,
+    UNIFORM_DYNAMIC = 8,
+    STORAGE_DYNAMIC = 9
 };
 
 enum ShaderType
@@ -149,14 +166,20 @@ enum PipelineTopology
 enum ImageLayout
 {
     LAYOUT_UNDEFINED = 0,
-    LAYOUT_TRANSFER_DST_OPTIMAL = 2,
+    LAYOUT_COLOUR_ATTACHMENT = 2,
+    LAYOUT_DEPTH_STENCIL_ATTACHMENT = 3,
     LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
+    LAYOUT_TRANSFER_DST_OPTIMAL = 7,
 };
 
 enum BufferType
 {
+    TRANSFER_SRC_BUFFER = 0x00000001,
+    TRANSFER_DST_BUFFER = 0x00000002,
+    UNIFORM_BUFFER = 0x00000010,
+    STORAGE_BUFFER = 0x00000020,
+    INDEX_BUFFER = 0x00000040,
     VERTEX_BUFFER = 0x00000080,
-    INDEX_BUFFER = 0x00000040
 };
 
 enum PipelineStage
@@ -165,7 +188,9 @@ enum PipelineStage
     STAGE_TOP_OF_PIPE = 0x00000001,
     STAGE_VERTEX_SHADER = 0x00000008,
     STAGE_FRAGMENT_SHADER = 0x00000080,
-    STAGE_TRANSFER_BIT = 0x00001000
+    STAGE_EARLY_FRAGMENT_TEST = 0x00000100,
+    STAGE_COLOUR_ATTACHMENT_OUTPUT = 0x00000400,
+    STAGE_TRANSFER_BIT = 0x00001000,
 };
 
 enum MemoryAccess
@@ -174,7 +199,9 @@ enum MemoryAccess
     ACCESS_TRANSFER_WRITE = 0x00001000,
     ACCESS_TRANSFER_READ = 0x00000800,
     ACCESS_SHADER_READ = 0x00000020,
-    ACCESS_SHADER_WRITE = 0x00000040
+    ACCESS_SHADER_WRITE = 0x00000040,
+    ACCESS_COLOUR_ATTACHMENT_WRITE = 0x00000100,
+    ACCESS_DEPTH_ATTACHMENT_WRITE = 0x00000400,
 };
 
 enum ImageAspect
@@ -189,6 +216,13 @@ enum VertexInputRate
 {
     INPUT_RATE_VERTEX = 0,
     INPUT_RATE_INSTANCE = 1
+};
+
+enum MemoryProperty
+{
+    MEMORY_DEVICE_LOCAL = 0x00000001,
+    MEMORY_HOST_COHERENT = 0x00000002,
+    MEMORY_HOST_VISIBLE = 0x00000004
 };
 
 //----------------------------------------- Structs -----------------------------------------------
@@ -228,6 +262,12 @@ struct Extent2DF
 struct Image2DConfig
 {
     ImageFormat format;
+};
+
+struct UniformAllocation
+{
+    UniformType type;
+    uint32_t uniformCount;
 };
 
 } // namespace Siege::Vulkan::Utils

@@ -9,16 +9,21 @@
 #ifndef SIEGE_ENGINE_DESCRIPTOR_POOL_H
 #define SIEGE_ENGINE_DESCRIPTOR_POOL_H
 
-#include "../Core.h"
+#include <utils/collections/HeapArray.h>
+
+#include "render/renderer/platform/vulkan/utils/Types.h"
 
 namespace Siege
 {
+// TODO(Aryeh): Remove the statics in this file (remember to create constructors and Swap functions)
 class DescriptorPool
 {
 public:
 
-    static void AddPoolSize(const VkDescriptorType type, const uint32_t size);
-    static VkDescriptorPool& GetDescriptorPool()
+    static void Initialise();
+    static void AddPoolSize(const Vulkan::Utils::UniformType type, const unsigned int size);
+
+    static inline Vulkan::Utils::UniformAllocator& GetDescriptorPool()
     {
         return descriptorPool;
     }
@@ -28,10 +33,8 @@ public:
 
 private:
 
-    static constexpr size_t MAX_DESCRIPTOR_POOL_SIZES = 1024;
-
-    static VkDescriptorPool descriptorPool;
-    static MSArray<VkDescriptorPoolSize, MAX_DESCRIPTOR_POOL_SIZES> sizes;
+    static Vulkan::Utils::UniformAllocator descriptorPool;
+    static MHArray<Vulkan::Utils::UniformAllocation> sizes;
 };
 } // namespace Siege
 

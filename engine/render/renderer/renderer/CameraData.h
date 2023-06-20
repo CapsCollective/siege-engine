@@ -6,16 +6,10 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_CORE_H
-#define SIEGE_ENGINE_CORE_H
+#ifndef SIEGE_ENGINE_RENDERER_COMMON_H
+#define SIEGE_ENGINE_RENDERER_COMMON_H
 
-#include <utils/Hash.h>
-#include <utils/collections/HeapArray.h>
-#include <utils/collections/StackArray.h>
 #include <utils/math/mat/Mat4.h>
-#include <volk/volk.h>
-
-#include <cstdint>
 
 namespace Siege
 {
@@ -26,4 +20,4 @@ struct CameraData
 };
 } // namespace Siege
 
-#endif
+#endif // SIEGE_ENGINE_RENDERER_COMMON_H

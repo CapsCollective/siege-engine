@@ -12,8 +12,8 @@
 #include <utils/collections/StackArray.h>
 
 #include "CommandBuffer.h"
+#include "RenderPass.h"
 #include "Shader.h"
-#include "render/renderer/pass/RenderPass.h"
 #include "utils/Types.h"
 
 namespace Siege::Vulkan

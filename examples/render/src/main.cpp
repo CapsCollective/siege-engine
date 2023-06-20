@@ -213,7 +213,6 @@ int main()
                                     Siege::Vec3::Zero,
                                     Siege::IColour::White,
                                     &cappy);
-
         Siege::Renderer3D::DrawText3D("Random Vase",
                                       {0.f, -.85f, -.5175f},
                                       {},
