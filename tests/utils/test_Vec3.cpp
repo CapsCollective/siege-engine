@@ -8,11 +8,11 @@
 
 #include <time.h>
 #include <utest.h>
+#include <utils/math/vec/Equality.h>
+#include <utils/math/vec/Format.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
-#include <utils/math/vec/Equality.h>
-#include <utils/math/vec/Format.h>
 
 using namespace Siege;
 
@@ -243,7 +243,7 @@ UTEST(test_Vec3, NormaliseVector)
 
 UTEST(test_Vec3, TestVec3CosOperation)
 {
-    Vec3 expected = {0.540302336f,-0.416146845, -0.989992499};
+    Vec3 expected = {0.540302336f, -0.416146845, -0.989992499};
 
     Vec3 vec = {1.f, 2.f, 3.f};
 
@@ -254,7 +254,7 @@ UTEST(test_Vec3, TestVec3CosOperation)
 
 UTEST(test_Vec3, TestVec3SinOperation)
 {
-    Vec3 expected = {0.841471016f,0.909297406, 0.141120002};
+    Vec3 expected = {0.841471016f, 0.909297406, 0.141120002};
 
     Vec3 vec = {1.f, 2.f, 3.f};
 
@@ -265,7 +265,7 @@ UTEST(test_Vec3, TestVec3SinOperation)
 
 UTEST(test_Vec3, TestVec3TanOperation)
 {
-    Vec3 expected = {1.55740774f,-2.18503976, -0.142546549};
+    Vec3 expected = {1.55740774f, -2.18503976, -0.142546549};
 
     Vec3 vec = {1.f, 2.f, 3.f};
 
@@ -846,7 +846,7 @@ UTEST(test_Vec3, TestFromString)
 
     String inputString = "1.00,2.00,3.00";
 
-    Vec3 result{};
+    Vec3 result {};
 
     ASSERT_TRUE(FromString(result, inputString));
 

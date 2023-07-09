@@ -206,7 +206,9 @@ struct Vec<T, 2>
      * @param time the proportion of movement to be done from origin to destination
      * @return a new vector with the results of the linear interpolation
      */
-    static inline constexpr Vec<T, 2> Lerp(const Vec<T, 2>& origin, const Vec<T, 2>& destination, T time)
+    static inline constexpr Vec<T, 2> Lerp(const Vec<T, 2>& origin,
+                                           const Vec<T, 2>& destination,
+                                           T time)
     {
         return origin * (1.0f - time) + destination * time;
     }
@@ -232,13 +234,15 @@ struct Vec<T, 2>
     inline constexpr Vec<T, 2>(T x) : Vec<T, 2>(x, 0) {}
 
     /**
-     * The 3D vector constructor. Takes the x and y axes from the provided vector and returns a new Vec<T, 2>
+     * The 3D vector constructor. Takes the x and y axes from the provided vector and returns a new
+     * Vec<T, 2>
      * @param other the 3D vector to convert from
      */
     inline constexpr Vec<T, 2>(const Vec<T, 3>& other) : Vec<T, 2>(other.x, other.y) {}
 
     /**
-     * The 4D vector constructor. Takes the x and y axes from the provided vector and returns a new Vec<T, 2>
+     * The 4D vector constructor. Takes the x and y axes from the provided vector and returns a new
+     * Vec<T, 2>
      * @param other the 4D vector to convert from
      */
     inline constexpr Vec<T, 2>(const Vec<T, 4>& other) : Vec<T, 2>(other.x, other.y) {}

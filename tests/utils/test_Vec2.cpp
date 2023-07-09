@@ -8,11 +8,11 @@
 
 #include <time.h>
 #include <utest.h>
+#include <utils/math/vec/Equality.h>
+#include <utils/math/vec/Format.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
-#include <utils/math/vec/Equality.h>
-#include <utils/math/vec/Format.h>
 
 using namespace Siege;
 
@@ -222,7 +222,7 @@ UTEST(test_Vec2, TestGetDotProduct)
 
 UTEST(test_Vec2, TestVec3CosOperation)
 {
-    Vec2 expected = {0.540302336f,-0.416146845};
+    Vec2 expected = {0.540302336f, -0.416146845};
 
     Vec2 vec = {1.f, 2.f};
 
@@ -233,7 +233,7 @@ UTEST(test_Vec2, TestVec3CosOperation)
 
 UTEST(test_Vec2, TestVec3SinOperation)
 {
-    Vec2 expected = {0.841471016f,0.909297406};
+    Vec2 expected = {0.841471016f, 0.909297406};
 
     Vec2 vec = {1.f, 2.f};
 
@@ -244,7 +244,7 @@ UTEST(test_Vec2, TestVec3SinOperation)
 
 UTEST(test_Vec2, TestVec3TanOperation)
 {
-    Vec2 expected = {1.55740774f,-2.18503976};
+    Vec2 expected = {1.55740774f, -2.18503976};
 
     Vec2 vec = {1.f, 2.f};
 
@@ -407,7 +407,7 @@ UTEST(test_Vec2, TestFromString)
 
     String inputString = "1.00,2.00";
 
-    Vec2 result{};
+    Vec2 result {};
 
     ASSERT_TRUE(FromString(result, inputString));
 

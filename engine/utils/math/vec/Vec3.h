@@ -62,7 +62,7 @@ struct Vec<T, 3>
      * @param rhs the vector on the right hand side of the operation
      * @returns the result of the vector addition
      */
-    static inline constexpr Vec<T, 3> Add(const Vec<T, 3>& lhs, const Vec<T, 3>&  rhs)
+    static inline constexpr Vec<T, 3> Add(const Vec<T, 3>& lhs, const Vec<T, 3>& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
     }
@@ -84,7 +84,7 @@ struct Vec<T, 3>
      * @param rhs the vector on the right hand side of the operation
      * @returns the result of the vector subtraction
      */
-    static inline constexpr Vec<T, 3> Subtract(const Vec<T, 3>& lhs, const Vec<T, 3>&  rhs)
+    static inline constexpr Vec<T, 3> Subtract(const Vec<T, 3>& lhs, const Vec<T, 3>& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
     }
@@ -227,7 +227,9 @@ struct Vec<T, 3>
      * @param time the proportion of movement to be done from origin to destination
      * @return a new vector with the results of the linear interpolation
      */
-    static inline constexpr Vec<T, 3> Lerp(const Vec<T, 3>& origin, const Vec<T, 3>& destination, T time)
+    static inline constexpr Vec<T, 3> Lerp(const Vec<T, 3>& origin,
+                                           const Vec<T, 3>& destination,
+                                           T time)
     {
         return origin * (1.0f - time) + destination * time;
     }
@@ -261,7 +263,8 @@ struct Vec<T, 3>
     inline constexpr Vec<T, 3>(float x) : Vec<T, 3>(x, 0, 0) {}
 
     /**
-     * The 4D vector constructor. Constructs a 3D vector using the x, y, and z element of the inputted 4D vector
+     * The 4D vector constructor. Constructs a 3D vector using the x, y, and z element of the
+     * inputted 4D vector
      * @param other a 4D vector of the same type to convert from
      */
     inline constexpr Vec<T, 3>(const Vec<T, 4>& other) : Vec<T, 3>(other.x, other.y, other.z) {}

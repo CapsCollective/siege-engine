@@ -64,7 +64,7 @@ struct Vec<T, 4>
      * @param rhs the vector on the right hand side of the operation
      * @returns the result of the vector addition
      */
-    static inline constexpr Vec<T, 4> Add(const Vec<T, 4>& lhs, const Vec<T, 4>&  rhs)
+    static inline constexpr Vec<T, 4> Add(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs)
     {
         return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
     }
@@ -86,7 +86,7 @@ struct Vec<T, 4>
      * @param rhs the vector on the right hand side of the operation
      * @returns the result of the vector subtraction
      */
-    static inline constexpr Vec<T, 4> Subtract(const Vec<T, 4>& lhs, const Vec<T, 4>&  rhs)
+    static inline constexpr Vec<T, 4> Subtract(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs)
     {
         return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w};
     }
@@ -214,7 +214,9 @@ struct Vec<T, 4>
      * @param time the proportion of movement to be done from origin to destination
      * @return a new vector with the results of the linear interpolation
      */
-    static inline constexpr Vec<T, 4> Lerp(const Vec<T, 4>& origin, const Vec<T, 4>& destination, T time)
+    static inline constexpr Vec<T, 4> Lerp(const Vec<T, 4>& origin,
+                                           const Vec<T, 4>& destination,
+                                           T time)
     {
         return origin * (1.0f - time) + destination * time;
     }
@@ -284,11 +286,11 @@ struct Vec<T, 4>
     {}
 
     /**
-     * The 3D vector constructor. Creates a 4D vector from a 3D vector of the same type. The w element defaults to 0
+     * The 3D vector constructor. Creates a 4D vector from a 3D vector of the same type. The w
+     * element defaults to 0
      * @param other the 3D vector to convert from
      */
-    inline constexpr Vec<T, 4>(const Vec<T, 3> other) : Vec<T, 4>(other, 0.f)
-    {}
+    inline constexpr Vec<T, 4>(const Vec<T, 3> other) : Vec<T, 4>(other, 0.f) {}
 
     // Operator Overloads
 
@@ -344,7 +346,8 @@ struct Vec<T, 4>
     }
 
     /**
-     * The 3D Vec assignment operator. Assigns the values of the x, y, and z axes of a 3D vector to the 4D vector
+     * The 3D Vec assignment operator. Assigns the values of the x, y, and z axes of a 3D vector to
+     * the 4D vector
      * @param vec the 3D vector to assign values from
      * @return a reference to the current 4D vector
      */
@@ -357,7 +360,8 @@ struct Vec<T, 4>
     }
 
     /**
-     * The 2D Vec assignment operator. Assigns the values of the x, and y axes of a 2D vector to the 4D vector
+     * The 2D Vec assignment operator. Assigns the values of the x, and y axes of a 2D vector to the
+     * 4D vector
      * @param vec the 2D vector to assign values from
      * @return a reference to the current 4D vector
      */
@@ -3839,7 +3843,6 @@ inline constexpr Vec<T, 4> operator+(const Vec<T, 4>& lhs, const float& scalar)
 {
     return Vec<T, 4>::Add(lhs, scalar);
 }
-
 
 /**
  * The subtraction operator between two 4D vectors

@@ -8,12 +8,11 @@
 
 #include <time.h>
 #include <utest.h>
+#include <utils/math/vec/Equality.h>
+#include <utils/math/vec/Format.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
-
-#include <utils/math/vec/Equality.h>
-#include <utils/math/vec/Format.h>
 
 using namespace Siege;
 
@@ -241,7 +240,7 @@ UTEST(test_Vec4, CaculateDotProduct)
 
 UTEST(test_Vec4, TestVec4CosOperation)
 {
-    Vec4 expected = {0.540302336f,-0.416146845, -0.989992499, -0.653643608};
+    Vec4 expected = {0.540302336f, -0.416146845, -0.989992499, -0.653643608};
 
     Vec4 vec = {1.f, 2.f, 3.f, 4.f};
 
@@ -252,7 +251,7 @@ UTEST(test_Vec4, TestVec4CosOperation)
 
 UTEST(test_Vec4, TestVec4SinOperation)
 {
-    Vec4 expected = {0.841471016f,0.909297406, 0.141120002, -0.756802499};
+    Vec4 expected = {0.841471016f, 0.909297406, 0.141120002, -0.756802499};
 
     Vec4 vec = {1.f, 2.f, 3.f, 4.f};
 
@@ -263,7 +262,7 @@ UTEST(test_Vec4, TestVec4SinOperation)
 
 UTEST(test_Vec4, TestVec4TanOperation)
 {
-    Vec4 expected = {1.55740774f,-2.18503976, -0.142546549, 1.1578213};
+    Vec4 expected = {1.55740774f, -2.18503976, -0.142546549, 1.1578213};
 
     Vec4 vec = {1.f, 2.f, 3.f, 4.f};
 
@@ -1888,7 +1887,7 @@ UTEST(test_Vec4, TestFromString)
 
     String inputString = "1.00,2.00,3.00,4.00";
 
-    Vec4 result{};
+    Vec4 result {};
 
     ASSERT_TRUE(FromString(result, inputString));
 
