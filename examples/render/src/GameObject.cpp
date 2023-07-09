@@ -60,7 +60,7 @@ void GameObject::SetRotation2D(float rotation)
 
 void GameObject::SetPosition2D(const Siege::Vec2& newPos)
 {
-    transform.SetPosition({newPos.x, newPos.y});
+    transform.SetPosition(Siege::Vec3 {newPos.x, newPos.y});
 }
 
 void GameObject::SetScale2D(const Siege::Vec2& newScale)

@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_POINT_LIGHT_H
 
 #include <utils/Colour.h>
+#include <utils/math/vec/Vec3.h>
 
 #include "../model/Model.h"
 
@@ -24,7 +25,7 @@ public:
     {
         FColour lightColor = {1.f, 1.f, 1.f, 0.2f};
         alignas(16) FColour ambientLightColor = {1.f, 1.f, 1.f, .02f};
-        alignas(16) Vec3 position = Vec3::Zero;
+        alignas(16) Vec3 position = Vec3::Zero();
     };
 
     PointLight();

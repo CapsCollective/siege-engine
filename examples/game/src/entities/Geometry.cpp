@@ -57,7 +57,7 @@ static Siege::String Serialise(Siege::Entity* entity)
 {
     Siege::String fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
-    fileData += DefineField("DIMENSIONS", geometry->GetDimensions().ToString());
+    fileData += DefineField("DIMENSIONS", Siege::ToString(geometry->GetDimensions()));
 
     auto modelData = geometry->GetModelData();
     fileData += DefineField("MODEL_PATH", modelData.modelPath);
@@ -69,7 +69,7 @@ static Siege::Entity* Deserialise(const Siege::EntityData& data,
                                   const std::vector<Siege::String>& args)
 {
     Siege::Vec3 dimensions;
-    if (!Siege::Vec3::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
+    if (!Siege::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
     {
         CC_LOG_WARNING("Failed to deserialise dimensions with value {}",
                        args[Siege::CUSTOM_FIELD_1]);

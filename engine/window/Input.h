@@ -26,6 +26,8 @@ public:
     static void SetInputWindowSource(Glfw::Window window);
     static bool IsKeyDown(int key);
     static bool IsKeyJustPressed(int key);
+    static bool IsMouseButtonDown(int button);
+    static bool IsMouseButtonJustPressed(int button);
 
     static const MousePosition GetCursorPosition();
     static int GetLatestKey();

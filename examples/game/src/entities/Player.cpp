@@ -37,7 +37,7 @@ void Player::OnUpdate()
     };
 
     // Normalise and apply move to velocity
-    velocity += move.Normalise() * speed * Siege::Window::GetDeltaTime();
+    velocity += Siege::Vec3::Normalise(move) * speed * Siege::Window::GetDeltaTime();
 
     // Apply force of gravity
     velocity += {0.f, -0.01f, 0.f};
@@ -60,8 +60,8 @@ Siege::BoundedBox Player::GetBoundingBox() const
 {
     Siege::Vec3 position = transform.GetPosition();
     return Siege::BoundedBox {
-        position - Siege::Vec3::One,
-        position + Siege::Vec3::One,
+        position - Siege::Vec3::One(),
+        position + Siege::Vec3::One(),
     };
 }
 

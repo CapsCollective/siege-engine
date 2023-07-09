@@ -8,7 +8,7 @@
 
 #include "QuadRenderer3D.h"
 
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
 
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
@@ -70,9 +70,8 @@ void QuadRenderer3D::DrawQuad(const Siege::Vec3& position,
 
     auto& textureQuads = quads[texIndex];
 
-    textureQuads.Append({Graphics::CalculateTransform3D(position, rotation, scale),
-                         ToFColour(colour),
-                         {0.f, 0.f, 1.f, 1.f}});
+    textureQuads.Append(
+        {Transform3D(position, rotation, scale), ToFColour(colour), {0.f, 0.f, 1.f, 1.f}});
 }
 
 void QuadRenderer3D::RecreateMaterials()

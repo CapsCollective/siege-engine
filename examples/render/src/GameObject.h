@@ -11,14 +11,12 @@
 
 #include <render/renderer/model/Model.h>
 #include <utils/math/Xform.h>
-#include <utils/math/mat/Mat3.h>
-#include <utils/math/mat/Mat4.h>
 #include <utils/math/vec/Vec3.h>
 
 struct Transform
 {
-    Siege::Vec3 position {Siege::Vec3::Zero};
-    Siege::Vec3 scale {Siege::Vec3::One};
+    Siege::Vec3 position {Siege::Vec3::Zero()};
+    Siege::Vec3 scale {Siege::Vec3::One()};
     Siege::Vec3 rotation {};
 };
 

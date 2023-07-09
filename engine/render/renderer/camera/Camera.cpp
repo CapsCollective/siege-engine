@@ -6,18 +6,7 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_RENDERER_COMMON_H
-#define SIEGE_ENGINE_RENDERER_COMMON_H
-
-#include <utils/math/mat/Mat4.h>
+#include "Camera.h"
 
 namespace Siege
-{
-struct CameraData
-{
-    Mat4 projectionMatrix;
-    Mat4 viewMatrix;
-};
-} // namespace Siege
-
-#endif // SIEGE_ENGINE_RENDERER_COMMON_H
+{} // namespace Siege

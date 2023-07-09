@@ -34,6 +34,10 @@ void Input::SetInputWindowSource(Glfw::Window window)
                     (action == ACTION_RELEASED * -1);
         keyUpdated = true;
     });
+
+    SetOnMouseKeyPressedCallback(window, [](Window, int button, int action, int mods) {
+        // TODO: Set logic here
+    });
 }
 
 bool Input::IsKeyDown(int key)
@@ -71,6 +75,45 @@ bool Input::IsKeyJustPressed(int key)
         return true;
     }
     else if (!hasKey && keyEntryExists) keyMap[key] = 0;
+
+    return false;
+}
+
+bool Input::IsMouseButtonDown(int button)
+{
+    bool hasButton = Glfw::IsMouseButtonDown(primaryWindow, button);
+
+    if (keyMap.find(button) != keyMap.end())
+    {
+        keyMap[button] = hasButton ? 1 : 0;
+    }
+    else
+    {
+        if (hasButton) keyMap[button] = 1;
+    }
+    return hasButton;
+}
+
+bool Input::IsMouseButtonJustPressed(int button)
+{
+    bool hasButton = Glfw::IsMouseButtonDown(primaryWindow, button);
+
+    bool keyEntryExists = keyMap.find(button) != keyMap.end();
+    if (keyEntryExists && hasButton)
+    {
+        if (keyMap[button] == 0)
+        {
+            keyMap[button] = 1;
+            return true;
+        }
+        else return false;
+    }
+    else if (hasButton && !keyEntryExists)
+    {
+        keyMap[button] = 1;
+        return true;
+    }
+    else if (!hasButton && keyEntryExists) keyMap[button] = 0;
 
     return false;
 }

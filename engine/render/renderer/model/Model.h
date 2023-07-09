@@ -12,6 +12,8 @@
 #include <utils/Colour.h>
 #include <utils/Hash.h>
 #include <utils/math/mat/Mat4.h>
+#include <utils/math/vec/Vec2.h>
+#include <utils/math/vec/Vec3.h>
 
 #include <unordered_map>
 

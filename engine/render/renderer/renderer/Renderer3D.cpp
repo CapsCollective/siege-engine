@@ -8,6 +8,8 @@
 
 #include "Renderer3D.h"
 
+#include <utils/math/vec/Vec2.h>
+
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
@@ -61,12 +63,12 @@ void Renderer3D::DrawModel(Model* model,
 
 void Renderer3D::DrawModel(Model* model, const Vec3& position, const Vec3& scale)
 {
-    DrawModel(model, position, scale, Vec3::Zero);
+    DrawModel(model, position, scale, Vec3::Zero());
 }
 
 void Renderer3D::DrawModel(Model* model, const Vec3& position)
 {
-    DrawModel(model, position, Vec3::One, Vec3::Zero);
+    DrawModel(model, position, Vec3::One(), Vec3::Zero());
 }
 
 void Renderer3D::DrawPointLight(const Vec3& position,
@@ -100,7 +102,7 @@ void Renderer3D::DrawQuad(const Vec3 position,
 
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
-                        const CameraData& cameraData)
+                        const Camera& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);

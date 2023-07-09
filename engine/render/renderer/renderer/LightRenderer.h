@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_LIGHT_RENDERER_H
 
 #include <utils/Colour.h>
+#include <utils/math/vec/Vec2.h>
 
 #include "../model/Model.h"
 

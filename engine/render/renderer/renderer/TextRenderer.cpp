@@ -8,7 +8,7 @@
 
 #include "TextRenderer.h"
 
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
 
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
@@ -102,7 +102,7 @@ void TextRenderer::DrawFont(const char* text,
         Vec4 coordinates = {x + glyph.bearingX, y - (height + yOffset), glyph.width, height};
 
         fontTexts.Append(
-            {Graphics::CalculateTransform3D(position, rotation, scale),
+            {Transform3D(position, rotation, scale),
              {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              ToFColour(colour),
              coordinates / textScale});

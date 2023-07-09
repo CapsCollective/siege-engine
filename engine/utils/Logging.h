@@ -17,6 +17,10 @@
 #include "Macros.h"
 #include "String.h"
 #include "math/Maths.h"
+#include "math/mat/Format.h"
+#include "math/mat/Mat2.h"
+#include "math/mat/Mat3.h"
+#include "math/vec/Format.h"
 
 // Define terminal colour wrapping macros
 #define _CC_LOG_COLOUR_RED "31"
@@ -92,9 +96,12 @@ public:
     DEFINE_VARIANT_TYPE(unsigned long data, String::FromU32(data));
     DEFINE_VARIANT_TYPE(unsigned long long data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
-    DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + data.ToString() + ")");
-    DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + data.ToString() + ")");
-    DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + data.ToString() + ")");
+    DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + ToString(data) + ")");
+    //    DEFINE_VARIANT_TYPE(const Mat2& data, "Mat2(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const Mat3& data, "Mat3(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const Mat4& data, "Mat4(" + ToString(data) + ")");
 
     /**
      * Returns the data held by the variant container

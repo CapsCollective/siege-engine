@@ -62,6 +62,16 @@ inline constexpr float Sin(float val) noexcept
 }
 
 /**
+ * Computes the ASin of a give value. Value is assumed to be in radians.
+ * @param val the radian value to compute.
+ * @return the Sin of the given angle.
+ */
+inline constexpr float ASin(float val) noexcept
+{
+    return asinf(val);
+}
+
+/**
  * Computes the Cos of a give value. Value is assumed to be in radians.
  * @param val the radian value to compute.
  * @return the Cos of the given angle.
@@ -69,6 +79,16 @@ inline constexpr float Sin(float val) noexcept
 inline constexpr float Cos(float val) noexcept
 {
     return cosf(val);
+}
+
+/**
+ * Computes the ACos of a give value. Value is assumed to be in radians.
+ * @param val the radian value to compute.
+ * @return the Cos of the given angle.
+ */
+inline constexpr float ACos(float val) noexcept
+{
+    return acosf(val);
 }
 
 /**
@@ -82,13 +102,34 @@ inline constexpr float Tan(float val) noexcept
 }
 
 /**
+ * Computes the ATan of a give value. Value is assumed to be in radians.
+ * @param val the radian value to compute.
+ * @return the Tan of the given angle.
+ */
+inline constexpr float ATan(float val) noexcept
+{
+    return atanf(val);
+}
+
+/**
+ * Computes the ATan of a two values. Value is assumed to be in radians.
+ * @param x the first value.
+ * @param y the second value.
+ * @return the Tan of the given angles.
+ */
+inline constexpr float ATan(float y, float x) noexcept
+{
+    return atan2f(y, x);
+}
+
+/**
  * Converts a degree value to radians.
  * @param degrees the angle in degrees.
  * @return the radian value of the angle.
  */
 inline constexpr float Radians(float degrees)
 {
-    return degrees * (Pi / 180.f);
+    return degrees * 0.01745329251994329576923690768489;
 }
 
 /**
@@ -177,7 +218,7 @@ inline constexpr float Abs(const float& value)
  */
 inline constexpr float Max(const float& lhs, const float& rhs)
 {
-    return ((lhs + rhs + Abs(lhs - rhs)) / 2);
+    return (lhs + rhs + Abs(lhs - rhs)) / 2;
 }
 
 /**
@@ -188,7 +229,7 @@ inline constexpr float Max(const float& lhs, const float& rhs)
  */
 inline constexpr float Min(const float& lhs, const float& rhs)
 {
-    return ((lhs + rhs - Abs(lhs - rhs)) / 2);
+    return (lhs + rhs - Abs(lhs - rhs)) / 2;
 }
 
 /**

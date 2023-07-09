@@ -9,7 +9,7 @@
 #include "Renderer2D.h"
 
 #include <utils/Logging.h>
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
 
 #include "render/renderer/Renderer.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
@@ -34,7 +34,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
                                             .AddMat4Attribute()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute())
-                     .WithUniform<CameraData>(globalDataName)
+                     .WithUniform<Camera>(globalDataName)
                      .WithPushConstant(sizeof(uint32_t))
                      .Build(),
                  Shader::Builder()
@@ -53,7 +53,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute())
-                     .WithUniform<CameraData>(globalDataName)
+                     .WithUniform<Camera>(globalDataName)
                      .WithPushConstant(sizeof(uint32_t))
                      .Build(),
                  Shader::Builder()
@@ -97,12 +97,11 @@ void Renderer2D::DrawQuad(const Vec2 position,
     if (texIndex >= layerQuads.Count())
         layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
 
-    layerQuads[texIndex].Append(
-        {Graphics::CalculateTransform3D(Vec3(position.x + scale.x, position.y + scale.y, 1.f),
-                                        {0.f, 0.f, rotation},
-                                        scale),
-         ToFColour(colour),
-         {0.f, 0.f, 1.f, 1.f}});
+    layerQuads[texIndex].Append({Transform3D({position.x + scale.x, position.y + scale.y, 1.f},
+                                             {0.f, 0.f, rotation},
+                                             scale),
+                                 ToFColour(colour),
+                                 {0.f, 0.f, 1.f, 1.f}});
 }
 
 void Renderer2D::DrawText2D(const char* const text,
@@ -141,9 +140,7 @@ void Renderer2D::DrawText2D(const char* const text,
         Vec4 coordinates = {x + glyph.bearingX, y - (height + yOffset), glyph.width, height};
 
         fontTexts.Append(
-            {Graphics::CalculateTransform3D(Vec3(position.x, position.y + scale.y, 1.f),
-                                            {0.f, 0.f, rotation},
-                                            scale),
+            {Transform3D({position.x, position.y + scale.y, 1.f}, {0.f, 0.f, rotation}, scale),
              ToFColour(colour),
              {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              coordinates / textScale});

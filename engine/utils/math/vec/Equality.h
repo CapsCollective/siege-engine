@@ -9,8 +9,9 @@
 #ifndef SIEGE_ENGINE_UTILS_MATH_VEC_EQUALITY_H
 #define SIEGE_ENGINE_UTILS_MATH_VEC_EQUALITY_H
 
-#include "Vec.h"
 #include <cmath>
+
+#include "Vec.h"
 
 namespace Siege
 {

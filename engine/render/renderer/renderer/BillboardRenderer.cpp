@@ -8,6 +8,8 @@
 
 #include "BillboardRenderer.h"
 
+#include <utils/math/vec/Vec2.h>
+
 namespace Siege
 {
 BillboardRenderer::BillboardRenderer() {}

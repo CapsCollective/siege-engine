@@ -24,7 +24,7 @@ public:
 
     // 'Structors
 
-    Geometry() : Geometry({Siege::Vec3::Zero, 0.f}) {};
+    Geometry() : Geometry({Siege::Vec3::Zero(), 0.f}) {};
 
     explicit Geometry(const Siege::Xform& transform) :
         Geometry(transform, "models/cube/cube.obj", "models/cube/cube.png") {};

@@ -9,8 +9,9 @@
 #ifndef SIEGE_ENGINE_UTILS_MATH_MAT_EQUALITY_H
 #define SIEGE_ENGINE_UTILS_MATH_MAT_EQUALITY_H
 
-#include "Mat.h"
 #include <cmath>
+
+#include "Mat.h"
 
 namespace Siege
 {

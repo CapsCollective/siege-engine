@@ -8,7 +8,7 @@
 
 #include "ModelRenderer.h"
 
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
 
 namespace Siege
 {
@@ -28,8 +28,8 @@ void ModelRenderer::DrawModel(Model* model,
 {
     models.Append(model);
 
-    auto transform = Graphics::CalculateTransform3D(position, rotation, scale);
-    auto normal = Graphics::CalculateNormal(rotation, scale);
+    auto transform = Transform3D(position, rotation, scale);
+    auto normal = Normal(rotation, scale);
     transforms.Append({transform, normal});
 }
 
