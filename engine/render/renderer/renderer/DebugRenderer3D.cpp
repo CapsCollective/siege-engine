@@ -8,6 +8,9 @@
 
 #include "DebugRenderer3D.h"
 
+#include "render/renderer/platform/vulkan/Swapchain.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
+
 namespace Siege
 {
 DebugRenderer3D::DebugRenderer3D() {}
@@ -16,8 +19,6 @@ DebugRenderer3D::~DebugRenderer3D() {}
 
 void DebugRenderer3D::Initialise(const String& globalDataAttributeName)
 {
-    using Vulkan::Mesh;
-
     globalDataId = INTERN_STR(globalDataAttributeName);
 
     lineMaterial = Vulkan::Material(
@@ -30,16 +31,18 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName)
             .Build(),
         Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/line.frag.spv").Build());
 
-    // Set empty mesh
-    lineModel.SetMesh(Mesh({sizeof(LineVertex), nullptr, 0}));
+    perFrameVertexBuffers = MHArray<Vulkan::VBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
-    lineModel.SetMaterial(&lineMaterial);
+    for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        perFrameVertexBuffers[i] = Vulkan::VBuffer(sizeof(LineVertex) * MAX_LINES);
+    }
 }
 
 void DebugRenderer3D::Destroy()
 {
     lineMaterial.Free();
-    lineModel.DestroyModel();
+    for (auto it = perFrameVertexBuffers.CreateFIterator(); it; ++it) it->Free();
 }
 
 void DebugRenderer3D::RecreateMaterials()
@@ -65,16 +68,20 @@ void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
                                   const void* globalData,
                                   uint32_t currentFrame)
 {
+    auto& vBuffer = perFrameVertexBuffers[currentFrame];
+
     if (lines.Count() == 0) return;
 
     lineMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lineMaterial.Bind(buffer);
 
-    lineModel.UpdateMesh(currentFrame,
-                         {sizeof(LineVertex), lines.Data(), static_cast<uint32_t>(lines.Count())});
+    vBuffer.Copy(lines.Data(), sizeof(LineVertex) * lines.Count(), 0);
 
-    lineModel.Bind(buffer, currentFrame);
-    lineModel.Draw(buffer, currentFrame);
+    unsigned long long bindOffset = 0;
+
+    vBuffer.Bind(buffer, &bindOffset);
+
+    Vulkan::Utils::Draw(buffer.Get(), lines.Count(), 1, 0, 0);
 }
 
 void DebugRenderer3D::Render(Vulkan::CommandBuffer& commandBuffer,

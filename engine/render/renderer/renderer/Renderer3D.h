@@ -44,7 +44,10 @@ public:
     static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
     static void DrawModel(Model* model, const Vec3& position);
 
-    static void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);
+    static void DrawBillboard(const Vec3& position,
+                              const Vec2& scale,
+                              const IColour& colour,
+                              Vulkan::Texture2D* texture = nullptr);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?

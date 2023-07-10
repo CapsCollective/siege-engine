@@ -43,8 +43,6 @@ UTEST(test_Transform, TranslateViewMatrix)
     Siege::Mat4 view = Siege::LookAt({0.f, 0.f, 0.f}, {0, -2.f, 5.f});
     Siege::Mat4 result = Siege::Translate(view, {0.f, -1.f, -2.5f});
 
-    // 1.85695338
-
     ASSERT_TRUE(Siege::FEquals(expected, result));
 }
 

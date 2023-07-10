@@ -76,6 +76,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
     quadIndexBuffer = Vulkan::IndexBuffer(6, fontIndices);
 
     quadVertexBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
+    quadVBuffer = Vulkan::VBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
     textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
 }
 
@@ -229,12 +230,18 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
 
         uint64_t vertexBufferOffset = (index * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
 
-        quadVertexBuffer.Update(sizeof(QuadVertex),
-                                quadArr.Data(),
-                                quadArr.Count(),
-                                vertexBufferOffset);
+        //        quadVertexBuffer.Update(sizeof(QuadVertex),
+        //                                quadArr.Data(),
+        //                                quadArr.Count(),
+        //                                vertexBufferOffset);
+        quadVBuffer.Copy(quadArr.Data(),
+                         sizeof(QuadVertex) * quadArr.Count(),
+                         sizeof(QuadVertex) * vertexBufferOffset);
 
-        quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
+        unsigned long long bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
+
+        quadVBuffer.Bind(buffer, &bindOffset);
+        // quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }

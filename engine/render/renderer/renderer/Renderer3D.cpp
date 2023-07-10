@@ -48,9 +48,12 @@ void Renderer3D::Initialise()
         false);
 }
 
-void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour)
+void Renderer3D::DrawBillboard(const Vec3& position,
+                               const Vec2& scale,
+                               const IColour& colour,
+                               Vulkan::Texture2D* texture)
 {
-    billboardRenderer.DrawBillboard(position, scale, colour);
+    billboardRenderer.DrawBillboard(position, scale, colour, texture);
 }
 
 void Renderer3D::DrawModel(Model* model,
@@ -158,7 +161,7 @@ void Renderer3D::Flush()
 void Renderer3D::DestroyRenderer3D()
 {
     debugRenderer.Destroy();
-    billboardRenderer.Destroy();
+    billboardRenderer.Free();
     lightRenderer.Destroy();
     quadRenderer3D.Free();
     textRenderer.Free();
@@ -170,5 +173,6 @@ void Renderer3D::Update()
 {
     quadRenderer3D.Update();
     textRenderer.Update();
+    billboardRenderer.Update();
 }
 } // namespace Siege

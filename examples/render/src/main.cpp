@@ -174,10 +174,10 @@ int main()
             Siege::Vec2 cursorPos = {(float) Siege::Input::GetCursorPosition().x,
                                      (float) Siege::Input::GetCursorPosition().y};
 
-            bool intersects = box.Intersects(camera.GetMouseRay(cursorPos.x,
-                                                                cursorPos.y,
-                                                                window.GetWidth(),
-                                                                window.GetHeight()));
+            auto ray =
+                camera.GetMouseRay(cursorPos.x, cursorPos.y, window.GetWidth(), window.GetHeight());
+
+            bool intersects = box.Intersects(ray);
 
             CC_LOG_INFO("INTERSECTS?: {}", intersects)
         }
@@ -197,7 +197,10 @@ int main()
                                           {255, 0, 0, (uint8_t) 255.f},
                                           {0, 0, 255, 5});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f},
+                                         {1.f, 1.f},
+                                         {255, 255, 255, 255},
+                                         &cappy);
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
@@ -212,11 +215,28 @@ int main()
                                     Siege::Vec3::Zero(),
                                     Siege::IColour::Green);
 
+        Siege::Renderer3D::DrawQuad({2.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::White);
+
         Siege::Renderer3D::DrawQuad({2.f, -1.5f, 2.95f},
                                     {.5f, .5f},
                                     Siege::Vec3::Zero(),
                                     Siege::IColour::White,
                                     &cappy);
+
+        Siege::Renderer3D::DrawQuad({-2.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::Blue);
+
+        Siege::Renderer3D::DrawQuad({0.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::Pink,
+                                    &cappy);
+
         Siege::Renderer3D::DrawText3D("Random Vase",
                                       {0.f, -.85f, -.5175f},
                                       {},

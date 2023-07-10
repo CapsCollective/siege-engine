@@ -13,6 +13,7 @@
 
 #include "../model/Model.h"
 #include "render/renderer/platform/vulkan/Texture2D.h"
+#include "render/renderer/platform/vulkan/VBuffer.h"
 
 namespace Siege
 {
@@ -56,7 +57,7 @@ private:
 
     MSArray<MHArray<QuadVertex>, MAX_TEXTURES> quads;
 
-    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
+    MHArray<Vulkan::VBuffer> perFrameVBuffers;
     Vulkan::IndexBuffer indexBuffer;
 
     Vulkan::Texture2D defaultTexture;

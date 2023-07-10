@@ -46,11 +46,11 @@ void QuadRenderer3D::Initialise(const String& globalDataAttributeName)
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
-    perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+    perFrameVBuffers = MHArray<Vulkan::VBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
     {
-        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(sizeof(QuadVertex) * VERTEX_BUFFER_SIZE);
+        perFrameVBuffers[i] = Vulkan::VBuffer(sizeof(QuadVertex) * VERTEX_BUFFER_SIZE);
     }
 
     indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
@@ -86,19 +86,23 @@ void QuadRenderer3D::Render(Vulkan::CommandBuffer& buffer,
 {
     defaultMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
 
+    auto& vBuffer = perFrameVBuffers[frameIndex];
+
     for (uint32_t i = 0; i < quads.Count(); i++)
     {
         defaultMaterial.BindPushConstant(buffer, &i);
 
         defaultMaterial.Bind(buffer);
 
-        uint64_t fontOffset = (i * MAX_QUADS_PER_TEXTURE);
+        unsigned long long fontOffset = (i * MAX_QUADS_PER_TEXTURE);
 
-        auto& vertexBuffer = perFrameVertexBuffers[frameIndex];
+        vBuffer.Copy(quads[i].Data(),
+                     sizeof(QuadVertex) * quads[i].Count(),
+                     sizeof(QuadVertex) * fontOffset);
 
-        vertexBuffer.Update(sizeof(QuadVertex), quads[i].Data(), quads[i].Count(), fontOffset);
+        unsigned long long bindOffset = sizeof(QuadVertex) * fontOffset;
 
-        vertexBuffer.Bind(buffer, &fontOffset);
+        vBuffer.Bind(buffer, &bindOffset);
         indexBuffer.Bind(buffer);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quads[i].Count(), 0, 0, 0);
@@ -109,7 +113,7 @@ void QuadRenderer3D::Free()
 {
     defaultTexture.Free();
     defaultMaterial.Free();
-    for (auto it = perFrameVertexBuffers.CreateIterator(); it; ++it) it->Free();
+    for (auto it = perFrameVBuffers.CreateIterator(); it; ++it) it->Free();
     indexBuffer.Free();
 }
 

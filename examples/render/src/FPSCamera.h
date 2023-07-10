@@ -34,6 +34,11 @@ public:
 
     Siege::RayCast GetMouseRay(float mouseX, float mouseY, float windowX, float windowY);
 
+    inline Siege::Vec3 GetPosition()
+    {
+        return camPos;
+    }
+
 private:
 
     Siege::Vec2 oldMousePos {};

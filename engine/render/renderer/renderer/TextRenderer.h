@@ -15,6 +15,7 @@
 #include "render/renderer/model/Model.h"
 #include "render/renderer/platform/vulkan/Font.h"
 #include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
