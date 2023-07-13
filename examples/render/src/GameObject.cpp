@@ -10,7 +10,7 @@
 
 GameObject::GameObject() {}
 
-GameObject::GameObject(Siege::Model* model) : model {model} {}
+GameObject::GameObject(Siege::Vulkan::StaticMesh* newMesh) : mesh {newMesh} {}
 
 GameObject::~GameObject() {}
 
@@ -18,6 +18,7 @@ void GameObject::SetColour(const Siege::IColour& newColor)
 {
     fillColor = newColor;
 }
+
 void GameObject::SetPosition(const Siege::Vec3& newPos)
 {
     transform.SetPosition(newPos);
@@ -28,11 +29,6 @@ void GameObject::SetScale(const Siege::Vec3& newScale)
     transform.SetScale(newScale);
 }
 
-void GameObject::SetRotation(const Siege::Vec3& rotation)
-{
-    transform.SetRotation(rotation);
-}
-
 void GameObject::SetRotationX(float rotation)
 {
     transform.SetRotationX(rotation);
@@ -41,29 +37,4 @@ void GameObject::SetRotationX(float rotation)
 void GameObject::SetRotationY(float rotation)
 {
     transform.SetRotationY(rotation);
-}
-
-void GameObject::SetRotationZ(float rotation)
-{
-    transform.SetRotationZ(rotation);
-}
-
-void GameObject::SetZIndex(float zIndex)
-{
-    transform.SetPositionZ(zIndex);
-}
-
-void GameObject::SetRotation2D(float rotation)
-{
-    transform.SetRotationZ(rotation);
-}
-
-void GameObject::SetPosition2D(const Siege::Vec2& newPos)
-{
-    transform.SetPosition(Siege::Vec3 {newPos.x, newPos.y});
-}
-
-void GameObject::SetScale2D(const Siege::Vec2& newScale)
-{
-    transform.SetScale(newScale);
 }

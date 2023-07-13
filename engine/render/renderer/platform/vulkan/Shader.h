@@ -221,22 +221,6 @@ public:
         Builder& WithGlobalData3DUniform(uint32_t set = 0);
 
         /**
-         * Adds a storage buffer type with all configured 3D transforms
-         * @param set the descriptorSet the storage buffer is stored in
-         * @param size the number of elements in the buffer
-         * @return a reference to the current Builder object
-         */
-        Builder& WithTransform3DStorage(uint32_t set = 0, uint64_t size = 1);
-
-        /**
-         * Adds a storage buffer type with all configured 2D transforms
-         * @param set the descriptorSet the storage buffer is stored in
-         * @param size the number of elements in the buffer
-         * @return a reference to the current Builder object
-         */
-        Builder& WithTransform2DStorage(uint32_t set = 0, uint64_t size = 1);
-
-        /**
          * Specifies that this shader uses a push constant
          * @param size the size of the push constant
          * @return a reference to the current Builder object

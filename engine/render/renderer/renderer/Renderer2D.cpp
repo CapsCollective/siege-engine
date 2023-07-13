@@ -73,10 +73,10 @@ void Renderer2D::Initialise(const char* const globalDataName)
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
-    quadIndexBuffer = Vulkan::IndexBuffer(6, fontIndices);
+    quadIndexBuffer = Vulkan::IndexBuffer(fontIndices, sizeof(unsigned int) * 6);
 
     quadVertexBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
-    quadVBuffer = Vulkan::VBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
+    quadVBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
     textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
 }
 
@@ -199,13 +199,13 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
         textMaterial.BindPushConstant(buffer, &j);
         textMaterial.Bind(buffer);
 
-        uint64_t vertexBufferOffset =
-            (index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
+        unsigned long long vertexBufferOffset =
+            sizeof(FontVertex) *
+            ((index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT));
 
-        textVertexBuffer.Update(sizeof(FontVertex),
-                                quadArr.Data(),
-                                quadArr.Count(),
-                                vertexBufferOffset);
+        textVertexBuffer.Copy(quadArr.Data(),
+                              sizeof(FontVertex) * quadArr.Count(),
+                              vertexBufferOffset);
 
         textVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
@@ -230,10 +230,6 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
 
         uint64_t vertexBufferOffset = (index * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
 
-        //        quadVertexBuffer.Update(sizeof(QuadVertex),
-        //                                quadArr.Data(),
-        //                                quadArr.Count(),
-        //                                vertexBufferOffset);
         quadVBuffer.Copy(quadArr.Data(),
                          sizeof(QuadVertex) * quadArr.Count(),
                          sizeof(QuadVertex) * vertexBufferOffset);

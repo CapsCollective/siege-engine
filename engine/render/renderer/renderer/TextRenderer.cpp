@@ -19,7 +19,6 @@ namespace Siege
 void TextRenderer::Initialise(const String& globalDataAttributeName)
 {
     using Vulkan::Material;
-    using Vulkan::Mesh;
     using Vulkan::Shader;
 
     globalDataId = INTERN_STR(globalDataAttributeName);
@@ -28,7 +27,7 @@ void TextRenderer::Initialise(const String& globalDataAttributeName)
 
     defaultMaterial =
         Material(Shader::Builder()
-                     .FromVertexShader("assets/shaders/text2D.vert.spv")
+                     .FromVertexShader("assets/shaders/Text3D.vert.spv")
                      .WithVertexBinding(Shader::VertexBinding()
                                             .WithInputRate(Vulkan::Utils::INPUT_RATE_INSTANCE)
                                             .AddMat4Attribute()
@@ -39,7 +38,7 @@ void TextRenderer::Initialise(const String& globalDataAttributeName)
                      .WithPushConstant(sizeof(uint32_t))
                      .Build(),
                  Shader::Builder()
-                     .FromFragmentShader("assets/shaders/text2D.frag.spv")
+                     .FromFragmentShader("assets/shaders/Text3D.frag.spv")
                      .WithTexture("texture", 0, 16)
                      .WithDefaultTexture(&defaultTexture)
                      .Build());
@@ -57,7 +56,7 @@ void TextRenderer::Initialise(const String& globalDataAttributeName)
         perFrameVertexBuffers[i] = Vulkan::VertexBuffer(size);
     }
 
-    indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
+    indexBuffer = Vulkan::IndexBuffer(fontIndices, sizeof(unsigned int) * 6);
 }
 
 void TextRenderer::Free()
@@ -131,16 +130,15 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
 
         defaultMaterial.Bind(buffer);
 
-        uint64_t fontOffset = (i * OFFSET_PER_FONT);
-
         auto& vertexBuffer = perFrameVertexBuffers[frameIndex];
 
-        vertexBuffer.Update(sizeof(QuadData),
-                            characters[i].Data(),
-                            characters[i].Count(),
-                            fontOffset);
+        unsigned long long bindOffset = sizeof(QuadData) * (i * OFFSET_PER_FONT);
 
-        vertexBuffer.Bind(buffer, &fontOffset);
+        vertexBuffer.Copy(characters[i].Data(),
+                          sizeof(QuadData) * characters[i].Count(),
+                          bindOffset);
+
+        vertexBuffer.Bind(buffer, &bindOffset);
         indexBuffer.Bind(buffer);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, characters[i].Count(), 0, 0, 0);

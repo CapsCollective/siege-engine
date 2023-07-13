@@ -17,7 +17,7 @@
 
 #include "render/renderer/platform/vulkan/IndexBuffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
-#include "render/renderer/platform/vulkan/VBuffer.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -67,7 +67,7 @@ private:
     Hash::StringId textureId;
 
     MHArray<MHArray<BillboardVertex>> vertices;
-    MHArray<Vulkan::VBuffer> perFrameVertexBuffers;
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
     Vulkan::IndexBuffer indexBuffer;
     Vulkan::Texture2D defaultTexture;
 };

@@ -47,16 +47,18 @@ void BillboardRenderer::Initialise(const String& globalDataAttributeName)
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
-    perFrameVertexBuffers = MHArray<Vulkan::VBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+    perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
     {
-        perFrameVertexBuffers[i] = Vulkan::VBuffer(sizeof(BillboardVertex) * VERTEX_BUFFER_SIZE);
+        perFrameVertexBuffers[i] =
+            Vulkan::VertexBuffer(sizeof(BillboardVertex) * VERTEX_BUFFER_SIZE);
     }
 
     vertices = MHArray<MHArray<BillboardVertex>>(MAX_TEXTURES);
 
-    indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
+    indexBuffer = Vulkan::IndexBuffer(sizeof(uint32_t) * 6);
+    indexBuffer.Copy(fontIndices, sizeof(uint32_t) * 6);
 }
 
 void BillboardRenderer::RecreateMaterials()

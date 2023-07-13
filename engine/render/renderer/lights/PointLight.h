@@ -12,8 +12,6 @@
 #include <utils/Colour.h>
 #include <utils/math/vec/Vec3.h>
 
-#include "../model/Model.h"
-
 namespace Siege
 {
 
@@ -36,10 +34,7 @@ public:
     {
         return lightData;
     }
-    Model* GetModel()
-    {
-        return model;
-    }
+
     void SetPosition(Vec3 position)
     {
         lightData.position = position;
@@ -53,15 +48,9 @@ public:
         lightData.ambientLightColor = ambientColor;
     }
 
-    void SetModel(Model* model)
-    {
-        this->model = model;
-    }
-
 private:
 
     Data lightData;
-    Model* model;
 };
 } // namespace Siege
 

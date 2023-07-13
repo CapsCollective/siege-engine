@@ -9,7 +9,7 @@
 #ifndef SIEGE_ENGINE_GAME_OBJECT_H
 #define SIEGE_ENGINE_GAME_OBJECT_H
 
-#include <render/renderer/model/Model.h>
+#include <render/renderer/platform/vulkan/StaticMesh.h>
 #include <utils/math/Xform.h>
 #include <utils/math/vec/Vec3.h>
 
@@ -25,18 +25,13 @@ class GameObject
 public:
 
     GameObject();
-    explicit GameObject(Siege::Model* model);
+    explicit GameObject(Siege::Vulkan::StaticMesh* mesh);
 
     ~GameObject();
 
-    Siege::IColour& GetColor()
+    Siege::Vulkan::StaticMesh* GetMesh()
     {
-        return fillColor;
-    }
-
-    Siege::Model* GetModel()
-    {
-        return model;
+        return mesh;
     }
 
     Siege::Vec3 GetRotation()
@@ -54,60 +49,16 @@ public:
         return transform.GetScale();
     }
 
-    Siege::Vec2 GetPosition2D()
-    {
-        return transform.GetPosition();
-    }
-
-    Siege::Vec2 GetScale2D()
-    {
-        return transform.GetScale();
-    }
-
-    float GetRotation2D()
-    {
-        return transform.GetRotation().z;
-    }
-    float GetZIndex()
-    {
-        return transform.GetPosition().z;
-    }
-
-    const float GetZIndex() const
-    {
-        return transform.GetPosition().z;
-    }
-
-    const Siege::Vec2 GetPosition2D() const
-    {
-        return transform.GetPosition();
-    }
-    const Siege::Vec2 GetScale2D() const
-    {
-        return transform.GetScale();
-    }
-    const float GetRotation2D() const
-    {
-        return transform.GetRotation().z;
-    }
-
     void SetColour(const Siege::IColour& newColor);
     void SetScale(const Siege::Vec3& newScale);
     void SetPosition(const Siege::Vec3& newPos);
-    void SetRotation(const Siege::Vec3& rotation);
     void SetRotationX(float rotation);
     void SetRotationY(float rotation);
-    void SetRotationZ(float rotation);
-
-    void SetZIndex(float zIndex);
-    void SetPosition2D(const Siege::Vec2& newPos);
-    void SetScale2D(const Siege::Vec2& newPos);
-    void SetRotation2D(float rotation);
 
 private:
 
     Siege::Xform transform {};
-    Siege::Model* model;
+    Siege::Vulkan::StaticMesh* mesh {};
     Siege::IColour fillColor {};
 };
 #endif

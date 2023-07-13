@@ -23,19 +23,19 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName)
 
     lineMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
-            .FromVertexShader("assets/shaders/line.vert.spv")
+            .FromVertexShader("assets/shaders/DebugLine.vert.spv")
             .WithVertexBinding(
                 Vulkan::Shader::VertexBinding().AddFloatVec3Attribute().AddFloatVec4Attribute())
             .WithGlobalData3DUniform()
             .WithVertexTopology(Vulkan::Utils::TOPOLOGY_LINE_LIST)
             .Build(),
-        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/line.frag.spv").Build());
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/DebugLine.frag.spv").Build());
 
-    perFrameVertexBuffers = MHArray<Vulkan::VBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+    perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
     {
-        perFrameVertexBuffers[i] = Vulkan::VBuffer(sizeof(LineVertex) * MAX_LINES);
+        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(sizeof(LineVertex) * MAX_LINES);
     }
 }
 

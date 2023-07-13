@@ -16,7 +16,6 @@
 #include "render/renderer/platform/vulkan/Font.h"
 #include "render/renderer/platform/vulkan/IndexBuffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
-#include "render/renderer/platform/vulkan/VBuffer.h"
 #include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
@@ -113,7 +112,7 @@ private:
     Vulkan::Material quadMaterial;
     Vulkan::VertexBuffer quadVertexBuffer;
 
-    Vulkan::VBuffer quadVBuffer;
+    Vulkan::VertexBuffer quadVBuffer;
 
     SArray<MSArray<MHArray<QuadVertex>, MAX_TEXTURES>, MAX_LAYERS> quads;
 

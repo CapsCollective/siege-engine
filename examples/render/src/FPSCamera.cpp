@@ -28,8 +28,8 @@ void FPSCamera::MoveCamera(float deltaTime)
     Siege::Vec3 camRight = Siege::Vec3::Normalise(Siege::Vec3::Cross(camFront, camUp));
     Siege::Vec3 camMoveDir = Siege::Vec3::Zero();
 
-    if (Siege::Input::IsKeyDown(Siege::KEY_W)) camMoveDir += camFront;
-    if (Siege::Input::IsKeyDown(Siege::KEY_S)) camMoveDir -= camFront;
+    if (Siege::Input::IsKeyDown(Siege::KEY_W)) camMoveDir += {camFront.x, 0, camFront.z};
+    if (Siege::Input::IsKeyDown(Siege::KEY_S)) camMoveDir -= {camFront.x, 0, camFront.z};
     if (Siege::Input::IsKeyDown(Siege::KEY_A)) camMoveDir -= camRight;
     if (Siege::Input::IsKeyDown(Siege::KEY_D)) camMoveDir += camRight;
     if (Siege::Input::IsKeyDown(Siege::KEY_Q)) camMoveDir -= camUp;

@@ -10,10 +10,13 @@
 #define SIEGE_ENGINE_QUADRENDERER3D_H
 
 #include <utils/Colour.h>
+#include <utils/collections/StackArray.h>
+#include <utils/math/mat/Mat4.h>
 
-#include "../model/Model.h"
+#include "render/renderer/platform/vulkan/IndexBuffer.h"
+#include "render/renderer/platform/vulkan/Material.h"
 #include "render/renderer/platform/vulkan/Texture2D.h"
-#include "render/renderer/platform/vulkan/VBuffer.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -57,7 +60,7 @@ private:
 
     MSArray<MHArray<QuadVertex>, MAX_TEXTURES> quads;
 
-    MHArray<Vulkan::VBuffer> perFrameVBuffers;
+    MHArray<Vulkan::VertexBuffer> perFrameVBuffers;
     Vulkan::IndexBuffer indexBuffer;
 
     Vulkan::Texture2D defaultTexture;

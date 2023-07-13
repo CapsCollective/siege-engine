@@ -11,7 +11,6 @@
 
 #include "../camera/Camera.h"
 #include "../lights/PointLight.h"
-#include "../model/Model.h"
 #include "BillboardRenderer.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
@@ -36,13 +35,10 @@ public:
 
     static void Initialise();
 
-    static void DrawModel(Model* model,
-                          const Vec3& position,
-                          const Vec3& scale,
-                          const Vec3& rotation);
-
-    static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
-    static void DrawModel(Model* model, const Vec3& position);
+    static void DrawMesh(Vulkan::StaticMesh* mesh,
+                         const Vec3& position,
+                         const Vec3& scale,
+                         const Vec3& rotation);
 
     static void DrawBillboard(const Vec3& position,
                               const Vec2& scale,

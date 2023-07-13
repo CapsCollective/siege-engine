@@ -14,7 +14,7 @@
 #include <utils/math/vec/Vec3.h>
 
 #include "render/renderer/platform/vulkan/Material.h"
-#include "render/renderer/platform/vulkan/VBuffer.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -57,7 +57,7 @@ private:
 
     Vulkan::Material lineMaterial;
 
-    MHArray<Vulkan::VBuffer> perFrameVertexBuffers;
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
 
     Hash::StringId globalDataId;
 

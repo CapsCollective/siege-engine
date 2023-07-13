@@ -7,8 +7,8 @@
 //
 
 #include <GLFW/glfw3.h>
+#include <render/renderer/ObjectLoader.h>
 #include <render/renderer/Renderer.h>
-#include <render/renderer/model/Model.h>
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
@@ -73,7 +73,7 @@ int main()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec3Attribute()
                                             .AddFloatVec2Attribute())
-                     .WithTransform3DStorage(0, 1000)
+                     .WithStorage<Siege::ModelTransform>("transforms", 0, 1000)
                      .WithGlobalData3DUniform()
                      .Build(),
                  Shader::Builder()
@@ -85,12 +85,8 @@ int main()
 
     // Generating models from .obj files
 
-    Siege::Model cubeObjModel("assets/models/cube.obj");
-    Siege::Model vaseObjModel("assets/models/smooth_vase.obj");
-
-    // Set 3D diffuse material
-    cubeObjModel.SetMaterial(&testMaterial);
-    vaseObjModel.SetMaterial(&testMaterial);
+    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.obj", &testMaterial);
+    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.obj", &testMaterial);
 
     // Create shapes for use
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
@@ -185,10 +181,10 @@ int main()
         for (auto it = objects3D.CreateFIterator(); it; ++it)
         {
             GameObject obj = *it;
-            Siege::Renderer3D::DrawModel(obj.GetModel(),
-                                         obj.GetPosition(),
-                                         obj.GetScale(),
-                                         obj.GetRotation());
+            Siege::Renderer3D::DrawMesh(obj.GetMesh(),
+                                        obj.GetPosition(),
+                                        obj.GetScale(),
+                                        obj.GetRotation());
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.

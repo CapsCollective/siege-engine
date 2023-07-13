@@ -8,54 +8,53 @@
 
 #include "LightRenderer.h"
 
+#include "render/renderer/platform/vulkan/Swapchain.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
+
 namespace Siege
 {
 void LightRenderer::Initialise(const String& globalDataAttributeName)
 {
-    using Vulkan::Mesh;
+    using Vulkan::StaticMesh;
 
     globalDataId = INTERN_STR(globalDataAttributeName);
 
     lightMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
-            .FromVertexShader("assets/shaders/pointLight.vert.spv")
-            .WithVertexBinding(Vulkan::Shader::VertexBinding().AddFloatVec2Attribute())
+            .FromVertexShader("assets/shaders/PointLightGizmoInstanced.vert.spv")
+            .WithVertexBinding(Vulkan::Shader::VertexBinding()
+                                   .WithInputRate(Vulkan::Utils::INPUT_RATE_INSTANCE)
+                                   .AddFloatVec3Attribute()
+                                   .AddFloatVec4Attribute())
             .WithGlobalData3DUniform()
             .Build(),
         Vulkan::Shader::Builder()
-            .FromFragmentShader("assets/shaders/pointLight.frag.spv")
-            .WithGlobalData3DUniform()
+            .FromFragmentShader("assets/shaders/PointLightGizmoInstanced.frag.spv")
             .Build());
 
-    lightModel.SetMesh(Mesh({sizeof(Vec2), nullptr, 0}, {nullptr, 0}));
+    perFrameVertexBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+    lights = MHArray<LightVertex>(MAX_LIGHTS);
 
-    lightModel.SetMaterial(&lightMaterial);
+    for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        perFrameVertexBuffers[i] = Vulkan::VertexBuffer(sizeof(Vec2) * MAX_LIGHTS);
+    }
+
+    uint32_t quadIndices[] = {0, 1, 3, 1, 2, 3};
+
+    indexBuffer = Vulkan::IndexBuffer(quadIndices, sizeof(unsigned int) * 6);
 }
 
-void LightRenderer::Destroy()
+void LightRenderer::Free()
 {
     lightMaterial.Free();
-    lightModel.DestroyModel();
+    for (auto it = perFrameVertexBuffers.CreateFIterator(); it; ++it) it->Free();
+    indexBuffer.Free();
 }
 
-void LightRenderer::DrawPointLight(const Vec3& position,
-                                   float radius,
-                                   const IColour& colour,
-                                   const IColour& ambientColor)
+void LightRenderer::DrawPointLight(const Vec3& position, const IColour& colour)
 {
-    pointLightVertices.Append({1.f, 1.f});
-    pointLightVertices.Append({1.f, -1.f});
-    pointLightVertices.Append({-1.f, -1.f});
-    pointLightVertices.Append({-1.f, 1.f});
-
-    // Pattern: 0, 1, 3, 1, 2, 3
-    pointLightIndices.Append(pointLightVertices.Count() - 4);
-    pointLightIndices.Append(pointLightVertices.Count() - 3);
-    pointLightIndices.Append(pointLightVertices.Count() - 1);
-
-    pointLightIndices.Append(pointLightVertices.Count() - 3);
-    pointLightIndices.Append(pointLightVertices.Count() - 2);
-    pointLightIndices.Append(pointLightVertices.Count() - 1);
+    lights.Append({position, ToFColour(colour)});
 }
 
 void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
@@ -63,27 +62,24 @@ void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const void* globalData,
                            uint32_t currentFrame)
 {
-    if (pointLightVertices.Count() == 0) return;
-
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lightMaterial.Bind(buffer);
 
-    lightModel.UpdateMeshIndexed(
-        currentFrame,
-        {sizeof(Vec2),
-         pointLightVertices.Data(),
-         static_cast<uint32_t>(pointLightVertices.Count())},
-        {pointLightIndices.Data(), static_cast<uint32_t>(pointLightIndices.Count())});
+    auto& vBuffer = perFrameVertexBuffers[currentFrame];
 
-    lightModel.BindIndexed(buffer, currentFrame);
+    vBuffer.Copy(lights.Data(), sizeof(LightVertex) * lights.Count());
 
-    lightModel.DrawIndexed(buffer, currentFrame, 0);
+    unsigned long long bindOffset = 0;
+
+    vBuffer.Bind(buffer, &bindOffset);
+    indexBuffer.Bind(buffer);
+
+    Vulkan::Utils::DrawIndexed(buffer.Get(), 6, lights.Count(), 0, 0, 0);
 }
 
 void LightRenderer::Flush()
 {
-    pointLightVertices.Clear();
-    pointLightIndices.Clear();
+    lights.Clear();
 }
 
 void LightRenderer::RecreateMaterials()

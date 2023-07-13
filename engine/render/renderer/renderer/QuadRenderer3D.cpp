@@ -20,7 +20,6 @@ void QuadRenderer3D::Initialise(const String& globalDataAttributeName)
     globalDataId = INTERN_STR(globalDataAttributeName);
 
     using Vulkan::Material;
-    using Vulkan::Mesh;
     using Vulkan::Shader;
 
     defaultTexture = Siege::Vulkan::Texture2D("default");
@@ -44,16 +43,16 @@ void QuadRenderer3D::Initialise(const String& globalDataAttributeName)
 
     textureId = INTERN_STR("texture");
 
-    uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
+    uint32_t quadIndices[] = {0, 1, 3, 1, 2, 3};
 
-    perFrameVBuffers = MHArray<Vulkan::VBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+    perFrameVBuffers = MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
     {
-        perFrameVBuffers[i] = Vulkan::VBuffer(sizeof(QuadVertex) * VERTEX_BUFFER_SIZE);
+        perFrameVBuffers[i] = Vulkan::VertexBuffer(sizeof(QuadVertex) * VERTEX_BUFFER_SIZE);
     }
 
-    indexBuffer = Vulkan::IndexBuffer(6, fontIndices);
+    indexBuffer = Vulkan::IndexBuffer(quadIndices, sizeof(unsigned int) * 6);
 }
 
 void QuadRenderer3D::DrawQuad(const Siege::Vec3& position,
@@ -94,13 +93,9 @@ void QuadRenderer3D::Render(Vulkan::CommandBuffer& buffer,
 
         defaultMaterial.Bind(buffer);
 
-        unsigned long long fontOffset = (i * MAX_QUADS_PER_TEXTURE);
+        unsigned long long bindOffset = sizeof(QuadVertex) * (i * MAX_QUADS_PER_TEXTURE);
 
-        vBuffer.Copy(quads[i].Data(),
-                     sizeof(QuadVertex) * quads[i].Count(),
-                     sizeof(QuadVertex) * fontOffset);
-
-        unsigned long long bindOffset = sizeof(QuadVertex) * fontOffset;
+        vBuffer.Copy(quads[i].Data(), sizeof(QuadVertex) * quads[i].Count(), bindOffset);
 
         vBuffer.Bind(buffer, &bindOffset);
         indexBuffer.Bind(buffer);
