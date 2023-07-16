@@ -14,7 +14,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        shell: PowerShell
+        shell: pwsh
     
     steps:
     - uses: actions/checkout@v2

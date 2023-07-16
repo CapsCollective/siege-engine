@@ -13,17 +13,18 @@
 
 using namespace Siege;
 
-const float aspectRatio = 1.33333337f;
-const float degrees = Float::Radians(60.f);
+static constexpr float aspectRatio = 1.33333337f;
+static constexpr float degrees = 1.04719758f;
 
 UTEST(test_Projection, CreatePerspectiveMatrix)
 {
+    float radians = 1.39626336f; // 80 degrees as radians
     Mat4 expected {{0.893815219, 0, 0, 0},
                    {0, -1.19175363, 0, 0},
                    {0, 0, -1.00001001, -1},
                    {0, 0, -0.0100001004, 0}};
 
-    Mat4 perspective = Perspective(Float::Radians(80.f), aspectRatio, 0.01f, 1000.f);
+    Mat4 perspective = Perspective(radians, aspectRatio, 0.01f, 1000.f);
 
     ASSERT_TRUE(perspective == expected);
 }
@@ -70,7 +71,9 @@ UTEST(test_Projection, TestUnProjectPoint3D)
 
     Vec3 unProjected = UnProjectPoint3D(view, projection, coords);
 
-    ASSERT_TRUE(FEquals(expected, unProjected));
+    ASSERT_LE(expected.x - unProjected.x, ScaledEpsilon(expected.x, unProjected.x));
+    ASSERT_LE(expected.y - unProjected.y, ScaledEpsilon(expected.y, unProjected.y));
+    ASSERT_LE(expected.z - unProjected.z, ScaledEpsilon(expected.z, unProjected.z));
 }
 
 UTEST(test_Projection, TestWorldToScreen)

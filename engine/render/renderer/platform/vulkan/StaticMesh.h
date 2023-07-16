@@ -11,6 +11,8 @@
 
 #include <utils/collections/HeapArray.h>
 
+#include <cstdint>
+
 #include "CommandBuffer.h"
 #include "IndexBuffer.h"
 #include "Material.h"
@@ -107,11 +109,11 @@ public:
      */
     void Free();
 
-    void Bind(CommandBuffer& commandBuffer, unsigned long long offset);
+    void Bind(CommandBuffer& commandBuffer, uint64_t offset);
 
     void BindIndexed(CommandBuffer& commandBuffer,
-                     unsigned long long vertOffset = 0,
-                     unsigned long long indexOffset = 0);
+                     uint64_t vertOffset = 0,
+                     uint64_t indexOffset = 0);
 
     // Getters and Setters
 

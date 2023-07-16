@@ -12,7 +12,6 @@
 
 #include "Swapchain.h"
 #include "render/renderer/ObjectLoader.h"
-#include "utils/Draw.h"
 
 namespace Siege::Vulkan
 {
@@ -108,14 +107,14 @@ void StaticMesh::Free()
     indexBuffer.Free();
 }
 
-void StaticMesh::Bind(CommandBuffer& commandBuffer, unsigned long long offset)
+void StaticMesh::Bind(CommandBuffer& commandBuffer, uint64_t offset)
 {
     vertexBuffer.Bind(commandBuffer, &offset);
 }
 
 void StaticMesh::BindIndexed(CommandBuffer& commandBuffer,
-                             unsigned long long vertexOffset,
-                             unsigned long long indexOffset)
+                             uint64_t vertexOffset,
+                             uint64_t indexOffset)
 {
     Bind(commandBuffer, vertexOffset);
     indexBuffer.Bind(commandBuffer, indexOffset);

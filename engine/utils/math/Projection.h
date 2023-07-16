@@ -9,7 +9,6 @@
 #ifndef SIEGE_ENGINE_UTILS_MATH_PROJECTION_H
 #define SIEGE_ENGINE_UTILS_MATH_PROJECTION_H
 
-#include "../Logging.h"
 #include "mat/Mat4.h"
 #include "vec/Vec2.h"
 #include "vec/Vec3.h"
@@ -20,20 +19,23 @@ namespace Siege
  * Creates a right-handed perspective matrix
  * @param fovy the vertical field of view of the perspective projection
  * @param aspect the aspect ratio of the perspective view
- * @param near the near plane
- * @param far the far plane
+ * @param zNear the zNear plane
+ * @param zFar the zFar plane
  * @return a new matrix with the provided perspective values
  */
-inline constexpr Mat4 Perspective(float fovy, float aspect, float near, float far)
+inline constexpr Mat4 Perspective(const float fovy,
+                                  const float aspect,
+                                  const float zNear,
+                                  const float zFar)
 {
-    float const tanHalfFovy = tan(fovy / 2);
+    const float tanHalfFovy = std::tan(fovy / 2.f);
 
-    Mat4 result(0);
-    result[0][0] = 1 / (aspect * tanHalfFovy);
-    result[1][1] = -1 / tanHalfFovy;
-    result[2][2] = far / (near - far);
-    result[2][3] = -1;
-    result[3][2] = -(far * near) / (far - near);
+    Mat4 result = Mat4::Zero();
+    result[0][0] = 1.f / (aspect * tanHalfFovy);
+    result[1][1] = -1.f / tanHalfFovy;
+    result[2][2] = zFar / (zNear - zFar);
+    result[2][3] = -1.f;
+    result[3][2] = -(zFar * zNear) / (zFar - zNear);
     return result;
 }
 
@@ -78,7 +80,7 @@ inline constexpr Vec3 UnProjectPoint3D(const Mat4& viewMatrix,
 {
     Mat4 inv = Mat4::Inverse(projection * viewMatrix);
 
-    Vec4 unProjected = inv* Vec4 {ndc.XYZ(), 1.f};
+    Vec4 unProjected = inv * Vec4 {ndc.XYZ(), 1.f};
     return unProjected.XYZ() / unProjected.w;
 }
 
@@ -105,4 +107,4 @@ inline constexpr Vec2 WorldToScreen(const Vec3& worldCoords,
 }
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_PROJECTION_H
+#endif // SIEGE_ENGINE_UTILS_MATH_PROJECTION_H

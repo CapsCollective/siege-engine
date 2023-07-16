@@ -10,6 +10,8 @@
 
 #include <utils/math/Transform.h>
 
+#include <cstdint>
+
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -93,7 +95,7 @@ void QuadRenderer3D::Render(Vulkan::CommandBuffer& buffer,
 
         defaultMaterial.Bind(buffer);
 
-        unsigned long long bindOffset = sizeof(QuadVertex) * (i * MAX_QUADS_PER_TEXTURE);
+        uint64_t bindOffset = sizeof(QuadVertex) * (i * MAX_QUADS_PER_TEXTURE);
 
         vBuffer.Copy(quads[i].Data(), sizeof(QuadVertex) * quads[i].Count(), bindOffset);
 

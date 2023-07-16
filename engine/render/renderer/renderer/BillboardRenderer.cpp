@@ -10,6 +10,8 @@
 
 #include <utils/math/vec/Vec2.h>
 
+#include <cstdint>
+
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -106,13 +108,13 @@ void BillboardRenderer::Render(Vulkan::CommandBuffer& buffer,
 
         billboardMaterial.Bind(buffer);
 
-        unsigned long long quadOffset = (i * MAX_QUADS_PER_TEXTURE);
+        uint64_t quadOffset = (i * MAX_QUADS_PER_TEXTURE);
 
         vBuffer.Copy(vertices[i].Data(),
                      sizeof(BillboardVertex) * vertices[i].Count(),
                      sizeof(BillboardVertex) * quadOffset);
 
-        unsigned long long bindOffset = sizeof(BillboardVertex) * quadOffset;
+        uint64_t bindOffset = sizeof(BillboardVertex) * quadOffset;
 
         vBuffer.Bind(buffer, &bindOffset);
         indexBuffer.Bind(buffer);

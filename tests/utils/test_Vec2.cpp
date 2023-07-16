@@ -14,6 +14,10 @@
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
 
+#define ASSERT_EQ_VEC2(a, b)                                               \
+    ASSERT_LE(std::abs(a.x - b.x), std::numeric_limits<float>::epsilon()); \
+    ASSERT_LE(std::abs(a.y - b.y), std::numeric_limits<float>::epsilon());
+
 using namespace Siege;
 
 UTEST(test_Vec2, TestCreateEmptyVec2)
@@ -64,7 +68,7 @@ UTEST(test_Vec2, TestCreateVec2WithVec3)
 
     Vec2 result = vec;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestCreateVec2WithVec4)
@@ -75,7 +79,7 @@ UTEST(test_Vec2, TestCreateVec2WithVec4)
 
     Vec2 result = vec;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestSubscriptOperator)
@@ -105,7 +109,7 @@ UTEST(test_Vec2, TestAddVectors)
 
     Vec2 result = vecA + vecA;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestAddScalar)
@@ -116,7 +120,7 @@ UTEST(test_Vec2, TestAddScalar)
 
     Vec2 result = vecA + 2.f;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestSubtractVectors)
@@ -129,7 +133,7 @@ UTEST(test_Vec2, TestSubtractVectors)
 
     Vec2 result = vecA - vecB;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestSubtractScalar)
@@ -140,7 +144,7 @@ UTEST(test_Vec2, TestSubtractScalar)
 
     Vec2 result = vecA - 2.f;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestMultiplyVectors)
@@ -153,7 +157,7 @@ UTEST(test_Vec2, TestMultiplyVectors)
 
     Vec2 result = vecA * vecB;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestMultiplyScalar)
@@ -164,7 +168,7 @@ UTEST(test_Vec2, TestMultiplyScalar)
 
     Vec2 result = vecA * 2.f;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestDivideVectors)
@@ -177,7 +181,7 @@ UTEST(test_Vec2, TestDivideVectors)
 
     Vec2 result = vecA / vecB;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestDivideScalar)
@@ -188,7 +192,7 @@ UTEST(test_Vec2, TestDivideScalar)
 
     Vec2 result = vecA / 2.f;
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestGetVectorLength)
@@ -206,8 +210,8 @@ UTEST(test_Vec2, TestGetNormalisedVector)
 
     Vec2 norm = Vec2::Normalise(vec);
 
-    ASSERT_TRUE((norm.x - 0.554775417f) < std::numeric_limits<float>::epsilon());
-    ASSERT_TRUE((norm.y - 0.832163095f) < std::numeric_limits<float>::epsilon());
+    ASSERT_LE((norm.x - 0.554775417f), std::numeric_limits<float>::epsilon());
+    ASSERT_LE((norm.y - 0.832163095f), std::numeric_limits<float>::epsilon());
 }
 
 UTEST(test_Vec2, TestGetDotProduct)
@@ -228,7 +232,7 @@ UTEST(test_Vec2, TestVec3CosOperation)
 
     auto result = Vec2::Cos(vec);
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestVec3SinOperation)
@@ -239,7 +243,7 @@ UTEST(test_Vec2, TestVec3SinOperation)
 
     auto result = Vec2::Sin(vec);
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestVec3TanOperation)
@@ -250,7 +254,7 @@ UTEST(test_Vec2, TestVec3TanOperation)
 
     auto result = Vec2::Tan(vec);
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestSwizzleOperators)
@@ -398,7 +402,7 @@ UTEST(test_Vec2, TestToString)
 
     String result = ToString(vec);
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_STREQ(result.Str(), expected.Str());
 }
 
 UTEST(test_Vec2, TestFromString)
@@ -411,7 +415,7 @@ UTEST(test_Vec2, TestFromString)
 
     ASSERT_TRUE(FromString(result, inputString));
 
-    ASSERT_TRUE(result == expected);
+    ASSERT_EQ_VEC2(result, expected);
 }
 
 UTEST(test_Vec2, TestFuzzyEquals)
@@ -420,7 +424,7 @@ UTEST(test_Vec2, TestFuzzyEquals)
 
     Vec2 vecB = {0.9999999999999912, 2.0000000000000023f};
 
-    ASSERT_TRUE(FEquals(vecA, vecB));
+    ASSERT_TRUE(Equals(vecA, vecB));
 }
 
 UTEST(test_Vec2, LerpVector)
@@ -428,5 +432,5 @@ UTEST(test_Vec2, LerpVector)
     Vec2 expected = {1.5f, 1.5f};
     Vec2 vec = Vec2::One();
 
-    ASSERT_TRUE(expected == Vec2::Lerp(vec, {2.f, 2.f}, .5f));
+    ASSERT_EQ_VEC2(expected, Vec2::Lerp(vec, {2.f, 2.f}, .5f));
 }

@@ -8,6 +8,8 @@
 
 #include "LightRenderer.h"
 
+#include <cstdint>
+
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -69,7 +71,7 @@ void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
 
     vBuffer.Copy(lights.Data(), sizeof(LightVertex) * lights.Count());
 
-    unsigned long long bindOffset = 0;
+    uint64_t bindOffset = 0;
 
     vBuffer.Bind(buffer, &bindOffset);
     indexBuffer.Bind(buffer);

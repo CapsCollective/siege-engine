@@ -18,6 +18,10 @@ int Input::latestChar {-1};
 bool Input::keyUpdated {false};
 bool Input::charUpdated {false};
 std::map<int, int> Input::keyMap;
+Vec2 Input::lastMousePos {Vec2::Zero()};
+Vec2 Input::mouseMoveDelta {Vec2::Zero()};
+bool Input::isFirstMouseCall {true};
+
 void Input::SetInputWindowSource(Glfw::Window window)
 {
     primaryWindow = window;
@@ -37,6 +41,19 @@ void Input::SetInputWindowSource(Glfw::Window window)
 
     SetOnMouseKeyPressedCallback(window, [](Window, int button, int action, int mods) {
         // TODO: Set logic here
+    });
+
+    SetOnMouseMovedCallback(window, [](Window, double x, double y) {
+        if (isFirstMouseCall)
+        {
+            lastMousePos = {(float) x, (float) y};
+            mouseMoveDelta = {0.f, 0.f};
+            isFirstMouseCall = false;
+            return;
+        }
+
+        mouseMoveDelta = {(lastMousePos.x - (float) x), ((float) y - lastMousePos.y)};
+        lastMousePos = {(float) x, (float) y};
     });
 }
 
@@ -118,10 +135,17 @@ bool Input::IsMouseButtonJustPressed(int button)
     return false;
 }
 
-const MousePosition Input::GetCursorPosition()
+const Vec2 Input::GetCursorPosition()
 {
-    return Glfw::GetMousePosition(primaryWindow);
+    return lastMousePos;
 }
+
+const Vec2 Input::GetMouseDirection()
+{
+    auto oldMouseDir = mouseMoveDelta;
+    mouseMoveDelta = Vec2::Zero();
+    return oldMouseDir;
+};
 
 int Input::GetLatestKey()
 {

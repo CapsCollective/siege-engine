@@ -118,8 +118,12 @@ int main()
     objects3D[4].SetScale({2.f, 2.f, 2.f});
     objects3D[4].SetColour({128, 0, 0, 255});
 
-    FPSCamera camera = FPSCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
-    OrthoCamera camera2 = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
+    FPSCamera camera3D = FPSCamera({0.f, -1.f, -2.5f},
+                                   {0.f, 0.f, 1.f},
+                                   Siege::Float::Radians(60.f),
+                                   window.GetWidth(),
+                                   window.GetHeight());
+    OrthoCamera camera2D = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -143,25 +147,23 @@ int main()
         currentTime = newTime;
 
         window.Update();
+        window.ToggleCursor(inputEnabled);
 
-        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE))
-        {
-            inputEnabled = !inputEnabled;
-            window.ToggleCursor(inputEnabled);
-        }
+        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) inputEnabled = !inputEnabled;
+
+        camera3D.SetIsMovable(inputEnabled && !isPanelOpen);
+        camera3D.MoveCamera(frameTime);
 
         float aspect = renderer.GetAspectRatio();
 
         float panelWidth = window.GetWidth();
         float panelHeight = 50.f;
 
-        camera.Update(Siege::Float::Radians(60.f), aspect, 0.1f, 100.f);
-        camera2.Update(0.f, window.GetWidth(), 0.f, window.GetHeight(), 0.1f, 1000.f);
+        camera3D.SetAspectRatio(aspect);
+        camera2D.Update(0.f, window.GetWidth(), 0.f, window.GetHeight(), 0.1f, 1000.f);
 
-        if (inputEnabled && !isPanelOpen) camera.MoveCamera(frameTime);
-
-        renderer.SetCamera3D(camera.GetCamera());
-        renderer.SetCamera2D(camera2.GetCamera());
+        renderer.SetCamera3D(camera3D.GetCamera());
+        renderer.SetCamera2D(camera2D.GetCamera());
 
         if (!renderer.StartFrame()) continue;
 
@@ -170,8 +172,10 @@ int main()
             Siege::Vec2 cursorPos = {(float) Siege::Input::GetCursorPosition().x,
                                      (float) Siege::Input::GetCursorPosition().y};
 
-            auto ray =
-                camera.GetMouseRay(cursorPos.x, cursorPos.y, window.GetWidth(), window.GetHeight());
+            auto ray = camera3D.GetMouseRay(cursorPos.x,
+                                            cursorPos.y,
+                                            window.GetWidth(),
+                                            window.GetHeight());
 
             bool intersects = box.Intersects(ray);
 

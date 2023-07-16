@@ -27,7 +27,7 @@ IndexBuffer::IndexBuffer(unsigned long bufferSize) : size {bufferSize}
     Allocate(device);
 }
 
-IndexBuffer::IndexBuffer(void* data, unsigned long long dataSize) : IndexBuffer(dataSize)
+IndexBuffer::IndexBuffer(void* data, uint64_t dataSize) : IndexBuffer(dataSize)
 {
     Copy(data, dataSize, 0);
 }
@@ -89,7 +89,7 @@ void IndexBuffer::Copy(const void* data, unsigned long dSize, unsigned long offs
     Utils::CopyData(device, memory, dSize, dst, offset);
 }
 
-void IndexBuffer::Bind(const CommandBuffer& commandBuffer, unsigned long long offset)
+void IndexBuffer::Bind(const CommandBuffer& commandBuffer, uint64_t offset)
 {
     vkCmdBindIndexBuffer(commandBuffer.Get(), buffer, offset, VK_INDEX_TYPE_UINT32);
 }

@@ -67,7 +67,7 @@ struct Vec<T, 2>
      * @param scalar the scalar value to scale by
      * @returns the result of the scalar addition
      */
-    static inline constexpr Vec<T, 2> Add(const Vec<T, 2>& vector, float scalar)
+    static inline constexpr Vec<T, 2> Add(const Vec<T, 2>& vector, T scalar)
     {
         return {vector.x + scalar, vector.y + scalar};
     }
@@ -89,7 +89,7 @@ struct Vec<T, 2>
      * @param scalar the scalar value to scale by
      * @returns the result of the scalar subtraction
      */
-    static inline constexpr Vec<T, 2> Subtract(const Vec<T, 2>& vector, float scalar)
+    static inline constexpr Vec<T, 2> Subtract(const Vec<T, 2>& vector, T scalar)
     {
         return {vector.x - scalar, vector.y - scalar};
     }
@@ -100,7 +100,7 @@ struct Vec<T, 2>
      * @param scalar the scalar value to scale by
      * @returns the result of the scalar multiplication
      */
-    static inline constexpr Vec<T, 2> Multiply(const Vec<T, 2>& vector, float scalar)
+    static inline constexpr Vec<T, 2> Multiply(const Vec<T, 2>& vector, T scalar)
     {
         return {vector.x * scalar, vector.y * scalar};
     }
@@ -122,7 +122,7 @@ struct Vec<T, 2>
      * @param scalar the scalar value to scale by
      * @returns the result of the scalar division
      */
-    static inline constexpr Vec<T, 2> Divide(const Vec<T, 2>& vector, float scalar)
+    static inline constexpr Vec<T, 2> Divide(const Vec<T, 2>& vector, T scalar)
     {
         return {vector.x / scalar, vector.y / scalar};
     }
@@ -144,7 +144,7 @@ struct Vec<T, 2>
      * @param rhs the vector on the right hand of the operation
      * @return the dot product of the two inputted vectors
      */
-    static inline constexpr float Dot(const Vec<T, 2>& lhs, const Vec<T, 2>& rhs)
+    static inline constexpr T Dot(const Vec<T, 2>& lhs, const Vec<T, 2>& rhs)
     {
         return (lhs.x * rhs.x) + (lhs.y * rhs.y);
     }
@@ -254,7 +254,7 @@ struct Vec<T, 2>
      * @param index the index of the requested dimension
      * @return a reference to the requested value
      */
-    inline constexpr float& operator[](unsigned int index)
+    inline constexpr T& operator[](unsigned int index)
     {
         switch (index)
         {
@@ -271,7 +271,7 @@ struct Vec<T, 2>
      * @param index the index of the requested dimension
      * @return a copy of the requested value
      */
-    inline constexpr float operator[](unsigned int index) const
+    inline constexpr T operator[](unsigned int index) const
     {
         return ((index == 0) * x) + ((index == 1) * y);
     }

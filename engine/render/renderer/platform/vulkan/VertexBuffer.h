@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_RENDER_VERTEXBUFFER_H
 #define SIEGE_ENGINE_RENDER_VERTEXBUFFER_H
 
+#include <cstdint>
+
 #include "CommandBuffer.h"
 #include "utils/Types.h"
 
@@ -36,9 +38,7 @@ public:
     // Functions
 
     void Copy(const void* data, unsigned long size, unsigned long offset = 0);
-    void Bind(const CommandBuffer& commandBuffer,
-              unsigned long long* offset,
-              unsigned int binding = 0);
+    void Bind(const CommandBuffer& commandBuffer, const uint64_t* offset, unsigned int binding = 0);
     void Free();
 
     template<typename T>

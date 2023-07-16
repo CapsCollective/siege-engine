@@ -13,6 +13,7 @@
 #include <utils/Logging.h>
 #include <utils/math/vec/Hashing.h>
 
+#include <unordered_map>
 #include <vector>
 
 namespace std

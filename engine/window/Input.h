@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_INPUT_H
 
 #include <utils/collections/HeapArray.h>
+#include <utils/math/vec/Vec2.h>
 
 #include <map>
 
@@ -29,7 +30,8 @@ public:
     static bool IsMouseButtonDown(int button);
     static bool IsMouseButtonJustPressed(int button);
 
-    static const MousePosition GetCursorPosition();
+    static const Vec2 GetCursorPosition();
+    static const Vec2 GetMouseDirection();
     static int GetLatestKey();
     static int GetLatestChar();
 
@@ -41,6 +43,9 @@ private:
     static bool charUpdated;
     static Glfw::Window primaryWindow;
     static std::map<int, int> keyMap;
+    static Vec2 lastMousePos;
+    static Vec2 mouseMoveDelta;
+    static bool isFirstMouseCall;
 };
 } // namespace Siege
 

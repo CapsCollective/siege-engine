@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_GLFW_INPUT_H
 #define SIEGE_ENGINE_GLFW_INPUT_H
 
+#include <utils/math/vec/Vec2.h>
+
 #include "Types.h"
 #include "window/utils/Types.h"
 
@@ -20,13 +22,15 @@ typedef void (*setTextKeyPressedCallback)(Window, unsigned int key);
 typedef setTextKeyPressedCallback SetTextKeyPressedCallback;
 typedef void (*setMousePressedCallback)(Window, int button, int action, int mods);
 typedef setMousePressedCallback SetMouseButtonPressedCallback;
+typedef void (*setMousePositionCallback)(Window, double x, double y);
+typedef setMousePositionCallback SetMousePositionCallback;
 
 bool IsKeyDown(Window window, int keyCode);
 bool IsMouseButtonDown(Window window, int buttonCode);
-MousePosition GetMousePosition(Window window);
 void SetOnKeyPressedCallback(Window window, SetKeyPressedCallback callback);
 void SetOnTextKeyPressedCallback(Window window, SetTextKeyPressedCallback callback);
 void SetOnMouseKeyPressedCallback(Window window, SetMouseButtonPressedCallback callback);
+void SetOnMouseMovedCallback(Window window, SetMousePositionCallback callback);
 } // namespace Siege::Glfw
 
 #endif // SIEGE_ENGINE_GLFW_INPUT_H

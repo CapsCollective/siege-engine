@@ -9,6 +9,8 @@
 #ifndef SIEGE_ENGINE_RENDER_INDEX_BUFFER_H
 #define SIEGE_ENGINE_RENDER_INDEX_BUFFER_H
 
+#include <cstdint>
+
 #include "CommandBuffer.h"
 #include "utils/Types.h"
 
@@ -22,7 +24,7 @@ public:
     // 'Structors
 
     IndexBuffer() = default;
-    IndexBuffer(void* data, unsigned long long dataSize);
+    IndexBuffer(void* data, uint64_t dataSize);
     IndexBuffer(unsigned long bufferSize);
     IndexBuffer(const IndexBuffer& other);
     IndexBuffer(IndexBuffer&& other);
@@ -37,7 +39,7 @@ public:
 
     void Free();
     void Copy(const void* data, unsigned long size, unsigned long offset = 0);
-    void Bind(const CommandBuffer& commandBuffer, unsigned long long offset = 0);
+    void Bind(const CommandBuffer& commandBuffer, uint64_t offset = 0);
 
 private:
 

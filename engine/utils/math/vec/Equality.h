@@ -15,52 +15,58 @@
 
 namespace Siege
 {
+
+template<typename T>
+inline constexpr T ScaledEpsilon(T lhs, T rhs)
+{
+    return std::numeric_limits<T>::epsilon() * std::fmax(std::fabs(lhs), std::fabs(rhs));
+}
+
 /**
  * A fuzzy equals comparison function. Checks if two 4D vectors are equal within a given tolerance
  * level
  * @tparam T the type of numerical value stored by the vector
  * @param lhs the vector on the left hand side of the operation
  * @param rhs the vector on the right hand side of the operation
+ * @param epsilon the epsilon value used for the acceptable difference
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs)
+inline constexpr bool Equals(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-
-    return (lhs.x - rhs.x <= epsilon) && (lhs.y - rhs.y <= epsilon) && (lhs.z - rhs.z <= epsilon) &&
-           (lhs.w - rhs.w <= epsilon);
+    return (std::fabs(lhs.x - rhs.x) <= epsilon) && (std::fabs(lhs.y - rhs.y) <= epsilon) &&
+           (std::fabs(lhs.z - rhs.z) <= epsilon) && (std::fabs(lhs.w - rhs.w) <= epsilon);
 }
 
 /**
- * A fuzzy equals comparison function. Checks if two 3D vectors are equal within a given tolerance
+ * A equals comparison function. Checks if two 3D vectors are equal within a given tolerance
  * level
  * @tparam T the type of numerical value stored by the vector
  * @param lhs the vector on the left hand side of the operation
  * @param rhs the vector on the right hand side of the operation
+ * @param epsilon the epsilon value used for the acceptable difference
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Vec<T, 3>& lhs, const Vec<T, 3>& rhs)
+inline constexpr bool Equals(const Vec<T, 3>& lhs, const Vec<T, 3>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-
-    return (lhs.x - rhs.x <= epsilon) && (lhs.y - rhs.y <= epsilon) && (lhs.z - rhs.z <= epsilon);
+    return (std::fabs(lhs.x - rhs.x) <= epsilon) && (std::fabs(lhs.y - rhs.y) <= epsilon) &&
+           (std::fabs(lhs.z - rhs.z) <= epsilon);
 }
 
 /**
- * A fuzzy equals comparison function. Checks if two 2D vectors are equal within a given tolerance
+ * An comparison function. Checks if two 2D vectors are equal within a given tolerance
  * level
  * @tparam T the type of numerical value stored by the vector
  * @param lhs the vector on the left hand side of the operation
  * @param rhs the vector on the right hand side of the operation
+ * @param epsilon the epsilon value used for the acceptable difference
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Vec<T, 2>& lhs, const Vec<T, 2>& rhs)
+inline constexpr bool Equals(const Vec<T, 2>& lhs, const Vec<T, 2>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-    return (lhs.x - rhs.x <= epsilon) && (lhs.y - rhs.y <= epsilon);
+    return (std::fabs(lhs.x - rhs.x) <= epsilon) && (std::fabs(lhs.y - rhs.y) <= epsilon);
 }
 } // namespace Siege
 

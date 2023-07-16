@@ -8,6 +8,8 @@
 
 #include "DebugRenderer3D.h"
 
+#include <cstdint>
+
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -77,7 +79,7 @@ void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
 
     vBuffer.Copy(lines.Data(), sizeof(LineVertex) * lines.Count(), 0);
 
-    unsigned long long bindOffset = 0;
+    uint64_t bindOffset = 0;
 
     vBuffer.Bind(buffer, &bindOffset);
 

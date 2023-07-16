@@ -22,13 +22,6 @@ bool IsMouseButtonDown(Window window, int buttonCode)
     return glfwGetMouseButton(window, buttonCode);
 }
 
-MousePosition GetMousePosition(Window window)
-{
-    MousePosition position = {};
-    glfwGetCursorPos(window, &position.x, &position.y);
-    return position;
-}
-
 void SetOnKeyPressedCallback(Window window, SetKeyPressedCallback callback)
 {
     glfwSetKeyCallback(window, callback);
@@ -42,6 +35,11 @@ void SetOnTextKeyPressedCallback(Window window, SetTextKeyPressedCallback callba
 void SetOnMouseKeyPressedCallback(Window window, SetMouseButtonPressedCallback callback)
 {
     glfwSetMouseButtonCallback(window, callback);
+}
+
+void SetOnMouseMovedCallback(Window window, SetMousePositionCallback callback)
+{
+    glfwSetCursorPosCallback(window, callback);
 }
 
 } // namespace Siege::Glfw

@@ -13,15 +13,71 @@
 #include <utils/math/Transform.h>
 #include <window/Input.h>
 
-void FPSCamera::Update(float fovy, float aspect, float near, float far)
+#define DEFAULT_NEAR_POINT 0.1f
+#define DEFAULT_FAR_POINT 1000.f
+#define DEFAULT_VIEW_WIDTH 800.f
+#define DEFAULT_VIEW_HEIGHT 600.f
+
+FPSCamera::FPSCamera(Siege::Vec3 position,
+                     Siege::Vec3 front,
+                     float fov,
+                     float width,
+                     float height,
+                     float near,
+                     float far) :
+    camPos {position},
+    camFront {front},
+    fov {fov},
+    aspectRatio {width / height},
+    near {near},
+    far {far},
+    viewWidth {width},
+    viewHeight {height}
 {
-    cam.projection = Siege::Perspective(fovy, aspect, near, far);
+    cam.view = Siege::LookAt(camPos, camPos + camFront);
+    cam.projection = Siege::Perspective(fov, viewWidth / viewHeight, near, far);
+}
+
+FPSCamera::FPSCamera(Siege::Vec3 position,
+                     Siege::Vec3 front,
+                     float fov,
+                     float width,
+                     float height,
+                     float near) :
+    FPSCamera(position, front, fov, width, height, near, DEFAULT_FAR_POINT)
+{}
+
+FPSCamera::FPSCamera(Siege::Vec3 position,
+                     Siege::Vec3 front,
+                     float fov,
+                     float width,
+                     float height) :
+    FPSCamera(position, front, fov, width, height, DEFAULT_NEAR_POINT)
+{}
+
+FPSCamera::FPSCamera(Siege::Vec3 position, Siege::Vec3 front, float fov, float width) :
+    FPSCamera(position, front, fov, width, DEFAULT_VIEW_HEIGHT)
+{}
+
+FPSCamera::FPSCamera(Siege::Vec3 position, Siege::Vec3 front, float fov) :
+    FPSCamera(position, front, fov, DEFAULT_VIEW_WIDTH)
+{}
+
+void FPSCamera::Update(float fovy, float width, float height, float near, float far)
+{
+    cam.projection = Siege::Perspective(fovy, width / height, near, far);
 }
 
 void FPSCamera::MoveCamera(float deltaTime)
 {
-    Siege::Vec2 mouse = {(float) Siege::Input::GetCursorPosition().x,
-                         (float) Siege::Input::GetCursorPosition().y};
+    if (!isMoveable) return;
+
+    Siege::Vec2 mouseDir = Siege::Input::GetMouseDirection();
+
+    const float sensitivity = 0.1f;
+
+    yaw += mouseDir.x * sensitivity;
+    pitch = Siege::Float::Clamp(pitch + (mouseDir.y * sensitivity), -89.f, 89.f);
 
     const float camSpeed = deltaTime * 2.5f;
 
@@ -37,14 +93,6 @@ void FPSCamera::MoveCamera(float deltaTime)
 
     camPos += Siege::Vec3::Normalise(camMoveDir) * camSpeed;
 
-    const float sensitivity = 0.1f;
-
-    float xDelta = (oldMousePos.x - mouse.x) * sensitivity;
-    float yDelta = (mouse.y - oldMousePos.y) * sensitivity;
-
-    yaw += xDelta;
-    pitch = Siege::Float::Clamp(pitch + yDelta, -89.f, 89.f);
-
     Siege::Vec3 direction;
     direction.x = Siege::Float::Cos(Siege::Float::Radians(yaw)) *
                   Siege::Float::Cos(Siege::Float::Radians(pitch));
@@ -54,8 +102,6 @@ void FPSCamera::MoveCamera(float deltaTime)
     camFront = Siege::Vec3::Normalise(direction);
 
     cam.view = Siege::LookAt(camPos, camPos + camFront);
-
-    oldMousePos = mouse;
 }
 
 Siege::RayCast FPSCamera::GetMouseRay(float mouseX, float mouseY, float windowX, float windowY)
@@ -75,4 +121,10 @@ Siege::RayCast FPSCamera::GetMouseRay(float mouseX, float mouseY, float windowX,
     Siege::Vec3 direction = Siege::Vec4::Normalise(rayFar - rayNear);
 
     return {{camPos.x, camPos.y, camPos.z}, {direction.x, direction.y, direction.z}};
+}
+
+void FPSCamera::SetAspectRatio(float aspect)
+{
+    aspectRatio = aspect;
+    cam.projection = Siege::Perspective(fov, aspectRatio, near, far);
 }

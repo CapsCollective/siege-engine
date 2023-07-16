@@ -299,7 +299,7 @@ struct Vec<T, 4>
      * @param index the index of the requested dimension
      * @return a reference to the requested value
      */
-    inline constexpr float& operator[](unsigned int index)
+    inline constexpr T& operator[](unsigned int index)
     {
         switch (index)
         {
@@ -320,7 +320,7 @@ struct Vec<T, 4>
      * @param index the index of the requested dimension
      * @return a copy of the requested value
      */
-    inline constexpr float operator[](unsigned int index) const
+    inline constexpr T operator[](unsigned int index) const
     {
         return ((index == 0) * x) + ((index == 1) * y) + ((index == 2) * z) + ((index == 3) * w);
     }
@@ -3839,7 +3839,7 @@ inline constexpr Vec<T, 4> operator+(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs)
  * @return a new vector with the result of the vector addition
  */
 template<typename T>
-inline constexpr Vec<T, 4> operator+(const Vec<T, 4>& lhs, const float& scalar)
+inline constexpr Vec<T, 4> operator+(const Vec<T, 4>& lhs, const T& scalar)
 {
     return Vec<T, 4>::Add(lhs, scalar);
 }
@@ -3865,7 +3865,7 @@ inline constexpr Vec<T, 4> operator-(const Vec<T, 4>& lhs, const Vec<T, 4>& rhs)
  * @return a new vector with the result of the vector subtraction
  */
 template<typename T>
-inline constexpr Vec<T, 4> operator-(const Vec<T, 4>& lhs, const float& scalar)
+inline constexpr Vec<T, 4> operator-(const Vec<T, 4>& lhs, const T& scalar)
 {
     return Vec<T, 4>::Subtract(lhs, scalar);
 }

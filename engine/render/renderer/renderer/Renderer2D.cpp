@@ -11,6 +11,8 @@
 #include <utils/Logging.h>
 #include <utils/math/Transform.h>
 
+#include <cstdint>
+
 #include "render/renderer/Renderer.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -199,7 +201,7 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
         textMaterial.BindPushConstant(buffer, &j);
         textMaterial.Bind(buffer);
 
-        unsigned long long vertexBufferOffset =
+        uint64_t vertexBufferOffset =
             sizeof(FontVertex) *
             ((index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT));
 
@@ -234,7 +236,7 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
                          sizeof(QuadVertex) * quadArr.Count(),
                          sizeof(QuadVertex) * vertexBufferOffset);
 
-        unsigned long long bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
+        uint64_t bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
 
         quadVBuffer.Bind(buffer, &bindOffset);
         // quadVertexBuffer.Bind(buffer, &vertexBufferOffset);

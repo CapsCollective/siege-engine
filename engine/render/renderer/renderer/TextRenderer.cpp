@@ -10,6 +10,8 @@
 
 #include <utils/math/Transform.h>
 
+#include <cstdint>
+
 #include "render/renderer/platform/vulkan/Swapchain.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
@@ -132,7 +134,7 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
 
         auto& vertexBuffer = perFrameVertexBuffers[frameIndex];
 
-        unsigned long long bindOffset = sizeof(QuadData) * (i * OFFSET_PER_FONT);
+        uint64_t bindOffset = sizeof(QuadData) * (i * OFFSET_PER_FONT);
 
         vertexBuffer.Copy(characters[i].Data(),
                           sizeof(QuadData) * characters[i].Count(),

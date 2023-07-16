@@ -57,7 +57,7 @@ VertexBuffer::~VertexBuffer()
 }
 
 void VertexBuffer::Bind(const CommandBuffer& commandBuffer,
-                        unsigned long long* offset,
+                        const uint64_t* offset,
                         unsigned int binding)
 {
     vkCmdBindVertexBuffers(commandBuffer.Get(), binding, 1, &buffer, offset);

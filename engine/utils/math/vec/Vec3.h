@@ -247,20 +247,20 @@ struct Vec<T, 3>
      * @param y the value for the y axis
      * @param z the value for the z axis
      */
-    inline constexpr Vec<T, 3>(float x, float y, float z) : x {x}, y {y}, z {z} {}
+    inline constexpr Vec<T, 3>(T x, T y, T z) : x {x}, y {y}, z {z} {}
 
     /**
      * The two-element partial constructor for the Vec<T, 3>
      * @param x the value for the x axis
      * @param y the value for the y axis
      */
-    inline constexpr Vec<T, 3>(float x, float y) : Vec<T, 3>(x, y, 0) {}
+    inline constexpr Vec<T, 3>(T x, T y) : Vec<T, 3>(x, y, 0) {}
 
     /**
      * The one-element partial constructor for the Vec<T, 3>
      * @param x the value for the x axis
      */
-    inline constexpr Vec<T, 3>(float x) : Vec<T, 3>(x, 0, 0) {}
+    inline constexpr Vec<T, 3>(T x) : Vec<T, 3>(x, 0, 0) {}
 
     /**
      * The 4D vector constructor. Constructs a 3D vector using the x, y, and z element of the
@@ -289,7 +289,7 @@ struct Vec<T, 3>
      * @param index the index of the requested dimension
      * @return a reference to the requested value
      */
-    inline constexpr float& operator[](unsigned int index)
+    inline constexpr T& operator[](unsigned int index)
     {
         switch (index)
         {
@@ -308,7 +308,7 @@ struct Vec<T, 3>
      * @param index the index of the requested dimension
      * @return a copy of the requested value
      */
-    inline constexpr float operator[](unsigned int index) const
+    inline constexpr T operator[](unsigned int index) const
     {
         return ((index == 0) * x) + ((index == 1) * y) + ((index == 2) * z);
     }
