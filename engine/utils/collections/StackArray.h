@@ -460,7 +460,7 @@ public:
     }
 
     /**
-     * Returns the element in the MSArray
+     * Returns the last element in the MSArray
      * @return the last element in the array
      */
     inline const T& Back() const
@@ -469,7 +469,7 @@ public:
     }
 
     /**
-     * Returns the element in the MSArray
+     * Returns the last element in the MSArray
      * @return the last element in the array
      */
     inline T& Back()
@@ -477,7 +477,46 @@ public:
         return data[bitField.LeftMostBit() - 1];
     }
 
+    /**
+     * Returns the first element in the MSArray
+     * @return the first element in the array
+     */
+    inline const T& Front() const
+    {
+        return data[bitField.FirstSetBit() - 1];
+    }
+
+    /**
+     * Returns the first element in the MSArray
+     * @return the first element in the array
+     */
+    inline T& Front()
+    {
+        return data[bitField.FirstSetBit() - 1];
+    }
+
 private:
+
+    friend class MIter<MSArray<T, S>, T>;
+    friend class CMIter<MSArray<T, S>, T>;
+
+    /**
+     * Returns the index of the first element of the array. Used primarily for iterators
+     * @return the index of the first element of the array
+     */
+    inline size_t GetFirstElementIdx()
+    {
+        return bitField.FirstSetBit() - 1;
+    }
+
+    /**
+     * Returns the index of the first element of the array. Used primarily for const iterators
+     * @return the index of the first element of the array
+     */
+    inline const size_t GetFirstElementIdx() const
+    {
+        return bitField.FirstSetBit() - 1;
+    }
 
     /**
      * A private constructor for the MSArray. Simply initialises the count value of the array.

@@ -674,3 +674,13 @@ UTEST(test_MSArray, GetItemAtBackOfMSArray)
 
     ASSERT_EQ(4, arrayB.Back());
 }
+
+UTEST(test_MSArray, GetItemAtFrontOfMSArray)
+{
+    MSArray<uint32_t, 5> arrayA {0, 1, 2, 3, 4};
+    const MSArray<uint32_t, 5> arrayB {10, 1, 2, 3, 4};
+
+    ASSERT_EQ(0, arrayA.Front());
+
+    ASSERT_EQ(10, arrayB.Front());
+}

@@ -78,27 +78,8 @@ unsigned long CalculateLeftMostBit(const unsigned char& byte)
 
 unsigned long GetBitPosIndex(const unsigned long& bit)
 {
-    switch (bit)
-    {
-        case 1:
-            return GET_BIT_POS(1);
-        case 2:
-            return GET_BIT_POS(2);
-        case 4:
-            return GET_BIT_POS(4);
-        case 8:
-            return GET_BIT_POS(8);
-        case 16:
-            return GET_BIT_POS(16);
-        case 32:
-            return GET_BIT_POS(32);
-        case 64:
-            return GET_BIT_POS(64);
-        case 128:
-            return GET_BIT_POS(128);
-        default:
-            return 0;
-    }
+    return ((bit == 1) * 1) + ((bit == 2) * 2) + ((bit == 4) * 3) + ((bit == 8) * 4) +
+           ((bit == 16) * 5) + ((bit == 32) * 6) + ((bit == 64) * 7) + ((bit == 128) * 8);
 }
 
 void SetBitsToOne(unsigned char* bitfield, const unsigned long& bits)

@@ -243,6 +243,7 @@ public:
      */
     inline constexpr MIter(A* arrPtr) : ptr {arrPtr}
     {
+        index = arrPtr->GetFirstElementIdx();
         ptr = arrPtr->Data() && arrPtr->Count() > 0 ? arrPtr : nullptr;
 
         while (ptr && !ptr->IsActive(index)) index++;
@@ -359,6 +360,7 @@ public:
      */
     inline constexpr CMIter(const A* arrPtr) : ptr {arrPtr}
     {
+        index = arrPtr->GetFirstElementIdx();
         ptr = arrPtr->Data() && arrPtr->Count() > 0 ? arrPtr : nullptr;
 
         while (ptr && !ptr->IsActive(index)) index++;

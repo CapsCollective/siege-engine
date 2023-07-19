@@ -32,7 +32,7 @@ VertexBuffer::VertexBuffer(unsigned long bufferSize) : size {bufferSize}
 
 VertexBuffer::VertexBuffer(void* data, unsigned long bufferSize) : VertexBuffer(bufferSize)
 {
-    Copy(data, bufferSize, 0);
+    Copy(data, bufferSize);
 }
 
 void VertexBuffer::Copy(const void* data, unsigned long dSize, unsigned long offset)

@@ -259,6 +259,29 @@ UTEST(test_BitSet, MoveBitField)
     ASSERT_EQ(0, bitMaskA.LeftMostBit());
 }
 
+UTEST(test_BitSet, TestGetFirstSetBit)
+{
+    Siege::BitUtils::BitSet bitMask(2);
+    auto firstSet = bitMask.FirstSetBit();
+
+    ASSERT_EQ(0, firstSet);
+
+    bitMask.SetBit(5);
+    bitMask.SetBit(7); // 0000 1010
+
+    ASSERT_EQ(5, bitMask.FirstSetBit());
+    ASSERT_EQ(7, bitMask.LeftMostBit());
+
+    bitMask.UnsetBit(5);
+    ASSERT_EQ(7, bitMask.FirstSetBit());
+
+    bitMask.SetBit(12);
+    ASSERT_EQ(7, bitMask.FirstSetBit());
+
+    bitMask.SetBit(1);
+    ASSERT_EQ(1, bitMask.FirstSetBit());
+}
+
 // --------------------------------------- SBitSet ------------------------------------------------
 
 UTEST(test_SBitSet, CreateBitSet)
