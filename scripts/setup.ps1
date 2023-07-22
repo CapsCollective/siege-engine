@@ -1,3 +1,9 @@
+# Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+#
+# This code is released under an unmodified zlib license.
+# For conditions of distribution and use, please see:
+#     https://opensource.org/licenses/Zlib
+
 param (
     [switch] $Include_Validation_Layers
 )
@@ -38,9 +44,24 @@ function Checkout-Tags {
     git -C "$Path"  fetch --all --tags ; git -C "$Path" checkout tags/"$Tag"
 }
 
+function Setup-Raylib {
+    Write-Output "Setting up raylib..."
+    Write-Output "Cloning raylib..."
+    Update-Submodule -Submodule raylib-cpp
+}
+
+function Setup-Utest {
+    Write-Output "Setting up utest..."
+    Write-Output "Cloning utest..."
+    Update-Submodule -Submodule utest.h
+}
+
 function Setup-Zlib {
+    Write-Output "Setting up zlib..."
+    Write-Output "Cloning zlib..."
     Update-Submodule zlib
 
+    Write-Output "Building zlib..."
     [string] $build_dir = "$Vendor_Dir/zlib/build"
 
     Make-Dir $build_dir
@@ -53,8 +74,11 @@ function Setup-Zlib {
 }
 
 function Setup-LibPng {
+    Write-Output "Setting up libpng..."
+    Write-Output "Cloning libpng..."
     Update-Submodule libpng
 
+    Write-Output "Building libpng..."
     [string] $build_dir = "$Vendor_Dir/libpng/build"
 
     Make-Dir $build_dir
@@ -65,8 +89,11 @@ function Setup-LibPng {
 }
 
 function Setup-FreeType {
+    Write-Output "Setting up freetype..."
+    Write-Output "Cloning freetype..."
     Update-Submodule freetype
 
+    Write-Output "Building freetype..."
     [string] $build_dir = "$Vendor_Dir/freetype/build"
     [string] $zlib_build_dir = "$Vendor_Dir/zlib/build"
     [string] $libpng_build_dir = "$Vendor_Dir/libpng/build"
@@ -94,8 +121,11 @@ function Setup-FreeType {
 }
 
 function Setup-Glfw {
+    Write-Output "Setting up glfw..."
+    Write-Output "Cloning glfw..."
     Update-Submodule glfw
 
+    Write-Output "Building glfw..."
     [string] $build_dir = "$Vendor_Dir/glfw/build"
 
     cmake -G"$Generator" -DCMAKE_INSTALL_PREFIX="$build_dir" -B"$build_dir" -S"$Vendor_Dir/glfw"
@@ -104,8 +134,11 @@ function Setup-Glfw {
 }
 
 function Setup-Glslang {
+    Write-Output "Setting up glslang..."
+    Write-Output "Cloning glslang..."
     Update-Submodule glslang
 
+    Write-Output "Building glslang..."
     [string] $build_dir = "$Vendor_Dir/glslang/build"
 
     Make-Dir $build_dir
@@ -121,8 +154,11 @@ function Setup-Glslang {
 }
 
 function Setup-Volk {
+    Write-Output "Setting up volk..."
+    Write-Output "Cloning volk..."
     Update-Submodule vulkan/volk
 
+    Write-Output "Building volk..."
     Make-Dir $Volk_Include_Dir
 
     Copy-Item -Path "$Vulkan_Vendor_Dir/volk/volk.h" -Destination $Volk_Include_Dir
@@ -130,9 +166,12 @@ function Setup-Volk {
 }
 
 function Setup-Vulkan-Headers {
+    Write-Output "Setting up Vulkan Headers..."
+    Write-Output "Cloning Vulkan Headers..."
     Update-Submodule vulkan/Vulkan-Headers
     Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Headers" $Vulkan_Version
 
+    Write-Output "Building Vulkan Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Headers/build"
 
     Make-Dir $build_dir
@@ -145,11 +184,14 @@ function Setup-Vulkan-Headers {
     Copy-Item -Path "$Vulkan_Vendor_Dir/Vulkan-Headers/include/vulkan/*" -Destination $Vulkan_Include_Dir -Include "*.h"
 }
 
-function Setup-Vulkan_Loader {
+function Setup-Vulkan-Loader {
+    Write-Output "Setting up Vulkan Loader..."
+    Write-Output "Cloning Vulkan Loader..."
     Update-Submodule vulkan/Vulkan-Loader
 
     Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Loader" $Vulkan_Version
 
+    Write-Output "Building Vulkan Loader..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Loader/build"
 
     cmake `
@@ -165,10 +207,12 @@ function Setup-Vulkan_Loader {
     Copy-Item -Path "$build_dir/loader/Release/*" -Destination $Vulkan_Lib_Dir -Include "*.dll" -Recurse
 }
 
-function Setup-Robin-Hood-Hashing
-{
+function Setup-Robin-Hood-Hashing {
+    Write-Output "Setting up Robin Hood Hashing..."
+    Write-Output "Cloning Robin Hood Hashing..."
     Update-Submodule vulkan/robin-hood-hashing
 
+    Write-Output "Building Robin Hood Hashing..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/robin-hood-hashing/build"
 
     cmake `
@@ -183,10 +227,13 @@ function Setup-Robin-Hood-Hashing
 }
 
 function Setup-Spirv-Headers {
+    Write-Output "Setting up SPIRV Headers..."
+    Write-Output "Cloning SPIRV Headers..."
     Update-Submodule vulkan/SPIRV-Headers
 
     Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "sdk-1.3.231.1"
 
+    Write-Output "Building SPIRV Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Headers/build"
 
     Make-Dir $build_dir
@@ -197,10 +244,13 @@ function Setup-Spirv-Headers {
 }
 
 function Setup-Spirv-Tools {
+    Write-Output "Setting up Spirv Tools..."
+    Write-Output "Cloning SPIRV Tools..."
     Update-Submodule vulkan/SPIRV-Tools
 
     Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Tools" "$Spirv_Version"
 
+    Write-Output "Building SPIRV Tools..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Tools/build"
 
     Make-Dir $build_dir
@@ -211,10 +261,13 @@ function Setup-Spirv-Tools {
 }
 
 function Setup-Validation-Layers {
+    Write-Output "Setting up Vulkan Validation Layers..."
+    Write-Output "Cloning Vulkan ValidationLayers..."
     Update-Submodule vulkan/Vulkan-ValidationLayers
 
     Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers" "$Vulkan_Version"
 
+    Write-Output "Building Vulkan Validation Layers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers/build"
 
     Make-Dir $build_dir
@@ -240,60 +293,33 @@ function Setup-Validation-Layers {
     Copy-Item -Path "$build_dir/layers/Release/*" -Destination "$Vulkan_Lib_Dir/explicit_layer.d" -Include "*.dll" -Recurse
 }
 
-Write-Output "Setting up Dependencies"
+Write-Output "Setting up dependencies..."
 
 if (Test-Path "$Vulkan_Lib_Dir") { Remove-Item -Path "$Vulkan_Lib_Dir" -Recurse -Force }
 if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_Vendor_Dir/vulkan/include" -Recurse -Force }
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
-Write-Output "Setting up Raylib"
-Write-Output "Cloning Raylib"
-Update-Submodule -Submodule raylib-cpp
-
-Write-Output "Setting up utest"
-Write-Output "Cloning utest"
-Update-Submodule -Submodule utest.h
-
-Write-Output "Setting up zLib"
+Setup-Raylib
+Setup-Utest
 Setup-Zlib
-
-Write-Output "Setting up libpng"
 Setup-LibPng
-
-Write-Output "Setting up freetype"
 Setup-FreeType
-
-Write-Output "Setting up glfw"
 Setup-Glfw
-
-Write-Output "Setting up glslang"
 Setup-Glslang
-
-Write-Output "Setting up volk"
 Setup-Volk
-
-Write-Output "Setting up Vulkan-Headers"
 Setup-Vulkan-Headers
-
-Write-Output "Setting up Vulkan-Loader"
-Setup-Vulkan_Loader
+Setup-Vulkan-Loader
 
 if ($Include_Validation_Layers)
 {
-    Write-Output "Setting up Robin Hood Hashing"
     Setup-Robin-Hood-Hashing
-
-    Write-Output "Setting up Spirv-Headers"
     Setup-Spirv-Headers
-
-    Write-Output "Setting up Spirv-Tools"
     Setup-Spirv-Tools
-
-    Write-Output "Setting up Vulkan Validation Layers"
     Setup-Validation-Layers
 
+    Write-Output "Configuring environment file..."
     if (!(Test-Path "$Root_Dir/.env")) { New-Item -Path "$Root_Dir/.env" -ItemType file }
     Set-Content -Path "$Root_Dir/.env" -Value "VK_LAYER_PATH=$Bin_Dir\examples\render\build\lib\explicit_layer.d"
 }
 
-Write-Output "Configuring environment file"
+Write-Output "Siege setup complete"

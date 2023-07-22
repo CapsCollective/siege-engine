@@ -89,7 +89,7 @@ $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi
     ```
     ```console
     // Windows
-    > ./scripts/Setup.ps1
+    > ./scripts/setup.ps1
     ```
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
@@ -104,7 +104,7 @@ $ ./scripts/setup.sh --include-validation-layers
 ```
 ```console
 // Windows
-> ./scripts/Setup.ps1 -Include_Validation_Layers
+> ./scripts/setup.ps1 -Include_Validation_Layers
 ```
 
 **NOTE**: Building with this option can take some time to complete. Please be patient while the project builds the required validation layers.

@@ -34,7 +34,7 @@ echo %CXXFLAGS% > %TARGET_FILE%
 EXIT /B %ERRORLEVEL%
 
 :WriteError
-    echo "Requires at least two arguments (e.g. buildFlags.bat <target_dir> <cxxflags> <dirs>)"
+    echo "Requires at least two arguments (e.g. buildflags.bat <target_dir> <cxxflags> <dirs>)"
 EXIT /B 1
 
 ENDLOCAL

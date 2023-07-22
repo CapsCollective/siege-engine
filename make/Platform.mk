@@ -18,10 +18,10 @@ ifeq ($(OS), Windows_NT)
 	COPY = $(scriptsDir)/copy.bat $1 $2 $3
 	COPY_DIR = $(scriptsDir)/copy.bat --copy-directory $1 $2
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
-	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.bat
-	COMBINE_LIBS = powershell $(scriptsDir)/Combine-Libs.ps1 --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildflags.bat
+	COMBINE_LIBS = powershell $(scriptsDir)/combinelibs.ps1 --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 else
-	COMBINE_LIBS = $(scriptsDir)/combine-libs.sh --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
+	COMBINE_LIBS = $(scriptsDir)/combinelibs.sh --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -45,5 +45,5 @@ else
 	COPY = cp -r $1$(PATHSEP)$3 $2
 	COPY_DIR = $(call COPY,$1,$2,$3)
 	VALIDATION_LAYERS_INSTALL_DIR := lib/explicit_layer.d
-	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildFlags.sh
+	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildflags.sh
 endif
