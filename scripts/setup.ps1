@@ -36,7 +36,7 @@ function Get-Files {
 
 function Update-Submodule {
     param ([string] $Submodule)
-    git submodule update --init --recursive $Vendor_Dir/$Submodule
+    git submodule update --init --recursive --depth 1 $Vendor_Dir/$Submodule
 }
 
 function Checkout-Tags {

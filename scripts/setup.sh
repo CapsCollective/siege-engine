@@ -37,7 +37,7 @@ VULKAN_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/vulkan"
 VOLK_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/volk"
 
 update_submodules() {
-    git submodule update --init --recursive "${VENDOR_DIR}"/"$1"
+    git submodule update --init --recursive --depth 1 "${VENDOR_DIR}"/"$1"
 }
 
 checkout_tags() {
