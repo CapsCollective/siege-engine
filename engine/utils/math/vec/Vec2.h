@@ -258,11 +258,11 @@ struct Vec<T, 2>
     {
         switch (index)
         {
-            default:
-            case (0):
-                return x;
             case (1):
                 return y;
+            case (0):
+            default:
+                return x;
         }
     }
 

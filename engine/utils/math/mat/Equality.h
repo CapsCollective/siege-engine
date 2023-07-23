@@ -21,21 +21,28 @@ namespace Siege
  * @tparam T the type of numerical value stored by the matrix
  * @param lhs the matrix on the left hand side of the operation
  * @param rhs the matrix on the right hand side of the operation
+ * @param epsilon the tolerance level for the comparison
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+inline constexpr bool Equals(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-
-    return (lhs[0][0] - rhs[0][0] <= epsilon) && (lhs[0][1] - rhs[0][1] <= epsilon) &&
-           (lhs[0][2] - rhs[0][2] <= epsilon) && (lhs[0][3] - rhs[0][3] <= epsilon) &&
-           (lhs[1][0] - rhs[1][0] <= epsilon) && (lhs[1][1] - rhs[1][1] <= epsilon) &&
-           (lhs[1][2] - rhs[1][2] <= epsilon) && (lhs[1][3] - rhs[1][3] <= epsilon) &&
-           (lhs[2][0] - rhs[2][0] <= epsilon) && (lhs[2][1] - rhs[2][1] <= epsilon) &&
-           (lhs[2][2] - rhs[2][2] <= epsilon) && (lhs[2][3] - rhs[2][3] <= epsilon) &&
-           (lhs[3][0] - rhs[3][0] <= epsilon) && (lhs[3][1] - rhs[3][1] <= epsilon) &&
-           (lhs[3][2] - rhs[3][2] <= epsilon) && (lhs[3][3] - rhs[3][3] <= epsilon);
+    return (std::fabs(lhs[0][0] - rhs[0][0]) <= epsilon) &&
+           (std::fabs(lhs[0][1] - rhs[0][1]) <= epsilon) &&
+           (std::fabs(lhs[0][2] - rhs[0][2]) <= epsilon) &&
+           (std::fabs(lhs[0][3] - rhs[0][3]) <= epsilon) &&
+           (std::fabs(lhs[1][0] - rhs[1][0]) <= epsilon) &&
+           (std::fabs(lhs[1][1] - rhs[1][1]) <= epsilon) &&
+           (std::fabs(lhs[1][2] - rhs[1][2]) <= epsilon) &&
+           (std::fabs(lhs[1][3] - rhs[1][3]) <= epsilon) &&
+           (std::fabs(lhs[2][0] - rhs[2][0]) <= epsilon) &&
+           (std::fabs(lhs[2][1] - rhs[2][1]) <= epsilon) &&
+           (std::fabs(lhs[2][2] - rhs[2][2]) <= epsilon) &&
+           (std::fabs(lhs[2][3] - rhs[2][3]) <= epsilon) &&
+           (std::fabs(lhs[3][0] - rhs[3][0]) <= epsilon) &&
+           (std::fabs(lhs[3][1] - rhs[3][1]) <= epsilon) &&
+           (std::fabs(lhs[3][2] - rhs[3][2]) <= epsilon) &&
+           (std::fabs(lhs[3][3] - rhs[3][3]) <= epsilon);
 }
 
 /**
@@ -44,18 +51,21 @@ inline constexpr bool FEquals(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
  * @tparam T the type of numerical value stored by the matrix
  * @param lhs the matrix on the left hand side of the operation
  * @param rhs the matrix on the right hand side of the operation
+ * @param epsilon the tolerance level for the comparison
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+inline constexpr bool Equals(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-
-    return (lhs[0][0] - rhs[0][0] <= epsilon) && (lhs[0][1] - rhs[0][1] <= epsilon) &&
-           (lhs[0][2] - rhs[0][2] <= epsilon) && (lhs[1][0] - rhs[1][0] <= epsilon) &&
-           (lhs[1][1] - rhs[1][1] <= epsilon) && (lhs[1][2] - rhs[1][2] <= epsilon) &&
-           (lhs[2][0] - rhs[2][0] <= epsilon) && (lhs[2][1] - rhs[2][1] <= epsilon) &&
-           (lhs[2][2] - rhs[2][2] <= epsilon);
+    return (std::fabs(lhs[0][0] - rhs[0][0]) <= epsilon) &&
+           (std::fabs(lhs[0][1] - rhs[0][1]) <= epsilon) &&
+           (std::fabs(lhs[0][2] - rhs[0][2]) <= epsilon) &&
+           (std::fabs(lhs[1][0] - rhs[1][0]) <= epsilon) &&
+           (std::fabs(lhs[1][1] - rhs[1][1]) <= epsilon) &&
+           (std::fabs(lhs[1][2] - rhs[1][2]) <= epsilon) &&
+           (std::fabs(lhs[2][0] - rhs[2][0]) <= epsilon) &&
+           (std::fabs(lhs[2][1] - rhs[2][1]) <= epsilon) &&
+           (std::fabs(lhs[2][2] - rhs[2][2]) <= epsilon);
 }
 
 /**
@@ -64,14 +74,16 @@ inline constexpr bool FEquals(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
  * @tparam T the type of numerical value stored by the matrix
  * @param lhs the matrix on the left hand side of the operation
  * @param rhs the matrix on the right hand side of the operation
+ * @param epsilon the tolerance level for the comparison
  * @return a boolean specifying if they are equal within the given tolerance
  */
 template<typename T>
-inline constexpr bool FEquals(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+inline constexpr bool Equals(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs, T epsilon = 0)
 {
-    T epsilon = std::numeric_limits<T>::epsilon();
-    return (lhs[0][0] - rhs[0][0] <= epsilon) && (lhs[0][1] - rhs[0][1] <= epsilon) &&
-           (lhs[1][0] - rhs[1][0] <= epsilon) && (lhs[1][1] - rhs[1][1] <= epsilon);
+    return (std::fabs(lhs[0][0] - rhs[0][0]) <= epsilon) &&
+           (std::fabs(lhs[0][1] - rhs[0][1]) <= epsilon) &&
+           (std::fabs(lhs[1][0] - rhs[1][0]) <= epsilon) &&
+           (std::fabs(lhs[1][1] - rhs[1][1]) <= epsilon);
 }
 } // namespace Siege
 

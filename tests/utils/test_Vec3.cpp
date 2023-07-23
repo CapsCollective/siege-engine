@@ -8,6 +8,7 @@
 
 #include <time.h>
 #include <utest.h>
+#include <utils/math/Maths.h>
 #include <utils/math/vec/Equality.h>
 #include <utils/math/vec/Format.h>
 #include <utils/math/vec/Vec2.h>
@@ -30,7 +31,7 @@ UTEST(test_Vec3, CreateVec3)
     ASSERT_EQ(0.f, vec.z);
 }
 
-UTEST(test_Vec3, TestCreateVec3WithValues)
+UTEST(test_Vec3, CreateVec3WithValues)
 {
     Vec3 vec {1.f, 2.f, 3.f};
 
@@ -39,7 +40,7 @@ UTEST(test_Vec3, TestCreateVec3WithValues)
     ASSERT_EQ(3.f, vec.z);
 }
 
-UTEST(test_Vec3, TestCreateVec3One)
+UTEST(test_Vec3, CreateVec3One)
 {
     Vec3 vec = Vec3::One();
 
@@ -48,7 +49,7 @@ UTEST(test_Vec3, TestCreateVec3One)
     ASSERT_EQ(1, vec.z);
 }
 
-UTEST(test_Vec3, TestCreateVec3UpVector)
+UTEST(test_Vec3, CreateVec3UpVector)
 {
     Vec3 vec = Vec3::Up();
 
@@ -57,7 +58,7 @@ UTEST(test_Vec3, TestCreateVec3UpVector)
     ASSERT_EQ(0, vec.z);
 }
 
-UTEST(test_Vec3, TestCreateVec3RightVector)
+UTEST(test_Vec3, CreateVec3RightVector)
 {
     Vec3 vec = Vec3::Right();
 
@@ -66,7 +67,7 @@ UTEST(test_Vec3, TestCreateVec3RightVector)
     ASSERT_EQ(0, vec.z);
 }
 
-UTEST(test_Vec3, TestCreateVec3WithVec2)
+UTEST(test_Vec3, CreateVec3WithVec2)
 {
     Vec3 expected = {1.f, 2.f, 0.f};
 
@@ -77,7 +78,7 @@ UTEST(test_Vec3, TestCreateVec3WithVec2)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestCreateVec3WithVec4)
+UTEST(test_Vec3, CreateVec3WithVec4)
 {
     Vec3 expected = {1.f, 2.f, 3.f};
 
@@ -88,7 +89,7 @@ UTEST(test_Vec3, TestCreateVec3WithVec4)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestSubscriptOperator)
+UTEST(test_Vec3, SubscriptOperator)
 {
     Vec3 vec = {1.f, 2.f, 3.f};
 
@@ -97,7 +98,7 @@ UTEST(test_Vec3, TestSubscriptOperator)
     ASSERT_EQ(3.f, vec[2]);
 }
 
-UTEST(test_Vec3, TestSubscriptAssignmentOperator)
+UTEST(test_Vec3, SubscriptAssignmentOperator)
 {
     Vec3 vec {};
 
@@ -110,7 +111,7 @@ UTEST(test_Vec3, TestSubscriptAssignmentOperator)
     ASSERT_EQ(3.f, vec[2]);
 }
 
-UTEST(test_Vec3, TestAddVectors)
+UTEST(test_Vec3, AddVectors)
 {
     Vec3 expected = {4.f, 2.f, 6};
 
@@ -121,7 +122,7 @@ UTEST(test_Vec3, TestAddVectors)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestAddScalar)
+UTEST(test_Vec3, AddScalar)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -132,7 +133,7 @@ UTEST(test_Vec3, TestAddScalar)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestSubtractVectors)
+UTEST(test_Vec3, SubtractVectors)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -145,7 +146,7 @@ UTEST(test_Vec3, TestSubtractVectors)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestSubtractScalar)
+UTEST(test_Vec3, SubtractScalar)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -156,7 +157,7 @@ UTEST(test_Vec3, TestSubtractScalar)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestMultiplyVectors)
+UTEST(test_Vec3, MultiplyVectors)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -169,7 +170,7 @@ UTEST(test_Vec3, TestMultiplyVectors)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestMultiplyScalar)
+UTEST(test_Vec3, MultiplyScalar)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -180,7 +181,7 @@ UTEST(test_Vec3, TestMultiplyScalar)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestDivideVectors)
+UTEST(test_Vec3, DivideVectors)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -193,7 +194,7 @@ UTEST(test_Vec3, TestDivideVectors)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestDivideScalar)
+UTEST(test_Vec3, DivideScalar)
 {
     Vec3 expected = {4.f, 2.f, 6.f};
 
@@ -246,7 +247,7 @@ UTEST(test_Vec3, NormaliseVector)
     ASSERT_LE((norm.z - 0.743622779f), std::numeric_limits<float>::epsilon());
 }
 
-UTEST(test_Vec3, TestVec3CosOperation)
+UTEST(test_Vec3, Vec3CosOperation)
 {
     Vec3 expected = {0.540302336f, -0.416146845, -0.989992499};
 
@@ -257,7 +258,7 @@ UTEST(test_Vec3, TestVec3CosOperation)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestVec3SinOperation)
+UTEST(test_Vec3, Vec3SinOperation)
 {
     Vec3 expected = {0.841471016f, 0.909297406, 0.141120002};
 
@@ -268,7 +269,7 @@ UTEST(test_Vec3, TestVec3SinOperation)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestVec3TanOperation)
+UTEST(test_Vec3, Vec3TanOperation)
 {
     Vec3 expected = {1.55740774f, -2.18503976, -0.142546549};
 
@@ -279,7 +280,7 @@ UTEST(test_Vec3, TestVec3TanOperation)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestSwizzleOperators)
+UTEST(test_Vec3, SwizzleOperators)
 {
     srand(time(NULL));
     float x = rand() % 1000;
@@ -834,7 +835,7 @@ UTEST(test_Vec3, TestSwizzleOperators)
     ASSERT_EQ(z, vecZZZZ.w);
 }
 
-UTEST(test_Vec3, TestToString)
+UTEST(test_Vec3, ToString)
 {
     String expected = "1.00,2.00,3.00";
 
@@ -845,7 +846,7 @@ UTEST(test_Vec3, TestToString)
     ASSERT_STREQ(result.Str(), expected.Str());
 }
 
-UTEST(test_Vec3, TestFromString)
+UTEST(test_Vec3, FromString)
 {
     Vec3 expected = {1.f, 2.f, 3.f};
 
@@ -858,13 +859,19 @@ UTEST(test_Vec3, TestFromString)
     ASSERT_EQ_VEC3(result, expected);
 }
 
-UTEST(test_Vec3, TestFuzzyEquals)
+UTEST(test_Vec3, CheckVectorEquality)
 {
     Vec3 vecA = {1.f, 2.f, 3.f};
 
     Vec3 vecB = {0.9999999999999912, 2.0000000000000023f, 3.f};
 
-    ASSERT_TRUE(Equals(vecA, vecB));
+    ASSERT_TRUE(Equals(vecA, vecB, Epsilon<float>()));
+
+    vecA = {-1.f, -2.f, -3.f};
+
+    vecB = {-0.9999999999999912, -2.0000000000000023f, -3.f};
+
+    ASSERT_TRUE(Equals(vecA, vecB, Epsilon<float>()));
 }
 
 UTEST(test_Vec3, LerpVector)

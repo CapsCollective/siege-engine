@@ -41,7 +41,7 @@ UTEST(test_Projection, CreateOrthographicMatrix)
     ASSERT_TRUE(orthographic == expected);
 }
 
-UTEST(test_Projection, TestInverseProjectionMatrix)
+UTEST(test_Projection, InvertProjectionMatrix)
 {
     auto perspective = Perspective(degrees, aspectRatio, 0.1f, 1000.f);
 
@@ -55,7 +55,7 @@ UTEST(test_Projection, TestInverseProjectionMatrix)
     ASSERT_TRUE(result == expected);
 }
 
-UTEST(test_Projection, TestUnProjectPoint3D)
+UTEST(test_Projection, UnProject2DPointTo3D)
 {
     Vec3 expected = {-0.000915590383f, -0.993325829f, -2.40004373f};
 
@@ -76,7 +76,7 @@ UTEST(test_Projection, TestUnProjectPoint3D)
     ASSERT_LE(expected.z - unProjected.z, ScaledEpsilon(expected.z, unProjected.z));
 }
 
-UTEST(test_Projection, TestWorldToScreen)
+UTEST(test_Projection, ConvertWorldPointToScreen)
 {
     Vec3 expected = {372.660217f, 307.925781f, 0.f};
 

@@ -239,7 +239,6 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
         uint64_t bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
 
         quadVBuffer.Bind(buffer, &bindOffset);
-        // quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }

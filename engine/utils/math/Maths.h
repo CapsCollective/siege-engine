@@ -18,6 +18,13 @@
 
 namespace Siege
 {
+
+template<typename T>
+inline constexpr T Epsilon()
+{
+    return static_cast<T>(1e-6);
+}
+
 struct BoundedBox
 {
     // 'Structors

@@ -7,6 +7,7 @@
 //
 
 #include <utest.h>
+#include <utils/math/Maths.h>
 #include <utils/math/mat/Equality.h>
 #include <utils/math/mat/Format.h>
 #include <utils/math/mat/Mat2.h>
@@ -331,7 +332,7 @@ UTEST(test_Mat4, DivideMatrixWithSlashEqualsOperator)
     ASSERT_TRUE(matrixA == expected);
 }
 
-UTEST(test_Mat4, TestTranspose)
+UTEST(test_Mat4, TransposeMatrix)
 {
     Siege::Mat4 expected = {{1.f, 5.f, 9.f, 13},
                             {2.f, 6.f, 10.f, 14.f},
@@ -348,7 +349,7 @@ UTEST(test_Mat4, TestTranspose)
     ASSERT_TRUE(transposed == expected);
 }
 
-UTEST(test_Mat4, TestReverseOperator)
+UTEST(test_Mat4, NegateMatrix)
 {
     Siege::Mat4 expected = {{1.f, -1.f, 1.f, -1.f},
                             {-1.f, 1.f, -1.f, 1.f},
@@ -363,7 +364,7 @@ UTEST(test_Mat4, TestReverseOperator)
     ASSERT_TRUE(-matrix == expected);
 }
 
-UTEST(test_Mat4, TestToString)
+UTEST(test_Mat4, ConvertMatrixToString)
 {
     String str = "{1.00,2.00,3.00,4.00}\n{5.00,6.00,7.00,8.00}\n{9.00,10.00,11.00,12.00}\n{13.00,"
                  "14.00,15.00,16.00}";
@@ -375,7 +376,7 @@ UTEST(test_Mat4, TestToString)
     ASSERT_TRUE(str == result);
 }
 
-UTEST(test_Mat4, TestFuzzyEquals)
+UTEST(test_Mat4, CheckMatrixEquality)
 {
     Mat4 matrixA = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
 
@@ -384,5 +385,5 @@ UTEST(test_Mat4, TestFuzzyEquals)
                     {8.99999999999999999, 10, 11, 12},
                     {13, 14, 15, 16}};
 
-    ASSERT_TRUE(FEquals(matrixA, matrixB));
+    ASSERT_TRUE(Equals(matrixA, matrixB, Epsilon<float>()));
 }

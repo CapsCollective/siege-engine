@@ -7,6 +7,7 @@
 //
 
 #include <utest.h>
+#include <utils/math/Maths.h>
 #include <utils/math/mat/Equality.h>
 #include <utils/math/mat/Format.h>
 #include <utils/math/mat/Mat.h>
@@ -14,20 +15,26 @@
 #include <utils/math/mat/Mat4.h>
 #include <utils/math/vec/Vec2.h>
 
+#define ASSERT_EQ_MAT2(a, b)                                         \
+    ASSERT_LE(std::abs(a[0][0] - b[0][0]), Siege::Epsilon<float>()); \
+    ASSERT_LE(std::abs(a[0][1] - b[0][1]), Siege::Epsilon<float>()); \
+    ASSERT_LE(std::abs(a[1][0] - b[1][0]), Siege::Epsilon<float>()); \
+    ASSERT_LE(std::abs(a[1][1] - b[1][1]), Siege::Epsilon<float>());
+
 using namespace Siege;
 
 UTEST(test_Mat2, CreateEmptyMatrix)
 {
     Mat2 mat {};
 
-    ASSERT_TRUE(mat == Mat2::Zero());
+    ASSERT_EQ_MAT2(mat, Mat2::Zero())
 }
 
 UTEST(test_Mat2, CreateConstexprEmptyMatrix)
 {
     constexpr Mat2 mat {};
 
-    ASSERT_TRUE(mat == Mat2::Zero());
+    ASSERT_EQ_MAT2(mat, Mat2::Zero());
 }
 
 UTEST(test_Mat2, CreateIdentityMatrix)
@@ -253,7 +260,7 @@ UTEST(test_Mat2, TestTranspose)
     ASSERT_TRUE(transposed == expected);
 }
 
-UTEST(test_Mat2, TestReverseOperator)
+UTEST(test_Mat2, NegateMatrix)
 {
     Siege::Mat2 expected = {{1.f, -1.f}, {-1.f, 1.f}};
 
@@ -262,7 +269,7 @@ UTEST(test_Mat2, TestReverseOperator)
     ASSERT_TRUE(-matrix == expected);
 }
 
-UTEST(test_Mat2, TestToString)
+UTEST(test_Mat2, ConvertMatrixToString)
 {
     String str = "{1.00,2.00}\n{3.00,4.00}";
 
@@ -273,11 +280,11 @@ UTEST(test_Mat2, TestToString)
     ASSERT_TRUE(str == result);
 }
 
-UTEST(test_Mat2, TestFuzzyEquals)
+UTEST(test_Mat2, CheckMatrixEquality)
 {
     Mat2 matrixA = {{1, 2}, {3, 4}};
 
     Mat2 matrixB = {{0.99999999999912, 2}, {3, 4}};
 
-    ASSERT_TRUE(FEquals(matrixA, matrixB));
+    ASSERT_TRUE(Equals(matrixA, matrixB, Siege::Epsilon<float>()));
 }

@@ -16,6 +16,14 @@
 namespace Siege
 {
 
+/**
+ * Calculates the epsilon scaled to the larger of the values to compare. Creates a more generous
+ * tolerance level than a standard epsilon
+ * @tparam T The type of the values to compare
+ * @param lhs the value on the left hand side
+ * @param rhs the value on the right hand side
+ * @return the scaled epsilon of the two values
+ */
 template<typename T>
 inline constexpr T ScaledEpsilon(T lhs, T rhs)
 {

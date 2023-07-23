@@ -7,12 +7,12 @@
 //
 
 #include <utest.h>
+#include <utils/math/Maths.h>
 #include <utils/math/mat/Equality.h>
 #include <utils/math/mat/Format.h>
 #include <utils/math/mat/Mat2.h>
 #include <utils/math/mat/Mat3.h>
 #include <utils/math/mat/Mat4.h>
-#include <utils/math/vec/Vec3.h>
 
 using namespace Siege;
 
@@ -246,7 +246,7 @@ UTEST(test_Mat3, DivideMatrixWithSlashEqualsOperator)
     ASSERT_TRUE(matrixA == expected);
 }
 
-UTEST(test_Mat3, TestTranspose)
+UTEST(test_Mat3, TransposeMatrix)
 {
     Siege::Mat3 expected = {{1.f, 5.f, 9.f}, {2.f, 6.f, 10.f}, {3.f, 7.f, 11.f}};
 
@@ -257,7 +257,7 @@ UTEST(test_Mat3, TestTranspose)
     ASSERT_TRUE(transposed == expected);
 }
 
-UTEST(test_Mat3, TestReverseOperator)
+UTEST(test_Mat3, NegateMatrix)
 {
     Siege::Mat3 expected = {{1.f, -1.f, 1.f}, {-1.f, 1.f, -1.}, {1.f, -1.f, 1.f}};
 
@@ -272,7 +272,7 @@ UTEST(test_Mat3, TestReverseOperator)
     ASSERT_TRUE(-matrix == expected);
 }
 
-UTEST(test_Mat3, TestToString)
+UTEST(test_Mat3, ConvertMatrixToString)
 {
     String str = "{1.00,2.00,3.00}\n{4.00,5.00,6.00}\n{7.00,8.00,9.00}";
 
@@ -283,11 +283,11 @@ UTEST(test_Mat3, TestToString)
     ASSERT_TRUE(str == result);
 }
 
-UTEST(test_Mat3, TestFuzzyEquals)
+UTEST(test_Mat3, EvaluateEquallityWithEpsilon)
 {
     Mat3 matrixA = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
     Mat3 matrixB = {{0.99999999999912, 2, 3}, {4, 5.0000000000000000012, 6}, {7, 8, 9}};
 
-    ASSERT_TRUE(FEquals(matrixA, matrixB));
+    ASSERT_TRUE(Equals(matrixA, matrixB, Epsilon<float>()));
 }

@@ -8,6 +8,7 @@
 
 #include <time.h>
 #include <utest.h>
+#include <utils/math/Maths.h>
 #include <utils/math/vec/Equality.h>
 #include <utils/math/vec/Format.h>
 #include <utils/math/vec/Vec2.h>
@@ -20,7 +21,7 @@
 
 using namespace Siege;
 
-UTEST(test_Vec2, TestCreateEmptyVec2)
+UTEST(test_Vec2, CreateEmptyVec2)
 {
     Vec2 vec {};
 
@@ -28,7 +29,7 @@ UTEST(test_Vec2, TestCreateEmptyVec2)
     ASSERT_EQ(0, vec.y);
 }
 
-UTEST(test_Vec2, TestCreateVec2WithValues)
+UTEST(test_Vec2, CreateVec2WithValues)
 {
     Vec2 vec {1, 2};
 
@@ -36,7 +37,7 @@ UTEST(test_Vec2, TestCreateVec2WithValues)
     ASSERT_EQ(2, vec.y);
 }
 
-UTEST(test_Vec2, TestCreateVec2One)
+UTEST(test_Vec2, CreateVec2One)
 {
     Vec2 vec = Vec2::One();
 
@@ -44,7 +45,7 @@ UTEST(test_Vec2, TestCreateVec2One)
     ASSERT_EQ(1, vec.y);
 }
 
-UTEST(test_Vec2, TestCreateVec2UpVector)
+UTEST(test_Vec2, CreateVec2UpVector)
 {
     Vec2 vec = Vec2::Up();
 
@@ -52,7 +53,7 @@ UTEST(test_Vec2, TestCreateVec2UpVector)
     ASSERT_EQ(-1, vec.y);
 }
 
-UTEST(test_Vec2, TestCreateVec2RightVector)
+UTEST(test_Vec2, CreateVec2RightVector)
 {
     Vec2 vec = Vec2::Right();
 
@@ -60,7 +61,7 @@ UTEST(test_Vec2, TestCreateVec2RightVector)
     ASSERT_EQ(0, vec.y);
 }
 
-UTEST(test_Vec2, TestCreateVec2WithVec3)
+UTEST(test_Vec2, CreateVec2WithVec3)
 {
     Vec2 expected = {1.f, 2.f};
 
@@ -71,7 +72,7 @@ UTEST(test_Vec2, TestCreateVec2WithVec3)
     ASSERT_EQ_VEC2(result, expected);
 }
 
-UTEST(test_Vec2, TestCreateVec2WithVec4)
+UTEST(test_Vec2, CreateVec2WithVec4)
 {
     Vec2 expected = {1.f, 2.f};
 
@@ -82,7 +83,7 @@ UTEST(test_Vec2, TestCreateVec2WithVec4)
     ASSERT_EQ_VEC2(result, expected);
 }
 
-UTEST(test_Vec2, TestSubscriptOperator)
+UTEST(test_Vec2, SubscriptOperator)
 {
     Vec2 vec = {1.f, 2.f};
 
@@ -418,13 +419,19 @@ UTEST(test_Vec2, TestFromString)
     ASSERT_EQ_VEC2(result, expected);
 }
 
-UTEST(test_Vec2, TestFuzzyEquals)
+UTEST(test_Vec2, CheckVectorEquality)
 {
     Vec2 vecA = {1.f, 2.f};
 
     Vec2 vecB = {0.9999999999999912, 2.0000000000000023f};
 
-    ASSERT_TRUE(Equals(vecA, vecB));
+    ASSERT_TRUE(Equals(vecA, vecB, Epsilon<float>()));
+
+    vecA = {-1.f, -2.f};
+
+    vecB = {-0.9999999999999912, -2.0000000000000023f};
+
+    ASSERT_TRUE(Equals(vecA, vecB, Epsilon<float>()));
 }
 
 UTEST(test_Vec2, LerpVector)

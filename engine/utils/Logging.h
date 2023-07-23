@@ -99,7 +99,7 @@ public:
     DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + ToString(data) + ")");
-    //    DEFINE_VARIANT_TYPE(const Mat2& data, "Mat2(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const Mat2& data, "Mat2(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Mat3& data, "Mat3(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Mat4& data, "Mat4(" + ToString(data) + ")");
 

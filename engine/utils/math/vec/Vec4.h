@@ -303,15 +303,15 @@ struct Vec<T, 4>
     {
         switch (index)
         {
-            default:
-            case (0):
-                return x;
             case (1):
                 return y;
             case (2):
                 return z;
             case (3):
                 return w;
+            case (0):
+            default:
+                return x;
         }
     }
 
