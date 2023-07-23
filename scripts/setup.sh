@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 #
 # This code is released under an unmodified zlib license.
@@ -37,29 +37,43 @@ VULKAN_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/vulkan"
 VOLK_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/volk"
 
 update_submodules() {
-    git submodule update --init "${VENDOR_DIR}"/"$1"
+    git submodule update --init --recursive --depth 1 "${VENDOR_DIR}"/"$1"
 }
 
 checkout_tags() {
     git -C "$1"  fetch --all --tags ; git -C "$1" checkout tags/"$2"
 }
 
+setup_raylib() {
+    echo "Setting up raylib..."
+    echo "Cloning raylib..."
+    update_submodules raylib-cpp
+}
+
+setup_utest() {
+    echo "Setting up utest..."
+    echo "Cloning utest..."
+    update_submodules utest.h
+}
+
 setup_glfw() {
-    echo "Cloning GLFW..."
+    echo "Setting up glfw..."
+    echo "Cloning glfw..."
     update_submodules glfw
 
     local BUILD_DIR="${VENDOR_DIR}"/glfw/build
 
-    echo "Setting up GLFW..."
+    echo "Building glfw..."
     cmake -G "${GENERATOR}" -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" -B"${BUILD_DIR}" -S"${VENDOR_DIR}"/glfw
     make -C "${BUILD_DIR}" -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_glslang() {
-    echo "Cloning GLSLang..."
+    echo "Setting up glslang..."
+    echo "Cloning glslang..."
     update_submodules glslang
 
-    echo "Setting up GLSLang..."
+    echo "Building glslang..."
     mkdir -p "${VENDOR_DIR}"/glslang/build
     cmake \
         -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/glslang/build \
@@ -71,26 +85,29 @@ setup_glslang() {
 }
 
 setup_glm() {
-  echo "Cloning GLM..."
+  echo "Setting up glm..."
+  echo "Cloning glm..."
   update_submodules glm
 }
 
 setup_volk() {
-    echo "Cloning Volk..."
+    echo "Setting up volk..."
+    echo "Cloning volk..."
     update_submodules vulkan/volk
 
-    echo "Setting up Volk..."
+    echo "Building volk..."
     mkdir -p "${VOLK_INCLUDE_DIR}"
     cp "${VULKAN_VENDOR_DIR}"/volk/volk.h "${VOLK_INCLUDE_DIR}"
     cp "${VULKAN_VENDOR_DIR}"/volk/volk.c "${VOLK_INCLUDE_DIR}"
 }
 
 setup_vulkan_headers() {
+    echo "Setting up Vulkan Headers..."
     echo "Cloning Vulkan Headers..."
     update_submodules vulkan/Vulkan-Headers
     checkout_tags "${VULKAN_VENDOR_DIR}"/Vulkan-Headers "$VULKAN_VERSION"
 
-    echo "Setting up Vulkan Headers..."
+    echo "Building Vulkan Headers..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Headers/build
     mkdir -p "${BUILD_DIR}"
     cmake -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"/install -G "${GENERATOR}" -B"${BUILD_DIR}" -S"${VULKAN_VENDOR_DIR}"/Vulkan-Headers
@@ -100,11 +117,12 @@ setup_vulkan_headers() {
 }
 
 setup_vulkan_loader() {
+    echo "Setting up Vulkan Loader..."
     echo "Cloning Vulkan Loader..."
     update_submodules vulkan/Vulkan-Loader
     checkout_tags "${VULKAN_VENDOR_DIR}"/Vulkan-Loader "$VULKAN_VERSION"
     
-    echo "Setting up Vulkan Loader..."
+    echo "Building Vulkan Loader..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Loader/build
     mkdir -p "${BUILD_DIR}"
     cmake \
@@ -118,11 +136,12 @@ setup_vulkan_loader() {
 }
 
 setup_moltenVk() {
+    echo "Setting up MoltenVk..."
     echo "Cloning MoltenVk..."
     update_submodules vulkan/MoltenVK
     checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK "v1.2.0"
 
-    echo "Setting up MoltenVk..."
+    echo "Building MoltenVk..."
     (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos --v-headers-root "${VULKAN_VENDOR_DIR}"/Vulkan-Headers)
     make -C "${VULKAN_VENDOR_DIR}"/MoltenVK macos -j"${NUMBER_OF_PROCESSORS}"
     mkdir -p "${VULKAN_LIB_DIR}"/icd.d
@@ -131,10 +150,11 @@ setup_moltenVk() {
 }
 
 setup_robin_hood_hashing() {
+    echo "Setting up Robin Hood Hashing..."
     echo "Cloning Robin Hood Hashing..."
     update_submodules vulkan/robin-hood-hashing
 
-    echo "Setting up Robin Hood Hashing..."
+    echo "Building Robin Hood Hashing..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/robin-hood-hashing/build
     cmake \
         -G "${GENERATOR}" "${VULKAN_VENDOR_DIR}"/robin-hood-hashing \
@@ -147,12 +167,13 @@ setup_robin_hood_hashing() {
 }
 
 setup_spirv_headers() {
+    echo "Setting up SPIRV Headers..."
     echo "Cloning SPIRV Headers..."
     update_submodules vulkan/SPIRV-Headers
 
     checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "sdk-1.3.231.1"
 
-    echo "Setting up SPIRV Headers..."
+    echo "Building SPIRV Headers..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build
     mkdir -p "${BUILD_DIR}"
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"/install -S"${VULKAN_VENDOR_DIR}"/SPIRV-Headers -B"${BUILD_DIR}"
@@ -160,11 +181,12 @@ setup_spirv_headers() {
 }
 
 setup_spirv_tools() {
+    echo "Setting up SPIRV Tools..."
     echo "Cloning SPIRV Tools..."
     update_submodules vulkan/SPIRV-Tools
     checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "$SPIRV_VERSION"
 
-    echo "Setting up SPIRV Tools..."
+    echo "Building SPIRV Tools..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build
     mkdir -p "${BUILD_DIR}"
     python3 "${VULKAN_VENDOR_DIR}"/SPIRV-Tools/utils/git-sync-deps
@@ -173,11 +195,12 @@ setup_spirv_tools() {
 }
 
 setup_validation_layers() {
+    echo "Setting up Vulkan Validation Layers..."
     echo "Cloning Vulkan Validation Layers..."
     update_submodules vulkan/Vulkan-ValidationLayers
     checkout_tags "${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers "$VULKAN_VERSION"
 
-    echo "Setting up Vulkan Validation Layers..."
+    echo "Building Vulkan Validation Layers..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-ValidationLayers/build
     mkdir -p "${BUILD_DIR}"
     cmake \
@@ -199,27 +222,33 @@ setup_validation_layers() {
 }
 
 setup_zlib() {
-    echo "Cloning zLib..."
+    echo "Setting up zlib..."
+    echo "Cloning zlib..."
     update_submodules zlib
 
+    echo "Building zlib..."
     mkdir -p "${VENDOR_DIR}"/zlib/build
     (cd "${VENDOR_DIR}"/zlib && ./configure --prefix="${VENDOR_DIR}"/zlib/build --static)
     make -f "${VENDOR_DIR}"/zlib/Makefile -C "${VENDOR_DIR}"/zlib  install prefix="${VENDOR_DIR}"/zlib/build -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_libpng() {
-  echo "Cloning libPng..."
+  echo "Setting up libpng..."
+  echo "Cloning libpng..."
   update_submodules libpng
 
+  echo "Building libpng..."
   mkdir -p "${VENDOR_DIR}"/libpng/build
   cmake "${VENDOR_DIR}"/libpng -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/libpng/build -S "${VENDOR_DIR}"/libpng -B"${VENDOR_DIR}"/libpng/build
   make -C "${VENDOR_DIR}"/libpng/build install -j"${NUMBER_OF_PROCESSORS}"
 }
 
 setup_freetype() {
-  echo "Cloning FreeType..."
-
+  echo "Setting up freetype..."
+  echo "Cloning freetype..."
   update_submodules freetype
+
+  echo "Building freetype..."
   local BUILD_DIR="${VULKAN_DIR}"/freetype
   mkdir -p "${BUILD_DIR}"
   cmake -G "${GENERATOR}" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DFT_DISABLE_HARFBUZZ=TRUE -B"${VENDOR_DIR}"/freetype/build -S"${VENDOR_DIR}"/freetype
@@ -230,58 +259,28 @@ setup_freetype() {
 }
 
 echo "OS detected: ${OS}"
+echo "Setting up dependencies..."
 
-echo "Setting up raylib..."
-echo "Cloning raylib..."
-git submodule update --init --recursive "${VENDOR_DIR}"/raylib-cpp
-
-echo "Setting up utest..."
-echo "Cloning utest..."
-git submodule update --init --recursive "${VENDOR_DIR}"/utest.h
-
-echo "Setting up GLFW..."
+setup_raylib
+setup_utest
 setup_glfw
-
-echo "Setting up GLSLang..."
 setup_glslang
-
-echo "Setting up GLM..."
 setup_glm
-
-echo "Setting up Volk..."
 setup_volk
-
-echo "Setting up Vulkan Headers"
 setup_vulkan_headers
-
-echo "Setting up zlib"
 setup_zlib
-
-echo "Setting up libpng"
 setup_libpng
-
-echo "Setting up FreeType"
 setup_freetype
-
-echo "Setting up Vulkan Loader"
 setup_vulkan_loader
 
 if [[ "${OS}" == "macos" ]]; then
-    echo "Setting up MoltenVk"
     setup_moltenVk
 fi
 
 if [[ $* == *--include-validation-layers* ]]; then
-    echo "Setting up Robin Hood Hashing..."
     setup_robin_hood_hashing
-
-    echo "Setting up SPIRV Headers..."
     setup_spirv_headers
-
-    echo "Setting up SPIRV Tools..."
     setup_spirv_tools
-
-    echo "Setting up Vulkan Validation Layers..."
     setup_validation_layers
 fi
 
@@ -294,4 +293,4 @@ if [[ "${OS}" == "macos" ]]; then
     echo "VK_ICD_FILENAMES='${VULKAN_LIB_DIR}/icd.d/MoltenVK_icd.json'" >> .env
 fi
 
-echo "Setup complete"
+echo "Siege setup complete"

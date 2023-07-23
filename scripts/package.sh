@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 #
 # This code is released under an unmodified zlib license.
