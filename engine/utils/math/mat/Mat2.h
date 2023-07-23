@@ -6,304 +6,408 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MAT2_H
-#define SIEGE_ENGINE_MAT2_H
-
-#include <cassert>
+#ifndef SIEGE_ENGINE_UTILS_MAT2X2_H
+#define SIEGE_ENGINE_UTILS_MAT2X2_H
 
 #include "../vec/Vec2.h"
-#include "Macros.h"
+#include "Mat.h"
 
 namespace Siege
 {
 
-/**
- * A class representing a 2x2 matrix of float values.
- */
-struct Mat2
+template<typename T>
+struct Mat<T, 2, 2>
 {
+    // Static functions & members
+
+    /**
+     * Creates a 2x2 matrix with all values set to 0
+     * @return a new 2x2 matrix with all values set to 0
+     */
+    static inline constexpr Mat<T, 2, 2> Zero()
+    {
+        return Mat<T, 2, 2>(0);
+    }
+
+    /**
+     * Creates a 2x2 identity matrix
+     * @return a new 2x2 identity matrix
+     */
+    static inline constexpr Mat<T, 2, 2> Identity()
+    {
+        return Mat<T, 2, 2>(1);
+    }
+
+    /**
+     * Adds two 2x2 matrices and returns a new matrix with the result of the addition
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix addition
+     */
+    static inline constexpr Mat<T, 2, 2> Add(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+    {
+        return {lhs[0] + rhs[0], lhs[1] + rhs[1]};
+    }
+
+    /**
+     * Subtracts two 2x2 matrices and returns a new matrix with the result of the subtraction
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix subtraction
+     */
+    static inline constexpr Mat<T, 2, 2> Subtract(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+    {
+        return {lhs[0] - rhs[0], lhs[1] - rhs[1]};
+    }
+
+    /**
+     * Multiplies two 2x2 matrices and returns a new matrix with the result of the multiplication
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix multiplication
+     */
+    static inline constexpr Mat<T, 2, 2> Multiply(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+    {
+        return {
+            {(lhs[0][0] * rhs[0][0]) + (lhs[1][0] * rhs[0][1]),
+             (lhs[0][1] * rhs[0][0]) + (lhs[1][1] * rhs[0][1])},
+            {(lhs[0][0] * rhs[1][0]) + (lhs[1][0] * rhs[1][1]),
+             (lhs[0][1] * rhs[1][0]) + (lhs[1][1] * rhs[1][1])},
+        };
+    }
+
+    /**
+     * Multiplies a 2x2 matrix by a scalar and returns the result in a new matrix
+     * @param lhs the matrix to be multiplied
+     * @param scalar the scalar to multiply the matrix by
+     * @return a new matrix with the result of the multiplication
+     */
+    static inline constexpr Mat<T, 2, 2> Multiply(const Mat<T, 2, 2>& lhs, T scalar)
+    {
+        return {{lhs[0] * scalar}, {lhs[1] * scalar}};
+    }
+
+    /**
+     * Multiplies a 2x2 matrix by a 2D vector and returns a 2D vector with the results
+     * @param lhs the matrix to be multiplied
+     * @param vector the vector to be multiplied by
+     * @return a 2D vector with the results of the multiplication
+     */
+    static inline constexpr Vec<T, 2> Multiply(const Mat<T, 2, 2>& lhs, const Vec<T, 2> vector)
+    {
+        return {(lhs[0] * vector.x) + (lhs[1] * vector.y)};
+    }
+
+    /**
+     * Divides two 2x2 matrices and returns a new matrix with the result of the division
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix division
+     */
+    static inline constexpr Mat<T, 2, 2> Divide(const Mat<T, 2, 2> lhs, const Mat<T, 2, 2> rhs)
+    {
+        return Multiply(lhs, Inverse(rhs));
+    }
+
+    /**
+     * Computes the determinant of a 2x2 matrix
+     * @param matrix the matrix who's determinant needs to be computed
+     * @return the matrix's determinant
+     */
+    static inline constexpr T Determinant(const Mat<T, 2, 2>& mat)
+    {
+        return (mat[0][0] * mat[1][1]) - (mat[0][1] * mat[1][0]);
+    }
+
+    /**
+     * Computes the inverse of a 2x2 matrix
+     * @param matrix the matrix who's inverse needs to be computed
+     * @return a new matrix with the result of the inverse operation
+     */
+    static inline constexpr Mat<T, 2, 2> Inverse(const Mat<T, 2, 2>& mat)
+    {
+        float oneOverDeterminant = 1.f / Determinant(mat);
+
+        return {{mat[1][1] * oneOverDeterminant, -mat[0][1] * oneOverDeterminant},
+                {-mat[1][0] * oneOverDeterminant, mat[0][0] * oneOverDeterminant}};
+    }
+
+    /**
+     * Transposes a 2x2 matrix and returns a new matrix with the results
+     * @param matrix the matrix to be computed
+     * @return a new matrix with the results of the transpose operation
+     */
+    static inline constexpr Mat<T, 2, 2> Transpose(const Mat<T, 2, 2>& matrix)
+    {
+        return {{matrix[0][0], matrix[1][0]}, {matrix[0][1], matrix[1][1]}};
+    }
+
     // 'Structors
 
     /**
-     * The base constructor of the Mat2x2 matrix class.
-     * @param x0 the x value of the first row matrix.
-     * @param y0 the y value of the first row matrix.
-     * @param x1 the x value of the second row matrix.
-     * @param y1 the y value of the second row matrix.
+     * The default 2x2 matrix constructor
      */
-    Mat2(const float& x0 = 0, const float& y0 = 0, const float& x1 = 0, const float& y1 = 0) :
-        values {x0, y0, x1, y1}
+    inline constexpr Mat<T, 2, 2>() = default;
+
+    /**
+     * The base 2x2 matrix constructor. Accepts two 2D vectors for each row in the matrix and
+     * returns the final result
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
+     */
+    inline constexpr Mat<T, 2, 2>(const Vec<T, 2>& row0, const Vec<T, 2>& row1) :
+        values {row0, row1}
     {}
 
     /**
-     * The Mat2x2 vector constructor.
-     * @param row0 a Vec2 containing the first row of the matrix.
-     * @param row1 a Vec2 containing the second row of the matrix.
+     * A one element partial 2x2 matrix constructor. Accepts one 2D vector for the first row and
+     * defaults the rest of the values to 0
+     * @param row0 the first row of the matrix
      */
-    Mat2(const Vec2& row0, const Vec2& row1) : Mat2(row0.x, row0.y, row1.x, row1.y) {}
-
-    // Statics
+    inline constexpr Mat<T, 2, 2>(const Vec<T, 2>& row0) : Mat<T, 2, 2>(row0, Zero()) {}
 
     /**
-     * A pre-configured matrix set to contain identity values (a 1 for every diagonal).
+     * A scalar 2x2 matrix constructor. Sets all diagonal elements to the provided scalar value
+     * @param value the scalar value to set the identity to
      */
-    static const Mat2 Identity;
+    inline constexpr Mat<T, 2, 2>(T scalar) : Mat<T, 2, 2>({scalar, 0}, {0, scalar}) {}
 
     /**
-     * A pre-configured empty matrix.
+     * Creates a 2x2 matrix from a 3x3 matrix
+     * @param mat the 3x3 matrix to convert from
      */
-    static const Mat2 Zero;
+    inline constexpr Mat<T, 2, 2>(const Mat<T, 3, 3>& mat) : Mat<T, 2, 2>(mat[0].XY(), mat[1].XY())
+    {}
 
     /**
-     * A matrix division function.
-     * @param lhs the left hand side matrix to be divided.
-     * @param rhs the right hand side matrix to be divided by.
-     * @return a matrix containing the division result.
+     * Creates a 2x2 matrix from a 4x4 matrix
+     * @param mat the 4x4 matrix to construct the matrix from
      */
-    static Mat2 Divide(const Mat2& lhs, const Mat2& rhs);
+    inline constexpr Mat<T, 2, 2>(const Mat<T, 4, 4>& mat) :
+        Mat<T, 2, 2>({mat[0].XY()}, {mat[1].XY()})
+    {}
+
+    // Operator overloads
 
     /**
-     * Adds two 2x2 matrices.
-     * @param lhs the left hand matrix to be added to.
-     * @param rhs the right hand matrix to be added by.
-     * @return a new matrix containing the addition result.
+     * The 2x2 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a const reference to the vector representing the requested row
      */
-    static Mat2 Add(const Mat2& lhs, const Mat2& rhs);
-
-    /**
-     * Subtracts two matrices.
-     * @param lhs the left hand matrix to be subtracted to.
-     * @param rhs the right hand matrix to be subtracted by.
-     * @return a new matrix containing the subtraction result.
-     */
-    static Mat2 Subtract(const Mat2& lhs, const Mat2& rhs);
-
-    /**
-     * Multiples a matrix by a scalar value.
-     * @param lhs the matrix to be scaled.
-     * @param scalar the scalar to be used on the matrix.
-     * @return a new matrix containing the scalar result.
-     */
-    static Mat2 Multiply(const Mat2& lhs, const float& scalar);
-
-    /**
-     * Multiplies a 2x2 matrix by another 2x2 matrix.
-     * @param lhs the left hand side matrix to be multiplied.
-     * @param rhs the right hand side matrix to be multiplied by.
-     * @return the product of the two matrices.
-     */
-    static Mat2 Multiply(const Mat2& lhs, const Mat2& rhs);
-
-    /**
-     * Multiplies a matrix by a two dimensional vector.
-     * @param lhs the matrix to be multiplied by.
-     * @param rhs the vector to be multiplied.
-     * @return a new matrix containing the product of the vector and the matrix.
-     */
-    static Vec2 Multiply(const Mat2& lhs, const Vec2& rhs);
-
-    /**
-     * Computes the determinant of the matrix.
-     * @param mat the matrix to to be evaluated.
-     * @return the determinant of the matrix.
-     */
-    static float Determinant(const Mat2& mat);
-
-    /**
-     * Computes the inverse of the matrix.
-     * @param mat the matrix to be evaluated.
-     * @return a new matrix with the result of the matrix inversion.
-     */
-    static Mat2 Inverse(const Mat2& mat);
-
-    /**
-     * Returns a value stored within a logical index.
-     * @param rowIndex the row index (0 - 1).
-     * @param colIndex the column index (0 -1).
-     * @return the float value stored in the given indices.
-     */
-    const float& Get(const size_t& rowIndex, const size_t& colIndex);
-
-    // Operators
-
-    /**
-     * A subscript operator for indexing into the matrix.
-     * @param index the index location of the float value being searched.
-     * @return the float value of the given index.
-     */
-    constexpr float const& operator[](const size_t& index) const
+    inline constexpr Vec<T, 2> operator[](unsigned int index) const
     {
-        assert(index < 4 &&
-               "Error: trying to index into matrix with a size that's greater than matrix!");
-
         return values[index];
     }
 
     /**
-     * An equality operator between two 2x2 matrices.
-     * @param other the second matrix to be evaluated.
-     * @return a boolean value representing whether the matrices are equal.
+     * The 2x2 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a reference to the vector representing the requested row
      */
-    bool operator==(const Mat2& other);
+    inline constexpr Vec<T, 2>& operator[](unsigned int index)
+    {
+        return values[index];
+    }
 
     /**
-     * A negative equality operator.
-     * @param other the matrix to check for equality.
-     * @return a boolean value representing if the matrices are unequal.
+     * The addition operator. Adds the values of the provided matrix to those of the current matrix
+     * @param rhs the matrix to add values from
+     * @return a reference to the current matrix
      */
-    bool operator!=(const Mat2& other);
+    inline constexpr Mat<T, 2, 2>& operator+=(const Mat<T, 2, 2>& rhs)
+    {
+        values[0] += rhs[0];
+        values[1] += rhs[1];
+        return *this;
+    }
 
     /**
-     * Adds another matrix to the current matrix.
-     * @param other the matrix to add.
-     * @return A reference to the new evaluated matrix.
+     * The subtraction operator. Subtracts the values of the provided matrix to those of the current
+     * matrix
+     * @param rhs the matrix to subtract values from
+     * @return a reference to the current matrix
      */
-    Mat2& operator+=(const Mat2& other);
+    inline constexpr Mat<T, 2, 2>& operator-=(const Mat<T, 2, 2>& rhs)
+    {
+        values[0] -= rhs[0];
+        values[1] -= rhs[1];
+        return *this;
+    }
 
     /**
-     * Subtracts another matrix to the current matrix.
-     * @param other the matrix to subtract.
-     * @return A reference to the new evaluated matrix.
+     * The multiplication operator. Multiplies the values of the provided matrix to those of the
+     * current matrix
+     * @param rhs the matrix to multiply values from
+     * @return a reference to the current matrix
      */
-    Mat2& operator-=(const Mat2& other);
+    inline constexpr Mat<T, 2, 2>& operator*=(const Mat<T, 2, 2>& rhs)
+    {
+        *this = Multiply(*this, rhs);
+        return *this;
+    }
 
     /**
-     * Multiplies another matrix to the current matrix.
-     * @param other the matrix to multiply.
-     * @return A reference to the new evaluated matrix.
+     * The scalar multiplication operator. Multiplies the matrix by a scalar value
+     * @param scalar the scalar value to multiply by
+     * @return a reference to the current matrix
      */
-    Mat2& operator*=(const Mat2& other);
+    inline constexpr Mat<T, 2, 2>& operator*=(T scalar)
+    {
+        *this = Multiply(*this, scalar);
+        return *this;
+    }
 
     /**
-     * Divides another matrix to the current matrix.
-     * @param other the matrix to divide.
-     * @return A reference to the new evaluated matrix.
+     * The division operator. Divides the matrix by another matrix
+     * @param rhs the matrix to divide by
+     * @return a reference to the current matrix
      */
-    Mat2& operator/=(const Mat2& other);
+    inline constexpr Mat<T, 2, 2>& operator/=(const Mat<T, 2, 2>& rhs)
+    {
+        *this = Divide(*this, rhs);
+        return *this;
+    }
 
     /**
-     * Multiplies the matrix with a scalar.
-     * @param scalar the scalar to multiply by.
-     * @return A reference to the new evaluated matrix.
+     * The quality operator. Checks two 2x2 matrices for equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are equal
      */
-    Mat2& operator*=(const float& scalar);
+    inline constexpr bool operator==(const Mat<T, 2, 2>& rhs) const
+    {
+        return values[0] == rhs[0] && values[1] == rhs[1];
+    }
 
     /**
-     * Negates all values in the matrix.
-     * @return a new matrix with the negated values.
+     * The inequality operator. Checks two 2x2 matrices for non-equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are not equal
      */
-    Mat2 operator-();
-
-    // Functions
+    inline constexpr bool operator!=(const Mat<T, 2, 2>& rhs) const
+    {
+        return values[0] != rhs[0] || values[1] != rhs[1];
+    }
 
     /**
-     * Adds a matrix to the current matrix.
-     * @param other the matrix to be added.
+     * The 3x3 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 3x3 matrix
+     * @param other the 3x3 matrix to convert from
+     * @return a reference to the current matrix
      */
-    void Add(const Mat2& other);
+    inline constexpr Mat<T, 2, 2> operator=(const Mat<T, 3, 3>& other)
+    {
+        values[0] = other[0].XY();
+        values[1] = other[1].XY();
+        return *this;
+    }
 
     /**
-     * Subtracts a matrix to the current matrix.
-     * @param other the matrix to be subtracted.
+     * The 4x4 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 4x4 matrix
+     * @param other the 3x3 matrix to convert from
+     * @return a reference to the current matrix
      */
-    void Subtract(const Mat2& other);
+    inline constexpr Mat<T, 2, 2> operator=(const Mat<T, 4, 4>& other)
+    {
+        values[0] = other[0].XY();
+        values[1] = other[1].XY();
+        return *this;
+    }
 
-    /**
-     * Multiplies the matrix by a scalar.
-     * @param scalar the scalar to be multiplied.
-     */
-    void Multiply(const float& scalar);
-
-    /**
-     * Multiplies the matrix by another matrix.
-     * @param other the matrix to be multiplied.
-     */
-    void Multiply(const Mat2& other);
-
-    /**
-     * Multiplies a vector by the matrix.
-     * @param vector the vector to be multiplied.
-     * @return A new vector representing the product of the matrix and the vector.
-     */
-    Vec2 Multiply(const Vec2& vector) const;
-
-    /**
-     * Divides the matrix by another matrix.
-     * @param other the matrix to be divided.
-     */
-    void Divide(const Mat2& other);
-
-    /**
-     * Returns the determinant of the matrix.
-     * @return the matrix's determinant.
-     */
-    float Determinant() const;
-
-    /**
-     * Evaluates the matrix's inverse and returns a new inverse value.
-     * @return a new matrix representing the matrix's inverse.
-     */
-    Mat2 Inverse() const;
-
-    /**
-     * Returns the matrix's transpose.
-     * @return a new matrix representing the matrix's transpose.
-     */
-    Mat2 Transpose() const;
-
-    float values[4];
+    Vec<T, 2> values[2] = {Vec<T, 2>::Zero(), Vec<T, 2>::Zero()};
 };
 
-// Binary operators
+/**
+ * The binary 2x2 matrix addition operator. Adds two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix addition
+ */
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator+(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+{
+    return Mat<T, 2, 2>::Add(lhs, rhs);
+}
 
 /**
- * Adds two 2x2 matrices.
- * @param lhs the left hand matrix to be added to.
- * @param rhs the right hand matrix to be added by.
- * @return a new matrix containing the addition result.
+ * The binary 2x2 matrix subtraction operator. Subtracts two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix subtraction
  */
-Mat2 operator+(const Mat2& lhs, const Mat2& rhs);
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator-(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+{
+    return Mat<T, 2, 2>::Subtract(lhs, rhs);
+}
 
 /**
- * Subtracts two matrices.
- * @param lhs the left hand matrix to be subtracted to.
- * @param rhs the right hand matrix to be subtracted by.
- * @return a new matrix containing the subtraction result.
+ * The binary 2x2 matrix multiplication operator. Multiplies two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix multiplication
  */
-Mat2 operator-(const Mat2& lhs, const Mat2& rhs);
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator*(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+{
+    return Mat<T, 2, 2>::Multiply(lhs, rhs);
+}
 
 /**
- * Multiples a matrix by a scalar value.
- * @param lhs the matrix to be scaled.
- * @param scalar the scalar to be used on the matrix.
- * @return a new matrix containing the scalar result.
+ * A binary 2x2 matrix to scalar multiplication operator. Multiples a matrix by a scalar and returns
+ * the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param scalar the scalar being used to multiply the matrix by
+ * @return a new matrix with the result of the scalar operation
  */
-Mat2 operator*(const Mat2& lhs, const float& scalar);
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator*(const Mat<T, 2, 2>& lhs, T scalar)
+{
+    return Mat<T, 2, 2>::Multiply(lhs, scalar);
+}
 
 /**
- * Multiplies a 2x2 matrix by another 2x2 matrix.
- * @param lhs the left hand side matrix to be multiplied.
- * @param rhs the right hand side matrix to be multiplied by.
- * @return the product of the two matrices.
+ * A binary 2x2 matrix to vector multiplication operator. Multiplies a matrix by a vector and
+ * returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param vector the vector the matrix is being multiplied by
+ * @return a 2D vector with the results of the multiplication
  */
-Mat2 operator*(const Mat2& lhs, const Mat2& rhs);
+template<typename T>
+inline constexpr Vec<T, 2> operator*(const Mat<T, 2, 2>& lhs, const Vec<T, 2>& vector)
+{
+    return Mat<T, 2, 2>::Multiply(lhs, vector);
+}
 
 /**
- * A matrix division function.
- * @param lhs the left hand side matrix to be divided.
- * @param rhs the right hand side matrix to be divided by.
- * @return a matrix containing the division result.
+ * The binary 2x2 matrix division operator. Divides two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix division
  */
-Mat2 operator/(const Mat2& lhs, const Mat2& rhs);
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator/(const Mat<T, 2, 2>& lhs, const Mat<T, 2, 2>& rhs)
+{
+    return Mat<T, 2, 2>::Divide(lhs, rhs);
+}
 
 /**
- * Multiplies a matrix by a two dimensional vector.
- * @param lhs the matrix to be multiplied by.
- * @param rhs the vector to be multiplied.
- * @return a new matrix containing the product of the vector and the matrix.
+ * The 2x2 matrix negation operator. Negates the values of a 2x2 matrix
+ * @tparam T the type of numeric value stored by the matrix
+ * @param matrix the matrix to be negated
+ * @return a new matrix with the negated values
  */
-Vec2 operator*(const Mat2& lhs, const Vec2& rhs);
-
+template<typename T>
+inline constexpr Mat<T, 2, 2> operator-(const Mat<T, 2, 2>& matrix)
+{
+    return {-matrix[0], -matrix[1]};
+}
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_MAT2_H
+#endif // SIEGE_ENGINE_UTILS_MAT2X2_H

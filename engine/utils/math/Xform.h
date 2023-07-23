@@ -9,9 +9,8 @@
 #ifndef SIEGE_ENGINE_XFORM_H
 #define SIEGE_ENGINE_XFORM_H
 
-#include "mat/Mat2.h"
-#include "mat/Mat3.h"
 #include "mat/Mat4.h"
+#include "vec/Vec2.h"
 #include "vec/Vec3.h"
 
 namespace Siege
@@ -20,15 +19,15 @@ struct Xform
 {
 public:
 
-    Xform() : Xform(Vec3::Zero) {}
+    Xform() : Xform(Vec3::Zero()) {}
 
     explicit Xform(Vec3 position) : Xform(position, 0.f) {}
 
-    Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One) {}
+    Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One()) {}
 
     Xform(Vec3 position, float rotation, Vec3 scale) :
         position(position),
-        rotation({0.f, rotation, 0.f}),
+        rotation(Vec3 {0.f, rotation, 0.f}),
         scale(scale)
     {}
 

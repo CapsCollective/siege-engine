@@ -10,8 +10,14 @@
 #define SIEGE_ENGINE_BILLBOARD_RENDERER_H
 
 #include <utils/Colour.h>
+#include <utils/String.h>
+#include <utils/math/vec/Vec2.h>
+#include <utils/math/vec/Vec3.h>
+#include <utils/math/vec/Vec4.h>
 
-#include "../model/Model.h"
+#include "render/renderer/platform/vulkan/IndexBuffer.h"
+#include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -23,9 +29,12 @@ public:
     ~BillboardRenderer();
 
     void Initialise(const String& globalDataAttributeName);
-    void Destroy();
+    void Free();
 
-    void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);
+    void DrawBillboard(const Vec3& position,
+                       const Vec2& scale,
+                       const IColour& colour,
+                       Vulkan::Texture2D* texture = nullptr);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -36,29 +45,31 @@ public:
 
     void RecreateMaterials();
 
+    void Update();
+
 private:
 
     struct BillboardVertex
     {
         Vec3 position;
+        Vec3 scale;
         FColour colour;
+        Vec4 uv;
     };
 
-    struct BillboardUBO
-    {
-        alignas(16) Vec3 position;
-        alignas(16) Vec3 scale;
-    };
+    static constexpr size_t MAX_TEXTURES = 16;
+    static constexpr size_t MAX_QUADS_PER_TEXTURE = 256;
+    static constexpr size_t VERTEX_BUFFER_SIZE = MAX_TEXTURES * MAX_QUADS_PER_TEXTURE;
 
     Vulkan::Material billboardMaterial;
-    Model billboardModel;
 
     Hash::StringId globalDataId;
-    Hash::StringId positionsId;
+    Hash::StringId textureId;
 
-    MSArray<BillboardVertex, Vulkan::Mesh::MAX_VERTICES> vertices;
-    MSArray<uint32_t, Vulkan::Mesh::MAX_INDICES> indices;
-    MSArray<BillboardUBO, 1000> positions;
+    MHArray<MHArray<BillboardVertex>> vertices;
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
+    Vulkan::IndexBuffer indexBuffer;
+    Vulkan::Texture2D defaultTexture;
 };
 } // namespace Siege
 

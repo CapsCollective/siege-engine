@@ -8,6 +8,8 @@
 
 #include "Renderer3D.h"
 
+#include <utils/math/vec/Vec2.h>
+
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
@@ -39,34 +41,27 @@ void Renderer3D::Initialise()
 
     gridMaterial = Vulkan::Material(
         Vulkan::Shader::Builder()
-            .FromVertexShader("assets/shaders/grid.vert.spv")
+            .FromVertexShader("assets/shaders/Grid3D.vert.spv")
             .WithGlobalData3DUniform()
             .Build(),
-        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/grid.frag.spv").Build(),
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/Grid3D.frag.spv").Build(),
         false);
 }
 
-void Renderer3D::DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour)
+void Renderer3D::DrawBillboard(const Vec3& position,
+                               const Vec2& scale,
+                               const IColour& colour,
+                               Vulkan::Texture2D* texture)
 {
-    billboardRenderer.DrawBillboard(position, scale, colour);
+    billboardRenderer.DrawBillboard(position, scale, colour, texture);
 }
 
-void Renderer3D::DrawModel(Model* model,
-                           const Vec3& position,
-                           const Vec3& scale,
-                           const Vec3& rotation)
+void Renderer3D::DrawMesh(Vulkan::StaticMesh* mesh,
+                          const Vec3& position,
+                          const Vec3& scale,
+                          const Vec3& rotation)
 {
-    modelRenderer.DrawModel(model, position, scale, rotation);
-}
-
-void Renderer3D::DrawModel(Model* model, const Vec3& position, const Vec3& scale)
-{
-    DrawModel(model, position, scale, Vec3::Zero);
-}
-
-void Renderer3D::DrawModel(Model* model, const Vec3& position)
-{
-    DrawModel(model, position, Vec3::One, Vec3::Zero);
+    modelRenderer.DrawMesh(mesh, position, scale, rotation);
 }
 
 void Renderer3D::DrawPointLight(const Vec3& position,
@@ -76,7 +71,7 @@ void Renderer3D::DrawPointLight(const Vec3& position,
 {
     global3DData.lightData = {ToFColour(colour), ToFColour(ambientColor), position};
 
-    lightRenderer.DrawPointLight(position, 0.05f, colour, ambientColor);
+    lightRenderer.DrawPointLight(position, colour);
 }
 
 void Renderer3D::DrawText3D(const char* text,
@@ -100,12 +95,12 @@ void Renderer3D::DrawQuad(const Vec3 position,
 
 void Renderer3D::Render(uint32_t currentFrame,
                         Vulkan::CommandBuffer& commandBuffer,
-                        const CameraData& cameraData)
+                        const Camera& cameraData)
 {
     global3DData.cameraData = cameraData;
     uint64_t globalDataSize = sizeof(global3DData);
 
-    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
+    modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
 
 #ifdef ENABLE_GRID
     RenderGrid(commandBuffer, global3DData);
@@ -156,8 +151,8 @@ void Renderer3D::Flush()
 void Renderer3D::DestroyRenderer3D()
 {
     debugRenderer.Destroy();
-    billboardRenderer.Destroy();
-    lightRenderer.Destroy();
+    billboardRenderer.Free();
+    lightRenderer.Free();
     quadRenderer3D.Free();
     textRenderer.Free();
 
@@ -168,5 +163,6 @@ void Renderer3D::Update()
 {
     quadRenderer3D.Update();
     textRenderer.Update();
+    billboardRenderer.Update();
 }
 } // namespace Siege

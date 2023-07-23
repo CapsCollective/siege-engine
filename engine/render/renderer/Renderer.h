@@ -12,12 +12,11 @@
 #include <utils/Logging.h>
 #include <window/Window.h>
 
+#include "camera/Camera.h"
 #include "lights/PointLight.h"
-#include "model/Model.h"
 #include "render/renderer/platform/vulkan/CommandBuffer.h"
 #include "render/renderer/platform/vulkan/Context.h"
 #include "render/renderer/platform/vulkan/DescriptorPool.h"
-#include "renderer/CameraData.h"
 #include "renderer/Renderer2D.h"
 #include "renderer/Renderer3D.h"
 
@@ -37,14 +36,14 @@ public:
         return static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
     }
 
-    void SetProjection(const Mat4& projectionMat, const Mat4& viewMat)
+    void SetCamera3D(const Camera& camera)
     {
-        projection = {projectionMat, viewMat};
+        camera3D = camera;
     }
 
-    void SetUiProjection(const Mat4& projectionMat, const Mat4& viewMat)
+    void SetCamera2D(const Camera& camera)
     {
-        uiCamera = {projectionMat, viewMat};
+        camera2D = camera;
     }
 
     bool StartFrame();
@@ -107,8 +106,8 @@ private:
 
     uint32_t currentImageIndex;
     bool isFrameStarted {false};
-    CameraData projection;
-    CameraData uiCamera;
+    Camera camera3D;
+    Camera camera2D;
 };
 } // namespace Siege
 

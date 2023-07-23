@@ -631,3 +631,13 @@ UTEST(test_MHArray, GetItemAtBackOfMHArray)
 
     ASSERT_EQ(4, arrayB.Back());
 }
+
+UTEST(test_MHArray, GetItemAtFrontOfMHArray)
+{
+    MHArray<uint32_t> arrayA {0, 1, 2, 3, 4};
+    const MHArray<uint32_t> arrayB {10, 1, 2, 3, 4};
+
+    ASSERT_EQ(0, arrayA.Front());
+
+    ASSERT_EQ(10, arrayB.Front());
+}

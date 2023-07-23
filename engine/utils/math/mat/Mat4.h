@@ -6,376 +6,540 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MAT4_H
-#define SIEGE_ENGINE_MAT4_H
-
-#include <cassert>
+#ifndef SIEGE_ENGINE_UTILS_MAT4X4_H
+#define SIEGE_ENGINE_UTILS_MAT4X4_H
 
 #include "../vec/Vec4.h"
-#include "Macros.h"
-#include "Mat3.h"
+#include "Mat.h"
 
 namespace Siege
 {
-/**
- * A class representing a 4x4 matrix of float values.
- */
-struct Mat4
+template<typename T>
+struct Mat<T, 4, 4>
 {
-public:
+    // Static functions
+
+    /**
+     * Creates a 4x4 matrix with all values set to 0
+     * @return a new 4x4 matrix with all values set to 0
+     */
+    static inline constexpr Mat<T, 4, 4> Zero()
+    {
+        return Mat<T, 4, 4>(0);
+    }
+
+    /**
+     * Creates a 4x4 identity matrix
+     * @return a new 4x4 identity matrix
+     */
+    static inline constexpr Mat<T, 4, 4> Identity()
+    {
+        return Mat<T, 4, 4>(1);
+    }
+
+    /**
+     * Adds two 4x4 matrices and returns a new matrix with the result of the addition
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix addition
+     */
+    static inline constexpr Mat<T, 4, 4> Add(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+    {
+        return {lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]};
+    }
+
+    /**
+     * Subtracts two 4x4 matrices and returns a new matrix with the result of the subtraction
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix subtraction
+     */
+    static inline constexpr Mat<T, 4, 4> Subtract(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+    {
+        return {lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]};
+    }
+
+    /**
+     * Multiplies two 4x4 matrices and returns a new matrix with the result of the multiplication
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix multiplication
+     */
+    static inline constexpr Mat<T, 4, 4> Multiply(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+    {
+        return {
+            {lhs[0] * rhs[0][0] + lhs[1] * rhs[0][1] + lhs[2] * rhs[0][2] + lhs[3] * rhs[0][3]},
+            {lhs[0] * rhs[1][0] + lhs[1] * rhs[1][1] + lhs[2] * rhs[1][2] + lhs[3] * rhs[1][3]},
+            {lhs[0] * rhs[2][0] + lhs[1] * rhs[2][1] + lhs[2] * rhs[2][2] + lhs[3] * rhs[2][3]},
+            {lhs[0] * rhs[3][0] + lhs[1] * rhs[3][1] + lhs[2] * rhs[3][2] + lhs[3] * rhs[3][3]}};
+    }
+
+    /**
+     * Multiplies a 4x4 matrix by a scalar and returns the result in a new matrix
+     * @param lhs the matrix to be multiplied
+     * @param scalar the scalar to multiply the matrix by
+     * @return a new matrix with the result of the multiplication
+     */
+    static inline constexpr Mat<T, 4, 4> Multiply(const Mat<T, 4, 4>& lhs, T scalar)
+    {
+        return {{lhs[0] * scalar}, {lhs[1] * scalar}, {lhs[2] * scalar}, {lhs[3] * scalar}};
+    }
+
+    /**
+     * Multiplies a 4x4 matrix by a 4D vector and returns a 4D vector with the results
+     * @param lhs the matrix to be multiplied
+     * @param vector the vector to be multiplied by
+     * @return a 4D vector with the results of the multiplication
+     */
+    static inline constexpr Vec<T, 4> Multiply(const Mat<T, 4, 4>& lhs, const Vec<T, 4> vector)
+    {
+        return {(lhs[0] * vector.x) + (lhs[1] * vector.y) + (lhs[2] * vector.z) +
+                (lhs[3] * vector.w)};
+    }
+
+    /**
+     * Divides two 4x4 matrices and returns a new matrix with the result of the division
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix division
+     */
+    static inline constexpr Mat<T, 4, 4> Divide(const Mat<T, 4, 4> lhs, const Mat<T, 4, 4> rhs)
+    {
+        return Multiply(lhs, Inverse(rhs));
+    }
+
+    /**
+     * Computes the determinant of a 4x4 matrix
+     * @param matrix the matrix who's determinant needs to be computed
+     * @return the matrix's determinant
+     */
+    static inline constexpr T Determinant(const Mat<T, 4, 4>& matrix)
+    {
+        float subFactor00 = matrix[2][2] * matrix[3][3] - matrix[2][3] * matrix[3][2];
+        float subFactor01 = matrix[1][2] * matrix[3][3] - matrix[1][3] * matrix[3][2];
+        float subFactor02 = matrix[1][2] * matrix[2][3] - matrix[1][3] * matrix[2][2];
+        float subFactor03 = matrix[0][2] * matrix[3][3] - matrix[0][3] * matrix[3][2];
+        float subFactor04 = matrix[0][2] * matrix[2][3] - matrix[0][3] * matrix[2][2];
+        float subFactor05 = matrix[0][2] * matrix[1][3] - matrix[0][3] * matrix[1][2];
+
+        Vec<T, 4> coefficient = {
+            +(matrix[1][1] * subFactor00 - matrix[2][1] * subFactor01 + matrix[3][1] * subFactor02),
+            -(matrix[0][1] * subFactor00 - matrix[2][1] * subFactor03 + matrix[3][1] * subFactor04),
+            +(matrix[0][1] * subFactor01 - matrix[1][1] * subFactor03 + matrix[3][1] * subFactor05),
+            -(matrix[0][1] * subFactor02 - matrix[1][1] * subFactor04 + matrix[2][1] * subFactor05),
+        };
+
+        return matrix[0][0] * coefficient.x + matrix[1][0] * coefficient.y +
+               matrix[2][0] * coefficient.z + matrix[3][0] * coefficient.w;
+    }
+
+    /**
+     * Computes the inverse of a 4x4 matrix
+     * @param matrix the matrix who's inverse needs to be computed
+     * @return a new matrix with the result of the inverse operation
+     */
+    static inline constexpr Mat<T, 4, 4> Inverse(const Mat<T, 4, 4>& matrix)
+    {
+        T coef0 = matrix[2][2] * matrix[3][3] - matrix[3][2] * matrix[2][3];
+        T coef2 = matrix[2][1] * matrix[3][3] - matrix[3][1] * matrix[2][3];
+        T coef3 = matrix[2][1] * matrix[3][2] - matrix[3][1] * matrix[2][2];
+        T coef4 = matrix[2][0] * matrix[3][3] - matrix[3][0] * matrix[2][3];
+        T coef5 = matrix[2][0] * matrix[3][2] - matrix[3][0] * matrix[2][2];
+        T coef6 = matrix[2][0] * matrix[3][1] - matrix[3][0] * matrix[2][1];
+
+        Vec<T, 4> fac0(coef0,
+                       coef0,
+                       matrix[1][2] * matrix[3][3] - matrix[3][2] * matrix[1][3],
+                       matrix[1][2] * matrix[2][3] - matrix[2][2] * matrix[1][3]);
+
+        Vec<T, 4> fac1(coef2,
+                       coef2,
+                       matrix[1][1] * matrix[3][3] - matrix[3][1] * matrix[1][3],
+                       matrix[1][1] * matrix[2][3] - matrix[2][1] * matrix[1][3]);
+
+        Vec<T, 4> fac2(coef3,
+                       coef3,
+                       matrix[1][1] * matrix[3][2] - matrix[3][1] * matrix[1][2],
+                       matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]);
+
+        Vec<T, 4> fac3(coef4,
+                       coef4,
+                       matrix[1][0] * matrix[3][3] - matrix[3][0] * matrix[1][3],
+                       matrix[1][0] * matrix[2][3] - matrix[2][0] * matrix[1][3]);
+
+        Vec<T, 4> fac4(coef5,
+                       coef5,
+                       matrix[1][0] * matrix[3][2] - matrix[3][0] * matrix[1][2],
+                       matrix[1][0] * matrix[2][2] - matrix[2][0] * matrix[1][2]);
+
+        Vec<T, 4> fac5(coef6,
+                       coef6,
+                       matrix[1][0] * matrix[3][1] - matrix[3][0] * matrix[1][1],
+                       matrix[1][0] * matrix[2][1] - matrix[2][0] * matrix[1][1]);
+
+        Vec<T, 4> vec0(matrix[1][0], matrix[0][0], matrix[0][0], matrix[0][0]);
+        Vec<T, 4> vec1(matrix[1][1], matrix[0][1], matrix[0][1], matrix[0][1]);
+        Vec<T, 4> vec2(matrix[1][2], matrix[0][2], matrix[0][2], matrix[0][2]);
+        Vec<T, 4> vec3(matrix[1][3], matrix[0][3], matrix[0][3], matrix[0][3]);
+
+        Vec<T, 4> inv0(vec1 * fac0 - vec2 * fac1 + vec3 * fac2);
+        Vec<T, 4> inv1(vec0 * fac0 - vec2 * fac3 + vec3 * fac4);
+        Vec<T, 4> inv2(vec0 * fac1 - vec1 * fac3 + vec3 * fac5);
+        Vec<T, 4> inv3(vec0 * fac2 - vec1 * fac4 + vec2 * fac5);
+
+        Vec<T, 4> signA(+1, -1, +1, -1);
+        Vec<T, 4> signB(-1, +1, -1, +1);
+        Mat<T, 4, 4> inverse(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB);
+
+        Vec<T, 4> column0(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
+
+        Vec<T, 4> dot0(matrix[0] * column0);
+
+        T oneOverDeterminant = static_cast<T>(1) / ((dot0.x + dot0.y) + (dot0.z + dot0.w));
+
+        return inverse * oneOverDeterminant;
+    }
+
+    /**
+     * Transposes a 4x4 matrix and returns a new matrix with the results
+     * @param matrix the matrix to be computed
+     * @return a new matrix with the results of the transpose operation
+     */
+    static inline constexpr Mat<T, 4, 4> Transpose(const Mat<T, 4, 4>& matrix)
+    {
+        return {{matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0]},
+                {matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1]},
+                {matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2]},
+                {matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]}};
+    }
 
     // 'Structors
 
     /**
-     * A base constructor for the Mat4x4 class.
-     * @param x0 the x value of the first row matrix.
-     * @param y0 the y value of the first row matrix.
-     * @param z0 the z value of the first row matrix.
-     * @param w0 the w value of the first row matrix.
-     * @param x1 the x value of the second row matrix.
-     * @param y1 the y value of the second row matrix.
-     * @param z1 the z value of the second row matrix.
-     * @param w1 the w value of the second row matrix.
-     * @param x2 the x value of the third row matrix.
-     * @param y2 the y value of the third row matrix.
-     * @param z2 the z value of the third row matrix.
-     * @param w2 the w value of the third row matrix.
-     * @param x3 the x value of the fourth row matrix.
-     * @param y3 the y value of the fourth row matrix.
-     * @param z3 the z value of the fourth row matrix.
-     * @param w3 the w value of the fourth row matrix.
+     * The default 4x4 matrix constructor
      */
-    Mat4(const float& x0 = 0.f,
-         const float& y0 = 0.f,
-         const float& z0 = 0.f,
-         const float& w0 = 0.f,
-         const float& x1 = 0.f,
-         const float& y1 = 0.f,
-         const float& z1 = 0.f,
-         const float& w1 = 0.f,
-         const float& x2 = 0.f,
-         const float& y2 = 0.f,
-         const float& z2 = 0.f,
-         const float& w2 = 0.f,
-         const float& x3 = 0.f,
-         const float& y3 = 0.f,
-         const float& z3 = 0.f,
-         const float& w3 = 0.f) :
-        values {x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3}
+    inline constexpr Mat<T, 4, 4>() = default;
+
+    /**
+     * The base 4x4 matrix constructor. Accepts four 4D vectors for each row in the matrix and
+     * returns the final result
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
+     * @param row2 the third row of the matrix
+     * @param row3 the fourth row of the matrix
+     */
+    inline constexpr Mat<T, 4, 4>(const Vec<T, 4>& row0,
+                                  const Vec<T, 4>& row1,
+                                  const Vec<T, 4>& row2,
+                                  const Vec<T, 4>& row3) :
+        values {row0, row1, row2, row3}
     {}
 
     /**
-     * The Mat4x4 vector constructor.
-     * @param row0 a Vec4 containing the first row of the matrix.
-     * @param row1 a Vec4 containing the second row of the matrix.
-     * @param row2 a Vec4 containing the third row of the matrix.
-     * @param row3 a Vec4 containing the fourth row of the matrix.
+     * A one element partial 4x4 matrix constructor. Accepts one 4D vector for the first row and
+     * defaults the rest of the values to 0
+     * @param row0 the first row of the matrix
      */
-    Mat4(const Vec4& row0, const Vec4& row1, const Vec4& row2, const Vec4& row3) :
-        Mat4(row0.x,
-             row0.y,
-             row0.z,
-             row0.w,
-             row1.x,
-             row1.y,
-             row1.z,
-             row1.w,
-             row2.x,
-             row2.y,
-             row2.z,
-             row2.w,
-             row3.x,
-             row3.y,
-             row3.z,
-             row3.w)
+    inline constexpr Mat<T, 4, 4>(const Vec<T, 4>& row0) :
+        Mat<T, 4, 4>(row0, Mat<T, 4, 4>::Zero(), Mat<T, 4, 4>::Zero(), Mat<T, 4, 4>::Zero())
     {}
 
     /**
-     * A 4x4 matrix constructor using a 3x3 matrix.
-     * @param other a 3x3 matrix used to construct the matrix
+     * A two element partial 4x4 matrix constructor. Accepts two 4D vectors for the first and second
+     * rows and defaults the rest to 0
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
      */
-    Mat4(const Mat3& other) :
-        Mat4({other[0], other[1], other[2], 0.f},
-             {other[3], other[4], other[5], 0.f},
-             {other[6], other[7], other[8], 0.f},
-             {0.f, 0.f, 0.f, 1.f})
+    inline constexpr Mat<T, 4, 4>(const Vec<T, 4>& row0, const Vec<T, 4>& row1) :
+        Mat<T, 4, 4>(row0, row1, Mat<T, 4, 4>::Zero(), Mat<T, 4, 4>::Zero())
     {}
 
-    // Statics
+    /**
+     * A three element partial 4x4 matrix constructor. Accepts three 4D vectors for the first,
+     * second, and third rows and defaults the rest to 0
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
+     * @param row2 the third row of the matrix
+     */
+    inline constexpr Mat<T, 4, 4>(const Vec<T, 4>& row0,
+                                  const Vec<T, 4>& row1,
+                                  const Vec<T, 4>& row2) :
+        Mat<T, 4, 4>(row0, row1, row2, Vec<T, 4>::Zero())
+    {}
 
     /**
-     * A pre-configured matrix set to contain identity values (a 1 for every diagonal).
+     * A scalar 4x4 matrix constructor. Sets all diagonal elements to the provided scalar value
+     * @param value the scalar value to set the identity to
      */
-    static const Mat4 Identity;
+    inline constexpr Mat<T, 4, 4>(T value) :
+        Mat<T, 4, 4>({value, 0, 0, 0}, {0, value, 0, 0}, {0, 0, value, 0}, {0, 0, 0, value})
+    {}
 
     /**
-     * A pre-configured empty matrix.
+     * Creates a 4x4 matrix from a 3x3 matrix. Sets the last row and last column of the matrix to
+     * their identity
+     * @param mat the 3x3 matrix to convert from
      */
-    static const Mat4 Zero;
+    inline constexpr Mat<T, 4, 4>(const Mat<T, 3, 3>& mat) :
+        Mat<T, 4, 4>({mat[0], 0.f}, {mat[1], 0.f}, {mat[2], 0.f}, {0.f, 0.f, 0.f, 1.f})
+    {}
 
     /**
-     * Adds two 4x4 matrices.
-     * @param lhs the left hand matrix to be added to.
-     * @param rhs the right hand matrix to be added by.
-     * @return a new matrix containing the addition result.
+     * Creates a 4x4 matrix from a 2x2 matrix. Sets the last two rows to the identity
+     * @param mat the 2x2 matrix to construct the matrix from
      */
-    static Mat4 Add(const Mat4& lhs, const Mat4& rhs);
+    inline constexpr Mat<T, 4, 4>(const Mat<T, 2, 2>& mat) :
+        Mat<T, 4, 4>({mat[0], 0.f, 0.f},
+                     {mat[1], 0.f, 0.f},
+                     {0.f, 0.f, 1.f, 0.f},
+                     {0.f, 0.f, 0.f, 1.f})
+    {}
+
+    // Operator overloads
 
     /**
-     * Subtracts two 4x4 matrices.
-     * @param lhs the left hand matrix to be subtracted to.
-     * @param rhs the right hand matrix to be subtracted by.
-     * @return a new matrix containing the subtraction result.
+     * The 4x4 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a const reference to the vector representing the requested row
      */
-    static Mat4 Subtract(const Mat4& lhs, const Mat4& rhs);
-
-    /**
-     * Multiples a 4x4 matrix by a scalar value.
-     * @param lhs the matrix to be scaled.
-     * @param scalar the scalar to be used on the matrix.
-     * @return a new matrix containing the scalar result.
-     */
-    static Mat4 Multiply(const Mat4& lhs, const float& scalar);
-
-    /**
-     * Multiplies a 4x4 matrix by another 3x3 matrix.
-     * @param lhs the left hand side matrix to be multiplied.
-     * @param rhs the right hand side matrix to be multiplied by.
-     * @return the product of the two matrices.
-     */
-    static Mat4 Multiply(const Mat4& lhs, const Mat4& rhs);
-
-    /**
-     * Multiplies a 4x4 matrix by a four dimensional vector.
-     * @param lhs the matrix to be multiplied by.
-     * @param rhs the vector to be multiplied.
-     * @return a new vector containing the product of the vector and the matrix.
-     */
-    static Vec4 Multiply(const Mat4& lhs, const Vec4& rhs);
-
-    /**
-     * Divides two 4x4 matrices.
-     * @param lhs the left hand side matrix to be divided.
-     * @param rhs the right hand side matrix to be divided by.
-     * @return a matrix containing the division result.
-     */
-    static Mat4 Divide(const Mat4& lhs, const Mat4& rhs);
-
-    /**
-     * Computes the determinant of the matrix.
-     * @param mat the matrix to to be evaluated.
-     * @return the determinant of the matrix.
-     */
-    static float Determinant(const Mat4& matrix);
-
-    /**
-     * Computes the inverse of the matrix.
-     * @param mat the matrix to be evaluated.
-     * @return a new matrix with the result of the matrix inversion.
-     */
-    static Mat4 Inverse(const Mat4& matrix);
-
-    /**
-     * Returns the transpose of the matrix.
-     * @param matrix the matrix who's transpose needs to be found.
-     * @return a new matrix representing the transpose of the original matrix.
-     */
-    static Mat4 Transpose(const Mat4& matrix);
-
-    // Operators
-
-    /**
-     * A const subscript operator for indexing into the matrix.
-     * @param index the index location of the float value being searched.
-     * @return the float value of the given index.
-     */
-    constexpr float const& operator[](const size_t& index) const
+    inline constexpr Vec<T, 4> operator[](unsigned int index) const
     {
-        assert(index < 16 &&
-               "Error: trying to index into matrix with a size that's greater than matrix!");
-
         return values[index];
     }
 
     /**
-     * A subscript operator for indexing into the matrix.
-     * @param index the index location of the float value being searched.
-     * @return the float value of the given index.
+     * The 4x4 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a reference to the vector representing the requested row
      */
-    float& operator[](const size_t& index);
+    inline constexpr Vec<T, 4>& operator[](unsigned int index)
+    {
+        return values[index];
+    }
 
     /**
-     * An equality operator.
-     * @param other the second matrix to be evaluated.
-     * @return a boolean value representing whether the matrices are equal.
+     * The equality operator. Checks two 4x4 matrices for equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are equal
      */
-    bool operator==(const Mat4& other);
+    inline constexpr bool operator==(const Mat<T, 4, 4>& rhs) const
+    {
+        return values[0] == rhs[0] && values[1] == rhs[1] && values[2] == rhs[2] &&
+               values[3] == rhs[3];
+    }
 
     /**
-     * An inequality operator.
-     * @param other the matrix to check for equality.
-     * @return a boolean value representing if the matrices are unequal.
+     * The inequality operator. Checks two 4x4 matrices for non-equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are not equal
      */
-    bool operator!=(const Mat4& other);
+    inline constexpr bool operator!=(const Mat<T, 4, 4>& rhs) const
+    {
+        return values[0] != rhs[0] || values[1] != rhs[1] || values[2] != rhs[2] ||
+               values[3] != rhs[3];
+    }
 
     /**
-     * Adds another matrix to the current matrix.
-     * @param other the matrix to add.
-     * @return A reference to the new evaluated matrix.
+     * The 2x2 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 2x2 matrix
+     * @param other the 2x2 matrix to convert from
+     * @return a reference to the current matrix
      */
-    Mat4& operator+=(const Mat4& other);
+    inline constexpr Mat<T, 4, 4> operator=(const Mat<T, 2, 2>& other)
+    {
+        values[0] = other[0];
+        values[1] = other[1];
+        values[2] = {0.f, 0.f, 1.f, 0.f};
+        values[3] = {0.f, 0.f, 0.f, 1.f};
+        return *this;
+    }
 
     /**
-     * Subtracts another matrix to the current matrix.
-     * @param other the matrix to subtract.
-     * @return A reference to the new evaluated matrix.
+     * The 3x3 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 3x3 matrix
+     * @param other the 3x3 matrix to convert from
+     * @return a reference to the current matrix
      */
-    Mat4& operator-=(const Mat4& other);
+    inline constexpr Mat<T, 4, 4> operator=(const Mat<T, 3, 3>& other)
+    {
+        values[0] = other[0];
+        values[1] = other[1];
+        values[2] = other[2];
+        values[3] = {0.f, 0.f, 0.f, 1.f};
+        return *this;
+    }
 
     /**
-     * Multiplies the matrix with a scalar.
-     * @param scalar the scalar to multiply by.
-     * @return A reference to the new evaluated matrix.
+     * The addition operator. Adds the values of the provided matrix to those of the current matrix
+     * @param rhs the matrix to add values from
+     * @return a reference to the current matrix
      */
-    Mat4& operator*=(const float& scalar);
+    inline constexpr Mat<T, 4, 4>& operator+=(const Mat<T, 4, 4>& rhs)
+    {
+        values[0] += rhs[0];
+        values[1] += rhs[1];
+        values[2] += rhs[2];
+        values[3] += rhs[3];
+        return *this;
+    }
 
     /**
-     * Multiplies another matrix to the current matrix.
-     * @param other the matrix to multiply.
-     * @return A reference to the new evaluated matrix.
+     * The subtraction operator. Subtracts the values of the provided matrix to those of the current
+     * matrix
+     * @param rhs the matrix to subtract values from
+     * @return a reference to the current matrix
      */
-    Mat4& operator*=(const Mat4& other);
+    inline constexpr Mat<T, 4, 4>& operator-=(const Mat<T, 4, 4>& rhs)
+    {
+        values[0] -= rhs[0];
+        values[1] -= rhs[1];
+        values[2] -= rhs[2];
+        values[3] -= rhs[3];
+        return *this;
+    }
 
     /**
-     * Divides another matrix to the current matrix.
-     * @param other the matrix to divide.
-     * @return A reference to the new evaluated matrix.
+     * The multiplication operator. Multiplies the values of the provided matrix to those of the
+     * current matrix
+     * @param rhs the matrix to multiply values from
+     * @return a reference to the current matrix
      */
-    Mat4& operator/=(const Mat4& other);
+    inline constexpr Mat<T, 4, 4>& operator*=(const Mat<T, 4, 4>& rhs)
+    {
+        *this = Multiply(*this, rhs);
+        return *this;
+    }
 
     /**
-     * Negates all values in the matrix.
-     * @return a new matrix with the negated values.
+     * The scalar multiplication operator. Multiplies the matrix by a scalar value
+     * @param scalar the scalar value to multiply by
+     * @return a reference to the current matrix
      */
-    Mat4 operator-();
-
-    // Functions
+    inline constexpr Mat<T, 4, 4>& operator*=(T scalar)
+    {
+        *this = Multiply(*this, scalar);
+        return *this;
+    }
 
     /**
-     * Returns a value stored within a logical index.
-     * @param rowIndex the row index (0 - 3).
-     * @param colIndex the column index (0 - 3).
-     * @return the float value stored in the given indices.
+     * The division operator. Divides the matrix by another matrix
+     * @param rhs the matrix to divide by
+     * @return a reference to the current matrix
      */
-    const float& Get(const size_t& rowIndex, const size_t& colIndex);
+    inline constexpr Mat<T, 4, 4>& operator/=(const Mat<T, 4, 4>& rhs)
+    {
+        *this = Divide(*this, rhs);
+        return *this;
+    }
 
     /**
-     * Adds a matrix to the current matrix.
-     * @param other the matrix to be added.
+     * The negation operator. Negates every row of the matrix
+     * @return a new matrix with the result of the negation
      */
-    void Add(const Mat4& other);
+    inline constexpr Mat<T, 4, 4>& operator-()
+    {
+        values[0] = -values[0];
+        values[1] = -values[1];
+        values[2] = -values[2];
+        values[3] = -values[3];
 
-    /**
-     * Subtracts a matrix to the current matrix.
-     * @param other the matrix to be subtracted.
-     */
-    void Subtract(const Mat4& other);
+        return *this;
+    }
 
-    /**
-     * Multiplies the matrix by a scalar.
-     * @param scalar the scalar to be multiplied.
-     */
-    void Multiply(const float& scalar);
-
-    /**
-     * Multiplies the matrix by another matrix.
-     * @param other the matrix to be multiplied.
-     */
-    void Multiply(const Mat4& rhs);
-
-    /**
-     * Multiplies a vector by the matrix.
-     * @param vector the vector to be multiplied.
-     * @return A new vector representing the product of the matrix and the vector.
-     */
-    Vec4 Multiply(const Vec4& vector) const;
-
-    /**
-     * Divides the matrix by another matrix.
-     * @param other the matrix to be divided.
-     */
-    void Divide(const Mat4& rhs);
-
-    /**
-     * Returns the determinant of the matrix.
-     * @return the matrix's determinant.
-     */
-    float Determinant() const;
-
-    /**
-     * Evaluates the matrix's inverse and returns a new inverse value.
-     * @return a new matrix representing the matrix's inverse.
-     */
-    Mat4 Inverse() const;
-
-    /**
-     * Returns the matrix's transpose.
-     * @return a new matrix representing the matrix's transpose.
-     */
-    Mat4 Transpose() const;
-
-    float values[16];
+    Vec<T, 4> values[4] {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 };
 
-// Binary operators
+/**
+ * The binary 4x4 matrix addition operator. Adds two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix addition
+ */
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator+(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+{
+    return Mat<T, 4, 4>::Add(lhs, rhs);
+}
 
 /**
- * Adds two 4x4 matrices.
- * @param lhs the left hand matrix to be added to.
- * @param rhs the right hand matrix to be added by.
- * @return a new matrix containing the addition result.
+ * The binary 4x4 matrix subtraction operator. Subtracts two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix subtraction
  */
-Mat4 operator+(const Mat4& lhs, const Mat4& rhs);
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator-(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+{
+    return Mat<T, 4, 4>::Subtract(lhs, rhs);
+}
 
 /**
- * Subtracts two 4x4 matrices.
- * @param lhs the left hand matrix to be subtracted to.
- * @param rhs the right hand matrix to be subtracted by.
- * @return a new matrix containing the subtraction result.
+ * The binary 4x4 matrix multiplication operator. Multiplies two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix multiplication
  */
-Mat4 operator-(const Mat4& lhs, const Mat4& rhs);
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator*(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+{
+    return Mat<T, 4, 4>::Multiply(lhs, rhs);
+}
 
 /**
- * Multiples a 4x4 matrix by a scalar value.
- * @param lhs the matrix to be scaled.
- * @param scalar the scalar to be used on the matrix.
- * @return a new matrix containing the scalar result.
+ * A binary 4x4 matrix to scalar multiplication operator. Multiples a matrix by a scalar and returns
+ * the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param scalar the scalar being used to multiply the matrix by
+ * @return a new matrix with the result of the scalar operation
  */
-Mat4 operator*(const Mat4& lhs, const float& scalar);
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator*(const Mat<T, 4, 4>& lhs, T scalar)
+{
+    return Mat<T, 4, 4>::Multiply(lhs, scalar);
+}
 
 /**
- * Multiplies a 4x4 matrix by another 4x4 matrix.
- * @param lhs the left hand side matrix to be multiplied.
- * @param rhs the right hand side matrix to be multiplied by.
- * @return the product of the two matrices.
+ * A binary 4x4 matrix to vector multiplication operator. Multiplies a matrix by a vector and
+ * returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param vector the vector the matrix is being multiplied by
+ * @return a 4D vector with the results of the multiplication
  */
-Mat4 operator*(const Mat4& lhs, const Mat4& rhs);
+template<typename T>
+inline constexpr Vec<T, 4> operator*(const Mat<T, 4, 4>& lhs, const Vec<T, 4>& vector)
+{
+    return Mat<T, 4, 4>::Multiply(lhs, vector);
+}
 
 /**
- * Multiplies a matrix by a four dimensional vector.
- * @param lhs the matrix to be multiplied by.
- * @param rhs the vector to be multiplied.
- * @return a new matrix containing the product of the vector and the matrix.
+ * The binary 4x4 matrix division operator. Divides two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix division
  */
-Vec4 operator*(const Mat4& lhs, const Vec4& rhs);
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator/(const Mat<T, 4, 4>& lhs, const Mat<T, 4, 4>& rhs)
+{
+    return Mat<T, 4, 4>::Divide(lhs, rhs);
+}
 
 /**
- * Divides two 4x4 matrices.
- * @param lhs the left hand side matrix to be divided.
- * @param rhs the right hand side matrix to be divided by.
- * @return a matrix containing the division result.
+ * The 4x4 matrix negation operator. Negates the values of a 4x4 matrix
+ * @tparam T the type of numeric value stored by the matrix
+ * @param matrix the matrix to be negated
+ * @return a new matrix with the negated values
  */
-Mat4 operator/(const Mat4& lhs, const Mat4& rhs);
+template<typename T>
+inline constexpr Mat<T, 4, 4> operator-(const Mat<T, 4, 4>& matrix)
+{
+    return {-matrix[0], -matrix[1], -matrix[2], -matrix[3]};
+}
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_MAT4_H
+#endif // SIEGE_ENGINE_UTILS_MAT4X4_H

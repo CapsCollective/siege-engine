@@ -10,8 +10,11 @@
 #define SIEGE_ENGINE_DEBUG_RENDERER3D_H
 
 #include <utils/Colour.h>
+#include <utils/String.h>
+#include <utils/math/vec/Vec3.h>
 
-#include "../model/Model.h"
+#include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -39,6 +42,8 @@ public:
 
 private:
 
+    static inline constexpr size_t MAX_LINES = 512;
+
     struct LineVertex
     {
         Vec3 position;
@@ -50,14 +55,13 @@ private:
                      const void* globalData,
                      uint32_t currentFrame);
 
-    Vec3 lineColor;
-
     Vulkan::Material lineMaterial;
-    Model lineModel;
+
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
 
     Hash::StringId globalDataId;
 
-    MSArray<LineVertex, Vulkan::Mesh::MAX_VERTICES> lines;
+    MSArray<LineVertex, MAX_LINES> lines;
 };
 } // namespace Siege
 

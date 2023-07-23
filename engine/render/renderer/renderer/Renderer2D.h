@@ -11,6 +11,7 @@
 
 #include <utils/Colour.h>
 #include <utils/math/mat/Mat4.h>
+#include <utils/math/vec/Vec2.h>
 
 #include "render/renderer/platform/vulkan/Font.h"
 #include "render/renderer/platform/vulkan/IndexBuffer.h"
@@ -26,7 +27,7 @@ public:
     Renderer2D() = default;
     void Initialise(const char* const globalDataName);
     void DrawQuad(const Vec2 position,
-                  const Vec2 scale = Vec2::One,
+                  const Vec2 scale = Vec2::One(),
                   const IColour colour = IColour::White,
                   float rotation = 0.f,
                   const uint8_t zIndex = 0,
@@ -110,6 +111,8 @@ private:
 
     Vulkan::Material quadMaterial;
     Vulkan::VertexBuffer quadVertexBuffer;
+
+    Vulkan::VertexBuffer quadVBuffer;
 
     SArray<MSArray<MHArray<QuadVertex>, MAX_TEXTURES>, MAX_LAYERS> quads;
 

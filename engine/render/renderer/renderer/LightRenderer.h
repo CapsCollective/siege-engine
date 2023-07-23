@@ -10,8 +10,13 @@
 #define SIEGE_ENGINE_LIGHT_RENDERER_H
 
 #include <utils/Colour.h>
+#include <utils/String.h>
+#include <utils/math/vec/Vec2.h>
+#include <utils/math/vec/Vec3.h>
 
-#include "../model/Model.h"
+#include "render/renderer/platform/vulkan/IndexBuffer.h"
+#include "render/renderer/platform/vulkan/StaticMesh.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {
@@ -21,12 +26,9 @@ public:
 
     void Initialise(const String& globalDataAttributeName);
 
-    void Destroy();
+    void Free();
 
-    void DrawPointLight(const Vec3& position,
-                        float radius,
-                        const IColour& colour,
-                        const IColour& ambientColor);
+    void DrawPointLight(const Vec3& position, const IColour& colour);
 
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
@@ -39,13 +41,23 @@ public:
 
 private:
 
-    Model lightModel;
+    struct LightVertex
+    {
+        Vec3 position;
+        FColour colour;
+    };
+
+    static inline constexpr size_t MAX_LIGHTS = 4;
+
     Vulkan::Material lightMaterial;
 
     Hash::StringId globalDataId;
 
-    MSArray<Vec2, Vulkan::Mesh::MAX_VERTICES> pointLightVertices;
-    MSArray<uint32_t, Vulkan::Mesh::MAX_INDICES> pointLightIndices;
+    MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
+
+    MHArray<LightVertex> lights;
+
+    Vulkan::IndexBuffer indexBuffer;
 };
 } // namespace Siege
 

@@ -10,8 +10,7 @@
 #define SIEGE_ENGINE_POINT_LIGHT_H
 
 #include <utils/Colour.h>
-
-#include "../model/Model.h"
+#include <utils/math/vec/Vec3.h>
 
 namespace Siege
 {
@@ -24,7 +23,7 @@ public:
     {
         FColour lightColor = {1.f, 1.f, 1.f, 0.2f};
         alignas(16) FColour ambientLightColor = {1.f, 1.f, 1.f, .02f};
-        alignas(16) Vec3 position = Vec3::Zero;
+        alignas(16) Vec3 position = Vec3::Zero();
     };
 
     PointLight();
@@ -35,10 +34,7 @@ public:
     {
         return lightData;
     }
-    Model* GetModel()
-    {
-        return model;
-    }
+
     void SetPosition(Vec3 position)
     {
         lightData.position = position;
@@ -52,15 +48,9 @@ public:
         lightData.ambientLightColor = ambientColor;
     }
 
-    void SetModel(Model* model)
-    {
-        this->model = model;
-    }
-
 private:
 
     Data lightData;
-    Model* model;
 };
 } // namespace Siege
 

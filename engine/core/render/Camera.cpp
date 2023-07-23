@@ -19,8 +19,8 @@ static Vec3 pos {0.f, 10.f, 10.f};
 static raylib::Camera3D& GetCamera()
 {
     static raylib::Camera3D camera(FromVec3(pos),
-                                   FromVec3(Vec3::Zero),
-                                   FromVec3(Vec3::Up),
+                                   FromVec3(Vec3::Zero()),
+                                   FromVec3(Vec3::Up()),
                                    45.f,
                                    CAMERA_PERSPECTIVE);
     return camera;

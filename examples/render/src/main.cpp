@@ -6,19 +6,22 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <GLFW/glfw3.h>
+#include <render/renderer/ObjectLoader.h>
 #include <render/renderer/Renderer.h>
-#include <render/renderer/model/Model.h>
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
 #include <utils/math/Float.h>
+#include <utils/math/mat/Mat4.h>
 #include <window/Input.h>
 #include <window/Window.h>
 
 #include <chrono>
 
-#include "Camera.h"
+#include "FPSCamera.h"
 #include "GameObject.h"
+#include "OrthoCamera.h"
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(DEBUG)
 #include <windows.h>
@@ -47,9 +50,6 @@ int main()
 
     Siege::Renderer renderer(window);
 
-    Camera camera;
-    Camera camera2;
-
     // Load textures
     auto aryehthulu = Siege::Vulkan::Texture2D("Aryehthulu", "assets/textures/aryehthulu.jpg");
     auto cappy = Siege::Vulkan::Texture2D("Cthulhu", "assets/textures/cappy.png");
@@ -73,7 +73,7 @@ int main()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec3Attribute()
                                             .AddFloatVec2Attribute())
-                     .WithTransform3DStorage(0, 1000)
+                     .WithStorage<Siege::ModelTransform>("transforms", 0, 1000)
                      .WithGlobalData3DUniform()
                      .Build(),
                  Shader::Builder()
@@ -85,12 +85,8 @@ int main()
 
     // Generating models from .obj files
 
-    Siege::Model cubeObjModel("assets/models/cube.obj");
-    Siege::Model vaseObjModel("assets/models/smooth_vase.obj");
-
-    // Set 3D diffuse material
-    cubeObjModel.SetMaterial(&testMaterial);
-    vaseObjModel.SetMaterial(&testMaterial);
+    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.obj", &testMaterial);
+    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.obj", &testMaterial);
 
     // Create shapes for use
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
@@ -122,8 +118,12 @@ int main()
     objects3D[4].SetScale({2.f, 2.f, 2.f});
     objects3D[4].SetColour({128, 0, 0, 255});
 
-    camera.SetPosition({0.f, -1.f, -2.5f});
-    camera2.SetPosition({0.f, -1.f, -2.5f});
+    FPSCamera camera3D = FPSCamera({0.f, -1.f, -2.5f},
+                                   {0.f, 0.f, 1.f},
+                                   Siege::Float::Radians(60.f),
+                                   window.GetWidth(),
+                                   window.GetHeight());
+    OrthoCamera camera2D = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -136,6 +136,8 @@ int main()
     const size_t PANEL_INPUT_CHAR_MAX = 15;
     Siege::String panelInput = "_";
 
+    Siege::BoundedBox box = {{-.5f, 0, -.5f}, {.5f, -1.f, .5f}};
+
     while (!window.WindowShouldClose())
     {
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -144,48 +146,49 @@ int main()
                 .count();
         currentTime = newTime;
 
-        auto time = std::time(nullptr);
-        auto alpha = std::clamp<float>(abs(sin(time)), 0.001f, 1.f);
-        auto blink = std::clamp<float>(abs(sin(time * 2.f)), 0.001f, 1.f);
-
         window.Update();
+        window.ToggleCursor(inputEnabled);
 
-        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE))
-        {
-            inputEnabled = !inputEnabled;
-            window.ToggleCursor(inputEnabled);
-        }
+        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) inputEnabled = !inputEnabled;
+
+        camera3D.SetIsMovable(inputEnabled && !isPanelOpen);
+        camera3D.MoveCamera(frameTime);
 
         float aspect = renderer.GetAspectRatio();
 
         float panelWidth = window.GetWidth();
         float panelHeight = 50.f;
 
-        camera.UpdatePerspectiveProjection(Siege::Float::Radians(50.f), aspect, 0.1f, 100.f);
+        camera3D.SetAspectRatio(aspect);
+        camera2D.Update(0.f, window.GetWidth(), 0.f, window.GetHeight(), 0.1f, 1000.f);
 
-        camera2
-            .UpdateOrthographicProjection(0, window.GetWidth(), 0, window.GetHeight(), 0.1f, 100.f);
-
-        if (inputEnabled && !isPanelOpen)
-        {
-            camera.MoveCamera(frameTime);
-        }
-
-        renderer.SetProjection(camera.GetProjection(), camera.GetView());
-        renderer.SetUiProjection(camera2.GetProjection(), camera2.GetView());
+        renderer.SetCamera3D(camera3D.GetCamera());
+        renderer.SetCamera2D(camera2D.GetCamera());
 
         if (!renderer.StartFrame()) continue;
 
-        camera.Update();
-        camera2.Update();
+        if (Siege::Input::IsMouseButtonJustPressed(Siege::MOUSE_BUTTON_LEFT))
+        {
+            Siege::Vec2 cursorPos = {(float) Siege::Input::GetCursorPosition().x,
+                                     (float) Siege::Input::GetCursorPosition().y};
+
+            auto ray = camera3D.GetMouseRay(cursorPos.x,
+                                            cursorPos.y,
+                                            window.GetWidth(),
+                                            window.GetHeight());
+
+            bool intersects = box.Intersects(ray);
+
+            CC_LOG_INFO("INTERSECTS?: {}", intersects)
+        }
 
         for (auto it = objects3D.CreateFIterator(); it; ++it)
         {
             GameObject obj = *it;
-            Siege::Renderer3D::DrawModel(obj.GetModel(),
-                                         obj.GetPosition(),
-                                         obj.GetScale(),
-                                         obj.GetRotation());
+            Siege::Renderer3D::DrawMesh(obj.GetMesh(),
+                                        obj.GetPosition(),
+                                        obj.GetScale(),
+                                        obj.GetRotation());
         }
 
         // TODO(Aryeh): This will eventually need to take in multiple lights.
@@ -194,25 +197,46 @@ int main()
                                           {255, 0, 0, (uint8_t) 255.f},
                                           {0, 0, 255, 5});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 255, 255, 255});
+        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f},
+                                         {1.f, 1.f},
+                                         {255, 255, 255, 255},
+                                         &cappy);
         Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
         Siege::Renderer3D::DrawQuad({-1.95f, -1.5f, 2.95f},
                                     {1.f, .5f},
-                                    Siege::Vec3::Zero,
+                                    Siege::Vec3::Zero(),
                                     Siege::IColour::White,
                                     &aryehthulu);
         Siege::Renderer3D::DrawQuad({0.f, -1.5f, 2.95f},
                                     {.5f, .5f},
-                                    Siege::Vec3::Zero,
+                                    Siege::Vec3::Zero(),
                                     Siege::IColour::Green);
+
+        Siege::Renderer3D::DrawQuad({2.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::White);
+
         Siege::Renderer3D::DrawQuad({2.f, -1.5f, 2.95f},
                                     {.5f, .5f},
-                                    Siege::Vec3::Zero,
+                                    Siege::Vec3::Zero(),
                                     Siege::IColour::White,
                                     &cappy);
+
+        Siege::Renderer3D::DrawQuad({-2.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::Blue);
+
+        Siege::Renderer3D::DrawQuad({0.f, -3.f, 2.95f},
+                                    {.5f, .5f},
+                                    Siege::Vec3::Zero(),
+                                    Siege::IColour::Pink,
+                                    &cappy);
+
         Siege::Renderer3D::DrawText3D("Random Vase",
                                       {0.f, -.85f, -.5175f},
                                       {},
@@ -325,13 +349,13 @@ int main()
             isPanelJustOpened = false;
         }
 
-        renderer.DrawQuad({0, window.GetHeight() - 100.f},
+        renderer.DrawQuad({0.f, (float) window.GetHeight() - 100.f},
                           {50, 50},
                           Siege::IColour::White,
                           0,
                           0,
                           &cappy);
-        renderer.DrawQuad({window.GetWidth() - 200.f, window.GetHeight() - 100.f},
+        renderer.DrawQuad({window.GetWidth() - 200.f, (float) window.GetHeight() - 100.f},
                           {100, 50},
                           Siege::IColour::White,
                           0,

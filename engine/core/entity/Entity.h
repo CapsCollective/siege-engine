@@ -43,7 +43,7 @@ public:
      * @param name - a const reference to the name of the
      *               entity as a string
      */
-    Entity(const String& name) : Entity(name, {Vec3::Zero, 0.f}) {};
+    Entity(const String& name) : Entity(name, {Vec3::Zero(), 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises

@@ -8,7 +8,10 @@
 
 #include "ModelRenderer.h"
 
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
+
+#include "../vertex/BaseVertex.h"
+#include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege
 {
@@ -21,60 +24,53 @@ void ModelRenderer::Initialise(const String& globalDataAttributeName)
     transformId = INTERN_STR("transforms");
 }
 
-void ModelRenderer::DrawModel(Model* model,
-                              const Vec3& position,
-                              const Vec3& scale,
-                              const Vec3& rotation)
+void ModelRenderer::DrawMesh(Vulkan::StaticMesh* mesh,
+                             const Vec3& position,
+                             const Vec3& scale,
+                             const Vec3& rotation)
 {
-    models.Append(model);
-
-    auto transform = Graphics::CalculateTransform3D(position, rotation, scale);
-    auto normal = Graphics::CalculateNormal(rotation, scale);
-    transforms.Append({transform, normal});
+    staticMeshes.Append(mesh);
+    transforms.Append({Transform3D(position, rotation, scale), Normal(rotation, scale)});
 }
 
 void ModelRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const uint64_t& globalDataSize,
-                           const void* globalData,
-                           uint32_t currentFrame)
+                           const void* globalData)
 {
-    if (models.Count() == 0) return;
+    Vulkan::Material* mat = nullptr;
 
-    for (size_t i = 0; i < models.Count(); i++)
+    for (size_t i = 0; i < staticMeshes.Count(); i++)
     {
-        auto& model = models.Get(i);
+        auto& mesh = staticMeshes[i];
+        auto& subMeshes = mesh->GetSubMeshes();
 
-        if (currentMaterial != model->GetMaterial())
+        for (size_t j = 0; j < subMeshes.Count(); j++)
         {
-            currentMaterial = model->GetMaterial();
-            currentMaterial->SetUniformData(transformId,
-                                            sizeof(transforms[0]) * transforms.Count(),
-                                            transforms.Data());
-            currentMaterial->SetUniformData(globalDataId, globalDataSize, globalData);
-            currentMaterial->Bind(buffer);
-        }
+            auto subMesh = subMeshes[j];
+            auto subMeshMaterial = mesh->GetMaterial(subMesh.materialIndex);
+            if (mat != subMeshMaterial)
+            {
+                mat = subMeshMaterial;
+                mat->SetUniformData(transformId,
+                                    sizeof(ModelTransform) * transforms.Count(),
+                                    transforms.Data());
+                mat->SetUniformData(globalDataId, globalDataSize, globalData);
+                mat->Bind(buffer);
+            }
 
-        if (currentModel != model)
-        {
-            currentModel = model;
-            currentModel->BindIndexed(buffer, currentFrame);
+            mesh->BindIndexed(buffer,
+                              sizeof(BaseVertex) * subMesh.baseVertex,
+                              sizeof(unsigned int) * subMesh.baseIndex);
+            Vulkan::Utils::DrawIndexed(buffer.Get(), subMesh.indexCount, 1, 0, 0, i);
         }
-
-        model->DrawIndexed(buffer, currentFrame, i);
     }
-
-    currentModel = nullptr;
-    currentMaterial = nullptr;
 }
 
 void ModelRenderer::Flush()
 {
     transforms.Clear();
-    models.Clear();
+    staticMeshes.Clear();
 }
 
-void ModelRenderer::RecreateMaterials()
-{
-    if (currentMaterial) currentMaterial->Recreate();
-}
+void ModelRenderer::RecreateMaterials() {}
 } // namespace Siege

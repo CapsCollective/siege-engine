@@ -18,6 +18,10 @@ int Input::latestChar {-1};
 bool Input::keyUpdated {false};
 bool Input::charUpdated {false};
 std::map<int, int> Input::keyMap;
+Vec2 Input::lastMousePos {Vec2::Zero()};
+Vec2 Input::mouseMoveDelta {Vec2::Zero()};
+bool Input::isFirstMouseCall {true};
+
 void Input::SetInputWindowSource(Glfw::Window window)
 {
     primaryWindow = window;
@@ -33,6 +37,23 @@ void Input::SetInputWindowSource(Glfw::Window window)
         latestKey = ((action == ACTION_PRESSED || action == ACTION_REPEAT) * key) +
                     (action == ACTION_RELEASED * -1);
         keyUpdated = true;
+    });
+
+    SetOnMouseKeyPressedCallback(window, [](Window, int button, int action, int mods) {
+        // TODO: Set logic here
+    });
+
+    SetOnMouseMovedCallback(window, [](Window, double x, double y) {
+        if (isFirstMouseCall)
+        {
+            lastMousePos = {(float) x, (float) y};
+            mouseMoveDelta = {0.f, 0.f};
+            isFirstMouseCall = false;
+            return;
+        }
+
+        mouseMoveDelta = {(lastMousePos.x - (float) x), ((float) y - lastMousePos.y)};
+        lastMousePos = {(float) x, (float) y};
     });
 }
 
@@ -75,10 +96,56 @@ bool Input::IsKeyJustPressed(int key)
     return false;
 }
 
-const MousePosition Input::GetCursorPosition()
+bool Input::IsMouseButtonDown(int button)
 {
-    return Glfw::GetMousePosition(primaryWindow);
+    bool hasButton = Glfw::IsMouseButtonDown(primaryWindow, button);
+
+    if (keyMap.find(button) != keyMap.end())
+    {
+        keyMap[button] = hasButton ? 1 : 0;
+    }
+    else
+    {
+        if (hasButton) keyMap[button] = 1;
+    }
+    return hasButton;
 }
+
+bool Input::IsMouseButtonJustPressed(int button)
+{
+    bool hasButton = Glfw::IsMouseButtonDown(primaryWindow, button);
+
+    bool keyEntryExists = keyMap.find(button) != keyMap.end();
+    if (keyEntryExists && hasButton)
+    {
+        if (keyMap[button] == 0)
+        {
+            keyMap[button] = 1;
+            return true;
+        }
+        else return false;
+    }
+    else if (hasButton && !keyEntryExists)
+    {
+        keyMap[button] = 1;
+        return true;
+    }
+    else if (!hasButton && keyEntryExists) keyMap[button] = 0;
+
+    return false;
+}
+
+const Vec2 Input::GetCursorPosition()
+{
+    return lastMousePos;
+}
+
+const Vec2 Input::GetMouseDirection()
+{
+    auto oldMouseDir = mouseMoveDelta;
+    mouseMoveDelta = Vec2::Zero();
+    return oldMouseDir;
+};
 
 int Input::GetLatestKey()
 {

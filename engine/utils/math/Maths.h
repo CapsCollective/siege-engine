@@ -11,8 +11,6 @@
 #define SIEGE_ENGINE_MATHS_H
 
 #include "Float.h"
-#include "mat/Mat2.h"
-#include "mat/Mat3.h"
 #include "mat/Mat4.h"
 #include "vec/Vec2.h"
 #include "vec/Vec3.h"
@@ -20,6 +18,13 @@
 
 namespace Siege
 {
+
+template<typename T>
+inline constexpr T Epsilon()
+{
+    return static_cast<T>(1e-6);
+}
+
 struct BoundedBox
 {
     // 'Structors

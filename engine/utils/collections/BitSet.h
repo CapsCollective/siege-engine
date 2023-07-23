@@ -266,6 +266,21 @@ public:
         return leftMostBit;
     }
 
+    inline unsigned long FirstSetBit() const
+    {
+        using namespace BitUtils;
+
+        unsigned long bit = 0;
+        for (unsigned int i = 0; i < size; i++)
+        {
+            auto index = GetBitPosIndex((bitfield[i] ^ (bitfield[i] & (bitfield[i] - 1))));
+            bit = (index > 0) * (i * BYTE_SIZE_IN_BITS) + index;
+            if (bit > 0) break;
+        }
+
+        return bit;
+    }
+
     /**
      * Sets a specified bit to 0.
      * @param bit the bit to unset, ranging from 1 - bytes * 8.
@@ -394,6 +409,21 @@ public:
     inline const unsigned long& LeftMostBit() const
     {
         return leftMostBit;
+    }
+
+    inline unsigned long FirstSetBit() const
+    {
+        using namespace BitUtils;
+
+        unsigned long bit = 0;
+        for (unsigned int i = 0; i < S; i++)
+        {
+            auto index = GetBitPosIndex((bitfield[i] ^ (bitfield[i] & (bitfield[i] - 1))));
+            bit = (index > 0) * (i * BYTE_SIZE_IN_BITS) + index;
+            if (bit > 0) break;
+        }
+
+        return bit;
     }
 
     /**

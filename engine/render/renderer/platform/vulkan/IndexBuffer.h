@@ -1,23 +1,22 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_INDEXBUFFER_H
-#define SIEGE_ENGINE_INDEXBUFFER_H
+#ifndef SIEGE_ENGINE_RENDER_INDEX_BUFFER_H
+#define SIEGE_ENGINE_RENDER_INDEX_BUFFER_H
+
+#include <cstdint>
 
 #include "CommandBuffer.h"
 #include "utils/Types.h"
 
 namespace Siege::Vulkan
 {
-/**
- * The index buffer wrapper class. This class represents a buffer which stores vertex index values.
- * The base assumption is that all indices are stored as 32-bit unsigned integers
- */
+
 class IndexBuffer
 {
 public:
@@ -25,118 +24,101 @@ public:
     // 'Structors
 
     /**
-     * A default Index buffer constructor
+     * The default constructor for the IndexBuffer class
      */
     IndexBuffer() = default;
 
     /**
-     * An index buffer constructor. This constructor allocates the index buffer memory and assigns
-     * the values to the buffer
-     * @param count the number of indices to be stored in the buffer
-     * @param indices an array storing the buffer indices
+     * The IndexBuffer base constructor. Accepts index data along with a size to construct the
+     * buffer with
+     * @param data the data to copy into the buffer
+     * @param dataSize the size of the data in bytes
      */
-    IndexBuffer(unsigned int count, const unsigned int* indices);
+    IndexBuffer(void* data, uint64_t dataSize);
 
     /**
-     * An index buffer constructor. This constructor allocates the memory needed by the buffer
-     * without assigning any data to it
-     * @param count the number of indices to allocate memory for
+     * A zero copy constructor. Initialises the IndexBuffer with a maximum size but no data
+     * @param bufferSize the total size of the buffer in bytes
      */
-    IndexBuffer(unsigned int count);
+    IndexBuffer(unsigned long bufferSize);
 
     /**
-     * A move constructor for the index buffer.
-     * @param other the index buffer to move data from
+     * An IndexBuffer copy constructor. Creates a new IndexBuffer with the contents of another
+     * IndexBuffer
+     * @param other the index buffer to copy data from
      */
-    inline IndexBuffer(IndexBuffer&& other)
-    {
-        Swap(other);
-    }
+    IndexBuffer(const IndexBuffer& other);
 
     /**
-     * An index buffer destructor. Frees all memory held by the buffer
+     * An IndexBuffer move constructor. Creates a new IndexBuffer with the moved memory from another
+     * IndexBuffer
+     * @param other the IndexBuffer to move data from
      */
-    inline ~IndexBuffer()
-    {
-        Free();
-    }
-
-    // Operator Overloads
+    IndexBuffer(IndexBuffer&& other);
 
     /**
-     * An index buffer move assignment operator. Creates a new index buffer and moves its contents
-     * into the current buffer
-     * @param other the buffer to move
-     * @return a reference to the current buffer
+     * The IndexBuffer destructor. Frees all memory and resets the IndexBuffer
      */
-    inline IndexBuffer& operator=(IndexBuffer&& other)
-    {
-        Swap(other);
-        return *this;
-    }
+    ~IndexBuffer();
 
-    // Public Methods
+    // Operator overload
 
     /**
-     * Updates the data in the index buffer
-     * @param data an array of indices to be copied into the buffer
-     * @param indexCount the number of indices to copy in
+     * The IndexBuffer copy assignment operator. Copies the value from one IndexBuffer into another
+     * @param other the IndexBuffer to copy data from
+     * @return a reference to the current IndexBuffer
      */
-    void Update(unsigned int* data, unsigned int indexCount);
+    IndexBuffer& operator=(const IndexBuffer& other);
 
     /**
-     * Binds the buffer memory to the command buffer
-     * @param commandBuffer the command buffer to bind to
+     * The IndexBuffer move assignment operator. Moves the value from one IndexBuffer into another
+     * @param other the IndexBuffer to move data from
+     * @return a reference to the current IndexBuffer
      */
-    void Bind(CommandBuffer& commandBuffer);
+    IndexBuffer& operator=(IndexBuffer&& other);
+
+    // Functions
 
     /**
-     * Frees the memory held by the buffer
+     * Frees all memory from the IndexBuffer and resets all values
      */
     void Free();
 
-    // Getters
+    /**
+     * Copies the provided data into the IndexBuffer with an offset
+     * @param data the data to be copied into the buffer
+     * @param size the size in bytes of the data
+     * @param offset the byte offset to copy the data to
+     */
+    void Copy(const void* data, unsigned long size, unsigned long offset = 0);
 
     /**
-     * Returns the number of indices held by the bufer
-     * @return
+     * Binds the IndexBuffer for rendering
+     * @param commandBuffer the command buffer to bind to
+     * @param offset the byte offset to bind
      */
-    inline unsigned long GetCount() const
-    {
-        return count;
-    }
+    void Bind(const CommandBuffer& commandBuffer, uint64_t offset = 0);
 
 private:
 
-    static constexpr size_t INDEX_BUFFER_ELEMENT_SIZE = sizeof(unsigned int);
-
     /**
-     * Swaps the contents of two index buffers
-     * @param other the index buffer to swap contents with
+     * Swaps the contents of two buffers
+     * @param other the buffer to swap values with
      */
     void Swap(IndexBuffer& other);
 
     /**
      * Allocates memory for the buffer
-     * @param device
+     * @param device the device to allocate memory from
      */
     void Allocate(VkDevice device);
 
-    /**
-     * Copies contents from an array of indices into the buffer
-     * @param device the GPU device used to copy data into
-     * @param newSize the size of the data being copied into the buffer
-     * @param data the array of data being copied into the buffer
-     */
-    void Copy(VkDevice device, unsigned int newSize, const unsigned int* data);
-
-    unsigned int size {0};
-    unsigned int count {0};
-    unsigned int* rawBuffer {nullptr};
-
+    void* rawBuffer {nullptr};
     VkBuffer buffer {nullptr};
     VkDeviceMemory memory {nullptr};
+    unsigned long size {0};
 };
+
 } // namespace Siege::Vulkan
 
-#endif // SIEGE_ENGINE_INDEXBUFFER_H
+#endif // SIEGE_ENGINE_RENDER_INDEX_BUFFER_H

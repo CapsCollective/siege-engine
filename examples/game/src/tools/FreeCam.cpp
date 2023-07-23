@@ -56,7 +56,7 @@ void FreeCam::OnUpdate()
 
         // Set the new position and look rotation of the camera
         Siege::Vec3 position(camera->GetPosition());
-        position = position + move.Normalise() * moveSpeed * deltaTime;
+        position = position + Siege::Vec3::Normalise(move) * moveSpeed * deltaTime;
         Siege::Vec3 target(position + rotation);
         camera->SetPosition(position);
         camera->SetTarget(target);

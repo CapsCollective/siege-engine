@@ -9,12 +9,14 @@
 #ifndef SIEGE_ENGINE_TEXTRENDERER_H
 #define SIEGE_ENGINE_TEXTRENDERER_H
 
+#include <utils/math/mat/Mat4.h>
 #include <utils/math/vec/Vec3.h>
 #include <utils/math/vec/Vec4.h>
 
-#include "render/renderer/model/Model.h"
 #include "render/renderer/platform/vulkan/Font.h"
+#include "render/renderer/platform/vulkan/IndexBuffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
 {

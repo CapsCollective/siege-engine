@@ -399,7 +399,7 @@ public:
     }
 
     /**
-     * Returns the element in the MSArray
+     * Returns the last element in the MSArray
      * @return the last element in the array
      */
     inline const T& Back() const
@@ -408,12 +408,30 @@ public:
     }
 
     /**
-     * Returns the element in the MSArray
+     * Returns the last element in the MSArray
      * @return the last element in the array
      */
     inline T& Back()
     {
         return data[bitField.LeftMostBit() - 1];
+    }
+
+    /**
+     * Returns the first element in the MSArray
+     * @return the first element in the array
+     */
+    inline const T& Front() const
+    {
+        return data[bitField.FirstSetBit() - 1];
+    }
+
+    /**
+     * Returns the first element in the MSArray
+     * @return the first element in the array
+     */
+    inline T& Front()
+    {
+        return data[bitField.FirstSetBit() - 1];
     }
 
 private:
@@ -448,6 +466,27 @@ private:
     {}
 
     // Functions
+
+    friend class MIter<MHArray<T>, T>;
+    friend class CMIter<MHArray<T>, T>;
+
+    /**
+     * Returns the index of the first element of the array. Used primarily for iterators
+     * @return the index of the first element of the array
+     */
+    inline size_t GetFirstElementIdx()
+    {
+        return bitField.FirstSetBit() - 1;
+    }
+
+    /**
+     * Returns the index of the first element of the array. Used primarily for const iterators
+     * @return the index of the first element of the array
+     */
+    inline const size_t GetFirstElementIdx() const
+    {
+        return bitField.FirstSetBit() - 1;
+    }
 
     /**
      * @brief Sets an element in the array to a corresponding value

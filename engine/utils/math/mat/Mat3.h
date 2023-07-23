@@ -6,324 +6,456 @@
 //      https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_MAT3_H
-#define SIEGE_ENGINE_MAT3_H
-
-#include <cassert>
+#ifndef SIEGE_ENGINE_UTILS_MAT3F_H
+#define SIEGE_ENGINE_UTILS_MAT3F_H
 
 #include "../vec/Vec3.h"
-#include "Macros.h"
+#include "Mat.h"
 
 namespace Siege
 {
-/**
- * A class representing a 3x3 matrix of float values.
- */
-struct Mat3
+template<typename T>
+struct Mat<T, 3, 3>
 {
+    // Static functions
+
+    /**
+     * Creates a 3x3 matrix with all values set to 0
+     * @return a new 4x4 matrix with all values set to 0
+     */
+    static inline constexpr Mat<T, 3, 3> Zero()
+    {
+        return Mat<T, 3, 3>(0);
+    }
+
+    /**
+     * Creates a 3x3 identity matrix
+     * @return a new 3x3 identity matrix
+     */
+    static inline constexpr Mat<T, 3, 3> Identity()
+    {
+        return Mat<T, 3, 3>(1);
+    }
+
+    /**
+     * Adds two 3x3 matrices and returns a new matrix with the result of the addition
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix addition
+     */
+    static inline constexpr Mat<T, 3, 3> Add(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+    {
+        return {lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
+    }
+
+    /**
+     * Subtracts two 3x3 matrices and returns a new matrix with the result of the subtraction
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix subtraction
+     */
+    static inline constexpr Mat<T, 3, 3> Subtract(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+    {
+        return {lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
+    }
+
+    /**
+     * Multiplies two 3x3 matrices and returns a new matrix with the result of the multiplication
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix multiplication
+     */
+    static inline constexpr Mat<T, 3, 3> Multiply(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+    {
+        return {
+            {(lhs[0][0] * rhs[0][0]) + (lhs[1][0] * rhs[0][1]) + (lhs[2][0] * rhs[0][2]),
+             (lhs[0][1] * rhs[0][0]) + (lhs[1][1] * rhs[0][1]) + (lhs[2][1] * rhs[0][2]),
+             (lhs[0][2] * rhs[0][0]) + (lhs[1][2] * rhs[0][1]) + (lhs[2][2] * rhs[0][2])},
+            {(lhs[0][0] * rhs[1][0]) + (lhs[1][0] * rhs[1][1]) + (lhs[2][0] * rhs[1][2]),
+             (lhs[0][1] * rhs[1][0]) + (lhs[1][1] * rhs[1][1]) + (lhs[2][1] * rhs[1][2]),
+             (lhs[0][2] * rhs[1][0]) + (lhs[1][2] * rhs[1][1]) + (lhs[2][2] * rhs[1][2])},
+            {(lhs[0][0] * rhs[2][0]) + (lhs[1][0] * rhs[2][1]) + (lhs[2][0] * rhs[2][2]),
+             (lhs[0][1] * rhs[2][0]) + (lhs[1][1] * rhs[2][1]) + (lhs[2][1] * rhs[2][2]),
+             (lhs[0][2] * rhs[2][0]) + (lhs[1][2] * rhs[2][1]) + (lhs[2][2] * rhs[2][2])},
+        };
+    }
+
+    /**
+     * Multiplies a 3x3 matrix by a scalar and returns the result in a new matrix
+     * @param lhs the matrix to be multiplied
+     * @param scalar the scalar to multiply the matrix by
+     * @return a new matrix with the result of the multiplication
+     */
+    static inline constexpr Mat<T, 3, 3> Multiply(const Mat<T, 3, 3>& lhs, T scalar)
+    {
+        return {{lhs[0] * scalar}, {lhs[1] * scalar}, {lhs[2] * scalar}};
+    }
+
+    /**
+     * Multiplies a 3x3 matrix by a 3D vector and returns a 3D vector with the results
+     * @param lhs the matrix to be multiplied
+     * @param vector the vector to be multiplied by
+     * @return a 3D vector with the results of the multiplication
+     */
+    static inline constexpr Vec<T, 3> Multiply(const Mat<T, 3, 3>& lhs, const Vec<T, 3> vector)
+    {
+        return {(lhs[0] * vector.x) + (lhs[1] * vector.y) + (lhs[2] * vector.z)};
+    }
+
+    /**
+     * Divides two 3x3 matrices and returns a new matrix with the result of the division
+     * @param lhs the matrix on the left hand side
+     * @param rhs the matrix on the right hand side
+     * @return a new matrix with the results of the matrix division
+     */
+    static inline constexpr Mat<T, 3, 3> Divide(const Mat<T, 3, 3> lhs, const Mat<T, 3, 3> rhs)
+    {
+        return Multiply(lhs, Inverse(rhs));
+    }
+
+    /**
+     * Computes the determinant of a 3x3 matrix
+     * @param matrix the matrix who's determinant needs to be computed
+     * @return the matrix's determinant
+     */
+    static inline constexpr T Determinant(const Mat<T, 3, 3>& matrix)
+    {
+        return +matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]) -
+               matrix[1][0] * (matrix[0][1] * matrix[2][2] - matrix[2][1] * matrix[0][2]) +
+               matrix[2][0] * (matrix[0][1] * matrix[1][2] - matrix[1][1] * matrix[0][2]);
+    }
+
+    /**
+     * Computes the inverse of a 3x3 matrix
+     * @param matrix the matrix who's inverse needs to be computed
+     * @return a new matrix with the result of the inverse operation
+     */
+    static inline constexpr Mat<T, 3, 3> Inverse(const Mat<T, 3, 3>& matrix)
+    {
+        T OneOverDeterminant = 1 / Determinant(matrix);
+
+        Mat<T, 3, 3> inverse;
+        inverse[0][0] =
+            +(matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]) * OneOverDeterminant;
+        inverse[1][0] =
+            -(matrix[1][0] * matrix[2][2] - matrix[2][0] * matrix[1][2]) * OneOverDeterminant;
+        inverse[2][0] =
+            +(matrix[1][0] * matrix[2][1] - matrix[2][0] * matrix[1][1]) * OneOverDeterminant;
+        inverse[0][1] =
+            -(matrix[0][1] * matrix[2][2] - matrix[2][1] * matrix[0][2]) * OneOverDeterminant;
+        inverse[1][1] =
+            +(matrix[0][0] * matrix[2][2] - matrix[2][0] * matrix[0][2]) * OneOverDeterminant;
+        inverse[2][1] =
+            -(matrix[0][0] * matrix[2][1] - matrix[2][0] * matrix[0][1]) * OneOverDeterminant;
+        inverse[0][2] =
+            +(matrix[0][1] * matrix[1][2] - matrix[1][1] * matrix[0][2]) * OneOverDeterminant;
+        inverse[1][2] =
+            -(matrix[0][0] * matrix[1][2] - matrix[1][0] * matrix[0][2]) * OneOverDeterminant;
+        inverse[2][2] =
+            +(matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1]) * OneOverDeterminant;
+
+        return inverse;
+    }
+
+    /**
+     * Transposes a 3x3 matrix and returns a new matrix with the results
+     * @param matrix the matrix to be computed
+     * @return a new matrix with the results of the transpose operation
+     */
+    static inline constexpr Mat<T, 3, 3> Transpose(const Mat<T, 3, 3>& matrix)
+    {
+        return {{matrix[0][0], matrix[1][0], matrix[2][0]},
+                {matrix[0][1], matrix[1][1], matrix[2][1]},
+                {matrix[0][2], matrix[1][2], matrix[2][2]}};
+    }
+
     // 'Structors
 
     /**
-     * A base constructor for the Mat3x3 class.
-     * @param vx0 the x value of the first row matrix.
-     * @param vy0 the y value of the first row matrix.
-     * @param vz0 the z value of the first row matrix.
-     * @param vx1 the x value of the second row matrix.
-     * @param vy1 the y value of the second row matrix.
-     * @param vz1 the z value of the second row matrix.
-     * @param vx2 the x value of the third row matrix.
-     * @param vy2 the y value of the third row matrix.
-     * @param vz2 the z value of the third row matrix.
+     * The default 3x3 matrix constructor
      */
-    Mat3(const float& vx0 = 0.f,
-         const float& vy0 = 0.f,
-         const float& vz0 = 0.f,
-         const float& vx1 = 0.f,
-         const float& vy1 = 0.f,
-         const float& vz1 = 0.f,
-         const float& vx2 = 0.f,
-         const float& vy2 = 0.f,
-         const float& vz2 = 0.f) :
-        values {vx0, vy0, vz0, vx1, vy1, vz1, vx2, vy2, vz2}
+    inline constexpr Mat<T, 3, 3>() = default;
+
+    /**
+     * The base 3x3 matrix constructor. Accepts three 3D vectors for each row in the matrix and
+     * returns the final result
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
+     * @param row2 the third row of the matrix
+     */
+    inline constexpr Mat<T, 3, 3>(const Vec<T, 3>& row0,
+                                  const Vec<T, 3>& row1,
+                                  const Vec<T, 3>& row2) :
+        values {row0, row1, row2}
     {}
 
     /**
-     * The Mat3x3 vector constructor.
-     * @param vec0 a Vec3 containing the first row of the matrix.
-     * @param vec1 a Vec3 containing the second row of the matrix.
-     * @param vec2 a Vec3 containing the third row of the matrix.
+     * A one element partial 3x3 matrix constructor. Accepts one 3D vector for the first row and
+     * defaults the rest of the values to 0
+     * @param row0 the first row of the matrix
      */
-    Mat3(const Vec3& vec0, const Vec3& vec1, const Vec3& vec2) :
-        Mat3(vec0.x, vec0.y, vec0.z, vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z)
+    inline constexpr Mat<T, 3, 3>(const Vec<T, 3>& row0) : Mat<T, 3, 3>(row0, Zero(), Zero()) {}
+
+    /**
+     * A two element partial 3x3 matrix constructor. Accepts two 3D vectors for the first and
+     * second rows and defaults the rest to 0
+     * @param row0 the first row of the matrix
+     * @param row1 the second row of the matrix
+     */
+    inline constexpr Mat<T, 3, 3>(const Vec<T, 3>& row0, const Vec<T, 3>& row1) :
+        Mat<T, 3, 3>(row0, row1, Zero())
     {}
 
-    // Statics
+    /**
+     * A scalar 3x3 matrix constructor. Sets all diagonal elements to the provided scalar value
+     * @param value the scalar value to set the identity to
+     */
+    inline constexpr Mat<T, 3, 3>(T scalar) :
+        Mat<T, 3, 3>({scalar, 0, 0}, {0, scalar, 0}, {0, 0, scalar})
+    {}
 
     /**
-     * A pre-configured matrix set to contain identity values (a 1 for every diagonal).
+     * Creates a 3x3 matrix from a 2x2 matrix. Sets the last row and last column of the matrix to
+     * their identity
+     * @param mat the 2x2 matrix to convert from
      */
-    static const Mat3 Identity;
+    inline constexpr Mat<T, 3, 3>(const Mat<T, 2, 2>& mat) :
+        Mat<T, 3, 3>({mat[0]}, {mat[1]}, {0.f, 0.f, 1.f})
+    {}
 
     /**
-     * A pre-configured empty matrix.
+     * Creates a 3x3 matrix from a 4x4 matrix
+     * @param mat the 4x4 matrix to construct the matrix from
      */
-    static const Mat3 Zero;
+    inline constexpr Mat<T, 3, 3>(const Mat<T, 4, 4>& mat) :
+        Mat<T, 3, 3>({mat[0]}, {mat[1]}, mat[2])
+    {}
+
+    // Operator Overloads
 
     /**
-     * Returns a value stored within a logical index.
-     * @param rowIndex the row index (0 - 2).
-     * @param colIndex the column index (0 - 2).
-     * @return the float value stored in the given indices.
+     * The 3x3 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a const reference to the vector representing the requested row
      */
-    const float& Get(const size_t& rowIndex, const size_t& colIndex);
-
-    /**
-     * Divides two 3x3 matrices.
-     * @param lhs the left hand side matrix to be divided.
-     * @param rhs the right hand side matrix to be divided by.
-     * @return a matrix containing the division result.
-     */
-    static Mat3 Divide(const Mat3& lhs, const Mat3& rhs);
-
-    /**
-     * Adds two 3x3 matrices.
-     * @param lhs the left hand matrix to be added to.
-     * @param rhs the right hand matrix to be added by.
-     * @return a new matrix containing the addition result.
-     */
-    static Mat3 Add(const Mat3& lhs, const Mat3& rhs);
-
-    /**
-     * Multiplies a 3x3 matrix by another 3x3 matrix.
-     * @param lhs the left hand side matrix to be multiplied.
-     * @param rhs the right hand side matrix to be multiplied by.
-     * @return the product of the two matrices.
-     */
-    static Mat3 Multiply(const Mat3& lhs, const Mat3& rhs);
-
-    /**
-     * Subtracts two 3x3 matrices.
-     * @param lhs the left hand matrix to be subtracted to.
-     * @param rhs the right hand matrix to be subtracted by.
-     * @return a new matrix containing the subtraction result.
-     */
-    static Mat3 Subtract(const Mat3& lhs, const Mat3& rhs);
-
-    /**
-     * Multiples a 3x3 matrix by a scalar value.
-     * @param lhs the matrix to be scaled.
-     * @param scalar the scalar to be used on the matrix.
-     * @return a new matrix containing the scalar result.
-     */
-    static Mat3 Multiply(const Mat3& lhs, const float& rhs);
-
-    /**
-     * Multiplies a 3x3 matrix by a three dimensional vector.
-     * @param lhs the matrix to be multiplied by.
-     * @param rhs the vector to be multiplied.
-     * @return a new vector containing the product of the vector and the matrix.
-     */
-    static Vec3 Multiply(const Mat3& lhs, const Vec3& rhs);
-
-    /**
-     * Computes the determinant of the matrix.
-     * @param mat the matrix to to be evaluated.
-     * @return the determinant of the matrix.
-     */
-    static float Determinant(const Mat3& mat);
-
-    /**
-     * Computes the inverse of the matrix.
-     * @param mat the matrix to be evaluated.
-     * @return a new matrix with the result of the matrix inversion.
-     */
-    static Mat3 Inverse(const Mat3& mat);
-
-    // Operators
-
-    /**
-     * A const subscript operator for indexing into the matrix.
-     * @param index the index location of the float value being searched.
-     * @return the float value of the given index.
-     */
-    constexpr float const& operator[](const size_t& index) const
+    inline constexpr Vec<T, 3> operator[](unsigned int index) const
     {
-        assert(index < 9 &&
-               "Error: trying to index into matrix with a size that's greater than matrix!");
-
         return values[index];
     }
 
     /**
-     * A subscript operator for indexing into the matrix.
-     * @param index the index location of the float value being searched.
-     * @return the float value of the given index.
+     * The 3x3 matrix subscript operator
+     * @param index the index of the row to be accessed
+     * @return a reference to the vector representing the requested row
      */
-    float& operator[](const size_t& index);
+    inline constexpr Vec<T, 3>& operator[](unsigned int index)
+    {
+        return values[index];
+    }
 
     /**
-     * Adds another matrix to the current matrix.
-     * @param other the matrix to add.
-     * @return A reference to the new evaluated matrix.
+     * The equality operator. Checks two 3x3 matrices for equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are equal
      */
-    Mat3& operator+=(const Mat3& other);
+    inline constexpr bool operator==(const Mat<T, 3, 3>& rhs) const
+    {
+        return values[0] == rhs[0] && values[1] == rhs[1] && values[2] == rhs[2];
+    }
 
     /**
-     * Subtracts another matrix to the current matrix.
-     * @param other the matrix to subtract.
-     * @return A reference to the new evaluated matrix.
+     * The inequality operator. Checks two 3x3 matrices for non-equality
+     * @param rhs the matrix to compare with
+     * @return a boolean representing whether the matrices are not equal
      */
-    Mat3& operator-=(const Mat3& other);
+    inline constexpr bool operator!=(const Mat<T, 3, 3>& rhs) const
+    {
+        return values[0] != rhs[0] || values[1] != rhs[1] || values[2] != rhs[2];
+    }
 
     /**
-     * Multiplies the matrix with a scalar.
-     * @param scalar the scalar to multiply by.
-     * @return A reference to the new evaluated matrix.
+     * The 2x2 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 2x2 matrix
+     * @param other the 2x2 matrix to convert from
+     * @return a reference to the current matrix
      */
-    Mat3& operator*=(const float& scalar);
+    inline constexpr Mat<T, 3, 3> operator=(const Mat<T, 2, 2>& other)
+    {
+        values[0] = other[0];
+        values[1] = other[1];
+        values[2] = {0.f, 0.f, 1.f};
+        return *this;
+    }
 
     /**
-     * Multiplies another matrix to the current matrix.
-     * @param other the matrix to multiply.
-     * @return A reference to the new evaluated matrix.
+     * The 4x4 matrix assignment operator. Sets the values of the matrix to those of the provided
+     * 4x4 matrix
+     * @param other the 4x4 matrix to convert from
+     * @return a reference to the current matrix
      */
-    Mat3& operator*=(const Mat3& other);
+    inline constexpr Mat<T, 3, 3> operator=(const Mat<T, 4, 4>& other)
+    {
+        values[0] = other[0];
+        values[1] = other[1];
+        values[2] = other[2];
+        return *this;
+    }
 
     /**
-     * Divides another matrix to the current matrix.
-     * @param other the matrix to divide.
-     * @return A reference to the new evaluated matrix.
+     * The addition operator. Adds the values of the provided matrix to those of the current matrix
+     * @param rhs the matrix to add values from
+     * @return a reference to the current matrix
      */
-    Mat3& operator/=(const Mat3& other);
+    inline constexpr Mat<T, 3, 3>& operator+=(const Mat<T, 3, 3>& rhs)
+    {
+        values[0] += rhs[0];
+        values[1] += rhs[1];
+        values[2] += rhs[2];
+        return *this;
+    }
 
     /**
-     * Negates all values in the matrix.
-     * @return a new matrix with the negated values.
+     * The subtraction operator. Subtracts the values of the provided matrix to those of the current
+     * matrix
+     * @param rhs the matrix to subtract values from
+     * @return a reference to the current matrix
      */
-    Mat3 operator-();
+    inline constexpr Mat<T, 3, 3>& operator-=(const Mat<T, 3, 3>& rhs)
+    {
+        values[0] -= rhs[0];
+        values[1] -= rhs[1];
+        values[2] -= rhs[2];
+        return *this;
+    }
 
     /**
-     * An equality operator.
-     * @param other the second matrix to be evaluated.
-     * @return a boolean value representing whether the matrices are equal.
+     * The multiplication operator. Multiplies the values of the provided matrix to those of the
+     * current matrix
+     * @param rhs the matrix to multiply values from
+     * @return a reference to the current matrix
      */
-    bool operator==(const Mat3& other);
+    inline constexpr Mat<T, 3, 3>& operator*=(const Mat<T, 3, 3>& rhs)
+    {
+        *this = Multiply(*this, rhs);
+        return *this;
+    }
 
     /**
-     * A negative equality operator.
-     * @param other the matrix to check for equality.
-     * @return a boolean value representing if the matrices are unequal.
+     * The scalar multiplication operator. Multiplies the matrix by a scalar value
+     * @param scalar the scalar value to multiply by
+     * @return a reference to the current matrix
      */
-    bool operator!=(const Mat3& other);
-
-    // Functions
+    inline constexpr Mat<T, 3, 3>& operator*=(float scalar)
+    {
+        *this = Multiply(*this, scalar);
+        return *this;
+    }
 
     /**
-     * Adds a matrix to the current matrix.
-     * @param other the matrix to be added.
+     * The division operator. Divides the matrix by another matrix
+     * @param rhs the matrix to divide by
+     * @return a reference to the current matrix
      */
-    void Add(const Mat3& other);
+    inline constexpr Mat<T, 3, 3>& operator/=(const Mat<T, 3, 3>& rhs)
+    {
+        *this = Divide(*this, rhs);
+        return *this;
+    }
 
-    /**
-     * Subtracts a matrix to the current matrix.
-     * @param other the matrix to be subtracted.
-     */
-    void Subtract(const Mat3& other);
-
-    /**
-     * Multiplies the matrix by a scalar.
-     * @param scalar the scalar to be multiplied.
-     */
-    void Multiply(const float& scalar);
-
-    /**
-     * Multiplies the matrix by another matrix.
-     * @param other the matrix to be multiplied.
-     */
-    void Multiply(const Mat3& matrix);
-
-    /**
-     * Multiplies a vector by the matrix.
-     * @param vector the vector to be multiplied.
-     * @return A new vector representing the product of the matrix and the vector.
-     */
-    Vec3 Multiply(const Vec3& vector) const;
-
-    /**
-     * Divides the matrix by another matrix.
-     * @param other the matrix to be divided.
-     */
-    void Divide(const Mat3& other);
-
-    /**
-     * Returns the determinant of the matrix.
-     * @return the matrix's determinant.
-     */
-    float Determinant() const;
-
-    /**
-     * Evaluates the matrix's inverse and returns a new inverse value.
-     * @return a new matrix representing the matrix's inverse.
-     */
-    Mat3 Inverse() const;
-
-    /**
-     * Returns the matrix's transpose.
-     * @return a new matrix representing the matrix's transpose.
-     */
-    Mat3 Transpose() const;
-
-    float values[9];
+    Vec<T, 3> values[3] {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 };
 
-// Binary operators
 /**
- * Adds two 3x3 matrices.
- * @param lhs the left hand matrix to be added to.
- * @param rhs the right hand matrix to be added by.
- * @return a new matrix containing the addition result.
+ * The binary 3x3 matrix addition operator. Adds two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix addition
  */
-Mat3 operator+(const Mat3& lhs, const Mat3& rhs);
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator+(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+{
+    return Mat<T, 3, 3>::Add(lhs, rhs);
+}
 
 /**
- * Subtracts two 3x3 matrices.
- * @param lhs the left hand matrix to be subtracted to.
- * @param rhs the right hand matrix to be subtracted by.
- * @return a new matrix containing the subtraction result.
+ * The binary 3x3 matrix subtraction operator. Subtracts two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix subtraction
  */
-Mat3 operator-(const Mat3& lhs, const Mat3& rhs);
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator-(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+{
+    return Mat<T, 3, 3>::Subtract(lhs, rhs);
+}
 
 /**
- * Multiples a 3x3 matrix by a scalar value.
- * @param lhs the matrix to be scaled.
- * @param scalar the scalar to be used on the matrix.
- * @return a new matrix containing the scalar result.
+ * The binary 3x3 matrix multiplication operator. Multiplies two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix multiplication
  */
-Mat3 operator*(const Mat3& lhs, const float& scalar);
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator*(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+{
+    return Mat<T, 3, 3>::Multiply(lhs, rhs);
+}
 
 /**
- * Multiplies a 3x3 matrix by another 3x3 matrix.
- * @param lhs the left hand side matrix to be multiplied.
- * @param rhs the right hand side matrix to be multiplied by.
- * @return the product of the two matrices.
+ * A binary 3x3 matrix to scalar multiplication operator. Multiples a matrix by a scalar and returns
+ * the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param scalar the scalar being used to multiply the matrix by
+ * @return a new matrix with the result of the scalar operation
  */
-Mat3 operator*(const Mat3& lhs, const Mat3& rhs);
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator*(const Mat<T, 3, 3>& lhs, T scalar)
+{
+    return Mat<T, 3, 3>::Multiply(lhs, scalar);
+}
 
 /**
- * Multiplies a matrix by a three dimensional vector.
- * @param lhs the matrix to be multiplied by.
- * @param rhs the vector to be multiplied.
- * @return a new matrix containing the product of the vector and the matrix.
+ * A binary 3x3 matrix to vector multiplication operator. Multiplies a matrix by a vector and
+ * returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix being multiplied
+ * @param vector the vector the matrix is being multiplied by
+ * @return a 3D vector with the results of the multiplication
  */
-const Vec3 operator*(const Mat3& lhs, const Vec3& rhs);
+template<typename T>
+inline constexpr Vec<T, 3> operator*(const Mat<T, 3, 3>& lhs, const Vec<T, 3>& vector)
+{
+    return Mat<T, 3, 3>::Multiply(lhs, vector);
+}
 
 /**
- * Divides two 3x3 matrices.
- * @param lhs the left hand side matrix to be divided.
- * @param rhs the right hand side matrix to be divided by.
- * @return a matrix containing the division result.
+ * The binary 3x3 matrix division operator. Divides two matrices and returns the result
+ * @tparam T the type of numeric value stored by the matrix
+ * @param lhs the matrix on the left hand side of the operation
+ * @param rhs the matrix on the right side of the operation
+ * @return a new matrix with the result of the matrix division
  */
-Mat3 operator/(const Mat3& lhs, const Mat3& rhs);
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator/(const Mat<T, 3, 3>& lhs, const Mat<T, 3, 3>& rhs)
+{
+    return Mat<T, 3, 3>::Divide(lhs, rhs);
+}
+
+/**
+ * The 3x3 matrix negation operator. Negates the values of a 3x3 matrix
+ * @tparam T the type of numeric value stored by the matrix
+ * @param matrix the matrix to be negated
+ * @return a new matrix with the negated values
+ */
+template<typename T>
+inline constexpr Mat<T, 3, 3> operator-(const Mat<T, 3, 3>& matrix)
+{
+    return {-matrix[0], -matrix[1], -matrix[2]};
+}
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_MAT3_H
+#endif // SIEGE_ENGINE_UTILS_MAT3F_H

@@ -37,4 +37,4 @@ private:
 };
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_CAMERA_H
+#endif // SIEGE_ENGINE_FPSCAMERA_H

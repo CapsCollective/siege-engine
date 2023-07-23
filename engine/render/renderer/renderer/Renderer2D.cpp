@@ -9,7 +9,9 @@
 #include "Renderer2D.h"
 
 #include <utils/Logging.h>
-#include <utils/math/Graphics.h>
+#include <utils/math/Transform.h>
+
+#include <cstdint>
 
 #include "render/renderer/Renderer.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
@@ -34,7 +36,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
                                             .AddMat4Attribute()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute())
-                     .WithUniform<CameraData>(globalDataName)
+                     .WithUniform<Camera>(globalDataName)
                      .WithPushConstant(sizeof(uint32_t))
                      .Build(),
                  Shader::Builder()
@@ -53,7 +55,7 @@ void Renderer2D::Initialise(const char* const globalDataName)
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute()
                                             .AddFloatVec4Attribute())
-                     .WithUniform<CameraData>(globalDataName)
+                     .WithUniform<Camera>(globalDataName)
                      .WithPushConstant(sizeof(uint32_t))
                      .Build(),
                  Shader::Builder()
@@ -73,9 +75,10 @@ void Renderer2D::Initialise(const char* const globalDataName)
 
     uint32_t fontIndices[] = {0, 1, 3, 1, 2, 3};
 
-    quadIndexBuffer = Vulkan::IndexBuffer(6, fontIndices);
+    quadIndexBuffer = Vulkan::IndexBuffer(fontIndices, sizeof(unsigned int) * 6);
 
     quadVertexBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
+    quadVBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
     textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
 }
 
@@ -97,12 +100,11 @@ void Renderer2D::DrawQuad(const Vec2 position,
     if (texIndex >= layerQuads.Count())
         layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
 
-    layerQuads[texIndex].Append(
-        {Graphics::CalculateTransform3D(Vec3(position.x + scale.x, position.y + scale.y, 1.f),
-                                        {0.f, 0.f, rotation},
-                                        scale),
-         ToFColour(colour),
-         {0.f, 0.f, 1.f, 1.f}});
+    layerQuads[texIndex].Append({Transform3D({position.x + scale.x, position.y + scale.y, 1.f},
+                                             {0.f, 0.f, rotation},
+                                             scale),
+                                 ToFColour(colour),
+                                 {0.f, 0.f, 1.f, 1.f}});
 }
 
 void Renderer2D::DrawText2D(const char* const text,
@@ -141,9 +143,7 @@ void Renderer2D::DrawText2D(const char* const text,
         Vec4 coordinates = {x + glyph.bearingX, y - (height + yOffset), glyph.width, height};
 
         fontTexts.Append(
-            {Graphics::CalculateTransform3D(Vec3(position.x, position.y + scale.y, 1.f),
-                                            {0.f, 0.f, rotation},
-                                            scale),
+            {Transform3D({position.x, position.y + scale.y, 1.f}, {0.f, 0.f, rotation}, scale),
              ToFColour(colour),
              {glyph.uvxMin, glyph.uvyMin, glyph.widthNormalised, glyph.heightNormalised},
              coordinates / textScale});
@@ -202,12 +202,12 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
         textMaterial.Bind(buffer);
 
         uint64_t vertexBufferOffset =
-            (index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT);
+            sizeof(FontVertex) *
+            ((index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT));
 
-        textVertexBuffer.Update(sizeof(FontVertex),
-                                quadArr.Data(),
-                                quadArr.Count(),
-                                vertexBufferOffset);
+        textVertexBuffer.Copy(quadArr.Data(),
+                              sizeof(FontVertex) * quadArr.Count(),
+                              vertexBufferOffset);
 
         textVertexBuffer.Bind(buffer, &vertexBufferOffset);
 
@@ -232,12 +232,13 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
 
         uint64_t vertexBufferOffset = (index * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
 
-        quadVertexBuffer.Update(sizeof(QuadVertex),
-                                quadArr.Data(),
-                                quadArr.Count(),
-                                vertexBufferOffset);
+        quadVBuffer.Copy(quadArr.Data(),
+                         sizeof(QuadVertex) * quadArr.Count(),
+                         sizeof(QuadVertex) * vertexBufferOffset);
 
-        quadVertexBuffer.Bind(buffer, &vertexBufferOffset);
+        uint64_t bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
+
+        quadVBuffer.Bind(buffer, &bindOffset);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }

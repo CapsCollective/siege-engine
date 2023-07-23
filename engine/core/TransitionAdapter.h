@@ -10,6 +10,7 @@
 #define SIEGE_ENGINE_TRANSITIONADAPTER_H
 
 #include <utils/math/Maths.h>
+#include <utils/math/vec/Vec3.h>
 
 #include <raylib/Vector3.hpp>
 

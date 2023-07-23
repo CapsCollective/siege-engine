@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #include "IndexBuffer.h"
 
-#include <cstdint>
+#include <utils/Logging.h>
 
 #include "Context.h"
 #include "utils/Buffer.h"
@@ -16,53 +16,51 @@
 namespace Siege::Vulkan
 {
 
-IndexBuffer::IndexBuffer(uint32_t count, const uint32_t* indices) : count {count}
+IndexBuffer::IndexBuffer(unsigned long bufferSize) : size {bufferSize}
 {
-    if (count == 0) return;
-
-    size = INDEX_BUFFER_ELEMENT_SIZE * count;
-
-    auto device = Context::GetVkLogicalDevice();
-
-    Allocate(device);
-
-    if (indices == nullptr) return;
-
-    Copy(device, size, indices);
-}
-
-IndexBuffer::IndexBuffer(uint32_t count) : count {count}
-{
-    if (count == 0) return;
-
-    size = INDEX_BUFFER_ELEMENT_SIZE * count;
+    CC_ASSERT(bufferSize > 0,
+              "Cannot allocate vertex buffer of size 0. If you wanted to create an "
+              "empty vertex buffer then please use the default constructor")
 
     auto device = Context::GetVkLogicalDevice();
 
     Allocate(device);
 }
 
-void IndexBuffer::Update(unsigned int* data, unsigned int indexCount)
+IndexBuffer::IndexBuffer(void* data, uint64_t dataSize) : IndexBuffer(dataSize)
 {
-    auto device = Context::GetVkLogicalDevice();
-
-    const uint64_t newSize = INDEX_BUFFER_ELEMENT_SIZE * indexCount;
-
-    if (newSize > size)
-    {
-        Free();
-        size = newSize;
-        Allocate(device);
-    }
-
-    Copy(device, size, data);
-
-    count = indexCount;
+    Copy(data, dataSize, 0);
 }
 
-void IndexBuffer::Bind(CommandBuffer& commandBuffer)
+IndexBuffer::IndexBuffer(const IndexBuffer& other) : IndexBuffer(other.rawBuffer, other.size) {}
+
+IndexBuffer::IndexBuffer(IndexBuffer&& other)
 {
-    vkCmdBindIndexBuffer(commandBuffer.Get(), buffer, 0, VK_INDEX_TYPE_UINT32);
+    Swap(other);
+}
+
+IndexBuffer::~IndexBuffer()
+{
+    Free();
+}
+
+IndexBuffer& IndexBuffer::operator=(const IndexBuffer& other)
+{
+    size = other.size;
+
+    auto device = Context::GetVkLogicalDevice();
+
+    Allocate(device);
+
+    Copy(other.rawBuffer, size);
+
+    return *this;
+}
+
+IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other)
+{
+    Swap(other);
+    return *this;
 }
 
 void IndexBuffer::Free()
@@ -75,13 +73,25 @@ void IndexBuffer::Free()
 
     Utils::FreeBuffer(device, buffer, memory);
 
-    buffer = VK_NULL_HANDLE;
-    memory = VK_NULL_HANDLE;
-
-    rawBuffer = nullptr;
+    buffer = nullptr;
+    memory = nullptr;
 
     size = 0;
-    count = 0;
+    rawBuffer = nullptr;
+}
+
+void IndexBuffer::Copy(const void* data, unsigned long dSize, unsigned long offset)
+{
+    auto device = Context::GetVkLogicalDevice();
+
+    void* dst = reinterpret_cast<char*>(rawBuffer) + offset;
+    memcpy(dst, data, dSize);
+    Utils::CopyData(device, memory, dSize, dst, offset);
+}
+
+void IndexBuffer::Bind(const CommandBuffer& commandBuffer, uint64_t offset)
+{
+    vkCmdBindIndexBuffer(commandBuffer.Get(), buffer, offset, VK_INDEX_TYPE_UINT32);
 }
 
 void IndexBuffer::Swap(IndexBuffer& other)
@@ -90,24 +100,21 @@ void IndexBuffer::Swap(IndexBuffer& other)
     auto tmpSize = size;
     auto tmpBuffer = buffer;
     auto tmpMemory = memory;
-    auto tmpCount = count;
 
     rawBuffer = other.rawBuffer;
     size = other.size;
     buffer = other.buffer;
     memory = other.memory;
-    count = other.count;
 
     other.rawBuffer = tmpRawBuffer;
     other.size = tmpSize;
     other.buffer = tmpBuffer;
     other.memory = tmpMemory;
-    other.count = tmpCount;
 }
 
 void IndexBuffer::Allocate(VkDevice device)
 {
-    rawBuffer = static_cast<uint32_t*>(malloc(size));
+    rawBuffer = malloc(size);
 
     auto physicalDevice = Context::GetPhysicalDevice()->GetDevice();
 
@@ -120,9 +127,4 @@ void IndexBuffer::Allocate(VkDevice device)
                         memory);
 }
 
-void IndexBuffer::Copy(VkDevice device, unsigned int newSize, const unsigned int* data)
-{
-    memcpy(rawBuffer, data, newSize);
-    Utils::CopyData(device, memory, newSize, rawBuffer, 0);
-}
 } // namespace Siege::Vulkan

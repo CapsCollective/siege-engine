@@ -1,49 +1,47 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #include "VertexBuffer.h"
+
+#include <utils/Logging.h>
+
+#include <cstdlib>
+#include <cstring>
 
 #include "Context.h"
 #include "utils/Buffer.h"
 
 namespace Siege::Vulkan
 {
-VertexBuffer::VertexBuffer(uint32_t newSize) : size {newSize}
+
+VertexBuffer::VertexBuffer(unsigned long bufferSize) : size {bufferSize}
 {
-    if (newSize == 0) return;
+    CC_ASSERT(bufferSize > 0,
+              "Cannot allocate vertex buffer of size 0. If you wanted to create an "
+              "empty vertex buffer then please use the default constructor")
 
     auto device = Context::GetVkLogicalDevice();
 
     Allocate(device);
 }
 
-VertexBuffer::VertexBuffer(uint32_t vertexSize, void* vertices, uint32_t vertexCount) :
-    size {vertexSize * vertexCount}
+VertexBuffer::VertexBuffer(void* data, unsigned long bufferSize) : VertexBuffer(bufferSize)
 {
-    if (vertexCount == 0) return;
-
-    auto device = Context::GetVkLogicalDevice();
-
-    Allocate(device);
-
-    if (vertices == nullptr) return;
-
-    Copy(device, size, vertices);
+    Copy(data, bufferSize);
 }
 
-VertexBuffer::VertexBuffer(uint32_t vertexSize, uint32_t vertexCount) :
-    size {vertexSize * vertexCount}
+void VertexBuffer::Copy(const void* data, unsigned long dSize, unsigned long offset)
 {
-    if (vertexCount == 0) return;
-
     auto device = Context::GetVkLogicalDevice();
 
-    Allocate(device);
+    void* dst = reinterpret_cast<char*>(rawBuffer) + offset;
+    memcpy(dst, data, dSize);
+    Utils::CopyData(device, memory, dSize, dst, offset);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& other)
@@ -51,9 +49,18 @@ VertexBuffer::VertexBuffer(VertexBuffer&& other)
     Swap(other);
 }
 
+VertexBuffer::VertexBuffer(const VertexBuffer& other) : VertexBuffer(other.rawBuffer, other.size) {}
+
 VertexBuffer::~VertexBuffer()
 {
     Free();
+}
+
+void VertexBuffer::Bind(const CommandBuffer& commandBuffer,
+                        const uint64_t* offset,
+                        unsigned int binding)
+{
+    vkCmdBindVertexBuffers(commandBuffer.Get(), binding, 1, &buffer, offset);
 }
 
 void VertexBuffer::Free()
@@ -63,49 +70,30 @@ void VertexBuffer::Free()
     if (device == nullptr) return;
 
     free(rawBuffer);
-
     Utils::FreeBuffer(device, buffer, memory);
-
-    buffer = VK_NULL_HANDLE;
-    memory = VK_NULL_HANDLE;
-
-    rawBuffer = nullptr;
-
     size = 0;
+    rawBuffer = nullptr;
+    buffer = nullptr;
+    memory = nullptr;
 }
 
-void VertexBuffer::Update(uint32_t vertexSize,
-                          void* vertices,
-                          uint32_t vertexCount,
-                          uint32_t offset)
+VertexBuffer& VertexBuffer::operator=(const VertexBuffer& other)
 {
+    size = other.size;
+
     auto device = Context::GetVkLogicalDevice();
 
-    const uint64_t newSize = vertexSize * vertexCount;
+    Allocate(device);
 
-    if (newSize > size)
-    {
-        Free();
-        size = newSize;
-        Allocate(device);
-    }
+    Copy(other.rawBuffer, size);
 
-    Copy(device, newSize, vertices, offset);
+    return *this;
 }
 
-void VertexBuffer::Bind(CommandBuffer& commandBuffer,
-                        uint64_t* offsets,
-                        uint32_t offsetCount,
-                        uint32_t binding,
-                        uint64_t firstOffset)
+VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other)
 {
-    VkBuffer buffers[offsetCount];
-
-    for (size_t i = 0; i < offsetCount; i++) buffers[i] = buffer;
-
-    uint64_t* vertOffsets = offsets == nullptr ? &firstOffset : offsets;
-
-    vkCmdBindVertexBuffers(commandBuffer.Get(), binding, offsetCount, buffers, vertOffsets);
+    Swap(other);
+    return *this;
 }
 
 void VertexBuffer::Swap(VertexBuffer& other)
@@ -139,12 +127,5 @@ void VertexBuffer::Allocate(VkDevice device)
                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                         buffer,
                         memory);
-}
-
-void VertexBuffer::Copy(VkDevice device, uint32_t dataSize, void* data, uint32_t offset)
-{
-    void* dst = (char*) rawBuffer + offset;
-    memcpy(dst, data, dataSize);
-    Utils::CopyData(device, memory, dataSize, dst, offset);
 }
 } // namespace Siege::Vulkan

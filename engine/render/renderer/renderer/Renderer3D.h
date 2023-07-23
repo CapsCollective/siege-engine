@@ -9,10 +9,9 @@
 #ifndef SIEGE_ENGINE_RENDERER3D_H
 #define SIEGE_ENGINE_RENDERER3D_H
 
+#include "../camera/Camera.h"
 #include "../lights/PointLight.h"
-#include "../model/Model.h"
 #include "BillboardRenderer.h"
-#include "CameraData.h"
 #include "DebugRenderer3D.h"
 #include "LightRenderer.h"
 #include "ModelRenderer.h"
@@ -30,20 +29,21 @@ public:
 
     struct GlobalData
     {
-        CameraData cameraData;
+        Camera cameraData;
         PointLight::Data lightData;
     };
 
     static void Initialise();
 
-    static void DrawModel(Model* model,
-                          const Vec3& position,
-                          const Vec3& scale,
-                          const Vec3& rotation);
-    static void DrawModel(Model* model, const Vec3& position, const Vec3& scale);
-    static void DrawModel(Model* model, const Vec3& position);
+    static void DrawMesh(Vulkan::StaticMesh* mesh,
+                         const Vec3& position,
+                         const Vec3& scale,
+                         const Vec3& rotation);
 
-    static void DrawBillboard(const Vec3& position, const Vec2& scale, const IColour& colour);
+    static void DrawBillboard(const Vec3& position,
+                              const Vec2& scale,
+                              const IColour& colour,
+                              Vulkan::Texture2D* texture = nullptr);
 
     // Debug rendering
     // TODO(Aryeh): Move this to it's own renderer module?
@@ -71,7 +71,7 @@ public:
 
     static void Render(uint32_t currentFrame,
                        Vulkan::CommandBuffer& commandBuffer,
-                       const CameraData& cameraData);
+                       const Camera& cameraData);
     static void Flush();
 
     static void DestroyRenderer3D();

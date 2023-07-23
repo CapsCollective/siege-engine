@@ -13,6 +13,7 @@
 #include <core/render/RenderSystem.h>
 #include <core/render/Window.h>
 #include <core/scene/SceneSystem.h>
+#include <utils/math/vec/Format.h>
 
 #include <stdexcept>
 
@@ -104,7 +105,7 @@ void DevConsole::OnUpdate()
             {
                 // Try to convert the argument to a Vector3, and set the entity's position
                 Siege::Vec3 position;
-                if (Siege::Vec3::FromString(position, argument))
+                if (Siege::FromString(position, argument))
                 {
                     if (ServiceLocator::GetEditorController()->TrySetPos(position))
                     {

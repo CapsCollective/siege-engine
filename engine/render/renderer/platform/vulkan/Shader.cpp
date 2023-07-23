@@ -12,7 +12,6 @@
 
 #include <fstream>
 
-#include "render/renderer/model/Model.h"
 #include "render/renderer/renderer/Renderer3D.h"
 #include "utils/ShaderModule.h"
 
@@ -58,20 +57,10 @@ Shader::Builder& Shader::Builder::WithGlobalData3DUniform(uint32_t set)
     return WithUniform<Siege::Renderer3D::GlobalData>("globalData", set);
 }
 
-Shader::Builder& Shader::Builder::WithTransform2DStorage(uint32_t set, uint64_t size)
-{
-    return WithStorage<Siege::Model::Transform2D>("transforms", set, size);
-}
-
 Shader::Builder& Shader::Builder::WithPushConstant(uint64_t size)
 {
     pushConstant.size = size;
     return *this;
-}
-
-Shader::Builder& Shader::Builder::WithTransform3DStorage(uint32_t set, uint64_t size)
-{
-    return WithStorage<Siege::Model::Transform>("transforms", set, size);
 }
 
 Shader::Builder& Shader::Builder::WithVertexTopology(Utils::PipelineTopology topology)

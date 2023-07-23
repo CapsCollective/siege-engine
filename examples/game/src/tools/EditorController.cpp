@@ -138,7 +138,7 @@ void EditorController::OnUpdate()
         {
             case POSITION: {
                 // Calculate move from input
-                Siege::Vec3 move = Siege::Vec3::Zero;
+                Siege::Vec3 move = Siege::Vec3::Zero();
                 float precision = MOVE_LEVELS[movePrecision];
                 move.x =
                     precision * (float) (-Siege::Statics::Input().KeyPressed(Siege::Key::LEFT) +
