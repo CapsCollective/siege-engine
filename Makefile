@@ -18,15 +18,13 @@ endif
 # Set platform vars
 ifeq ($(platform), windows)
     linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -mwindows -static -static-libgcc -static-libstdc++
-    export packageScript = $(scriptsDir)/package.bat
+    export packageScript = powershell -executionpolicy bypass $(scriptsDir)/package.ps1 --pkg-name $1 --exe-name $2 --output-dir $3 --build-dir $4 $5
 else ifeq ($(platform), linux)
     linkFlags += -Wl,--no-as-needed -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -no-pie
     formatScript = $(scriptsDir)/format.sh
-    export packageScript = $(scriptsDir)/package.sh
 else ifeq ($(platform), macos)
     linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
     formatScript = $(scriptsDir)/format.sh
-    export packageScript = $(scriptsDir)/package.sh
 endif
 
 # Set directories
@@ -93,7 +91,7 @@ package-renderapp: renderapp
 
 # Check to invalidate the build if flags have changed
 buildFlags:
-	$(BUILD_FLAGS_SCRIPT) $(buildFlagsFile) "$(CXXFLAGS)" "$(libDir) $(binDir)"
+	$(call BUILD_FLAGS_SCRIPT, $(buildFlagsFile), $(CXXFLAGS), $(libDir) $(binDir))
 
 # Run cleanup across project
 clean:

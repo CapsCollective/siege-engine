@@ -27,9 +27,7 @@ raylibLib := $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a
 $(coreLib): $(raylibLib) $(raylibIncludeDir) $(coreObjects)
 	$(MKDIR) $(call platformpth, $(libDir))
 	$(RM) $(call platformpth, $(coreLib))
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir),$(libDir),libraylib.a)
-	mv $(call platformpth,$(libDir)/libraylib.a) $(call platformpth,$(libDir)/libcore.a)
-	ar -rs $(coreLib) $(coreObjects)
+	$(call COMBINE_LIBS, $(vendorDir)/raylib-cpp/vendor/raylib/$(libGenDir)/libraylib.a, $(coreObjects), $(libDir), core)
 
 # Add all rules from dependency files
 -include $(coreDepends)
@@ -43,8 +41,8 @@ $(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
 # Copy the relevant header files into includes
 $(raylibIncludeDir):
 	$(MKDIR) $(call platformpth, $(raylibIncludeDir)/raylib)
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raylib.h)
-	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raymath.h)
+	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raylib.h,**)
+	$(call COPY,$(vendorDir)/raylib-cpp/vendor/raylib/src,$(raylibIncludeDir)/raylib,raymath.h,**)
 	$(call COPY,$(vendorDir)/raylib-cpp/include,$(raylibIncludeDir)/raylib,*.hpp)
 
 # Build the raylib static library file

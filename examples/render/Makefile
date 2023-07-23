@@ -63,11 +63,11 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 # Copy assets (and other required build files) directory to the build directory
 render-assets:
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir))
-	$(call COPY_DIR,$(binDir)/engine/render/build,$(exampleRenderBuildDir))
+	$(call COPY,$(binDir)/engine/render/build,$(exampleRenderBuildDir),**)
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets)
-	$(call COPY_DIR,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets)
+	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleRenderOutputName)"
-	$(packageScript) $(exampleRenderOutputName) $(shell basename $(exampleRenderApp)) $(outputDir) $(exampleRenderBuildDir) $(packagingFlags)
+	$(call PACKAGE_SCRIPT, $(exampleRenderOutputName), $(shell basename $(exampleRenderApp)), $(outputDir), $(exampleRenderBuildDir), $(packagingFlags))
