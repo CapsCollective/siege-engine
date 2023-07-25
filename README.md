@@ -47,12 +47,16 @@ The following are dependencies for building and running the project:
     - [CMake](https://cmake.org/)
 - **macOS**
     - [GNU Make](https://www.gnu.org/software/make/)
-    - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html) (Linux & MacOS)
+    - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html)
+    - [Xcode Command Line Tools](https://developer.apple.com/download/) (via `xcode-select --install`)
 - **Windows**
     - [MinGW32 Make](https://www.mingw-w64.org/)
     - [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
 - **Linux**
-    - For linux environments the following packages are required for building the dependencies:
+    - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html)
+    - The following packages are required for building the dependencies:
+        - `git`
+        - `build-essential`
         - `libx11-xcb-dev`
         - `libxkbcommon-dev`
         - `libwayland-dev`
@@ -60,7 +64,6 @@ The following are dependencies for building and running the project:
         - `libasound2-dev`
         - `mesa-common-dev`
         - `libx11-dev`
-        - `libxrandr-dev`
         - `libxi-dev`
         - `xorg-dev`
         - `libgl1-mesa-dev`
@@ -69,12 +72,11 @@ The following are dependencies for building and running the project:
 These can be installed using `apt-get` or an equivalent package manager for your Linux distribution:
 
 ```console
-// Only required if not building with the Vulkan SDK
 $ sudo apt-get update
 $ sudo apt-get install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
 
 // Required for building GLFW
-$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+$ sudo apt-get install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 ```
 
 ### Setup
@@ -93,9 +95,9 @@ $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi
 
 3. This should install all required dependencies. Once completed a `.env` file will be generated with all required variables. If the build is completed with no issue then you can proceed to build the project.
 
-#### Building With Validation Layers
+#### Setup With Validation Layers
 
-If you want to build with validation layers then the setup scripts should be run by passing the `--include-validation-layers` flag:
+If you want to build with validation layers then the setup scripts should be run instead by passing the validation layers include flag:
 
 ```console
 // Linux & macOS
@@ -117,14 +119,14 @@ Assuming all dependencies have been satisfied, the project can be built using th
 $ make
 
 // Linux and macOS (with validation layers)
-$ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
+$ make CXXFLAGS="-DENABLE_VALIDATION_LAYERS"
 ```
 ```console
 // Windows
 > mingw32-make
 
 // Windows (with validation layers)
-> mingw32-make CXXFLAGS="-DENABLE_VALIDATION_LAYERS=1"
+> mingw32-make CXXFLAGS="-DENABLE_VALIDATION_LAYERS"
 ```
 
 Once it completes, all targets should be built and ready to run from the newly generated `output` directory.
@@ -137,13 +139,13 @@ You can see examples of this in any of the application targets under `examples`.
 
 #### Compile Options
 
-| Option                         | Default Value    | Description                                                                      |
-| ------------------------------ | ---------------- | -------------------------------------------------------------------------------- |
-| **DEBUG**                      | `1`              | When set to `1`, will compile in debug mode, and default **CC_LOG_LEVEL** to `2` |
-| **CC_LOG_LEVEL**               | `2`              | Sets the logging verbosity to `info` (`2`), `warning` (`1`), and `error` (`0`)   |
-| **ENABLE_VALIDATION_LAYERS**   | `0`              | When set to `1`, will enable Vulkan validation layers for the executable         |
-| **CXX**                        | `g++`/`clang++`  | Sets the compiler to use during build steps (default differs per-platform)       |
-| **CXXFLAGS**                   | N/A              | Allows for the specification of compile directives, such as macro definitions    |
+| Option                       | Default Value    | Description                                                                      |
+| ---------------------------- |------------------|----------------------------------------------------------------------------------|
+| **DEBUG**                    | `1`              | When set to `1`, will compile in debug mode, and default **CC_LOG_LEVEL** to `2` |
+| **CC_LOG_LEVEL**             | `2`              | Sets the logging verbosity to `info` (`2`), `warning` (`1`), and `error` (`0`)   |
+| **ENABLE_VALIDATION_LAYERS** | N/A              | When set, will enable Vulkan validation layers for the executable                |
+| **CXX**                      | `g++`/`clang++`  | Sets the compiler to use during build steps (default differs per-platform)       |
+| **CXXFLAGS**                 | N/A              | Allows for the specification of compile directives, such as macro definitions    |
 
 ## Project Structure
 
@@ -152,6 +154,7 @@ You can see examples of this in any of the application targets under `examples`.
      ├─[engine]
      │        ├─[core] <- the engine's core library
      │        ├─[render] <- the engine's renderer
+     │        ├─[window] <- the engine's windowing and input library
      │        ├─[utils] <- the engine's utils library
      │
      ├─[examples]
