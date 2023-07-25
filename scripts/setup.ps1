@@ -9,8 +9,10 @@ param (
 )
 
 [string] $Root_Dir=(pwd)
-[string] $Vulkan_Version= "v1.3.211"
-[string] $Spirv_Version="v2022.4"
+[string] $Vulkan_Version= "v1.3.250"
+[string] $Spirv_Version="sdk-1.3.250.1"
+[string] $Glslang_Version="12.2.0"
+[string] $Robin_Hood_Hashing_Version="3.11.5"
 [string] $Generator="MinGW Makefiles"
 [string] $Vendor_Dir="$Root_Dir\vendor"
 
@@ -19,7 +21,7 @@ param (
 
 [string] $Vulkan_Vendor_Dir="$Vendor_Dir/vulkan"
 [string] $Vulkan_Lib_Dir="$Vulkan_Vendor_Dir/lib"
-[string] $Vulkan_Include_Dir="$Vulkan_Vendor_Dir/include/vulkan"
+[string] $Vulkan_Include_Dir="$Vulkan_Vendor_Dir/include"
 [string] $Volk_Include_Dir="$Vulkan_Vendor_Dir/include/volk"
 
 function Make-Dir {
@@ -137,6 +139,7 @@ function Setup-Glslang {
     Write-Output "Setting up glslang..."
     Write-Output "Cloning glslang..."
     Update-Submodule glslang
+    Checkout-Tags "$Vendor_Dir/glslang" $Glslang_Version
 
     Write-Output "Building glslang..."
     [string] $build_dir = "$Vendor_Dir/glslang/build"
@@ -181,7 +184,7 @@ function Setup-Vulkan-Headers {
 
     Make-Dir $Vulkan_Include_Dir
 
-    Copy-Item -Path "$Vulkan_Vendor_Dir/Vulkan-Headers/include/vulkan/*" -Destination $Vulkan_Include_Dir -Include "*.h"
+    Copy-Item -Path "$Vulkan_Vendor_Dir/Vulkan-Headers/build/install/include" -Destination $Vulkan_Include_Dir -Recurse
 }
 
 function Setup-Vulkan-Loader {
@@ -211,6 +214,7 @@ function Setup-Robin-Hood-Hashing {
     Write-Output "Setting up Robin Hood Hashing..."
     Write-Output "Cloning Robin Hood Hashing..."
     Update-Submodule vulkan/robin-hood-hashing
+    Checkout-Tags "$Vulkan_Vendor_Dir/robin-hood-hashing" $Robin_Hood_Hashing_Version
 
     Write-Output "Building Robin Hood Hashing..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/robin-hood-hashing/build"
@@ -231,7 +235,7 @@ function Setup-Spirv-Headers {
     Write-Output "Cloning SPIRV Headers..."
     Update-Submodule vulkan/SPIRV-Headers
 
-    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "sdk-1.3.231.1"
+    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "$Spirv_Version"
 
     Write-Output "Building SPIRV Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Headers/build"
@@ -255,8 +259,7 @@ function Setup-Spirv-Tools {
 
     Make-Dir $build_dir
 
-    python3 "$Vulkan_Vendor_Dir\SPIRV-Tools\utils\git-sync-deps"
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$build_dir\install" -S"$Vulkan_Vendor_Dir\SPIRV-Tools" -B"$build_dir"
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DSPIRV_SKIP_TESTS=ON -DSPIRV_WERROR=OFF -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers" -DCMAKE_INSTALL_PREFIX="$build_dir\install" -S"$Vulkan_Vendor_Dir\SPIRV-Tools" -B"$build_dir"
     cmake --build $build_dir --parallel $env:NUMBER_OF_PROCESSORS --target install --config Release
 }
 
@@ -273,8 +276,7 @@ function Setup-Validation-Layers {
     Make-Dir $build_dir
 
     cmake `
-        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"              `
-        -DVULKAN_LOADER_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Loader/build"                        `
+        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"              `                    `
         -DGLSLANG_INSTALL_DIR="$Vulkan_Vendor_Dir/glslang/build/install"                            `
         -DSPIRV_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers/build/install"                `
         -DSPIRV_TOOLS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Tools/build/install"                    `

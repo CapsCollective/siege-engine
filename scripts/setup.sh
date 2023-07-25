@@ -25,15 +25,18 @@ else
 fi
 
 # Set setup details
-VULKAN_VERSION="v1.3.231"
-SPIRV_VERSION="2022.4"
+VULKAN_VERSION="v1.3.250"
+SPIRV_VERSION="sdk-1.3.250.1"
+GLSLANG_VERSION="12.2.0"
+ROBIN_HOOD_HASHING_VERSION="3.11.5"
+MOLTENVK_VERSION="v1.2.4"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
 # Vulkan dependency variables
 VULKAN_VENDOR_DIR="${VENDOR_DIR}/vulkan"
 VULKAN_LIB_DIR="${VULKAN_VENDOR_DIR}/lib"
-VULKAN_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/vulkan"
+VULKAN_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include"
 VOLK_INCLUDE_DIR="${VULKAN_VENDOR_DIR}/include/volk"
 
 update_submodules() {
@@ -72,6 +75,7 @@ setup_glslang() {
     echo "Setting up glslang..."
     echo "Cloning glslang..."
     update_submodules glslang
+    checkout_tags "${VENDOR_DIR}"/glslang "$GLSLANG_VERSION"
 
     echo "Building glslang..."
     mkdir -p "${VENDOR_DIR}"/glslang/build
@@ -113,7 +117,7 @@ setup_vulkan_headers() {
     cmake -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"/install -G "${GENERATOR}" -B"${BUILD_DIR}" -S"${VULKAN_VENDOR_DIR}"/Vulkan-Headers
     cmake --build "${BUILD_DIR}" --target install
     mkdir -p "${VULKAN_INCLUDE_DIR}"
-    cp "${VULKAN_VENDOR_DIR}"/Vulkan-Headers/include/vulkan/**.h "${VULKAN_INCLUDE_DIR}"
+    cp -r "${VULKAN_VENDOR_DIR}"/Vulkan-Headers/build/install/include/** "${VULKAN_INCLUDE_DIR}"
 }
 
 setup_vulkan_loader() {
@@ -139,7 +143,7 @@ setup_moltenVk() {
     echo "Setting up MoltenVk..."
     echo "Cloning MoltenVk..."
     update_submodules vulkan/MoltenVK
-    checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK "v1.2.0"
+    checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK ${MOLTENVK_VERSION}
 
     echo "Building MoltenVk..."
     (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos --v-headers-root "${VULKAN_VENDOR_DIR}"/Vulkan-Headers)
@@ -153,6 +157,7 @@ setup_robin_hood_hashing() {
     echo "Setting up Robin Hood Hashing..."
     echo "Cloning Robin Hood Hashing..."
     update_submodules vulkan/robin-hood-hashing
+    checkout_tags "${VULKAN_VENDOR_DIR}"/robin-hood-hashing ${ROBIN_HOOD_HASHING_VERSION}
 
     echo "Building Robin Hood Hashing..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/robin-hood-hashing/build
@@ -171,7 +176,7 @@ setup_spirv_headers() {
     echo "Cloning SPIRV Headers..."
     update_submodules vulkan/SPIRV-Headers
 
-    checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "sdk-1.3.231.1"
+    checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "${SPIRV_VERSION}"
 
     echo "Building SPIRV Headers..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build
@@ -189,8 +194,7 @@ setup_spirv_tools() {
     echo "Building SPIRV Tools..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build
     mkdir -p "${BUILD_DIR}"
-    python3 "${VULKAN_VENDOR_DIR}"/SPIRV-Tools/utils/git-sync-deps
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"/install -S"${VULKAN_VENDOR_DIR}"/SPIRV-Tools -B"${BUILD_DIR}"
+    cmake -DCMAKE_BUILD_TYPE=Release -DSPIRV_SKIP_TESTS=ON -DSPIRV_WERROR=OFF -DSPIRV-Headers_SOURCE_DIR="${VULKAN_VENDOR_DIR}/SPIRV-Headers" -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}"/install -S"${VULKAN_VENDOR_DIR}"/SPIRV-Tools -B"${BUILD_DIR}"
     cmake --build "${BUILD_DIR}" --target install --config Release -j"${NUMBER_OF_PROCESSORS}"
 }
 
@@ -205,7 +209,6 @@ setup_validation_layers() {
     mkdir -p "${BUILD_DIR}"
     cmake \
         -DVULKAN_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Headers/build/install          \
-        -DVULKAN_LOADER_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/Vulkan-Loader/build                    \
         -DGLSLANG_INSTALL_DIR="${VENDOR_DIR}"/glslang/build/install                               \
         -DSPIRV_HEADERS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Headers/build/install            \
         -DSPIRV_TOOLS_INSTALL_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build/install                \

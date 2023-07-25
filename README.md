@@ -45,7 +45,6 @@ The following are dependencies for building and running the project:
 
 - **All platforms**
     - [CMake](https://cmake.org/)
-    - [Python](https://www.python.org/)
 - **macOS**
     - [GNU Make](https://www.gnu.org/software/make/)
     - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html) (Linux & MacOS)
