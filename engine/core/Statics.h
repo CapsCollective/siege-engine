@@ -17,11 +17,7 @@ public:
 
     static class CollisionSystem& Collision();
 
-    static class InputSystem& Input();
-
     static class ResourceSystem& Resource();
-
-    static class RenderSystem& Render();
 
     static class SceneSystem& Scene();
 

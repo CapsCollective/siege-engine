@@ -14,7 +14,7 @@
 #include <algorithm>
 
 #include "../entity/Entity.h"
-#include "../render/ResourceSystem.h"
+#include "../ResourceSystem.h"
 
 namespace Siege
 {

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "../ServiceLocator.h"
+#include "MessageDisplay.h"
 
 enum EditorMode
 {
@@ -36,7 +37,7 @@ public:
         movePrecision(2),
         rotatePrecision(3),
         selectedIdx(0),
-        camera(ServiceLocator::GetCamera()),
+        camera(ServiceLocator::GetFPSCamera()),
         selectedEntity(nullptr),
         messageDisplay(ServiceLocator::GetMessageDisplay()) {};
 
@@ -80,7 +81,7 @@ private:
 
     size_t selectedIdx;
 
-    Siege::Cam* camera;
+    FPSCamera* camera;
 
     Siege::EntityPtr<Entity> selectedEntity;
 

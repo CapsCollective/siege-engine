@@ -9,21 +9,27 @@
 #ifndef SIEGE_ENGINE_SERVICELOCATOR_H
 #define SIEGE_ENGINE_SERVICELOCATOR_H
 
-#include <core/render/Camera.h>
-#include <core/render/Window.h>
+#include "entities/FPSCamera.h"
+#include <window/Window.h>
+#include <render/renderer/Renderer.h>
+#include <core/Ticker.h>
 #include <utils/ServiceLocatorUtils.h>
 
 class ServiceLocator
 {
 public:
 
-    REGISTER_SERVICE(Camera, class Siege::Cam)
+    REGISTER_SERVICE(Renderer, class Siege::Renderer)
+
+    REGISTER_SERVICE(FPSCamera, class FPSCamera)
 
     REGISTER_SERVICE(EditorController, class EditorController)
 
     REGISTER_SERVICE(MessageDisplay, class MessageDisplay)
 
     REGISTER_SERVICE(Window, class Siege::Window)
+
+    REGISTER_SERVICE(Ticker, class Siege::Ticker)
 };
 
 #endif // SIEGE_ENGINE_SERVICELOCATOR_H

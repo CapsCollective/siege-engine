@@ -20,13 +20,11 @@ void Geometry::OnStart()
 {
     // Register the entity with systems
     Siege::Statics::Collision().Add(this);
-    Siege::Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Siege::Statics::Render().Remove(this);
     Siege::Statics::Collision().Remove(this);
 }
 
@@ -36,6 +34,34 @@ Siege::BoundedBox Geometry::GetBoundingBox() const
         GetPosition() - GetScale(),
         GetPosition() + GetScale(),
     };
+}
+
+void Geometry::OnDraw3D()
+{
+//    using Siege::Vulkan::Shader;
+//    using Siege::Vulkan::Material;
+//    Siege::Model model(modelPath);
+//
+//    Material material(Shader::Builder()
+//                          .FromVertexShader("assets/shaders/simpleShader.vert.spv")
+//                          .WithVertexBinding(Shader::VertexBinding()
+//                                                 .AddFloatVec3Attribute()
+//                                                 .AddFloatVec4Attribute()
+//                                                 .AddFloatVec3Attribute()
+//                                                 .AddFloatVec2Attribute())
+//                          .WithTransform3DStorage(0, 1000)
+//                          .WithGlobalData3DUniform()
+//                          .Build(),
+//                      Shader::Builder()
+//                          .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
+//                          .WithGlobalData3DUniform()
+//                          .Build());
+//    model.SetMaterial(&material);
+//
+//    Siege::Renderer3D::DrawModel(&model,
+//                                 transform.GetPosition(),
+//                                 transform.GetScale(),
+//                                 transform.GetRotation());
 }
 
 const Siege::Vec3& Geometry::GetDimensions()
@@ -48,9 +74,14 @@ Siege::Entity* Geometry::Clone() const
     return new Geometry(transform);
 }
 
-Siege::ModelData Geometry::GetModelData()
+const Siege::String& Geometry::GetModelPath() const
 {
-    return {modelPath, texturePath};
+    return modelPath;
+}
+
+const Siege::String& Geometry::GetTexturePath() const
+{
+    return texturePath;
 }
 
 static Siege::String Serialise(Siege::Entity* entity)
@@ -59,9 +90,8 @@ static Siege::String Serialise(Siege::Entity* entity)
     auto geometry = dynamic_cast<Geometry*>(entity);
     fileData += DefineField("DIMENSIONS", Siege::ToString(geometry->GetDimensions()));
 
-    auto modelData = geometry->GetModelData();
-    fileData += DefineField("MODEL_PATH", modelData.modelPath);
-    fileData += DefineField("TEXTURE_PATH", modelData.texturePath);
+    fileData += DefineField("MODEL_PATH", geometry->GetModelPath());
+    fileData += DefineField("TEXTURE_PATH", geometry->GetTexturePath());
     return fileData;
 }
 

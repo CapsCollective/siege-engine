@@ -9,9 +9,7 @@
 #include "DevConsole.h"
 
 #include <core/Statics.h>
-#include <core/input/InputSystem.h>
-#include <core/render/RenderSystem.h>
-#include <core/render/Window.h>
+#include <window/Input.h>
 #include <core/scene/SceneSystem.h>
 #include <utils/math/vec/Format.h>
 
@@ -23,7 +21,7 @@ void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::GRAVE))
+    if (Siege::Input::IsKeyDown(Siege::Key::KEY_GRAVE_ACCENT))
     {
         // Toggle the console
         isActive = !isActive;
@@ -35,21 +33,21 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) Siege::Statics::Input().GetKeyChar()) > 0)
+    while ((key = (char) Siege::Input::GetLatestChar()) > 0)
     {
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
     // Remove characters on backspace
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::BACKSPACE) && !inputText.IsEmpty())
+    if (Siege::Input::IsKeyDown(Siege::Key::KEY_BACKSPACE) && !inputText.IsEmpty())
         inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::UP) && !lastInput.IsEmpty())
+    if (Siege::Input::IsKeyDown(Siege::Key::KEY_UP) && !lastInput.IsEmpty())
         inputText = lastInput;
 
     // Process the command on enter
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::ENTER))
+    if (Siege::Input::IsKeyDown(Siege::Key::KEY_ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
@@ -120,7 +118,7 @@ void DevConsole::OnUpdate()
         {
             if (CheckEditorMode() && CheckArgs("setrot", argument))
             {
-                // Try convert the argument to float, and set the entity's rotation
+                // Try to convert the argument to float, and set the entity's rotation
                 try
                 {
                     float rotation;
@@ -151,10 +149,22 @@ void DevConsole::OnDraw2D()
     if (!isActive) return;
 
     Siege::Window* window = ServiceLocator::GetWindow();
+    auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
 
     // Draw the console to the screen
-    Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IColour::Black);
-    Siege::Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Siege::IColour::White);
+    //Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IColour::Black);
+    ServiceLocator::GetRenderer()->DrawQuad({0.f, -1.f},
+                      {((float) window->GetWidth()) / 2, 50.f},
+                      Siege::IColour::Black,
+                      0,
+                      1);
+    ServiceLocator::GetRenderer()->DrawText2D("~ " + inputText,
+                                              pixel,
+                                              {10.f, 10.f},
+                                              {20.f, 20.f},
+                                              0.f,
+                                              Siege::IColour::White,
+                                              0);
 }
 
 bool DevConsole::CheckEditorMode()

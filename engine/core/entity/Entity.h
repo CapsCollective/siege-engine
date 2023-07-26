@@ -88,6 +88,12 @@ public:
     virtual void OnDraw2D() {};
 
     /**
+     * A virtual update method to be overridden for 3D
+     * drawing instructions
+     */
+    virtual void OnDraw3D() {};
+
+    /**
      * A virtual method for implementing a definition of an
      * entity's BoundedBox attribute
      * @return the entity's BoundedBox

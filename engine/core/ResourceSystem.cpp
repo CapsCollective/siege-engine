@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022-2023 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 // This code is released under an unmodified zlib license.
 // For conditions of distribution and use, please see:
@@ -7,8 +7,6 @@
 //
 
 #include "ResourceSystem.h"
-
-#include <raylib/raylib-cpp.hpp>
 #include <vector>
 
 namespace Siege
@@ -20,15 +18,15 @@ static std::map<String, Texture> textures = std::map<String, Texture>();
 void ResourceSystem::RegisterModel(const String& path)
 {
     String fullPath = baseDir + path;
-    if (models.find(fullPath) != models.end()) return;
-    models[fullPath] = LoadModel(fullPath);
+//    if (models.find(fullPath) != models.end()) return;
+//    models[fullPath] = LoadModel(fullPath);
 }
 
 void ResourceSystem::RegisterTexture(const String& path)
 {
     String fullPath = baseDir + path;
-    if (textures.find(fullPath) != textures.end()) return;
-    textures[fullPath] = LoadTexture(fullPath);
+//    if (textures.find(fullPath) != textures.end()) return;
+//    textures[fullPath] = LoadTexture(fullPath);
 }
 
 void* ResourceSystem::GetModel(const String& path)
@@ -50,14 +48,14 @@ void ResourceSystem::FreeResources()
     // Iterate over vectors backwards to avoid memory issues
     for (auto i = freedModels.rbegin(); i != freedModels.rend(); i++)
     {
-        UnloadModel(**i);
+//        UnloadModel(**i);
     }
     freedModels.clear();
     models.clear();
 
     for (auto i = freedTextures.rbegin(); i != freedTextures.rend(); i++)
     {
-        UnloadTexture(**i);
+//        UnloadTexture(**i);
     }
     freedTextures.clear();
     textures.clear();
@@ -65,8 +63,8 @@ void ResourceSystem::FreeResources()
 
 void ResourceSystem::ClearResources()
 {
-    for (auto& model : models) freedModels.push_back(&model.second);
-    for (auto& texture : textures) freedTextures.push_back(&texture.second);
+//    for (auto& model : models) freedModels.push_back(&model.second);
+//    for (auto& texture : textures) freedTextures.push_back(&texture.second);
 }
 
 void ResourceSystem::SetBaseDirectory(const String& dir)

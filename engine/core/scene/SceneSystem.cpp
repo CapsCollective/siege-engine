@@ -14,7 +14,7 @@
 
 #include "../Statics.h"
 #include "../entity/Entity.h"
-#include "../render/ResourceSystem.h"
+#include "../ResourceSystem.h"
 #include "SceneFile.h"
 
 namespace Siege

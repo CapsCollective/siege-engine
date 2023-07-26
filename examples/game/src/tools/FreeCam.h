@@ -22,10 +22,12 @@ public:
     FreeCam() :
         moveSpeed(10.f),
         lookSpeed(0.1f),
-        camera(ServiceLocator::GetCamera()),
+        camera(ServiceLocator::GetFPSCamera()),
         rotation(Siege::Vec3 {0.f, -1.f, -1.f}),
-        previousMousePosition(Siege::Vec3 {0.f, 0.f, 0.f})
+        previousMousePosition({0.f, 0.f})
     {}
+
+    void OnDraw3D() override;
 
 protected:
 
@@ -41,11 +43,11 @@ private:
 
     float lookSpeed;
 
-    Siege::Cam* camera;
+    FPSCamera* camera;
 
     Siege::Vec3 rotation;
 
-    Siege::Vec3 previousMousePosition;
+    Siege::MousePosition previousMousePosition;
 };
 
 #endif // SIEGE_ENGINE_FREECAM_H

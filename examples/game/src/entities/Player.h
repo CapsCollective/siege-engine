@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_PLAYER_H
 
 #include <core/entity/Entity.h>
-#include <core/render/RenderSystem.h>
 
 class Player : public Siege::Entity
 {
@@ -34,6 +33,8 @@ public:
     Entity* Clone() const override;
 
     Siege::BoundedBox GetBoundingBox() const override;
+
+    void OnDraw3D() override;
 
 protected:
 
