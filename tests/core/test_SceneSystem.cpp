@@ -8,7 +8,7 @@
 
 #include <core/Statics.h>
 #include <core/entity/Entity.h>
-#include <core/render/ResourceSystem.h>
+#include <core/ResourceSystem.h>
 #include <core/scene/SceneFile.h>
 #include <core/scene/SceneSystem.h>
 #include <utest.h>

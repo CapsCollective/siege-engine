@@ -38,22 +38,23 @@ void DevConsole::OnUpdate()
         if ((key >= 32) && (key <= 125)) inputText += key;
     }
 
+    int latestKey = Siege::Input::GetLatestKey();
+
     // Remove characters on backspace
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_BACKSPACE) && !inputText.IsEmpty())
+    if (latestKey == Siege::Key::KEY_BACKSPACE && !inputText.IsEmpty())
         inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_UP) && !lastInput.IsEmpty())
+    if (latestKey == Siege::Key::KEY_UP && !lastInput.IsEmpty())
         inputText = lastInput;
 
     // Process the command on enter
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_ENTER))
+    if (latestKey == Siege::Key::KEY_ENTER)
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
         Siege::String command(!args.empty() ? args[0] : nullptr);
         Siege::String argument(args.size() > 1 ? args[1] : nullptr);
-        command.Erase(0, 1);
 
         // Run the appropriate instructions for specified command
         if (command == "load")

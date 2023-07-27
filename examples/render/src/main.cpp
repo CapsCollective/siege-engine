@@ -44,7 +44,7 @@ int main()
 
     Siege::Window window("Render Example", {WIDTH, HEIGHT});
 
-    window.DisableCursor();
+    Siege::Input::DisableCursor();
 
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
 
@@ -147,7 +147,7 @@ int main()
         currentTime = newTime;
 
         window.Update();
-        window.ToggleCursor(inputEnabled);
+        Siege::Input::ToggleCursor(inputEnabled);
 
         if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) inputEnabled = !inputEnabled;
 
