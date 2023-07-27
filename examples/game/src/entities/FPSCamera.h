@@ -40,6 +40,8 @@ public:
 
     void MoveCamera(float deltaTime);
 
+    void LookAt(Siege::Vec3 target);
+
     inline const Siege::Camera& GetCamera() const
     {
         return cam;

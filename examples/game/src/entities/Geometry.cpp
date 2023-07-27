@@ -12,6 +12,7 @@
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
 #include <utils/Logging.h>
+#include "../ServiceLocator.h"
 
 // Static member initialisation
 const Siege::String Geometry::ENTITY_NAME("Geometry");
@@ -38,30 +39,7 @@ Siege::BoundedBox Geometry::GetBoundingBox() const
 
 void Geometry::OnDraw3D()
 {
-//    using Siege::Vulkan::Shader;
-//    using Siege::Vulkan::Material;
-//    Siege::Model model(modelPath);
-//
-//    Material material(Shader::Builder()
-//                          .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-//                          .WithVertexBinding(Shader::VertexBinding()
-//                                                 .AddFloatVec3Attribute()
-//                                                 .AddFloatVec4Attribute()
-//                                                 .AddFloatVec3Attribute()
-//                                                 .AddFloatVec2Attribute())
-//                          .WithTransform3DStorage(0, 1000)
-//                          .WithGlobalData3DUniform()
-//                          .Build(),
-//                      Shader::Builder()
-//                          .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
-//                          .WithGlobalData3DUniform()
-//                          .Build());
-//    model.SetMaterial(&material);
-//
-//    Siege::Renderer3D::DrawModel(&model,
-//                                 transform.GetPosition(),
-//                                 transform.GetScale(),
-//                                 transform.GetRotation());
+    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(), GetPosition(), GetScale(), GetRotation());
 }
 
 const Siege::Vec3& Geometry::GetDimensions()

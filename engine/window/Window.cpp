@@ -100,24 +100,9 @@ void Window::ResetWindowResized()
     wasResized = false;
 }
 
-void Window::EnableCursor()
-{
-    Glfw::SetIsCursorVisible(AsGlfwWindow(window), true);
-}
-
-void Window::DisableCursor()
-{
-    Glfw::SetIsCursorVisible(AsGlfwWindow(window), false);
-}
-
 MHArray<const char*> Window::GetRequiredExtensions()
 {
     return Glfw::GetRequiredExtensions();
-}
-
-void Window::ToggleCursor(bool state)
-{
-    state ? DisableCursor() : EnableCursor();
 }
 
 void Window::WaitEvents()

@@ -32,8 +32,8 @@ void Player::OnUpdate()
         (float) (-Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
                  Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT)),
         0.f,
-        (float) (-Siege::Input::IsKeyDown(Siege::Key::KEY_UP) +
-                 Siege::Input::IsKeyDown(Siege::Key::KEY_DOWN)),
+        (float) (Siege::Input::IsKeyDown(Siege::Key::KEY_UP) +
+                 -Siege::Input::IsKeyDown(Siege::Key::KEY_DOWN)),
     };
 
     // Normalise and apply move to velocity
@@ -41,7 +41,7 @@ void Player::OnUpdate()
     velocity += Siege::Vec3::Normalise(move) * speed * deltaTime;
 
     // Apply force of gravity
-    velocity += {0.f, -0.01f, 0.f};
+    velocity += {0.f, 0.01f, 0.f};
 
     // Set the resulting attempted move's velocity to the object's position
     velocity = Siege::Statics::Collision().MoveAndSlide(GetBoundingBox(), velocity);
@@ -72,33 +72,7 @@ Siege::Entity* Player::Clone() const
 
 void Player::OnDraw3D()
 {
-//    using Siege::Vulkan::Shader;
-//    using Siege::Vulkan::Material;
-//    Siege::String modelPath = "assets/models/cube/cube.obj";
-//    Siege::String texturePath = "models/cube/cube.png";
-//
-//    Siege::Model model(modelPath);
-//
-//    Material material(Shader::Builder()
-//                          .FromVertexShader("assets/shaders/simpleShader.vert.spv")
-//                          .WithVertexBinding(Shader::VertexBinding()
-//                                                 .AddFloatVec3Attribute()
-//                                                 .AddFloatVec4Attribute()
-//                                                 .AddFloatVec3Attribute()
-//                                                 .AddFloatVec2Attribute())
-//                          .WithTransform3DStorage(0, 1000)
-//                          .WithGlobalData3DUniform()
-//                          .Build(),
-//                      Shader::Builder()
-//                          .FromFragmentShader("assets/shaders/diffuseFragShader.frag.spv")
-//                          .WithGlobalData3DUniform()
-//                          .Build());
-//    model.SetMaterial(&material);
-//
-//    Siege::Renderer3D::DrawModel(&model,
-//                                 transform.GetPosition(),
-//                                 transform.GetScale(),
-//                                 transform.GetRotation());
+    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(), GetPosition(), GetScale(), GetRotation());
 }
 
 static Siege::Entity* Deserialise(const Siege::EntityData& data,

@@ -92,7 +92,7 @@ void EditorController::OnUpdate()
     }
 
     // Check for mouse clicks
-    if (Siege::Input::IsKeyDown(Siege::Mouse::MOUSE_BUTTON_LEFT))
+    if (Siege::Input::IsMouseButtonDown(Siege::Mouse::MOUSE_BUTTON_LEFT))
     {
         // Get the ray cast by the mouse position
         Siege::Vec2 cursorPos = {(float) Siege::Input::GetCursorPosition().x,
@@ -188,25 +188,25 @@ void EditorController::OnDraw2D()
         Siege::String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
-    auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
+    auto& pixel = ServiceLocator::GetRenderResources()->GetFont();
     Siege::Renderer3D::DrawText3D(nameLabel,
                                   selectedEntity->GetPosition(),
                                   {},
-                                  {1.f, 1.f},
+                                  {0.5f, 0.5f},
                                   Siege::IColour::Pink,
                                   &pixel);
     Siege::Renderer3D::DrawText3D(posLabel,
                                   selectedEntity->GetPosition(),
                                   {},
-                                  {.075f, .075f},
+                                  {.01f, .01f},
                                   currentMode == POSITION ? BRIGHT_PINK : Siege::IColour::Pink,
                                   &pixel);
-    Siege::Renderer3D::DrawText3D(rotLabel,
-                                  selectedEntity->GetPosition(),
-                                  {},
-                                  {.075f, .075f},
-                                  currentMode == ROTATION ? BRIGHT_PINK : Siege::IColour::Pink,
-                                  &pixel);
+//    Siege::Renderer3D::DrawText3D(rotLabel,
+//                                  selectedEntity->GetPosition(),
+//                                  {},
+//                                  {.075f, .075f},
+//                                  currentMode == ROTATION ? BRIGHT_PINK : Siege::IColour::Pink,
+//                                  &pixel);
 }
 
 void EditorController::SelectEntity(Entity* entity)

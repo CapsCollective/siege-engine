@@ -64,6 +64,8 @@ void LightRenderer::Render(Vulkan::CommandBuffer& buffer,
                            const void* globalData,
                            uint32_t currentFrame)
 {
+    if (lights.Count() == 0) return;
+
     lightMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
     lightMaterial.Bind(buffer);
 

@@ -52,13 +52,7 @@ public:
 
     void ResetWindowResized();
 
-    void EnableCursor();
-
-    void DisableCursor();
-
     static MHArray<const char*> GetRequiredExtensions();
-
-    void ToggleCursor(bool state);
 
     void WaitEvents();
 

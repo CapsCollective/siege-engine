@@ -26,11 +26,14 @@ typedef void (*setMousePositionCallback)(Window, double x, double y);
 typedef setMousePositionCallback SetMousePositionCallback;
 
 bool IsKeyDown(Window window, int keyCode);
+bool IsKeyReleased(Window window, int keyCode);
 bool IsMouseButtonDown(Window window, int buttonCode);
+bool IsMouseButtonReleased(Window window, int buttonCode);
 void SetOnKeyPressedCallback(Window window, SetKeyPressedCallback callback);
 void SetOnTextKeyPressedCallback(Window window, SetTextKeyPressedCallback callback);
 void SetOnMouseKeyPressedCallback(Window window, SetMouseButtonPressedCallback callback);
 void SetOnMouseMovedCallback(Window window, SetMousePositionCallback callback);
+void SetIsCursorVisible(Window window, bool isCursorVisible);
 } // namespace Siege::Glfw
 
 #endif // SIEGE_ENGINE_GLFW_INPUT_H

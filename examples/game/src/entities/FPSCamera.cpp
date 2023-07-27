@@ -68,6 +68,12 @@ void FPSCamera::Update(float fovy, float width, float height, float near, float 
     cam.projection = Siege::Perspective(fovy, width / height, near, far);
 }
 
+void FPSCamera::LookAt(Siege::Vec3 target)
+{
+    Siege::Vec3 direction = target - camPos;
+    cam.view = Siege::LookAt(camPos, camPos + direction);
+}
+
 void FPSCamera::MoveCamera(float deltaTime)
 {
     if (!isMoveable) return;

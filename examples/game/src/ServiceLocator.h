@@ -14,6 +14,7 @@
 #include <render/renderer/Renderer.h>
 #include <core/Ticker.h>
 #include <utils/ServiceLocatorUtils.h>
+#include "RenderResources.h"
 
 class ServiceLocator
 {
@@ -30,6 +31,8 @@ public:
     REGISTER_SERVICE(Window, class Siege::Window)
 
     REGISTER_SERVICE(Ticker, class Siege::Ticker)
+
+    REGISTER_SERVICE(RenderResources, class RenderResources)
 };
 
 #endif // SIEGE_ENGINE_SERVICELOCATOR_H

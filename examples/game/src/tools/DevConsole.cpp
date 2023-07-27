@@ -21,7 +21,7 @@ void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_GRAVE_ACCENT))
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_GRAVE_ACCENT))
     {
         // Toggle the console
         isActive = !isActive;
@@ -53,6 +53,7 @@ void DevConsole::OnUpdate()
         auto args = inputText.Split(' ');
         Siege::String command(!args.empty() ? args[0] : nullptr);
         Siege::String argument(args.size() > 1 ? args[1] : nullptr);
+        command.Erase(0, 1);
 
         // Run the appropriate instructions for specified command
         if (command == "load")
@@ -149,17 +150,16 @@ void DevConsole::OnDraw2D()
     if (!isActive) return;
 
     Siege::Window* window = ServiceLocator::GetWindow();
-    auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
 
     // Draw the console to the screen
     //Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IColour::Black);
     ServiceLocator::GetRenderer()->DrawQuad({0.f, -1.f},
-                      {((float) window->GetWidth()) / 2, 50.f},
+                      {((float) window->GetWidth()) / 2, 25.f},
                       Siege::IColour::Black,
                       0,
                       1);
     ServiceLocator::GetRenderer()->DrawText2D("~ " + inputText,
-                                              pixel,
+                                              ServiceLocator::GetRenderResources()->GetFont(),
                                               {10.f, 10.f},
                                               {20.f, 20.f},
                                               0.f,
