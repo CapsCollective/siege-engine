@@ -458,16 +458,27 @@ UTEST(test_String, SubString)
 
 UTEST(test_String, PopBack)
 {
-    // The string can pop back
-    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
-    ASSERT_EQ('.', s.PopBack());
-    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE..", s.Str());
-    ASSERT_EQ('.', s.PopBack());
-    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE.", s.Str());
-    ASSERT_EQ('.', s.PopBack());
-    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE", s.Str());
-    ASSERT_EQ('E', s.PopBack());
-    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUag", s.Str());
+    // The string can pop back from the stack
+    Siege::String s1("ruSt");
+    ASSERT_EQ('t', s1.PopBack());
+    ASSERT_STREQ("ruS", s1.Str());
+    ASSERT_EQ('S', s1.PopBack());
+    ASSERT_STREQ("ru", s1.Str());
+    ASSERT_EQ('u', s1.PopBack());
+    ASSERT_STREQ("r", s1.Str());
+    ASSERT_EQ('r', s1.PopBack());
+    ASSERT_STREQ("", s1.Str());
+
+    // The string can pop back from the heap
+    Siege::String s2("ruSt Is a MuCH SafEr lANgUagE...");
+    ASSERT_EQ('.', s2.PopBack());
+    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE..", s2.Str());
+    ASSERT_EQ('.', s2.PopBack());
+    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE.", s2.Str());
+    ASSERT_EQ('.', s2.PopBack());
+    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUagE", s2.Str());
+    ASSERT_EQ('E', s2.PopBack());
+    ASSERT_STREQ("ruSt Is a MuCH SafEr lANgUag", s2.Str());
 }
 
 UTEST(test_String, GetLine)
