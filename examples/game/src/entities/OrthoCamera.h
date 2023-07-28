@@ -9,8 +9,8 @@
 #ifndef SIEGE_ENGINE_RENDER_EXAMPLE_ORTHOCAMERA_H
 #define SIEGE_ENGINE_RENDER_EXAMPLE_ORTHOCAMERA_H
 
-#include <utils/math/vec/Vec3.h>
 #include <render/renderer/camera/Camera.h>
+#include <utils/math/vec/Vec3.h>
 
 class OrthoCamera
 {

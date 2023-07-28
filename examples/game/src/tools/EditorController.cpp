@@ -9,9 +9,10 @@
 #include "EditorController.h"
 
 #include <core/Statics.h>
-#include <window/Input.h>
 #include <core/scene/SceneSystem.h>
 #include <utils/Colour.h>
+#include <utils/math/Projection.h>
+#include <window/Input.h>
 
 #include "../entities/Geometry.h"
 #include "../entities/Player.h"
@@ -39,27 +40,28 @@ void EditorController::OnStart()
 
 void EditorController::OnUpdate()
 {
-    if (!camera || !messageDisplay) return;
+    // The editor should not be able to receive input while the console is open
+    if ((!camera || !messageDisplay) || !isHandlingInput) return;
 
     // Check for deselection and activation keys
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_ESCAPE)) SelectEntity(nullptr);
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) SelectEntity(nullptr);
 
     // Check for command key presses
-    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_LEFT_SUPER))
+    if (Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT_SUPER))
     {
-        if (Siege::Input::IsKeyDown(Siege::Key::KEY_G))
+        if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_G))
         {
             // Toggle grid display
             isGridActive = !isGridActive;
             messageDisplay->DisplayMessage("Grid display toggled");
         }
-        else if (Siege::Input::IsKeyDown(Siege::Key::KEY_R))
+        else if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_R))
         {
             // Toggle rotation mode
             currentMode = currentMode == ROTATION ? POSITION : ROTATION;
             messageDisplay->DisplayMessage("Rotation mode toggled");
         }
-        else if (Siege::Input::IsKeyDown(Siege::Key::KEY_S))
+        else if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_S))
         {
             // Save the scene
             Siege::Statics::Scene().SaveScene();
@@ -67,7 +69,7 @@ void EditorController::OnUpdate()
         }
         else if (selectedEntity)
         {
-            if (Siege::Input::IsKeyDown(Siege::Key::KEY_D))
+            if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_D))
             {
                 // Try duplicate the entity
                 auto newEntity = selectedEntity->Clone();
@@ -78,7 +80,7 @@ void EditorController::OnUpdate()
                 }
                 else messageDisplay->DisplayMessage("Entity not duplicatable");
             }
-            else if (Siege::Input::IsKeyDown(Siege::Key::KEY_BACKSPACE))
+            else if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_BACKSPACE))
             {
                 // Free the entity
                 selectedEntity->QueueFree();
@@ -86,23 +88,24 @@ void EditorController::OnUpdate()
                 messageDisplay->DisplayMessage("Entity deleted");
             }
             // Adjust the transformation precision level
-            else if (Siege::Input::IsKeyDown(Siege::Key::KEY_EQUAL)) AdjustPrecision(1);
-            else if (Siege::Input::IsKeyDown(Siege::Key::KEY_MINUS)) AdjustPrecision(-1);
+            else if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_EQUAL)) AdjustPrecision(1);
+            else if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_MINUS)) AdjustPrecision(-1);
         }
     }
 
     // Check for mouse clicks
-    if (Siege::Input::IsMouseButtonDown(Siege::Mouse::MOUSE_BUTTON_LEFT))
+    if (Siege::Input::IsMouseButtonJustPressed(Siege::Mouse::MOUSE_BUTTON_LEFT))
     {
         // Get the ray cast by the mouse position
         Siege::Vec2 cursorPos = {(float) Siege::Input::GetCursorPosition().x,
                                  (float) Siege::Input::GetCursorPosition().y};
         FPSCamera* camera3d = ServiceLocator::GetFPSCamera();
         Siege::Window* window = ServiceLocator::GetWindow();
+
         auto ray = camera3d->GetMouseRay(cursorPos.x,
-                                        cursorPos.y,
-                                        window->GetWidth(),
-                                        window->GetHeight());
+                                         cursorPos.y,
+                                         window->GetWidth(),
+                                         window->GetHeight());
 
         // Check if any entities fall within the ray and set them as selected
         SelectEntity(nullptr);
@@ -117,7 +120,7 @@ void EditorController::OnUpdate()
     }
 
     // Cycle through all entities
-    if (Siege::Input::IsKeyDown(Siege::Key::KEY_TAB))
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_TAB))
     {
         // Select the first packed entity by index
         size_t totalEntities = Siege::Statics::Entity().GetEntities().size();
@@ -134,6 +137,7 @@ void EditorController::OnUpdate()
                 else selectedIdx = ++selectedIdx % totalEntities;
             } while (selectedIdx != startIdx);
         }
+        CC_LOG_INFO("IDX: {}", selectedIdx)
     }
 
     if (selectedEntity)
@@ -145,16 +149,15 @@ void EditorController::OnUpdate()
                 // Calculate move from input
                 Siege::Vec3 move = Siege::Vec3::Zero();
                 float precision = MOVE_LEVELS[movePrecision];
-                move.x =
-                    precision * (float) (-Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
-                                         Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT));
+                move.x = precision * (float) -(Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
+                                               -Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT));
 
                 // Switch vertical move input between z and y-axis based on shift key down
                 float verticalMove =
-                    precision * (float) (-Siege::Input::IsKeyDown(Siege::Key::KEY_UP) +
-                                         Siege::Input::IsKeyDown(Siege::Key::KEY_DOWN));
+                    precision * (float) (Siege::Input::IsKeyDown(Siege::Key::KEY_UP) +
+                                         -Siege::Input::IsKeyDown(Siege::Key::KEY_DOWN));
                 Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT_SHIFT) ? move.y = -verticalMove :
-                                                                          move.z = verticalMove;
+                                                                      move.z = verticalMove;
 
                 // Apply the move to the position of the entity
                 Siege::Vec3 entityPosition = selectedEntity->GetPosition();
@@ -165,8 +168,8 @@ void EditorController::OnUpdate()
                 // Calculate rotation from input and apply it to the rotation of the entity
                 float precision = ROTATE_LEVELS[rotatePrecision];
                 float rotation =
-                    precision * (float) (-Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
-                                         Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT));
+                    precision * (float) (Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
+                                         -Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT));
                 selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
                 break;
             }
@@ -178,6 +181,12 @@ void EditorController::OnDraw2D()
 {
     if (!selectedEntity) return;
 
+    Siege::Window* window = ServiceLocator::GetWindow();
+    auto position = Siege::WorldToScreen(selectedEntity->GetPosition(),
+                                         camera->GetCamera().projection * camera->GetCamera().view,
+                                         window->GetWidth(),
+                                         window->GetHeight());
+
     // Format display text on the selected entity
     Siege::String nameLabel = Siege::String("%s").Formatted(selectedEntity->GetName().Str());
     Siege::String posLabel = Siege::String("Position: <%.2f, %.2f, %.2f>")
@@ -185,28 +194,28 @@ void EditorController::OnDraw2D()
                                             selectedEntity->GetPosition().y,
                                             selectedEntity->GetPosition().z);
     Siege::String rotLabel =
-        Siege::String("Rotation: %.2f°").Formatted(selectedEntity->GetRotation());
+        Siege::String("Rotation: %.2f").Formatted(selectedEntity->GetRotation());
 
     // Draw display text just above the entity in world-space
     auto& pixel = ServiceLocator::GetRenderResources()->GetFont();
-    Siege::Renderer3D::DrawText3D(nameLabel,
-                                  selectedEntity->GetPosition(),
-                                  {},
-                                  {0.5f, 0.5f},
-                                  Siege::IColour::Pink,
-                                  &pixel);
-    Siege::Renderer3D::DrawText3D(posLabel,
-                                  selectedEntity->GetPosition(),
-                                  {},
-                                  {.01f, .01f},
-                                  currentMode == POSITION ? BRIGHT_PINK : Siege::IColour::Pink,
-                                  &pixel);
-//    Siege::Renderer3D::DrawText3D(rotLabel,
-//                                  selectedEntity->GetPosition(),
-//                                  {},
-//                                  {.075f, .075f},
-//                                  currentMode == ROTATION ? BRIGHT_PINK : Siege::IColour::Pink,
-//                                  &pixel);
+    ServiceLocator::GetRenderer()->DrawText2D(nameLabel,
+                                              pixel,
+                                              position - Siege::Vec2 {48.f, 42.f},
+                                              {12.f, 12.f},
+                                              0.f,
+                                              Siege::IColour::Pink);
+    ServiceLocator::GetRenderer()->DrawText2D(posLabel,
+                                              pixel,
+                                              position - Siege::Vec2 {48.f, 26.f},
+                                              {12.f, 12.f},
+                                              0.f,
+                                              Siege::IColour::Pink);
+    ServiceLocator::GetRenderer()->DrawText2D(rotLabel,
+                                              pixel,
+                                              position - Siege::Vec2 {48.f, 10.f},
+                                              {12.f, 12.f},
+                                              0.f,
+                                              Siege::IColour::Pink);
 }
 
 void EditorController::SelectEntity(Entity* entity)
@@ -278,4 +287,9 @@ bool EditorController::TrySetRot(float rotation)
     if (!selectedEntity) return false;
     selectedEntity->SetRotation(rotation);
     return true;
+}
+
+void EditorController::SetIsHandlingInput(bool state)
+{
+    isHandlingInput = state;
 }

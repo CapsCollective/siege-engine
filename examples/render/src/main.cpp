@@ -44,9 +44,8 @@ int main()
 
     Siege::Window window("Render Example", {WIDTH, HEIGHT});
 
-    Siege::Input::DisableCursor();
-
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
+    Siege::Input::DisableCursor();
 
     Siege::Renderer renderer(window);
 
@@ -147,14 +146,14 @@ int main()
         currentTime = newTime;
 
         window.Update();
-        Siege::Input::ToggleCursor(inputEnabled);
 
         if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) inputEnabled = !inputEnabled;
+        Siege::Input::ToggleCursor(!inputEnabled);
 
         camera3D.SetIsMovable(inputEnabled && !isPanelOpen);
         camera3D.MoveCamera(frameTime);
 
-        float aspect = renderer.GetAspectRatio();
+        float aspect = window.AspectRatio();
 
         float panelWidth = window.GetWidth();
         float panelHeight = 50.f;

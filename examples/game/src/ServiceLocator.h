@@ -9,12 +9,13 @@
 #ifndef SIEGE_ENGINE_SERVICELOCATOR_H
 #define SIEGE_ENGINE_SERVICELOCATOR_H
 
-#include "entities/FPSCamera.h"
-#include <window/Window.h>
-#include <render/renderer/Renderer.h>
 #include <core/Ticker.h>
+#include <render/renderer/Renderer.h>
 #include <utils/ServiceLocatorUtils.h>
+#include <window/Window.h>
+
 #include "RenderResources.h"
+#include "entities/FPSCamera.h"
 
 class ServiceLocator
 {

@@ -13,8 +13,8 @@
 
 #include <algorithm>
 
-#include "../entity/Entity.h"
 #include "../ResourceSystem.h"
+#include "../entity/Entity.h"
 
 namespace Siege
 {

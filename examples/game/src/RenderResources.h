@@ -9,14 +9,15 @@
 #ifndef SIEGE_ENGINE_RENDERRESOURCES_H
 #define SIEGE_ENGINE_RENDERRESOURCES_H
 
-#include <render/renderer/platform/vulkan/Material.h>
-#include <render/renderer/platform/vulkan/StaticMesh.h>
-#include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Font.h>
+#include <render/renderer/platform/vulkan/Material.h>
+#include <render/renderer/platform/vulkan/Shader.h>
+#include <render/renderer/platform/vulkan/StaticMesh.h>
 
 class RenderResources
 {
 public:
+
     RenderResources();
 
     Siege::Vulkan::Material* GetCubeMaterial();
@@ -24,6 +25,7 @@ public:
     Siege::Vulkan::Font& GetFont();
 
 private:
+
     Siege::Vulkan::Material cubeMaterial;
     Siege::Vulkan::StaticMesh cubeMesh;
     Siege::Vulkan::Font defaultFont;

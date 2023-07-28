@@ -6,9 +6,9 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <core/ResourceSystem.h>
 #include <core/Statics.h>
 #include <core/entity/Entity.h>
-#include <core/ResourceSystem.h>
 #include <core/scene/SceneFile.h>
 #include <core/scene/SceneSystem.h>
 #include <utest.h>

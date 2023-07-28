@@ -14,13 +14,11 @@
 #include <map>
 #include <vector>
 
-struct Model {
+struct Model
+{};
 
-};
-
-struct Texture {
-
-};
+struct Texture
+{};
 
 namespace Siege
 {

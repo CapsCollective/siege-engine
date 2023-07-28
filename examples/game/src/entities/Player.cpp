@@ -9,11 +9,11 @@
 #include "Player.h"
 
 #include <core/Statics.h>
-#include <window/Input.h>
-#include <core/physics/CollisionSystem.h>
 #include <core/Ticker.h>
+#include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
 #include <utils/Logging.h>
+#include <window/Input.h>
 
 #include "../ServiceLocator.h"
 
@@ -72,7 +72,10 @@ Siege::Entity* Player::Clone() const
 
 void Player::OnDraw3D()
 {
-    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(), GetPosition(), GetScale(), GetRotation());
+    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(),
+                                GetPosition(),
+                                GetScale(),
+                                GetRotation());
 }
 
 static Siege::Entity* Deserialise(const Siege::EntityData& data,

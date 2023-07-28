@@ -8,9 +8,9 @@
 
 #include "Input.h"
 
-#include "window/platform/glfw/Input.h"
-
 #include <utils/Logging.h>
+
+#include "window/platform/glfw/Input.h"
 
 namespace Siege
 {

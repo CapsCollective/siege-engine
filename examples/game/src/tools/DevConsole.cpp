@@ -9,9 +9,9 @@
 #include "DevConsole.h"
 
 #include <core/Statics.h>
-#include <window/Input.h>
 #include <core/scene/SceneSystem.h>
 #include <utils/math/vec/Format.h>
+#include <window/Input.h>
 
 #include <stdexcept>
 
@@ -26,6 +26,7 @@ void DevConsole::OnUpdate()
         // Toggle the console
         isActive = !isActive;
         if (!isActive) inputText = "";
+        ServiceLocator::GetEditorController()->SetIsHandlingInput(!isActive);
         return;
     }
 
@@ -35,27 +36,26 @@ void DevConsole::OnUpdate()
     char key;
     while ((key = (char) Siege::Input::GetLatestChar()) > 0)
     {
-        if ((key >= 32) && (key <= 125)) inputText += key;
+        if ((key >= 32) && (key <= 125) &&
+            !(key == Siege::Key::KEY_GRAVE_ACCENT && inputText.IsEmpty()))
+            inputText += key;
     }
 
     int latestKey = Siege::Input::GetLatestKey();
 
     // Remove characters on backspace
-    if (latestKey == Siege::Key::KEY_BACKSPACE && !inputText.IsEmpty())
-        inputText.PopBack();
+    if (latestKey == Siege::Key::KEY_BACKSPACE && !inputText.IsEmpty()) inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (latestKey == Siege::Key::KEY_UP && !lastInput.IsEmpty())
-        inputText = lastInput;
+    if (latestKey == Siege::Key::KEY_UP && !lastInput.IsEmpty()) inputText = lastInput;
 
     // Process the command on enter
-    if (latestKey == Siege::Key::KEY_ENTER)
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
         Siege::String command(!args.empty() ? args[0] : nullptr);
         Siege::String argument(args.size() > 1 ? args[1] : nullptr);
-
         // Run the appropriate instructions for specified command
         if (command == "load")
         {
@@ -143,6 +143,7 @@ void DevConsole::OnUpdate()
         isActive = false;
         lastInput = inputText;
         inputText = "";
+        ServiceLocator::GetEditorController()->SetIsHandlingInput(true);
     }
 }
 
@@ -153,12 +154,13 @@ void DevConsole::OnDraw2D()
     Siege::Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    //Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IColour::Black);
+    // Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40,
+    // Siege::IColour::Black);
     ServiceLocator::GetRenderer()->DrawQuad({0.f, -1.f},
-                      {((float) window->GetWidth()) / 2, 25.f},
-                      Siege::IColour::Black,
-                      0,
-                      1);
+                                            {((float) window->GetWidth()) / 2, 25.f},
+                                            Siege::IColour::Black,
+                                            0,
+                                            1);
     ServiceLocator::GetRenderer()->DrawText2D("~ " + inputText,
                                               ServiceLocator::GetRenderResources()->GetFont(),
                                               {10.f, 10.f},

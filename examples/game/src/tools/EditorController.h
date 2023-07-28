@@ -33,6 +33,7 @@ public:
 
     EditorController() :
         isGridActive(true),
+        isHandlingInput(true),
         currentMode(POSITION),
         movePrecision(2),
         rotatePrecision(3),
@@ -53,6 +54,8 @@ public:
 
     bool TrySetRot(float rotation);
 
+    void SetIsHandlingInput(bool state);
+
 protected:
 
     // Protected overrides
@@ -72,6 +75,8 @@ private:
     // Private fields
 
     bool isGridActive;
+
+    bool isHandlingInput;
 
     EditorMode currentMode;
 

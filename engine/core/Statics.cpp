@@ -8,9 +8,9 @@
 
 #include "Statics.h"
 
+#include "ResourceSystem.h"
 #include "physics/CollisionSystem.h"
 #include "scene/SceneSystem.h"
-#include "ResourceSystem.h"
 
 namespace Siege
 {

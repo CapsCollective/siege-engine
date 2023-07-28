@@ -9,8 +9,8 @@
 #ifndef SIEGE_ENGINE_EXAMPLE_FPSCAMERA_H
 #define SIEGE_ENGINE_EXAMPLE_FPSCAMERA_H
 
-#include <utils/math/Maths.h>
 #include <render/renderer/camera/Camera.h>
+#include <utils/math/Maths.h>
 
 class FPSCamera
 {

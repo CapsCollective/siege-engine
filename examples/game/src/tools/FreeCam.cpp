@@ -20,8 +20,7 @@ void FreeCam::OnUpdate()
     if (Input::IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
     {
         camera->MoveCamera(ServiceLocator::GetTicker()->GetDeltaTime());
-    } else if (Input::IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) Input::EnableCursor();
-
+    }
+    else if (Input::IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) Input::EnableCursor();
 }
-void FreeCam::OnDraw3D()
-{}
+void FreeCam::OnDraw3D() {}

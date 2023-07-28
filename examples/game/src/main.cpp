@@ -6,15 +6,15 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <core/ResourceSystem.h>
 #include <core/Statics.h>
+#include <core/Ticker.h>
 #include <core/entity/EntitySystem.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneSystem.h>
-#include <core/ResourceSystem.h>
-#include <core/Ticker.h>
-#include <window/Window.h>
-#include <window/Input.h>
 #include <render/renderer/Renderer.h>
+#include <window/Input.h>
+#include <window/Window.h>
 
 #include "ServiceLocator.h"
 #include "entities/FPSCamera.h"
@@ -105,10 +105,10 @@ int main(int argc, char* argv[])
         Siege::Statics::Entity().RegisterEntities();
         Siege::Statics::Collision().RegisterEntities();
 
-        float aspect = renderer.GetAspectRatio();
+        float aspect = window.AspectRatio();
 
-//        float panelWidth = window.GetWidth();
-//        float panelHeight = 50.f;
+        //        float panelWidth = window.GetWidth();
+        //        float panelHeight = 50.f;
 
         camera3d.SetAspectRatio(aspect);
         camera2d.Update(0.f, window.GetWidth(), 0.f, window.GetHeight(), 0.1f, 1000.f);

@@ -7,6 +7,7 @@
 //
 
 #include "RenderResources.h"
+
 #include <render/renderer/renderer/ModelRenderer.h>
 
 RenderResources::RenderResources()

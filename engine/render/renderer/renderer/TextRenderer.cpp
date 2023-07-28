@@ -122,12 +122,12 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
                           const void* globalData,
                           uint32_t frameIndex)
 {
-    if (characters.Count() == 0) return;
-
     defaultMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
 
     for (uint32_t i = 0; i < characters.Count(); i++)
     {
+        if (characters[i].Count() == 0) continue;
+
         uint32_t texIndex = i;
 
         defaultMaterial.BindPushConstant(buffer, &texIndex);

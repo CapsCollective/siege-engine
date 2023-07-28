@@ -12,6 +12,7 @@
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
 #include <utils/Logging.h>
+
 #include "../ServiceLocator.h"
 
 // Static member initialisation
@@ -39,7 +40,10 @@ Siege::BoundedBox Geometry::GetBoundingBox() const
 
 void Geometry::OnDraw3D()
 {
-    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(), GetPosition(), GetScale(), GetRotation());
+    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(),
+                                GetPosition(),
+                                GetScale(),
+                                GetRotation());
 }
 
 const Siege::Vec3& Geometry::GetDimensions()

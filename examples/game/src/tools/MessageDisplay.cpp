@@ -16,12 +16,12 @@ void MessageDisplay::OnDraw2D()
     if (displayTime > 0.f)
     {
         ServiceLocator::GetRenderer()->DrawText2D(displayMessage,
-                                                   ServiceLocator::GetRenderResources()->GetFont(),
-                                                   {25.f, 25.f},
-                                                   {16.f, 16.f},
-                                                   0.f,
-                                                    Siege::IColour::Pink,
-                                                   0);
+                                                  ServiceLocator::GetRenderResources()->GetFont(),
+                                                  {25.f, 25.f},
+                                                  {16.f, 16.f},
+                                                  0.f,
+                                                  Siege::IColour::Pink,
+                                                  0);
         displayTime -= 0.1f;
     }
 }
