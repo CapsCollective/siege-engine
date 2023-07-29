@@ -60,8 +60,6 @@ protected:
 
     // Protected overrides
 
-    void OnStart() override;
-
     void OnUpdate() override;
 
     void OnDraw2D() override;

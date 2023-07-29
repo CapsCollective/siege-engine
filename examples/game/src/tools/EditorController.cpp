@@ -25,12 +25,6 @@ static float ROTATE_LEVELS[] = {.01f, .1f, 1.f, 15.f, 45.f, 90.f};
 // Define colours
 static Siege::IColour BRIGHT_PINK(255, 5, 146);
 
-void EditorController::OnStart()
-{
-
-    // if (isGridActive) DrawGrid(100, 1.0f);
-}
-
 void EditorController::OnUpdate()
 {
     // The editor should not be able to receive input while the console is open
@@ -213,6 +207,7 @@ void EditorController::OnDraw2D()
 
 void EditorController::OnDraw3D()
 {
+    Siege::Renderer3D::SetGridEnabled(isGridActive);
 
     if (selectedEntity)
     {
