@@ -143,7 +143,7 @@ void DevConsole::OnUpdate()
         isActive = false;
         lastInput = inputText;
         inputText = "";
-        ServiceLocator::GetEditorController()->SetIsHandlingInput(true);
+        if (isEditorMode) ServiceLocator::GetEditorController()->SetIsHandlingInput(true);
     }
 }
 
