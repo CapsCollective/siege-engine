@@ -27,15 +27,8 @@ static Siege::IColour BRIGHT_PINK(255, 5, 146);
 
 void EditorController::OnStart()
 {
-    // TODO temporarily disabled transform gizmo and grid
-    //    Vec3 extents(3.f, 3.f, 3.f);
-    //    gizmoRenderItem = RenderSystem::Add(this, {extents.XComp(), Siege::Colour::Red},
-    //    gizmoPos); gizmoRenderItem = RenderSystem::Add(this, {extents.YComp(),
-    //    Siege::Colour::Green}, gizmoPos); gizmoRenderItem = RenderSystem::Add(this,
-    //    {extents.ZComp(), Siege::Colour::Blue}, gizmoPos);
 
     // if (isGridActive) DrawGrid(100, 1.0f);
-    // gizmoRenderItem->isEnabled = selectedEntity;
 }
 
 void EditorController::OnUpdate()
@@ -216,6 +209,25 @@ void EditorController::OnDraw2D()
                                               {12.f, 12.f},
                                               0.f,
                                               Siege::IColour::Pink);
+}
+
+void EditorController::OnDraw3D()
+{
+
+    if (selectedEntity)
+    {
+        float extent = 10.f;
+        const Siege::Vec3& entityPos = selectedEntity->GetPosition();
+        Siege::Renderer3D::DrawLine(entityPos,
+                                    entityPos + Siege::Vec3::Right() * extent,
+                                    {255, 0, 0, 255});
+        Siege::Renderer3D::DrawLine(entityPos,
+                                    entityPos + Siege::Vec3::Up() * extent,
+                                    {0, 255, 0, 255});
+        Siege::Renderer3D::DrawLine(entityPos,
+                                    entityPos + Siege::Vec3::Forward() * extent,
+                                    {0, 0, 255, 255});
+    }
 }
 
 void EditorController::SelectEntity(Entity* entity)

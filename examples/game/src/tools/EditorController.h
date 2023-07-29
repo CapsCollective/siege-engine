@@ -66,6 +66,8 @@ protected:
 
     void OnDraw2D() override;
 
+    void OnDraw3D() override;
+
 private:
 
     // Private methods
