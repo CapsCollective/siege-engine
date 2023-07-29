@@ -31,6 +31,8 @@ public:
     // Wire primitives
     void DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour);
 
+    void SetGridEnabled(bool enabled);
+
     void Render(Vulkan::CommandBuffer& commandBuffer,
                 const uint64_t& globalDataSize,
                 const void* globalData,
@@ -55,6 +57,10 @@ private:
                      const void* globalData,
                      uint32_t currentFrame);
 
+    void RenderGrid(Vulkan::CommandBuffer& commandBuffer,
+                    const uint64_t& globalDataSize,
+                    const void* globalData);
+
     Vulkan::Material lineMaterial;
 
     MHArray<Vulkan::VertexBuffer> perFrameVertexBuffers;
@@ -62,6 +68,10 @@ private:
     Hash::StringId globalDataId;
 
     MSArray<LineVertex, MAX_LINES> lines;
+
+    Vulkan::Material gridMaterial;
+
+    bool drawGrid;
 };
 } // namespace Siege
 

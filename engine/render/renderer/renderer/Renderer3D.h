@@ -46,7 +46,7 @@ public:
                               Vulkan::Texture2D* texture = nullptr);
 
     // Debug rendering
-    // TODO(Aryeh): Move this to it's own renderer module?
+    // TODO(Aryeh): Move this to its own renderer module?
     static void DrawLine(const Vec3& origin, const Vec3& destination, const IColour& colour);
 
     static void DrawPointLight(const Vec3& position,
@@ -67,6 +67,8 @@ public:
                          IColour colour,
                          Vulkan::Texture2D* texture = nullptr);
 
+    static void SetGridEnabled(bool enabled);
+
     static void RecreateMaterials();
 
     static void Render(uint32_t currentFrame,
@@ -80,9 +82,6 @@ public:
 
 private:
 
-    // static void RenderRects(VkCommandBuffer& commandBuffer, const GlobalData& globalData);
-    static void RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData);
-
     static Hash::StringId globalDataId;
 
     // FIXME(Aryeh): These statics are evil and need to be removed.
@@ -93,8 +92,6 @@ private:
     static LightRenderer lightRenderer;
     static TextRenderer textRenderer;
     static QuadRenderer3D quadRenderer3D;
-
-    static Vulkan::Material gridMaterial;
 
     static GlobalData global3DData;
 };
