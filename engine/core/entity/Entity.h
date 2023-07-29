@@ -142,9 +142,9 @@ public:
 
     /**
      * Getter method for the entity's rotation attribute
-     * @return the entity's rotation as a float
+     * @return the entity's rotation as a Vec3
      */
-    float GetRotation() const;
+    const Vec3& GetRotation() const;
 
     /**
      * Getter method for the entity's scale attribute
@@ -158,6 +158,13 @@ public:
      *         transform values
      */
     const Xform& GetTransform() const;
+
+    /**
+     * Getter method for the entity's transform
+     * @return a reference to the entity's
+     *         transform values
+     */
+    Xform& GetTransform();
 
     /**
      * Getter method for the entity's z-index attribute
@@ -177,25 +184,31 @@ public:
     void SetIndex(GenerationalIndex idx);
 
     /**
+     * Setter method for the entity's transform
+     * @param xform - a transform to set to the entity
+     */
+    void SetTransform(const Xform& xform);
+
+    /**
      * Setter method for the entity's position attribute
-     * @param position - a Vector3 to set as the entity's
+     * @param position - a Vec3 to set as the entity's
      *                   position
      */
     void SetPosition(const Vec3& position);
 
     /**
      * Setter method for the entity's rotation attribute
-     * @param rotation - a float to set as the entity's
+     * @param rotation - a Vec3 to set as the entity's
      *                   rotation
      * @note While negative rotations are accepted,
      *       rotations beyond 360 degrees are
      *       automatically wrapped
      */
-    void SetRotation(float rotation);
+    void SetRotation(const Vec3& rotation);
 
     /**
      * Setter method for the entity's scale attribute
-     * @param scale - a Vector3 to set as the entity's
+     * @param scale - a Vec3 to set as the entity's
      *                scale
      */
     void SetScale(const Vec3& scale);

@@ -157,7 +157,8 @@ void EditorController::OnUpdate()
                 float rotation =
                     precision * (float) (Siege::Input::IsKeyDown(Siege::Key::KEY_LEFT) +
                                          -Siege::Input::IsKeyDown(Siege::Key::KEY_RIGHT));
-                selectedEntity->SetRotation(selectedEntity->GetRotation() + rotation);
+                Siege::Xform& xform = selectedEntity->GetTransform();
+                xform.SetRotationY(selectedEntity->GetRotation().y + rotation);
                 break;
             }
         }
@@ -181,7 +182,7 @@ void EditorController::OnDraw2D()
                                             selectedEntity->GetPosition().y,
                                             selectedEntity->GetPosition().z);
     Siege::String rotLabel =
-        Siege::String("Rotation: %.2f").Formatted(selectedEntity->GetRotation());
+        Siege::String("Rotation: %.2f").Formatted(selectedEntity->GetRotation().y);
 
     // Draw display text just above the entity in world-space
     auto& pixel = ServiceLocator::GetRenderResources()->GetFont();
@@ -292,7 +293,9 @@ bool EditorController::TrySetPos(Siege::Vec3 position)
 bool EditorController::TrySetRot(float rotation)
 {
     if (!selectedEntity) return false;
-    selectedEntity->SetRotation(rotation);
+    Siege::Xform xform = selectedEntity->GetTransform();
+    xform.SetRotationY(rotation);
+    selectedEntity->SetTransform(xform);
     return true;
 }
 

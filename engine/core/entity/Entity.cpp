@@ -61,6 +61,11 @@ const Xform& Entity::GetTransform() const
     return transform;
 }
 
+Xform& Entity::GetTransform()
+{
+    return transform;
+}
+
 int Entity::GetZIndex() const
 {
     return zIndex;
@@ -71,9 +76,9 @@ const Vec3& Entity::GetPosition() const
     return transform.GetPosition();
 }
 
-float Entity::GetRotation() const
+const Vec3& Entity::GetRotation() const
 {
-    return transform.GetRotation().y;
+    return transform.GetRotation();
 }
 
 const Vec3& Entity::GetScale() const
@@ -81,15 +86,19 @@ const Vec3& Entity::GetScale() const
     return transform.GetScale();
 }
 
+void Entity::SetTransform(const Xform& xform)
+{
+    transform = xform;
+}
+
 void Entity::SetPosition(const Vec3& position)
 {
     transform.SetPosition(position);
 }
 
-void Entity::SetRotation(float rotation)
+void Entity::SetRotation(const Vec3& rotation)
 {
-    transform.SetRotation(
-        {transform.GetRotation().x, fmod(rotation, 360.f), transform.GetRotation().z});
+    transform.SetRotation(rotation);
 }
 
 void Entity::SetScale(const Vec3& scale)
