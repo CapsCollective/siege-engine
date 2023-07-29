@@ -9,7 +9,6 @@
 #include <core/ResourceSystem.h>
 #include <core/Statics.h>
 #include <core/Ticker.h>
-#include <core/entity/EntitySystem.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneSystem.h>
 #include <render/renderer/Renderer.h>
@@ -106,9 +105,6 @@ int main(int argc, char* argv[])
         Siege::Statics::Collision().RegisterEntities();
 
         float aspect = window.AspectRatio();
-
-        //        float panelWidth = window.GetWidth();
-        //        float panelHeight = 50.f;
 
         camera3d.SetAspectRatio(aspect);
         camera2d.Update(0.f, window.GetWidth(), 0.f, window.GetHeight(), 0.1f, 1000.f);

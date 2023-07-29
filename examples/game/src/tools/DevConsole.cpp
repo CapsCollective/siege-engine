@@ -26,7 +26,7 @@ void DevConsole::OnUpdate()
         // Toggle the console
         isActive = !isActive;
         if (!isActive) inputText = "";
-        ServiceLocator::GetEditorController()->SetIsHandlingInput(!isActive);
+        if (isEditorMode) ServiceLocator::GetEditorController()->SetIsHandlingInput(!isActive);
         return;
     }
 
@@ -154,14 +154,12 @@ void DevConsole::OnDraw2D()
     Siege::Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    // Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40,
-    // Siege::IColour::Black);
     ServiceLocator::GetRenderer()->DrawQuad({0.f, -1.f},
                                             {((float) window->GetWidth()) / 2, 25.f},
                                             Siege::IColour::Black,
                                             0,
                                             1);
-    ServiceLocator::GetRenderer()->DrawText2D("~ " + inputText,
+    ServiceLocator::GetRenderer()->DrawText2D("> " + inputText,
                                               ServiceLocator::GetRenderResources()->GetFont(),
                                               {10.f, 10.f},
                                               {20.f, 20.f},

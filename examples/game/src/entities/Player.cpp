@@ -9,10 +9,8 @@
 #include "Player.h"
 
 #include <core/Statics.h>
-#include <core/Ticker.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
-#include <utils/Logging.h>
 #include <window/Input.h>
 
 #include "../ServiceLocator.h"
