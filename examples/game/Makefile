@@ -66,9 +66,9 @@ game-assets:
 # Copy assets (and other required build files) directory to the build directory
 render-assets:
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir))
-	$(call COPY_DIR,$(binDir)/engine/render/build,$(exampleGameBuildDir))
+	$(call COPY,$(binDir)/engine/render/build,$(exampleGameBuildDir),**)
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets)
-	$(call COPY_DIR,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets)
+	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
 
 # Package the built application and all its assets to the output directory
 package: all

@@ -137,6 +137,8 @@ int main()
 
     Siege::BoundedBox box = {{-.5f, 0, -.5f}, {.5f, -1.f, .5f}};
 
+    Siege::Renderer3D::SetGridEnabled(true);
+
     while (!window.WindowShouldClose())
     {
         auto newTime = std::chrono::high_resolution_clock::now();

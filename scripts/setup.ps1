@@ -103,7 +103,7 @@ function Setup-FreeType {
         -DFT_DISABLE_BZIP2=TRUE `
         -DFT_DISABLE_HARFBUZZ=TRUE `
         -DZLIB_LIBRARY="$zlib_build_dir/lib/libz.a" `
-        -DZLIB_INCLUDE_DIR="$zlib_build_dir" `
+        -DZLIB_INCLUDE_DIR="$zlib_build_dir/include" `
         -DPNG_LIBRARY="$libpng_build_dir/lib/libpng.a" `
         -DPNG_PNG_INCLUDE_DIR="$libpng_build_dir/include" `
         -B"$build_dir" `
