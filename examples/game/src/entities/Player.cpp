@@ -18,11 +18,6 @@
 // Static member initialisation
 const Siege::String Player::ENTITY_NAME("Player");
 
-void Player::OnStart()
-{
-    // Register the entity with systems
-}
-
 void Player::OnUpdate()
 {
     // Get move axes as vector
@@ -47,11 +42,6 @@ void Player::OnUpdate()
 
     // Dampen velocity
     velocity = velocity * 0.9f;
-}
-
-void Player::OnDestroy()
-{
-    // Deregister the entity from systems before freeing it
 }
 
 Siege::BoundedBox Player::GetBoundingBox() const

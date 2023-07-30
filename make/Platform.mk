@@ -18,10 +18,10 @@ ifeq ($(OS), Windows_NT)
 	COPY = powershell -executionpolicy bypass $(scriptsDir)/copy.ps1 $1 $2 $3
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
 	BUILD_FLAGS_SCRIPT = powershell -executionpolicy bypass $(scriptsDir)/buildflags.ps1 --Target $1 --CXXFlags $2 --Dirs $3
+	BUILD_LIB = powershell -executionpolicy bypass $(scriptsDir)/combinelibs.ps1 --src_objs $1 --output_dir $2 --output_name $3
 	COMBINE_LIBS = powershell -executionpolicy bypass $(scriptsDir)/combinelibs.ps1 --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 	PACKAGE_SCRIPT = powershell -executionpolicy bypass $(scriptsDir)/package.ps1 --pkg-name $1 --exe-name $2 --output-dir $3 --build-dir $4 $5
 else
-	COMBINE_LIBS = $(scriptsDir)/combinelibs.sh --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 	# Check for MacOS/Linux
 	UNAMEOS := $(shell uname)
 	ifeq ($(UNAMEOS), Linux)
@@ -46,5 +46,7 @@ else
 	COPY_DIR = $(call COPY,$1,$2,$3)
 	VALIDATION_LAYERS_INSTALL_DIR := lib/explicit_layer.d
 	BUILD_FLAGS_SCRIPT = $(scriptsDir)/buildflags.sh $1 "$2" "$3"
+	BUILD_LIB = $(scriptsDir)/combinelibs.sh --src_objs $1 --output_dir $2 --output_name $3
+	COMBINE_LIBS = $(scriptsDir)/combinelibs.sh --src_libs $1 --src_objs $2 --output_dir $3 --output_name $4
 	PACKAGE_SCRIPT = $(scriptsDir)/package.sh $1 $2 $3 $4 $5
 endif

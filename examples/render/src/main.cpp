@@ -124,6 +124,8 @@ int main()
                                    window.GetHeight());
     OrthoCamera camera2D = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
 
+    Siege::Renderer3D::SetGridEnabled(true);
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;

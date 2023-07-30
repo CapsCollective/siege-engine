@@ -40,11 +40,7 @@ protected:
 
     // Protected overrides
 
-    void OnStart() override;
-
     void OnUpdate() override;
-
-    void OnDestroy() override;
 
 private:
 
