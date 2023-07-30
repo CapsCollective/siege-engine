@@ -72,5 +72,5 @@ render-assets:
 
 # Package the built application and all its assets to the output directory
 package: all
-	$(RM) $(call platformpth,$(outputDir)/$(exampleGameOutputName))
+	$(RM) "$(outputDir)/$(exampleGameOutputName)"
 	$(call PACKAGE_SCRIPT, $(exampleGameOutputName), $(shell basename $(exampleGameApp)), $(outputDir), $(exampleGameBuildDir))
