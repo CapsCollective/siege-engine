@@ -62,14 +62,6 @@ void* GetUserPtr(Window window)
     return glfwGetWindowUserPointer(window);
 }
 
-void SetIsCursorVisible(Window window, bool isCursorVisible)
-{
-    glfwSetInputMode(
-        window,
-        GLFW_CURSOR,
-        (isCursorVisible * GLFW_CURSOR_NORMAL) + (!isCursorVisible * GLFW_CURSOR_DISABLED));
-}
-
 void WaitEvents()
 {
     glfwWaitEvents();

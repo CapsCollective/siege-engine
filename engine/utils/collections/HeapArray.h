@@ -1,10 +1,9 @@
 //
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
-//
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #ifndef SIEGE_ENGINE_HEAP_ARRAY_H
@@ -267,39 +266,6 @@ public:
     }
 
     /**
-     * @brief Resizes the array. Re-allocates the memory to a new size and adjusts the stateMask
-     * accordingly
-     * @param newSize the new size of the array
-     */
-    void Resize(size_t newSize)
-    {
-        // Setting the array to 0 is the equivalent of destroying the array.
-        if (newSize == 0)
-        {
-            Destroy();
-            return;
-        }
-
-        // Every 8 positions are represented with one 8-bit unsigned integer. As such, every 8
-        // elements in the array represents one to the size of our collection of byte masks.
-        size_t newByteCount = ((newSize / BitUtils::BYTE_SIZE_IN_BITS) + 1);
-
-        // Reallocate the two pointers
-        ReallocateMemory(newSize);
-
-        // Resize our state mask. Reallocating the states simply changes the number of bytes.
-        // We need to change the last byte available to us to represent the new number of possible
-        // states.
-        bitField.Resize(newByteCount);
-        bitField.UnsetPostBits(newSize);
-
-        size = newSize;
-
-        // Adjust the count to be within the range of our new size.
-        count = ArrayUtils::SetCount(count, 0, newSize);
-    }
-
-    /**
      * @brief Checks if an array element has been filled
      * @param index the index of the element we want to check
      * @return `true` if this element has been set, `false` if it has not
@@ -552,7 +518,6 @@ private:
     void DeallocateMemory()
     {
         free(data);
-        bitField.Clear();
     }
 
     /**

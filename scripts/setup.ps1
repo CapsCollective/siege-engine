@@ -46,12 +46,6 @@ function Checkout-Tags {
     git -C "$Path"  fetch --all --tags ; git -C "$Path" checkout tags/"$Tag"
 }
 
-function Setup-Raylib {
-    Write-Output "Setting up raylib..."
-    Write-Output "Cloning raylib..."
-    Update-Submodule -Submodule raylib-cpp
-}
-
 function Setup-Utest {
     Write-Output "Setting up utest..."
     Write-Output "Cloning utest..."
@@ -109,7 +103,7 @@ function Setup-FreeType {
         -DFT_DISABLE_BZIP2=TRUE `
         -DFT_DISABLE_HARFBUZZ=TRUE `
         -DZLIB_LIBRARY="$zlib_build_dir/lib/libz.a" `
-        -DZLIB_INCLUDE_DIR="$zlib_build_dir" `
+        -DZLIB_INCLUDE_DIR="$zlib_build_dir/include" `
         -DPNG_LIBRARY="$libpng_build_dir/lib/libpng.a" `
         -DPNG_PNG_INCLUDE_DIR="$libpng_build_dir/include" `
         -B"$build_dir" `
@@ -302,7 +296,6 @@ if (Test-Path "$Vulkan_Lib_Dir") { Remove-Item -Path "$Vulkan_Lib_Dir" -Recurse 
 if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_Vendor_Dir/vulkan/include" -Recurse -Force }
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
-Setup-Raylib
 Setup-Utest
 Setup-Zlib
 Setup-LibPng

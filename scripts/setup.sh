@@ -47,12 +47,6 @@ checkout_tags() {
     git -C "$1"  fetch --all --tags ; git -C "$1" checkout tags/"$2"
 }
 
-setup_raylib() {
-    echo "Setting up raylib..."
-    echo "Cloning raylib..."
-    update_submodules raylib-cpp
-}
-
 setup_utest() {
     echo "Setting up utest..."
     echo "Cloning utest..."
@@ -264,7 +258,6 @@ setup_freetype() {
 echo "OS detected: ${OS}"
 echo "Setting up dependencies..."
 
-setup_raylib
 setup_utest
 setup_glfw
 setup_glslang

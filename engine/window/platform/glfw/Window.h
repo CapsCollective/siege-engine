@@ -34,8 +34,6 @@ void SetWindowMinimisedCallback(Window window, IsMinimisedCallback callback);
 void SetWindowResizedCallback(Window window, IsResizedCallback callback);
 void* GetUserPtr(Window window);
 
-void SetIsCursorVisible(Window window, bool isCursorVisible);
-
 void WaitEvents();
 void GetEvents();
 

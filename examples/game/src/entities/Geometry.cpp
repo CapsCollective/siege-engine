@@ -13,6 +13,8 @@
 #include <core/scene/SceneFile.h>
 #include <utils/Logging.h>
 
+#include "../ServiceLocator.h"
+
 // Static member initialisation
 const Siege::String Geometry::ENTITY_NAME("Geometry");
 
@@ -20,13 +22,11 @@ void Geometry::OnStart()
 {
     // Register the entity with systems
     Siege::Statics::Collision().Add(this);
-    Siege::Statics::Render().Add(this, {modelPath, texturePath});
 }
 
 void Geometry::OnDestroy()
 {
     // Deregister the entity from systems before freeing it
-    Siege::Statics::Render().Remove(this);
     Siege::Statics::Collision().Remove(this);
 }
 
@@ -36,6 +36,14 @@ Siege::BoundedBox Geometry::GetBoundingBox() const
         GetPosition() - GetScale(),
         GetPosition() + GetScale(),
     };
+}
+
+void Geometry::OnDraw3D()
+{
+    Siege::Renderer3D::DrawMesh(ServiceLocator::GetRenderResources()->GetCubeMesh(),
+                                GetPosition(),
+                                GetScale(),
+                                GetRotation());
 }
 
 const Siege::Vec3& Geometry::GetDimensions()
@@ -48,9 +56,14 @@ Siege::Entity* Geometry::Clone() const
     return new Geometry(transform);
 }
 
-Siege::ModelData Geometry::GetModelData()
+const Siege::String& Geometry::GetModelPath() const
 {
-    return {modelPath, texturePath};
+    return modelPath;
+}
+
+const Siege::String& Geometry::GetTexturePath() const
+{
+    return texturePath;
 }
 
 static Siege::String Serialise(Siege::Entity* entity)
@@ -59,9 +72,8 @@ static Siege::String Serialise(Siege::Entity* entity)
     auto geometry = dynamic_cast<Geometry*>(entity);
     fileData += DefineField("DIMENSIONS", Siege::ToString(geometry->GetDimensions()));
 
-    auto modelData = geometry->GetModelData();
-    fileData += DefineField("MODEL_PATH", modelData.modelPath);
-    fileData += DefineField("TEXTURE_PATH", modelData.texturePath);
+    fileData += DefineField("MODEL_PATH", geometry->GetModelPath());
+    fileData += DefineField("TEXTURE_PATH", geometry->GetTexturePath());
     return fileData;
 }
 

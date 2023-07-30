@@ -31,11 +31,6 @@ public:
 
     ~Renderer();
 
-    float GetAspectRatio() const
-    {
-        return static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
-    }
-
     void SetCamera3D(const Camera& camera)
     {
         camera3D = camera;

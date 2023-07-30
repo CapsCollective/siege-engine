@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #ifndef SIEGE_ENGINE_XFORM_H
@@ -36,7 +36,7 @@ public:
         return position;
     }
 
-    Vec3 GetRotation() const
+    const Vec3& GetRotation() const
     {
         return rotation;
     }
@@ -74,21 +74,27 @@ public:
     void SetRotation(const Vec3& newRotation)
     {
         rotation = newRotation;
+        rotation.x = fmod(rotation.x, 360.f);
+        rotation.y = fmod(rotation.y, 360.f);
+        rotation.z = fmod(rotation.z, 360.f);
     }
 
     void SetRotationX(const float& newRotation)
     {
         rotation.x = newRotation;
+        rotation.x = fmod(rotation.x, 360.f);
     }
 
     void SetRotationY(const float& newRotation)
     {
         rotation.y = newRotation;
+        rotation.y = fmod(rotation.y, 360.f);
     }
 
     void SetRotationZ(const float& newRotation)
     {
         rotation.z = newRotation;
+        rotation.z = fmod(rotation.z, 360.f);
     }
 
     void SetScale(const Vec3& newScale)

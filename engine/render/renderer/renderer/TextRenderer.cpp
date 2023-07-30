@@ -126,6 +126,8 @@ void TextRenderer::Render(Vulkan::CommandBuffer& buffer,
 
     for (uint32_t i = 0; i < characters.Count(); i++)
     {
+        if (characters[i].Count() == 0) continue;
+
         uint32_t texIndex = i;
 
         defaultMaterial.BindPushConstant(buffer, &texIndex);

@@ -14,8 +14,11 @@
 #include <map>
 #include <vector>
 
-typedef struct Model Model;
-typedef struct Texture Texture;
+struct Model
+{};
+
+struct Texture
+{};
 
 namespace Siege
 {

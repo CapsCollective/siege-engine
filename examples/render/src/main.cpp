@@ -44,9 +44,8 @@ int main()
 
     Siege::Window window("Render Example", {WIDTH, HEIGHT});
 
-    window.DisableCursor();
-
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
+    Siege::Input::DisableCursor();
 
     Siege::Renderer renderer(window);
 
@@ -125,6 +124,8 @@ int main()
                                    window.GetHeight());
     OrthoCamera camera2D = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
 
+    Siege::Renderer3D::SetGridEnabled(true);
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     bool inputEnabled = true;
@@ -138,6 +139,8 @@ int main()
 
     Siege::BoundedBox box = {{-.5f, 0, -.5f}, {.5f, -1.f, .5f}};
 
+    Siege::Renderer3D::SetGridEnabled(true);
+
     while (!window.WindowShouldClose())
     {
         auto newTime = std::chrono::high_resolution_clock::now();
@@ -147,14 +150,14 @@ int main()
         currentTime = newTime;
 
         window.Update();
-        window.ToggleCursor(inputEnabled);
 
         if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ESCAPE)) inputEnabled = !inputEnabled;
+        Siege::Input::ToggleCursor(!inputEnabled);
 
         camera3D.SetIsMovable(inputEnabled && !isPanelOpen);
         camera3D.MoveCamera(frameTime);
 
-        float aspect = renderer.GetAspectRatio();
+        float aspect = window.AspectRatio();
 
         float panelWidth = window.GetWidth();
         float panelHeight = 50.f;

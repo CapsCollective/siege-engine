@@ -39,17 +39,27 @@ void DebugRenderer3D::Initialise(const String& globalDataAttributeName)
     {
         perFrameVertexBuffers[i] = Vulkan::VertexBuffer(sizeof(LineVertex) * MAX_LINES);
     }
+
+    gridMaterial = Vulkan::Material(
+        Vulkan::Shader::Builder()
+            .FromVertexShader("assets/shaders/Grid3D.vert.spv")
+            .WithGlobalData3DUniform()
+            .Build(),
+        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/Grid3D.frag.spv").Build(),
+        false);
 }
 
 void DebugRenderer3D::Destroy()
 {
     lineMaterial.Free();
     for (auto it = perFrameVertexBuffers.CreateFIterator(); it; ++it) it->Free();
+    gridMaterial.~Material();
 }
 
 void DebugRenderer3D::RecreateMaterials()
 {
     lineMaterial.Recreate();
+    gridMaterial.Recreate();
 }
 
 // Wire primitives
@@ -86,11 +96,29 @@ void DebugRenderer3D::RenderLines(Vulkan::CommandBuffer& buffer,
     Vulkan::Utils::Draw(buffer.Get(), lines.Count(), 1, 0, 0);
 }
 
+void DebugRenderer3D::RenderGrid(Vulkan::CommandBuffer& commandBuffer,
+                                 const uint64_t& globalDataSize,
+                                 const void* globalData)
+{
+    if (!drawGrid) return;
+
+    gridMaterial.SetUniformData(globalDataId, globalDataSize, globalData);
+    gridMaterial.Bind(commandBuffer);
+
+    Vulkan::Utils::Draw(commandBuffer.Get(), 6, 1, 0, 0);
+}
+
 void DebugRenderer3D::Render(Vulkan::CommandBuffer& commandBuffer,
                              const uint64_t& globalDataSize,
                              const void* globalData,
                              uint32_t currentFrame)
 {
     RenderLines(commandBuffer, globalDataSize, globalData, currentFrame);
+    RenderGrid(commandBuffer, globalDataSize, globalData);
+}
+
+void DebugRenderer3D::SetGridEnabled(bool enabled)
+{
+    drawGrid = enabled;
 }
 } // namespace Siege

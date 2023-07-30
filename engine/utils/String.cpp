@@ -531,6 +531,7 @@ char String::PopBack()
     char character = data[len - 1];
     data[len - 1] = '\0';
     if (onHeap) size -= 1;
+    else space += 1;
     return character;
 }
 

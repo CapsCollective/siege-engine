@@ -10,7 +10,6 @@
 #define SIEGE_ENGINE_GEOMETRY_H
 
 #include <core/entity/Entity.h>
-#include <core/render/RenderSystem.h>
 
 #include <utility>
 
@@ -27,7 +26,7 @@ public:
     Geometry() : Geometry({Siege::Vec3::Zero(), 0.f}) {};
 
     explicit Geometry(const Siege::Xform& transform) :
-        Geometry(transform, "models/cube/cube.obj", "models/cube/cube.png") {};
+        Geometry(transform, "assets/models/cube/cube.obj", "assets/models/cube/cube.png") {};
 
     Geometry(const Siege::Xform& transform, Siege::String modelPath, Siege::String texturePath) :
         Entity(ENTITY_NAME, transform),
@@ -40,7 +39,11 @@ public:
 
     Siege::BoundedBox GetBoundingBox() const override;
 
-    Siege::ModelData GetModelData();
+    void OnDraw3D() override;
+
+    const Siege::String& GetModelPath() const;
+
+    const Siege::String& GetTexturePath() const;
 
     // Public methods
 

@@ -8,15 +8,20 @@
 
 #include "MessageDisplay.h"
 
-#include <core/Statics.h>
-#include <core/render/RenderSystem.h>
+#include "../ServiceLocator.h"
 
 void MessageDisplay::OnDraw2D()
 {
     // Draw the display message to the screen while the display time is valid
     if (displayTime > 0.f)
     {
-        Siege::Statics::Render().DrawText2D(displayMessage, 10, 10, 20, Siege::IColour::Pink);
+        ServiceLocator::GetRenderer()->DrawText2D(displayMessage,
+                                                  ServiceLocator::GetRenderResources()->GetFont(),
+                                                  {25.f, 25.f},
+                                                  {16.f, 16.f},
+                                                  0.f,
+                                                  Siege::IColour::Pink,
+                                                  0);
         displayTime -= 0.1f;
     }
 }

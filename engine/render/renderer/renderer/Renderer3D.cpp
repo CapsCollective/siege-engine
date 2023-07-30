@@ -17,8 +17,6 @@ namespace Siege
 // static initialisation
 Hash::StringId Renderer3D::globalDataId;
 
-Vulkan::Material Renderer3D::gridMaterial;
-
 ModelRenderer Renderer3D::modelRenderer;
 DebugRenderer3D Renderer3D::debugRenderer;
 BillboardRenderer Renderer3D::billboardRenderer;
@@ -38,14 +36,6 @@ void Renderer3D::Initialise()
     lightRenderer.Initialise("globalData");
     textRenderer.Initialise("globalData");
     quadRenderer3D.Initialise("globalData");
-
-    gridMaterial = Vulkan::Material(
-        Vulkan::Shader::Builder()
-            .FromVertexShader("assets/shaders/Grid3D.vert.spv")
-            .WithGlobalData3DUniform()
-            .Build(),
-        Vulkan::Shader::Builder().FromFragmentShader("assets/shaders/Grid3D.frag.spv").Build(),
-        false);
 }
 
 void Renderer3D::DrawBillboard(const Vec3& position,
@@ -102,10 +92,6 @@ void Renderer3D::Render(uint32_t currentFrame,
 
     modelRenderer.Render(commandBuffer, globalDataSize, &global3DData);
 
-#ifdef ENABLE_GRID
-    RenderGrid(commandBuffer, global3DData);
-#endif
-
     lightRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
     debugRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
     billboardRenderer.Render(commandBuffer, globalDataSize, &global3DData, currentFrame);
@@ -118,12 +104,9 @@ void Renderer3D::DrawLine(const Vec3& origin, const Vec3& destination, const ICo
     debugRenderer.DrawLine(origin, destination, colour);
 }
 
-void Renderer3D::RenderGrid(Vulkan::CommandBuffer& commandBuffer, const GlobalData& globalData)
+void Renderer3D::SetGridEnabled(bool enabled)
 {
-    gridMaterial.SetUniformData(globalDataId, sizeof(globalData), &globalData);
-    gridMaterial.Bind(commandBuffer);
-
-    Vulkan::Utils::Draw(commandBuffer.GetActiveCommandBuffer(), 6, 1, 0, 0);
+    debugRenderer.SetGridEnabled(enabled);
 }
 
 void Renderer3D::RecreateMaterials()
@@ -134,8 +117,6 @@ void Renderer3D::RecreateMaterials()
     lightRenderer.RecreateMaterials();
     quadRenderer3D.RecreateMaterials();
     textRenderer.RecreateMaterials();
-
-    gridMaterial.Recreate();
 }
 
 void Renderer3D::Flush()
@@ -155,8 +136,6 @@ void Renderer3D::DestroyRenderer3D()
     lightRenderer.Free();
     quadRenderer3D.Free();
     textRenderer.Free();
-
-    gridMaterial.~Material();
 }
 
 void Renderer3D::Update()

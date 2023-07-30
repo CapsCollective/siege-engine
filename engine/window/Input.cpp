@@ -8,6 +8,8 @@
 
 #include "Input.h"
 
+#include <utils/Logging.h>
+
 #include "window/platform/glfw/Input.h"
 
 namespace Siege
@@ -96,6 +98,11 @@ bool Input::IsKeyJustPressed(int key)
     return false;
 }
 
+bool Input::IsKeyReleased(int key)
+{
+    return Glfw::IsKeyReleased(primaryWindow, key);
+}
+
 bool Input::IsMouseButtonDown(int button)
 {
     bool hasButton = Glfw::IsMouseButtonDown(primaryWindow, button);
@@ -109,6 +116,11 @@ bool Input::IsMouseButtonDown(int button)
         if (hasButton) keyMap[button] = 1;
     }
     return hasButton;
+}
+
+bool Input::IsMouseButtonReleased(int button)
+{
+    return Glfw::IsMouseButtonReleased(primaryWindow, button);
 }
 
 bool Input::IsMouseButtonJustPressed(int button)
@@ -160,4 +172,20 @@ int Input::GetLatestChar()
     charUpdated = false;
     return key;
 }
+
+void Input::DisableCursor()
+{
+    Glfw::SetIsCursorVisible(primaryWindow, false);
+}
+
+void Input::EnableCursor()
+{
+    Glfw::SetIsCursorVisible(primaryWindow, true);
+}
+
+void Input::ToggleCursor(bool state)
+{
+    Glfw::SetIsCursorVisible(primaryWindow, state);
+}
+
 } // namespace Siege

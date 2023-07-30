@@ -26,14 +26,19 @@ public:
 
     static void SetInputWindowSource(Glfw::Window window);
     static bool IsKeyDown(int key);
+    static bool IsKeyReleased(int key);
     static bool IsKeyJustPressed(int key);
     static bool IsMouseButtonDown(int button);
+    static bool IsMouseButtonReleased(int button);
     static bool IsMouseButtonJustPressed(int button);
 
     static const Vec2 GetCursorPosition();
     static const Vec2 GetMouseDirection();
     static int GetLatestKey();
     static int GetLatestChar();
+    static void DisableCursor();
+    static void EnableCursor();
+    static void ToggleCursor(bool state);
 
 private:
 

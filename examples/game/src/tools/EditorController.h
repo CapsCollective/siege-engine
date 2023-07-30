@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "../ServiceLocator.h"
+#include "MessageDisplay.h"
 
 enum EditorMode
 {
@@ -32,11 +33,12 @@ public:
 
     EditorController() :
         isGridActive(true),
+        isHandlingInput(true),
         currentMode(POSITION),
         movePrecision(2),
         rotatePrecision(3),
         selectedIdx(0),
-        camera(ServiceLocator::GetCamera()),
+        camera(ServiceLocator::GetFPSCamera()),
         selectedEntity(nullptr),
         messageDisplay(ServiceLocator::GetMessageDisplay()) {};
 
@@ -52,15 +54,17 @@ public:
 
     bool TrySetRot(float rotation);
 
+    void SetIsHandlingInput(bool state);
+
 protected:
 
     // Protected overrides
 
-    void OnStart() override;
-
     void OnUpdate() override;
 
     void OnDraw2D() override;
+
+    void OnDraw3D() override;
 
 private:
 
@@ -72,6 +76,8 @@ private:
 
     bool isGridActive;
 
+    bool isHandlingInput;
+
     EditorMode currentMode;
 
     int movePrecision;
@@ -80,7 +86,7 @@ private:
 
     size_t selectedIdx;
 
-    Siege::Cam* camera;
+    FPSCamera* camera;
 
     Siege::EntityPtr<Entity> selectedEntity;
 

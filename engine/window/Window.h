@@ -20,6 +20,8 @@ class Window
 {
 public:
 
+    static MHArray<const char*> GetRequiredExtensions();
+
     // 'Structors
 
     Window(char const* name, WindowExtents extents);
@@ -52,15 +54,12 @@ public:
 
     void ResetWindowResized();
 
-    void EnableCursor();
-
-    void DisableCursor();
-
-    static MHArray<const char*> GetRequiredExtensions();
-
-    void ToggleCursor(bool state);
-
     void WaitEvents();
+
+    inline float AspectRatio()
+    {
+        return static_cast<float>(extents.width) / static_cast<float>(extents.height);
+    }
 
 private:
 

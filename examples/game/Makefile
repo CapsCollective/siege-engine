@@ -16,15 +16,37 @@ exampleGameDepends := $(patsubst %.o, %.d, $(call rwildcard,$(exampleGameBinDir)
 exampleGameBuildDir := $(exampleGameBinDir)/build
 exampleGameOutputName := "Game Example"
 
+# Set packaging vars
+ifeq ($(platform), linux)
+    packagingEnvVars := \
+    	export DYLD_LIBRARY_PATH='./lib'; \
+    	export VK_LAYER_PATH='./lib/explicit_layer.d';
+else ifeq ($(platform), macos)
+    packagingEnvVars := \
+		export DYLD_LIBRARY_PATH='./lib'; \
+		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
+		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
+endif
+
+ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
+	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
+endif
+
+ifneq ("$(packagingEnvVars)","")
+	ENV_VARS = --env-vars "$(packagingEnvVars)"
+endif
+
+packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
+
 # Set build vars
-linkFlags += -l core -l utils
+linkFlags += -l core -l window -l render -l utils
 
-.PHONY: all game-assets
+.PHONY: all game-assets render-assets
 
-all: $(exampleGameApp) game-assets
+all: $(exampleGameApp) game-assets render-assets
 
 # Link the object files and create an executable
-$(exampleGameApp): $(utilsLib) $(coreLib) $(exampleGameObjects)
+$(exampleGameApp): $(utilsLib) $(windowLib) $(renderLib) $(coreLib) $(exampleGameObjects)
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) $(exampleGameObjects) -o $(exampleGameApp) $(linkFlags)
 
@@ -41,7 +63,14 @@ game-assets:
 	$(MKDIR) $(call platformpth, $(exampleGameBuildDir)/assets)
 	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
 
+# Copy assets (and other required build files) directory to the build directory
+render-assets:
+	$(MKDIR) $(call platformpth,$(exampleGameBuildDir))
+	$(call COPY,$(binDir)/engine/render/build,$(exampleGameBuildDir),**)
+	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets)
+	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
+
 # Package the built application and all its assets to the output directory
 package: all
-	$(RM) $(call platformpth,$(outputDir)/$(exampleGameOutputName))
+	$(RM) "$(outputDir)/$(exampleGameOutputName)"
 	$(call PACKAGE_SCRIPT, $(exampleGameOutputName), $(shell basename $(exampleGameApp)), $(outputDir), $(exampleGameBuildDir))

@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
-//  This code is released under an unmodified zlib license.
-//  For conditions of distribution and use, please see:
-//      https://opensource.org/licenses/Zlib
+// This code is released under an unmodified zlib license.
+// For conditions of distribution and use, please see:
+//     https://opensource.org/licenses/Zlib
 //
 
 #include <utest.h>
@@ -507,87 +507,6 @@ UTEST(test_MHArray, IterateWithFastIteratorWithGaps)
     {
         ASSERT_EQ(expected[i], actualResults[i]);
     }
-}
-
-UTEST(test_MHArray, ResizeArray)
-{
-    MHArray<uint32_t> array({1, 2, 3, 4});
-
-    ASSERT_EQ(array.Size(), 4);
-    ASSERT_EQ(array.Count(), 4);
-
-    ASSERT_EQ(array[0], 1);
-    ASSERT_EQ(array[1], 2);
-    ASSERT_EQ(array[2], 3);
-    ASSERT_EQ(array[3], 4);
-
-    array.Resize(6);
-
-    ASSERT_EQ(array.Size(), 6);
-    ASSERT_EQ(array.Count(), 4);
-
-    ASSERT_EQ(array[0], 1);
-    ASSERT_EQ(array[1], 2);
-    ASSERT_EQ(array[2], 3);
-    ASSERT_EQ(array[3], 4);
-
-    ASSERT_FALSE(array.IsActive(4));
-    ASSERT_FALSE(array.IsActive(5));
-
-    array[4] = 5;
-    array[5] = 6;
-
-    ASSERT_TRUE(array.IsActive(4));
-    ASSERT_TRUE(array.IsActive(5));
-
-    ASSERT_EQ(array[4], 5);
-    ASSERT_EQ(array[5], 6);
-    ASSERT_EQ(array.Count(), 6);
-}
-
-UTEST(test_MHArray, ResizeArrayToSmallerSize)
-{
-    MHArray<uint32_t> array({1, 2, 3, 4});
-
-    ASSERT_EQ(array.Size(), 4);
-    ASSERT_EQ(array.Count(), 4);
-
-    ASSERT_EQ(array[0], 1);
-    ASSERT_EQ(array[1], 2);
-    ASSERT_EQ(array[2], 3);
-    ASSERT_EQ(array[3], 4);
-
-    array.Resize(2);
-
-    ASSERT_EQ(array.Size(), 2);
-    ASSERT_EQ(array.Count(), 2);
-
-    ASSERT_EQ(array[0], 1);
-    ASSERT_EQ(array[1], 2);
-
-    ASSERT_TRUE(array.IsActive(0));
-    ASSERT_TRUE(array.IsActive(1));
-    ASSERT_FALSE(array.IsActive(2));
-    ASSERT_FALSE(array.IsActive(3));
-}
-
-UTEST(test_MHArray, ResizeLargeArray)
-{
-    MHArray<uint32_t> array({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-
-    ASSERT_EQ(array.Size(), 10);
-    ASSERT_EQ(array.Count(), 10);
-
-    uint32_t number = 1;
-
-    for (auto it = array.CreateIterator(); it; ++it) ASSERT_EQ(number++, *it);
-
-    array.Resize(9);
-
-    ASSERT_EQ(array.Size(), 9);
-    ASSERT_EQ(array.Count(), 9);
-
-    ASSERT_FALSE(array.IsActive(9));
 }
 
 UTEST(test_MHArray, ClearArray)

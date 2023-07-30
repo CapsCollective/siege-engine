@@ -12,9 +12,9 @@
 
 #include <vector>
 
+#include "../ResourceSystem.h"
 #include "../Statics.h"
 #include "../entity/Entity.h"
-#include "../render/ResourceSystem.h"
 #include "SceneFile.h"
 
 namespace Siege

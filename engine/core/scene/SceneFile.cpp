@@ -13,8 +13,8 @@
 
 #include <algorithm>
 
+#include "../ResourceSystem.h"
 #include "../entity/Entity.h"
-#include "../render/ResourceSystem.h"
 
 namespace Siege
 {
@@ -44,7 +44,7 @@ String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
         // Serialise the general entity information
         fileData += (entity->GetName() + SEP);
         fileData += DefineField("POSITION", ToString(entity->GetPosition()));
-        fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation()));
+        fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation().y));
         fileData += DefineField("Z-INDEX", String::FromInt(entity->GetZIndex()));
 
         // Apply its serialiser if it

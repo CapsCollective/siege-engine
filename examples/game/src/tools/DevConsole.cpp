@@ -9,11 +9,9 @@
 #include "DevConsole.h"
 
 #include <core/Statics.h>
-#include <core/input/InputSystem.h>
-#include <core/render/RenderSystem.h>
-#include <core/render/Window.h>
 #include <core/scene/SceneSystem.h>
 #include <utils/math/vec/Format.h>
+#include <window/Input.h>
 
 #include <stdexcept>
 
@@ -23,11 +21,12 @@ void DevConsole::OnUpdate()
 {
     if (!messageDisplay) return;
 
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::GRAVE))
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_GRAVE_ACCENT))
     {
         // Toggle the console
         isActive = !isActive;
         if (!isActive) inputText = "";
+        if (isEditorMode) ServiceLocator::GetEditorController()->SetIsHandlingInput(!isActive);
         return;
     }
 
@@ -35,27 +34,28 @@ void DevConsole::OnUpdate()
 
     // Get input from the keyboard and input it
     char key;
-    while ((key = (char) Siege::Statics::Input().GetKeyChar()) > 0)
+    while ((key = (char) Siege::Input::GetLatestChar()) > 0)
     {
-        if ((key >= 32) && (key <= 125)) inputText += key;
+        if ((key >= 32) && (key <= 125) &&
+            !(key == Siege::Key::KEY_GRAVE_ACCENT && inputText.IsEmpty()))
+            inputText += key;
     }
 
+    int latestKey = Siege::Input::GetLatestKey();
+
     // Remove characters on backspace
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::BACKSPACE) && !inputText.IsEmpty())
-        inputText.PopBack();
+    if (latestKey == Siege::Key::KEY_BACKSPACE && !inputText.IsEmpty()) inputText.PopBack();
 
     // Get the last command you ran - only works once.
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::UP) && !lastInput.IsEmpty())
-        inputText = lastInput;
+    if (latestKey == Siege::Key::KEY_UP && !lastInput.IsEmpty()) inputText = lastInput;
 
     // Process the command on enter
-    if (Siege::Statics::Input().KeyPressed(Siege::Key::ENTER))
+    if (Siege::Input::IsKeyJustPressed(Siege::Key::KEY_ENTER))
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
         Siege::String command(!args.empty() ? args[0] : nullptr);
         Siege::String argument(args.size() > 1 ? args[1] : nullptr);
-
         // Run the appropriate instructions for specified command
         if (command == "load")
         {
@@ -120,7 +120,7 @@ void DevConsole::OnUpdate()
         {
             if (CheckEditorMode() && CheckArgs("setrot", argument))
             {
-                // Try convert the argument to float, and set the entity's rotation
+                // Try to convert the argument to float, and set the entity's rotation
                 try
                 {
                     float rotation;
@@ -143,6 +143,7 @@ void DevConsole::OnUpdate()
         isActive = false;
         lastInput = inputText;
         inputText = "";
+        if (isEditorMode) ServiceLocator::GetEditorController()->SetIsHandlingInput(true);
     }
 }
 
@@ -153,8 +154,18 @@ void DevConsole::OnDraw2D()
     Siege::Window* window = ServiceLocator::GetWindow();
 
     // Draw the console to the screen
-    Siege::Statics::Render().DrawRectangle2D(0, 0, window->GetWidth(), 40, Siege::IColour::Black);
-    Siege::Statics::Render().DrawText2D("~ " + inputText, 10.f, 10.f, 20.f, Siege::IColour::White);
+    ServiceLocator::GetRenderer()->DrawQuad({0.f, -1.f},
+                                            {((float) window->GetWidth()) / 2, 25.f},
+                                            Siege::IColour::Black,
+                                            0,
+                                            1);
+    ServiceLocator::GetRenderer()->DrawText2D("> " + inputText,
+                                              ServiceLocator::GetRenderResources()->GetFont(),
+                                              {10.f, 10.f},
+                                              {20.f, 20.f},
+                                              0.f,
+                                              Siege::IColour::White,
+                                              0);
 }
 
 bool DevConsole::CheckEditorMode()

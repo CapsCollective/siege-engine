@@ -111,7 +111,7 @@ UTEST_F(test_SceneFile, SerialiseSingleEntity)
 
     // Modifying its fields should result in the same transforms being applied
     e1.SetPosition({1, 2, 3});
-    e1.SetRotation(25.f);
+    e1.SetRotation({0.f, 25.f, 0.f});
     e1.SetZIndex(-3);
     sceneData = SceneFile::SerialiseToString({&e1});
     ASSERT_STREQ("TestEntity1|"
@@ -241,10 +241,13 @@ UTEST_F(test_SceneFile, DeserialiseSingleEntity)
     // It should retain its standard field values
     ASSERT_STREQ("TestEntity1", entities[0]->GetName().Str());
     Vec3 pos(entities[0]->GetPosition());
+    Vec3 rot(entities[0]->GetRotation());
     ASSERT_EQ(1.f, pos.x);
     ASSERT_EQ(2.f, pos.y);
     ASSERT_EQ(3.f, pos.z);
-    ASSERT_EQ(25.f, entities[0]->GetRotation());
+    ASSERT_EQ(0.f, rot.x);
+    ASSERT_EQ(25.f, rot.y);
+    ASSERT_EQ(0.f, rot.z);
     ASSERT_EQ(-3, entities[0]->GetZIndex());
 
     // It should retain its custom data
