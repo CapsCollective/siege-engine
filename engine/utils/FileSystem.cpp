@@ -49,4 +49,14 @@ bool Save(const String& filename, const String& content)
     fileStream.close();
     return true;
 }
+
+void ForEachFileInDir(const String& path,
+                      const std::function<void(const std::filesystem::path&)>& func)
+{
+    auto it = std::filesystem::recursive_directory_iterator(path.Str());
+    for (const auto& entry : it)
+    {
+        if (!std::filesystem::is_directory(entry)) func(entry.path());
+    }
+}
 } // namespace Siege::FileSystem
