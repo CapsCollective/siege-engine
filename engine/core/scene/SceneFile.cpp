@@ -59,10 +59,12 @@ String SceneFile::SerialiseToString(const std::vector<Entity*>& entities)
 
 bool SceneFile::Deserialise(std::vector<Entity*>& entities)
 {
-    // Iterate over each line of the file
-    String lines = FileSystem::Read(MakeScenePath(sceneName));
-    if (!lines) return false;
-    DeserialiseLines(lines.Split('\n'), entities);
+    auto deserialiseEntity = [&entities](const std::filesystem::path& filepath) {
+        if (filepath.extension() != ".entity") return;
+        String lines = FileSystem::Read(filepath.c_str());
+        DeserialiseLines(lines.Split('\n'), entities);
+    };
+    FileSystem::ForEachFileInDir(MakeScenePath(sceneName), deserialiseEntity);
     return true;
 }
 
