@@ -18,6 +18,8 @@
 #include <utility>
 #include <vector>
 
+#include "core/entity/EntityPtr.h"
+
 // Define macros
 #define REGISTER_SERIALISATION_INTERFACE(name, serialiser, deserialiser)                         \
     static Siege::SerialisationInterfaceRegisterer CONCAT_SYMBOL(_si_reg_, __LINE__)(name,       \
@@ -26,9 +28,10 @@
 namespace Siege
 {
 // Define constants
-static constexpr const char SEP = '|';
+static constexpr const char LINE_SEP = '\n';
 static constexpr const char NAME_SEP = ':';
 static constexpr const char* SCENE_FILE_EXT = ".scene";
+static constexpr const char* ENTITY_FILE_EXT = ".entity";
 
 // Define types
 typedef struct EntityData EntityData;
@@ -87,12 +90,12 @@ public:
     bool Serialise(const std::vector<class Entity*>& entities);
 
     /**
-     * Serialises a list of entities into the scene file format as
-     * a string
-     * @param entities - the list of entities to serialise
-     * @return a string representation of the scene
+     * Serialises an entity into the scene file format as a string
+     * @param entity - the entity to serialise
+     * @param fileData - a string to populate with the serialised data
+     * @return true if the operation was successful
      */
-    static String SerialiseToString(const std::vector<Entity*>& entities);
+    static bool SerialiseToString(Entity* entity, OUT String& fileData);
 
     /**
      * Deserialises a scene file's content into a list of
@@ -104,18 +107,46 @@ public:
     bool Deserialise(OUT std::vector<Entity*>& entities);
 
     /**
-     * Deserialises a scene file's content from a vector
-     * of strings
-     * @param lines - strings for each line of the scene file
-     * @param entities - a reference to a vector of entity
-     *                   pointers to populate
+     * Deserialises an entity from a given string
+     * @param fileData - a string representing a serialised entity
+     * @return a pointer to the deserialised entity
      */
-    static void DeserialiseLines(const std::vector<String>& lines,
-                                 OUT std::vector<Entity*>& entities);
+    static Entity* DeserialiseFromString(const String& fileData);
+
+    /**
+     * Returns the name of the currently set scene
+     * @return the scene name
+     */
+    const String& GetSceneName();
+
+    /**
+     * Replaces the currently set scene name
+     * @param name - the new scene name as a string
+     */
+    void SetSceneName(const String& name);
+
+    /**
+     * Lifetime method required to properly initialise entity path
+     * mappings so that they can be used in cross-referencing on
+     * re-serialisation.
+     *
+     * Should be called after the entities have had their generational
+     * index initialised.
+     */
+    void InitialiseEntityPathMappings();
 
 private:
 
     // Private methods
+
+    /**
+     * Finds or generates a filepath for a given entity, first performing
+     * a lookup across active entity path mappings, then finding the next
+     * available entity file index to create.
+     * @param entity - the entity to generate a filepath for
+     * @return a filepath as a string
+     */
+    String GetOrCreateEntityFilepath(Entity* entity);
 
     /**
      * Creates a filepath to the specified scene relative to
@@ -141,6 +172,11 @@ private:
      * The name of the scene file
      */
     String sceneName;
+
+    /**
+     * Path mappings from entity files to entity pointers
+     */
+    std::map<EntityPtr<Entity>, String> entityPaths;
 };
 
 /**
@@ -202,7 +238,7 @@ struct SerialisationInterfaceRegisterer
  */
 inline String DefineField(const String& name, const String& content)
 {
-    return name + NAME_SEP + content + SEP;
+    return name + NAME_SEP + content + LINE_SEP;
 }
 } // namespace Siege
 

@@ -22,6 +22,8 @@ bool Exists(const String& filename);
 
 bool Save(const String& filename, const String& content);
 
+bool CreateDirectoryRecursive(const String& dirpath);
+
 void ForEachFileInDir(const String& path,
                       const std::function<void(const std::filesystem::path&)>& func);
 

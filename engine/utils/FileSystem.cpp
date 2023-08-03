@@ -50,6 +50,11 @@ bool Save(const String& filename, const String& content)
     return true;
 }
 
+bool CreateDirectoryRecursive(const String& dirpath)
+{
+    return std::filesystem::create_directories(dirpath.Str());
+}
+
 void ForEachFileInDir(const String& path,
                       const std::function<void(const std::filesystem::path&)>& func)
 {
