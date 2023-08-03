@@ -1,1 +1,4 @@
-Player|POSITION:0.00,-3.00,-5.00|ROTATION:0.000000|Z-INDEX:0|MODEL_PATH:assets/models/cube/cube.obj|TEXTURE_PATH:models/cube/cube.png|
+Player
+POSITION:0.00,-3.00,-5.00
+ROTATION:0.000000
+Z-INDEX:0
