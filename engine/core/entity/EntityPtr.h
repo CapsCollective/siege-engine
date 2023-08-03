@@ -30,7 +30,7 @@ public:
     explicit EntityPtr(E* pointer) : pointer(pointer)
     {
         static_assert(std::is_base_of_v<Entity, E>);
-        if (pointer) index = pointer->GetIndex();
+        InitialiseIndex();
     }
 
     // Operator overloads
@@ -99,6 +99,15 @@ public:
     {
         pointer = other;
         index = other ? other->GetIndex() : GenerationalIndex();
+    }
+
+    /**
+     * Attempts to initialise the stored generational index
+     * based on the current entity pointer
+     */
+    void InitialiseIndex()
+    {
+        if (pointer) index = pointer->GetIndex();
     }
 
 private:
