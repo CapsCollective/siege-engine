@@ -91,12 +91,18 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         entities.push_back(newEntity);
         entityPaths[EntityPtr(newEntity)] = path.c_str();
     };
-    FileSystem::ForEachFileInDir(MakeScenePath(sceneName), deserialiseEntity);
-    return succeeded;
+    bool result = FileSystem::ForEachFileInDir(MakeScenePath(sceneName), deserialiseEntity);
+    return succeeded && result;
 }
 
 Entity* SceneFile::DeserialiseFromString(const String& fileData)
 {
+    if (fileData.IsEmpty())
+    {
+        CC_LOG_WARNING("Found empty entity during deserialisation");
+        return nullptr;
+    }
+
     // Split the file into arguments and strip the labels from each item
     std::vector<String> args = fileData.Split(LINE_SEP);
     for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
@@ -152,7 +158,7 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
     // Search through the scene file for the next available file index
     int newFileIndex = 1;
-    auto findNextAvailableFileIndex = [&newFileIndex](const std::filesystem::path& path) {
+    auto findNextFileIndex = [&newFileIndex](const std::filesystem::path& path) {
         if (path.extension() != ENTITY_FILE_EXT) return;
         std::vector<String> filename = String(path.filename().c_str()).Split('.');
 
@@ -162,9 +168,10 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
             newFileIndex = nameIndex + 1;
         }
     };
-    FileSystem::ForEachFileInDir(MakeScenePath(sceneName), findNextAvailableFileIndex);
+    bool result = FileSystem::ForEachFileInDir(MakeScenePath(sceneName), findNextFileIndex);
 
-    String index = String::FromInt(newFileIndex);
+    // Failed attempts to find a file index are serialised as 0
+    String index = result ? String::FromInt(newFileIndex) : "0";
     return MakeScenePath(sceneName) + '/' + entity->GetName() + '.' + index + ENTITY_FILE_EXT;
 }
 
