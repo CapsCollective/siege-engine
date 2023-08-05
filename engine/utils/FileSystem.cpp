@@ -36,8 +36,7 @@ String Read(const String& filename)
 
 bool Exists(const String& filename)
 {
-    std::ifstream file(filename);
-    return (bool) file;
+    return std::filesystem::exists(filename.Str());
 }
 
 bool Save(const String& filename, const String& content)
@@ -50,18 +49,26 @@ bool Save(const String& filename, const String& content)
     return true;
 }
 
+bool Remove(const String& filepath)
+{
+    return std::filesystem::remove_all(filepath.Str());
+}
+
 bool CreateDirectoryRecursive(const String& dirpath)
 {
     return std::filesystem::create_directories(dirpath.Str());
 }
 
-void ForEachFileInDir(const String& path,
+bool ForEachFileInDir(const String& path,
                       const std::function<void(const std::filesystem::path&)>& func)
 {
+    if (!Exists(path)) return false;
+
     auto it = std::filesystem::recursive_directory_iterator(path.Str());
     for (const auto& entry : it)
     {
         if (!std::filesystem::is_directory(entry)) func(entry.path());
     }
+    return true;
 }
 } // namespace Siege::FileSystem
