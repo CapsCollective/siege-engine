@@ -223,3 +223,60 @@ UTEST_F(test_SceneSystem, LoadGarbageScene)
     Statics::Entity().RegisterEntities();
     ASSERT_TRUE(Statics::Entity().GetEntities().empty());
 }
+
+UTEST_F(test_SceneSystem, ResaveSceneWithRemovedEntity)
+{
+    // When an entity is added to the scene, it should be saved to the scene file
+    Statics::Entity().Add(new TestEntity());
+    Statics::Entity().RegisterEntities();
+    Statics::Scene().SaveScene("test");
+
+    String filepath = Filepath(TEST_SCENE_FILE);
+    ASSERT_TRUE(FileSystem::Exists(filepath));
+
+    std::vector<String> entityFiles;
+    GetContainedEntityFiles(filepath, entityFiles);
+    ASSERT_FALSE(entityFiles.empty());
+    ASSERT_EQ(1, entityFiles.size());
+    ASSERT_STREQ("TestEntity.1.entity", entityFiles[0].Str());
+
+    // When an entity is removed from an exiting scene, it should no longer be serialised
+    Statics::Entity().Reset();
+    Statics::Scene().SaveScene("test");
+    ASSERT_TRUE(FileSystem::Exists(filepath));
+
+    entityFiles.clear();
+    GetContainedEntityFiles(filepath, entityFiles);
+    ASSERT_TRUE(entityFiles.empty());
+}
+
+UTEST_F(test_SceneSystem, ResaveLoadedSceneWithRemovedEntity)
+{
+    // When an entity is added to the scene, it should be saved to the scene file
+    Statics::Entity().Add(new TestEntity());
+    Statics::Entity().RegisterEntities();
+    Statics::Scene().SaveScene("test");
+
+    String filepath = Filepath(TEST_SCENE_FILE);
+    ASSERT_TRUE(FileSystem::Exists(filepath));
+
+    std::vector<String> entityFiles;
+    GetContainedEntityFiles(filepath, entityFiles);
+    ASSERT_FALSE(entityFiles.empty());
+    ASSERT_EQ(1, entityFiles.size());
+    ASSERT_STREQ("TestEntity.1.entity", entityFiles[0].Str());
+
+    // When loading a non-empty file, it should populate the EntitySystem correctly
+    Statics::Scene().QueueNextScene("test");
+    Statics::Scene().LoadNextScene();
+    Statics::Entity().RegisterEntities();
+
+    // When an entity is removed from an exiting scene, it should no longer be serialised
+    Statics::Entity().Reset();
+    Statics::Scene().SaveScene("test");
+    ASSERT_TRUE(FileSystem::Exists(filepath));
+
+    entityFiles.clear();
+    GetContainedEntityFiles(filepath, entityFiles);
+    ASSERT_TRUE(entityFiles.empty());
+}

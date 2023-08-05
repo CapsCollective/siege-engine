@@ -29,6 +29,12 @@ bool SceneFile::Serialise(const std::vector<Entity*>& entities)
     // Create the required scene file directory
     FileSystem::CreateDirectoryRecursive(MakeScenePath(sceneName));
 
+    // Flush any removed entities from disk
+    for (const auto& pair : entityPaths)
+    {
+        if (!pair.first) FileSystem::Remove(pair.second);
+    }
+
     bool succeeded = true;
     for (auto& entity : entities)
     {
