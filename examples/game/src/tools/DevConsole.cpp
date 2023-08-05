@@ -54,8 +54,8 @@ void DevConsole::OnUpdate()
     {
         // Process the input into command and argument format
         auto args = inputText.Split(' ');
-        Siege::String command(!args.empty() ? args[0] : nullptr);
-        Siege::String argument(args.size() > 1 ? args[1] : nullptr);
+        Siege::String command(!args.empty() ? args[0] : "");
+        Siege::String argument(args.size() > 1 ? args[1] : "");
         // Run the appropriate instructions for specified command
         if (command == "load")
         {

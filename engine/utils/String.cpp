@@ -117,6 +117,13 @@ String::String(const char* string) : memory()
     Assign(string);
 }
 
+String::String(const wchar_t* string) : memory()
+{
+    char convertedStr[std::wcslen(string)];
+    std::wcstombs(convertedStr, string, sizeof(convertedStr));
+    Assign(convertedStr);
+}
+
 String::String(char character) : memory()
 {
     char cstr[2] = {character, '\0'};
@@ -389,7 +396,7 @@ String String::SubString(int startPos, size_t length) const
     size_t len = Size();
     startPos = startPos < 0 ? (int) len + startPos : startPos;
     length = length == -1 ? len - startPos : length;
-    if (startPos >= len || (startPos + length) > len) return nullptr;
+    if (startPos >= len || (startPos + length) > len) return {};
 
     // Copy over the substring and return it
     char subString[length];

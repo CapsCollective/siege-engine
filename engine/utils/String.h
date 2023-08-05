@@ -72,6 +72,12 @@ public:
     String(const char* string);
 
     /**
+     * Wide c-string constructor for initialising by copy
+     * @param string - the wide c-string to copy
+     */
+    String(const wchar_t* string);
+
+    /**
      * Character constructor for initialising by copy
      * @param string - the character to copy
      */
