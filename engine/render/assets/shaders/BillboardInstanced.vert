@@ -1,5 +1,3 @@
-#version 450
-
 //
 // Copyright (c) 2022 Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
 //
@@ -7,6 +5,8 @@
 // For conditions of distribution and use, please see:
 //     https://opensource.org/licenses/Zlib
 //
+
+#version 450
 
 // Per instance data
 layout (location = 0) in vec3 inPosition;
