@@ -185,7 +185,7 @@ We use GitHub issues for tracking requests and bugs where possible, please use t
 
 ### Contributors
 
-- [J-Mo63](https://github.com/J-Mo63) Jonathan Moallem - co-creator, maintainer
+- [jonjondev](https://github.com/jonjondev) Jonathan Moallem - co-creator, maintainer
 - [Raelr](https://github.com/Raelr) Aryeh Zinn - co-creator, maintainer
 
 ## Licence
