@@ -11,6 +11,8 @@
 
 #include <utils/String.h>
 
+#include "SceneFile.h"
+
 namespace Siege
 {
 class SceneSystem
@@ -18,6 +20,11 @@ class SceneSystem
 public:
 
     // Public methods
+
+    /**
+     * Scene system constructor method
+     */
+    SceneSystem() : nextSceneName(), currentScene(nextSceneName) {};
 
     /**
      * Closes the current scene and starts a new, empty scene
@@ -61,14 +68,14 @@ private:
     // Private fields
 
     /**
-     * The name of the currently loaded scene
-     */
-    String currentScene;
-
-    /**
      * The name of the next scene to be loaded (if any)
      */
-    String nextScene;
+    String nextSceneName;
+
+    /**
+     * The currently loaded scene file
+     */
+    SceneFile currentScene;
 };
 } // namespace Siege
 

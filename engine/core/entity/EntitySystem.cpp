@@ -62,9 +62,7 @@ bool EntitySystem::IsLive(Entity* entity)
 {
     EntitySystem* system = FindInGlobalRegister(entity);
     if (system) return system->IsLive(entity->GetIndex());
-    CC_LOG_WARNING("Could not find storage for {} at {}",
-                   entity->GetName(),
-                   entity->GetIndex().ToString());
+    CC_LOG_WARNING("Could not find storage for provided entity");
     return false;
 }
 
