@@ -156,11 +156,7 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 {
     // Try to find the entity path amongst the deserialised
     auto it = entityPaths.find(EntityPtr(entity));
-    if (it != entityPaths.end())
-    {
-        std::cout << it->second << '\n';
-        return it->second;
-    }
+    if (it != entityPaths.end()) return it->second;
 
     // Search through the scene file for the next available file index
     int newFileIndex = 1;
