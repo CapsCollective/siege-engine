@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
+# Copyright (c) 2020-present Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
 #
 # This code is released under an unmodified zlib license.
 # For conditions of distribution and use, please see:
