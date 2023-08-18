@@ -69,7 +69,8 @@ Newly added source files should include the required legal header as so:
 
 ```cpp
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2020-present Caps Collective & contributors
+// Originally authored by Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
 //
 // This code is released under an unmodified zlib license.
 // For conditions of distribution and use, please see:
@@ -84,7 +85,8 @@ While there are currently no explicit standards in place for linting our Make fi
 Newly added Make files should include the required legal header as so:
 
 ```make
-# Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+# Copyright (c) 2020-present Caps Collective & contributors
+# Originally authored by Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
 #
 # This code is released under an unmodified zlib license.
 # For conditions of distribution and use, please see:

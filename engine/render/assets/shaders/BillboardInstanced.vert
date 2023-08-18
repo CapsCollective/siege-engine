@@ -1,12 +1,13 @@
-#version 450
-
 //
-// Copyright (c) 2022 Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2020-present Caps Collective & contributors
+// Originally authored by Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
 //
 // This code is released under an unmodified zlib license.
 // For conditions of distribution and use, please see:
 //     https://opensource.org/licenses/Zlib
 //
+
+#version 450
 
 // Per instance data
 layout (location = 0) in vec3 inPosition;
