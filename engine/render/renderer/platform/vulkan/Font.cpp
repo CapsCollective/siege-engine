@@ -143,8 +143,6 @@ void Font::PopulateTextureAtlas(uint8_t* buffer)
         auto& glyph = glyphs[c];
         float xPos {glyph.uvxMin}, yPos {glyph.uvyMin};
 
-        // TODO:  Add an extent type which uses floating point numbers
-
         glyph.uvxMin /= extent.width;
         glyph.uvyMin /= extent.height;
 

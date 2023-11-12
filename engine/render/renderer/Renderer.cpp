@@ -48,6 +48,7 @@ Renderer::Renderer(Window& window) : window {window}
 Renderer::~Renderer()
 {
     CC_LOG_INFO("Destroying renderer")
+    Vulkan::Context::GetCurrentDevice()->WaitIdle();
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
     Statics::Free();

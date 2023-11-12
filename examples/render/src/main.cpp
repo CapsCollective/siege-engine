@@ -7,7 +7,6 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <GLFW/glfw3.h>
 #include <render/renderer/ObjectLoader.h>
 #include <render/renderer/Renderer.h>
 #include <render/renderer/platform/vulkan/Material.h>
@@ -368,8 +367,6 @@ int main()
 
         renderer.EndFrame();
     }
-
-    renderer.ClearDeviceQueue();
 
     return 0;
 }

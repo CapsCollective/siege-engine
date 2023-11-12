@@ -47,15 +47,16 @@ export renderLib := $(libDir)/librender.a
 export testApp := $(binDir)/tests/build/app
 export exampleGameApp := $(binDir)/examples/game/build/app
 export exampleRenderApp := $(binDir)/examples/render/build/app
+export exampleTilemapApp := $(binDir)/examples/tilemap/build/app
 
 # Set build vars
 export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
 buildFlagsFile:=.buildflags
 
-.PHONY: all testapp gameapp renderapp package-gameapp package-renderapp buildFlags clean format
+.PHONY: all testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemap buildFlags clean format
 
-all: testapp package-gameapp package-renderapp
+all: testapp package-gameapp package-renderapp package-tilemap
 
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
@@ -78,17 +79,25 @@ $(exampleGameApp): buildFlags $(renderLib) $(coreLib)
 $(exampleRenderApp): buildFlags $(renderLib)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
+$(exampleTilemapApp): buildFlags $(renderLib)
+	"$(MAKE)" -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
+
 testapp: $(testApp)
 
 gameapp: $(exampleGameApp)
 
 renderapp: $(exampleRenderApp)
 
+tilemapapp: $(exampleTilemapApp)
+
 package-gameapp: gameapp
 	"$(MAKE)" package -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
 package-renderapp: renderapp
 	"$(MAKE)" package -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
+
+package-tilemap: tilemapapp
+	"$(MAKE)" package -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed
 buildFlags:
