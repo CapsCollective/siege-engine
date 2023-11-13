@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         Siege::Statics::Scene().LoadNextScene();
     }
 
-    renderer.ClearDeviceQueue();
+    renderer.ClearQueues();
 
     return 0;
 }

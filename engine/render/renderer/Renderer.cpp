@@ -48,7 +48,6 @@ Renderer::Renderer(Window& window) : window {window}
 Renderer::~Renderer()
 {
     CC_LOG_INFO("Destroying renderer")
-    Vulkan::Context::GetCurrentDevice()->WaitIdle();
     DescriptorPool::DestroyPool();
     Renderer3D::DestroyRenderer3D();
     Statics::Free();
@@ -62,7 +61,7 @@ void Renderer::DrawFrame()
 
 void Renderer::RecreateSwapChain()
 {
-    ClearDeviceQueue();
+    ClearQueues();
     auto extent = window.GetExtents();
 
     while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
@@ -176,7 +175,7 @@ void Renderer::EndFrame()
     renderer2D.Flush();
 }
 
-void Renderer::ClearDeviceQueue()
+void Renderer::ClearQueues()
 {
     Vulkan::Context::GetCurrentDevice()->WaitIdle();
 }

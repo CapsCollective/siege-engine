@@ -42,6 +42,7 @@ Font::Font(const char* filePath)
                         sizeof(uint8_t) * extent.width * extent.height,
                         extent.width,
                         extent.height,
+                        Utils::TEXTURE_FILTER_LINEAR,
                         Texture2D::Usage::TEX_USAGE_FONT);
 
     PopulateTextureAtlas(buffer);

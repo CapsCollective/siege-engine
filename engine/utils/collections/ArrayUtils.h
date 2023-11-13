@@ -17,8 +17,8 @@
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
-#include <utility>
 #include <iterator>
+#include <utility>
 
 namespace Siege
 {

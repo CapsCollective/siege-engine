@@ -226,6 +226,15 @@ enum MemoryProperty
     MEMORY_HOST_VISIBLE = 0x00000004
 };
 
+enum TextureFilter
+{
+    TEXTURE_FILTER_NEAREST = 0,
+    TEXTURE_FILTER_LINEAR = 1,
+    TEXTURE_FILTER_CUBIC_EXT = 1000015000,
+    TEXTURE_FILTER_CUBIC_IMG = TEXTURE_FILTER_CUBIC_EXT,
+    TEXTURE_FILTER_MAX_ENUM = 0x7FFFFFFF
+};
+
 //----------------------------------------- Structs -----------------------------------------------
 
 struct Extent2D

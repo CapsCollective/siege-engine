@@ -54,9 +54,9 @@ export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
 buildFlagsFile:=.buildflags
 
-.PHONY: all testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemap buildFlags clean format
+.PHONY: all testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemapapp buildFlags clean format
 
-all: testapp package-gameapp package-renderapp package-tilemap
+all: testapp package-gameapp package-renderapp package-tilemapapp
 
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
@@ -96,7 +96,7 @@ package-gameapp: gameapp
 package-renderapp: renderapp
 	"$(MAKE)" package -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-package-tilemap: tilemapapp
+package-tilemapapp: tilemapapp
 	"$(MAKE)" package -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
 
 # Check to invalidate the build if flags have changed

@@ -368,5 +368,7 @@ int main()
         renderer.EndFrame();
     }
 
+    renderer.ClearQueues();
+
     return 0;
 }
