@@ -355,6 +355,21 @@ DECL_VULKAN_SWITCH_FUN(VertexInputRate,
                                   VK_VERTEX_INPUT_RATE_INSTANCE,
                                   INPUT_RATE_INSTANCE) SWITCH_DEFAULT(INPUT_RATE_VERTEX))
 
+DECL_VULKAN_SWITCH_FUN(VkFilter,
+                       TextureFilter,
+                       SWITCH_MEM(TextureFilter, TEXTURE_FILTER_NEAREST, VK_FILTER_NEAREST)
+                           SWITCH_MEM(TextureFilter, TEXTURE_FILTER_LINEAR, VK_FILTER_LINEAR)
+                               SWITCH_MEM(TextureFilter,
+                                          TEXTURE_FILTER_MAX_ENUM,
+                                          VK_FILTER_MAX_ENUM) SWITCH_DEFAULT(VK_FILTER_CUBIC_EXT))
+
+DECL_VULKAN_SWITCH_FUN(TextureFilter,
+                       VkFilter,
+                       SWITCH_MEM(VkFilter, VK_FILTER_NEAREST, TEXTURE_FILTER_NEAREST)
+                           SWITCH_MEM(VkFilter, VK_FILTER_LINEAR, TEXTURE_FILTER_LINEAR)
+                               SWITCH_MEM(VkFilter, VK_FILTER_MAX_ENUM, TEXTURE_FILTER_MAX_ENUM)
+                                   SWITCH_DEFAULT(TEXTURE_FILTER_CUBIC_EXT))
+
 //----------------------------------------- Structs -----------------------------------------------
 
 DECL_CONVERSION_FUN(VkExtent2D, Extent2D, {GET_MEMBER(width), GET_MEMBER(height)})

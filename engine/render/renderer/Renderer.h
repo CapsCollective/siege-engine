@@ -45,7 +45,7 @@ public:
     bool StartFrame();
     void EndFrame();
 
-    void ClearDeviceQueue();
+    void ClearQueues();
 
     void DrawQuad(const Vec2 position,
                   const Vec2 scale = {1.f, 1.f},

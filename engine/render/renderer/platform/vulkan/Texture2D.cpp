@@ -13,6 +13,7 @@
 #include "Context.h"
 #include "render/renderer/buffer/Buffer.h"
 #include "utils/Descriptor.h"
+#include "utils/TypeAdaptor.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -21,11 +22,12 @@
 
 namespace Siege::Vulkan
 {
-Texture2D::Texture2D(const char* name, Usage texUsage)
+Texture2D::Texture2D(const char* name, Utils::TextureFilter filter, Usage texUsage)
 {
     LoadTexture(Constants::DEFAULT_TEXTURE_2D, Constants::DEFAULT_TEXTURE_SIZE, 16, 16, texUsage);
 
-    VkSamplerCreateInfo samplerInfo = Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
+    VkSamplerCreateInfo samplerInfo =
+        Utils::Descriptor::SamplerCreateInfo(Utils::ToVkFilter(filter));
 
     info = {image.GetInfo()};
 
@@ -37,11 +39,12 @@ Texture2D::Texture2D(const char* name, Usage texUsage)
     info.usage = texUsage;
 }
 
-Texture2D::Texture2D(const char* name, const char* filePath)
+Texture2D::Texture2D(const char* name, const char* filePath, Utils::TextureFilter filter)
 {
     LoadFromFile(filePath);
 
-    VkSamplerCreateInfo samplerInfo = Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
+    VkSamplerCreateInfo samplerInfo =
+        Utils::Descriptor::SamplerCreateInfo(Utils::ToVkFilter(filter));
 
     info = {image.GetInfo()};
 
@@ -55,11 +58,13 @@ Texture2D::Texture2D(const char* name,
                      size_t size,
                      uint32_t width,
                      uint32_t height,
+                     Utils::TextureFilter filter,
                      Usage texUsage)
 {
     LoadTexture(pixels, size, width, height, texUsage);
 
-    VkSamplerCreateInfo samplerInfo = Utils::Descriptor::SamplerCreateInfo(VK_FILTER_LINEAR);
+    VkSamplerCreateInfo samplerInfo =
+        Utils::Descriptor::SamplerCreateInfo(Utils::ToVkFilter(filter));
 
     info = {image.GetInfo()};
 
@@ -91,6 +96,10 @@ void Texture2D::LoadFromFile(const char* filePath)
     int texWidth, texHeight, texChannels;
 
     stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    defer([pixels] {
+        stbi_image_free(pixels);
+        ;
+    });
 
     CC_ASSERT(pixels, "Failed to load image file!")
 
@@ -104,6 +113,8 @@ void Texture2D::LoadFromFile(const char* filePath)
     memcpy(pixelPtr, pixels, sizeof(uint8_t) * imageSize);
 
     Buffer::Buffer stagingBuffer;
+    defer([&stagingBuffer] { Buffer::DestroyBuffer(stagingBuffer); });
+
     Buffer::CreateBuffer(imageSize,
                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          // specifies that data is accessible on the CPU.
@@ -115,8 +126,6 @@ void Texture2D::LoadFromFile(const char* filePath)
 
     Buffer::CopyData(stagingBuffer, imageSize, pixelPtr);
 
-    stbi_image_free(pixels);
-
     extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
 
     Utils::Extent3D imageExtent {static_cast<uint32_t>(texWidth),
@@ -125,8 +134,6 @@ void Texture2D::LoadFromFile(const char* filePath)
     image = Image({Utils::RGBASRGB, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
 
     image.CopyBuffer(stagingBuffer.buffer, imageExtent);
-
-    Buffer::DestroyBuffer(stagingBuffer);
 }
 
 void Texture2D::LoadTexture(const uint8_t* pixels,

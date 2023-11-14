@@ -61,7 +61,7 @@ void Renderer::DrawFrame()
 
 void Renderer::RecreateSwapChain()
 {
-    ClearDeviceQueue();
+    ClearQueues();
     auto extent = window.GetExtents();
 
     while (!window.IsVisible() || extent.width == 0.0 || extent.height == 0.0)
@@ -175,7 +175,7 @@ void Renderer::EndFrame()
     renderer2D.Flush();
 }
 
-void Renderer::ClearDeviceQueue()
+void Renderer::ClearQueues()
 {
     Vulkan::Context::GetCurrentDevice()->WaitIdle();
 }

@@ -57,7 +57,9 @@ public:
      * default white texture
      * @param name the name of the texture being created
      */
-    Texture2D(const char* name, Usage texUsage = TEX_USAGE_TEX2D);
+    Texture2D(const char* name,
+              Utils::TextureFilter filter = Utils::TEXTURE_FILTER_LINEAR,
+              Usage texUsage = TEX_USAGE_TEX2D);
 
     /**
      * The texture constructor used for loading a texture from file. This loads data from a given
@@ -65,13 +67,16 @@ public:
      * @param name the name of the texture
      * @param filePath the path of the PNG or JPG file
      */
-    Texture2D(const char* name, const char* filePath);
+    Texture2D(const char* name,
+              const char* filePath,
+              Utils::TextureFilter filter = Utils::TEXTURE_FILTER_LINEAR);
 
     Texture2D(const char* name,
               const uint8_t* pixels,
               size_t size,
               uint32_t width,
               uint32_t height,
+              Utils::TextureFilter filter = Utils::TEXTURE_FILTER_LINEAR,
               Usage texUsage = Usage::TEX_USAGE_TEX2D);
 
     /**

@@ -42,6 +42,7 @@ Font::Font(const char* filePath)
                         sizeof(uint8_t) * extent.width * extent.height,
                         extent.width,
                         extent.height,
+                        Utils::TEXTURE_FILTER_LINEAR,
                         Texture2D::Usage::TEX_USAGE_FONT);
 
     PopulateTextureAtlas(buffer);
@@ -142,8 +143,6 @@ void Font::PopulateTextureAtlas(uint8_t* buffer)
     {
         auto& glyph = glyphs[c];
         float xPos {glyph.uvxMin}, yPos {glyph.uvyMin};
-
-        // TODO:  Add an extent type which uses floating point numbers
 
         glyph.uvxMin /= extent.width;
         glyph.uvyMin /= extent.height;
