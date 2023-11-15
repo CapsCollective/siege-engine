@@ -66,7 +66,7 @@ void QuadRenderer3D::DrawQuad(const Siege::Vec3& position,
 {
     auto targetTexture = texture == nullptr ? &defaultTexture : texture;
 
-    auto texIndex = defaultMaterial.SetTexture(textureId, targetTexture);
+    auto texIndex = defaultMaterial.SetTexture(textureId, *targetTexture);
 
     if (texIndex >= quads.Count()) quads.Append(MHArray<QuadVertex>(MAX_QUADS_PER_TEXTURE));
 

@@ -24,14 +24,24 @@ public:
     {
     public:
 
-        TextureRef(TextureAtlas& parent, float minX, float minY, float width, float height) :
+        // 'Structors
+        TextureRef(TextureAtlas* parent, float minX, float minY, float width, float height) :
             parentAtlas {parent},
             minX {minX},
             width {width},
             minY {minY},
             height {height}
         {}
+
+        // Operator Overloads
+
         Texture2D& operator*();
+
+        TextureAtlas* operator->();
+
+        operator bool() const;
+
+        // Getters and setters
 
         inline float GetMinX() const
         {
@@ -41,7 +51,6 @@ public:
         {
             return minY;
         }
-
         inline float GetWidth() const
         {
             return width;
@@ -54,9 +63,11 @@ public:
     private:
 
         // NOTE(Aryeh): Can we always guarantee that the atlas will exist?
-        TextureAtlas& parentAtlas;
+        TextureAtlas* parentAtlas {nullptr};
         float minX, width, minY, height {0.f};
     };
+
+    // 'Structors
 
     TextureAtlas() = default;
     TextureAtlas(const char* name,
@@ -66,11 +77,29 @@ public:
     TextureAtlas(TextureAtlas&& other);
     ~TextureAtlas();
 
+    // Operator Overloads
+
     TextureRef operator[](size_t index);
+
+    // Getters & Setters
+
+    inline Texture2D& GetTexture()
+    {
+        return texture;
+    }
+    inline const Texture2D& GetTexture() const
+    {
+        return texture;
+    }
 
 private:
 
+    // Private functions
+
     void Swap(TextureAtlas& other);
+
+    // Private member variables
+
     Texture2D texture;
     Utils::Extent2DF fixedExtent {};
 };

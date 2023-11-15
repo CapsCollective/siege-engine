@@ -13,7 +13,12 @@ namespace Siege::Vulkan
 {
 Texture2D& TextureAtlas::TextureRef::operator*()
 {
-    return parentAtlas.texture;
+    return parentAtlas->texture;
+}
+
+TextureAtlas::TextureRef::operator bool() const
+{
+    return parentAtlas;
 }
 
 TextureAtlas::TextureAtlas(const char* name,
@@ -30,7 +35,26 @@ TextureAtlas::TextureAtlas(TextureAtlas&& other)
     Swap(other);
 }
 
-TextureAtlas::~TextureAtlas() {}
+TextureAtlas::~TextureAtlas()
+{
+    fixedExtent = {};
+}
+
+TextureAtlas::TextureRef TextureAtlas::operator[](size_t index)
+{
+    size_t elementsInRow = 1 / fixedExtent.width;
+
+    return TextureRef(this,
+                      (index % elementsInRow) * fixedExtent.width, // potentially slow code
+                      (index / elementsInRow) * fixedExtent.height,
+                      fixedExtent.width,
+                      fixedExtent.height);
+}
+
+TextureAtlas* TextureAtlas::TextureRef::operator->()
+{
+    return parentAtlas;
+}
 
 void TextureAtlas::Swap(TextureAtlas& other)
 {
@@ -42,17 +66,6 @@ void TextureAtlas::Swap(TextureAtlas& other)
 
     other.texture = std::move(tmpTexture);
     other.fixedExtent = tmpFixedExtent;
-}
-
-TextureAtlas::TextureRef TextureAtlas::operator[](size_t index)
-{
-    size_t elementsInRow = 1 / fixedExtent.width;
-
-    return TextureRef(*this,
-                      (index % elementsInRow) * fixedExtent.width, // potentially slow code
-                      (index / elementsInRow) * fixedExtent.height,
-                      fixedExtent.width,
-                      fixedExtent.height);
 }
 
 } // namespace Siege::Vulkan

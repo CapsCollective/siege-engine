@@ -158,17 +158,17 @@ void Material::SetUniformData(Hash::StringId id, uint64_t dataSize, const void* 
     }
 }
 
-uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
+uint32_t Material::SetTexture(Hash::StringId id, const Texture2D& texture)
 {
     using namespace Utils;
     using namespace Descriptor;
 
-    auto texIndex = FindTextureIndex(texture->GetId());
+    auto texIndex = FindTextureIndex(texture.GetId());
 
     if (texIndex > -1) return texIndex;
 
     texIndex = textureIds.Count();
-    textureIds.Append(texture->GetId());
+    textureIds.Append(texture.GetId());
 
     for (auto it = propertiesSlots.CreateIterator(); it; ++it)
     {
@@ -179,7 +179,7 @@ uint32_t Material::SetTexture(Hash::StringId id, Texture2D* texture)
 
         if (propIdx == -1) continue;
 
-        auto info = texture->GetInfo();
+        auto info = texture.GetInfo();
 
         textureInfos[texIndex] = {info.sampler, info.imageInfo.view, info.imageInfo.layout};
 

@@ -29,7 +29,6 @@ int main()
                                                "assets/textures/tilemap.png",
                                                {.5f, .5f},
                                                Siege::Vulkan::Utils::TEXTURE_FILTER_NEAREST);
-    auto fullTile = Siege::Vulkan::Texture2D("full tilemap", "assets/textures/tilemap.png", Siege::Vulkan::Utils::TEXTURE_FILTER_NEAREST);
 
     Siege::Camera camera;
 
@@ -49,12 +48,17 @@ int main()
 
         renderer.DrawText2D("Full Texture",
                             pixel,
-                            {window.GetWidth() / 4.f, 20.f},
+                            {window.GetWidth() / 3.8f, 20.f},
                             {32.f, 32.f},
                             0.f,
                             Siege::IColour::Black);
 
-        renderer.DrawQuad({(window.GetWidth() / 2.f) - 64.f, 100.f}, {64.f, 64.f}, Siege::IColour::White, 0.f, 0, &fullTile);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) - 64.f, 100.f},
+                          {64.f, 64.f},
+                          Siege::IColour::White,
+                          0.f,
+                          0,
+                          &tilemap.GetTexture());
 
         renderer.DrawText2D("Texture 0",
                             pixel,
@@ -84,10 +88,30 @@ int main()
                             0.f,
                             Siege::IColour::Black);
 
-        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.1f, 325.f}, tilemap[0], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
-        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.6f, 325.f}, tilemap[1], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
-        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.1f, 325.f}, tilemap[2], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
-        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.6f, 325.f}, tilemap[3], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.1f, 325.f},
+                          tilemap[0],
+                          {64.f, 64.f},
+                          Siege::IColour::White,
+                          0.f,
+                          0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.6f, 325.f},
+                          tilemap[1],
+                          {64.f, 64.f},
+                          Siege::IColour::White,
+                          0.f,
+                          0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.1f, 325.f},
+                          tilemap[2],
+                          {64.f, 64.f},
+                          Siege::IColour::White,
+                          0.f,
+                          0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.6f, 325.f},
+                          tilemap[3],
+                          {64.f, 64.f},
+                          Siege::IColour::White,
+                          0.f,
+                          0);
 
         renderer.EndFrame();
     }

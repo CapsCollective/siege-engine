@@ -27,6 +27,7 @@ class Renderer2D
 public:
 
     Renderer2D() = default;
+    ~Renderer2D();
     void Initialise(const char* const globalDataName);
     void DrawQuad(const Vec2 position,
                   const Vec2 scale = Vec2::One(),
@@ -57,8 +58,8 @@ public:
                 const uint64_t& globalDataSize,
                 const void* globalData,
                 uint32_t frameIndex);
-    void RenderText(Vulkan::CommandBuffer& buffer, size_t index);
-    void RenderQuads(Vulkan::CommandBuffer& buffer, size_t index);
+    void RenderText(Vulkan::CommandBuffer& buffer, size_t index, uint32_t frameIndex);
+    void RenderQuads(Vulkan::CommandBuffer& buffer, size_t index, uint32_t frameIndex);
     void RenderGrid(Vulkan::CommandBuffer& buffer);
     void Update();
     void Flush();
@@ -118,16 +119,15 @@ private:
     // 2D Quads (used for sprites)
 
     Vulkan::Material quadMaterial;
-    Vulkan::VertexBuffer quadVertexBuffer;
 
-    Vulkan::VertexBuffer quadVBuffer;
+    MHArray<Vulkan::VertexBuffer> perFrameQuadVertexBuffers;
 
     SArray<MSArray<MHArray<QuadVertex>, MAX_TEXTURES>, MAX_LAYERS> quads;
 
     // 2D Text
 
     Vulkan::Material textMaterial;
-    Vulkan::VertexBuffer textVertexBuffer;
+    MHArray<Vulkan::VertexBuffer> perFrameTextVertexBuffers;
 
     SArray<MSArray<MHArray<FontVertex>, MAX_TEXTURES>, MAX_LAYERS> characters;
 

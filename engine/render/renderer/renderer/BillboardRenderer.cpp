@@ -84,7 +84,7 @@ void BillboardRenderer::DrawBillboard(const Vec3& position,
 {
     auto targetTexture = texture == nullptr ? &defaultTexture : texture;
 
-    auto texIndex = billboardMaterial.SetTexture(textureId, targetTexture);
+    auto texIndex = billboardMaterial.SetTexture(textureId, *targetTexture);
 
     if (texIndex >= vertices.Count())
         vertices.Append(MHArray<BillboardVertex>(MAX_QUADS_PER_TEXTURE));
