@@ -108,6 +108,30 @@ void Renderer2D::DrawQuad(const Vec2 position,
                                  {0.f, 0.f, 1.f, 1.f}});
 }
 
+void Renderer2D::DrawQuad(const Vec2 position,
+                          Vulkan::TextureAtlas::TextureRef& texture,
+                          const Vec2 scale,
+                          IColour colour,
+                          float rotation,
+                          uint8_t zIndex)
+{
+    CC_ASSERT(zIndex < MAX_LAYERS, "zIndex provided is larger than the maximum number of layers")
+
+    auto texIndex = quadMaterial.SetTexture(textureId, &(*texture));
+
+    auto& layerQuads = quads[zIndex];
+
+    if (texIndex >= layerQuads.Count())
+        layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
+
+    layerQuads[texIndex].Append(
+        {Transform3D({position.x + scale.x, position.y + scale.y, 1.f},
+                     {0.f, 0.f, rotation},
+                     scale),
+         ToFColour(colour),
+         {texture.GetMinX(), texture.GetMinY(), texture.GetWidth(), texture.GetHeight()}});
+}
+
 void Renderer2D::DrawText2D(const char* const text,
                             const Vec2 position,
                             const Vec2 scale,

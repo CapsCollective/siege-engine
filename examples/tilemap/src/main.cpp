@@ -9,6 +9,7 @@
 
 #include <render/renderer/Renderer.h>
 #include <render/renderer/camera/Camera.h>
+#include <render/renderer/platform/vulkan/TextureAtlas.h>
 #include <utils/math/Projection.h>
 #include <utils/math/Transform.h>
 #include <utils/math/vec/Vec3.h>
@@ -24,9 +25,11 @@ int main()
     Siege::Renderer renderer(window);
 
     auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
-    auto tilemap = Siege::Vulkan::Texture2D("tilemap",
-                                            "assets/textures/tilemap.png",
-                                            Siege::Vulkan::Utils::TEXTURE_FILTER_NEAREST);
+    auto tilemap = Siege::Vulkan::TextureAtlas("tilemap",
+                                               "assets/textures/tilemap.png",
+                                               {.5f, .5f},
+                                               Siege::Vulkan::Utils::TEXTURE_FILTER_NEAREST);
+    auto fullTile = Siege::Vulkan::Texture2D("full tilemap", "assets/textures/tilemap.png", Siege::Vulkan::Utils::TEXTURE_FILTER_NEAREST);
 
     Siege::Camera camera;
 
@@ -44,14 +47,47 @@ int main()
 
         renderer.DrawGrid2D(100.f, {.2f, .2f, .2f}, window.GetDPI());
 
-        renderer.DrawText2D("Hello World!",
+        renderer.DrawText2D("Full Texture",
                             pixel,
-                            {10.f, 10.f},
-                            {64.f, 64.f},
+                            {window.GetWidth() / 4.f, 20.f},
+                            {32.f, 32.f},
                             0.f,
                             Siege::IColour::Black);
 
-        renderer.DrawQuad({400.f, 300.f}, {64.f, 64.f}, Siege::IColour::White, 0.f, 0, &tilemap);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) - 64.f, 100.f}, {64.f, 64.f}, Siege::IColour::White, 0.f, 0, &fullTile);
+
+        renderer.DrawText2D("Texture 0",
+                            pixel,
+                            {(window.GetWidth() / 2.f) * 0.1f, 275.f},
+                            {16.f, 16.f},
+                            0.f,
+                            Siege::IColour::Black);
+
+        renderer.DrawText2D("Texture 1",
+                            pixel,
+                            {(window.GetWidth() / 2.f) * 0.6f, 275.f},
+                            {16.f, 16.f},
+                            0.f,
+                            Siege::IColour::Black);
+
+        renderer.DrawText2D("Texture 2",
+                            pixel,
+                            {(window.GetWidth() / 2.f) * 1.1f, 275.f},
+                            {16.f, 16.f},
+                            0.f,
+                            Siege::IColour::Black);
+
+        renderer.DrawText2D("Texture 3",
+                            pixel,
+                            {(window.GetWidth() / 2.f) * 1.6f, 275.f},
+                            {16.f, 16.f},
+                            0.f,
+                            Siege::IColour::Black);
+
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.1f, 325.f}, tilemap[0], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 0.6f, 325.f}, tilemap[1], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.1f, 325.f}, tilemap[2], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
+        renderer.DrawQuad({(window.GetWidth() / 2.f) * 1.6f, 325.f}, tilemap[3], {64.f, 64.f}, Siege::IColour::White, 0.f, 0);
 
         renderer.EndFrame();
     }

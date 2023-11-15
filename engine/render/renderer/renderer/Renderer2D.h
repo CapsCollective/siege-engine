@@ -17,6 +17,7 @@
 #include "render/renderer/platform/vulkan/Font.h"
 #include "render/renderer/platform/vulkan/IndexBuffer.h"
 #include "render/renderer/platform/vulkan/Material.h"
+#include "render/renderer/platform/vulkan/TextureAtlas.h"
 #include "render/renderer/platform/vulkan/VertexBuffer.h"
 
 namespace Siege
@@ -33,6 +34,12 @@ public:
                   float rotation = 0.f,
                   const uint8_t zIndex = 0,
                   Vulkan::Texture2D* texture = nullptr);
+    void DrawQuad(const Vec2 position,
+                  Vulkan::TextureAtlas::TextureRef& texture,
+                  const Vec2 scale = Vec2::One(),
+                  const IColour colour = IColour::White,
+                  float rotation = 0.f,
+                  const uint8_t zIndex = 0);
     void DrawText2D(const char* const text,
                     const Vec2 position,
                     const Vec2 scale,
