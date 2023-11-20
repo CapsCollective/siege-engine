@@ -36,7 +36,7 @@ public:
                   const uint8_t zIndex = 0,
                   Vulkan::Texture2D* texture = nullptr);
     void DrawQuad(const Vec2 position,
-                  Vulkan::TextureAtlas::TextureRef& texture,
+                  Vulkan::TextureAtlas::SubTextureRef& texture,
                   const Vec2 scale = Vec2::One(),
                   const IColour colour = IColour::White,
                   float rotation = 0.f,

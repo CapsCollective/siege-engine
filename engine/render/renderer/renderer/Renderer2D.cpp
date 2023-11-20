@@ -130,7 +130,7 @@ void Renderer2D::DrawQuad(const Vec2 position,
 }
 
 void Renderer2D::DrawQuad(const Vec2 position,
-                          Vulkan::TextureAtlas::TextureRef& texture,
+                          Vulkan::TextureAtlas::SubTextureRef& texture,
                           const Vec2 scale,
                           IColour colour,
                           float rotation,

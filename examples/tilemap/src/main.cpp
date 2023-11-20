@@ -32,15 +32,14 @@ int main()
 
     Siege::Camera camera;
 
-    camera.projection =
-        Siege::Orthographic(0.f, window.GetWidth(), window.GetHeight(), 0.f, 0.1f, 1000.f);
-    camera.view = Siege::LookAt(Siege::Vec3::Zero(), {0.f, 0.f, 1.f});
-
-    renderer.SetCamera2D(camera);
-
     while (!window.WindowShouldClose())
     {
         window.Update();
+
+        camera.projection =
+            Siege::Orthographic(0.f, window.GetWidth(), window.GetHeight(), 0.f, 0.1f, 1000.f);
+        camera.view = Siege::LookAt(Siege::Vec3::Zero(), Siege::Vec3::Forward());
+        renderer.SetCamera2D(camera);
 
         if (!renderer.StartFrame()) continue;
 
