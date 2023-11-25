@@ -93,7 +93,7 @@ public:
      * @param index
      * @param textureInfo
      */
-    uint32_t SetTexture(Hash::StringId id, Texture2D* texture);
+    uint32_t SetTexture(Hash::StringId id, const Texture2D& texture);
 
     /**
      * Binds the Material for rendering (also binds the stored Pipeline)

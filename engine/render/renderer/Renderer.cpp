@@ -122,6 +122,16 @@ void Renderer::DrawQuad(const Vec2 position,
     renderer2D.DrawQuad(position, scale, colour, rotation, zIndex, texture);
 }
 
+void Renderer::DrawQuad(const Vec2 position,
+                        Vulkan::TextureAtlas::SubTextureRef texture,
+                        const Vec2 scale,
+                        const IColour colour,
+                        float rotation,
+                        const uint8_t zIndex)
+{
+    renderer2D.DrawQuad(position, texture, scale, colour, rotation, zIndex);
+}
+
 void Renderer::DrawText2D(const char* text,
                           Vulkan::Font& font,
                           const Vec2 position,

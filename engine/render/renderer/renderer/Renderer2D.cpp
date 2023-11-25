@@ -19,6 +19,12 @@
 
 namespace Siege
 {
+Renderer2D::~Renderer2D()
+{
+    for (auto it = perFrameQuadVertexBuffers.CreateFIterator(); it; ++it) it->Free();
+    for (auto it = perFrameTextVertexBuffers.CreateFIterator(); it; ++it) it->Free();
+}
+
 void Renderer2D::Initialise(const char* const globalDataName)
 {
     globalDataId = INTERN_STR(globalDataName);
@@ -78,9 +84,24 @@ void Renderer2D::Initialise(const char* const globalDataName)
 
     quadIndexBuffer = Vulkan::IndexBuffer(fontIndices, sizeof(unsigned int) * 6);
 
-    quadVertexBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
-    quadVBuffer = Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
-    textVertexBuffer = Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
+    perFrameQuadVertexBuffers =
+        MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        perFrameQuadVertexBuffers[i] =
+            Vulkan::VertexBuffer(sizeof(QuadVertex) * QUAD_VERTEX_BUFFER_SIZE);
+    }
+
+    perFrameTextVertexBuffers =
+        MHArray<Vulkan::VertexBuffer>(Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < Vulkan::Swapchain::MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        perFrameTextVertexBuffers[i] =
+            Vulkan::VertexBuffer(sizeof(FontVertex) * TEXT_VERTEX_BUFFER_SIZE);
+        ;
+    }
 }
 
 void Renderer2D::DrawQuad(const Vec2 position,
@@ -94,7 +115,7 @@ void Renderer2D::DrawQuad(const Vec2 position,
 
     auto targetTexture = texture == nullptr ? &defaultTexture : texture;
 
-    auto texIndex = quadMaterial.SetTexture(textureId, targetTexture);
+    auto texIndex = quadMaterial.SetTexture(textureId, *targetTexture);
 
     auto& layerQuads = quads[zIndex];
 
@@ -108,6 +129,32 @@ void Renderer2D::DrawQuad(const Vec2 position,
                                  {0.f, 0.f, 1.f, 1.f}});
 }
 
+void Renderer2D::DrawQuad(const Vec2 position,
+                          Vulkan::TextureAtlas::SubTextureRef& texture,
+                          const Vec2 scale,
+                          IColour colour,
+                          float rotation,
+                          uint8_t zIndex)
+{
+    CC_ASSERT(zIndex < MAX_LAYERS, "zIndex provided is larger than the maximum number of layers")
+
+    auto& targetTexture = texture ? *texture : defaultTexture;
+
+    auto texIndex = quadMaterial.SetTexture(textureId, targetTexture);
+
+    auto& layerQuads = quads[zIndex];
+
+    if (texIndex >= layerQuads.Count())
+        layerQuads[texIndex] = MHArray<QuadVertex>(MAX_QUADS_PER_LAYER);
+
+    layerQuads[texIndex].Append(
+        {Transform3D({position.x + scale.x, position.y + scale.y, 1.f},
+                     {0.f, 0.f, rotation},
+                     scale),
+         ToFColour(colour),
+         {texture.GetMinX(), texture.GetMinY(), texture.GetWidth(), texture.GetHeight()}});
+}
+
 void Renderer2D::DrawText2D(const char* const text,
                             const Vec2 position,
                             const Vec2 scale,
@@ -118,7 +165,7 @@ void Renderer2D::DrawText2D(const char* const text,
 {
     CC_ASSERT(zIndex < MAX_LAYERS, "zIndex provided is larger than the maximum number of layers")
 
-    auto texIndex = textMaterial.SetTexture(textureId, font.GetTexture());
+    auto texIndex = textMaterial.SetTexture(textureId, *font.GetTexture());
 
     auto& layerQuads = characters[zIndex];
 
@@ -179,19 +226,21 @@ void Renderer2D::Render(Vulkan::CommandBuffer& buffer,
     {
         // Render 2D quads for this layer
 
-        RenderQuads(buffer, i);
+        RenderQuads(buffer, i, frameIndex);
 
         // Render text for this layer
 
-        RenderText(buffer, i);
+        RenderText(buffer, i, frameIndex);
     }
 }
 
-void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
+void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index, uint32_t frameIndex)
 {
     if (characters[index].Count() == 0) return;
 
     auto& perFontQuads = characters[index];
+
+    auto& vertexBuffer = perFrameTextVertexBuffers[frameIndex];
 
     for (size_t j = 0; j < perFontQuads.Count(); j++)
     {
@@ -206,21 +255,20 @@ void Renderer2D::RenderText(Vulkan::CommandBuffer& buffer, size_t index)
             sizeof(FontVertex) *
             ((index * MAX_TEXTURES) + (j * MAX_TEXTS_PER_FONT * MAX_CHARS_PER_TEXT));
 
-        textVertexBuffer.Copy(quadArr.Data(),
-                              sizeof(FontVertex) * quadArr.Count(),
-                              vertexBufferOffset);
+        vertexBuffer.Copy(quadArr.Data(), sizeof(FontVertex) * quadArr.Count(), vertexBufferOffset);
 
-        textVertexBuffer.Bind(buffer, &vertexBufferOffset);
+        vertexBuffer.Bind(buffer, &vertexBufferOffset);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }
 }
 
-void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
+void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index, uint32_t frameIndex)
 {
     if (quads[index].Count() == 0) return;
 
     auto& perTextureQuads = quads[index];
+    auto& vertexBuffer = perFrameQuadVertexBuffers[frameIndex];
 
     for (size_t j = 0; j < perTextureQuads.Count(); j++)
     {
@@ -233,13 +281,13 @@ void Renderer2D::RenderQuads(Vulkan::CommandBuffer& buffer, size_t index)
 
         uint64_t vertexBufferOffset = (index * MAX_TEXTURES) + (j * MAX_QUADS_PER_LAYER);
 
-        quadVBuffer.Copy(quadArr.Data(),
-                         sizeof(QuadVertex) * quadArr.Count(),
-                         sizeof(QuadVertex) * vertexBufferOffset);
+        vertexBuffer.Copy(quadArr.Data(),
+                          sizeof(QuadVertex) * quadArr.Count(),
+                          sizeof(QuadVertex) * vertexBufferOffset);
 
         uint64_t bindOffset = sizeof(QuadVertex) * vertexBufferOffset;
 
-        quadVBuffer.Bind(buffer, &bindOffset);
+        vertexBuffer.Bind(buffer, &bindOffset);
 
         Vulkan::Utils::DrawIndexed(buffer.Get(), 6, quadArr.Count(), 0, 0, 0);
     }
