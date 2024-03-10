@@ -37,6 +37,7 @@ export scriptsDir := $(abspath scripts)
 export outputDir := $(abspath output)
 export engineDir := $(abspath engine)
 export testsDir := $(abspath tests)
+export packerDir := $(abspath packer)
 export examplesDir := $(abspath examples)
 
 # Set top level targets
@@ -45,6 +46,7 @@ export windowLib := $(libDir)/libwindow.a
 export coreLib := $(libDir)/libcore.a
 export renderLib := $(libDir)/librender.a
 export testApp := $(binDir)/tests/build/app
+export packerApp := $(binDir)/packer/build/app
 export exampleGameApp := $(binDir)/examples/game/build/app
 export exampleRenderApp := $(binDir)/examples/render/build/app
 export exampleTilemapApp := $(binDir)/examples/tilemap/build/app
@@ -54,9 +56,9 @@ export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
 buildFlagsFile:=.buildflags
 
-.PHONY: all testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemapapp buildFlags clean format
+.PHONY: all packerapp testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemapapp buildFlags clean format
 
-all: testapp package-gameapp package-renderapp package-tilemapapp
+all: packerapp testapp package-gameapp package-renderapp package-tilemapapp
 
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
@@ -73,6 +75,9 @@ $(renderLib): buildFlags $(utilsLib) $(windowLib)
 $(testApp): buildFlags $(utilsLib) $(coreLib)
 	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
+$(packerApp): buildFlags $(utilsLib) $(coreLib)
+	"$(MAKE)" -C $(packerDir) CXXFLAGS="$(CXXFLAGS)"
+
 $(exampleGameApp): buildFlags $(renderLib) $(coreLib)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
@@ -83,6 +88,8 @@ $(exampleTilemapApp): buildFlags $(renderLib)
 	"$(MAKE)" -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)
+
+packerapp: $(packerApp)
 
 gameapp: $(exampleGameApp)
 
@@ -112,8 +119,8 @@ clean:
 
 # Check file formatting program across all source files
 format-check:
-	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)" --check
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir) $(packerDir)" --check
 
 # Run file formatting program across all source files
 format:
-	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)"
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir) $(packerDir)"
