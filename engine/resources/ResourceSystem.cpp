@@ -25,9 +25,9 @@ bool ResourceSystem::MountPackFile(const String& searchPath)
     }
 
     std::filesystem::path packFilePath;
-    for(const auto& entry : std::filesystem::directory_iterator(basePath))
+    for (const auto& entry : std::filesystem::directory_iterator(basePath))
     {
-        if(entry.path().extension() == ".pck")
+        if (entry.path().extension() == ".pck")
         {
             packFile = new PackFile(entry.path().c_str());
             return true;
@@ -52,4 +52,4 @@ ResourceSystem& ResourceSystem::GetInstance()
     return resourceSystem;
 }
 
-} // namespace std
+} // namespace Siege

@@ -9,10 +9,9 @@
 
 #include "SceneFile.h"
 
+#include <resources/ResourceSystem.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
-#include <resources/ResourceSystem.h>
-
 
 #include <algorithm>
 

@@ -28,7 +28,8 @@ int main(int argc, char* argv[])
 {
     if (argc <= 1)
     {
-        CC_LOG_ERROR("Requires at least three arguments, expected form <outputFile> <assetsDir> [<inputFiles>]")
+        CC_LOG_ERROR("Requires at least three arguments, expected form <outputFile> <assetsDir> "
+                     "[<inputFiles>]")
         return 1;
     }
 
@@ -45,7 +46,8 @@ int main(int argc, char* argv[])
     uint32_t dataSize = 0;
     uint32_t entriesSize = 0;
 
-    struct BodyDataEntry {
+    struct BodyDataEntry
+    {
         void* ptr;
         uint32_t size;
     };
@@ -59,7 +61,7 @@ int main(int argc, char* argv[])
 
         void* data = nullptr;
         uint32_t bodyDataSize = 0;
-        Siege::String fullPath = assetsDir + "/" + file.c_str();
+        Siege::String fullPath = assetsDir + "/" + Siege::String(file.c_str());
         std::filesystem::path extension = file.extension();
         if (extension == ".obj")
         {
@@ -89,7 +91,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        PackFile::TocEntry* tocEntry = PackFile::TocEntry::Create(file.c_str(), dataSize, bodyDataSize);
+        PackFile::TocEntry* tocEntry =
+            PackFile::TocEntry::Create(file.c_str(), dataSize, bodyDataSize);
 
         bodyDataEntries.push_back({data, bodyDataSize});
         tocEntries.push_back(tocEntry);
@@ -101,42 +104,56 @@ int main(int argc, char* argv[])
         dynamicAllocations.push_back(tocEntry);
     }
 
-    PackFile::Header header {
-        {PACKER_MAGIC_NUMBER_FILE},
-        PACKER_FILE_VERSION,
-        dataSize + PACKER_MAGIC_NUMBER_SIZE + entriesSize,
-        dataSize
-    };
+    PackFile::Header header {{PACKER_MAGIC_NUMBER_FILE},
+                             PACKER_FILE_VERSION,
+                             dataSize + PACKER_MAGIC_NUMBER_SIZE + entriesSize,
+                             dataSize};
 
-    CC_LOG_INFO("Beginning pack file version {} write process for body size {} and ToC offset of {}...", header.version, header.bodySize, header.tocOffset)
+    CC_LOG_INFO(
+        "Beginning pack file version {} write process for body size {} and ToC offset of {}...",
+        header.version,
+        header.bodySize,
+        header.tocOffset)
     uint64_t writeTotal = 0;
     uint64_t dataOffset = 0;
 
     std::ofstream outputFileStream;
-    outputFileStream.open(outputFile, std::ios::out|std::ios::binary);
+    outputFileStream.open(outputFile, std::ios::out | std::ios::binary);
 
     outputFileStream.write(reinterpret_cast<char*>(&header), sizeof(PackFile::Header));
     writeTotal += sizeof(PackFile::Header);
-    CC_LOG_INFO("Adding HEADER to pack file with size: {} (write total: {})", sizeof(PackFile::Header), writeTotal)
+    CC_LOG_INFO("Adding HEADER to pack file with size: {} (write total: {})",
+                sizeof(PackFile::Header),
+                writeTotal)
 
     for (auto entry : bodyDataEntries)
     {
         uint32_t bodyDataSize = entry.size;
         outputFileStream.write(reinterpret_cast<char*>(entry.ptr), bodyDataSize);
         writeTotal += bodyDataSize;
-        CC_LOG_INFO("Adding DATA (offset: {}) to pack file with size: {} (write total: {})", dataOffset, bodyDataSize, writeTotal)
+        CC_LOG_INFO("Adding DATA (offset: {}) to pack file with size: {} (write total: {})",
+                    dataOffset,
+                    bodyDataSize,
+                    writeTotal)
         dataOffset += bodyDataSize;
     }
 
     outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
     writeTotal += PACKER_MAGIC_NUMBER_SIZE;
-    CC_LOG_INFO("Adding MAGIC NUMBER to pack file with size: {} (write total: {})", PACKER_MAGIC_NUMBER_SIZE, writeTotal)
+    CC_LOG_INFO("Adding MAGIC NUMBER to pack file with size: {} (write total: {})",
+                PACKER_MAGIC_NUMBER_SIZE,
+                writeTotal)
 
     for (Siege::PackFile::TocEntry* toc : tocEntries)
     {
         outputFileStream.write(reinterpret_cast<char*>(toc), toc->GetDataSize());
         writeTotal += toc->GetDataSize();
-        CC_LOG_INFO("Adding TOC ENTRY \"{}\" (offset: {}) to pack file with size: {} (write total: {})", toc->name, toc->dataOffset, toc->GetDataSize(), writeTotal)
+        CC_LOG_INFO(
+            "Adding TOC ENTRY \"{}\" (offset: {}) to pack file with size: {} (write total: {})",
+            toc->name,
+            toc->dataOffset,
+            toc->GetDataSize(),
+            writeTotal)
     }
 
     outputFileStream.close();

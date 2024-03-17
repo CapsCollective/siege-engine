@@ -28,7 +28,10 @@ struct Texture2DData
         return &pixels[0];
     }
 
-    static Texture2DData* Create(uint8_t* pixels, int32_t texWidth, int32_t texHeight, int32_t texChannels)
+    static Texture2DData* Create(uint8_t* pixels,
+                                 int32_t texWidth,
+                                 int32_t texHeight,
+                                 int32_t texChannels)
     {
         uint64_t imageSize = texWidth * texHeight * 4;
         uint32_t pixelDataSize = sizeof(uint8_t) * texWidth * texHeight * 4;
@@ -40,7 +43,8 @@ struct Texture2DData
         texture2dData->texWidth = texWidth;
         texture2dData->texHeight = texHeight;
         texture2dData->texChannels = texChannels;
-        memset(&texture2dData->pixels[0], 0, imageSize); // Set the image to 0 so that we get no garbage data in the pixel array
+        // Ensure we get no garbage data in the pixel array
+        memset(&texture2dData->pixels[0], 0, imageSize);
         memcpy(&texture2dData->pixels[0], pixels, sizeof(uint8_t) * imageSize);
 
         return texture2dData;
@@ -49,7 +53,8 @@ struct Texture2DData
     static uint32_t GetDataSize(void* objectData)
     {
         Texture2DData* textureData = reinterpret_cast<Texture2DData*>(objectData);
-        return sizeof(Texture2DData) + sizeof(uint8_t) * textureData->texWidth * textureData->texHeight * 4;
+        return sizeof(Texture2DData) +
+               sizeof(uint8_t) * textureData->texWidth * textureData->texHeight * 4;
     }
 };
 #pragma pack(pop)

@@ -8,12 +8,12 @@
 
 #include "PackFile.h"
 
+#include <utils/FileSystem.h>
+#include <utils/Logging.h>
+
 #include <fstream>
 #include <iostream>
 #include <map>
-
-#include <utils/FileSystem.h>
-#include <utils/Logging.h>
 
 namespace Siege
 {
@@ -56,7 +56,9 @@ const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
     return entries;
 }
 
-PackFile::TocEntry* PackFile::TocEntry::Create(const String& name, uint32_t dataOffset, uint32_t dataSize)
+PackFile::TocEntry* PackFile::TocEntry::Create(const String& name,
+                                               uint32_t dataOffset,
+                                               uint32_t dataSize)
 {
     uint32_t nameDataSize = name.Size() + 1;
     void* mem = malloc(sizeof(TocEntry) + nameDataSize);

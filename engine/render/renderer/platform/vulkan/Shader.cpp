@@ -9,14 +9,14 @@
 
 #include "Shader.h"
 
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
+#include <resources/ShaderData.h>
 #include <utils/Logging.h>
 
 #include <fstream>
 
 #include "render/renderer/renderer/Renderer3D.h"
-#include "resources/ResourceSystem.h"
-#include "resources/PackFile.h"
-#include "resources/ShaderData.h"
 #include "utils/ShaderModule.h"
 
 namespace Siege::Vulkan
@@ -173,8 +173,9 @@ void Shader::Destroy()
 
 MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
-    Siege::ResourceSystem::GetInstance().MountPackFile();
-    ShaderData* shaderData = ResourceSystem::GetInstance().GetPackFile()->FindData<ShaderData>(filePath);
+    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
+    resourceSystem.MountPackFile();
+    ShaderData* shaderData = resourceSystem.GetPackFile()->FindData<ShaderData>(filePath);
     MHArray<char> buffer(shaderData->data, shaderData->dataSize);
     return buffer;
 }

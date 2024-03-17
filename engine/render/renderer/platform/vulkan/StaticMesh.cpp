@@ -9,8 +9,8 @@
 
 #include "StaticMesh.h"
 
-#include <resources/ResourceSystem.h>
 #include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
 #include <utils/Logging.h>
 
 #include "Swapchain.h"
@@ -42,7 +42,8 @@ StaticMesh::StaticMesh(unsigned int vertexBufferSize,
 StaticMesh::StaticMesh(const char* filePath, Material* material)
 {
     // TODO(Aryeh): How to extract material data from object files?
-    StaticMeshData* vertexData = Siege::ResourceSystem::GetInstance().GetPackFile()->FindData<StaticMeshData>(filePath);
+    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
+    StaticMeshData* vertexData = resourceSystem.GetPackFile()->FindData<StaticMeshData>(filePath);
 
     CC_ASSERT(vertexData->verticesCount > 0, "Cannot load in a file with no vertices!")
     CC_ASSERT(vertexData->indicesCount > 0, "Cannot load in a file with no indices!")

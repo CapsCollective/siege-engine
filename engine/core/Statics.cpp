@@ -10,6 +10,7 @@
 #include "Statics.h"
 
 #include <resources/ResourceSystem.h>
+
 #include "physics/CollisionSystem.h"
 #include "scene/SceneSystem.h"
 

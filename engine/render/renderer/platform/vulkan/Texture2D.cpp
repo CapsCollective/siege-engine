@@ -92,7 +92,8 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 
 void Texture2D::LoadFromFile(const char* filePath)
 {
-    Texture2DData* texture2dData = Siege::ResourceSystem::GetInstance().GetPackFile()->FindData<Texture2DData>(filePath);
+    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
+    Texture2DData* texture2dData = resourceSystem.GetPackFile()->FindData<Texture2DData>(filePath);
     uint64_t imageSize = texture2dData->texWidth * texture2dData->texHeight * 4;
     const uint8_t* pixelPtr = texture2dData->GetPixels();
 
@@ -110,7 +111,8 @@ void Texture2D::LoadFromFile(const char* filePath)
 
     Buffer::CopyData(stagingBuffer, imageSize, pixelPtr);
 
-    extent = {static_cast<uint32_t>(texture2dData->texWidth), static_cast<uint32_t>(texture2dData->texHeight)};
+    extent = {static_cast<uint32_t>(texture2dData->texWidth),
+              static_cast<uint32_t>(texture2dData->texHeight)};
 
     Utils::Extent3D imageExtent {static_cast<uint32_t>(texture2dData->texWidth),
                                  static_cast<uint32_t>(texture2dData->texHeight),

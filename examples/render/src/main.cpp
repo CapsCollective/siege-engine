@@ -11,11 +11,11 @@
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
 #include <render/renderer/platform/vulkan/Texture2D.h>
+#include <resources/ResourceSystem.h>
 #include <utils/math/Float.h>
 #include <utils/math/mat/Mat4.h>
 #include <window/Input.h>
 #include <window/Window.h>
-#include <resources/ResourceSystem.h>
 
 #include <chrono>
 

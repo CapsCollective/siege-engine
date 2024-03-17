@@ -9,15 +9,16 @@
 #include "WavefrontDataPacker.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
-#include <utils/Logging.h>
 #include <resources/StaticMeshData.h>
+#include <tiny_obj_loader.h>
+#include <utils/Logging.h>
+
+#include <unordered_map>
 
 using Siege::BaseVertex;
+using Siege::FColour;
 using Siege::Vec2;
 using Siege::Vec3;
-using Siege::FColour;
 
 void* PackWavefrontFile(const Siege::String& filePath)
 {

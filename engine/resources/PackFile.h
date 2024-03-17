@@ -9,10 +9,10 @@
 #ifndef SIEGE_ENGINE_PACKFILE_H
 #define SIEGE_ENGINE_PACKFILE_H
 
+#include <utils/String.h>
+
 #include <filesystem>
 #include <map>
-
-#include <utils/String.h>
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
 #define PACKER_MAGIC_NUMBER_TOC "toc!"
@@ -27,19 +27,22 @@ class PackFile
 public:
 
 #pragma pack(push, 1)
-    union MagicNumber {
+    union MagicNumber
+    {
         char string[4];
         uint32_t number;
     };
 
-    struct Header {
+    struct Header
+    {
         MagicNumber magic;
         uint32_t version;
         uint64_t bodySize;
         uint64_t tocOffset;
     };
 
-    struct TocEntry {
+    struct TocEntry
+    {
         uint32_t nameSize;
         uint32_t dataOffset;
         uint32_t dataSize;

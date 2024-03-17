@@ -9,11 +9,10 @@
 #include "Texture2DDataPacker.h"
 
 #define STB_IMAGE_IMPLEMENTATION
+#include <resources/Texture2DData.h>
 #include <stb_image.h>
-
 #include <utils/Defer.h>
 #include <utils/Logging.h>
-#include <resources/Texture2DData.h>
 
 void* PackTexture2DFile(const Siege::String& filePath)
 {
@@ -22,6 +21,7 @@ void* PackTexture2DFile(const Siege::String& filePath)
     defer([pixels] { stbi_image_free(pixels); });
     CC_ASSERT(pixels, "Failed to load image file!")
 
-    Siege::Texture2DData* texture2dData = Siege::Texture2DData::Create(pixels, texWidth, texHeight, texChannels);
+    Siege::Texture2DData* texture2dData =
+        Siege::Texture2DData::Create(pixels, texWidth, texHeight, texChannels);
     return texture2dData;
 }

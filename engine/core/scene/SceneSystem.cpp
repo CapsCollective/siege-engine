@@ -9,11 +9,11 @@
 
 #include "SceneSystem.h"
 
+#include <resources/ResourceSystem.h>
 #include <utils/Logging.h>
 
 #include <vector>
 
-#include <resources/ResourceSystem.h>
 #include "SceneFile.h"
 
 namespace Siege
@@ -58,7 +58,8 @@ void SceneSystem::LoadNextScene()
 void SceneSystem::SaveScene()
 {
     // Save the scene as the current scene or untitled
-    if (currentScene.GetSceneName().IsEmpty()) currentScene.SetSceneName(baseDir + UNKNOWN_FILENAME);
+    if (currentScene.GetSceneName().IsEmpty())
+        currentScene.SetSceneName(baseDir + UNKNOWN_FILENAME);
 
     // Serialise the data to it and close it
     if (currentScene.Serialise(Statics::Entity().GetEntities())) return;
