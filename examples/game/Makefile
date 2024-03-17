@@ -32,6 +32,7 @@ engineRenderBuildDir := $(binDir)/engine/render/build
 exampleGameAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.obj))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.png))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.jpg))
+exampleGameAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
@@ -77,6 +78,7 @@ render-assets:
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
 	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets/models)
 	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets/textures)
+	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets/shaders)
 
 # Package the built application and all its assets to the output directory
 package: all

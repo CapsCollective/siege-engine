@@ -28,9 +28,11 @@ else ifeq ($(platform), macos)
 		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
+engineRenderBuildDir := $(binDir)/engine/render/build
 exampleRenderAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.obj))
 exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.png))
 exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.jpg))
+exampleRenderAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)

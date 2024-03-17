@@ -31,6 +31,7 @@ endif
 engineRenderBuildDir := $(binDir)/engine/render/build
 exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.png))
 exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.jpg))
+exampleTilemapAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
