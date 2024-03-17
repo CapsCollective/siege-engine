@@ -9,9 +9,9 @@
 
 #include "ModelRenderer.h"
 
+#include <resources/StaticMeshData.h>
 #include <utils/math/Transform.h>
 
-#include "../vertex/BaseVertex.h"
 #include "render/renderer/platform/vulkan/utils/Draw.h"
 
 namespace Siege

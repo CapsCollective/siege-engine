@@ -42,6 +42,7 @@ export examplesDir := $(abspath examples)
 
 # Set top level targets
 export utilsLib := $(libDir)/libutils.a
+export resourcesLib := $(libDir)/libresources.a
 export windowLib := $(libDir)/libwindow.a
 export coreLib := $(libDir)/libcore.a
 export renderLib := $(libDir)/librender.a
@@ -63,6 +64,9 @@ all: packerapp testapp package-gameapp package-renderapp package-tilemapapp
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
 
+$(resourcesLib): buildFlags $(utilsLib)
+	"$(MAKE)" -C $(engineDir)/resources CXXFLAGS="$(CXXFLAGS)"
+
 $(windowLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/window CXXFLAGS="$(CXXFLAGS)"
 
@@ -72,19 +76,19 @@ $(coreLib): buildFlags $(utilsLib)
 $(renderLib): buildFlags $(utilsLib) $(windowLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-$(testApp): buildFlags $(utilsLib) $(coreLib)
-	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
-
-$(packerApp): buildFlags $(utilsLib) $(coreLib)
+$(packerApp): buildFlags $(utilsLib) $(resourcesLib)
 	"$(MAKE)" -C $(packerDir) CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleGameApp): buildFlags $(renderLib) $(coreLib)
+$(testApp): buildFlags $(utilsLib) $(coreLib) $(packerApp)
+	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
+
+$(exampleGameApp): buildFlags $(renderLib) $(coreLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleRenderApp): buildFlags $(renderLib)
+$(exampleRenderApp): buildFlags $(renderLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleTilemapApp): buildFlags $(renderLib)
+$(exampleTilemapApp): buildFlags $(renderLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)

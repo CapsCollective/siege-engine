@@ -57,6 +57,18 @@ public:
      */
     void LoadNextScene();
 
+    /**
+     * Sets the base directory used for scene management.
+     * @param dir - the directory to set as base
+     */
+    void SetBaseDirectory(const String& dir);
+
+    /**
+     * Gets the base directory used for scene management.
+     * @return the directory as a string
+     */
+    const String& GetBaseDirectory();
+
 private:
 
     // Private methods
@@ -77,6 +89,11 @@ private:
      * The currently loaded scene file
      */
     SceneFile currentScene;
+
+    /**
+     * The base directory for accessing scenes
+     */
+    String baseDir;
 };
 } // namespace Siege
 

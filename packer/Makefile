@@ -17,7 +17,8 @@ packerDepends := $(patsubst %.o, %.d, $(call rwildcard,$(packerBinDir)/,*.o))
 packerBuildDir := $(packerBinDir)/build
 
 # Set build vars
-linkFlags += -l core -l utils
+linkFlags += -l resources -l utils
+compileFlags += -I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image
 
 .PHONY: all
 

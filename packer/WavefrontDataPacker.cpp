@@ -1,40 +1,25 @@
 //
-// Copyright (c) 2020-present Caps Collective & contributors
-// Originally authored by Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
+// Copyright (c) 2020-present Jonathan Moallem (@J-Mo63) & Aryeh Zinn (@Raelr)
 //
 // This code is released under an unmodified zlib license.
 // For conditions of distribution and use, please see:
 //     https://opensource.org/licenses/Zlib
 //
 
-#include "ObjectLoader.h"
+#include "WavefrontDataPacker.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
 #include <utils/Logging.h>
-#include <utils/math/vec/Hashing.h>
+#include <resources/StaticMeshData.h>
 
-#include <unordered_map>
-#include <vector>
+using Siege::BaseVertex;
+using Siege::Vec2;
+using Siege::Vec3;
+using Siege::FColour;
 
-namespace std
-{
-template<>
-struct hash<Siege::BaseVertex>
-{
-    size_t operator()(const Siege::BaseVertex& vertex) const
-    {
-        size_t seed = 0;
-        Siege::Hash::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-        return seed;
-    };
-};
-} // namespace std
-
-namespace Siege
-{
-
-ObjectVertexData LoadObjectFromFile(const char* filePath)
+void* PackWavefrontFile(const Siege::String& filePath)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -88,9 +73,6 @@ ObjectVertexData LoadObjectFromFile(const char* filePath)
         }
     }
 
-    return {sizeof(BaseVertex),
-            MHArray<BaseVertex>(objVertices.data(), objVertices.size()),
-            MHArray(objIndices.data(), objIndices.size())};
+    Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(objIndices, objVertices);
+    return staticMeshData;
 }
-
-} // namespace Siege

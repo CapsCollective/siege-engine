@@ -7,196 +7,172 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <resources/FontData.h>
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
+#include <resources/ShaderData.h>
+#include <resources/StaticMeshData.h>
+#include <resources/Texture2DData.h>
+#include <utils/Logging.h>
+
 #include <fstream>
-#include <iostream>
-#include <map>
 
-#include "utils/FileSystem.h"
+#include "FontDataPacker.h"
+#include "ShaderDataPacker.h"
+#include "Texture2DDataPacker.h"
+#include "WavefrontDataPacker.h"
 
-#define PACKER_MAGIC_NUMBER_FILE "spck"
-#define PACKER_MAGIC_NUMBER_TOC "toc!"
-#define PACKER_MAGIC_NUMBER_SIZE sizeof(uint32_t)
-#define PACKER_FILE_VERSION 1
+using Siege::PackFile;
 
-struct Example {
-    int i;
-    bool b;
-    float f;
-    int ia[10];
-    bool ba[10];
-    float fa[10];
-};
-
-union MagicNumber {
-    const char* string;
-    uint32_t number;
-};
-
-struct PackageHeader {
-    MagicNumber magic;
-    uint32_t version;
-    uint64_t bodySize;
-    uint64_t tocOffset;
-};
-
-struct TocEntry {
-    uint32_t nameSize;
-    uint32_t dataOffset;
-    uint32_t dataSize;
-    const char* name;
-
-    uint32_t entrySize() const
+int main(int argc, char* argv[])
+{
+    if (argc <= 1)
     {
-        return sizeof(TocEntry) + nameSize - 1;
-    }
-};
-
-std::map<const char*, TocEntry*> entries;
-
-const char* path = "/Users/j-mo/Desktop/example.pck";
-
-void printHeader(const PackageHeader& h)
-{
-    std::cout << "Header" << "\n";
-    std::cout << "magic: " << h.magic.string << "\n";
-    std::cout << "version: " << h.version << "\n";
-    std::cout << "bodySize: " << h.bodySize << "\n";
-    std::cout << "tocOffset: " << h.tocOffset << "\n";
-    std::cout << "\n";
-}
-
-void printToc(const TocEntry& t)
-{
-    std::cout << "ToC" << "\n";
-    std::cout << "nameSize: " << t.nameSize << "\n";
-    std::cout << "dataOffset: " << t.dataOffset << "\n";
-    std::cout << "dataSize: " << t.dataSize << "\n";
-    std::cout << "name: " << t.name << "\n";
-    std::cout << "\n";
-}
-
-void printExample(const Example& e)
-{
-    std::cout << "Example" << "\n";
-    std::cout << "i: " << e.i << "\n";
-    std::cout << "b: " << e.b << "\n";
-    std::cout << "f: " << e.f << "\n";
-
-    std::cout << "ia: ";
-    for (int i = 0; i < 10; ++i) std::cout << e.ia[i] << ", ";
-    std::cout << "\n";
-
-    std::cout << "ba: ";
-    for (int i = 0; i < 10; ++i) std::cout << e.ba[i] << ", ";
-    std::cout << "\n";
-
-    std::cout << "fa: ";
-    for (int i = 0; i < 10; ++i) std::cout << e.fa[i] << ", ";
-    std::cout << "\n";
-    std::cout << "\n";
-}
-
-int main()
-{
-    {
-        PackageHeader header {
-            {PACKER_MAGIC_NUMBER_FILE},
-            PACKER_FILE_VERSION,
-            sizeof(Example)*4+PACKER_MAGIC_NUMBER_SIZE+sizeof(TocEntry)+5+sizeof(TocEntry)+7,
-            sizeof(Example)*4
-        };
-
-        std::vector<TocEntry> tv {
-            {
-                6,
-             sizeof(Example)*2,
-             sizeof(Example),
-             "hello"
-            },
-            {
-                8,
-                sizeof(Example)*3,
-                sizeof(Example),
-                "hellone"
-            }
-        };
-
-        Example e {};
-        e.i = 7;
-        e.b = true;
-        e.f = 3.14;
-
-        Example f {};
-        f.i = 9;
-        f.b = true;
-        f.f = 0.01f;
-
-        for (int i = 0; i < 10; ++i)
-        {
-            e.ia[i] = i;
-            e.ba[i] = i%2;
-            e.fa[i] = float(i) + (float(i)/10.f);
-
-            f.ia[i] = i*2;
-            f.ba[i] = !i%2;
-            f.fa[i] = float(i) + (float(i)/5.f);
-        }
-
-        std::ofstream outputFileStream;
-        outputFileStream.open(path, std::ios::out|std::ios::binary);
-        outputFileStream.write(reinterpret_cast<char*>(&header), sizeof(PackageHeader));
-
-        char zero[sizeof(Example)*2] = { 0 };
-        outputFileStream.write(zero, sizeof(Example)*2);
-
-        outputFileStream.write(reinterpret_cast<char*>(&e), sizeof(Example));
-
-        outputFileStream.write(reinterpret_cast<char*>(&f), sizeof(Example));
-
-        outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
-
-        for (auto toc : tv)
-        {
-            outputFileStream.write(reinterpret_cast<char*>(&toc), toc.entrySize());
-        }
-
-        outputFileStream.close();
+        CC_LOG_ERROR("Requires at least three arguments, expected form <outputFile> <assetsDir> [<inputFiles>]")
+        return 1;
     }
 
-    std::cout << "============================" << "\n";
+    bool errors = false;
+    Siege::String outputFile = argv[1];
+    Siege::String assetsDir = argv[2];
 
+    std::vector<std::filesystem::path> inputFiles;
+    for (int currentArg = 3; currentArg < argc; ++currentArg)
     {
-        PackageHeader header {};
-
-        std::ifstream inputFileStream;
-        inputFileStream.open(path, std::ios::in|std::ios::binary);
-        inputFileStream.read(reinterpret_cast<char*>(&header), sizeof(PackageHeader));
-        char* body = reinterpret_cast<char*>(malloc(header.bodySize));
-        inputFileStream.read(body, header.bodySize);
-        inputFileStream.close();
-
-        printHeader(header);
-
-        char* toc_start = body+header.tocOffset+PACKER_MAGIC_NUMBER_SIZE;
-        char* toc_end = body+header.bodySize;
-        char* toc_curr = toc_start;
-        while (toc_curr < toc_end)
-        {
-            TocEntry* toc = reinterpret_cast<TocEntry*>(toc_curr);
-            toc_curr += toc->entrySize();
-            entries.emplace(toc->name, toc);
-        }
-
-        for (auto entry : entries)
-        {
-            TocEntry* toc = entry.second;
-            printToc(*toc);
-            Example* g = reinterpret_cast<Example*>(body+toc->dataOffset);
-            printExample(*g);
-        }
-
-        free(body);
+        inputFiles.emplace_back(argv[currentArg]);
     }
 
+    uint32_t dataSize = 0;
+    uint32_t entriesSize = 0;
+
+    struct BodyDataEntry {
+        void* ptr;
+        uint32_t size;
+    };
+
+    std::vector<void*> dynamicAllocations;
+    std::vector<PackFile::TocEntry*> tocEntries;
+    std::vector<BodyDataEntry> bodyDataEntries;
+    for (auto& file : inputFiles)
+    {
+        if (file.empty()) continue;
+
+        void* data = nullptr;
+        uint32_t bodyDataSize = 0;
+        Siege::String fullPath = assetsDir + "/" + file.c_str();
+        std::filesystem::path extension = file.extension();
+        if (extension == ".obj")
+        {
+            data = PackWavefrontFile(fullPath);
+            bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
+        }
+        else if (extension == ".spv")
+        {
+            data = PackShaderFile(fullPath);
+            bodyDataSize = Siege::ShaderData::GetDataSize(data);
+        }
+        else if (extension == ".ttf")
+        {
+            data = PackFontFile(fullPath);
+            bodyDataSize = Siege::FontData::GetDataSize(data);
+        }
+        else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+        {
+            data = PackTexture2DFile(fullPath);
+            bodyDataSize = Siege::Texture2DData::GetDataSize(data);
+        }
+
+        if (!data)
+        {
+            CC_LOG_ERROR("Failed to create pack data for file \"{}\"", file.c_str())
+            errors = true;
+            continue;
+        }
+
+        PackFile::TocEntry* tocEntry = PackFile::TocEntry::Create(file.c_str(), dataSize, bodyDataSize);
+
+        bodyDataEntries.push_back({data, bodyDataSize});
+        tocEntries.push_back(tocEntry);
+
+        dataSize += bodyDataSize;
+        entriesSize += tocEntry->GetDataSize();
+
+        dynamicAllocations.push_back(data);
+        dynamicAllocations.push_back(tocEntry);
+    }
+
+    PackFile::Header header {
+        {PACKER_MAGIC_NUMBER_FILE},
+        PACKER_FILE_VERSION,
+        dataSize + PACKER_MAGIC_NUMBER_SIZE + entriesSize,
+        dataSize
+    };
+
+    CC_LOG_INFO("Beginning pack file version {} write process for body size {} and ToC offset of {}...", header.version, header.bodySize, header.tocOffset)
+    uint64_t writeTotal = 0;
+    uint64_t dataOffset = 0;
+
+    std::ofstream outputFileStream;
+    outputFileStream.open(outputFile, std::ios::out|std::ios::binary);
+
+    outputFileStream.write(reinterpret_cast<char*>(&header), sizeof(PackFile::Header));
+    writeTotal += sizeof(PackFile::Header);
+    CC_LOG_INFO("Adding HEADER to pack file with size: {} (write total: {})", sizeof(PackFile::Header), writeTotal)
+
+    for (auto entry : bodyDataEntries)
+    {
+        uint32_t bodyDataSize = entry.size;
+        outputFileStream.write(reinterpret_cast<char*>(entry.ptr), bodyDataSize);
+        writeTotal += bodyDataSize;
+        CC_LOG_INFO("Adding DATA (offset: {}) to pack file with size: {} (write total: {})", dataOffset, bodyDataSize, writeTotal)
+        dataOffset += bodyDataSize;
+    }
+
+    outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
+    writeTotal += PACKER_MAGIC_NUMBER_SIZE;
+    CC_LOG_INFO("Adding MAGIC NUMBER to pack file with size: {} (write total: {})", PACKER_MAGIC_NUMBER_SIZE, writeTotal)
+
+    for (Siege::PackFile::TocEntry* toc : tocEntries)
+    {
+        outputFileStream.write(reinterpret_cast<char*>(toc), toc->GetDataSize());
+        writeTotal += toc->GetDataSize();
+        CC_LOG_INFO("Adding TOC ENTRY \"{}\" (offset: {}) to pack file with size: {} (write total: {})", toc->name, toc->dataOffset, toc->GetDataSize(), writeTotal)
+    }
+
+    outputFileStream.close();
+    CC_LOG_INFO("Ended pack file write process (write total: {})", writeTotal)
+
+    uint32_t expectedSize = sizeof(PackFile::Header) + header.bodySize;
+    CC_ASSERT(expectedSize == writeTotal, "Write total does not match expected file size!")
+
+    CC_LOG_INFO("Mounting and verifying ToC contents of written pack file...")
+    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
+    std::filesystem::path buildDir(outputFile.Str());
+    resourceSystem.MountPackFile(buildDir.remove_filename().c_str());
+    PackFile* packFile = resourceSystem.GetPackFile();
+
+    for (const std::filesystem::path& file : inputFiles)
+    {
+        auto it = packFile->GetEntries().find(file.c_str());
+        if (it == packFile->GetEntries().end())
+        {
+            CC_LOG_WARNING("Missing ToC entry for input file \"{}\"", file.c_str())
+            errors = true;
+            continue;
+        }
+    }
+
+    CC_LOG_INFO("ToC contents finished verification process, unmounting written pack file...")
+    resourceSystem.UnmountPackFile();
+
+    CC_LOG_INFO("Freeing dynamically allocated memory from packer...")
+    for (void* allocation : dynamicAllocations) free(allocation);
+
+    if (errors)
+    {
+        CC_LOG_ERROR("Packing process completed with errors!")
+        return 1;
+    }
+    CC_LOG_INFO("Packing process completed successfully!")
     return 0;
 }

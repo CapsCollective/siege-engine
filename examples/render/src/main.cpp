@@ -7,7 +7,6 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <render/renderer/ObjectLoader.h>
 #include <render/renderer/Renderer.h>
 #include <render/renderer/platform/vulkan/Material.h>
 #include <render/renderer/platform/vulkan/Shader.h>
@@ -16,6 +15,7 @@
 #include <utils/math/mat/Mat4.h>
 #include <window/Input.h>
 #include <window/Window.h>
+#include <resources/ResourceSystem.h>
 
 #include <chrono>
 
@@ -43,6 +43,9 @@ int main()
     WINDOWS_ATTACH_CONSOLE
 
     Siege::Window window("Render Example", {WIDTH, HEIGHT});
+
+    // Load resources
+    Siege::ResourceSystem::GetInstance().MountPackFile();
 
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
     Siege::Input::DisableCursor();
@@ -81,9 +84,6 @@ int main()
                      .Build());
 
     // Generate models
-
-    // Generating models from .obj files
-
     Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.obj", &testMaterial);
     Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.obj", &testMaterial);
 

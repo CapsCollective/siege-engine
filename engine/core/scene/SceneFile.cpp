@@ -11,10 +11,10 @@
 
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
+#include <resources/ResourceSystem.h>
+
 
 #include <algorithm>
-
-#include "../ResourceSystem.h"
 
 namespace Siege
 {
@@ -180,6 +180,6 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
 String SceneFile::MakeScenePath(const String& sceneName)
 {
-    return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
+    return sceneName + SCENE_FILE_EXT;
 }
 } // namespace Siege
