@@ -9,16 +9,15 @@
 
 #include "Texture2D.h"
 
+#include <utils/Defer.h>
+
 #include "Constants.h"
 #include "Context.h"
 #include "render/renderer/buffer/Buffer.h"
+#include "resources/ResourceSystem.h"
+#include "resources/Texture2DData.h"
 #include "utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#include <utils/Defer.h>
-#include <utils/Logging.h>
 
 namespace Siege::Vulkan
 {
@@ -93,24 +92,9 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 
 void Texture2D::LoadFromFile(const char* filePath)
 {
-    int texWidth, texHeight, texChannels;
-
-    stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    defer([pixels] {
-        stbi_image_free(pixels);
-        ;
-    });
-
-    CC_ASSERT(pixels, "Failed to load image file!")
-
-    uint64_t imageSize = texWidth * texHeight * 4;
-
-    uint8_t* pixelPtr = new uint8_t[imageSize];
-    defer([pixelPtr] { delete[] pixelPtr; });
-
-    // Set the image to 0 so that we get no garbage data in the pixel array
-    memset(pixelPtr, 0, imageSize);
-    memcpy(pixelPtr, pixels, sizeof(uint8_t) * imageSize);
+    Texture2DData* texture2dData = Siege::ResourceSystem::GetInstance().GetPackFile()->FindData<Texture2DData>(filePath);
+    uint64_t imageSize = texture2dData->texWidth * texture2dData->texHeight * 4;
+    const uint8_t* pixelPtr = texture2dData->GetPixels();
 
     Buffer::Buffer stagingBuffer;
     defer([&stagingBuffer] { Buffer::DestroyBuffer(stagingBuffer); });
@@ -126,10 +110,10 @@ void Texture2D::LoadFromFile(const char* filePath)
 
     Buffer::CopyData(stagingBuffer, imageSize, pixelPtr);
 
-    extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
+    extent = {static_cast<uint32_t>(texture2dData->texWidth), static_cast<uint32_t>(texture2dData->texHeight)};
 
-    Utils::Extent3D imageExtent {static_cast<uint32_t>(texWidth),
-                                 static_cast<uint32_t>(texHeight),
+    Utils::Extent3D imageExtent {static_cast<uint32_t>(texture2dData->texWidth),
+                                 static_cast<uint32_t>(texture2dData->texHeight),
                                  1};
     image = Image({Utils::RGBASRGB, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
 
