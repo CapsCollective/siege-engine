@@ -65,7 +65,7 @@ struct test_SceneSystem
 
 UTEST_F_SETUP(test_SceneSystem)
 {
-    Statics::Scene().SetBaseDirectory(SCENE_DIR);
+    SceneSystem::SetBaseDirectory(SCENE_DIR);
     Statics::Scene().NewScene();
 }
 

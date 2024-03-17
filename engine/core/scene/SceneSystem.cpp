@@ -21,6 +21,8 @@ namespace Siege
 // Define constants
 static constexpr const char UNKNOWN_FILENAME[] = "untitled";
 
+String SceneSystem::baseDir;
+
 void SceneSystem::NewScene()
 {
     // Clear the current scene and reset current scene

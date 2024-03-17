@@ -10,6 +10,7 @@
 #include <resources/FontData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
+#include <resources/SceneData.h>
 #include <resources/ShaderData.h>
 #include <resources/StaticMeshData.h>
 #include <resources/Texture2DData.h>
@@ -18,6 +19,7 @@
 #include <fstream>
 
 #include "FontDataPacker.h"
+#include "SceneDataPacker.h"
 #include "ShaderDataPacker.h"
 #include "Texture2DDataPacker.h"
 #include "WavefrontDataPacker.h"
@@ -67,6 +69,16 @@ int main(int argc, char* argv[])
         {
             data = PackWavefrontFile(fullPath);
             bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
+        }
+        else if (extension == ".scene")
+        {
+            data = PackSceneFile(fullPath, assetsDir + "/");
+            bodyDataSize = Siege::SceneData::GetDataSize(data);
+        }
+        else if (extension == ".entity")
+        {
+            data = PackEntityFile(fullPath);
+            bodyDataSize = Siege::SceneEntityData::GetDataSize(data);
         }
         else if (extension == ".spv")
         {

@@ -45,8 +45,7 @@ endif
 packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
-compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/freetype/include
+compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
 .PHONY: all render-assets tilemap-assets

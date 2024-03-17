@@ -61,13 +61,13 @@ public:
      * Sets the base directory used for scene management.
      * @param dir - the directory to set as base
      */
-    void SetBaseDirectory(const String& dir);
+    static void SetBaseDirectory(const String& dir);
 
     /**
      * Gets the base directory used for scene management.
      * @return the directory as a string
      */
-    const String& GetBaseDirectory();
+    static const String& GetBaseDirectory();
 
 private:
 
@@ -93,7 +93,7 @@ private:
     /**
      * The base directory for accessing scenes
      */
-    String baseDir;
+    static String baseDir;
 };
 } // namespace Siege
 

@@ -18,7 +18,7 @@ testBuildDir := $(testBinDir)/build
 
 # Set build vars
 utestIncludeDir := $(vendorDir)/include/utest
-linkFlags += -l core -l utils
+linkFlags += -l core -l utils -l resources
 
 .PHONY: all test-data
 
