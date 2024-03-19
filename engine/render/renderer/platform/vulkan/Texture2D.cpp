@@ -92,8 +92,8 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 
 void Texture2D::LoadFromFile(const char* filePath)
 {
-    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
-    Texture2DData* texture2dData = resourceSystem.GetPackFile()->FindData<Texture2DData>(filePath);
+    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+    Texture2DData* texture2dData = packFile->FindData<Texture2DData>(filePath);
     uint64_t imageSize = texture2dData->texWidth * texture2dData->texHeight * 4;
     const uint8_t* pixelPtr = texture2dData->GetPixels();
 

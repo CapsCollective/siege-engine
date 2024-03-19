@@ -9,9 +9,9 @@
 
 #include "Shader.h"
 
+#include <resources/GenericFileData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
-#include <resources/ShaderData.h>
 #include <utils/Logging.h>
 
 #include <fstream>
@@ -173,10 +173,9 @@ void Shader::Destroy()
 
 MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
-    Siege::ResourceSystem& resourceSystem = Siege::ResourceSystem::GetInstance();
-    resourceSystem.MountPackFile();
-    ShaderData* shaderData = resourceSystem.GetPackFile()->FindData<ShaderData>(filePath);
-    MHArray<char> buffer(shaderData->data, shaderData->dataSize);
+    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
+    MHArray<char> buffer(fileData->data, fileData->dataSize);
     return buffer;
 }
 

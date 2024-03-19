@@ -7,8 +7,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_SHADERDATA_H
-#define SIEGE_ENGINE_SHADERDATA_H
+#ifndef SIEGE_ENGINE_GENERICFILEDATA_H
+#define SIEGE_ENGINE_GENERICFILEDATA_H
 
 #include "PackFile.h"
 
@@ -16,7 +16,7 @@ namespace Siege
 {
 
 #pragma pack(push, 1)
-struct ShaderData
+struct GenericFileData
 {
     uint32_t dataSize = 0;
     char data[];
@@ -26,27 +26,27 @@ struct ShaderData
         return &data[0];
     }
 
-    static ShaderData* Create(char* data, uint32_t dataSize)
+    static GenericFileData* Create(char* data, uint32_t dataSize)
     {
-        uint32_t totalDataSize = sizeof(ShaderData) + dataSize;
+        uint32_t totalDataSize = sizeof(GenericFileData) + dataSize;
 
         void* mem = malloc(totalDataSize);
-        Siege::ShaderData* shaderData = new (mem) Siege::ShaderData();
+        Siege::GenericFileData* fileData = new (mem) Siege::GenericFileData();
 
-        shaderData->dataSize = dataSize;
-        memcpy(&shaderData->data[0], data, dataSize);
+        fileData->dataSize = dataSize;
+        memcpy(&fileData->data[0], data, dataSize);
 
-        return shaderData;
+        return fileData;
     }
 
     static uint32_t GetDataSize(void* objectData)
     {
-        ShaderData* shaderData = reinterpret_cast<ShaderData*>(objectData);
-        return sizeof(ShaderData) + shaderData->dataSize;
+        GenericFileData* fileData = reinterpret_cast<GenericFileData*>(objectData);
+        return sizeof(GenericFileData) + fileData->dataSize;
     }
 };
 #pragma pack(pop)
 
 } // namespace Siege
 
-#endif // SIEGE_ENGINE_SHADERDATA_H
+#endif // SIEGE_ENGINE_GENERICFILEDATA_H

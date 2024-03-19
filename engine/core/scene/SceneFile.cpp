@@ -18,6 +18,7 @@
 #include <algorithm>
 
 #include "SceneSystem.h"
+#include "resources/GenericFileData.h"
 
 namespace Siege
 {
@@ -93,19 +94,19 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         [this, &entities, &succeeded, &isPacked](const std::filesystem::path& path) {
             if (path.extension() != ENTITY_FILE_EXT) return;
 
-            String fileData;
+            String entityData;
             if (!isPacked)
             {
-                fileData = FileSystem::Read(path.c_str());
+                entityData = FileSystem::Read(path.c_str());
             }
             else
             {
                 PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-                SceneEntityData* entityData = packFile->FindData<SceneEntityData>(path.c_str());
-                fileData = entityData->data;
+                GenericFileData* fileData = packFile->FindData<GenericFileData>(path.c_str());
+                entityData = fileData->data;
             }
 
-            Entity* newEntity = DeserialiseFromString(fileData);
+            Entity* newEntity = DeserialiseFromString(entityData);
 
             if (!newEntity)
             {

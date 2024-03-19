@@ -10,7 +10,7 @@
 #include "Font.h"
 
 #include <freetype/freetype.h>
-#include <resources/FontData.h>
+#include <resources/GenericFileData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <utils/Defer.h>
@@ -26,12 +26,13 @@ namespace Siege::Vulkan
 {
 Font::Font(const char* filePath)
 {
-    FontData* fontData = ResourceSystem::GetInstance().GetPackFile()->FindData<FontData>(filePath);
+    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
 
     FT_Open_Args args;
     args.flags = FT_OPEN_MEMORY;
-    args.memory_base = reinterpret_cast<const FT_Byte*>(fontData->data);
-    args.memory_size = FT_Long(fontData->dataSize);
+    args.memory_base = reinterpret_cast<const FT_Byte*>(fileData->data);
+    args.memory_size = FT_Long(fileData->dataSize);
 
     FT_Face fontFace;
     CC_ASSERT(!FT_Open_Face(Statics::GetFontLib(), &args, 0, &fontFace), "Failed to load font!")

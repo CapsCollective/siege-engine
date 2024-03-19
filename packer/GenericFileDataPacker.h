@@ -6,11 +6,11 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_FONTDATAPACKER_H
-#define SIEGE_ENGINE_FONTDATAPACKER_H
+#ifndef SIEGE_ENGINE_GENERICFILEDATAPACKER_H
+#define SIEGE_ENGINE_GENERICFILEDATAPACKER_H
 
 #include <resources/PackFile.h>
 
-void* PackFontFile(const Siege::String& filePath);
+void* PackGenericFile(const Siege::String& filePath);
 
-#endif // SIEGE_ENGINE_FONTDATAPACKER_H
+#endif // SIEGE_ENGINE_GENERICFILEDATAPACKER_H

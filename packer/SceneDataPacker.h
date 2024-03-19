@@ -13,6 +13,4 @@
 
 void* PackSceneFile(const Siege::String& filePath, const Siege::String& assetsDir);
 
-void* PackEntityFile(const Siege::String& filePath);
-
 #endif // SIEGE_ENGINE_SCENEDATAPACKER_H

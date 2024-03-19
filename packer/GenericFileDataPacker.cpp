@@ -6,14 +6,14 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include "ShaderDataPacker.h"
+#include "GenericFileDataPacker.h"
 
-#include <resources/ShaderData.h>
+#include <resources/GenericFileData.h>
 #include <utils/Logging.h>
 
 #include <fstream>
 
-void* PackShaderFile(const Siege::String& filePath)
+void* PackGenericFile(const Siege::String& filePath)
 {
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
@@ -29,6 +29,6 @@ void* PackShaderFile(const Siege::String& filePath)
     file.read(data, fileSize);
     file.close();
 
-    Siege::ShaderData* shaderData = Siege::ShaderData::Create(&data[0], fileSize);
-    return shaderData;
+    Siege::GenericFileData* fileData = Siege::GenericFileData::Create(&data[0], fileSize);
+    return fileData;
 }

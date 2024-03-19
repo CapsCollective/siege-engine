@@ -35,8 +35,14 @@ int main(int argc, char* argv[])
 
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
 
+    // Initialise resources
+    Siege::ResourceSystem::GetInstance().MountPackFile();
+
     Siege::Renderer renderer(window);
     ServiceLocator::Provide(&renderer);
+
+    RenderResources resources;
+    ServiceLocator::Provide(&resources);
 
     FPSCamera camera3d = FPSCamera({0.f, -5.f, -10.f},
                                    {0.f, 0.f, 1.f},
@@ -46,12 +52,6 @@ int main(int argc, char* argv[])
     camera3d.LookAt(Siege::Vec3::Zero());
     OrthoCamera camera2d = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
     ServiceLocator::Provide(&camera3d);
-
-    // Initialise resources
-    Siege::ResourceSystem::GetInstance().MountPackFile();
-
-    RenderResources resources;
-    ServiceLocator::Provide(&resources);
 
     // Initialise the message display
     auto display = MessageDisplay();

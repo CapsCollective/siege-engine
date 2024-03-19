@@ -7,20 +7,18 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/FontData.h>
+#include <resources/GenericFileData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
-#include <resources/ShaderData.h>
 #include <resources/StaticMeshData.h>
 #include <resources/Texture2DData.h>
 #include <utils/Logging.h>
 
 #include <fstream>
 
-#include "FontDataPacker.h"
+#include "GenericFileDataPacker.h"
 #include "SceneDataPacker.h"
-#include "ShaderDataPacker.h"
 #include "Texture2DDataPacker.h"
 #include "WavefrontDataPacker.h"
 
@@ -77,18 +75,18 @@ int main(int argc, char* argv[])
         }
         else if (extension == ".entity")
         {
-            data = PackEntityFile(fullPath);
-            bodyDataSize = Siege::SceneEntityData::GetDataSize(data);
+            data = PackGenericFile(fullPath);
+            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
         }
         else if (extension == ".spv")
         {
-            data = PackShaderFile(fullPath);
-            bodyDataSize = Siege::ShaderData::GetDataSize(data);
+            data = PackGenericFile(fullPath);
+            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
         }
         else if (extension == ".ttf")
         {
-            data = PackFontFile(fullPath);
-            bodyDataSize = Siege::FontData::GetDataSize(data);
+            data = PackGenericFile(fullPath);
+            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
