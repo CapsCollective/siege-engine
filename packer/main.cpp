@@ -68,30 +68,20 @@ int main(int argc, char* argv[])
             data = PackWavefrontFile(fullPath);
             bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
         }
-        else if (extension == ".scene")
-        {
-            data = PackSceneFile(fullPath, assetsDir + "/");
-            bodyDataSize = Siege::SceneData::GetDataSize(data);
-        }
-        else if (extension == ".entity")
-        {
-            data = PackGenericFile(fullPath);
-            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
-        }
-        else if (extension == ".spv")
-        {
-            data = PackGenericFile(fullPath);
-            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
-        }
-        else if (extension == ".ttf")
-        {
-            data = PackGenericFile(fullPath);
-            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
-        }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
             data = PackTexture2DFile(fullPath);
             bodyDataSize = Siege::Texture2DData::GetDataSize(data);
+        }
+        else if (extension == ".spv" || extension == ".ttf")
+        {
+            data = PackGenericFile(fullPath);
+            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
+        }
+        else if (extension == ".scene")
+        {
+            data = PackSceneFile(fullPath);
+            bodyDataSize = Siege::SceneData::GetDataSize(data);
         }
 
         if (!data)

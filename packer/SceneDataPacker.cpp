@@ -14,13 +14,12 @@
 
 #include <fstream>
 
-void* PackSceneFile(const Siege::String& filePath, const Siege::String& assetsDir)
+void* PackSceneFile(const Siege::String& filePath)
 {
     Siege::String bodyString;
-    auto appendFile = [&bodyString, &assetsDir](const std::filesystem::path& path) {
-        bodyString += std::filesystem::relative(path, assetsDir.Str()).c_str();
-        bodyString += ":";
-        bodyString.Replace(assetsDir.Str(), "");
+    auto appendFile = [&bodyString](const std::filesystem::path& path) {
+        bodyString += Siege::FileSystem::Read(path.c_str());
+        bodyString += '|';
     };
 
     bool result = Siege::FileSystem::ForEachFileInDir(filePath, appendFile);

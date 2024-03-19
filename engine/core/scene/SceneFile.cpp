@@ -86,26 +86,9 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     // Clear out the held entity paths before repopulating
     entityPaths.clear();
 
-    // TODO: Implement proper write-mode handling for scene system
-    bool isPacked = SceneSystem::GetBaseDirectory().IsEmpty();
-
     bool succeeded = true;
-    auto deserialiseEntity =
-        [this, &entities, &succeeded, &isPacked](const std::filesystem::path& path) {
-            if (path.extension() != ENTITY_FILE_EXT) return;
-
-            String entityData;
-            if (!isPacked)
-            {
-                entityData = FileSystem::Read(path.c_str());
-            }
-            else
-            {
-                PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-                GenericFileData* fileData = packFile->FindData<GenericFileData>(path.c_str());
-                entityData = fileData->data;
-            }
-
+    auto deserialiseEntityString =
+        [this, &entities, &succeeded](const String& entityData, const std::filesystem::path& path) {
             Entity* newEntity = DeserialiseFromString(entityData);
 
             if (!newEntity)
@@ -118,9 +101,16 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
             entityPaths[EntityPtr(newEntity)] = path.c_str();
         };
 
-    if (!isPacked)
+    // TODO: Implement proper write-mode handling for scene system
+    if (!SceneSystem::GetBaseDirectory().IsEmpty())
     {
-        bool result = FileSystem::ForEachFileInDir(MakeScenePath(sceneName), deserialiseEntity);
+        bool result = FileSystem::ForEachFileInDir(
+            MakeScenePath(sceneName),
+            [&deserialiseEntityString](const std::filesystem::path& path) {
+                if (path.extension() != ENTITY_FILE_EXT) return;
+                String entityData = FileSystem::Read(path.c_str());
+                deserialiseEntityString(entityData, path);
+            });
         if (!result)
         {
             CC_LOG_ERROR("Failed to read scene file at path \"{}\"", MakeScenePath(sceneName))
@@ -132,9 +122,9 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
         SceneData* sceneData = packFile->FindData<SceneData>(MakeScenePath(sceneName));
         String sceneString(sceneData->data);
-        for (const String& entityPath : sceneString.Split(':'))
+        for (const String& entityData : sceneString.Split('|'))
         {
-            deserialiseEntity(entityPath.Str());
+            deserialiseEntityString(entityData.Str(), "");
         }
     }
 
