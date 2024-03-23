@@ -64,7 +64,6 @@ PackFile::TocEntry* PackFile::TocEntry::Create(const String& name,
     void* mem = malloc(sizeof(TocEntry) + nameDataSize);
 
     PackFile::TocEntry* tocEntry = new (mem) TocEntry();
-    tocEntry->nameSize = nameDataSize;
     tocEntry->dataOffset = dataOffset;
     tocEntry->dataSize = dataSize;
     strcpy(&tocEntry->name[0], name.Str());
@@ -96,10 +95,9 @@ std::ostream& operator<<(std::ostream& os, const Siege::PackFile::Header& header
 std::ostream& operator<<(std::ostream& os, const Siege::PackFile::TocEntry& tocEntry)
 {
     os << "PackFile::TocEntry: {";
-    os << "magic: " << tocEntry.nameSize << ", ";
-    os << "version: " << tocEntry.dataOffset << ", ";
-    os << "bodySize: " << tocEntry.dataSize << ", ";
-    os << "tocOffset: " << tocEntry.name << "}";
+    os << "dataOffset: " << tocEntry.dataOffset << ", ";
+    os << "dataSize: " << tocEntry.dataSize << ", ";
+    os << "name: " << tocEntry.name << "}";
     return os;
 }
 

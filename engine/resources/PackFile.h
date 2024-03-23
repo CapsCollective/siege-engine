@@ -43,14 +43,13 @@ public:
 
     struct TocEntry
     {
-        uint32_t nameSize;
         uint32_t dataOffset;
         uint32_t dataSize;
         char name[];
 
         uint32_t GetDataSize() const
         {
-            return sizeof(TocEntry) + nameSize;
+            return sizeof(TocEntry) + strlen(name) + 1;
         }
 
         static TocEntry* Create(const Siege::String& name, uint32_t dataOffset, uint32_t dataSize);
