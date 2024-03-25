@@ -31,7 +31,7 @@ struct GenericFileData
         uint32_t totalDataSize = sizeof(GenericFileData) + dataSize;
 
         void* mem = malloc(totalDataSize);
-        Siege::GenericFileData* fileData = new (mem) Siege::GenericFileData();
+        GenericFileData* fileData = new (mem) GenericFileData();
 
         fileData->dataSize = dataSize;
         memcpy(&fileData->data[0], data, dataSize);

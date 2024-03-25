@@ -31,7 +31,7 @@ struct SceneData
         uint32_t totalDataSize = sizeof(SceneData) + dataSize;
 
         void* mem = malloc(totalDataSize);
-        Siege::SceneData* sceneData = new (mem) Siege::SceneData();
+        SceneData* sceneData = new (mem) SceneData();
 
         sceneData->dataSize = dataSize;
         memcpy(&sceneData->data[0], data, dataSize);

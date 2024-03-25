@@ -52,7 +52,7 @@ public:
             return sizeof(TocEntry) + strlen(name) + 1;
         }
 
-        static TocEntry* Create(const Siege::String& name, uint32_t dataOffset, uint32_t dataSize);
+        static TocEntry* Create(const String& name, uint32_t dataOffset, uint32_t dataSize);
     };
 #pragma pack(pop)
 
@@ -75,7 +75,7 @@ public:
         return reinterpret_cast<T*>(body + toc->dataOffset);
     }
 
-    const std::map<Siege::String, TocEntry*>& GetEntries();
+    const std::map<String, TocEntry*>& GetEntries();
 
 private:
 
@@ -85,7 +85,7 @@ private:
 
     char* body = nullptr;
 
-    std::map<Siege::String, TocEntry*> entries;
+    std::map<String, TocEntry*> entries;
 };
 
 } // namespace Siege

@@ -46,20 +46,20 @@ struct StaticMeshData
         return (uint32_t*) data;
     }
 
-    Siege::BaseVertex* GetVertices() const
+    BaseVertex* GetVertices() const
     {
-        return (Siege::BaseVertex*) (data + sizeof(uint32_t) * indicesCount);
+        return (BaseVertex*) (data + sizeof(uint32_t) * indicesCount);
     }
 
     static StaticMeshData* Create(const std::vector<uint32_t>& objIndices,
                                   const std::vector<BaseVertex>& objVertices)
     {
         uint32_t indicesDataSize = sizeof(uint32_t) * objIndices.size();
-        uint32_t verticesDataSize = sizeof(Siege::BaseVertex) * objVertices.size();
+        uint32_t verticesDataSize = sizeof(BaseVertex) * objVertices.size();
         uint32_t totalDataSize = sizeof(StaticMeshData) + indicesDataSize + verticesDataSize;
 
         void* mem = malloc(totalDataSize);
-        Siege::StaticMeshData* staticMeshData = new (mem) Siege::StaticMeshData();
+        StaticMeshData* staticMeshData = new (mem) StaticMeshData();
 
         staticMeshData->indicesCount = objIndices.size();
         staticMeshData->verticesCount = objVertices.size();
@@ -73,7 +73,7 @@ struct StaticMeshData
     {
         StaticMeshData* staticMeshData = reinterpret_cast<StaticMeshData*>(objectData);
         return sizeof(StaticMeshData) + sizeof(uint32_t) * staticMeshData->indicesCount +
-               sizeof(Siege::BaseVertex) * staticMeshData->verticesCount;
+               sizeof(BaseVertex) * staticMeshData->verticesCount;
     }
 };
 #pragma pack(pop)

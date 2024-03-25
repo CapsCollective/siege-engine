@@ -38,7 +38,7 @@ struct Texture2DData
         uint32_t totalDataSize = sizeof(Texture2DData) + pixelDataSize;
 
         void* mem = malloc(totalDataSize);
-        Siege::Texture2DData* texture2dData = new (mem) Siege::Texture2DData();
+        Texture2DData* texture2dData = new (mem) Texture2DData();
 
         texture2dData->texWidth = texWidth;
         texture2dData->texHeight = texHeight;
