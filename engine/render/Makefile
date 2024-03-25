@@ -26,8 +26,7 @@ fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 linkFlags += -l utils -l window
 
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image -I $(vendorDir)/zlib/build/include \
-				-I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
+				-I $(vendorDir)/zlib/build/include -I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
 
 .PHONY: all vulkan-libs
 

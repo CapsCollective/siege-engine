@@ -28,6 +28,13 @@ else ifeq ($(platform), macos)
 		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
+engineRenderBuildDir := $(binDir)/engine/render/build
+exampleGameAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.obj))
+exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.png))
+exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.jpg))
+exampleGameAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
+exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.ttf))
+exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.scene))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
@@ -40,7 +47,8 @@ endif
 packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
-linkFlags += -l core -l window -l render -l utils
+compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
+linkFlags += -l core -l window -l render -l resources -l utils
 
 .PHONY: all game-assets render-assets
 
@@ -70,6 +78,8 @@ render-assets:
 	$(call COPY,$(binDir)/engine/render/build,$(exampleGameBuildDir),**)
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets)
 	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
+	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
+	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets)
 
 # Package the built application and all its assets to the output directory
 package: all

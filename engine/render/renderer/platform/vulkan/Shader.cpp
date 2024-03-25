@@ -9,6 +9,9 @@
 
 #include "Shader.h"
 
+#include <resources/GenericFileData.h>
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
 #include <utils/Logging.h>
 
 #include <fstream>
@@ -170,24 +173,9 @@ void Shader::Destroy()
 
 MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
-    // Read the file as binary and consume the entire file.
-    std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
-
-    CC_ASSERT(file.is_open(), String("Could not find file: ") + filePath)
-
-    // Since we consumed the entire file, we can tell the size by checking where
-    // the file stream is reading from (which presumably is at the end of the file).
-    uint32_t size = static_cast<uint32_t>(file.tellg());
-
-    MHArray<char> buffer(size);
-
-    // Move to the beginning of the file.
-    file.seekg(0);
-
-    file.read(buffer.Data(), size);
-
-    file.close();
-
+    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
+    MHArray<char> buffer(fileData->data, fileData->dataSize);
     return buffer;
 }
 

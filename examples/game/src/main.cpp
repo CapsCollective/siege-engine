@@ -7,12 +7,12 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <core/ResourceSystem.h>
 #include <core/Statics.h>
 #include <core/Ticker.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneSystem.h>
 #include <render/renderer/Renderer.h>
+#include <resources/ResourceSystem.h>
 #include <window/Input.h>
 #include <window/Window.h>
 
@@ -35,8 +35,14 @@ int main(int argc, char* argv[])
 
     Siege::Input::SetInputWindowSource(reinterpret_cast<GLFWwindow*>(window.GetRawWindow()));
 
+    // Initialise resources
+    Siege::ResourceSystem::GetInstance().MountPackFile();
+
     Siege::Renderer renderer(window);
     ServiceLocator::Provide(&renderer);
+
+    RenderResources resources;
+    ServiceLocator::Provide(&resources);
 
     FPSCamera camera3d = FPSCamera({0.f, -5.f, -10.f},
                                    {0.f, 0.f, 1.f},
@@ -46,9 +52,6 @@ int main(int argc, char* argv[])
     camera3d.LookAt(Siege::Vec3::Zero());
     OrthoCamera camera2d = OrthoCamera({0.f, -1.f, -2.5f}, {0.f, -1.f, 1.f});
     ServiceLocator::Provide(&camera3d);
-
-    RenderResources resources;
-    ServiceLocator::Provide(&resources);
 
     // Initialise the message display
     auto display = MessageDisplay();
@@ -60,9 +63,6 @@ int main(int argc, char* argv[])
     // Batch register all initialised tools (including the dev console)
     Siege::Statics::Tool().SetAllowDeregistration(false);
     Siege::Statics::Tool().Add({&display, &devConsole});
-
-    // Set the default directories
-    Siege::Statics::Resource().SetBaseDirectory("assets/");
 
     // Instantiate world objects as per mode options
     if (isEditorMode)
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     else
     {
         // Load the game entrypoint
-        Siege::Statics::Scene().QueueNextScene("scenes/main");
+        Siege::Statics::Scene().QueueNextScene("assets/scenes/main");
     }
 
     // Create and initialise ticker
@@ -125,7 +125,6 @@ int main(int argc, char* argv[])
         renderer.EndFrame();
 
         // Remove all entities at the end of the frame
-        Siege::Statics::Resource().FreeResources();
         Siege::Statics::Collision().FreeEntities();
         Siege::Statics::Entity().FreeEntities();
         Siege::Statics::Tool().FreeEntities();
@@ -133,6 +132,7 @@ int main(int argc, char* argv[])
     }
 
     renderer.ClearQueues();
+    Siege::ResourceSystem::GetInstance().UnmountPackFile();
 
     return 0;
 }

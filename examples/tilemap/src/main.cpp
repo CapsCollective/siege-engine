@@ -10,6 +10,7 @@
 #include <render/renderer/Renderer.h>
 #include <render/renderer/camera/Camera.h>
 #include <render/renderer/platform/vulkan/TextureAtlas.h>
+#include <resources/ResourceSystem.h>
 #include <utils/math/Projection.h>
 #include <utils/math/Transform.h>
 #include <utils/math/vec/Vec3.h>
@@ -22,6 +23,7 @@ int main()
 {
     Siege::Window window("Tilemap Example", {WIDTH, HEIGHT});
 
+    Siege::ResourceSystem::GetInstance().MountPackFile();
     Siege::Renderer renderer(window);
 
     auto pixel = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
@@ -116,6 +118,7 @@ int main()
     }
 
     renderer.ClearQueues();
+    Siege::ResourceSystem::GetInstance().UnmountPackFile();
 
     return 0;
 }

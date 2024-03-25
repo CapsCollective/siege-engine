@@ -28,6 +28,11 @@ else ifeq ($(platform), macos)
 		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
+engineRenderBuildDir := $(binDir)/engine/render/build
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.png))
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.jpg))
+exampleTilemapAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.ttf))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
@@ -40,9 +45,8 @@ endif
 packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
-compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/freetype/include
-linkFlags += -l render -l window -l utils
+compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
+linkFlags += -l render -l window -l resources -l utils
 
 .PHONY: all render-assets tilemap-assets
 
@@ -72,6 +76,8 @@ render-assets:
 	$(call COPY,$(binDir)/engine/render/build,$(exampleTilemapBuildDir),**)
 	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,**)
+	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
+	$(RM) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 
 # Package the built application and all its assets to the output directory
 package:

@@ -9,10 +9,12 @@
 
 #include "StaticMesh.h"
 
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
 #include <utils/Logging.h>
 
 #include "Swapchain.h"
-#include "render/renderer/ObjectLoader.h"
+#include "resources/StaticMeshData.h"
 
 namespace Siege::Vulkan
 {
@@ -40,25 +42,23 @@ StaticMesh::StaticMesh(unsigned int vertexBufferSize,
 StaticMesh::StaticMesh(const char* filePath, Material* material)
 {
     // TODO(Aryeh): How to extract material data from object files?
-    auto vertexData = LoadObjectFromFile(filePath);
+    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+    StaticMeshData* vertexData = packFile->FindData<StaticMeshData>(filePath);
 
-    auto& vertices = vertexData.vertices;
-    auto& indices = vertexData.indices;
+    CC_ASSERT(vertexData->verticesCount > 0, "Cannot load in a file with no vertices!")
+    CC_ASSERT(vertexData->indicesCount > 0, "Cannot load in a file with no indices!")
 
-    CC_ASSERT(vertices.Count() > 0, "Cannot load in a file with no vertices!")
-    CC_ASSERT(indices.Count() > 0, "Cannot load in a file with no indices!")
+    CC_ASSERT(vertexData->verticesCount < MAX_VERTICES, "The provided model has too many vertices!")
+    CC_ASSERT(vertexData->indicesCount < MAX_INDICES, "The provided model has too many indices!")
 
-    CC_ASSERT(vertices.Count() < MAX_VERTICES, "The provided model has too many vertices!")
-    CC_ASSERT(indices.Count() < MAX_INDICES, "The provided model has too many indices!")
+    vertexBuffer = VertexBuffer(sizeof(BaseVertex) * vertexData->verticesCount);
+    vertexBuffer.Copy(vertexData->GetVertices(), sizeof(BaseVertex) * vertexData->verticesCount);
 
-    vertexBuffer = VertexBuffer(sizeof(BaseVertex) * vertices.Count());
-    vertexBuffer.Copy(vertices.Data(), sizeof(BaseVertex) * vertices.Count());
+    indexBuffer = IndexBuffer(sizeof(unsigned int) * vertexData->indicesCount);
+    indexBuffer.Copy(vertexData->GetIndices(), sizeof(unsigned int) * vertexData->indicesCount);
 
-    indexBuffer = IndexBuffer(sizeof(unsigned int) * indices.Count());
-    indexBuffer.Copy(indices.Data(), sizeof(unsigned int) * indices.Count());
-
-    vertexCount = vertices.Count();
-    indexCount = indices.Count();
+    vertexCount = vertexData->verticesCount;
+    indexCount = vertexData->indicesCount;
 
     subMeshes = MHArray<SubMesh>(1);
     materials = MHArray<Material*>(1);
