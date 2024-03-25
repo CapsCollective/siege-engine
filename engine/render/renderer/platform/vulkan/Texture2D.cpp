@@ -94,7 +94,7 @@ void Texture2D::LoadFromFile(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
     Texture2DData* texture2dData = packFile->FindData<Texture2DData>(filePath);
-    uint64_t imageSize = texture2dData->texWidth * texture2dData->texHeight * 4;
+    uint64_t imageSize = texture2dData->GetImageSize();
     const uint8_t* pixelPtr = texture2dData->GetPixels();
 
     Buffer::Buffer stagingBuffer;

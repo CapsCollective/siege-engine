@@ -12,6 +12,9 @@
 
 #include "PackFile.h"
 
+// TODO - Remove this hard-coded value and support various texture channel sizes
+#define TEXTURE2D_TEXTURE_CHANNELS 4
+
 namespace Siege
 {
 
@@ -28,13 +31,18 @@ struct Texture2DData
         return &pixels[0];
     }
 
+    uint64_t GetImageSize() const
+    {
+        return texWidth * texHeight * TEXTURE2D_TEXTURE_CHANNELS;
+    }
+
     static Texture2DData* Create(uint8_t* pixels,
                                  int32_t texWidth,
                                  int32_t texHeight,
                                  int32_t texChannels)
     {
-        uint64_t imageSize = texWidth * texHeight * 4;
-        uint32_t pixelDataSize = sizeof(uint8_t) * texWidth * texHeight * 4;
+        uint64_t imageSize = texWidth * texHeight * TEXTURE2D_TEXTURE_CHANNELS;
+        uint32_t pixelDataSize = sizeof(uint8_t) * imageSize;
         uint32_t totalDataSize = sizeof(Texture2DData) + pixelDataSize;
 
         void* mem = malloc(totalDataSize);
@@ -53,8 +61,7 @@ struct Texture2DData
     static uint32_t GetDataSize(void* objectData)
     {
         Texture2DData* textureData = reinterpret_cast<Texture2DData*>(objectData);
-        return sizeof(Texture2DData) +
-               sizeof(uint8_t) * textureData->texWidth * textureData->texHeight * 4;
+        return sizeof(Texture2DData) + sizeof(uint8_t) * textureData->GetImageSize();
     }
 };
 #pragma pack(pop)
