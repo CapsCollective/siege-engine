@@ -369,6 +369,7 @@ int main()
     }
 
     renderer.ClearQueues();
+    Siege::ResourceSystem::GetInstance().UnmountPackFile();
 
     return 0;
 }
