@@ -34,6 +34,11 @@ inline bool operator==(const BaseVertex& left, const BaseVertex& right)
            left.normal == right.normal && left.uv == right.uv;
 }
 
+inline bool operator!=(const BaseVertex& left, const BaseVertex& right)
+{
+    return !(left == right);
+}
+
 #pragma pack(push, 1)
 struct StaticMeshData
 {

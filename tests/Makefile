@@ -16,6 +16,11 @@ testObjects := $(call findobjs,$(testSrcDir),$(testBinDir),$(testSources))
 testDepends := $(patsubst %.o, %.d, $(call rwildcard,$(testBinDir)/,*.o))
 testBuildDir := $(testBinDir)/build
 
+testAssets := $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.obj))
+testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.png))
+testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.ttf))
+testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.scene))
+
 # Set build vars
 utestIncludeDir := $(vendorDir)/include/utest
 linkFlags += -l core -l utils -l resources
@@ -46,3 +51,4 @@ $(utestIncludeDir):
 test-data:
 	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
 	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,**)
+	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

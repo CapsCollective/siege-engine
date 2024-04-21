@@ -56,6 +56,11 @@ const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
     return entries;
 }
 
+const PackFile::Header& PackFile::GetHeader()
+{
+    return header;
+}
+
 PackFile::TocEntry* PackFile::TocEntry::Create(const String& name,
                                                uint32_t dataOffset,
                                                uint32_t dataSize)

@@ -77,6 +77,8 @@ public:
 
     const std::map<String, TocEntry*>& GetEntries();
 
+    const Header& GetHeader();
+
 private:
 
     // Private fields

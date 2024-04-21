@@ -39,6 +39,7 @@ bool ResourceSystem::MountPackFile(const String& searchPath)
 void ResourceSystem::UnmountPackFile()
 {
     delete packFile;
+    packFile = nullptr;
 }
 
 PackFile* ResourceSystem::GetPackFile()
