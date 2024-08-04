@@ -43,16 +43,20 @@ The ultimate purpose of this project is to act as the metaphorical siege engine 
 
 The following are dependencies for building and running the project:
 
-- **All platforms**
-    - [CMake](https://cmake.org/)
 - **macOS**
+    - [CMake](https://cmake.org/)
     - [GNU Make](https://www.gnu.org/software/make/)
     - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html)
     - [Xcode Command Line Tools](https://developer.apple.com/download/) (via `xcode-select --install`)
 - **Windows**
-    - [MinGW32 Make](https://www.mingw-w64.org/)
-    - [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+  - [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+  - [MSYS2](https://www.msys2.org/) with the following UCRT packages installed:
+    - `mingw-w64-ucrt-x86_64-gcc`
+    - `mingw-w64-ucrt-x86_64-make`
+    - `mingw-w64-ucrt-x86_64-python`
+    - `mingw-w64-ucrt-x86_64-cmake`
 - **Linux**
+    - [CMake](https://cmake.org/)
     - [Clang Format](https://clang.llvm.org/docs/ClangFormat.html)
     - The following packages are required for building the dependencies:
         - `git`

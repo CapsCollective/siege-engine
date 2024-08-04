@@ -13,7 +13,7 @@ ifeq ($(OS), Windows_NT)
 	THEN := &&
 	PATHSEP := \$(BLANK)
 	MKDIR = powershell -executionpolicy bypass $(scriptsDir)/mkdir.ps1
-	RM := rm -r -f
+	RM = powershell -executionpolicy bypass $(scriptsDir)/rm.ps1
 	EXE_NAME := .exe
 	VOLK_OS := WIN32_KHR
 	COPY = powershell -executionpolicy bypass $(scriptsDir)/copy.ps1 $1 $2 $3
