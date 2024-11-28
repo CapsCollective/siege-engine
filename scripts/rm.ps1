@@ -8,4 +8,4 @@
 
 param ([String] $Path)
 
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $Path
+Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue

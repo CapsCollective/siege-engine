@@ -18,8 +18,6 @@
 foreach ($arg in $args)
 {
     [string] $val = $arg
-
-    [string] $val = $arg
     if ($val.Contains("--")) {
         if ($current_arg -ne $val) { $current_arg = $val }
         continue
@@ -34,6 +32,8 @@ foreach ($arg in $args)
 }
 
 [string] $PkgFile = "$OutputDir/$PkgName"
+
+Write-Output "PACKAGING: $args"
 
 if (Test-Path $OutputDir) { Remove-Item -Path $OutputDir -Recurse }
 
@@ -50,5 +50,5 @@ Get-ChildItem $BuildDir | Copy-Item -Filter **.exe -Destination $PkgFile -Recurs
 
 if ($Excludes.Count -gt 0)
 {
-    foreach ($i in $Excludes) { if ($1 -ne $OutputDir) { Remove-Item -Path $PkgFile/$i -Recurse } }
+    foreach ($i in $Excludes) { if ($1 -ne $OutputDir) { Remove-Item -Path $PkgFile/$i -Recurse  -Force -ErrorAction SilentlyContinue } }
 }
