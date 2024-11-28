@@ -120,8 +120,11 @@ String::String(const char* string) : memory()
 
 String::String(const wchar_t* string) : memory()
 {
-    char convertedStr[std::wcslen(string)];
-    std::wcstombs(convertedStr, string, sizeof(convertedStr));
+    size_t size = std::wcslen(string) + 1;
+    char convertedStr[size];
+    memset(convertedStr, 0, size + 1);
+    std::wcstombs(convertedStr, string, size);
+    convertedStr[size] = '\0';
     Assign(convertedStr);
 }
 
@@ -221,6 +224,18 @@ String& String::operator+=(const String& rhs)
 String& String::operator+=(const char* rhs)
 {
     Append(rhs);
+    return *this;
+}
+
+String& String::operator+=(const wchar_t* rhs)
+{
+    size_t size = std::wcslen(rhs) + 1;
+    char convertedStr[size];
+    memset(convertedStr, 0, size + 1);
+    std::wcstombs(convertedStr, rhs, size);
+    convertedStr[size] = '\0';
+
+    Append(convertedStr);
     return *this;
 }
 

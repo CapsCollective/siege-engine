@@ -183,6 +183,8 @@ public:
      */
     String& operator+=(const char* rhs);
 
+    String& operator+=(const wchar_t* rhs);
+
     /**
      * Character addition compound assignment operator overload for prepending characters
      * @param rhs - the c-string to append

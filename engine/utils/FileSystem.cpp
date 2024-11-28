@@ -17,7 +17,7 @@ namespace Siege::FileSystem
 String Read(const String& filename)
 {
     // Try open the file for reading
-    FILE* file = fopen(filename, "r");
+    FILE* file = fopen(filename, "rb");
     if (!file) return "";
 
     // Determine file size
