@@ -65,7 +65,7 @@ function Setup-Zlib {
 
     cmake -G "$Generator" "$Vendor_Dir/zlib" -DCMAKE_INSTALL_PREFIX="$build_dir" -S"$Vendor_Dir/zlib" -B"$build_dir"
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
     if(!(Test-Path "$build_dir/lib/libz.a")) {Rename-Item -Path "$build_dir/lib/libzlibstatic.a" -NewName "libz.a"}
 }
@@ -77,12 +77,13 @@ function Setup-LibPng {
 
     Write-Output "Building libpng..."
     [string] $build_dir = "$Vendor_Dir/libpng/build"
+    [string] $zlib_dir = "$Vendor_Dir/zlib/build"
 
     Make-Dir $build_dir
 
-    cmake -G "$Generator" "$Vendor_Dir/libpng" -DCMAKE_INSTALL_PREFIX="$build_dir" -S"$Vendor_Dir/libpng" -B"$build_dir"
+    cmake -G "$Generator" "$Vendor_Dir/libpng" -DCMAKE_INSTALL_PREFIX="$build_dir" -DPNG_BUILD_ZLIB=ON -DZLIB_INCLUDE_DIRS="$zlib_dir/include" -DZLIB_LIBRARIES="$zlib_dir/lib/libz.a" -S"$Vendor_Dir/libpng" -B"$build_dir"
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-FreeType {
@@ -110,7 +111,7 @@ function Setup-FreeType {
         -B"$build_dir" `
         -S"$Vendor_Dir"/freetype
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
     Make-Dir "$Vendor_Dir/include/freetype"
 
@@ -127,7 +128,7 @@ function Setup-Glfw {
 
     cmake -G"$Generator" -DCMAKE_INSTALL_PREFIX="$build_dir" -B"$build_dir" -S"$Vendor_Dir/glfw"
 
-    make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Glslang {
@@ -148,7 +149,7 @@ function Setup-Glslang {
         -S"$Vendor_Dir/glslang" `
         -B"$build_dir"
 
-    make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Volk {
@@ -175,7 +176,7 @@ function Setup-Vulkan-Headers {
     Make-Dir $build_dir
 
     cmake -G "$Generator" -DCMAKE_INSTALL_PREFIX="$build_dir/install"  -B"$build_dir" -S"$Vulkan_Vendor_Dir/Vulkan-Headers"
-    make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 
     Make-Dir $Vulkan_Include_Dir
 
@@ -222,7 +223,7 @@ function Setup-Robin-Hood-Hashing {
         -S"$Vulkan_Vendor_Dir"/robin-hood-hashing `
         -B"$build_dir"
 
-    make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Spirv-Headers {

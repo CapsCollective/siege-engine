@@ -34,7 +34,7 @@ all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
 
 # Build the static library
 $(renderLib): $(renderObjects)
-	$(RM) $(call platformpth, $(renderLib))
+	-$(RM) $(call platformpth, $(renderLib))
 	$(call COMBINE_LIBS, $(renderLibs), $(renderObjects), $(libDir), render)
 
 # Add all rules from dependency files

@@ -21,7 +21,7 @@ compileFlags += -I $(vendorDir)/glfw/include
 
 # Build the static library
 $(windowLib): $(windowObjects)
-	$(RM) $(call platformpth, $(windowLib))
+	-$(RM) $(call platformpth, $(windowLib))
 	$(call COMBINE_LIBS, $(windowLibs), $(windowObjects), $(libDir), window)
 
 # Add all rules from dependency files
