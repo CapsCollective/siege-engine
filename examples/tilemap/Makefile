@@ -82,4 +82,4 @@ render-assets:
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleTilemapOutputName)"
-	$(call PACKAGE_SCRIPT, '$(exampleTilemapOutputName)', $(basename $(exampleTilemapApp)), $(outputDir), $(exampleTilemapBuildDir), $(packagingFlags))
+	$(call PACKAGE_SCRIPT, $(exampleTilemapOutputName), $(call BASENAME, $(exampleTilemapApp)), $(outputDir), $(exampleTilemapBuildDir), $(packagingFlags))

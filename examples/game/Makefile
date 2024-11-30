@@ -84,4 +84,4 @@ render-assets:
 # Package the built application and all its assets to the output directory
 package: all
 	$(RM) "$(outputDir)/$(exampleGameOutputName)"
-	$(call PACKAGE_SCRIPT, '$(exampleGameOutputName)', $(basename $(exampleGameApp)), $(outputDir), $(exampleGameBuildDir), $(packagingFlags))
+	$(call PACKAGE_SCRIPT, $(exampleGameOutputName), $(call BASENAME, $(exampleGameApp)), $(outputDir), $(exampleGameBuildDir), $(packagingFlags))
