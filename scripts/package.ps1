@@ -35,7 +35,7 @@ foreach ($arg in $args)
 
 Write-Output "PACKAGING: $args"
 
-if (Test-Path $OutputDir) { Remove-Item -Path $OutputDir -Recurse }
+if (Test-Path $OutputDir/$PkgName) { Remove-Item -Path $OutputDir/$PkgName -Recurse }
 
 New-Item -Path $PkgFile -ItemType directory -Force
 
