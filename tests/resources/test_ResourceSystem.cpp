@@ -55,8 +55,8 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(259385, header.bodySize);
-    ASSERT_EQ(259228, header.tocOffset);
+    ASSERT_EQ(259384, header.bodySize);
+    ASSERT_EQ(259227, header.tocOffset);
 
     std::vector<String> packedFilepaths {"data/scene2.scene",
                                          "data/scene1.scene",
@@ -175,17 +175,21 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    const char* expectedSceneData = "TestEntity\n"
-                                    "POSITION:0.000000,0.000000,0.000000\n"
-                                    "ROTATION:0.000000\n"
-                                    "Z-INDEX:0\n"
-                                    "|TestEntity\n"
-                                    "POSITION:0.000000,0.000000,0.000000\n"
-                                    "ROTATION:0.000000\n"
-                                    "Z-INDEX:0|TestEntity\n"
-                                    "POSITION:0.000000,0.000000,0.000000\n"
-                                    "ROTATION:0.000000\n"
-                                    "Z-INDEX:0\n|";
+    const char* expectedSceneData = "TestEntity;"
+                                    "POSITION:0.000000,0.000000,0.000000;"
+                                    "ROTATION:0.000000;"
+                                    "Z-INDEX:0;"
+                                    "|"
+                                    "TestEntity;"
+                                    "POSITION:0.000000,0.000000,0.000000;"
+                                    "ROTATION:0.000000;"
+                                    "Z-INDEX:0;"
+                                    "|"
+                                    "TestEntity;"
+                                    "POSITION:0.000000,0.000000,0.000000;"
+                                    "ROTATION:0.000000;"
+                                    "Z-INDEX:0;"
+                                    "|";
 
     SceneData* data = packFile->FindData<SceneData>("data/scene1.scene");
     ASSERT_TRUE(data);

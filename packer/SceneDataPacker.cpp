@@ -12,6 +12,7 @@
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
+#include <algorithm>
 #include <fstream>
 
 void* PackSceneFile(const Siege::String& filePath)
@@ -29,6 +30,11 @@ void* PackSceneFile(const Siege::String& filePath)
         CC_LOG_ERROR("Failed to read scene file at path \"{}\"", filePath)
         return nullptr;
     }
+
+    std::string str(bodyString);
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
+    bodyString = str.c_str();
 
     uint32_t fileSize = bodyString.Size() + 1;
     char data[fileSize];
