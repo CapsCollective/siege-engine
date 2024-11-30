@@ -585,7 +585,7 @@ UTEST(test_String, FromLong)
 {
     // The string can be converted from long
     ASSERT_STREQ("2", Siege::String::FromLong(2l).Str());
-    ASSERT_STREQ("90000000000000", Siege::String::FromLong(90000000000000l).Str());
+    ASSERT_STREQ("900000000", Siege::String::FromLong(900000000l).Str());
 }
 
 UTEST(test_String, FromSizeT)

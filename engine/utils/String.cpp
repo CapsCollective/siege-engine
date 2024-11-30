@@ -195,7 +195,7 @@ String String::operator+(const char* rhs) const
     size_t lhsLength = Size();
     size_t rhsLength = strlen(rhs);
 
-    char cstr[lhsLength + rhsLength];
+    char cstr[lhsLength + rhsLength + 1];
     strcpy(cstr, data);
     strcpy(cstr + lhsLength, rhs);
 
@@ -207,7 +207,7 @@ String String::operator+(char rhs) const
     const char* data = Data();
     size_t lhsLength = Size();
 
-    char cstr[lhsLength + 1];
+    char cstr[lhsLength + 1 + 1];
     strcpy(cstr, data);
     cstr[lhsLength] = rhs;
     cstr[lhsLength + 1] = '\0';
@@ -415,7 +415,7 @@ String String::SubString(int startPos, size_t length) const
     if (startPos >= len || (startPos + length) > len) return {};
 
     // Copy over the substring and return it
-    char subString[length];
+    char subString[length + 1];
     strncpy(subString, data + startPos, length);
     subString[length] = '\0'; // Manually add the null-termination char
     return subString;
@@ -498,7 +498,7 @@ void String::Append(const char* string)
     size_t rhsLength = strlen(string);
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength];
+    char cstr[fullLength + 1];
     strcpy(cstr, data);
     strcpy(cstr + lhsLength, string);
 
@@ -526,7 +526,7 @@ void String::Prepend(const String& string)
     size_t rhsLength = Size();
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength];
+    char cstr[fullLength + 1];
     strcpy(cstr, string.Data());
     strcpy(cstr + lhsLength, data);
 
@@ -540,7 +540,7 @@ void String::Prepend(const char* string)
     size_t rhsLength = Size();
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength];
+    char cstr[fullLength + 1];
     strcpy(cstr, string);
     strcpy(cstr + lhsLength, data);
 
@@ -565,14 +565,16 @@ void String::Erase(int startPos, size_t length)
     size_t len = Size();
     startPos = startPos < 0 ? (int) len + startPos : startPos;
     length = length == -1 ? len - startPos : length;
-    if (startPos < 0 || (startPos + length) > len)
+
+    size_t newLen = len - length;
+    if (startPos < 0 || (startPos + length) > len || newLen == 0)
     {
         Assign(nullptr);
         return;
     }
 
     // Copy over the non-erased portions and assign it
-    char newStr[len - length];
+    char newStr[newLen];
     strncpy(newStr, data, startPos);
     strcpy(newStr + startPos, data + startPos + length);
     Assign(newStr);
@@ -618,7 +620,7 @@ bool String::Replace(const char* toReplace, const char* replacement)
     size_t replaceLen = strlen(replacement);
     size_t finalLen = (currentLen - toReplaceLen) + replaceLen;
 
-    char newStr[finalLen];
+    char newStr[finalLen + 1];
     strncpy(newStr, data, pos);
     strncpy(newStr + pos, replacement, replaceLen);
     strcpy(newStr + pos + replaceLen, data + pos + toReplaceLen);
@@ -674,7 +676,7 @@ String operator+(const char* lhs, const String& rhs)
     size_t lhsLength = strlen(lhs);
     size_t rhsLength = rhs.Size();
 
-    char cstr[lhsLength + rhsLength];
+    char cstr[lhsLength + rhsLength + 1];
     strcpy(cstr, lhs);
     strcpy(cstr + lhsLength, rhs.Str());
 
@@ -685,7 +687,7 @@ String operator+(char lhs, const String& rhs)
 {
     size_t rhsLength = rhs.Size();
 
-    char cstr[1 + rhsLength];
+    char cstr[1 + rhsLength + 1];
     cstr[0] = lhs;
     strcpy(cstr + 1, rhs.Str());
 
