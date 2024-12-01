@@ -17,17 +17,22 @@ jobs:
       - name: perform checkout
         uses: actions/checkout@v4
 
-    - name: update apt
-      run: sudo apt-get update
+      - name: update apt
+        run: sudo apt-get update
 
-    - name: install vulkan dependencies
-      run: sudo apt install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
+      - name: install vulkan dependencies
+        run: sudo apt install git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
 
-    - name: install glfw dependencies
-      run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+      - name: install glfw dependencies
+        run: sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-    - name: perform setup
-      run: ./scripts/setup.sh
+      - name: perform setup
+        run: ./scripts/setup.sh
 
-    - name: build all targets
-      run: make
+      - name: build all targets
+        run: make
+
+      - name: run tests
+        run: |
+          cd ./bin/tests/build
+          ./app
