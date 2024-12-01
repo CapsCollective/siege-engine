@@ -14,7 +14,8 @@ jobs:
     runs-on: macos-latest
     
     steps:
-    - uses: actions/checkout@v2
+      - name: perform checkout
+        uses: actions/checkout@v4
 
     - name: perform setup
       run: ./scripts/setup.sh

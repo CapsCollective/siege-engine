@@ -11,9 +11,8 @@ jobs:
   formatting:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
-
-      # Install dependencies
+      - name: perform checkout
+        uses: actions/checkout@v4
 
       - name: install latest clang-format
         run: brew install clang-format
