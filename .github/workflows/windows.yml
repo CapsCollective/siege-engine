@@ -30,3 +30,13 @@ jobs:
         run: |
           cd ./bin/tests/build
           ./app.exe
+
+      - name: compress output
+        shell: bash
+        run: zip -m ./windows.zip ./output/**
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows_output
+          path: ./windows.zip
