@@ -26,7 +26,7 @@ String Read(const String& filename)
     rewind(file);
 
     // Copy the content
-    char content[size];
+    char content[size + 1];
     fread(content, sizeof(char), size, file);
     content[size] = '\0';
 
