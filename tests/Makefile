@@ -47,8 +47,9 @@ $(utestIncludeDir):
 	$(MKDIR) $(call platformpth, $(utestIncludeDir))
 	$(call COPY,$(vendorDir)/utest.h,$(utestIncludeDir),utest.h)
 
-# Copy the data directory to the build directory
+# Copy the data directory to the build directory, and pack them
 test-data:
 	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
 	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,**)
+	powershell Start-Sleep -Seconds 10.0
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

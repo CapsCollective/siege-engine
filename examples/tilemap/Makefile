@@ -48,9 +48,9 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all render-assets tilemap-assets
+.PHONY: all pack-assets
 
-all: $(exampleTilemapApp) tilemap-assets render-assets
+all: $(exampleTilemapApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleTilemapApp): $(renderLib) $(exampleTilemapObjects)
@@ -65,15 +65,13 @@ $(exampleTilemapBinDir)/%.o: $(exampleTilemapSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy assets directory to the build directory
-tilemap-assets:
+# Copy assets directory to the build directory and pack them
+pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleTilemapBuildDir)/assets)
 	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,**)
-
-# Copy assets (and other required build files) directory to the build directory
-render-assets:
 	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets/shaders)
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,**)
+	powershell Start-Sleep -Seconds 10.0
 	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
 	$(RM) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 

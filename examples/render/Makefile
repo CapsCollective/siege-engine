@@ -49,9 +49,9 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all render-assets
+.PHONY: all pack-assets
 
-all: $(exampleRenderApp) render-assets
+all: $(exampleRenderApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
@@ -66,12 +66,13 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy assets (and other required build files) directory to the build directory
-render-assets:
+# Copy assets directory to the build directory and pack them
+pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
 	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets/shaders)
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,**)
+	powershell Start-Sleep -Seconds 10.0
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
 	$(RM) $(call platformpth,$(exampleRenderBuildDir)/assets)
 

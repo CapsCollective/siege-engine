@@ -50,9 +50,9 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l core -l window -l render -l resources -l utils
 
-.PHONY: all game-assets render-assets
+.PHONY: all pack-assets
 
-all: $(exampleGameApp) game-assets render-assets
+all: $(exampleGameApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleGameApp): $(utilsLib) $(windowLib) $(renderLib) $(coreLib) $(exampleGameObjects)
@@ -67,15 +67,13 @@ $(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy assets directory to the build directory
-game-assets:
+# Copy assets directory to the build directory and pack them
+pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleGameBuildDir)/assets)
 	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
-
-# Copy assets (and other required build files) directory to the build directory
-render-assets:
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets/shaders)
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleGameBuildDir)/assets/shaders,**)
+	powershell Start-Sleep -Seconds 10.0
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
 	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets)
 
