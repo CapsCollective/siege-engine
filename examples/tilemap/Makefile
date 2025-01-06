@@ -72,10 +72,8 @@ tilemap-assets:
 
 # Copy assets (and other required build files) directory to the build directory
 render-assets:
-	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir))
-	$(call COPY,$(binDir)/engine/render/build,$(exampleTilemapBuildDir),**)
-	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets)
-	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,**)
+	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets/shaders)
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,**)
 	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
 	$(RM) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 

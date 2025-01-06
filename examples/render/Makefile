@@ -68,10 +68,10 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 
 # Copy assets (and other required build files) directory to the build directory
 render-assets:
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir))
-	$(call COPY,$(binDir)/engine/render/build,$(exampleRenderBuildDir),**)
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets)
+	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
 	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
+	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets/shaders)
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,**)
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
 	$(RM) $(call platformpth,$(exampleRenderBuildDir)/assets)
 
