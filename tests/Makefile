@@ -25,9 +25,9 @@ testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.scene))
 utestIncludeDir := $(vendorDir)/include/utest
 linkFlags += -l core -l utils -l resources
 
-.PHONY: all test-data
+.PHONY: all pack-assets
 
-all: $(testApp) test-data
+all: $(testApp) pack-assets
 
 # Link the object files and create an executable
 $(testApp): $(utestIncludeDir) $(testObjects)
@@ -47,8 +47,8 @@ $(utestIncludeDir):
 	$(MKDIR) $(call platformpth, $(utestIncludeDir))
 	$(call COPY,$(vendorDir)/utest.h,$(utestIncludeDir),utest.h)
 
-# Copy the data directory to the build directory, and pack them
-test-data:
+# Copy the assets directory to the build directory, and pack them
+pack-assets:
 	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
-	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,"$(RWCARDGLOB)")
+	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,$(RWCARDGLOB))
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

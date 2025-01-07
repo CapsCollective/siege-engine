@@ -11,7 +11,7 @@ ifeq ($(OS), Windows_NT)
 	platform := windows
 	CXX ?= g++
 	THEN := &&
-	RWCARDGLOB := *.*
+	RWCARDGLOB := "*.*"
 	PATHSEP := \$(BLANK)
 	MKDIR = powershell -executionpolicy bypass $(scriptsDir)/mkdir.ps1
 	RM = powershell -executionpolicy bypass $(scriptsDir)/rm.ps1
