@@ -11,12 +11,13 @@ ifeq ($(OS), Windows_NT)
 	platform := windows
 	CXX ?= g++
 	THEN := &&
+	WCARD := *.*
 	PATHSEP := \$(BLANK)
 	MKDIR = powershell -executionpolicy bypass $(scriptsDir)/mkdir.ps1
 	RM = powershell -executionpolicy bypass $(scriptsDir)/rm.ps1
 	EXE_NAME := .exe
 	VOLK_OS := WIN32_KHR
-	COPY = powershell -executionpolicy bypass $(scriptsDir)/copy.ps1 $1 $2 $3
+	COPY = powershell -executionpolicy bypass $(scriptsDir)/copy.ps1 -Source $1 -Destination $2 -Filter $3
 	BASENAME = $(basename $1)
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
 	BUILD_FLAGS_SCRIPT = powershell -executionpolicy bypass $(scriptsDir)/buildflags.ps1 --Target $1 --CXXFlags $2 --Dirs $3
@@ -40,6 +41,7 @@ else
 	endif
 
 	# Set UNIX macros
+	WCARD := **
 	THEN := ;
 	PATHSEP := /
 	MKDIR := mkdir -p

@@ -50,6 +50,5 @@ $(utestIncludeDir):
 # Copy the data directory to the build directory, and pack them
 test-data:
 	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
-	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,**)
-	powershell Start-Sleep -Seconds 10.0
+	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,"$(WCARD)")
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)
