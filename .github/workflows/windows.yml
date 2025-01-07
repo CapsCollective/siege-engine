@@ -32,8 +32,7 @@ jobs:
           ./app.exe
 
       - name: compress output
-        shell: bash
-        run: zip -m ./windows.zip ./output/**
+        run: Compress-Archive -Path ./output/* -DestinationPath ./windows.zip
 
       - name: upload artifacts
         uses: actions/upload-artifact@v4
