@@ -70,14 +70,14 @@ $(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
 # Copy assets directory to the build directory
 game-assets:
 	$(MKDIR) $(call platformpth, $(exampleGameBuildDir)/assets)
-	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
+	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,*)
 
 # Copy assets (and other required build files) directory to the build directory
 render-assets:
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir))
-	$(call COPY,$(binDir)/engine/render/build,$(exampleGameBuildDir),**)
+	$(call COPY,$(binDir)/engine/render/build,$(exampleGameBuildDir),*)
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets)
-	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,**)
+	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,*)
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
 	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets)
 
