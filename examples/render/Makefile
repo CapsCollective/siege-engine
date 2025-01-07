@@ -69,10 +69,9 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 # Copy assets directory to the build directory and pack them
 pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
-	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,"$(WCARD)")
+	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,"$(RWCARDGLOB)")
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets/shaders)
-	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,"$(WCARD)")
-	powershell Start-Sleep -Seconds 10.0
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,"$(RWCARDGLOB)")
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
 	$(RM) $(call platformpth,$(exampleRenderBuildDir)/assets)
 

@@ -11,7 +11,7 @@ ifeq ($(OS), Windows_NT)
 	platform := windows
 	CXX ?= g++
 	THEN := &&
-	WCARD := *.*
+	RWCARDGLOB := *.*
 	PATHSEP := \$(BLANK)
 	MKDIR = powershell -executionpolicy bypass $(scriptsDir)/mkdir.ps1
 	RM = powershell -executionpolicy bypass $(scriptsDir)/rm.ps1
@@ -41,7 +41,7 @@ else
 	endif
 
 	# Set UNIX macros
-	WCARD := **
+	RWCARDGLOB := **
 	THEN := ;
 	PATHSEP := /
 	MKDIR := mkdir -p

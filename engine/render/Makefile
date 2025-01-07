@@ -53,4 +53,4 @@ $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 # Copy Vulkan libraries to the build directory
 vulkan-libs:
 	$(MKDIR) $(call platformpth, $(renderBuildDir)/lib)
-	$(call COPY,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib,**)
+	$(call COPY,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib,"$(RWCARDGLOB)")

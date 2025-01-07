@@ -50,5 +50,5 @@ $(utestIncludeDir):
 # Copy the data directory to the build directory, and pack them
 test-data:
 	$(MKDIR) $(call platformpth,$(testBuildDir)/data)
-	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,"$(WCARD)")
+	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,"$(RWCARDGLOB)")
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

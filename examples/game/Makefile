@@ -70,10 +70,9 @@ $(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
 # Copy assets directory to the build directory and pack them
 pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleGameBuildDir)/assets)
-	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,"$(WCARD)")
+	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,"$(RWCARDGLOB)")
 	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets/shaders)
-	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleGameBuildDir)/assets/shaders,"$(WCARD)")
-	powershell Start-Sleep -Seconds 10.0
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleGameBuildDir)/assets/shaders,"$(RWCARDGLOB)")
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
 	$(RM) $(call platformpth,$(exampleGameBuildDir)/assets)
 

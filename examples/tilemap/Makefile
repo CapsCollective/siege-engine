@@ -68,10 +68,9 @@ $(exampleTilemapBinDir)/%.o: $(exampleTilemapSrcDir)/%.cpp
 # Copy assets directory to the build directory and pack them
 pack-assets:
 	$(MKDIR) $(call platformpth, $(exampleTilemapBuildDir)/assets)
-	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,"$(WCARD)")
+	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,"$(RWCARDGLOB)")
 	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets/shaders)
-	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,"$(WCARD)")
-	powershell Start-Sleep -Seconds 10.0
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,"$(RWCARDGLOB)")
 	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
 	$(RM) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 
