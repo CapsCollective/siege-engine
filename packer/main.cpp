@@ -17,10 +17,10 @@
 
 #include <fstream>
 
-#include "GenericFileDataPacker.h"
-#include "SceneDataPacker.h"
-#include "Texture2DDataPacker.h"
-#include "WavefrontDataPacker.h"
+#include "types/GenericFileDataPacker.h"
+#include "types/SceneDataPacker.h"
+#include "types/Texture2DDataPacker.h"
+#include "types/WavefrontDataPacker.h"
 
 using Siege::PackFile;
 

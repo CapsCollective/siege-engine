@@ -166,6 +166,7 @@ You can see examples of this in any of the application targets under `examples`.
      │          ├─[render] <- an example app demonstrating the renderer
      │
      ├─[make] <- additional Make file utilities for the build system
+     ├─[packer] <- an asset packing app for bundling game assets in a pack file on build 
      ├─[scripts] <- additional scripts for the build system and user convenience
      ├─[tests] <- a unit test app covering all of the engine's libraries
      ├─[vendor] <- all third-party libraries used by the project
