@@ -116,10 +116,10 @@ buildFlags:
 
 # Run cleanup across project
 clean:
-	$(RM) $(call platformpth, $(libDir))
-	$(RM) $(call platformpth, $(binDir))
-	$(RM) $(call platformpth, $(outputDir))
-	$(RM) $(call platformpth, $(buildFlagsFile))
+	$(RM) $(call platformpth,$(libDir))
+	$(RM) $(call platformpth,$(binDir))
+	$(RM) $(call platformpth,$(outputDir))
+	$(RM) $(call platformpth,$(buildFlagsFile))
 
 # Check file formatting program across all source files
 format-check:

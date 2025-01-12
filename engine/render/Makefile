@@ -34,7 +34,7 @@ all: $(renderLib) $(vertObjects) $(fragObjects)
 
 # Build the static library
 $(renderLib): $(renderObjects)
-	-$(RM) $(call platformpth, $(renderLib))
+	-$(RM) $(call platformpth,$(renderLib))
 	$(call COMBINE_LIBS, $(renderLibs), $(renderObjects), $(libDir), render)
 
 # Add all rules from dependency files
@@ -42,10 +42,10 @@ $(renderLib): $(renderObjects)
 
 # Compile object files to the bin directory
 $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR, $(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS) -DVK_USE_PLATFORM_$(VOLK_OS)
 
 # Compile shaders to the build directory
 $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR, $(call platformpth,$(@D)))
 	$(call platformpth,$(vendorDir)/glslang/build/StandAlone/glslangValidator$(EXE_NAME)) $< -V -o $@

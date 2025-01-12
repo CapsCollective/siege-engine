@@ -49,13 +49,13 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all vulkan-libs pack-assets
+.PHONY: all pack-assets
 
-all: $(exampleRenderApp) vulkan-libs pack-assets
+all: $(exampleRenderApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(exampleRenderObjects) -o $(exampleRenderApp) $(linkFlags)
 
 # Add all rules from dependency files
@@ -63,22 +63,20 @@ $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
 
 # Compile object files to the bin directory
 $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
 # Copy assets directory to the build directory and pack them
 pack-assets:
-	$(MKDIR) $(call platformpth, $(exampleRenderBuildDir)/assets)
+	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets))
 	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,$(RWCARDGLOB))
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets/shaders)
+	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets/shaders))
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
+	$(RM) "$(exampleRenderBuildDir)/assets"
+	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleRenderBuildDir))
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleRenderOutputName)"
 	$(call PACKAGE_SCRIPT, $(exampleRenderOutputName), $(call BASENAME, $(exampleRenderApp)), $(outputDir), $(exampleRenderBuildDir), $(packagingFlags))
-
-# Copy Vulkan libraries to the build directory
-vulkan-libs:
-	$(call COPY_VULKAN,$(vendorDir),$(exampleRenderBuildDir))

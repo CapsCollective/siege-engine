@@ -50,13 +50,13 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l core -l window -l render -l resources -l utils
 
-.PHONY: all vulkan-libs pack-assets
+.PHONY: all pack-assets
 
-all: $(exampleGameApp) vulkan-libs pack-assets
+all: $(exampleGameApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleGameApp): $(utilsLib) $(windowLib) $(renderLib) $(coreLib) $(exampleGameObjects)
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(exampleGameObjects) -o $(exampleGameApp) $(linkFlags)
 
 # Add all rules from dependency files
@@ -64,23 +64,23 @@ $(exampleGameApp): $(utilsLib) $(windowLib) $(renderLib) $(coreLib) $(exampleGam
 
 # Compile object files to the bin directory
 $(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
 # Copy assets directory to the build directory and pack them
 pack-assets:
-	$(MKDIR) $(call platformpth, $(exampleGameBuildDir)/assets)
+	$(call MKDIR,$(call platformpth,$(exampleGameBuildDir)/assets))
 	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,$(RWCARDGLOB))
-	$(MKDIR) $(call platformpth,$(exampleGameBuildDir)/assets/shaders)
+	$(call MKDIR,$(call platformpth,$(exampleGameBuildDir)/assets/shaders))
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleGameBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
+	$(RM) "$(exampleGameBuildDir)/assets"
+	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleGameBuildDir))
+
 
 # Package the built application and all its assets to the output directory
 package: all
 	$(RM) "$(outputDir)/$(exampleGameOutputName)"
-	$(call PACKAGE_SCRIPT, $(exampleGameOutputName), $(call BASENAME, $(exampleGameApp)), $(outputDir), $(exampleGameBuildDir), $(packagingFlags))
+	$(call PACKAGE_SCRIPT,$(exampleGameOutputName),$(call BASENAME,$(exampleGameApp)),$(outputDir),$(exampleGameBuildDir),$(packagingFlags))
 
-# Copy Vulkan libraries to the build directory
-vulkan-libs:
-	$(call COPY_VULKAN,$(vendorDir),$(exampleGameBuildDir))
 

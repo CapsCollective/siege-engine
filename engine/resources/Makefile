@@ -19,7 +19,7 @@ linkFlags += -l utils
 
 # Build the static library
 $(resourcesLib): $(resourcesObjects)
-	$(MKDIR) $(call platformpth, $(libDir))
+	$(call MKDIR,$(call platformpth,$(libDir)))
 	ar -crs $(resourcesLib) $(resourcesObjects)
 
 # Add all rules from dependency files
@@ -27,5 +27,5 @@ $(resourcesLib): $(resourcesObjects)
 
 # Compile object files to the bin directory
 $(resourcesBinDir)/%.o: $(resourcesSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)

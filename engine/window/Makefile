@@ -21,7 +21,7 @@ compileFlags += -I $(vendorDir)/glfw/include
 
 # Build the static library
 $(windowLib): $(windowObjects)
-	-$(RM) $(call platformpth, $(windowLib))
+	-$(RM) $(call platformpth,$(windowLib))
 	$(call COMBINE_LIBS, $(windowLibs), $(windowObjects), $(libDir), window)
 
 # Add all rules from dependency files
@@ -29,5 +29,5 @@ $(windowLib): $(windowObjects)
 
 # Compile object files to the bin directory
 $(windowBinDir)/%.o: $(windowSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)

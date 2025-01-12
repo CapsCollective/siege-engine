@@ -26,7 +26,7 @@ all: $(packerApp)
 
 # Link the object files and create an executable
 $(packerApp): $(packerObjects)
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(packerObjects) -o $(packerApp) $(linkFlags)
 
 # Add all rules from dependency files
@@ -34,5 +34,5 @@ $(packerApp): $(packerObjects)
 
 # Compile object files to the bin directory
 $(packerBinDir)/%.o: $(packerSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
