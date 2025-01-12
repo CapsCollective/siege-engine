@@ -37,7 +37,7 @@ void DevConsole::OnUpdate()
     char key;
     while ((key = (char) Siege::Input::GetLatestChar()) > 0)
     {
-        if ((key >= 32) && (key <= 125) &&
+        if (key >= 32 && key <= 125 &&
             !(key == Siege::Key::KEY_GRAVE_ACCENT && inputText.IsEmpty()))
             inputText += key;
     }

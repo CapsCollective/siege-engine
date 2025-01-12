@@ -510,7 +510,7 @@ void String::Append(char character)
     const char* data = Data();
     size_t lhsLength = Size();
 
-    char cstr[lhsLength + 1];
+    char cstr[lhsLength + 2];
     strcpy(cstr, data);
     cstr[lhsLength] = character;
     cstr[lhsLength + 1] = '\0';
