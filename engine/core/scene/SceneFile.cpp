@@ -102,10 +102,11 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         };
 
     // TODO: Implement proper write-mode handling for scene system
+    String ScenePath = MakeScenePath(sceneName);
     if (!SceneSystem::GetBaseDirectory().IsEmpty())
     {
         bool result = FileSystem::ForEachFileInDir(
-            MakeScenePath(sceneName),
+            ScenePath,
             [&deserialiseEntityString](const std::filesystem::path& path) {
                 if (path.extension() != ENTITY_FILE_EXT) return;
                 String entityData = FileSystem::Read(path.c_str());
@@ -113,14 +114,21 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
             });
         if (!result)
         {
-            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", MakeScenePath(sceneName))
+            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", ScenePath)
             return false;
         }
     }
     else
     {
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-        SceneData* sceneData = packFile->FindData<SceneData>(MakeScenePath(sceneName));
+
+        SceneData* sceneData = packFile->FindData<SceneData>(ScenePath);
+        if (!sceneData)
+        {
+            CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)
+            return false;
+        }
+
         String sceneString(sceneData->data);
         for (const String& entityData : sceneString.Split('|'))
         {
