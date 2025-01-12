@@ -7,7 +7,6 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <core/ResourceSystem.h>
 #include <core/Statics.h>
 #include <core/entity/Entity.h>
 #include <core/scene/SceneFile.h>
@@ -66,7 +65,7 @@ struct test_SceneSystem
 
 UTEST_F_SETUP(test_SceneSystem)
 {
-    Statics::Resource().SetBaseDirectory(SCENE_DIR);
+    SceneSystem::SetBaseDirectory(SCENE_DIR);
     Statics::Scene().NewScene();
 }
 

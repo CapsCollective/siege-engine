@@ -24,7 +24,7 @@ endif
 
 # Build the static library
 $(coreLib): $(coreObjects)
-	$(MKDIR) $(call platformpth, $(libDir))
+	$(call MKDIR,$(call platformpth,$(libDir)))
 	ar -crs $(coreLib) $(coreObjects)
 
 # Add all rules from dependency files
@@ -32,5 +32,5 @@ $(coreLib): $(coreObjects)
 
 # Compile object files to the bin directory
 $(coreBinDir)/%.o: $(coreSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)

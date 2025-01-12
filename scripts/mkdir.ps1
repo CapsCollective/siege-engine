@@ -8,4 +8,4 @@
 
 param ([String] $Path)
 
-if (!(Test-Path $Path)) { New-Item -Path $Path -ItemType directory }
+if (-not(Test-Path $Path)) { New-Item -Path $Path -ItemType "directory" -Force }

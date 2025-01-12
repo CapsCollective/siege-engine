@@ -17,7 +17,7 @@ namespace Siege::FileSystem
 String Read(const String& filename)
 {
     // Try open the file for reading
-    FILE* file = fopen(filename, "r");
+    FILE* file = fopen(filename, "rb");
     if (!file) return "";
 
     // Determine file size
@@ -26,7 +26,7 @@ String Read(const String& filename)
     rewind(file);
 
     // Copy the content
-    char content[size];
+    char content[size + 1];
     fread(content, sizeof(char), size, file);
     content[size] = '\0';
 

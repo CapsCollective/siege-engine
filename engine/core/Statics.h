@@ -18,8 +18,6 @@ public:
 
     static class CollisionSystem& Collision();
 
-    static class ResourceSystem& Resource();
-
     static class SceneSystem& Scene();
 
     static class EntitySystem& Entity();

@@ -37,14 +37,17 @@ export scriptsDir := $(abspath scripts)
 export outputDir := $(abspath output)
 export engineDir := $(abspath engine)
 export testsDir := $(abspath tests)
+export packerDir := $(abspath packer)
 export examplesDir := $(abspath examples)
 
 # Set top level targets
 export utilsLib := $(libDir)/libutils.a
+export resourcesLib := $(libDir)/libresources.a
 export windowLib := $(libDir)/libwindow.a
 export coreLib := $(libDir)/libcore.a
 export renderLib := $(libDir)/librender.a
 export testApp := $(binDir)/tests/build/app
+export packerApp := $(binDir)/packer/build/app
 export exampleGameApp := $(binDir)/examples/game/build/app
 export exampleRenderApp := $(binDir)/examples/render/build/app
 export exampleTilemapApp := $(binDir)/examples/tilemap/build/app
@@ -54,12 +57,15 @@ export compileFlags := -Wall -std=c++17
 export linkFlags += -L $(libDir)
 buildFlagsFile:=.buildflags
 
-.PHONY: all testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemapapp buildFlags clean format
+.PHONY: all packerapp testapp gameapp renderapp tilemapapp package-gameapp package-renderapp package-tilemapapp buildFlags clean format
 
-all: testapp package-gameapp package-renderapp package-tilemapapp
+all: packerapp testapp package-gameapp package-renderapp package-tilemapapp
 
 $(utilsLib): buildFlags
 	"$(MAKE)" -C $(engineDir)/utils CXXFLAGS="$(CXXFLAGS)"
+
+$(resourcesLib): buildFlags $(utilsLib)
+	"$(MAKE)" -C $(engineDir)/resources CXXFLAGS="$(CXXFLAGS)"
 
 $(windowLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/window CXXFLAGS="$(CXXFLAGS)"
@@ -70,19 +76,24 @@ $(coreLib): buildFlags $(utilsLib)
 $(renderLib): buildFlags $(utilsLib) $(windowLib)
 	"$(MAKE)" -C $(engineDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-$(testApp): buildFlags $(utilsLib) $(coreLib)
+$(packerApp): buildFlags $(utilsLib) $(resourcesLib)
+	"$(MAKE)" -C $(packerDir) CXXFLAGS="$(CXXFLAGS)"
+
+$(testApp): buildFlags $(utilsLib) $(coreLib) $(packerApp)
 	"$(MAKE)" -C $(testsDir) CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleGameApp): buildFlags $(renderLib) $(coreLib)
+$(exampleGameApp): buildFlags $(renderLib) $(coreLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/game CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleRenderApp): buildFlags $(renderLib)
+$(exampleRenderApp): buildFlags $(renderLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/render CXXFLAGS="$(CXXFLAGS)"
 
-$(exampleTilemapApp): buildFlags $(renderLib)
+$(exampleTilemapApp): buildFlags $(renderLib) $(packerApp)
 	"$(MAKE)" -C $(examplesDir)/tilemap CXXFLAGS="$(CXXFLAGS)"
 
 testapp: $(testApp)
+
+packerapp: $(packerApp)
 
 gameapp: $(exampleGameApp)
 
@@ -105,15 +116,15 @@ buildFlags:
 
 # Run cleanup across project
 clean:
-	$(RM) $(call platformpth, $(libDir))
-	$(RM) $(call platformpth, $(binDir))
-	$(RM) $(call platformpth, $(outputDir))
-	$(RM) $(call platformpth, $(buildFlagsFile))
+	$(RM) $(call platformpth,$(libDir))
+	$(RM) $(call platformpth,$(binDir))
+	$(RM) $(call platformpth,$(outputDir))
+	$(RM) $(call platformpth,$(buildFlagsFile))
 
 # Check file formatting program across all source files
 format-check:
-	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)" --check
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir) $(packerDir)" --check
 
 # Run file formatting program across all source files
 format:
-	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir)"
+	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir) $(packerDir)"

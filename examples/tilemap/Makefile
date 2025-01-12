@@ -28,6 +28,11 @@ else ifeq ($(platform), macos)
 		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
+engineRenderBuildDir := $(binDir)/engine/render/build
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.png))
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.jpg))
+exampleTilemapAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
+exampleTilemapAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleTilemapSrcDir),*.ttf))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
@@ -40,17 +45,16 @@ endif
 packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
-compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/freetype/include
-linkFlags += -l render -l window -l utils
+compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
+linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all render-assets tilemap-assets
+.PHONY: all pack-assets
 
-all: $(exampleTilemapApp) tilemap-assets render-assets
+all: $(exampleTilemapApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleTilemapApp): $(renderLib) $(exampleTilemapObjects)
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(exampleTilemapObjects) -o $(exampleTilemapApp) $(linkFlags)
 
 # Add all rules from dependency files
@@ -58,22 +62,20 @@ $(exampleTilemapApp): $(renderLib) $(exampleTilemapObjects)
 
 # Compile object files to the bin directory
 $(exampleTilemapBinDir)/%.o: $(exampleTilemapSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy assets directory to the build directory
-tilemap-assets:
-	$(MKDIR) $(call platformpth, $(exampleTilemapBuildDir)/assets)
-	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,**)
-
-# Copy assets (and other required build files) directory to the build directory
-render-assets:
-	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir))
-	$(call COPY,$(binDir)/engine/render/build,$(exampleTilemapBuildDir),**)
-	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets)
-	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,**)
+# Copy assets directory to the build directory and pack them
+pack-assets:
+	$(call MKDIR,$(call platformpth,$(exampleTilemapBuildDir)/assets))
+	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,$(RWCARDGLOB))
+	$(call MKDIR,$(call platformpth,$(exampleTilemapBuildDir)/assets/shaders))
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,$(RWCARDGLOB))
+	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
+	$(RM) "$(exampleTilemapBuildDir)/assets"
+	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleTilemapBuildDir))
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleTilemapOutputName)"
-	$(call PACKAGE_SCRIPT, $(exampleTilemapOutputName), $(shell basename $(exampleTilemapApp)), $(outputDir), $(exampleTilemapBuildDir), $(packagingFlags))
+	$(call PACKAGE_SCRIPT, $(exampleTilemapOutputName), $(call BASENAME, $(exampleTilemapApp)), $(outputDir), $(exampleTilemapBuildDir), $(packagingFlags))

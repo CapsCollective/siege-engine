@@ -81,3 +81,9 @@ for EXCLUDE in $EXCLUDES; do
     rm -rf "$EXCLUDE_PATH"
   fi
 done
+
+if [ -z "$( ls -A "$CONTENTS_DIR/lib" )" ]; then
+   rm -rf "$CONTENTS_DIR/lib"
+fi
+
+rm -rf "$CONTENTS_DIR/assets"

@@ -25,6 +25,8 @@ param (
 [string] $Vulkan_Include_Dir="$Vulkan_Vendor_Dir/include".Replace('\','/')
 [string] $Volk_Include_Dir="$Vulkan_Vendor_Dir/include/volk".Replace('\','/')
 
+[string] $CMAKE_COMPILERS="-DCMAKE_C_COMPILER=`"gcc.exe`" -DCMAKE_CXX_COMPILER=`"g++.exe`""
+
 function Make-Dir {
     param ( [string] $Dir_Path )
     if (!(Test-Path $Dir_Path)) { New-Item -Path $Dir_Path -ItemType directory }
@@ -63,9 +65,15 @@ function Setup-Zlib {
 
     Make-Dir $build_dir
 
-    cmake -G "$Generator" "$Vendor_Dir/zlib" -DCMAKE_INSTALL_PREFIX="$build_dir" -S"$Vendor_Dir/zlib" -B"$build_dir"
+    cmake                                   `
+        -G "$Generator"                     `
+        "$Vendor_Dir/zlib"                  `
+        $CMAKE_COMPILER                     `
+        -DCMAKE_INSTALL_PREFIX="$build_dir" `
+        -S"$Vendor_Dir/zlib"                `
+        -B"$build_dir"
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
     if(!(Test-Path "$build_dir/lib/libz.a")) {Rename-Item -Path "$build_dir/lib/libzlibstatic.a" -NewName "libz.a"}
 }
@@ -77,12 +85,22 @@ function Setup-LibPng {
 
     Write-Output "Building libpng..."
     [string] $build_dir = "$Vendor_Dir/libpng/build"
+    [string] $zlib_dir = "$Vendor_Dir/zlib/build"
 
     Make-Dir $build_dir
 
-    cmake -G "$Generator" "$Vendor_Dir/libpng" -DCMAKE_INSTALL_PREFIX="$build_dir" -S"$Vendor_Dir/libpng" -B"$build_dir"
+    cmake                                       `
+        -G "$Generator"                         `
+        "$Vendor_Dir/libpng"                    `
+        $CMAKE_COMPILER                         `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"     `
+        -DPNG_BUILD_ZLIB=ON                     `
+        -DZLIB_INCLUDE_DIRS="$zlib_dir/include" `
+        -DZLIB_LIBRARIES="$zlib_dir/lib/libz.a" `
+        -S"$Vendor_Dir/libpng"                  `
+        -B"$build_dir"
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-FreeType {
@@ -97,20 +115,21 @@ function Setup-FreeType {
 
     Make-Dir $build_dir
 
-    cmake `
-        -G "$Generator" `
-        -DCMAKE_INSTALL_PREFIX="$build_dir" `
-        -DFT_DISABLE_BROTLI=TRUE `
-        -DFT_DISABLE_BZIP2=TRUE `
-        -DFT_DISABLE_HARFBUZZ=TRUE `
-        -DZLIB_LIBRARY="$zlib_build_dir/lib/libz.a" `
-        -DZLIB_INCLUDE_DIR="$zlib_build_dir/include" `
-        -DPNG_LIBRARY="$libpng_build_dir/lib/libpng.a" `
-        -DPNG_PNG_INCLUDE_DIR="$libpng_build_dir/include" `
-        -B"$build_dir" `
+    cmake                                                   `
+        -G "$Generator"                                     `
+        $CMAKE_COMPILER                                     `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"                 `
+        -DFT_DISABLE_BROTLI=TRUE                            `
+        -DFT_DISABLE_BZIP2=TRUE                             `
+        -DFT_DISABLE_HARFBUZZ=TRUE                          `
+        -DZLIB_LIBRARY="$zlib_build_dir/lib/libz.a"         `
+        -DZLIB_INCLUDE_DIR="$zlib_build_dir/include"        `
+        -DPNG_LIBRARY="$libpng_build_dir/lib/libpng.a"      `
+        -DPNG_PNG_INCLUDE_DIR="$libpng_build_dir/include"   `
+        -B"$build_dir"                                      `
         -S"$Vendor_Dir"/freetype
 
-    make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
     Make-Dir "$Vendor_Dir/include/freetype"
 
@@ -125,9 +144,9 @@ function Setup-Glfw {
     Write-Output "Building glfw..."
     [string] $build_dir = "$Vendor_Dir/glfw/build"
 
-    cmake -G"$Generator" -DCMAKE_INSTALL_PREFIX="$build_dir" -B"$build_dir" -S"$Vendor_Dir/glfw"
+    cmake -G"$Generator" $CMAKE_COMPILER -DCMAKE_INSTALL_PREFIX="$build_dir" -B"$build_dir" -S"$Vendor_Dir/glfw"
 
-    make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Glslang {
@@ -141,14 +160,16 @@ function Setup-Glslang {
 
     Make-Dir $build_dir
 
-    cmake `
-        -G "$Generator" `
+    cmake                                   `
+        -G "$Generator"                     `
+        $CMAKE_COMPILER                     `
+        -DBUILD_EXTERNAL=OFF                `
         -DCMAKE_INSTALL_PREFIX="$build_dir" `
-        -DCMAKE_BUILD_TYPE=Release `
-        -S"$Vendor_Dir/glslang" `
+        -DCMAKE_BUILD_TYPE=Release          `
+        -S"$Vendor_Dir/glslang"             `
         -B"$build_dir"
 
-    make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Volk {
@@ -174,8 +195,14 @@ function Setup-Vulkan-Headers {
 
     Make-Dir $build_dir
 
-    cmake -G "$Generator" -DCMAKE_INSTALL_PREFIX="$build_dir/install"  -B"$build_dir" -S"$Vulkan_Vendor_Dir/Vulkan-Headers"
-    make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+    cmake                                               `
+        -G "$Generator"                                 `
+        $CMAKE_COMPILER                                 `
+        -DCMAKE_INSTALL_PREFIX="$build_dir/install"     `
+        -B"$build_dir"                                  `
+        -S"$Vulkan_Vendor_Dir/Vulkan-Headers"
+
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 
     Make-Dir $Vulkan_Include_Dir
 
@@ -192,10 +219,11 @@ function Setup-Vulkan-Loader {
     Write-Output "Building Vulkan Loader..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Loader/build"
 
-    cmake `
-        -DCMAKE_INSTALL_PREFIX="$build_dir" `
-        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install" `
-        -S"$Vulkan_Vendor_Dir/Vulkan-Loader" `
+    cmake                                                                               `
+        $CMAKE_COMPILER                                                                 `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"                                             `
+        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"  `
+        -S"$Vulkan_Vendor_Dir/Vulkan-Loader"                                            `
         -B"$build_dir"
 
     cmake --build "$build_dir" --parallel $env:NUMBER_OF_PROCESSORS --config Release
@@ -214,15 +242,16 @@ function Setup-Robin-Hood-Hashing {
     Write-Output "Building Robin Hood Hashing..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/robin-hood-hashing/build"
 
-    cmake `
+    cmake                                                       `
         -G "$Generator" "$Vulkan_Vendor_Dir"/robin-hood-hashing `
-        -DCMAKE_INSTALL_PREFIX="$build_dir"/install `
-        -DRH_STANDALONE_PROJECT=OFF `
-        -DCMAKE_BUILD_TYPE=Release `
-        -S"$Vulkan_Vendor_Dir"/robin-hood-hashing `
+        $CMAKE_COMPILER                                         `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"/install             `
+        -DRH_STANDALONE_PROJECT=OFF                             `
+        -DCMAKE_BUILD_TYPE=Release                              `
+        -S"$Vulkan_Vendor_Dir"/robin-hood-hashing               `
         -B"$build_dir"
 
-    make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Spirv-Headers {
@@ -237,7 +266,12 @@ function Setup-Spirv-Headers {
 
     Make-Dir $build_dir
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$build_dir/install" -S"$Vulkan_Vendor_Dir/SPIRV-Headers" -B"$build_dir"
+    cmake `
+        $CMAKE_COMPILER                             `
+        -DCMAKE_BUILD_TYPE=Release                  `
+        -DCMAKE_INSTALL_PREFIX="$build_dir/install" `
+        -S"$Vulkan_Vendor_Dir/SPIRV-Headers"        `
+        -B"$build_dir"
 
     cmake --build "$build_dir" --target install --config Release --parallel $env:NUMBER_OF_PROCESSORS
 }
@@ -254,9 +288,26 @@ function Setup-Spirv-Tools {
 
     Make-Dir $build_dir
 
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DSPIRV_SKIP_TESTS=ON -DSPIRV_WERROR=OFF -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers" -DCMAKE_INSTALL_PREFIX="$build_dir\install" -S"$Vulkan_Vendor_Dir\SPIRV-Tools" -B"$build_dir"
+    cmake                                                               `
+        ..                                                              `
+        $CMAKE_COMPILER                                                 `
+        -DCMAKE_BUILD_TYPE=Release                                      `
+        -DSPIRV_SKIP_TESTS=ON                                           `
+        -DSPIRV_WERROR=OFF                                              `
+        -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers"   `
+        -DCMAKE_INSTALL_PREFIX="$build_dir\install"                     `
+        -S"$Vulkan_Vendor_Dir\SPIRV-Tools"                              `
+        -B"$build_dir"
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DSPIRV_SKIP_TESTS=ON -DSPIRV_WERROR=OFF -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers" -DCMAKE_INSTALL_PREFIX="$build_dir\install" -S"$Vulkan_Vendor_Dir\SPIRV-Tools" -B"$build_dir"
+    cmake                                                               `
+        $CMAKE_COMPILER                                                 `
+        -DCMAKE_BUILD_TYPE=Release                                      `
+        -DSPIRV_SKIP_TESTS=ON                                           `
+        -DSPIRV_WERROR=OFF                                              `
+        -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers"   `
+        -DCMAKE_INSTALL_PREFIX="$build_dir\install"                     `
+        -S"$Vulkan_Vendor_Dir\SPIRV-Tools"                              `
+        -B"$build_dir"
     cmake --build $build_dir --parallel $env:NUMBER_OF_PROCESSORS --target install --config Release
 }
 
@@ -273,6 +324,7 @@ function Setup-Validation-Layers {
     Make-Dir $build_dir
 
     cmake                                                                                           `
+        $CMAKE_COMPILER                                                                             `
         -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"              `
         -DGLSLANG_INSTALL_DIR="$Vulkan_Vendor_Dir/glslang/build/install"                            `
         -DSPIRV_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers/build/install"                `

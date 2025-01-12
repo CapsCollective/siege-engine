@@ -7,5 +7,4 @@
 #
 
 param( [String] $Source, [String] $Destination, [String] $Filter)
-
-Get-ChildItem $Source | Copy-Item -Filter $Filter -Destination $Destination -Recurse -Force
+robocopy $Source $Destination $Filter /e /im /is /it

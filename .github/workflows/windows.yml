@@ -17,10 +17,25 @@ jobs:
         shell: pwsh
     
     steps:
-    - uses: actions/checkout@v2
+      - name: perform checkout
+        uses: actions/checkout@v4
 
-    - name: perform setup
-      run: ./scripts/setup.ps1
-      
-    - name: build all targets
-      run: mingw32-make
+      - name: perform setup
+        run: ./scripts/setup.ps1
+        
+      - name: build all targets
+        run: mingw32-make
+
+      - name: run tests
+        run: |
+          cd ./bin/tests/build
+          ./app.exe
+
+      - name: compress output
+        run: Compress-Archive -Path ./output/* -DestinationPath ./windows.zip
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows_output
+          path: ./windows.zip

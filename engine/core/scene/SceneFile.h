@@ -29,7 +29,7 @@
 namespace Siege
 {
 // Define constants
-static constexpr const char LINE_SEP = '\n';
+static constexpr const char LINE_SEP = ';';
 static constexpr const char NAME_SEP = ':';
 static constexpr const char* SCENE_FILE_EXT = ".scene";
 static constexpr const char* ENTITY_FILE_EXT = ".entity";

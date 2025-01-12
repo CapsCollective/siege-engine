@@ -9,7 +9,8 @@
 
 #include "Statics.h"
 
-#include "ResourceSystem.h"
+#include <resources/ResourceSystem.h>
+
 #include "physics/CollisionSystem.h"
 #include "scene/SceneSystem.h"
 
@@ -18,12 +19,6 @@ namespace Siege
 CollisionSystem& Statics::Collision()
 {
     static CollisionSystem system;
-    return system;
-}
-
-ResourceSystem& Statics::Resource()
-{
-    static ResourceSystem system;
     return system;
 }
 

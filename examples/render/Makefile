@@ -28,6 +28,12 @@ else ifeq ($(platform), macos)
 		export VK_LAYER_PATH='./lib/explicit_layer.d'; \
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
+engineRenderBuildDir := $(binDir)/engine/render/build
+exampleRenderAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.obj))
+exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.png))
+exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.jpg))
+exampleRenderAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))
+exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.ttf))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)
@@ -40,17 +46,16 @@ endif
 packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
-compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/tinyobjloader -I $(vendorDir)/freetype/include
-linkFlags += -l render -l window -l utils
+compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
+linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all render-assets
+.PHONY: all pack-assets
 
-all: $(exampleRenderApp) render-assets
+all: $(exampleRenderApp) pack-assets
 
 # Link the object files and create an executable
 $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(exampleRenderObjects) -o $(exampleRenderApp) $(linkFlags)
 
 # Add all rules from dependency files
@@ -58,17 +63,20 @@ $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
 
 # Compile object files to the bin directory
 $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
-	$(MKDIR) $(call platformpth, $(@D))
+	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) -MMD -MP -c $(compileFlags) -I $(engineDir) $< -o $@ $(CXXFLAGS)
 
-# Copy assets (and other required build files) directory to the build directory
-render-assets:
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir))
-	$(call COPY,$(binDir)/engine/render/build,$(exampleRenderBuildDir),**)
-	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets)
-	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,**)
+# Copy assets directory to the build directory and pack them
+pack-assets:
+	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets))
+	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,$(RWCARDGLOB))
+	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets/shaders))
+	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,$(RWCARDGLOB))
+	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
+	$(RM) "$(exampleRenderBuildDir)/assets"
+	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleRenderBuildDir))
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleRenderOutputName)"
-	$(call PACKAGE_SCRIPT, $(exampleRenderOutputName), $(shell basename $(exampleRenderApp)), $(outputDir), $(exampleRenderBuildDir), $(packagingFlags))
+	$(call PACKAGE_SCRIPT, $(exampleRenderOutputName), $(call BASENAME, $(exampleRenderApp)), $(outputDir), $(exampleRenderBuildDir), $(packagingFlags))

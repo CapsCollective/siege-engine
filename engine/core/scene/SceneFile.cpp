@@ -9,12 +9,16 @@
 
 #include "SceneFile.h"
 
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
+#include <resources/SceneData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
 #include <algorithm>
 
-#include "../ResourceSystem.h"
+#include "SceneSystem.h"
+#include "resources/GenericFileData.h"
 
 namespace Siege
 {
@@ -83,23 +87,56 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     entityPaths.clear();
 
     bool succeeded = true;
-    auto deserialiseEntity = [this, &entities, &succeeded](const std::filesystem::path& path) {
-        if (path.extension() != ENTITY_FILE_EXT) return;
+    auto deserialiseEntityString =
+        [this, &entities, &succeeded](const String& entityData, const std::filesystem::path& path) {
+            Entity* newEntity = DeserialiseFromString(entityData);
 
-        String fileData = FileSystem::Read(path.c_str());
-        Entity* newEntity = DeserialiseFromString(fileData);
+            if (!newEntity)
+            {
+                succeeded = false;
+                return;
+            }
 
-        if (!newEntity)
+            entities.push_back(newEntity);
+            entityPaths[EntityPtr(newEntity)] = path.c_str();
+        };
+
+    // TODO: Implement proper write-mode handling for scene system
+    String ScenePath = MakeScenePath(sceneName);
+    if (!SceneSystem::GetBaseDirectory().IsEmpty())
+    {
+        bool result = FileSystem::ForEachFileInDir(
+            ScenePath,
+            [&deserialiseEntityString](const std::filesystem::path& path) {
+                if (path.extension() != ENTITY_FILE_EXT) return;
+                String entityData = FileSystem::Read(path.c_str());
+                deserialiseEntityString(entityData, path);
+            });
+        if (!result)
         {
-            succeeded = false;
-            return;
+            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", ScenePath)
+            return false;
+        }
+    }
+    else
+    {
+        PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
+
+        SceneData* sceneData = packFile->FindData<SceneData>(ScenePath);
+        if (!sceneData)
+        {
+            CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)
+            return false;
         }
 
-        entities.push_back(newEntity);
-        entityPaths[EntityPtr(newEntity)] = path.c_str();
-    };
-    bool result = FileSystem::ForEachFileInDir(MakeScenePath(sceneName), deserialiseEntity);
-    return succeeded && result;
+        String sceneString(sceneData->data);
+        for (const String& entityData : sceneString.Split('|'))
+        {
+            deserialiseEntityString(entityData.Str(), "");
+        }
+    }
+
+    return succeeded;
 }
 
 Entity* SceneFile::DeserialiseFromString(const String& fileData)
@@ -180,6 +217,6 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
 String SceneFile::MakeScenePath(const String& sceneName)
 {
-    return Statics::Resource().GetBaseDirectory() + sceneName + SCENE_FILE_EXT;
+    return sceneName + SCENE_FILE_EXT;
 }
 } // namespace Siege
