@@ -49,9 +49,9 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all pack-assets
+.PHONY: all vulkan-libs pack-assets
 
-all: $(exampleRenderApp) pack-assets
+all: $(exampleRenderApp) vulkan-libs pack-assets
 
 # Link the object files and create an executable
 $(exampleRenderApp): $(renderLib) $(exampleRenderObjects)
@@ -73,9 +73,12 @@ pack-assets:
 	$(MKDIR) $(call platformpth,$(exampleRenderBuildDir)/assets/shaders)
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
-	$(RM) $(call platformpth,$(exampleRenderBuildDir)/assets)
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleRenderOutputName)"
 	$(call PACKAGE_SCRIPT, $(exampleRenderOutputName), $(call BASENAME, $(exampleRenderApp)), $(outputDir), $(exampleRenderBuildDir), $(packagingFlags))
+
+# Copy Vulkan libraries to the build directory
+vulkan-libs:
+	$(call COPY_VULKAN,$(vendorDir),$(exampleRenderBuildDir))

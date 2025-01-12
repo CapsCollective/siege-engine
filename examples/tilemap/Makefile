@@ -48,9 +48,9 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
 linkFlags += -l render -l window -l resources -l utils
 
-.PHONY: all pack-assets
+.PHONY: all vulkan-libs pack-assets
 
-all: $(exampleTilemapApp) pack-assets
+all: $(exampleTilemapApp) vulkan-libs pack-assets
 
 # Link the object files and create an executable
 $(exampleTilemapApp): $(renderLib) $(exampleTilemapObjects)
@@ -72,9 +72,12 @@ pack-assets:
 	$(MKDIR) $(call platformpth,$(exampleTilemapBuildDir)/assets/shaders)
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
-	$(RM) $(call platformpth,$(exampleTilemapBuildDir)/assets)
 
 # Package the built application and all its assets to the output directory
 package:
 	$(RM) "$(outputDir)/$(exampleTilemapOutputName)"
 	$(call PACKAGE_SCRIPT, $(exampleTilemapOutputName), $(call BASENAME, $(exampleTilemapApp)), $(outputDir), $(exampleTilemapBuildDir), $(packagingFlags))
+
+# Copy Vulkan libraries to the build directory
+vulkan-libs:
+	$(call COPY_VULKAN,$(vendorDir),$(exampleTilemapBuildDir))

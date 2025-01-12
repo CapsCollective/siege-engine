@@ -18,6 +18,7 @@ ifeq ($(OS), Windows_NT)
 	EXE_NAME := .exe
 	VOLK_OS := WIN32_KHR
 	COPY = powershell -executionpolicy bypass $(scriptsDir)/copy.ps1 -Source $1 -Destination $2 -Filter $3
+	COPY_VULKAN = $(call COPY,$1/vulkan/lib,$2/lib,$(RWCARDGLOB)); $(call COPY,$2/lib, $2,"vulkan-1.dll"); $(RM) $2\lib\vulkan-1.dll
 	BASENAME = $(basename $1)
 	VALIDATION_LAYERS_INSTALL_DIR := explicit_layer.d
 	BUILD_FLAGS_SCRIPT = powershell -executionpolicy bypass $(scriptsDir)/buildflags.ps1 --Target $1 --CXXFlags $2 --Dirs $3
@@ -44,9 +45,10 @@ else
 	RWCARDGLOB := **
 	THEN := ;
 	PATHSEP := /
-	MKDIR := mkdir -p
+	MKDIR = mkdir -p $1
 	RM := rm -rf
 	COPY = cp -r $1$(PATHSEP)$3 $2
+	COPY_VULKAN = $(call COPY,$1/vulkan/lib,$2/lib,$(RWCARDGLOB))
 	BASENAME = $(shell basename $1)
 	COPY_DIR = $(call COPY,$1,$2,$3)
 	VALIDATION_LAYERS_INSTALL_DIR := lib/explicit_layer.d

@@ -28,9 +28,9 @@ linkFlags += -l utils -l window
 compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
 				-I $(vendorDir)/zlib/build/include -I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
 
-.PHONY: all vulkan-libs
+.PHONY: all
 
-all: $(renderLib) $(vertObjects) $(fragObjects) vulkan-libs
+all: $(renderLib) $(vertObjects) $(fragObjects)
 
 # Build the static library
 $(renderLib): $(renderObjects)
@@ -49,8 +49,3 @@ $(renderBinDir)/%.o: $(renderSrcDir)/%.cpp
 $(renderBuildDir)/assets/shaders/%.spv: $(renderSrcDir)/assets/shaders/%
 	$(MKDIR) $(call platformpth, $(@D))
 	$(call platformpth,$(vendorDir)/glslang/build/StandAlone/glslangValidator$(EXE_NAME)) $< -V -o $@
-
-# Copy Vulkan libraries to the build directory
-vulkan-libs:
-	$(MKDIR) $(call platformpth, $(renderBuildDir)/lib)
-	$(call COPY,$(vendorDir)/vulkan/lib,$(renderBuildDir)/lib,$(RWCARDGLOB))

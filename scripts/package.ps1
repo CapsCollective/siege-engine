@@ -39,7 +39,10 @@ if (Test-Path $OutputDir/$PkgName) { Remove-Item -Path $OutputDir/$PkgName -Recu
 
 New-Item -Path $PkgFile -ItemType directory -Force
 
-Get-ChildItem $BuildDir/lib | Copy-Item -Filter * -Destination $PkgFile -Recurse -Force
+if (Test-Path -Path $BuildDir/lib)
+{
+    Get-ChildItem -Directory $BuildDir/lib | Copy-Item -Filter * -Destination $PkgFile -Recurse -Force
+}
 
 New-Item -Path $BuildDir/assets -ItemType directory -Force
 
@@ -52,3 +55,10 @@ if ($Excludes.Count -gt 0)
 {
     foreach ($i in $Excludes) { if ($1 -ne $OutputDir) { Remove-Item -Path $PkgFile/$i -Recurse  -Force -ErrorAction SilentlyContinue } }
 }
+
+if (-not (Test-Path -Path "$PkgFile/lib/*"))
+{
+    Remove-Item -Path $PkgFile/lib -Force
+}
+
+Remove-Item -Path "$PkgFile/assets" -Force -Recurse

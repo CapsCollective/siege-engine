@@ -7,5 +7,4 @@
 #
 
 param( [String] $Source, [String] $Destination, [String] $Filter)
-Write-Host ">>> $Filter"
 robocopy $Source $Destination $Filter /e /im /is /it
