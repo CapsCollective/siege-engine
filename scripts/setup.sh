@@ -26,11 +26,11 @@ else
 fi
 
 # Set setup details
-VULKAN_VERSION="v1.3.250"
-SPIRV_VERSION="sdk-1.3.250.1"
-GLSLANG_VERSION="12.2.0"
+VULKAN_VERSION="vulkan-sdk-1.3.296.0"
+SPIRV_VERSION="vulkan-sdk-1.3.296.0"
+GLSLANG_VERSION="vulkan-sdk-1.3.296.0"
 ROBIN_HOOD_HASHING_VERSION="3.11.5"
-MOLTENVK_VERSION="v1.2.4"
+MOLTENVK_VERSION="v1.2.11"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
@@ -261,6 +261,8 @@ echo "Setting up dependencies..."
 
 setup_utest
 setup_glfw
+setup_spirv_headers
+setup_spirv_tools
 setup_glslang
 setup_glm
 setup_volk
@@ -276,8 +278,6 @@ fi
 
 if [[ $* == *--include-validation-layers* ]]; then
     setup_robin_hood_hashing
-    setup_spirv_headers
-    setup_spirv_tools
     setup_validation_layers
 fi
 
