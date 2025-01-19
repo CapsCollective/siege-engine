@@ -10,7 +10,7 @@ param( [String] $LibSourceDir, [String] $LibDestDir )
 
 robocopy $LibSourceDir $LibDestDir /e /im /is /it
 
-if (Test-Path -Path "$LibDestDir/lib/*.dll")
+if (Test-Path -Path "$LibSourceDir/lib/*.dll")
 {
     robocopy $LibDestDir/lib LibDestDir *.dll /mov /im /is /it
 }
