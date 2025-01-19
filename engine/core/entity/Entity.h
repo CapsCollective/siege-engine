@@ -28,7 +28,7 @@ public:
 
     // Public constants
 
-    static const String ENTITY_NAME;
+    static const String ENTITY_TYPE_NAME;
 
     // 'Structors
 
@@ -36,15 +36,15 @@ public:
      * Zero-param constructor for Entity, initialises both
      * position and rotation to zero, and name to "Entity"
      */
-    Entity() : Entity(ENTITY_NAME) {};
+    Entity() : Entity(ENTITY_TYPE_NAME) {};
 
     /**
      * Single-param constructor for Entity that simply defines
      * a custom name for the Entity
-     * @param name - a const reference to the name of the
-     *               entity as a string
+     * @param typeName - a const reference to the name of the
+     *                   entity as a string
      */
-    Entity(const String& name) : Entity(name, {Vec3::Zero(), 0.f}) {};
+    Entity(const String& typeName) : Entity(typeName, {Vec3::Zero(), 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
@@ -55,7 +55,7 @@ public:
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const String& name, const Xform& transform, int zIndex = 0);
+    Entity(const String& typeName, const Xform& transform, int zIndex = 0);
 
     /**
      * Default virtual destructor for Entity
@@ -125,7 +125,7 @@ public:
      * @return a constant reference to the entity's name
      *         as a string
      */
-    const String& GetName() const;
+    const String& GetTypeName() const;
 
     /**
      * Getter method for the entity's generational index
@@ -236,7 +236,7 @@ private:
     /**
      * The name of the entity type
      */
-    const String& name;
+    const String& typeName;
 
     /**
      * The generational index of the entity

@@ -17,7 +17,7 @@
 #include "../ServiceLocator.h"
 
 // Static member initialisation
-const Siege::String Geometry::ENTITY_NAME("Geometry");
+const Siege::String Geometry::ENTITY_TYPE_NAME("Geometry");
 
 void Geometry::OnStart()
 {
@@ -78,19 +78,27 @@ static Siege::String Serialise(Siege::Entity* entity)
     return fileData;
 }
 
-static Siege::Entity* Deserialise(const Siege::EntityData& data,
-                                  const std::vector<Siege::String>& args)
+static Siege::Entity* Deserialise(const std::map<Siege::String, Siege::String>& attributes)
 {
+    Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
+
     Siege::Vec3 dimensions;
-    if (!Siege::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
+    auto it = attributes.find("DIMENSIONS");
+    if (it != attributes.end())
     {
-        CC_LOG_WARNING("Failed to deserialise dimensions with value {}",
-                       args[Siege::CUSTOM_FIELD_1]);
+        if (!Siege::FromString(dimensions, it->second))
+        {
+            CC_LOG_WARNING("Failed to deserialise dimensions with value {}", it->second);
+        }
     }
-    Siege::String modelPath = args[Siege::CUSTOM_FIELD_2];
-    Siege::String texturePath = args[Siege::CUSTOM_FIELD_3];
+
+    it = attributes.find("MODEL_PATH");
+    Siege::String modelPath = it != attributes.end() ? it->second : "";
+
+    it = attributes.find("TEXTURE_PATH");
+    Siege::String texturePath = it != attributes.end() ? it->second : "";
 
     return new Geometry({data.position, data.rotation, dimensions}, modelPath, texturePath);
 }
 
-REGISTER_SERIALISATION_INTERFACE(Geometry::ENTITY_NAME, Serialise, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(Geometry::ENTITY_TYPE_NAME, Serialise, Deserialise);

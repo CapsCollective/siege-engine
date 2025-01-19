@@ -20,7 +20,7 @@ public:
 
     // Public constants
 
-    static const Siege::String ENTITY_NAME;
+    static const Siege::String ENTITY_TYPE_NAME;
 
     // 'Structors
 
@@ -30,7 +30,7 @@ public:
         Geometry(transform, "assets/models/cube/cube.sm", "assets/models/cube/cube.png") {};
 
     Geometry(const Siege::Xform& transform, Siege::String modelPath, Siege::String texturePath) :
-        Entity(ENTITY_NAME, transform),
+        Entity(ENTITY_TYPE_NAME, transform),
         modelPath(std::move(modelPath)),
         texturePath(std::move(texturePath)) {};
 

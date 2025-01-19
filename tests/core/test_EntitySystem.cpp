@@ -51,8 +51,8 @@ UTEST(test_EntitySystem, AddEntities)
     auto e4 = new Entity(e4Name);
     auto e5 = new Entity(e5Name);
 
-    ASSERT_STREQ("e4", e4->GetName().Str());
-    ASSERT_STREQ("e5", e5->GetName().Str());
+    ASSERT_STREQ("e4", e4->GetTypeName().Str());
+    ASSERT_STREQ("e5", e5->GetTypeName().Str());
 }
 
 UTEST(test_EntitySystem, FreeEntities)
@@ -155,10 +155,10 @@ UTEST(test_EntitySystem, SortEntitiesByZIndex)
     auto* e3 = new Entity(e3Name, Xform(), 1);
     auto* e4 = new Entity(e4Name, Xform(), 3);
 
-    ASSERT_STREQ(e1->GetName().Str(), "e1");
-    ASSERT_STREQ(e2->GetName().Str(), "e2");
-    ASSERT_STREQ(e3->GetName().Str(), "e3");
-    ASSERT_STREQ(e4->GetName().Str(), "e4");
+    ASSERT_STREQ("e1", e1->GetTypeName().Str());
+    ASSERT_STREQ("e2", e2->GetTypeName().Str());
+    ASSERT_STREQ("e3", e3->GetTypeName().Str());
+    ASSERT_STREQ("e4", e4->GetTypeName().Str());
 
     system.Add({e1, e2, e3, e4});
 

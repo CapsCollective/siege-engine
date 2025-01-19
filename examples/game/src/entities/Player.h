@@ -18,14 +18,14 @@ public:
 
     // Public constants
 
-    static const Siege::String ENTITY_NAME;
+    static const Siege::String ENTITY_TYPE_NAME;
 
     // 'Structors
 
     Player() : Player({Siege::Vec3::Zero(), 0.f}) {};
 
     explicit Player(const Siege::Xform& transform) :
-        Entity(ENTITY_NAME, transform),
+        Entity(ENTITY_TYPE_NAME, transform),
         speed(1.5f),
         velocity(Siege::Vec3::Zero()) {};
 

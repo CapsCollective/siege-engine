@@ -177,7 +177,7 @@ void EditorController::OnDraw2D()
                                          window->GetHeight());
 
     // Format display text on the selected entity
-    Siege::String nameLabel = Siege::String("%s").Formatted(selectedEntity->GetName().Str());
+    Siege::String nameLabel = Siege::String("%s").Formatted(selectedEntity->GetTypeName().Str());
     Siege::String posLabel = Siege::String("Position: <%.2f, %.2f, %.2f>")
                                  .Formatted(selectedEntity->GetPosition().x,
                                             selectedEntity->GetPosition().y,

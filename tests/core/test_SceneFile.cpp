@@ -19,39 +19,39 @@ class TestEntity1 : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const String ENTITY_TYPE_NAME;
 
-    TestEntity1() : Entity(ENTITY_NAME) {};
+    TestEntity1() : Entity(ENTITY_TYPE_NAME) {};
 
-    TestEntity1(Xform transform, int zIndex) : Entity(ENTITY_NAME, transform, zIndex) {};
+    TestEntity1(Xform transform, int zIndex) : Entity(ENTITY_TYPE_NAME, transform, zIndex) {};
 };
-const String TestEntity1::ENTITY_NAME("TestEntity1");
+const String TestEntity1::ENTITY_TYPE_NAME("TestEntity1");
 
 class TestEntity2 : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const String ENTITY_TYPE_NAME;
 
-    TestEntity2() : Entity(ENTITY_NAME) {};
+    TestEntity2() : Entity(ENTITY_TYPE_NAME) {};
 
     explicit TestEntity2(String customData) :
-        Entity(ENTITY_NAME),
+        Entity(ENTITY_TYPE_NAME),
         customData(std::move(customData)) {};
 
     String customData;
 };
-const String TestEntity2::ENTITY_NAME("TestEntity2");
+const String TestEntity2::ENTITY_TYPE_NAME("TestEntity2");
 
 class TestEntity3 : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const String ENTITY_TYPE_NAME;
 
-    TestEntity3() : Entity(ENTITY_NAME) {};
+    TestEntity3() : Entity(ENTITY_TYPE_NAME) {};
 };
-const String TestEntity3::ENTITY_NAME("TestEntity3");
+const String TestEntity3::ENTITY_TYPE_NAME("TestEntity3");
 
 // Define test fixture
 struct test_SceneFile
@@ -60,22 +60,24 @@ struct test_SceneFile
     {
         // Register all serialisables for the fixture
         SceneFile::RegisterSerialisable(
-            TestEntity1::ENTITY_NAME,
+            TestEntity1::ENTITY_TYPE_NAME,
             [](Entity* entity) -> String {
                 return DefineField("CUSTOM_DATA", "this is some custom data");
             },
-            [](const EntityData& data, const std::vector<String>& args) -> Entity* {
+            [](const std::map<String, String>& attributes) -> Entity* {
+                Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
                 return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
             });
         SceneFile::RegisterSerialisable(
-            TestEntity2::ENTITY_NAME,
+            TestEntity2::ENTITY_TYPE_NAME,
             [](Entity* entity) -> String {
                 return DefineField("CUSTOM_DATA", "this is some other custom data");
             },
-            [](const EntityData& data, const std::vector<String>& args) -> Entity* {
-                return new TestEntity2(args[CUSTOM_FIELD_1]);
+            [](const std::map<String, String>& attributes) -> Entity* {
+                auto it = attributes.find("CUSTOM_DATA");
+                return new TestEntity2(it != attributes.end() ? it->second : "");
             });
-        SceneFile::RegisterSerialisable(TestEntity3::ENTITY_NAME, nullptr, nullptr);
+        SceneFile::RegisterSerialisable(TestEntity3::ENTITY_TYPE_NAME, nullptr, nullptr);
     }
 
     // Entity storage with cleanup
@@ -104,7 +106,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToString)
     TestEntity1 e1;
     String sceneData;
     ASSERT_TRUE(SceneFile::SerialiseToString(&e1, sceneData));
-    ASSERT_STREQ("TestEntity1;"
+    ASSERT_STREQ("TYPE:TestEntity1;"
                  "POSITION:0.00,0.00,0.00;"
                  "ROTATION:0.000000;"
                  "Z-INDEX:0;"
@@ -117,7 +119,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToString)
     e1.SetRotation({0.f, 25.f, 0.f});
     e1.SetZIndex(-3);
     ASSERT_TRUE(SceneFile::SerialiseToString(&e1, sceneData));
-    ASSERT_STREQ("TestEntity1;"
+    ASSERT_STREQ("TYPE:TestEntity1;"
                  "POSITION:1.00,2.00,3.00;"
                  "ROTATION:25.000000;"
                  "Z-INDEX:-3;"
@@ -131,7 +133,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToStringWithoutSerialiser)
     TestEntity3 e3;
     String sceneData;
     ASSERT_TRUE(SceneFile::SerialiseToString(&e3, sceneData));
-    ASSERT_STREQ("TestEntity3;"
+    ASSERT_STREQ("TYPE:TestEntity3;"
                  "POSITION:0.00,0.00,0.00;"
                  "ROTATION:0.000000;"
                  "Z-INDEX:0;",
@@ -168,7 +170,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromStringGarbageData)
 UTEST_F(test_SceneFile, DeserialiseEntityFromString)
 {
     // When deserialising a scene with a single entity it should deserialise correctly
-    String fileData = "TestEntity1;"
+    String fileData = "TYPE:TestEntity1;"
                       "POSITION:1.00,2.00,3.00;"
                       "ROTATION:25.000000;"
                       "Z-INDEX:-3;"
@@ -178,7 +180,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     ASSERT_TRUE(dynamic_cast<TestEntity1*>(e1));
 
     // It should retain its standard field values
-    ASSERT_STREQ("TestEntity1", e1->GetName().Str());
+    ASSERT_STREQ("TestEntity1", e1->GetTypeName().Str());
     Vec3 pos(e1->GetPosition());
     Vec3 rot(e1->GetRotation());
     ASSERT_EQ(1.f, pos.x);
@@ -191,7 +193,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     delete e1;
 
     // It should retain its custom data
-    fileData = "TestEntity2;"
+    fileData = "TYPE:TestEntity2;"
                "POSITION:0.00,0.00,0.00;"
                "ROTATION:0.000000;"
                "Z-INDEX:0;"
@@ -200,7 +202,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     ASSERT_TRUE(e2);
     auto* e2Cast = dynamic_cast<TestEntity2*>(e2);
     ASSERT_TRUE(e2Cast);
-    ASSERT_STREQ("TestEntity2", e2Cast->GetName().Str());
+    ASSERT_STREQ("TestEntity2", e2Cast->GetTypeName().Str());
     ASSERT_STREQ("this is some other custom data", e2Cast->customData.Str());
     delete e2;
 }
@@ -208,7 +210,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
 UTEST_F(test_SceneFile, DeserialiseEntityFromStringWithoutDeserialiser)
 {
     // When deserialising entities that do not define a deserialiser, it should do nothing
-    String fileData = "TestEntity3;"
+    String fileData = "TYPE:TestEntity3;"
                       "POSITION:0.00,0.00,0.00;"
                       "ROTATION:0.000000;"
                       "Z-INDEX:0;"
@@ -220,7 +222,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromStringWithoutDeserialiser)
 UTEST_F(test_SceneFile, DeserialiseEntityFromStringWithoutInterface)
 {
     // Entities that do not define a serialisation interface should not deserialise
-    String fileData = "Entity;"
+    String fileData = "TYPE:Entity;"
                       "POSITION:0.00,0.00,0.00;"
                       "ROTATION:0.000000;"
                       "Z-INDEX:0;"

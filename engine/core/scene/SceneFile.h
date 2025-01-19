@@ -37,22 +37,8 @@ static constexpr const char* ENTITY_FILE_EXT = ".entity";
 // Define types
 typedef struct EntityData EntityData;
 typedef const std::function<String(class Entity*)> Serialiser;
-typedef const std::function<Entity*(const EntityData&, const std::vector<String>&)> Deserialiser;
+typedef const std::function<Entity*(const std::map<String, String>&)> Deserialiser;
 typedef std::pair<Serialiser, Deserialiser> SerialisationInterface;
-
-/**
- * An enum for common serialisation field names
- */
-enum SerialisationFields
-{
-    ENTITY_NAME = 0,
-    ENTITY_POS = 1,
-    ENTITY_ROT = 2,
-    ENTITY_Z_IDX = 3,
-    CUSTOM_FIELD_1 = 4,
-    CUSTOM_FIELD_2 = 5,
-    CUSTOM_FIELD_3 = 6,
-};
 
 class SceneFile
 {
@@ -135,6 +121,8 @@ public:
      * index initialised.
      */
     void InitialiseEntityPathMappings();
+
+    static EntityData GetBaseEntityData(const std::map<String, String>& attributes);
 
 private:
 

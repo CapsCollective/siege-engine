@@ -55,8 +55,8 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(259383, header.bodySize);
-    ASSERT_EQ(259227, header.tocOffset);
+    ASSERT_EQ(259403, header.bodySize);
+    ASSERT_EQ(259247, header.tocOffset);
 
     std::vector<String> packedFilepaths {"data/scene2.scene",
                                          "data/scene1.scene",
@@ -175,17 +175,17 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    const char* expectedSceneData = "TestEntity;"
+    const char* expectedSceneData = "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
                                     "Z-INDEX:0;"
                                     "|"
-                                    "TestEntity;"
+                                    "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
                                     "Z-INDEX:0;"
                                     "|"
-                                    "TestEntity;"
+                                    "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
                                     "Z-INDEX:0;"

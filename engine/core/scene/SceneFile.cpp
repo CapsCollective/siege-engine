@@ -65,11 +65,11 @@ bool SceneFile::SerialiseToString(Entity* entity, String& fileData)
     auto& serialisables = GetSerialisables();
 
     // Only serialise entities that register a serialisable interface
-    auto it = serialisables.find(entity->GetName());
+    auto it = serialisables.find(entity->GetTypeName());
     if (it == serialisables.end()) return false;
 
     // Serialise the general entity information
-    fileData += (entity->GetName() + LINE_SEP);
+    fileData += DefineField("TYPE", entity->GetTypeName());
     fileData += DefineField("POSITION", ToString(entity->GetPosition()));
     fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation().y));
     fileData += DefineField("Z-INDEX", String::FromInt(entity->GetZIndex()));
@@ -147,28 +147,29 @@ Entity* SceneFile::DeserialiseFromString(const String& fileData)
         return nullptr;
     }
 
-    // Split the file into arguments and strip the labels from each item
-    std::vector<String> args = fileData.Split(LINE_SEP);
-    for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
+    std::string str(fileData);
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
+    String sanitisedFileData = str.c_str();
 
-    // Get the standard entity fields
-    EntityData data;
-    if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
-          args[ENTITY_Z_IDX].GetInt(data.zIndex) && FromString(data.position, args[ENTITY_POS])))
+    // Split the file into attributes
+    std::map<String, String> attributes;
+    for (const String& line : sanitisedFileData.Split(LINE_SEP))
     {
-        CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
+        std::vector<String> attribute = line.Split(NAME_SEP);
+        attributes[attribute[0]] = attribute[1];
     }
 
     // Check if the entity has a relevant serialisable interface registered
     auto& serialisables = GetSerialisables();
-    auto it = serialisables.find(args[ENTITY_NAME]);
+    auto it = serialisables.find(attributes["TYPE"]);
     if (it != serialisables.end())
     {
         // Apply its deserialiser
         Deserialiser deserialiser = it->second.second;
-        if (deserialiser) return deserialiser(data, args);
+        if (deserialiser) return deserialiser(attributes);
     }
-    else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", args[ENTITY_NAME]);
+    else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", attributes["TYPE"]);
     return nullptr;
 }
 
@@ -188,6 +189,29 @@ void SceneFile::InitialiseEntityPathMappings()
     {
         pair.first.InitialiseIndex();
     }
+}
+
+EntityData SceneFile::GetBaseEntityData(const std::map<String, String>& attributes)
+{
+    EntityData data;
+    auto it = attributes.find("ROTATION");
+    if (it == attributes.end() || !it->second.GetFloat(data.rotation))
+    {
+        CC_LOG_WARNING("Failed to deserialise ROTATION field for entity attributes");
+    }
+
+    it = attributes.find("Z-INDEX");
+    if (it == attributes.end() || !it->second.GetInt(data.zIndex))
+    {
+        CC_LOG_WARNING("Failed to deserialise Z-INDEX field for entity attributes");
+    }
+
+    it = attributes.find("POSITION");
+    if (it == attributes.end() || !FromString(data.position, it->second))
+    {
+        CC_LOG_WARNING("Failed to deserialise POSITION field for entity attributes");
+    }
+    return data;
 }
 
 String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
@@ -212,7 +236,7 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
     // Failed attempts to find a file index are serialised as 0
     String index = result ? String::FromInt(newFileIndex) : "0";
-    return MakeScenePath(sceneName) + '/' + entity->GetName() + '.' + index + ENTITY_FILE_EXT;
+    return MakeScenePath(sceneName) + '/' + entity->GetTypeName() + '.' + index + ENTITY_FILE_EXT;
 }
 
 String SceneFile::MakeScenePath(const String& sceneName)

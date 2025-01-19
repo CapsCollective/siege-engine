@@ -43,19 +43,20 @@ class TestEntity : public Entity
 {
 public:
 
-    static const String ENTITY_NAME;
+    static const String ENTITY_TYPE_NAME;
 
-    TestEntity() : Entity(ENTITY_NAME) {}
+    TestEntity() : Entity(ENTITY_TYPE_NAME) {}
 
-    explicit TestEntity(Xform transform) : Entity(ENTITY_NAME, transform) {}
+    explicit TestEntity(Xform transform) : Entity(ENTITY_TYPE_NAME, transform) {}
 };
 
-const String TestEntity::ENTITY_NAME("TestEntity");
+const String TestEntity::ENTITY_TYPE_NAME("TestEntity");
 
 REGISTER_SERIALISATION_INTERFACE(
-    TestEntity::ENTITY_NAME,
+    TestEntity::ENTITY_TYPE_NAME,
     [](Entity* entity) -> String { return ""; },
-    [](const EntityData& data, const std::vector<String>& args) -> Entity* {
+    [](const std::map<String, String>& attributes) -> Entity* {
+        Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
         return new TestEntity(Xform(data.position, data.rotation));
     });
 
