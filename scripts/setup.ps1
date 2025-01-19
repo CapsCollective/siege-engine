@@ -10,9 +10,9 @@ param (
 )
 
 [string] $Root_Dir=(pwd)
-[string] $Vulkan_Version= "v1.3.250"
-[string] $Spirv_Version="sdk-1.3.250.1"
-[string] $Glslang_Version="12.2.0"
+[string] $Vulkan_Version= "vulkan-sdk-1.3.296.0"
+[string] $Spirv_Version="vulkan-sdk-1.3.296.0"
+[string] $Glslang_Version="vulkan-sdk-1.3.296.0"
 [string] $Robin_Hood_Hashing_Version="3.11.5"
 [string] $Generator="MinGW Makefiles"
 [string] $Vendor_Dir="$Root_Dir/vendor".Replace('\','/')
@@ -46,7 +46,7 @@ function Update-Submodule {
 
 function Checkout-Tags {
     param([string] $Path=@(), [string] $Tag=@())
-    git -C "$Path"  fetch --all --tags ; git -C "$Path" checkout tags/"$Tag"
+    git -C "$Path"  fetch --all --tags --force ; git -C "$Path" checkout tags/"$Tag"
 }
 
 function Setup-Utest {
@@ -196,17 +196,16 @@ function Setup-Vulkan-Headers {
     Make-Dir $build_dir
 
     cmake                                               `
-        -G "$Generator"                                 `
         $CMAKE_COMPILER                                 `
         -DCMAKE_INSTALL_PREFIX="$build_dir/install"     `
         -B"$build_dir"                                  `
         -S"$Vulkan_Vendor_Dir/Vulkan-Headers"
 
-    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+    cmake --install "$build_dir" --prefix "$build_dir"
 
     Make-Dir $Vulkan_Include_Dir
 
-    Get-ChildItem "$Vulkan_Vendor_Dir/Vulkan-Headers/build/install/include" | Copy-Item -Destination $Vulkan_Include_Dir -Recurse
+    Get-ChildItem "$Vulkan_Vendor_Dir/Vulkan-Headers/build/include" | Copy-Item -Destination $Vulkan_Include_Dir -Recurse
 }
 
 function Setup-Vulkan-Loader {
@@ -222,7 +221,7 @@ function Setup-Vulkan-Loader {
     cmake                                                                               `
         $CMAKE_COMPILER                                                                 `
         -DCMAKE_INSTALL_PREFIX="$build_dir"                                             `
-        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"  `
+        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build"  `
         -S"$Vulkan_Vendor_Dir/Vulkan-Loader"                                            `
         -B"$build_dir"
 
@@ -289,7 +288,6 @@ function Setup-Spirv-Tools {
     Make-Dir $build_dir
 
     cmake                                                               `
-        ..                                                              `
         $CMAKE_COMPILER                                                 `
         -DCMAKE_BUILD_TYPE=Release                                      `
         -DSPIRV_SKIP_TESTS=ON                                           `
@@ -325,8 +323,8 @@ function Setup-Validation-Layers {
 
     cmake                                                                                           `
         $CMAKE_COMPILER                                                                             `
-        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"              `
-        -DGLSLANG_INSTALL_DIR="$Vulkan_Vendor_Dir/glslang/build/install"                            `
+        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build"              `
+        -DGLSLANG_INSTALL_DIR="$Vulkan_Vendor_Dir/glslang/build"                            `
         -DSPIRV_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers/build/install"                `
         -DSPIRV_TOOLS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Tools/build/install"                    `
         -DROBIN_HOOD_HASHING_INSTALL_DIR="$Vulkan_Vendor_Dir/robin-hood-hashing/build/install"      `
@@ -349,26 +347,26 @@ if (Test-Path "$Vulkan_Lib_Dir") { Remove-Item -Path "$Vulkan_Lib_Dir" -Recurse 
 if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_Vendor_Dir/vulkan/include" -Recurse -Force }
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
-Setup-Utest
-Setup-Zlib
-Setup-LibPng
-Setup-FreeType
-Setup-Glfw
-Setup-Glslang
-Setup-Volk
-Setup-Vulkan-Headers
-Setup-Vulkan-Loader
+#Setup-Utest
+#Setup-Zlib
+#Setup-LibPng
+#Setup-FreeType
+#Setup-Glfw
+#Setup-Spirv-Headers
+#Setup-Spirv-Tools
+#Setup-Glslang
+#Setup-Volk
+#Setup-Vulkan-Headers
+#Setup-Vulkan-Loader
 
 if ($Include_Validation_Layers)
 {
-    Setup-Robin-Hood-Hashing
-    Setup-Spirv-Headers
-    Setup-Spirv-Tools
+    #Setup-Robin-Hood-Hashing
     Setup-Validation-Layers
 
-    Write-Output "Configuring environment file..."
-    if (!(Test-Path "$Root_Dir/.env")) { New-Item -Path "$Root_Dir/.env" -ItemType file }
-    Set-Content -Path "$Root_Dir/.env" -Value "VK_LAYER_PATH=$Bin_Dir\examples\render\build\lib\explicit_layer.d"
+    #Write-Output "Configuring environment file..."
+    #if (!(Test-Path "$Root_Dir/.env")) { New-Item -Path "$Root_Dir/.env" -ItemType file }
+    #Set-Content -Path "$Root_Dir/.env" -Value "VK_LAYER_PATH=$Bin_Dir\examples\render\build\lib\explicit_layer.d"
 }
 
 Write-Output "Siege setup complete"
