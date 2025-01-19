@@ -7,7 +7,6 @@
 //
 
 #include "StaticMeshDataPacker.h"
-#include "WavefrontDataPacker.h"
 
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
@@ -15,24 +14,20 @@
 #include <algorithm>
 #include <fstream>
 
-static constexpr const char LINE_SEP = ';';
-static constexpr const char NAME_SEP = ':';
+#include "WavefrontDataPacker.h"
+
 static constexpr const char* SOURCE_PATH_ATTR = "SOURCE_PATH";
 
 void* PackStaticMeshFile(const Siege::String& filePath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
+    std::map<Siege::String, Siege::String> attributes =
+        Siege::FileSystem::ParseAttributeFileData(contents);
 
-    std::string str(contents);
-    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
-    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
-    contents = str.c_str();
-
-    std::map<Siege::String, Siege::String> attributes;
-    for (const Siege::String& line : contents.Split(LINE_SEP))
+    if (attributes.empty())
     {
-        std::vector<Siege::String> attrValue = line.Split(NAME_SEP);
-        attributes[attrValue[0]] = attrValue[1];
+        CC_LOG_WARNING("Received empty static mesh file at path \"{}\"", filePath);
+        return nullptr;
     }
 
     auto it = attributes.find(SOURCE_PATH_ATTR);

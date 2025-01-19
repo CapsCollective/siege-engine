@@ -31,10 +31,7 @@ void* PackSceneFile(const Siege::String& filePath)
         return nullptr;
     }
 
-    std::string str(bodyString);
-    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
-    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
-    bodyString = str.c_str();
+    bodyString = Siege::FileSystem::StripNewLines(bodyString);
 
     uint32_t fileSize = bodyString.Size() + 1;
     char data[fileSize];

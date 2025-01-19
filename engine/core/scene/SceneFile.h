@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_SCENEFILE_H
 #define SIEGE_ENGINE_SCENEFILE_H
 
+#include <utils/Filesystem.h>
 #include <utils/Macros.h>
 #include <utils/String.h>
 #include <utils/math/Maths.h>
@@ -29,8 +30,6 @@
 namespace Siege
 {
 // Define constants
-static constexpr const char LINE_SEP = ';';
-static constexpr const char NAME_SEP = ':';
 static constexpr const char* SCENE_FILE_EXT = ".scene";
 static constexpr const char* ENTITY_FILE_EXT = ".entity";
 
@@ -227,7 +226,7 @@ struct SerialisationInterfaceRegisterer
  */
 inline String DefineField(const String& name, const String& content)
 {
-    return name + NAME_SEP + content + LINE_SEP;
+    return name + ATTR_FILE_VALUE_SEP + content + ATTR_FILE_LINE_SEP;
 }
 } // namespace Siege
 

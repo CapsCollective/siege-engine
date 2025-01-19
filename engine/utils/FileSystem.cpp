@@ -72,4 +72,29 @@ bool ForEachFileInDir(const String& path,
     }
     return true;
 }
+
+String StripNewLines(const String& string)
+{
+    std::string str(string);
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
+    return str.c_str();
+}
+
+std::map<String, String> ParseAttributeFileData(const String& fileData)
+{
+    // Expunge any newlines characters from the file data
+    String sanitisedFileData = StripNewLines(fileData);
+
+    // Split the file line contents into attributes
+    std::map<String, String> attributes;
+    for (const String& line : sanitisedFileData.Split(ATTR_FILE_LINE_SEP))
+    {
+        std::vector<String> attribute = line.Split(ATTR_FILE_VALUE_SEP);
+        // TODO Warn
+        attributes[attribute[0]] = attribute[1];
+    }
+
+    return attributes;
+}
 } // namespace Siege::FileSystem

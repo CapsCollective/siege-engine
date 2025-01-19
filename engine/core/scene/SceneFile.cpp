@@ -141,23 +141,12 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
 
 Entity* SceneFile::DeserialiseFromString(const String& fileData)
 {
-    if (fileData.IsEmpty())
+    std::map<String, String> attributes = Siege::FileSystem::ParseAttributeFileData(fileData);
+
+    if (attributes.empty())
     {
-        CC_LOG_WARNING("Found empty entity during deserialisation");
+        CC_LOG_WARNING("Found empty entity during deserialisation!");
         return nullptr;
-    }
-
-    std::string str(fileData);
-    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
-    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
-    String sanitisedFileData = str.c_str();
-
-    // Split the file into attributes
-    std::map<String, String> attributes;
-    for (const String& line : sanitisedFileData.Split(LINE_SEP))
-    {
-        std::vector<String> attribute = line.Split(NAME_SEP);
-        attributes[attribute[0]] = attribute[1];
     }
 
     // Check if the entity has a relevant serialisable interface registered

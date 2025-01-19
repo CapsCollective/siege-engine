@@ -11,8 +11,13 @@
 #define SIEGE_ENGINE_FILESYSTEM_H
 
 #include <filesystem>
+#include <map>
 
 #include "String.h"
+
+// Define constants
+static constexpr const char ATTR_FILE_LINE_SEP = ';';
+static constexpr const char ATTR_FILE_VALUE_SEP = ':';
 
 namespace Siege::FileSystem
 {
@@ -29,6 +34,10 @@ bool CreateDirectoryRecursive(const String& dirpath);
 
 bool ForEachFileInDir(const String& path,
                       const std::function<void(const std::filesystem::path&)>& func);
+
+String StripNewLines(const String& string);
+
+std::map<String, String> ParseAttributeFileData(const String& fileData);
 
 } // namespace Siege::FileSystem
 
