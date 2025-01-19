@@ -27,7 +27,7 @@ public:
     Geometry() : Geometry({Siege::Vec3::Zero(), 0.f}) {};
 
     explicit Geometry(const Siege::Xform& transform) :
-        Geometry(transform, "assets/models/cube/cube.obj", "assets/models/cube/cube.png") {};
+        Geometry(transform, "assets/models/cube/cube.sm", "assets/models/cube/cube.png") {};
 
     Geometry(const Siege::Xform& transform, Siege::String modelPath, Siege::String texturePath) :
         Entity(ENTITY_NAME, transform),

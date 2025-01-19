@@ -19,6 +19,7 @@
 
 #include "types/GenericFileDataPacker.h"
 #include "types/SceneDataPacker.h"
+#include "types/StaticMeshDataPacker.h"
 #include "types/Texture2DDataPacker.h"
 #include "types/WavefrontDataPacker.h"
 
@@ -63,9 +64,9 @@ int main(int argc, char* argv[])
         uint32_t bodyDataSize = 0;
         Siege::String fullPath = assetsDir + "/" + Siege::String(file.c_str());
         std::filesystem::path extension = file.extension();
-        if (extension == ".obj")
+        if (extension == ".sm")
         {
-            data = PackWavefrontFile(fullPath);
+            data = PackStaticMeshFile(fullPath);
             bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")

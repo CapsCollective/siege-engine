@@ -29,7 +29,7 @@ else ifeq ($(platform), macos)
 		export VK_ICD_FILENAMES='./lib/icd.d/MoltenVK_icd.json'
 endif
 engineRenderBuildDir := $(binDir)/engine/render/build
-exampleGameAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.obj))
+exampleGameAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.sm))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.png))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.jpg))
 exampleGameAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))

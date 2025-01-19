@@ -1,0 +1,3 @@
+SOURCE_PATH:assets/models/colored_cube.obj;
+MATERIAL_PATH:assets/models/colored_cube.mat;
+NODE_PATH:/;

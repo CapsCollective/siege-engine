@@ -55,13 +55,13 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(259384, header.bodySize);
+    ASSERT_EQ(259383, header.bodySize);
     ASSERT_EQ(259227, header.tocOffset);
 
     std::vector<String> packedFilepaths {"data/scene2.scene",
                                          "data/scene1.scene",
                                          "data/garbage.scene",
-                                         "data/cube.obj",
+                                         "data/cube.sm",
                                          "data/cappy.png",
                                          "data/PublicPixel.ttf"};
 
@@ -96,7 +96,7 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    StaticMeshData* data = packFile->FindData<StaticMeshData>("data/cube.obj");
+    StaticMeshData* data = packFile->FindData<StaticMeshData>("data/cube.sm");
     ASSERT_TRUE(data);
     ASSERT_EQ(36, data->indicesCount);
     ASSERT_EQ(24, data->verticesCount);

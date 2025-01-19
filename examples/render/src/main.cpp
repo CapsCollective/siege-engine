@@ -84,8 +84,8 @@ int main()
                      .Build());
 
     // Generate models
-    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.obj", &testMaterial);
-    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.obj", &testMaterial);
+    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.sm", &testMaterial);
+    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.sm", &testMaterial);
 
     // Create shapes for use
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),

@@ -30,7 +30,7 @@ RenderResources::RenderResources()
                                 .WithGlobalData3DUniform()
                                 .Build());
 
-    cubeMesh = Siege::Vulkan::StaticMesh("assets/models/cube/cube.obj", &cubeMaterial);
+    cubeMesh = Siege::Vulkan::StaticMesh("assets/models/cube/cube.sm", &cubeMaterial);
 
     defaultFont = Siege::Vulkan::Font("assets/fonts/PublicPixel.ttf");
 }

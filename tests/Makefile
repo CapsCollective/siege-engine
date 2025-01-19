@@ -16,7 +16,7 @@ testObjects := $(call findobjs,$(testSrcDir),$(testBinDir),$(testSources))
 testDepends := $(patsubst %.o, %.d, $(call rwildcard,$(testBinDir)/,*.o))
 testBuildDir := $(testBinDir)/build
 
-testAssets := $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.obj))
+testAssets := $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.sm))
 testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.png))
 testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.ttf))
 testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.scene))
