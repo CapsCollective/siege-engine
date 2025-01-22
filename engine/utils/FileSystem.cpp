@@ -12,6 +12,8 @@
 #include <cstdio>
 #include <fstream>
 
+#include "Logging.h"
+
 namespace Siege::FileSystem
 {
 String Read(const String& filename)
@@ -81,18 +83,32 @@ String StripNewLines(const String& string)
     return str.c_str();
 }
 
-std::map<String, String> ParseAttributeFileData(const String& fileData)
+std::map<Token, String> ParseAttributeFileData(const String& fileData)
 {
     // Expunge any newlines characters from the file data
     String sanitisedFileData = StripNewLines(fileData);
 
     // Split the file line contents into attributes
-    std::map<String, String> attributes;
+    std::map<Token, String> attributes;
     for (const String& line : sanitisedFileData.Split(ATTR_FILE_LINE_SEP))
     {
         std::vector<String> attribute = line.Split(ATTR_FILE_VALUE_SEP);
-        // TODO Warn
-        attributes[attribute[0]] = attribute[1];
+        if (attribute.size() != 2)
+        {
+            CC_LOG_WARNING("Received wrong number of attribute value seperations for line \"{}\", "
+                           "will not register!",
+                           line)
+            continue;
+        }
+
+        Token attributeToken = Token::FindToken(attribute[0]);
+        if (!attributeToken)
+        {
+            CC_LOG_WARNING("Failed to find token for attribute \"{}\", will not register!",
+                           attribute[0])
+            continue;
+        }
+        attributes[attributeToken] = attribute[1];
     }
 
     return attributes;

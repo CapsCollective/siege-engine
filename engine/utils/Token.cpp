@@ -32,6 +32,11 @@ bool Token::operator<(Token rhs) const
     return tokenId < rhs.tokenId;
 }
 
+Token::operator bool() const
+{
+    return IsValid();
+}
+
 const char* Token::GetId() const
 {
     return tokenId;

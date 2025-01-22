@@ -178,17 +178,17 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
     const char* expectedSceneData = "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
-                                    "Z-INDEX:0;"
+                                    "Z_INDEX:0;"
                                     "|"
                                     "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
-                                    "Z-INDEX:0;"
+                                    "Z_INDEX:0;"
                                     "|"
                                     "TYPE:TestEntity;"
                                     "POSITION:0.000000,0.000000,0.000000;"
                                     "ROTATION:0.000000;"
-                                    "Z-INDEX:0;"
+                                    "Z_INDEX:0;"
                                     "|";
 
     SceneData* data = packFile->FindData<SceneData>("data/scene1.scene");

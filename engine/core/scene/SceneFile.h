@@ -36,7 +36,7 @@ static constexpr const char* ENTITY_FILE_EXT = ".entity";
 // Define types
 typedef struct EntityData EntityData;
 typedef const std::function<String(class Entity*)> Serialiser;
-typedef const std::function<Entity*(const std::map<String, String>&)> Deserialiser;
+typedef const std::function<Entity*(const std::map<Token, String>&)> Deserialiser;
 typedef std::pair<Serialiser, Deserialiser> SerialisationInterface;
 
 class SceneFile
@@ -121,7 +121,7 @@ public:
      */
     void InitialiseEntityPathMappings();
 
-    static EntityData GetBaseEntityData(const std::map<String, String>& attributes);
+    static EntityData GetBaseEntityData(const std::map<Token, String>& attributes);
 
 private:
 
@@ -220,13 +220,13 @@ struct SerialisationInterfaceRegisterer
 /**
  * An inlined helper function to define the structure of the
  * property field in a .scene file
- * @param name - the name of the property field
+ * @param name - the token name of the property field
  * @param content - the content of the property
  * @return the field content as a const string
  */
-inline String DefineField(const String& name, const String& content)
+inline String DefineField(Token name, const String& content)
 {
-    return name + ATTR_FILE_VALUE_SEP + content + ATTR_FILE_LINE_SEP;
+    return String(name.GetId()) + ATTR_FILE_VALUE_SEP + content + ATTR_FILE_LINE_SEP;
 }
 } // namespace Siege
 

@@ -16,12 +16,12 @@
 
 #include "WavefrontDataPacker.h"
 
-static constexpr const char* SOURCE_PATH_ATTR = "SOURCE_PATH";
+REGISTER_TOKEN(SOURCE_PATH);
 
 void* PackStaticMeshFile(const Siege::String& filePath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
-    std::map<Siege::String, Siege::String> attributes =
+    std::map<Siege::Token, Siege::String> attributes =
         Siege::FileSystem::ParseAttributeFileData(contents);
 
     if (attributes.empty())
@@ -30,7 +30,7 @@ void* PackStaticMeshFile(const Siege::String& filePath)
         return nullptr;
     }
 
-    auto it = attributes.find(SOURCE_PATH_ATTR);
+    auto it = attributes.find(TOKEN_SOURCE_PATH);
     if (it == attributes.end())
     {
         CC_LOG_ERROR("Failed to find SOURCE_PATH attribute in .sm file at path \"{}\"", filePath)

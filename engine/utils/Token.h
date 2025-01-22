@@ -73,6 +73,14 @@ public:
      */
     bool operator<(Token rhs) const;
 
+    // Conversion overloads
+
+    /**
+     * Boolean conversion operator overload for checking validity
+     * @return true if the Token is valid, false otherwise
+     */
+    operator bool() const;
+
     // Public methods
 
     /**

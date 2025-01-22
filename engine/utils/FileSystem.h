@@ -14,6 +14,7 @@
 #include <map>
 
 #include "String.h"
+#include "Token.h"
 
 // Define constants
 static constexpr const char ATTR_FILE_LINE_SEP = ';';
@@ -37,7 +38,7 @@ bool ForEachFileInDir(const String& path,
 
 String StripNewLines(const String& string);
 
-std::map<String, String> ParseAttributeFileData(const String& fileData);
+std::map<Token, String> ParseAttributeFileData(const String& fileData);
 
 } // namespace Siege::FileSystem
 

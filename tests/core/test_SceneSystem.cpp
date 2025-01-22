@@ -52,7 +52,7 @@ public:
 REGISTER_SERIALISATION_INTERFACE(
     TOKEN_TestEntity,
     [](Entity* entity) -> String { return ""; },
-    [](const std::map<String, String>& attributes) -> Entity* {
+    [](const std::map<Token, String>& attributes) -> Entity* {
         Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
         return new TestEntity(Xform(data.position, data.rotation));
     });

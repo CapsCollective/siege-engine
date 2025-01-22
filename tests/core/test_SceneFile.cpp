@@ -49,6 +49,7 @@ public:
 };
 
 // Define test fixture
+REGISTER_TOKEN(CUSTOM_DATA);
 struct test_SceneFile
 {
     test_SceneFile()
@@ -57,19 +58,19 @@ struct test_SceneFile
         SceneFile::RegisterSerialisable(
             TOKEN_TestEntity1,
             [](Entity* entity) -> String {
-                return DefineField("CUSTOM_DATA", "this is some custom data");
+                return DefineField(TOKEN_CUSTOM_DATA, "this is some custom data");
             },
-            [](const std::map<String, String>& attributes) -> Entity* {
+            [](const std::map<Token, String>& attributes) -> Entity* {
                 Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
                 return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
             });
         SceneFile::RegisterSerialisable(
             TOKEN_TestEntity2,
             [](Entity* entity) -> String {
-                return DefineField("CUSTOM_DATA", "this is some other custom data");
+                return DefineField(TOKEN_CUSTOM_DATA, "this is some other custom data");
             },
-            [](const std::map<String, String>& attributes) -> Entity* {
-                auto it = attributes.find("CUSTOM_DATA");
+            [](const std::map<Token, String>& attributes) -> Entity* {
+                auto it = attributes.find(TOKEN_CUSTOM_DATA);
                 return new TestEntity2(it != attributes.end() ? it->second : "");
             });
         SceneFile::RegisterSerialisable(TOKEN_TestEntity3, nullptr, nullptr);
@@ -104,7 +105,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToString)
     ASSERT_STREQ("TYPE:TestEntity1;"
                  "POSITION:0.00,0.00,0.00;"
                  "ROTATION:0.000000;"
-                 "Z-INDEX:0;"
+                 "Z_INDEX:0;"
                  "CUSTOM_DATA:this is some custom data;",
                  sceneData.Str());
 
@@ -117,7 +118,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToString)
     ASSERT_STREQ("TYPE:TestEntity1;"
                  "POSITION:1.00,2.00,3.00;"
                  "ROTATION:25.000000;"
-                 "Z-INDEX:-3;"
+                 "Z_INDEX:-3;"
                  "CUSTOM_DATA:this is some custom data;",
                  sceneData.Str());
 }
@@ -131,7 +132,7 @@ UTEST_F(test_SceneFile, SerialiseEntityToStringWithoutSerialiser)
     ASSERT_STREQ("TYPE:TestEntity3;"
                  "POSITION:0.00,0.00,0.00;"
                  "ROTATION:0.000000;"
-                 "Z-INDEX:0;",
+                 "Z_INDEX:0;",
                  sceneData.Str());
 }
 
@@ -168,7 +169,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     String fileData = "TYPE:TestEntity1;"
                       "POSITION:1.00,2.00,3.00;"
                       "ROTATION:25.000000;"
-                      "Z-INDEX:-3;"
+                      "Z_INDEX:-3;"
                       "CUSTOM_DATA:this is some custom data;";
     Entity* e1 = SceneFile::DeserialiseFromString(fileData);
     ASSERT_TRUE(e1);
@@ -191,7 +192,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     fileData = "TYPE:TestEntity2;"
                "POSITION:0.00,0.00,0.00;"
                "ROTATION:0.000000;"
-               "Z-INDEX:0;"
+               "Z_INDEX:0;"
                "CUSTOM_DATA:this is some other custom data;";
     Entity* e2 = SceneFile::DeserialiseFromString(fileData);
     ASSERT_TRUE(e2);
@@ -208,7 +209,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromStringWithoutDeserialiser)
     String fileData = "TYPE:TestEntity3;"
                       "POSITION:0.00,0.00,0.00;"
                       "ROTATION:0.000000;"
-                      "Z-INDEX:0;"
+                      "Z_INDEX:0;"
                       "CUSTOM_DATA:this is some other custom data;";
     Entity* e1 = SceneFile::DeserialiseFromString(fileData);
     ASSERT_FALSE(e1);
@@ -220,7 +221,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromStringWithoutInterface)
     String fileData = "TYPE:Entity;"
                       "POSITION:0.00,0.00,0.00;"
                       "ROTATION:0.000000;"
-                      "Z-INDEX:0;"
+                      "Z_INDEX:0;"
                       "CUSTOM_DATA:this is some other custom data;";
     Entity* e1 = SceneFile::DeserialiseFromString(fileData);
     ASSERT_FALSE(e1);
