@@ -8,7 +8,6 @@
 //
 
 #include <utest.h>
-
 #include <utils/Token.h>
 
 REGISTER_TOKEN(HelloWorld);

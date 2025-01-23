@@ -16,9 +16,6 @@
 
 #include "../ServiceLocator.h"
 
-// Static member initialisation
-const Siege::String Player::ENTITY_TYPE_NAME("Player");
-
 void Player::OnUpdate()
 {
     // Get move axes as vector
@@ -67,10 +64,10 @@ void Player::OnDraw3D()
                                 GetRotation());
 }
 
-static Siege::Entity* Deserialise(const std::map<Siege::String, Siege::String>& attributes)
+static Siege::Entity* Deserialise(const std::map<Siege::Token, Siege::String>& attributes)
 {
     Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
     return new Player({data.position, data.rotation});
 }
 
-REGISTER_SERIALISATION_INTERFACE(Player::ENTITY_TYPE_NAME, nullptr, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(TOKEN_Player, nullptr, Deserialise);

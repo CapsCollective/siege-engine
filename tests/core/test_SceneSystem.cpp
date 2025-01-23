@@ -39,21 +39,18 @@ void GetContainedEntityFiles(const String& filepath, OUT std::vector<String>& en
 }
 
 // Test entity
+REGISTER_TOKEN(TestEntity);
 class TestEntity : public Entity
 {
 public:
 
-    static const String ENTITY_TYPE_NAME;
+    TestEntity() : Entity(TOKEN_TestEntity) {}
 
-    TestEntity() : Entity(ENTITY_TYPE_NAME) {}
-
-    explicit TestEntity(Xform transform) : Entity(ENTITY_TYPE_NAME, transform) {}
+    explicit TestEntity(Xform transform) : Entity(TOKEN_TestEntity, transform) {}
 };
 
-const String TestEntity::ENTITY_TYPE_NAME("TestEntity");
-
 REGISTER_SERIALISATION_INTERFACE(
-    TestEntity::ENTITY_TYPE_NAME,
+    TOKEN_TestEntity,
     [](Entity* entity) -> String { return ""; },
     [](const std::map<String, String>& attributes) -> Entity* {
         Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);

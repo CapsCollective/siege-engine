@@ -11,11 +11,14 @@
 #define SIEGE_ENGINE_ENTITY_H
 
 #include <utils/String.h>
+#include <utils/Token.h>
 #include <utils/math/Maths.h>
 #include <utils/math/Xform.h>
 
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
+
+REGISTER_TOKEN(Entity);
 
 namespace Siege
 {
@@ -26,17 +29,13 @@ class Entity
 {
 public:
 
-    // Public constants
-
-    static const String ENTITY_TYPE_NAME;
-
     // 'Structors
 
     /**
      * Zero-param constructor for Entity, initialises both
      * position and rotation to zero, and name to "Entity"
      */
-    Entity() : Entity(ENTITY_TYPE_NAME) {};
+    Entity() : Entity(TOKEN_Entity) {};
 
     /**
      * Single-param constructor for Entity that simply defines
@@ -44,7 +43,7 @@ public:
      * @param typeName - a const reference to the name of the
      *                   entity as a string
      */
-    Entity(const String& typeName) : Entity(typeName, {Vec3::Zero(), 0.f}) {};
+    Entity(Token type) : Entity(type, {Vec3::Zero(), 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
@@ -55,7 +54,7 @@ public:
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const String& typeName, const Xform& transform, int zIndex = 0);
+    Entity(Token type, const Xform& transform, int zIndex = 0);
 
     /**
      * Default virtual destructor for Entity
@@ -121,11 +120,10 @@ public:
     // Public getters
 
     /**
-     * Getter method for the entity's vanity name
-     * @return a constant reference to the entity's name
-     *         as a string
+     * Getter method for the entity's type
+     * @return a token for the entity's type
      */
-    const String& GetTypeName() const;
+    Token GetType() const;
 
     /**
      * Getter method for the entity's generational index
@@ -234,9 +232,9 @@ private:
     // Private fields
 
     /**
-     * The name of the entity type
+     * The type of the entity type
      */
-    const String& typeName;
+    Token type;
 
     /**
      * The generational index of the entity

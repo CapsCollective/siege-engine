@@ -43,16 +43,14 @@ UTEST(test_EntitySystem, AddEntities)
     system.RegisterEntities();
     ASSERT_EQ(3, system.GetEntities().size());
 
-    // TODO: Change the Entity constructor to be able to take in string temporaries.
-    String e4Name = "e4";
-    String e5Name = "e5";
+    Siege::Token e4Token = Siege::Token::FindOrRegisterToken("e4");
+    Siege::Token e5Token = Siege::Token::FindOrRegisterToken("e5");
 
-    // TODO: If this takes in a string temporary it will break Linux.
-    auto e4 = new Entity(e4Name);
-    auto e5 = new Entity(e5Name);
+    auto e4 = new Entity(e4Token);
+    auto e5 = new Entity(e5Token);
 
-    ASSERT_STREQ("e4", e4->GetTypeName().Str());
-    ASSERT_STREQ("e5", e5->GetTypeName().Str());
+    ASSERT_STREQ("e4", e4->GetType().GetId());
+    ASSERT_STREQ("e5", e5->GetType().GetId());
 }
 
 UTEST(test_EntitySystem, FreeEntities)
@@ -145,20 +143,20 @@ UTEST(test_EntitySystem, SortEntitiesByZIndex)
     // Entities in storage should stay sorted by z-index
     EntitySystem system;
 
-    String e1Name = "e1";
-    String e2Name = "e2";
-    String e3Name = "e3";
-    String e4Name = "e4";
+    Siege::Token e1Token = Siege::Token::FindOrRegisterToken("e1");
+    Siege::Token e2Token = Siege::Token::FindOrRegisterToken("e2");
+    Siege::Token e3Token = Siege::Token::FindOrRegisterToken("e3");
+    Siege::Token e4Token = Siege::Token::FindOrRegisterToken("e4");
 
-    auto* e1 = new Entity(e1Name, Xform(), 2);
-    auto* e2 = new Entity(e2Name, Xform(), 5);
-    auto* e3 = new Entity(e3Name, Xform(), 1);
-    auto* e4 = new Entity(e4Name, Xform(), 3);
+    auto* e1 = new Entity(e1Token, Xform(), 2);
+    auto* e2 = new Entity(e2Token, Xform(), 5);
+    auto* e3 = new Entity(e3Token, Xform(), 1);
+    auto* e4 = new Entity(e4Token, Xform(), 3);
 
-    ASSERT_STREQ("e1", e1->GetTypeName().Str());
-    ASSERT_STREQ("e2", e2->GetTypeName().Str());
-    ASSERT_STREQ("e3", e3->GetTypeName().Str());
-    ASSERT_STREQ("e4", e4->GetTypeName().Str());
+    ASSERT_STREQ("e1", e1->GetType().GetId());
+    ASSERT_STREQ("e2", e2->GetType().GetId());
+    ASSERT_STREQ("e3", e3->GetType().GetId());
+    ASSERT_STREQ("e4", e4->GetType().GetId());
 
     system.Add({e1, e2, e3, e4});
 

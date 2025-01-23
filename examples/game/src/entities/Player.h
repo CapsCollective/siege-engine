@@ -11,21 +11,20 @@
 #define SIEGE_ENGINE_PLAYER_H
 
 #include <core/entity/Entity.h>
+#include <utils/Token.h>
+
+REGISTER_TOKEN(Player);
 
 class Player : public Siege::Entity
 {
 public:
-
-    // Public constants
-
-    static const Siege::String ENTITY_TYPE_NAME;
 
     // 'Structors
 
     Player() : Player({Siege::Vec3::Zero(), 0.f}) {};
 
     explicit Player(const Siege::Xform& transform) :
-        Entity(ENTITY_TYPE_NAME, transform),
+        Entity(TOKEN_Player, transform),
         speed(1.5f),
         velocity(Siege::Vec3::Zero()) {};
 

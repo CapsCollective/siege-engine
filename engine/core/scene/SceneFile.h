@@ -10,7 +10,7 @@
 #ifndef SIEGE_ENGINE_SCENEFILE_H
 #define SIEGE_ENGINE_SCENEFILE_H
 
-#include <utils/Filesystem.h>
+#include <utils/FileSystem.h>
 #include <utils/Macros.h>
 #include <utils/String.h>
 #include <utils/math/Maths.h>
@@ -60,11 +60,11 @@ public:
 
     /**
      * Registers a serialisation interface for an entity
-     * @param name - the name of the serialisable entity
+     * @param type - the type token of the serialisable entity
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    static void RegisterSerialisable(const String& name,
+    static void RegisterSerialisable(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise);
 
@@ -146,11 +146,11 @@ private:
 
     /**
      * Getter & storage for mapped serialisation interfaces
-     * @return a map of string to serialisation interfaces
+     * @return a map of token to serialisation interfaces
      */
-    static std::map<String, SerialisationInterface>& GetSerialisables()
+    static std::map<Token, SerialisationInterface>& GetSerialisables()
     {
-        static std::map<String, SerialisationInterface> serialisables;
+        static std::map<Token, SerialisationInterface> serialisables;
         return serialisables;
     }
 
@@ -203,15 +203,15 @@ struct SerialisationInterfaceRegisterer
      * that registers provided serialisation interfaces at
      * initialisation time
      * @note This is supposedly 1B in size per-instantiation
-     * @param name - the name of the serialisable entity
+     * @param type - the type token of the serialisable entity
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    SerialisationInterfaceRegisterer(const String& name,
+    SerialisationInterfaceRegisterer(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
     {
-        SceneFile::RegisterSerialisable(name, serialise, deserialise);
+        SceneFile::RegisterSerialisable(type, serialise, deserialise);
     }
 };
 

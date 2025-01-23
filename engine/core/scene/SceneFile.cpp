@@ -12,21 +12,19 @@
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
-#include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
 #include <algorithm>
 
 #include "SceneSystem.h"
-#include "resources/GenericFileData.h"
 
 namespace Siege
 {
-void SceneFile::RegisterSerialisable(const String& name,
+void SceneFile::RegisterSerialisable(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
 {
-    GetSerialisables().emplace(name, std::make_pair(serialise, deserialise));
+    GetSerialisables().emplace(type, std::make_pair(serialise, deserialise));
 }
 
 bool SceneFile::Serialise(const std::vector<Entity*>& entities)
@@ -65,11 +63,11 @@ bool SceneFile::SerialiseToString(Entity* entity, String& fileData)
     auto& serialisables = GetSerialisables();
 
     // Only serialise entities that register a serialisable interface
-    auto it = serialisables.find(entity->GetTypeName());
+    auto it = serialisables.find(entity->GetType());
     if (it == serialisables.end()) return false;
 
     // Serialise the general entity information
-    fileData += DefineField("TYPE", entity->GetTypeName());
+    fileData += DefineField("TYPE", entity->GetType().GetId());
     fileData += DefineField("POSITION", ToString(entity->GetPosition()));
     fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation().y));
     fileData += DefineField("Z-INDEX", String::FromInt(entity->GetZIndex()));
@@ -151,7 +149,8 @@ Entity* SceneFile::DeserialiseFromString(const String& fileData)
 
     // Check if the entity has a relevant serialisable interface registered
     auto& serialisables = GetSerialisables();
-    auto it = serialisables.find(attributes["TYPE"]);
+    Token typeToken(attributes["TYPE"]);
+    auto it = serialisables.find(typeToken);
     if (it != serialisables.end())
     {
         // Apply its deserialiser
@@ -225,7 +224,8 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
     // Failed attempts to find a file index are serialised as 0
     String index = result ? String::FromInt(newFileIndex) : "0";
-    return MakeScenePath(sceneName) + '/' + entity->GetTypeName() + '.' + index + ENTITY_FILE_EXT;
+    return MakeScenePath(sceneName) + '/' + entity->GetType().GetId() + '.' + index +
+           ENTITY_FILE_EXT;
 }
 
 String SceneFile::MakeScenePath(const String& sceneName)

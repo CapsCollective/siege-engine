@@ -11,16 +11,15 @@
 #define SIEGE_ENGINE_GEOMETRY_H
 
 #include <core/entity/Entity.h>
+#include <utils/Token.h>
 
 #include <utility>
+
+REGISTER_TOKEN(Geometry);
 
 class Geometry : public Siege::Entity
 {
 public:
-
-    // Public constants
-
-    static const Siege::String ENTITY_TYPE_NAME;
 
     // 'Structors
 
@@ -30,7 +29,7 @@ public:
         Geometry(transform, "assets/models/cube/cube.sm", "assets/models/cube/cube.png") {};
 
     Geometry(const Siege::Xform& transform, Siege::String modelPath, Siege::String texturePath) :
-        Entity(ENTITY_TYPE_NAME, transform),
+        Entity(TOKEN_Geometry, transform),
         modelPath(std::move(modelPath)),
         texturePath(std::move(texturePath)) {};
 

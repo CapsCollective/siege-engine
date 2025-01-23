@@ -10,48 +10,43 @@
 #include <core/entity/Entity.h>
 #include <core/scene/SceneFile.h>
 #include <utest.h>
+#include <utils/Token.h>
 
 #include <utility>
 
 using namespace Siege;
 
+REGISTER_TOKEN(TestEntity1);
 class TestEntity1 : public Entity
 {
 public:
 
-    static const String ENTITY_TYPE_NAME;
+    TestEntity1() : Entity(TOKEN_TestEntity1) {};
 
-    TestEntity1() : Entity(ENTITY_TYPE_NAME) {};
-
-    TestEntity1(Xform transform, int zIndex) : Entity(ENTITY_TYPE_NAME, transform, zIndex) {};
+    TestEntity1(Xform transform, int zIndex) : Entity(TOKEN_TestEntity1, transform, zIndex) {};
 };
-const String TestEntity1::ENTITY_TYPE_NAME("TestEntity1");
 
+REGISTER_TOKEN(TestEntity2);
 class TestEntity2 : public Entity
 {
 public:
 
-    static const String ENTITY_TYPE_NAME;
-
-    TestEntity2() : Entity(ENTITY_TYPE_NAME) {};
+    TestEntity2() : Entity(TOKEN_TestEntity2) {};
 
     explicit TestEntity2(String customData) :
-        Entity(ENTITY_TYPE_NAME),
+        Entity(TOKEN_TestEntity2),
         customData(std::move(customData)) {};
 
     String customData;
 };
-const String TestEntity2::ENTITY_TYPE_NAME("TestEntity2");
 
+REGISTER_TOKEN(TestEntity3);
 class TestEntity3 : public Entity
 {
 public:
 
-    static const String ENTITY_TYPE_NAME;
-
-    TestEntity3() : Entity(ENTITY_TYPE_NAME) {};
+    TestEntity3() : Entity(TOKEN_TestEntity3) {};
 };
-const String TestEntity3::ENTITY_TYPE_NAME("TestEntity3");
 
 // Define test fixture
 struct test_SceneFile
@@ -60,7 +55,7 @@ struct test_SceneFile
     {
         // Register all serialisables for the fixture
         SceneFile::RegisterSerialisable(
-            TestEntity1::ENTITY_TYPE_NAME,
+            TOKEN_TestEntity1,
             [](Entity* entity) -> String {
                 return DefineField("CUSTOM_DATA", "this is some custom data");
             },
@@ -69,7 +64,7 @@ struct test_SceneFile
                 return new TestEntity1(Xform(data.position, data.rotation), data.zIndex);
             });
         SceneFile::RegisterSerialisable(
-            TestEntity2::ENTITY_TYPE_NAME,
+            TOKEN_TestEntity2,
             [](Entity* entity) -> String {
                 return DefineField("CUSTOM_DATA", "this is some other custom data");
             },
@@ -77,7 +72,7 @@ struct test_SceneFile
                 auto it = attributes.find("CUSTOM_DATA");
                 return new TestEntity2(it != attributes.end() ? it->second : "");
             });
-        SceneFile::RegisterSerialisable(TestEntity3::ENTITY_TYPE_NAME, nullptr, nullptr);
+        SceneFile::RegisterSerialisable(TOKEN_TestEntity3, nullptr, nullptr);
     }
 
     // Entity storage with cleanup
@@ -180,7 +175,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     ASSERT_TRUE(dynamic_cast<TestEntity1*>(e1));
 
     // It should retain its standard field values
-    ASSERT_STREQ("TestEntity1", e1->GetTypeName().Str());
+    ASSERT_STREQ("TestEntity1", e1->GetType().GetId());
     Vec3 pos(e1->GetPosition());
     Vec3 rot(e1->GetRotation());
     ASSERT_EQ(1.f, pos.x);
@@ -202,7 +197,7 @@ UTEST_F(test_SceneFile, DeserialiseEntityFromString)
     ASSERT_TRUE(e2);
     auto* e2Cast = dynamic_cast<TestEntity2*>(e2);
     ASSERT_TRUE(e2Cast);
-    ASSERT_STREQ("TestEntity2", e2Cast->GetTypeName().Str());
+    ASSERT_STREQ("TestEntity2", e2Cast->GetType().GetId());
     ASSERT_STREQ("this is some other custom data", e2Cast->customData.Str());
     delete e2;
 }
