@@ -136,6 +136,31 @@ function Setup-FreeType {
     Get-ChildItem "$Vendor_Dir/freetype/include" | Copy-Item -Destination "$Vendor_Dir/include/freetype" -Recurse
 }
 
+function Setup-Assimp {
+    Write-Output "Setting up assimp..."
+    Write-Output "Cloning assimp..."
+    Update-Submodule assimp
+
+    Write-Output "Building assimp..."
+    [string] $build_dir = "$Vendor_Dir/assimp/build"
+
+    Make-Dir $build_dir
+
+    cmake                                           `
+        -G"$Generator"                              `
+        $CMAKE_COMPILER                             `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"         `
+        -DBUILD_SHARED_LIBS=OFF                     `
+        -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF `
+        -DASSIMP_BUILD_TESTS=OFF                    `
+        -DASSIMP_INSTALL=OFF                        `
+        -DASSIMP_BUILD_ZLIB=OFF                     `
+        -B"$build_dir"                              `
+        -S"$Vendor_Dir/assimp"                      `
+
+    mingw32-make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
+}
+
 function Setup-Glfw {
     Write-Output "Setting up glfw..."
     Write-Output "Cloning glfw..."
@@ -370,6 +395,7 @@ Setup-Utest
 Setup-Zlib
 Setup-LibPng
 Setup-FreeType
+Setup-Assimp
 Setup-Glfw
 Setup-Vulkan-Headers
 Setup-Spirv-Headers

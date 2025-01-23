@@ -46,3 +46,6 @@
 [submodule "vendor/vulkan/Vulkan-Utility-Libraries"]
 	path = vendor/vulkan/Vulkan-Utility-Libraries
 	url = https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
+[submodule "vendor/assimp"]
+	path = vendor/assimp
+	url = https://github.com/assimp/assimp.git

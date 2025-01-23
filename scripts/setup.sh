@@ -279,6 +279,25 @@ setup_freetype() {
   cp -R "${VENDOR_DIR}"/freetype/include/** "${VENDOR_DIR}"/include/freetype
 }
 
+setup_assimp() {
+    echo "Setting up assimp..."
+    echo "Cloning assimp..."
+    update_submodules assimp
+
+    echo "Building assimp..."
+    mkdir -p "${VENDOR_DIR}"/assimp/build
+    cmake "${VENDOR_DIR}"/assimp \
+        -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/assimp/build \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF \
+        -DASSIMP_BUILD_TESTS=OFF \
+        -DASSIMP_INSTALL=OFF \
+        -DASSIMP_BUILD_ZLIB=OFF \
+        -S "${VENDOR_DIR}"/assimp \
+        -B"${VENDOR_DIR}"/assimp/build
+    make -C "${VENDOR_DIR}"/assimp/build -j"${NUMBER_OF_PROCESSORS}"
+}
+
 echo "OS detected: ${OS}"
 echo "Setting up dependencies..."
 
@@ -293,6 +312,7 @@ setup_vulkan_headers
 setup_zlib
 setup_libpng
 setup_freetype
+setup_assimp
 setup_vulkan_loader
 
 if [[ "${OS}" == "macos" ]]; then
