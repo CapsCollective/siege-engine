@@ -11,6 +11,6 @@
 
 #include <resources/PackFile.h>
 
-void* PackStaticMeshFile(const Siege::String& filePath);
+void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath);
 
 #endif // SIEGE_ENGINE_STATICMESHDATAPACKER_H

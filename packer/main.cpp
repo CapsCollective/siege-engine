@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
         std::filesystem::path extension = file.extension();
         if (extension == ".sm")
         {
-            data = PackStaticMeshFile(fullPath);
+            data = PackStaticMeshFile(fullPath, assetsDir);
             bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
