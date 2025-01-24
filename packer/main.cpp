@@ -21,7 +21,6 @@
 #include "types/SceneDataPacker.h"
 #include "types/StaticMeshDataPacker.h"
 #include "types/Texture2DDataPacker.h"
-#include "types/WavefrontDataPacker.h"
 
 using Siege::PackFile;
 

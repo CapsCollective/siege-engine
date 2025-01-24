@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <fstream>
 
-#include "WavefrontDataPacker.h"
 
 REGISTER_TOKEN(SOURCE_PATH);
 
@@ -37,6 +36,4 @@ void* PackStaticMeshFile(const Siege::String& filePath)
         return nullptr;
     }
 
-    void* staticMeshData = PackWavefrontFile(it->second);
-    return staticMeshData;
 }
