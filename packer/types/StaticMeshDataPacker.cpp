@@ -23,78 +23,61 @@ using Siege::BaseVertex;
 using Siege::FColour;
 using Siege::Vec2;
 using Siege::Vec3;
+using Siege::Mat4;
 
 REGISTER_TOKEN(SOURCE_PATH);
 
-static Siege::StaticMeshData* GetMeshData(const aiScene* scene, aiMesh* mesh)
+static void GetMeshData(const aiScene* scene, aiMesh* mesh, aiMatrix4x4t<ai_real> matrix, OUT std::vector<BaseVertex>& vertices, OUT std::vector<uint32_t>& indices)
 {
-    std::vector<BaseVertex> vertices;
-    std::vector<uint32_t> indices;
-    std::unordered_map<BaseVertex, uint32_t> uniqueVertices {};
-
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
     {
         BaseVertex vertex {};
 
-        vertex.position.x = mesh->mVertices[i].x;
-        vertex.position.y = mesh->mVertices[i].y;
-        vertex.position.z = mesh->mVertices[i].z;
+        aiVector3t<ai_real> vert = mesh->mVertices[i];
+        vert *= matrix;
+        vertex.position = { vert.x, vert.y, vert.z};
 
-        vertex.normal = Vec3 { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+        aiVector3t<ai_real> norm = mesh->mNormals[i];
+        vertex.normal = { norm.x, norm.y, norm.z };
 
-        if (aiColor4t<float>* color = mesh->mColors[0])
-        {
-            vertex.color = FColour {color[i].r, color[i].g, color[i].b, color[i].a};
-        }
-        else
-        {
-            vertex.color = FColour::White;
-        }
+        aiColor4t<float>* color = mesh->mColors[0];
+        vertex.color = color ? FColour{color[i].r, color[i].g, color[i].b, color[i].a} : FColour::White;
 
         if (aiVector3t<ai_real>* uv = mesh->mTextureCoords[0])
         {
-            vertex.uv.x = static_cast<float>(uv[i].x);
-            vertex.uv.y = static_cast<float>(uv[i].y);
+            vertex.uv = {uv->x, uv->y};
         }
 
         vertices.push_back(vertex);
     }
 
+    auto it = std::max_element(indices.begin(), indices.end());
+    uint32_t indexOffset = it != indices.end() ? *it + 1 : 0;
     for (uint32_t i = 0; i < mesh->mNumFaces; i++)
     {
         aiFace face = mesh->mFaces[i];
         for (uint32_t j = 0; j < face.mNumIndices; j++)
         {
-            indices.push_back(face.mIndices[j]);
+            indices.push_back(indexOffset + face.mIndices[j]);
         }
     }
-    Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
-    return staticMeshData;
 }
 
-static std::vector<Siege::StaticMeshData*> GetMeshesForNode(const aiScene* scene, aiNode* node)
+static void GetMeshesForNode(const aiScene* scene, aiNode* node, aiMatrix4x4t<ai_real> matrix, OUT std::vector<BaseVertex>& vertices, OUT std::vector<uint32_t>& indices)
 {
-    std::vector<Siege::StaticMeshData*> meshData;
+    matrix *= node->mTransformation;
+    CC_LOG_ERROR("NODE: \"{}\"", node->mName.C_Str())
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        Siege::StaticMeshData* staticMeshData = GetMeshData(scene, mesh);
-        if (staticMeshData)
-        {
-            meshData.push_back(staticMeshData);
-        }
+        CC_LOG_ERROR("MESH: \"{}\"", mesh->mName.C_Str())
+        GetMeshData(scene, mesh, matrix, vertices, indices);
     }
 
     for (uint32_t i = 0; i < node->mNumChildren; i++)
     {
-        std::vector<Siege::StaticMeshData*> staticMeshData = GetMeshesForNode(scene, node->mChildren[i]);
-        if (!staticMeshData.empty())
-        {
-            meshData.insert(meshData.end(), staticMeshData.begin(), staticMeshData.end());
-        }
+        GetMeshesForNode(scene, node->mChildren[i], matrix, vertices, indices);
     }
-
-    return meshData;
 };
 
 void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
@@ -128,6 +111,15 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
         CC_LOG_ERROR("Failed to read file at path \"{}\"", modelPath)
         return nullptr;
     }
-    std::vector<Siege::StaticMeshData*> staticMeshData = GetMeshesForNode(scene, scene->mRootNode);
-    return staticMeshData[0];
+
+    aiMatrix4x4t<ai_real> out;
+    aiMatrix4x4t rotMat = aiMatrix4x4t<ai_real>::Rotation(1.570796f,{0.f, 1.f, 0.f}, out);
+    aiMatrix4x4t rotMat2 = aiMatrix4x4t<ai_real>::Rotation(3.141593,{1.f, 0.f, 0.f}, out);
+
+    std::vector<BaseVertex> vertices;
+    std::vector<uint32_t> indices;
+    GetMeshesForNode(scene, scene->mRootNode, aiMatrix4x4t<ai_real>(), vertices, indices);
+
+    Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
+    return staticMeshData;
 }
