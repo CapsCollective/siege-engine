@@ -55,16 +55,16 @@ SCRIPT_PATH=\$(dirname \"\$0\")
 SCRIPT_PATH=\$(cd \"\$SCRIPT_PATH\" && pwd)
 cd \"\$SCRIPT_PATH/Contents\" && ./$RUN_SCRIPT_NAME"
   chmod +x "$PKG_FILE"
+
+  # Add the run script
+  generate_script "$PKG_FILE/$CONTENTS_DIR_NAME/$RUN_SCRIPT_NAME" "#!/bin/bash
+  $ENV_VARS
+  ./$EXE_NAME"
 else
   # Create the package directory
   mkdir -p "$PKG_FILE"
 fi
 CONTENTS_DIR="$PKG_FILE/$CONTENTS_DIR_NAME"
-
-# Add the run script
-generate_script "$CONTENTS_DIR/$RUN_SCRIPT_NAME" "#!/bin/bash
-$ENV_VARS
-./$EXE_NAME"
 
 # Copy across all build directory to contents
 cp -r "$BUILD_DIR"/* "$CONTENTS_DIR"
@@ -81,9 +81,3 @@ for EXCLUDE in $EXCLUDES; do
     rm -rf "$EXCLUDE_PATH"
   fi
 done
-
-if [ -z "$( ls -A "$CONTENTS_DIR/lib" )" ]; then
-   rm -rf "$CONTENTS_DIR/lib"
-fi
-
-rm -rf "$CONTENTS_DIR/assets"
