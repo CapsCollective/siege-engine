@@ -17,6 +17,7 @@
 
 #include "Macros.h"
 #include "String.h"
+#include "Token.h"
 #include "math/Maths.h"
 #include "math/mat/Format.h"
 #include "math/mat/Mat2.h"
@@ -97,6 +98,7 @@ public:
     DEFINE_VARIANT_TYPE(unsigned long data, String::FromU32(data));
     DEFINE_VARIANT_TYPE(unsigned long long data, String::FromU64(data));
     DEFINE_VARIANT_TYPE(bool data, data ? "true" : "false");
+    DEFINE_VARIANT_TYPE(Token data, data.GetId());
     DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + ToString(data) + ")");
