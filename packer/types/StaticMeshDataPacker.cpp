@@ -8,40 +8,68 @@
 
 #include "StaticMeshDataPacker.h"
 
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <resources/StaticMeshData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
-#include <resources/StaticMeshData.h>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <fstream>
 
-using Siege::BaseVertex;
-using Siege::FColour;
-using Siege::Vec2;
-using Siege::Vec3;
-using Siege::Mat4;
-
 REGISTER_TOKEN(SOURCE_PATH);
+REGISTER_TOKEN(NODE_PATH);
 
-static void GetMeshData(const aiScene* scene, aiMesh* mesh, aiMatrix4x4t<ai_real> matrix, OUT std::vector<BaseVertex>& vertices, OUT std::vector<uint32_t>& indices)
+enum RequestPathStage
+{
+    PARENT,
+    CHILD,
+    SELF,
+    NONE,
+};
+
+static RequestPathStage GetRequestPathStage(const Siege::String& requestPath,
+                                            const Siege::String& currentPath)
+{
+    if (currentPath.Size() == requestPath.Size())
+    {
+        return SELF;
+    }
+
+    if (requestPath.BeginsWith(currentPath))
+    {
+        return PARENT;
+    }
+
+    if (currentPath.BeginsWith(requestPath))
+    {
+        return CHILD;
+    }
+
+    return NONE;
+}
+
+static void GetMeshData(const aiScene* scene,
+                        aiMesh* mesh,
+                        aiMatrix4x4t<ai_real> matrix,
+                        OUT std::vector<Siege::BaseVertex>& vertices,
+                        OUT std::vector<uint32_t>& indices)
 {
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
     {
-        BaseVertex vertex {};
+        Siege::BaseVertex vertex {};
 
         aiVector3t<ai_real> vert = mesh->mVertices[i];
         vert *= matrix;
-        vertex.position = { vert.x, vert.y, vert.z};
+        vertex.position = {vert.x, vert.y, vert.z};
 
         aiVector3t<ai_real> norm = mesh->mNormals[i];
-        vertex.normal = { norm.x, norm.y, norm.z };
+        vertex.normal = {norm.x, norm.y, norm.z};
 
         aiColor4t<float>* color = mesh->mColors[0];
-        vertex.color = color ? FColour{color[i].r, color[i].g, color[i].b, color[i].a} : FColour::White;
+        vertex.color = color ? Siege::FColour {color[i].r, color[i].g, color[i].b, color[i].a} :
+                               Siege::FColour::White;
 
         if (aiVector3t<ai_real>* uv = mesh->mTextureCoords[0])
         {
@@ -63,20 +91,53 @@ static void GetMeshData(const aiScene* scene, aiMesh* mesh, aiMatrix4x4t<ai_real
     }
 }
 
-static void GetMeshesForNode(const aiScene* scene, aiNode* node, aiMatrix4x4t<ai_real> matrix, OUT std::vector<BaseVertex>& vertices, OUT std::vector<uint32_t>& indices)
+static void GetMeshesForNode(const aiScene* scene,
+                             aiNode* node,
+                             const Siege::String& requestPath,
+                             Siege::String currentPath,
+                             aiMatrix4x4t<ai_real> matrix,
+                             OUT std::vector<Siege::BaseVertex>& vertices,
+                             OUT std::vector<uint32_t>& indices)
 {
-    matrix *= node->mTransformation;
-    CC_LOG_ERROR("NODE: \"{}\"", node->mName.C_Str())
+    currentPath = currentPath + node->mName.C_Str();
+
+    RequestPathStage nodePathStage = GetRequestPathStage(requestPath, currentPath);
+    if (nodePathStage == NONE)
+    {
+        return;
+    }
+
+    CC_LOG_INFO("Reading node at {}", currentPath)
+
+    if (nodePathStage == CHILD || nodePathStage == SELF)
+    {
+        matrix *= node->mTransformation;
+    }
+
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        CC_LOG_ERROR("MESH: \"{}\"", mesh->mName.C_Str())
+
+        Siege::String currentMeshPath = currentPath + '/' + mesh->mName.C_Str();
+        RequestPathStage meshPathStage = GetRequestPathStage(requestPath, currentMeshPath);
+        if (meshPathStage == NONE)
+        {
+            continue;
+        }
+
+        CC_LOG_INFO("Reading mesh at {}", currentMeshPath)
         GetMeshData(scene, mesh, matrix, vertices, indices);
     }
 
     for (uint32_t i = 0; i < node->mNumChildren; i++)
     {
-        GetMeshesForNode(scene, node->mChildren[i], matrix, vertices, indices);
+        GetMeshesForNode(scene,
+                         node->mChildren[i],
+                         requestPath,
+                         currentPath + '/',
+                         matrix,
+                         vertices,
+                         indices);
     }
 };
 
@@ -95,30 +156,36 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
     auto it = attributes.find(TOKEN_SOURCE_PATH);
     if (it == attributes.end())
     {
-        CC_LOG_ERROR("Failed to find SOURCE_PATH attribute in .sm file at path \"{}\"", filePath)
+        CC_LOG_WARNING("Failed to find SOURCE_PATH attribute in .sm file at path \"{}\"", filePath)
         return nullptr;
     }
 
     Siege::String modelPath = assetsPath + '/' + it->second;
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(modelPath,
-                                             aiProcess_CalcTangentSpace |
-                                                 aiProcess_Triangulate |
-                                                 aiProcess_JoinIdenticalVertices |
-                                                 aiProcess_SortByPType);
+    const aiScene* scene =
+        importer.ReadFile(modelPath,
+                          aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+                              aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
     if (!scene)
     {
-        CC_LOG_ERROR("Failed to read file at path \"{}\"", modelPath)
+        CC_LOG_WARNING("Failed to read file at path \"{}\"", modelPath)
         return nullptr;
     }
 
-    aiMatrix4x4t<ai_real> out;
-    aiMatrix4x4t rotMat = aiMatrix4x4t<ai_real>::Rotation(1.570796f,{0.f, 1.f, 0.f}, out);
-    aiMatrix4x4t rotMat2 = aiMatrix4x4t<ai_real>::Rotation(3.141593,{1.f, 0.f, 0.f}, out);
+    auto nodePathIt = attributes.find(TOKEN_NODE_PATH);
+    Siege::String requestedNodePath = nodePathIt != attributes.end() ? nodePathIt->second : "/";
 
-    std::vector<BaseVertex> vertices;
+    CC_LOG_INFO("Packing static mesh for file {} with node path {}", it->second, requestedNodePath)
+
+    std::vector<Siege::BaseVertex> vertices;
     std::vector<uint32_t> indices;
-    GetMeshesForNode(scene, scene->mRootNode, aiMatrix4x4t<ai_real>(), vertices, indices);
+    GetMeshesForNode(scene,
+                     scene->mRootNode,
+                     requestedNodePath,
+                     '/',
+                     aiMatrix4x4t<ai_real>(),
+                     vertices,
+                     indices);
 
     Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
     return staticMeshData;
