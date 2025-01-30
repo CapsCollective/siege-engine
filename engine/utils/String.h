@@ -343,6 +343,18 @@ public:
     size_t Find(char character, int startIdx = 0) const;
 
     /**
+     * Returns whether the String begins with the supplied String as a substring
+     * @return true if the String begins with the substring, false otherwise
+     */
+    bool BeginsWith(const String& substring) const;
+
+    /**
+     * Returns whether the String begins with the supplied c-string as a substring
+     * @return true if the String begins with the substring, false otherwise
+     */
+    bool BeginsWith(const char* substring) const;
+
+    /**
      * Splits the String by a provided list of delimiter characters
      * @param delimiters - a c-string of delimiter characters to split by (e.g. ",:-")
      * @return a vector of Strings resulting from the split

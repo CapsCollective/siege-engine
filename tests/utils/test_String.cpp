@@ -330,6 +330,23 @@ UTEST(test_String, Find)
     ASSERT_EQ(26, s.Find("a", -11));
 }
 
+UTEST(test_String, BeginsWith)
+{
+    // The string can be checked whether it begins with substrings
+    Siege::String s("ruSt Is a MuCH SafEr lANgUagE...");
+    ASSERT_TRUE(s.BeginsWith(""));
+    ASSERT_TRUE(s.BeginsWith('r'));
+    ASSERT_TRUE(s.BeginsWith("ruSt"));
+    ASSERT_TRUE(s.BeginsWith("ruSt Is a MuCH SafEr "));
+    ASSERT_FALSE(s.BeginsWith("Is"));
+    ASSERT_FALSE(s.BeginsWith("lANgUagE..."));
+
+    Siege::String s2("ruSt");
+    Siege::String s3("uSt");
+    ASSERT_TRUE(s.BeginsWith(s2));
+    ASSERT_FALSE(s.BeginsWith(s3));
+}
+
 UTEST(test_String, Replace)
 {
     // The string can replace by substring

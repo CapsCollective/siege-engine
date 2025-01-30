@@ -378,6 +378,18 @@ size_t String::Find(char character, int startIdx) const
     return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
+bool String::BeginsWith(const String& substring) const
+{
+    return BeginsWith(substring.Data());
+}
+
+bool String::BeginsWith(const char* substring) const
+{
+    const char* data = Data();
+    size_t strLen = strlen(substring);
+    return strncmp(data, substring, strLen) == 0;
+}
+
 std::vector<String> String::Split(const char* delimiters) const
 {
     const char* data = Data();
