@@ -76,9 +76,4 @@ const char* Token::FindTokenId(const String& name)
 
     return it != tokenRegister.end() ? it->Str() : nullptr;
 }
-
-TokenRegisterer::TokenRegisterer(const char* name)
-{
-    Token::FindOrRegisterToken(name);
-}
 } // namespace Siege

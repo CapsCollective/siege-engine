@@ -15,9 +15,8 @@
 #include "String.h"
 
 // Define macros
-#define REGISTER_TOKEN(name)                                                            \
-    static const Siege::TokenRegisterer CONCAT_SYMBOL(_tok_reg_, name)(TOSTRING(name)); \
-    static const Siege::Token CONCAT_SYMBOL(TOKEN_, name)(TOSTRING(name))
+#define REGISTER_TOKEN(name) \
+    static const Siege::Token CONCAT_SYMBOL(TOKEN_, name)(Siege::Token::FindOrRegisterToken(TOSTRING(name)))
 
 namespace Siege
 {
@@ -36,7 +35,7 @@ public:
     // 'Structors
 
     /**
-     * Zero-param constructor for initialising empty Strings
+     * Zero-param constructor for initialising empty Tokens
      */
     Token();
 
@@ -136,22 +135,6 @@ private:
      * Wrapped pointer to the start of the canonical String
      */
     const char* tokenId;
-};
-
-/**
- * An empty struct for static member registration of Tokens
- */
-struct TokenRegisterer
-{
-    // 'Structors
-
-    /**
-     * Constructor for Token registration that registers provided
-     * string tokens at initialisation time
-     * @note This is supposedly 1B in size per-instantiation
-     * @param name - the name of the requested Token
-     */
-    explicit TokenRegisterer(const char* name);
 };
 } // namespace Siege
 
