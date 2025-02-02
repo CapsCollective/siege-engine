@@ -15,6 +15,8 @@
 
 void* PackGenericFile(const Siege::String& filePath)
 {
+    CC_LOG_INFO("Reading file data as generic binary asset")
+
     // Read the file as binary and consume the entire file.
     std::ifstream file {filePath.Str(), std::ios::ate | std::ios::binary};
 

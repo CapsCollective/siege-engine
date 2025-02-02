@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
     for (auto& file : inputFiles)
     {
         if (file.empty()) continue;
+        CC_LOG_INFO("Reading asset at path {}", file.c_str())
 
         void* data = nullptr;
         uint32_t bodyDataSize = 0;

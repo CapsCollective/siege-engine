@@ -20,6 +20,7 @@ void* PackSceneFile(const Siege::String& filePath)
     Siege::String bodyString;
     auto appendFile = [&bodyString](const std::filesystem::path& path) {
         if (path.extension() != ".entity") return;
+        CC_LOG_INFO("Reading entity file {}", path.filename().c_str())
         bodyString += Siege::FileSystem::Read(path.c_str());
         bodyString += '|';
     };

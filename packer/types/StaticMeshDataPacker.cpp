@@ -175,7 +175,7 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
     auto nodePathIt = attributes.find(TOKEN_NODE_PATH);
     Siege::String requestedNodePath = nodePathIt != attributes.end() ? nodePathIt->second : "/";
 
-    CC_LOG_INFO("Packing static mesh for file {} with node path {}", it->second, requestedNodePath)
+    CC_LOG_INFO("Reading static mesh for file {} with node path {}", it->second, requestedNodePath)
 
     std::vector<Siege::BaseVertex> vertices;
     std::vector<uint32_t> indices;
