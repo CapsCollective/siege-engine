@@ -20,6 +20,7 @@
 
 REGISTER_TOKEN(SOURCE_PATH);
 REGISTER_TOKEN(NODE_PATH);
+REGISTER_TOKEN(FLIP_AXES);
 
 enum RequestPathStage
 {
@@ -177,13 +178,45 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
 
     CC_LOG_INFO("Reading static mesh for file {} with node path {}", it->second, requestedNodePath)
 
+    aiMatrix4x4t<ai_real> baseXform;
+    auto flipAxesIt = attributes.find(TOKEN_FLIP_AXES);
+    if (flipAxesIt != attributes.end())
+    {
+        if (flipAxesIt->second.Size() < 1 || flipAxesIt->second.Size() > 3)
+        {
+            CC_LOG_WARNING("FLIP_AXES attribute in .sm file contains invalid number of axes")
+        }
+
+        for (int32_t i = 0; i < flipAxesIt->second.Size(); ++i)
+        {
+            aiVector3t<ai_real> scale {1.f, 1.f, 1.f};
+            switch (flipAxesIt->second[i])
+            {
+            case 'x':
+                scale.x *= -1;
+                break;
+            case 'y':
+                scale.y *= -1;
+                break;
+            case 'z':
+                scale.z *= -1;
+                break;
+            default:
+                CC_LOG_WARNING("Found invalid axis \"{}\" in FLIP_AXES attribute, ignoring", flipAxesIt->second[i])
+                break;
+            }
+            aiMatrix4x4t<ai_real> scalingMat;
+            baseXform *= aiMatrix4x4t<ai_real>::Scaling(scale, scalingMat);
+        }
+    }
+
     std::vector<Siege::BaseVertex> vertices;
     std::vector<uint32_t> indices;
     GetMeshesForNode(scene,
                      scene->mRootNode,
                      requestedNodePath,
                      '/',
-                     aiMatrix4x4t<ai_real>(),
+                     baseXform,
                      vertices,
                      indices);
 
