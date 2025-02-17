@@ -1,3 +1,2 @@
 SOURCE_PATH:assets/models/cube_anim.glb;
 MATERIAL_PATH:assets/models/cube.mat;
-NODE_PATH:/;
