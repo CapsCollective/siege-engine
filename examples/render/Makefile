@@ -31,6 +31,7 @@ endif
 engineRenderBuildDir := $(binDir)/engine/render/build
 exampleRenderAssets := $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.sm))
 exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.sk))
+exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.ska))
 exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.png))
 exampleRenderAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleRenderSrcDir),*.jpg))
 exampleRenderAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(engineRenderBuildDir),*.spv))

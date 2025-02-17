@@ -13,12 +13,14 @@
 #include <resources/SceneData.h>
 #include <resources/StaticMeshData.h>
 #include <resources/SkeletalMeshData.h>
+#include <resources/AnimationData.h>
 #include <resources/Texture2DData.h>
 #include <utils/Logging.h>
 #include <zlib.h>
 
 #include <fstream>
 
+#include "types/AnimationDataPacker.h"
 #include "types/GenericFileDataPacker.h"
 #include "types/SceneDataPacker.h"
 #include "types/SkeletalMeshDataPacker.h"
@@ -66,6 +68,11 @@ int main(int argc, char* argv[])
         {
             data = PackSkeletalMeshFile(fullPath, assetsDir);
             bodyDataSize = Siege::SkeletalMeshData::GetDataSize(data);
+        }
+        else if (extension == ".ska")
+        {
+            data = PackAnimationFile(fullPath, assetsDir);
+            bodyDataSize = Siege::AnimationData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
