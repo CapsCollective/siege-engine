@@ -407,23 +407,23 @@ if (Test-Path "$Vulkan_Lib_Dir") { Remove-Item -Path "$Vulkan_Lib_Dir" -Recurse 
 if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_Vendor_Dir/vulkan/include" -Recurse -Force }
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
-# Setup-Utest
-# Setup-Zlib
-# Setup-LibPng
-# Setup-FreeType
-# Setup-Assimp
-# Setup-Glfw
-# Setup-Vulkan-Headers
-# Setup-Spirv-Headers
-# Setup-Spirv-Tools
-# Setup-Glslang
-# Setup-Volk
-# Setup-Vulkan-Loader
+Setup-Utest
+Setup-Zlib
+Setup-LibPng
+Setup-FreeType
+Setup-Assimp
+Setup-Glfw
+Setup-Vulkan-Headers
+Setup-Spirv-Headers
+Setup-Spirv-Tools
+Setup-Glslang
+Setup-Volk
+Setup-Vulkan-Loader
 
 if ($Include_Validation_Layers)
 {
-#     Setup-Robin-Hood-Hashing
-#     Setup-Vulkan-Utility-Libraries
+    Setup-Robin-Hood-Hashing
+    Setup-Vulkan-Utility-Libraries
     Setup-Validation-Layers
 
     Write-Output "Configuring environment file..."

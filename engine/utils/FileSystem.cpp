@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <algorithm>
 
 #include "Logging.h"
 

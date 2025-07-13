@@ -13,6 +13,7 @@
 #include <cstring>
 #include <ostream>
 #include <stdexcept>
+#include <algorithm>
 
 namespace Siege
 {
