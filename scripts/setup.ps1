@@ -10,9 +10,9 @@ param (
 )
 
 [string] $Root_Dir=(pwd)
-[string] $Vulkan_Version= "vulkan-sdk-1.3.296.0"
-[string] $Spirv_Version="vulkan-sdk-1.3.296.0"
-[string] $Glslang_Version="vulkan-sdk-1.3.296.0"
+[string] $Vulkan_Version= "vulkan-sdk-1.4.313"
+[string] $Spirv_Version="vulkan-sdk-1.4.313"
+[string] $Glslang_Version="vulkan-sdk-1.4.313"
 [string] $Robin_Hood_Hashing_Version="3.11.5"
 [string] $FreeType_Version="VER-2-13-3"
 [string] $LibPng_Version="v1.6.50"
@@ -44,12 +44,12 @@ function Get-Files {
 
 function Update-Submodule {
     param ([string] $Submodule)
-    git submodule update --init --recursive --depth 1 $Vendor_Dir/$Submodule
+    git submodule update --init --recursive $Vendor_Dir/$Submodule
 }
 
 function Checkout-Tags {
     param([string] $Path=@(), [string] $Tag=@())
-    git -C "$Path"  fetch --all --tags --force ; git -C "$Path" checkout tags/"$Tag"
+    git -C "$Path" fetch --all --tags --force ; git -C "$Path" checkout "$Tag"
 }
 
 function Setup-Utest {
@@ -99,9 +99,9 @@ function Setup-LibPng {
         "$Vendor_Dir/libpng"                    `
         $CMAKE_COMPILER                         `
         -DCMAKE_INSTALL_PREFIX="$build_dir"     `
-        -DPNG_BUILD_ZLIB=ON                     `
-        -DZLIB_INCLUDE_DIRS="$zlib_dir/include" `
-        -DZLIB_LIBRARIES="$zlib_dir/lib/libz.a" `
+        -DZLIB_HOME=$Vendor_Dir/zlib/build      `
+        -DZLIB_INCLUDE_DIR="$zlib_dir/include" `
+        -DZLIB_LIBRARY="$zlib_dir/lib/libz.a" `
         -S"$Vendor_Dir/libpng"                  `
         -B"$build_dir"
 
@@ -135,7 +135,7 @@ function Setup-FreeType {
         -B"$build_dir"                                      `
         -S"$Vendor_Dir"/freetype
 
-    mingw32-make -C "$Build_Dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
 
     Make-Dir "$Vendor_Dir/include/freetype"
 
@@ -153,14 +153,18 @@ function Setup-Assimp {
     Make-Dir $build_dir
 
     cmake                                           `
-        -G"$Generator"                              `
+        -G "$Generator"                             `
         $CMAKE_COMPILER                             `
         -DCMAKE_INSTALL_PREFIX="$build_dir"         `
         -DBUILD_SHARED_LIBS=OFF                     `
+        -DZLIB_FOUND=1                              `
+        -DZLIB_LIBRARIES="$Vendor_Dir/zlib/build/lib/libz.a"    `
+        -DZLIB_INCLUDE_DIR="$Vendor_Dir/zlib/build/include"    `
         -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF `
         -DASSIMP_BUILD_TESTS=OFF                    `
         -DASSIMP_INSTALL=OFF                        `
         -DASSIMP_BUILD_ZLIB=OFF                     `
+        -DASSIMP_WARNINGS_AS_ERRORS=OFF             `
         -B"$build_dir"                              `
         -S"$Vendor_Dir/assimp"                      `
 
@@ -191,18 +195,19 @@ function Setup-Glslang {
 
     Make-Dir $build_dir
 
-    cmake                                   `
-        -G "$Generator"                     `
-        $CMAKE_COMPILER                     `
-        -DBUILD_EXTERNAL=OFF                `
-        -DCMAKE_INSTALL_PREFIX="$build_dir" `
-        -DCMAKE_BUILD_TYPE=Release          `      `
-        -DSPIRV-Tools-opt_INCLUDE_DIRS="$Vulkan_Vendor_Dir\SPIRV-Tools\build\install\include" `
-        -DALLOW_EXTERNAL_SPIRV_TOOLS=1      `
-        -S"$Vendor_Dir/glslang"             `
+    cmake                                                                                           `
+        -G "$Generator"                                                                             `
+        $CMAKE_COMPILER                                                                             `
+        -DCMAKE_INSTALL_PREFIX="$build_dir"                                                         `
+        -DSPIRV-Tools-opt_DIR="$Vulkan_Vendor_Dir/SPIRV-Tools/build/install/lib/cmake/SPIRV-Tools-opt"  `
+        -DSPIRV-Tools_DIR="$Vulkan_Vendor_Dir/SPIRV-Tools/build/install/lib/cmake/SPIRV-Tools"          `
+        -DCMAKE_BUILD_TYPE=Release                                                                  `
+        -DENABLE_OPT=ON                                                                             `
+        -DALLOW_EXTERNAL_SPIRV_TOOLS=1                                                              `
+        -S"$Vendor_Dir/glslang"                                                                     `
         -B"$build_dir"
 
-    mingw32-make -C "$build_dir" install -j"$env:NUMBER_OF_PROCESSORS"
+    mingw32-make -C "$build_dir" -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Volk {
@@ -221,7 +226,7 @@ function Setup-Vulkan-Headers {
     Write-Output "Setting up Vulkan Headers..."
     Write-Output "Cloning Vulkan Headers..."
     Update-Submodule vulkan/Vulkan-Headers
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Headers" $Vulkan_Version
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Headers" "$Vulkan_Version.0"
 
     Write-Output "Building Vulkan Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Headers/build"
@@ -246,7 +251,7 @@ function Setup-Vulkan-Loader {
     Write-Output "Cloning Vulkan Loader..."
     Update-Submodule vulkan/Vulkan-Loader
 
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Loader" $Vulkan_Version
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Loader" "$Vulkan_Version.0"
 
     Write-Output "Building Vulkan Loader..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Loader/build"
@@ -292,21 +297,22 @@ function Setup-Spirv-Headers {
     Write-Output "Cloning SPIRV Headers..."
     Update-Submodule vulkan/SPIRV-Headers
 
-    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "$Spirv_Version"
+    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "$Spirv_Version.0"
 
     Write-Output "Building SPIRV Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Headers/build"
 
     Make-Dir $build_dir
 
-    cmake `
+    cmake                                           `
+        -G "$Generator"                             `
         $CMAKE_COMPILER                             `
-        -DCMAKE_BUILD_TYPE=Release                  `
         -DCMAKE_INSTALL_PREFIX="$build_dir/install" `
         -S"$Vulkan_Vendor_Dir/SPIRV-Headers"        `
         -B"$build_dir"
 
-    cmake --build "$build_dir" --target install --config Release --parallel $env:NUMBER_OF_PROCESSORS
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+#     cmake --build "$build_dir" --target install --config Release --parallel $env:NUMBER_OF_PROCESSORS
 }
 
 function Setup-Spirv-Tools {
@@ -314,7 +320,7 @@ function Setup-Spirv-Tools {
     Write-Output "Cloning SPIRV Tools..."
     Update-Submodule vulkan/SPIRV-Tools
 
-    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Tools" "$Spirv_Version"
+    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Tools" "$Spirv_Version.0"
 
     Write-Output "Building SPIRV Tools..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Tools/build"
@@ -322,16 +328,16 @@ function Setup-Spirv-Tools {
     Make-Dir $build_dir
 
     cmake                                                               `
+        -G "$Generator"                                                 `
         $CMAKE_COMPILER                                                 `
         -DCMAKE_BUILD_TYPE=Release                                      `
         -DSPIRV_SKIP_TESTS=ON                                           `
         -DSPIRV_WERROR=OFF                                              `
-        -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir\\SPIRV-Headers"   `
-        -DCMAKE_INSTALL_PREFIX="$build_dir\\install"                     `
-        -S"$Vulkan_Vendor_Dir\\SPIRV-Tools"                              `
+        -DSPIRV-Headers_SOURCE_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers"   `
+        -DCMAKE_INSTALL_PREFIX="$build_dir/install"                     `
+        -S"$Vulkan_Vendor_Dir/SPIRV-Tools"                              `
         -B"$build_dir"
-
-    cmake --build $build_dir --parallel $env:NUMBER_OF_PROCESSORS --target install --config Release
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Vulkan-Utility-Libraries
@@ -341,13 +347,14 @@ function Setup-Vulkan-Utility-Libraries
 
     Update-Submodule vulkan\Vulkan-Utility-Libraries
 
-    Checkout-Tags "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries" "$Vulkan_Version"
+    Checkout-Tags "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries" "$Vulkan_Version.0"
 
     Write-Output "Building Vulkan Validation Layers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries/build"
 
     cmake               `
-        $CMAKE_COMPILER `
+        -G "$Generator"                                     `
+        $CMAKE_COMPILER                                     `
         -S "${Vulkan_Vendor_Dir}\Vulkan-Utility-Libraries"  `
         -B "$build_dir"                                     `
         -DCMAKE_BUILD_TYPE=Release                          `
@@ -355,7 +362,7 @@ function Setup-Vulkan-Utility-Libraries
         -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir\Vulkan-Headers\build\install"  `
         -DCMAKE_INSTALL_PREFIX="$build_dir\install"
 
-    cmake --build $build_dir --target install --config Release --parallel $env:NUMBER_OF_PROCESSORS
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
 }
 
 function Setup-Validation-Layers {
@@ -363,7 +370,7 @@ function Setup-Validation-Layers {
     Write-Output "Cloning Vulkan ValidationLayers..."
     Update-Submodule vulkan/Vulkan-ValidationLayers
 
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers" "$Vulkan_Version"
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers" "$Vulkan_Version.0"
 
     Write-Output "Building Vulkan Validation Layers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers/build"
@@ -371,8 +378,9 @@ function Setup-Validation-Layers {
     Make-Dir $build_dir
 
     cmake                                                                                                   `
+        -G "$Generator"                                                                                     `
         $CMAKE_COMPILER                                                                                     `
-        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"                              `
+        -DVULKAN_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/Vulkan-Headers/build/install"                      `
         -DGLSLANG_INSTALL_DIR="$Vulkan_Vendor_Dir/glslang/build"                                            `
         -DSPIRV_HEADERS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Headers/build/install"                        `
         -DSPIRV_TOOLS_INSTALL_DIR="$Vulkan_Vendor_Dir/SPIRV-Tools/build/install"                            `
@@ -383,7 +391,9 @@ function Setup-Validation-Layers {
 -S"$Vulkan_Vendor_Dir/Vulkan-ValidationLayers"                                                              `
         -B"$build_dir"
 
-    cmake --build $build_dir --parallel $env:NUMBER_OF_PROCESSORS --target install --config Release
+    mingw32-make -C $build_dir install -j"$env:NUMBER_OF_PROCESSORS"
+
+#     cmake --build $build_dir --parallel $env:NUMBER_OF_PROCESSORS --target install --config Release
 
     Make-Dir "$Vulkan_Lib_Dir/explicit_layer.d"
 
@@ -397,23 +407,23 @@ if (Test-Path "$Vulkan_Lib_Dir") { Remove-Item -Path "$Vulkan_Lib_Dir" -Recurse 
 if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_Vendor_Dir/vulkan/include" -Recurse -Force }
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
-Setup-Utest
-Setup-Zlib
-Setup-LibPng
-Setup-FreeType
-Setup-Assimp
-Setup-Glfw
-Setup-Vulkan-Headers
-Setup-Spirv-Headers
-Setup-Spirv-Tools
-Setup-Glslang
-Setup-Volk
-Setup-Vulkan-Loader
+# Setup-Utest
+# Setup-Zlib
+# Setup-LibPng
+# Setup-FreeType
+# Setup-Assimp
+# Setup-Glfw
+# Setup-Vulkan-Headers
+# Setup-Spirv-Headers
+# Setup-Spirv-Tools
+# Setup-Glslang
+# Setup-Volk
+# Setup-Vulkan-Loader
 
 if ($Include_Validation_Layers)
 {
-    Setup-Robin-Hood-Hashing
-    Setup-Vulkan-Utility-Libraries
+#     Setup-Robin-Hood-Hashing
+#     Setup-Vulkan-Utility-Libraries
     Setup-Validation-Layers
 
     Write-Output "Configuring environment file..."
