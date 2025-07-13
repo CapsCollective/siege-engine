@@ -60,6 +60,7 @@ struct Texture2DData
 
     static uint32_t GetDataSize(void* objectData)
     {
+        if (!objectData) return 0;
         Texture2DData* textureData = reinterpret_cast<Texture2DData*>(objectData);
         return sizeof(Texture2DData) + sizeof(uint8_t) * textureData->GetImageSize();
     }

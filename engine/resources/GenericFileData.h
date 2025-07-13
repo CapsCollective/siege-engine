@@ -41,6 +41,7 @@ struct GenericFileData
 
     static uint32_t GetDataSize(void* objectData)
     {
+        if (!objectData) return 0;
         GenericFileData* fileData = reinterpret_cast<GenericFileData*>(objectData);
         return sizeof(GenericFileData) + fileData->dataSize;
     }

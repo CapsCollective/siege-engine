@@ -8,19 +8,16 @@
 
 #include "StaticMeshDataPacker.h"
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 #include <resources/StaticMeshData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
-#include <algorithm>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-#include <fstream>
 
-REGISTER_TOKEN(SOURCE_PATH);
-REGISTER_TOKEN(NODE_PATH);
-REGISTER_TOKEN(FLIP_AXES);
+#include <algorithm>
+#include <fstream>
 
 enum RequestPathStage
 {
