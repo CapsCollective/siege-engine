@@ -261,6 +261,21 @@ String::operator const char*() const
     return Data();
 }
 
+bool String::GetBool(bool& value) const
+{
+    if (*this == ("0") || *this == ("false"))
+    {
+        value = false;
+        return true;
+    }
+    if (*this == ("1") || *this == ("true"))
+    {
+        value = true;
+        return true;
+    }
+    return false;
+}
+
 bool String::GetInt(int& value) const
 {
     try
@@ -287,6 +302,11 @@ bool String::GetFloat(float& value) const
     catch (const std::out_of_range& err)
     {}
     return false;
+}
+
+String String::FromBool(bool value)
+{
+    return value ? "true" : "false";
 }
 
 String String::FromInt(int value)
@@ -568,6 +588,13 @@ char String::PopBack()
     if (onHeap) size -= 1;
     else space += 1;
     return character;
+}
+
+void String::Reverse()
+{
+    char* data = Data();
+    size_t len = Size();
+    std::reverse(data, data + len);
 }
 
 void String::Erase(int startPos, size_t length)

@@ -218,6 +218,13 @@ public:
     // Conversion methods
 
     /**
+     * Attempts to retrieve the String's value as a bool
+     * @param value - the bool to populate
+     * @return true if the conversion was successful, false otherwise
+     */
+    bool GetBool(OUT bool& value) const;
+
+    /**
      * Attempts to retrieve the String's value as an integer
      * @param value - the integer to populate
      * @return true if the conversion was successful, false otherwise
@@ -230,6 +237,13 @@ public:
      * @return true if the conversion was successful, false otherwise
      */
     bool GetFloat(OUT float& value) const;
+
+    /**
+     * Conversion method for bool values
+     * @param value - the bool value to convert
+     * @return the newly created String
+     */
+    static String FromBool(bool value);
 
     /**
      * Conversion method for integer values
@@ -438,10 +452,15 @@ public:
     void Prepend(const char* string);
 
     /**
-     * Removes the character at
-     * @return
+     * Removes the character at the end of the String and returns it
+     * @return the popped character
      */
     char PopBack();
+
+    /**
+     * Reverses the String in-place
+     */
+    void Reverse();
 
     /**
      * Erases portions of the String based on position and length
