@@ -48,8 +48,8 @@ static RequestPathStage GetRequestPathStage(const Siege::String& requestPath,
 }
 
 static void GetMeshData(const aiScene* scene,
-                        aiMesh* mesh,
-                        aiMatrix4x4t<ai_real> matrix,
+                        const aiMesh* mesh,
+                        const aiMatrix4x4t<ai_real>& matrix,
                         OUT std::vector<Siege::BaseVertex>& vertices,
                         OUT std::vector<uint32_t>& indices)
 {
@@ -64,23 +64,23 @@ static void GetMeshData(const aiScene* scene,
         aiVector3t<ai_real> norm = mesh->mNormals[i];
         vertex.normal = {norm.x, norm.y, norm.z};
 
-        aiColor4t<float>* color = mesh->mColors[0];
+        const aiColor4t<float>* color = mesh->mColors[0];
         vertex.color = color ? Siege::FColour {color[i].r, color[i].g, color[i].b, color[i].a} :
                                Siege::FColour::White;
 
         if (aiVector3t<ai_real>* uv = mesh->mTextureCoords[0])
         {
-            vertex.uv = {uv->x, uv->y};
+            vertex.uv = {uv[i].x, uv[i].y};
         }
 
         vertices.push_back(vertex);
     }
 
-    auto it = std::max_element(indices.begin(), indices.end());
-    uint32_t indexOffset = it != indices.end() ? *it + 1 : 0;
+    const auto it = std::max_element(indices.begin(), indices.end());
+    const uint32_t indexOffset = it != indices.end() ? *it + 1 : 0;
     for (uint32_t i = 0; i < mesh->mNumFaces; i++)
     {
-        aiFace face = mesh->mFaces[i];
+        const aiFace face = mesh->mFaces[i];
         for (uint32_t j = 0; j < face.mNumIndices; j++)
         {
             indices.push_back(indexOffset + face.mIndices[j]);
@@ -89,7 +89,7 @@ static void GetMeshData(const aiScene* scene,
 }
 
 static void GetMeshesForNode(const aiScene* scene,
-                             aiNode* node,
+                             const aiNode* node,
                              const Siege::String& requestPath,
                              Siege::String currentPath,
                              aiMatrix4x4t<ai_real> matrix,
@@ -98,7 +98,7 @@ static void GetMeshesForNode(const aiScene* scene,
 {
     currentPath = currentPath + node->mName.C_Str();
 
-    RequestPathStage nodePathStage = GetRequestPathStage(requestPath, currentPath);
+    const RequestPathStage nodePathStage = GetRequestPathStage(requestPath, currentPath);
     if (nodePathStage == NONE)
     {
         return;
@@ -113,10 +113,10 @@ static void GetMeshesForNode(const aiScene* scene,
 
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
     {
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
         Siege::String currentMeshPath = currentPath + '/' + mesh->mName.C_Str();
-        RequestPathStage meshPathStage = GetRequestPathStage(requestPath, currentMeshPath);
+        const RequestPathStage meshPathStage = GetRequestPathStage(requestPath, currentMeshPath);
         if (meshPathStage == NONE)
         {
             continue;

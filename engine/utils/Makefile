@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set build vars
-utilsSrcDir := .
+utilsSrcDir := ./
 utilsBinDir := $(binDir)/engine/utils
 utilsSources := $(call rwildcard,$(utilsSrcDir)/,*.cpp)
 utilsObjects := $(call findobjs,$(utilsSrcDir),$(utilsBinDir),$(utilsSources))

@@ -15,6 +15,8 @@
 #include <resources/Texture2DData.h>
 #include <utest.h>
 
+#include "utils/Logging.h"
+
 using namespace Siege;
 
 // Define test fixture
@@ -40,7 +42,7 @@ UTEST_F_TEARDOWN(test_ResourceSystem)
 UTEST(test_ResourceSystem, LoadNonExistentPackFile)
 {
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    bool result = resourceSystem.MountPackFile("data/nopackfile");
+    bool result = resourceSystem.MountPackFile("assets/nopackfile");
     ASSERT_FALSE(result);
 
     PackFile* packFile = resourceSystem.GetPackFile();
@@ -55,15 +57,15 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(259403, header.bodySize);
+    ASSERT_EQ(259415, header.bodySize);
     ASSERT_EQ(259247, header.tocOffset);
 
-    std::vector<String> packedFilepaths {"data/scene2.scene",
-                                         "data/scene1.scene",
-                                         "data/garbage.scene",
-                                         "data/cube.sm",
-                                         "data/cappy.png",
-                                         "data/PublicPixel.ttf"};
+    std::vector<String> packedFilepaths {"assets/scene2.scene",
+                                         "assets/scene1.scene",
+                                         "assets/garbage.scene",
+                                         "assets/cube.sm",
+                                         "assets/cappy.png",
+                                         "assets/PublicPixel.ttf"};
 
     for (const String& filepath : packedFilepaths)
     {
@@ -77,7 +79,7 @@ UTEST_F(test_ResourceSystem, LoadNonExistentData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    GenericFileData* data = packFile->FindData<GenericFileData>("data/nonexistent.filetype");
+    GenericFileData* data = packFile->FindData<GenericFileData>("assets/nonexistent.filetype");
     ASSERT_FALSE(data);
 }
 
@@ -86,7 +88,7 @@ UTEST_F(test_ResourceSystem, LoadGenericFileData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    GenericFileData* data = packFile->FindData<GenericFileData>("data/PublicPixel.ttf");
+    GenericFileData* data = packFile->FindData<GenericFileData>("assets/PublicPixel.ttf");
     ASSERT_TRUE(data);
     ASSERT_EQ(97456, data->dataSize);
 }
@@ -96,7 +98,7 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    StaticMeshData* data = packFile->FindData<StaticMeshData>("data/cube.sm");
+    StaticMeshData* data = packFile->FindData<StaticMeshData>("assets/cube.sm");
     ASSERT_TRUE(data);
     ASSERT_EQ(36, data->indicesCount);
     ASSERT_EQ(24, data->verticesCount);
@@ -162,7 +164,7 @@ UTEST_F(test_ResourceSystem, LoadTextureData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    Texture2DData* data = packFile->FindData<Texture2DData>("data/cappy.png");
+    Texture2DData* data = packFile->FindData<Texture2DData>("assets/cappy.png");
     ASSERT_TRUE(data);
     ASSERT_EQ(160000, data->GetImageSize());
 
@@ -191,7 +193,7 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
                                     "Z_INDEX:0;"
                                     "|";
 
-    SceneData* data = packFile->FindData<SceneData>("data/scene1.scene");
+    SceneData* data = packFile->FindData<SceneData>("assets/scene1.scene");
     ASSERT_TRUE(data);
     ASSERT_STREQ(expectedSceneData, data->GetData());
 }

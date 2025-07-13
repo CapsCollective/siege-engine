@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-exampleRenderSrcDir := .
+exampleRenderSrcDir := ./
 exampleRenderBinDir := $(binDir)/examples/render
 exampleRenderSources := $(call rwildcard,$(exampleRenderSrcDir)/,*.cpp)
 exampleRenderObjects := $(call findobjs,$(exampleRenderSrcDir),$(exampleRenderBinDir),$(exampleRenderSources))

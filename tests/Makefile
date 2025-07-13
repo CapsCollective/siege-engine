@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-testSrcDir := .
+testSrcDir := ./
 testBinDir := $(binDir)/tests
 testSources := $(call rwildcard,$(testSrcDir)/,*.cpp)
 testObjects := $(call findobjs,$(testSrcDir),$(testBinDir),$(testSources))
@@ -49,6 +49,6 @@ $(utestIncludeDir):
 
 # Copy the assets directory to the build directory, and pack them
 pack-assets:
-	$(call MKDIR,$(call platformpth,$(testBuildDir)/data))
-	$(call COPY,$(testSrcDir)/data,$(testBuildDir)/data,$(RWCARDGLOB))
+	$(call MKDIR,$(call platformpth,$(testBuildDir)/assets))
+	$(call COPY,$(testSrcDir)/assets,$(testBuildDir)/assets,$(RWCARDGLOB))
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

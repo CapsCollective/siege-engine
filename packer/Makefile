@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-packerSrcDir := .
+packerSrcDir := ./
 packerBinDir := $(binDir)/packer
 packerSources := $(call rwildcard,$(packerSrcDir)/,*.cpp)
 packerObjects := $(call findobjs,$(packerSrcDir),$(packerBinDir),$(packerSources))

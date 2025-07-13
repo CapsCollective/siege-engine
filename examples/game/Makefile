@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-exampleGameSrcDir := .
+exampleGameSrcDir := ./
 exampleGameBinDir := $(binDir)/examples/game
 exampleGameSources := $(call rwildcard,$(exampleGameSrcDir)/,*.cpp)
 exampleGameObjects := $(call findobjs,$(exampleGameSrcDir),$(exampleGameBinDir),$(exampleGameSources))

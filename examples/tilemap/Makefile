@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-exampleTilemapSrcDir := .
+exampleTilemapSrcDir := ./
 exampleTilemapBinDir := $(binDir)/examples/tilemap
 exampleTilemapSources := $(call rwildcard,$(exampleTilemapSrcDir)/,*.cpp)
 exampleTilemapObjects := $(call findobjs,$(exampleTilemapSrcDir),$(exampleTilemapBinDir),$(exampleTilemapSources))

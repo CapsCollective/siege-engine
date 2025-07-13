@@ -18,7 +18,7 @@
 using namespace Siege;
 
 // Const declarations
-static constexpr const char* SCENE_DIR = "data/";
+static constexpr const char* SCENE_DIR = "assets/";
 static constexpr const char* TEST_SCENE_FILE = "test.scene";
 static constexpr const char* UNTITLED_SCENE_FILE = "untitled.scene";
 static constexpr const char* GARBAGE_SCENE_FILE = "garbage.scene";

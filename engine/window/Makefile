@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-windowSrcDir := .
+windowSrcDir := ./
 windowBinDir := $(binDir)/engine/window
 windowSources := $(call rwildcard,$(windowSrcDir)/,*.cpp)
 windowObjects := $(call findobjs,$(windowSrcDir),$(windowBinDir),$(windowSources))
