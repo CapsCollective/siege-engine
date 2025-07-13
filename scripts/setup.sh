@@ -31,6 +31,9 @@ SPIRV_VERSION="vulkan-sdk-1.3.296.0"
 GLSLANG_VERSION="vulkan-sdk-1.3.296.0"
 ROBIN_HOOD_HASHING_VERSION="3.11.5"
 MOLTENVK_VERSION="v1.2.11"
+FREETYPE_VERSION="VER-2-13-3"
+LIBPNG_VERSION="v1.6.50"
+ZLIB_VERSION="v1.3.1"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
@@ -246,9 +249,11 @@ setup_zlib() {
     echo "Setting up zlib..."
     echo "Cloning zlib..."
     update_submodules zlib
+    checkout_tags "${VENDOR_DIR}"/zlib ${ZLIB_VERSION}
 
     echo "Building zlib..."
     mkdir -p "${VENDOR_DIR}"/zlib/build
+    local BUILD_DIR="${VENDOR_DIR}"/zlib/build
     (cd "${VENDOR_DIR}"/zlib && ./configure --prefix="${VENDOR_DIR}"/zlib/build --static)
     make -f "${VENDOR_DIR}"/zlib/Makefile -C "${VENDOR_DIR}"/zlib  install prefix="${VENDOR_DIR}"/zlib/build -j"${NUMBER_OF_PROCESSORS}"
 }
@@ -257,10 +262,18 @@ setup_libpng() {
   echo "Setting up libpng..."
   echo "Cloning libpng..."
   update_submodules libpng
+  checkout_tags "${VENDOR_DIR}"/libpng ${LIBPNG_VERSION}
 
   echo "Building libpng..."
-  mkdir -p "${VENDOR_DIR}"/libpng/build
-  cmake "${VENDOR_DIR}"/libpng -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/libpng/build -S "${VENDOR_DIR}"/libpng -B"${VENDOR_DIR}"/libpng/build
+  local BUILD_DIR="${VENDOR_DIR}"/libpng/build
+  local ZLIB_BUILD_DIR="${VENDOR_DIR}"/zlib/build
+  mkdir -p "${BUILD_DIR}"
+  cmake "${VENDOR_DIR}"/libpng \
+      -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" \
+      -DZLIB_INCLUDE_DIRS="${ZLIB_BUILD_DIR}"/include \
+      -DZLIB_LIBRARIES="${ZLIB_BUILD_DIR}"/lib/libz.a \
+      -S "${VENDOR_DIR}"/libpng \
+      -B"${BUILD_DIR}"
   make -C "${VENDOR_DIR}"/libpng/build install -j"${NUMBER_OF_PROCESSORS}"
 }
 
@@ -268,12 +281,25 @@ setup_freetype() {
   echo "Setting up freetype..."
   echo "Cloning freetype..."
   update_submodules freetype
+  checkout_tags "${VENDOR_DIR}"/freetype ${FREETYPE_VERSION}
 
   echo "Building freetype..."
-  local BUILD_DIR="${VULKAN_DIR}"/freetype
+  local BUILD_DIR="${VENDOR_DIR}"/freetype/build
+  local ZLIB_BUILD_DIR="${VENDOR_DIR}"/zlib/build
+  local LIBPNG_BUILD_DIR="${VENDOR_DIR}"/libpng/build
   mkdir -p "${BUILD_DIR}"
-  cmake -G "${GENERATOR}" -DFT_DISABLE_BROTLI=TRUE -DFT_DISABLE_BZIP2=TRUE -DFT_DISABLE_HARFBUZZ=TRUE -B"${VENDOR_DIR}"/freetype/build -S"${VENDOR_DIR}"/freetype
-  make -C "${VENDOR_DIR}"/freetype/build -j"${NUMBER_OF_PROCESSORS}"
+  cmake -G "${GENERATOR}" \
+      -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" \
+      -DFT_DISABLE_BROTLI=TRUE \
+      -DFT_DISABLE_BZIP2=TRUE \
+      -DFT_DISABLE_HARFBUZZ=TRUE \
+      -DZLIB_LIBRARY="${ZLIB_BUILD_DIR}"/lib/libz.a \
+      -DZLIB_INCLUDE_DIR="${ZLIB_BUILD_DIR}"/include \
+      -DPNG_LIBRARY="${LIBPNG_BUILD_DIR}"/lib/libpng.a \
+      -DPNG_PNG_INCLUDE_DIR="${LIBPNG_BUILD_DIR}"/include \
+      -B"${BUILD_DIR}" \
+      -S"${VENDOR_DIR}"/freetype
+  make -C "${BUILD_DIR}" -j"${NUMBER_OF_PROCESSORS}"
 
   mkdir -p "${VENDOR_DIR}"/include/freetype
   cp -R "${VENDOR_DIR}"/freetype/include/** "${VENDOR_DIR}"/include/freetype

@@ -14,6 +14,9 @@ param (
 [string] $Spirv_Version="vulkan-sdk-1.3.296.0"
 [string] $Glslang_Version="vulkan-sdk-1.3.296.0"
 [string] $Robin_Hood_Hashing_Version="3.11.5"
+[string] $FreeType_Version="VER-2-13-3"
+[string] $LibPng_Version="v1.6.50"
+[string] $Zlib_Version="v1.3.1"
 [string] $Generator="MinGW Makefiles"
 [string] $Vendor_Dir="$Root_Dir/vendor".Replace('\','/')
 
@@ -59,6 +62,7 @@ function Setup-Zlib {
     Write-Output "Setting up zlib..."
     Write-Output "Cloning zlib..."
     Update-Submodule zlib
+    Checkout-Tags "$Vendor_Dir/zlib" $Zlib_Version
 
     Write-Output "Building zlib..."
     [string] $build_dir = "$Vendor_Dir/zlib/build"
@@ -82,6 +86,7 @@ function Setup-LibPng {
     Write-Output "Setting up libpng..."
     Write-Output "Cloning libpng..."
     Update-Submodule libpng
+    Checkout-Tags "$Vendor_Dir/libpng" $LibPng_Version
 
     Write-Output "Building libpng..."
     [string] $build_dir = "$Vendor_Dir/libpng/build"
@@ -107,6 +112,7 @@ function Setup-FreeType {
     Write-Output "Setting up freetype..."
     Write-Output "Cloning freetype..."
     Update-Submodule freetype
+    Checkout-Tags "$Vendor_Dir/freetype" $FreeType_Version
 
     Write-Output "Building freetype..."
     [string] $build_dir = "$Vendor_Dir/freetype/build"
