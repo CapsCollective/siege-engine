@@ -21,7 +21,10 @@ void* PackTexture2DFile(const Siege::String& filePath)
     defer([pixels] { stbi_image_free(pixels); });
     CC_ASSERT(pixels, "Failed to load image file!")
 
-    CC_LOG_INFO("Reading 2D texture with dimensions {} by {} over {} channels", texWidth, texHeight, texChannels)
+    CC_LOG_INFO("Reading 2D texture with dimensions {} by {} over {} channels",
+                texWidth,
+                texHeight,
+                texChannels)
 
     Siege::Texture2DData* texture2dData =
         Siege::Texture2DData::Create(pixels, texWidth, texHeight, texChannels);

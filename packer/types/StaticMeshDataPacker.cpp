@@ -8,15 +8,14 @@
 
 #include "StaticMeshDataPacker.h"
 
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <resources/StaticMeshData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <fstream>
 
 enum RequestPathStage
@@ -189,18 +188,19 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
             aiVector3t<ai_real> scale {1.f, 1.f, 1.f};
             switch (flipAxesIt->second[i])
             {
-            case 'x':
-                scale.x *= -1;
-                break;
-            case 'y':
-                scale.y *= -1;
-                break;
-            case 'z':
-                scale.z *= -1;
-                break;
-            default:
-                CC_LOG_WARNING("Found invalid axis \"{}\" in FLIP_AXES attribute, ignoring", flipAxesIt->second[i])
-                break;
+                case 'x':
+                    scale.x *= -1;
+                    break;
+                case 'y':
+                    scale.y *= -1;
+                    break;
+                case 'z':
+                    scale.z *= -1;
+                    break;
+                default:
+                    CC_LOG_WARNING("Found invalid axis \"{}\" in FLIP_AXES attribute, ignoring",
+                                   flipAxesIt->second[i])
+                    break;
             }
             aiMatrix4x4t<ai_real> scalingMat;
             baseXform *= aiMatrix4x4t<ai_real>::Scaling(scale, scalingMat);
@@ -209,13 +209,7 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
 
     std::vector<Siege::BaseVertex> vertices;
     std::vector<uint32_t> indices;
-    GetMeshesForNode(scene,
-                     scene->mRootNode,
-                     requestedNodePath,
-                     '/',
-                     baseXform,
-                     vertices,
-                     indices);
+    GetMeshesForNode(scene, scene->mRootNode, requestedNodePath, '/', baseXform, vertices, indices);
 
     Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
     return staticMeshData;

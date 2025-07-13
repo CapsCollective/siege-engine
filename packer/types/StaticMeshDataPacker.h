@@ -9,8 +9,8 @@
 #ifndef SIEGE_ENGINE_STATICMESHDATAPACKER_H
 #define SIEGE_ENGINE_STATICMESHDATAPACKER_H
 
-#include <utils/Token.h>
 #include <resources/PackFile.h>
+#include <utils/Token.h>
 
 REGISTER_TOKEN(SOURCE_PATH);
 REGISTER_TOKEN(NODE_PATH);

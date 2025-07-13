@@ -15,8 +15,9 @@
 #include "String.h"
 
 // Define macros
-#define REGISTER_TOKEN(name) \
-    static const Siege::Token CONCAT_SYMBOL(TOKEN_, name)(Siege::Token::FindOrRegisterToken(TOSTRING(name)))
+#define REGISTER_TOKEN(name)                               \
+    static const Siege::Token CONCAT_SYMBOL(TOKEN_, name)( \
+        Siege::Token::FindOrRegisterToken(TOSTRING(name)))
 
 namespace Siege
 {
