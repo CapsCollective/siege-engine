@@ -34,6 +34,7 @@ MOLTENVK_VERSION="v1.2.11"
 FREETYPE_VERSION="VER-2-13-3"
 LIBPNG_VERSION="v1.6.50"
 ZLIB_VERSION="v1.3.1"
+ASSIMP_VERSION="v6.0.2"
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
@@ -309,12 +310,16 @@ setup_assimp() {
     echo "Setting up assimp..."
     echo "Cloning assimp..."
     update_submodules assimp
+    checkout_tags "${VENDOR_DIR}"/assimp ${ASSIMP_VERSION}
 
     echo "Building assimp..."
     mkdir -p "${VENDOR_DIR}"/assimp/build
     cmake "${VENDOR_DIR}"/assimp \
         -DCMAKE_INSTALL_PREFIX="${VENDOR_DIR}"/assimp/build \
         -DBUILD_SHARED_LIBS=OFF \
+        -DZLIB_FOUND=1 \
+        -DZLIB_LIBRARIES="${ZLIB_BUILD_DIR}"/lib/libz.a \
+        -DZLIB_INCLUDE_DIR="${ZLIB_BUILD_DIR}"/include \
         -DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF \
         -DASSIMP_BUILD_TESTS=OFF \
         -DASSIMP_INSTALL=OFF \

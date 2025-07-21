@@ -17,6 +17,7 @@ param (
 [string] $FreeType_Version="VER-2-13-3"
 [string] $LibPng_Version="v1.6.50"
 [string] $Zlib_Version="v1.3.1"
+[string] $Assimp_Version="v6.0.2"
 [string] $Generator="MinGW Makefiles"
 [string] $Vendor_Dir="$Root_Dir/vendor".Replace('\','/')
 
@@ -146,9 +147,11 @@ function Setup-Assimp {
     Write-Output "Setting up assimp..."
     Write-Output "Cloning assimp..."
     Update-Submodule assimp
+    Checkout-Tags "$Vendor_Dir/assimp" $Assimp_Version
 
     Write-Output "Building assimp..."
     [string] $build_dir = "$Vendor_Dir/assimp/build"
+    [string] $zlib_build_dir = "$Vendor_Dir/zlib/build"
 
     Make-Dir $build_dir
 
