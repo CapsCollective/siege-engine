@@ -35,6 +35,8 @@ FREETYPE_VERSION="VER-2-13-3"
 LIBPNG_VERSION="v1.6.50"
 ZLIB_VERSION="v1.3.1"
 ASSIMP_VERSION="v6.0.2"
+GLFW_VERSION="3.4"
+
 GENERATOR="Unix Makefiles"
 VENDOR_DIR="${ROOT_DIR}/vendor"
 
@@ -62,6 +64,7 @@ setup_glfw() {
     echo "Setting up glfw..."
     echo "Cloning glfw..."
     update_submodules glfw
+    checkout_tags "${VENDOR_DIR}"/glfw "$GLFW_VERSION"
 
     local BUILD_DIR="${VENDOR_DIR}"/glfw/build
 

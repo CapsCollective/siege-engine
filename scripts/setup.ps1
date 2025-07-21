@@ -18,6 +18,8 @@ param (
 [string] $LibPng_Version="v1.6.50"
 [string] $Zlib_Version="v1.3.1"
 [string] $Assimp_Version="v6.0.2"
+[string] $Glfw_Version="3.4"
+
 [string] $Generator="MinGW Makefiles"
 [string] $Vendor_Dir="$Root_Dir/vendor".Replace('\','/')
 
@@ -178,6 +180,7 @@ function Setup-Glfw {
     Write-Output "Setting up glfw..."
     Write-Output "Cloning glfw..."
     Update-Submodule glfw
+    Checkout-Tags "$Vendor_Dir/glfw" $Glfw_Version
 
     Write-Output "Building glfw..."
     [string] $build_dir = "$Vendor_Dir/glfw/build"
