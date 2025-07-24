@@ -93,7 +93,7 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 void Texture2D::LoadFromFile(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    Texture2DData* texture2dData = packFile->FindData<Texture2DData>(filePath);
+    std::shared_ptr<Texture2DData> texture2dData = packFile->FindData<Texture2DData>(filePath);
     uint64_t imageSize = texture2dData->GetImageSize();
     const uint8_t* pixelPtr = texture2dData->GetPixels();
 

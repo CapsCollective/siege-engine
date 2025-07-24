@@ -174,7 +174,7 @@ void Shader::Destroy()
 MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
+    std::shared_ptr<GenericFileData> fileData = packFile->FindData<GenericFileData>(filePath);
     MHArray<char> buffer(fileData->data, fileData->dataSize);
     return buffer;
 }

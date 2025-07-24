@@ -16,6 +16,7 @@ resourcesObjects := $(call findobjs,$(resourcesSrcDir),$(resourcesBinDir),$(reso
 resourcesDepends := $(patsubst %.o, %.d, $(call rwildcard,$(resourcesBinDir)/,*.o))
 
 linkFlags += -l utils
+compileFlags += -I $(vendorDir)/zlib/build/include
 
 # Build the static library
 $(resourcesLib): $(resourcesObjects)

@@ -23,7 +23,7 @@ testAssets += $(patsubst ./%,%, $(call rwildcard,$(testSrcDir),*.scene))
 
 # Set build vars
 utestIncludeDir := $(vendorDir)/include/utest
-linkFlags += -l core -l utils -l resources
+linkFlags += -l core -l utils -l resources -l z
 
 .PHONY: all pack-assets
 

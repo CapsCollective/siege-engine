@@ -27,7 +27,7 @@ namespace Siege::Vulkan
 Font::Font(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
+    std::shared_ptr<GenericFileData> fileData = packFile->FindData<GenericFileData>(filePath);
 
     FT_Open_Args args;
     args.flags = FT_OPEN_MEMORY;

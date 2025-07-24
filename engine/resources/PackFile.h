@@ -11,9 +11,12 @@
 #define SIEGE_ENGINE_PACKFILE_H
 
 #include <utils/String.h>
+#include <utils/Logging.h>
 
 #include <filesystem>
 #include <map>
+
+#include <zlib.h>
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
 #define PACKER_MAGIC_NUMBER_TOC "toc!"
@@ -46,6 +49,7 @@ public:
     {
         uint32_t dataOffset;
         uint32_t dataSize;
+        uint32_t dataSizeCompressed;
         char name[];
 
         uint32_t GetDataSize() const
@@ -66,14 +70,22 @@ public:
     bool LoadFromPath(const String& filepath);
 
     template<typename T>
-    T* FindData(const String& filepath)
+    std::shared_ptr<T> FindData(const String& filepath)
     {
-        PackFile::TocEntry* toc = entries[filepath];
+        const TocEntry* toc = entries[filepath];
         if (!toc)
         {
             return nullptr;
         }
-        return reinterpret_cast<T*>(body + toc->dataOffset);
+
+        uLongf bodyDataSizeUncompressed = toc->dataSize;
+        uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
+        void* mem = malloc(bodyDataSizeUncompressed);
+
+        int result = uncompress(static_cast<Bytef*>(mem), &bodyDataSizeUncompressed, reinterpret_cast<Bytef*>(body + toc->dataOffset), bodyDataSizeCompressed);
+        CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
+
+        return std::shared_ptr<T>(static_cast<T*>(mem), free);
     }
 
     const std::map<String, TocEntry*>& GetEntries();

@@ -125,7 +125,7 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     {
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
 
-        SceneData* sceneData = packFile->FindData<SceneData>(ScenePath);
+        std::shared_ptr<SceneData> sceneData = packFile->FindData<SceneData>(ScenePath);
         if (!sceneData)
         {
             CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)

@@ -43,7 +43,7 @@ StaticMesh::StaticMesh(const char* filePath, Material* material)
 {
     // TODO(Aryeh): How to extract material data from object files?
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    StaticMeshData* vertexData = packFile->FindData<StaticMeshData>(filePath);
+    std::shared_ptr<StaticMeshData> vertexData = packFile->FindData<StaticMeshData>(filePath);
 
     CC_ASSERT(vertexData->verticesCount > 0, "Cannot load in a file with no vertices!")
     CC_ASSERT(vertexData->indicesCount > 0, "Cannot load in a file with no indices!")

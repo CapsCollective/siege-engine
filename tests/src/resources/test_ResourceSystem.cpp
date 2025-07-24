@@ -57,8 +57,8 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(259415, header.bodySize);
-    ASSERT_EQ(259247, header.tocOffset);
+    ASSERT_EQ(48681, header.bodySize);
+    ASSERT_EQ(48489, header.tocOffset);
 
     std::vector<String> packedFilepaths {"assets/scene2.scene",
                                          "assets/scene1.scene",
@@ -79,7 +79,7 @@ UTEST_F(test_ResourceSystem, LoadNonExistentData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    GenericFileData* data = packFile->FindData<GenericFileData>("assets/nonexistent.filetype");
+    std::shared_ptr<GenericFileData> data = packFile->FindData<GenericFileData>("assets/nonexistent.filetype");
     ASSERT_FALSE(data);
 }
 
@@ -88,7 +88,7 @@ UTEST_F(test_ResourceSystem, LoadGenericFileData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    GenericFileData* data = packFile->FindData<GenericFileData>("assets/PublicPixel.ttf");
+    std::shared_ptr<GenericFileData> data = packFile->FindData<GenericFileData>("assets/PublicPixel.ttf");
     ASSERT_TRUE(data);
     ASSERT_EQ(97456, data->dataSize);
 }
@@ -98,11 +98,11 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    StaticMeshData* data = packFile->FindData<StaticMeshData>("assets/cube.sm");
+    std::shared_ptr<StaticMeshData> data = packFile->FindData<StaticMeshData>("assets/cube.sm");
     ASSERT_TRUE(data);
     ASSERT_EQ(36, data->indicesCount);
     ASSERT_EQ(24, data->verticesCount);
-    ASSERT_EQ(1312, StaticMeshData::GetDataSize(data));
+    ASSERT_EQ(1312, StaticMeshData::GetDataSize(data.get()));
 
     uint32_t expectedIndices[36] {0, 1,  2, 3, 4,  5, 6, 7,  8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
                                   0, 18, 1, 3, 19, 4, 6, 20, 7, 9, 21, 10, 12, 22, 13, 15, 23, 16};
@@ -164,7 +164,7 @@ UTEST_F(test_ResourceSystem, LoadTextureData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    Texture2DData* data = packFile->FindData<Texture2DData>("assets/cappy.png");
+    std::shared_ptr<Texture2DData> data = packFile->FindData<Texture2DData>("assets/cappy.png");
     ASSERT_TRUE(data);
     ASSERT_EQ(160000, data->GetImageSize());
 
@@ -193,7 +193,7 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
                                     "Z_INDEX:0;"
                                     "|";
 
-    SceneData* data = packFile->FindData<SceneData>("assets/scene1.scene");
+    std::shared_ptr<SceneData> data = packFile->FindData<SceneData>("assets/scene1.scene");
     ASSERT_TRUE(data);
     ASSERT_STREQ(expectedSceneData, data->GetData());
 }
