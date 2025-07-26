@@ -10,20 +10,30 @@
 #ifndef SIEGE_ENGINE_BINARYSERIALISATION_H
 #define SIEGE_ENGINE_BINARYSERIALISATION_H
 
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <vector>
 
 #include "String.h"
 
 namespace Siege::BinarySerialisation
 {
 
-#define SERIALISE_NATIVE(type) \
-    void serialise(Buffer& buffer, type& value, bool deserialise = false) { \
-        serialiseNative(buffer, value, deserialise); } \
-    void serialise(Buffer& buffer, const type& value, bool deserialise = false) { \
-        serialiseNative(buffer, value, deserialise); }
+enum SerialisationMode : u_int8_t
+{
+    SERIALISE,
+    DESERIALISE,
+};
+
+#define SERIALISE_NATIVE(type)                                                \
+    void serialise(Buffer& buffer, type& value, SerialisationMode mode)       \
+    {                                                                         \
+        serialiseNative(buffer, value, mode);                                 \
+    }                                                                         \
+    void serialise(Buffer& buffer, const type& value, SerialisationMode mode) \
+    {                                                                         \
+        serialiseNative(buffer, value, mode);                                 \
+    }
 
 struct Buffer
 {
@@ -41,30 +51,35 @@ struct BinarySerialisable
 {
     virtual ~BinarySerialisable() = default;
 
-    virtual void serialise(Buffer& buffer, bool deserialise) {}
+    virtual void serialise(Buffer& buffer, SerialisationMode mode) {}
 };
 
 template<typename T>
-void serialiseNative(Buffer& buffer, T& value, bool deserialise = false)
+void serialiseNative(Buffer& buffer, T& value, SerialisationMode mode)
 {
-    if (deserialise)
+    switch (mode)
     {
-        value = *(const T*)(buffer.data.data() + buffer.cursor);
-        buffer.cursor += sizeof(value);
-    }
-    else
-    {
-        size_t was = buffer.data.size();
-        buffer.data.resize(was + sizeof(value));
-        *(T*)&buffer.data[was] = value;
+        case SERIALISE:
+        {
+            size_t was = buffer.data.size();
+            buffer.data.resize(was + sizeof(value));
+            *(T*) &buffer.data[was] = value;
+            break;
+        }
+        case DESERIALISE:
+        {
+            value = *(const T*) (buffer.data.data() + buffer.cursor);
+            buffer.cursor += sizeof(value);
+            break;
+        }
     }
 }
 
 template<typename T>
-void serialiseNative(Buffer& buffer, const T& value, bool deserialise = false)
+void serialiseNative(Buffer& buffer, const T& value, SerialisationMode mode)
 {
     T& nonConstValue = const_cast<T&>(value);
-    serialiseNative(buffer, nonConstValue, deserialise);
+    serialiseNative(buffer, nonConstValue, mode);
 }
 
 SERIALISE_NATIVE(bool)
@@ -74,88 +89,112 @@ SERIALISE_NATIVE(float)
 SERIALISE_NATIVE(double)
 
 template<typename T1, typename T2>
-void serialise(Buffer& buffer, std::pair<T1, T2>& value, bool deserialise = false)
+void serialise(Buffer& buffer, std::pair<T1, T2>& value, SerialisationMode mode)
 {
-    serialise(buffer, value.first, deserialise);
-    serialise(buffer, value.second, deserialise);
+    serialise(buffer, value.first, mode);
+    serialise(buffer, value.second, mode);
 }
 
 template<typename T>
 void serialiseContainer(Buffer& buffer, T& value)
 {
     uint32_t size = value.size();
-    serialise(buffer, size);
+    serialise(buffer, size, SERIALISE);
     for (auto& entry : value)
     {
-        serialise(buffer, entry);
+        serialise(buffer, entry, SERIALISE);
     }
 }
 
 template<typename T>
-void serialise(Buffer& buffer, std::vector<T>& value, bool deserialise = false)
+void serialise(Buffer& buffer, std::vector<T>& value, SerialisationMode mode)
 {
-    if (deserialise)
+    switch (mode)
     {
-        value.clear();
-
-        uint32_t size;
-        serialise(buffer, size, true);
-        value.reserve(size);
-
-        T entry {};
-        while (size--)
+        case SERIALISE:
         {
-            serialise(buffer, entry, true);
-            value.push_back(entry);
+            serialiseContainer(buffer, value);
+            break;
+        }
+        case DESERIALISE:
+        {
+            value.clear();
+
+            uint32_t size;
+            serialise(buffer, size, mode);
+            value.reserve(size);
+
+            T entry {};
+            while (size--)
+            {
+                serialise(buffer, entry, mode);
+                value.push_back(entry);
+            }
+            break;
         }
     }
-    else serialiseContainer(buffer, value);
 }
 
 template<typename T>
-void serialise(Buffer& buffer, std::set<T>& value, bool deserialise = false)
+void serialise(Buffer& buffer, std::set<T>& value, SerialisationMode mode)
 {
-    if (deserialise)
+    switch (mode)
     {
-        value.clear();
-
-        uint32_t size;
-        serialise(buffer, size, true);
-
-        T entry {};
-        while (size--)
+        case SERIALISE:
         {
-            serialise(buffer, entry, true);
-            value.insert(entry);
+            serialiseContainer(buffer, value);
+            break;
+        }
+        case DESERIALISE:
+        {
+            value.clear();
+
+            uint32_t size;
+            serialise(buffer, size, mode);
+
+            T entry {};
+            while (size--)
+            {
+                serialise(buffer, entry, mode);
+                value.insert(entry);
+            }
+            break;
         }
     }
-    else serialiseContainer(buffer, value);
 }
 
 template<typename T1, typename T2>
-void serialise(Buffer& buffer, std::map<T1, T2>& value, bool deserialise = false)
+void serialise(Buffer& buffer, std::map<T1, T2>& value, SerialisationMode mode)
 {
-    if (deserialise)
+    switch (mode)
     {
-        value.clear();
-
-        uint32_t size;
-        serialise(buffer, size, true);
-
-        std::pair<T1, T2> entry;
-        while (size--)
+        case SERIALISE:
         {
-            serialise(buffer, entry, true);
-            value.insert(entry);
+            serialiseContainer(buffer, value);
+            break;
+        }
+        case DESERIALISE:
+        {
+            value.clear();
+
+            uint32_t size;
+            serialise(buffer, size, mode);
+
+            std::pair<T1, T2> entry;
+            while (size--)
+            {
+                serialise(buffer, entry, mode);
+                value.insert(entry);
+            }
+            break;
         }
     }
-    else serialiseContainer(buffer, value);
 }
 
 template<typename T>
-void serialise(Buffer& buffer, T& value, bool deserialise = false)
+void serialise(Buffer& buffer, T& value, SerialisationMode mode)
 {
-    value.serialise(buffer, deserialise);
+    value.serialise(buffer, mode);
 }
 
 } // namespace Siege::BinarySerialisation
