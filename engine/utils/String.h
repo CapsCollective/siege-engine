@@ -523,7 +523,7 @@ public:
     {
         const char* data = Data();
         size_t formatLen = snprintf(nullptr, 0, data, std::forward<P>(params)...);
-        char newStr[formatLen + 1];
+        char* newStr = static_cast<char*>(alloca(formatLen + 1));
         snprintf(newStr, formatLen + 1, data, std::forward<P>(params)...);
         Assign(newStr);
     }

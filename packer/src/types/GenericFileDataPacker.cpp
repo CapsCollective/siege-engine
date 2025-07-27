@@ -26,7 +26,7 @@ void* PackGenericFile(const Siege::String& filePath)
     // the file stream is reading from (which presumably is at the end of the file).
     uint32_t fileSize = static_cast<uint32_t>(file.tellg());
 
-    char data[fileSize];
+    char* data = static_cast<char*>(alloca(fileSize));
     file.seekg(0); // Move to the beginning of the file.
     file.read(data, fileSize);
     file.close();

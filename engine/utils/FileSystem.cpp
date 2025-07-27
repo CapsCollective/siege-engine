@@ -29,7 +29,7 @@ String Read(const String& filename)
     rewind(file);
 
     // Copy the content
-    char content[size + 1];
+    char* content = static_cast<char*>(alloca(size + 1));
     fread(content, sizeof(char), size, file);
     content[size] = '\0';
 

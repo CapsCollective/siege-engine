@@ -35,7 +35,7 @@ void* PackSceneFile(const Siege::String& filePath)
     bodyString = Siege::FileSystem::StripNewLines(bodyString);
 
     uint32_t fileSize = bodyString.Size() + 1;
-    char data[fileSize];
+    char* data = static_cast<char*>(alloca(fileSize));
     memcpy(data, bodyString.Str(), fileSize);
 
     Siege::SceneData* sceneData = Siege::SceneData::Create(&data[0], fileSize);
