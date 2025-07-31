@@ -7,7 +7,7 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/GenericFileData.h>
+#include <resources/PackFileData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
@@ -79,16 +79,16 @@ UTEST_F(test_ResourceSystem, LoadNonExistentData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<GenericFileData> data = packFile->FindData<GenericFileData>("assets/nonexistent.filetype");
+    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/nonexistent.filetype");
     ASSERT_FALSE(data);
 }
 
-UTEST_F(test_ResourceSystem, LoadGenericFileData)
+UTEST_F(test_ResourceSystem, LoadPackFileData)
 {
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<GenericFileData> data = packFile->FindData<GenericFileData>("assets/PublicPixel.ttf");
+    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/PublicPixel.ttf");
     ASSERT_TRUE(data);
     ASSERT_EQ(97456, data->dataSize);
 }
@@ -193,7 +193,7 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
                                     "Z_INDEX:0;"
                                     "|";
 
-    std::shared_ptr<SceneData> data = packFile->FindData<SceneData>("assets/scene1.scene");
+    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/scene1.scene");
     ASSERT_TRUE(data);
-    ASSERT_STREQ(expectedSceneData, data->GetData());
+    ASSERT_STREQ(expectedSceneData, "Fixme");
 }

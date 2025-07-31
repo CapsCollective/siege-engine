@@ -7,12 +7,11 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/GenericFileData.h>
+#include <resources/PackFileData.h>
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <resources/StaticMeshData.h>
-#include <resources/Texture2DData.h>
 #include <utils/Logging.h>
 
 #include <fstream>
@@ -55,28 +54,24 @@ int main(int argc, char* argv[])
         CC_LOG_INFO("Reading asset at path {}", file.c_str())
 
         void* data = nullptr;
-        uint32_t bodyDataSize = 0;
+        uint32_t dataSize = 0;
         Siege::String fullPath = assetsDir + "/" + Siege::String(file.c_str());
         std::filesystem::path extension = file.extension();
         if (extension == ".sm")
         {
-            data = PackStaticMeshFile(fullPath, assetsDir);
-            bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
+            data = PackStaticMeshFile(fullPath, assetsDir, dataSize);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
-            data = PackTexture2DFile(fullPath);
-            bodyDataSize = Siege::Texture2DData::GetDataSize(data);
+            data = PackTexture2DFile(fullPath, dataSize);
         }
         else if (extension == ".spv" || extension == ".ttf")
         {
-            data = PackGenericFile(fullPath);
-            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
+            data = PackGenericFile(fullPath, dataSize);
         }
         else if (extension == ".scene")
         {
-            data = PackSceneFile(fullPath);
-            bodyDataSize = Siege::SceneData::GetDataSize(data);
+            data = PackSceneFile(fullPath, dataSize);
         }
 
         if (!data)
@@ -86,12 +81,11 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        PackFile::TocEntry* tocEntry =
-            PackFile::TocEntry::Create(file.c_str(), entriesDataSize, bodyDataSize);
+        PackFile::TocEntry* tocEntry = PackFile::TocEntry::Create(file.c_str(), entriesDataSize, dataSize);
 
         entries.emplace_back(tocEntry, data);
 
-        entriesDataSize += bodyDataSize;
+        entriesDataSize += dataSize;
         entriesTocSize += tocEntry->GetDataSize();
 
         dynamicAllocations.push_back(data);
@@ -109,7 +103,6 @@ int main(int argc, char* argv[])
         header.bodySize,
         header.tocOffset)
     uint64_t writeTotal = 0;
-    uint64_t dataOffset = 0;
 
     std::ofstream outputFileStream;
     outputFileStream.open(outputFile, std::ios::out | std::ios::binary);
@@ -121,12 +114,15 @@ int main(int argc, char* argv[])
                 writeTotal)
 
     entriesDataSize = 0;
+    Bytef* bodyDataBufferCompressed  = nullptr;
     for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
     {
         uLongf bodyDataSizeUncompressed = entry.first->dataSize;
         uLongf bodyDataSizeCompressed = compressBound(bodyDataSizeUncompressed);
 
-        Bytef bodyDataBufferCompressed[bodyDataSizeCompressed];
+        Bytef* tempBuffer = static_cast<Bytef*>(realloc(bodyDataBufferCompressed, bodyDataSizeCompressed));
+        bodyDataBufferCompressed = tempBuffer;
+
         int result = compress2(bodyDataBufferCompressed, &bodyDataSizeCompressed,
             static_cast<Bytef*>(entry.second), bodyDataSizeUncompressed, Z_BEST_COMPRESSION);
         CC_ASSERT(result == Z_OK, "Compression failed for entry: " + Siege::String(entry.first->name));
@@ -136,13 +132,14 @@ int main(int argc, char* argv[])
         entry.first->dataSizeCompressed = bodyDataSizeCompressed;
         writeTotal += bodyDataSizeCompressed;
         entriesDataSize += bodyDataSizeCompressed;
-        CC_LOG_INFO("Adding DATA \"{}\" to pack file with size: {}, compressed to {}% (write total: {})",
+        CC_LOG_INFO("Adding DATA \"{}\" to pack file with size: {} from {}, compressed to ~{}% (write total: {})",
                     entry.first->name,
                     bodyDataSizeCompressed,
-                    static_cast<uint8_t>(static_cast<float>(bodyDataSizeCompressed) / static_cast<float>(bodyDataSizeUncompressed) * 100.f),
+                    bodyDataSizeUncompressed,
+                    static_cast<uint8_t>(ceilf(static_cast<float>(bodyDataSizeCompressed) / static_cast<float>(bodyDataSizeUncompressed) * 100.f)),
                     writeTotal)
-        dataOffset += bodyDataSizeCompressed;
     }
+    free(bodyDataBufferCompressed);
 
     outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
     writeTotal += PACKER_MAGIC_NUMBER_SIZE;

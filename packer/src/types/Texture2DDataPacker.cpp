@@ -15,7 +15,7 @@
 #include <utils/Defer.h>
 #include <utils/Logging.h>
 
-void* PackTexture2DFile(const Siege::String& filePath)
+void* PackTexture2DFile(const Siege::String& filePath, uint32_t& fileSize)
 {
     int32_t texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -29,5 +29,6 @@ void* PackTexture2DFile(const Siege::String& filePath)
 
     Siege::Texture2DData* texture2dData =
         Siege::Texture2DData::Create(pixels, texWidth, texHeight, texChannels);
+    fileSize = Siege::Texture2DData::GetDataSize(texture2dData);
     return texture2dData;
 }

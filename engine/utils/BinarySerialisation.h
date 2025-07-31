@@ -26,11 +26,11 @@ enum SerialisationMode : u_int8_t
 };
 
 #define SERIALISE_NATIVE(type)                                                \
-    void serialise(Buffer& buffer, type& value, SerialisationMode mode)       \
+    inline void serialise(Buffer& buffer, type& value, SerialisationMode mode)       \
     {                                                                         \
         serialiseNative(buffer, value, mode);                                 \
     }                                                                         \
-    void serialise(Buffer& buffer, const type& value, SerialisationMode mode) \
+    inline void serialise(Buffer& buffer, const type& value, SerialisationMode mode) \
     {                                                                         \
         serialiseNative(buffer, value, mode);                                 \
     }
@@ -83,6 +83,7 @@ void serialiseNative(Buffer& buffer, const T& value, SerialisationMode mode)
 }
 
 SERIALISE_NATIVE(bool)
+SERIALISE_NATIVE(char)
 SERIALISE_NATIVE(uint32_t)
 SERIALISE_NATIVE(int32_t)
 SERIALISE_NATIVE(float)
@@ -103,6 +104,32 @@ void serialiseContainer(Buffer& buffer, T& value)
     for (auto& entry : value)
     {
         serialise(buffer, entry, SERIALISE);
+    }
+}
+
+inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
+{
+
+    switch (mode)
+    {
+        case SERIALISE:
+        {
+            std::string temp(value.Str());
+            serialiseContainer(buffer, temp);
+            break;
+        }
+        case DESERIALISE:
+        {
+            value.Clear();
+
+            uint32_t size;
+            serialise(buffer, size, mode);
+            value.Reserve(size);
+
+            value.Append(reinterpret_cast<char*>(buffer.data.data() + buffer.cursor), size);
+            buffer.cursor += size;
+            break;
+        }
     }
 }
 

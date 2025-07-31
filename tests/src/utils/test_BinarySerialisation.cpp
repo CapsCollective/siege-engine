@@ -80,6 +80,19 @@ UTEST(test_BinarySerialisation, Native)
     buffer.Reset();
 }
 
+UTEST(test_BinarySerialisation, String)
+{
+    Siege::BinarySerialisation::Buffer buffer;
+    {
+        Siege::String s("Hello, world!");
+        Siege::BinarySerialisation::serialise(buffer, s, Siege::BinarySerialisation::SERIALISE);
+    }
+    Siege::String s;
+    Siege::BinarySerialisation::serialise(buffer, s, Siege::BinarySerialisation::DESERIALISE);
+    ASSERT_STREQ("Hello, world!", s.Str());
+    buffer.Reset();
+}
+
 UTEST(test_BinarySerialisation, Struct)
 {
     Siege::BinarySerialisation::Buffer buffer;

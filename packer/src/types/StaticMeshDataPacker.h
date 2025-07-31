@@ -17,6 +17,6 @@ REGISTER_TOKEN(SOURCE_PATH);
 REGISTER_TOKEN(NODE_PATH);
 REGISTER_TOKEN(FLIP_AXES);
 
-void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath);
+void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath, uint32_t& fileSize);
 
 #endif // SIEGE_ENGINE_STATICMESHDATAPACKER_H

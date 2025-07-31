@@ -140,7 +140,7 @@ static void GetMeshesForNode(const aiScene* scene,
     }
 };
 
-void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
+void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath, uint32_t& fileSize)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
     std::map<Siege::Token, Siege::String> attributes =
@@ -213,5 +213,6 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
     GetMeshesForNode(scene, scene->mRootNode, requestedNodePath, '/', baseXform, vertices, indices);
 
     Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
+    fileSize = Siege::StaticMeshData::GetDataSize(staticMeshData);
     return staticMeshData;
 }

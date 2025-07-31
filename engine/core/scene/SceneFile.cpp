@@ -11,6 +11,7 @@
 
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
+#include <resources/PackFileData.h>
 #include <resources/SceneData.h>
 #include <utils/Logging.h>
 
@@ -125,15 +126,23 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     {
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
 
-        std::shared_ptr<SceneData> sceneData = packFile->FindData<SceneData>(ScenePath);
-        if (!sceneData)
+        std::shared_ptr<PackFileData> sceneDataBuffer = packFile->FindData<PackFileData>(ScenePath);
+        if (!sceneDataBuffer)
         {
             CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)
             return false;
         }
 
-        String sceneString(sceneData->data);
-        for (const String& entityData : sceneString.Split('|'))
+        BinarySerialisation::Buffer buffer;
+        uint8_t* data = reinterpret_cast<uint8_t*>(sceneDataBuffer->data);
+        size_t dataSize = sceneDataBuffer->dataSize;
+        buffer.data.assign(data, dataSize);
+
+        // TODO - Fold into resource system
+        SceneData sceneData;
+        sceneData.serialise(buffer, BinarySerialisation::DESERIALISE);
+
+        for (const String& entityData : sceneData.entities)
         {
             deserialiseEntityString(entityData.Str(), "");
         }
