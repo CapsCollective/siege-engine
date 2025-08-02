@@ -52,6 +52,27 @@ bool PackFile::LoadFromPath(const String& filepath)
     return true;
 }
 
+std::shared_ptr<PackFileData> PackFile::FindData(const String& filepath)
+{
+    const TocEntry* toc = entries[filepath];
+    if (!toc)
+    {
+        return nullptr;
+    }
+
+    uLongf bodyDataSizeUncompressed = toc->dataSize;
+    uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
+
+    PackFileData* packFileData = new (malloc(bodyDataSizeUncompressed)) PackFileData();
+    int result = uncompress(reinterpret_cast<Bytef*>(packFileData),
+                            &bodyDataSizeUncompressed,
+                            reinterpret_cast<Bytef*>(body + toc->dataOffset),
+                            bodyDataSizeCompressed);
+    CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
+
+    return std::shared_ptr<PackFileData>(packFileData);
+}
+
 const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
 {
     return entries;

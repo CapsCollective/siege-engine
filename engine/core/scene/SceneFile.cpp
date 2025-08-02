@@ -10,8 +10,8 @@
 #include "SceneFile.h"
 
 #include <resources/PackFile.h>
-#include <resources/ResourceSystem.h>
 #include <resources/PackFileData.h>
+#include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <utils/Logging.h>
 
@@ -106,11 +106,11 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         };
 
     // TODO: Implement proper write-mode handling for scene system
-    String ScenePath = MakeScenePath(sceneName);
+    String scenePath = MakeScenePath(sceneName);
     if (!SceneSystem::GetBaseDirectory().IsEmpty())
     {
         bool result = FileSystem::ForEachFileInDir(
-            ScenePath,
+            scenePath,
             [&deserialiseEntityString](const std::filesystem::path& path) {
                 if (path.extension() != ENTITY_FILE_EXT) return;
                 String entityData = FileSystem::Read(path.c_str());
@@ -118,7 +118,7 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
             });
         if (!result)
         {
-            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", ScenePath)
+            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", scenePath)
             return false;
         }
     }
@@ -126,23 +126,16 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     {
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
 
-        std::shared_ptr<PackFileData> sceneDataBuffer = packFile->FindData<PackFileData>(ScenePath);
-        if (!sceneDataBuffer)
+        std::shared_ptr<SceneData> sceneData = packFile->FindDataDeserialised<SceneData>(scenePath);
+        if (!sceneData)
         {
-            CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)
+            CC_LOG_WARNING(
+                "Failed to retrieve deserialised scene data for scene \"{}\" from pack file",
+                scenePath)
             return false;
         }
 
-        BinarySerialisation::Buffer buffer;
-        uint8_t* data = reinterpret_cast<uint8_t*>(sceneDataBuffer->data);
-        size_t dataSize = sceneDataBuffer->dataSize;
-        buffer.data.assign(data, dataSize);
-
-        // TODO - Fold into resource system
-        SceneData sceneData;
-        sceneData.serialise(buffer, BinarySerialisation::DESERIALISE);
-
-        for (const String& entityData : sceneData.entities)
+        for (const String& entityData : sceneData->entities)
         {
             deserialiseEntityString(entityData.Str(), "");
         }

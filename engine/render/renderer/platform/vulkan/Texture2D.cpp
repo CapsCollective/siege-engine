@@ -94,21 +94,13 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 void Texture2D::LoadFromFile(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    std::shared_ptr<PackFileData> texture2dDataBuffer = packFile->FindData<PackFileData>(filePath);
-
-    BinarySerialisation::Buffer buffer;
-    uint8_t* data = reinterpret_cast<uint8_t*>(texture2dDataBuffer->data);
-    size_t dataSize = texture2dDataBuffer->dataSize;
-    buffer.data.assign(data, dataSize);
-
-    // TODO - Fold into resource system
-    Texture2DData texture2dData;
-    texture2dData.serialise(buffer, BinarySerialisation::DESERIALISE);
+    std::shared_ptr<Texture2DData> texture2dData =
+        packFile->FindDataDeserialised<Texture2DData>(filePath);
 
     Buffer::Buffer stagingBuffer;
     defer([&stagingBuffer] { Buffer::DestroyBuffer(stagingBuffer); });
 
-    Buffer::CreateBuffer(texture2dData.GetImageSize(),
+    Buffer::CreateBuffer(texture2dData->GetImageSize(),
                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          // specifies that data is accessible on the CPU.
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -117,13 +109,13 @@ void Texture2D::LoadFromFile(const char* filePath)
                          OUT stagingBuffer.buffer,
                          OUT stagingBuffer.bufferMemory);
 
-    Buffer::CopyData(stagingBuffer, texture2dData.GetImageSize(), texture2dData.pixels.data());
+    Buffer::CopyData(stagingBuffer, texture2dData->GetImageSize(), texture2dData->pixels.data());
 
-    extent = {static_cast<uint32_t>(texture2dData.texWidth),
-              static_cast<uint32_t>(texture2dData.texHeight)};
+    extent = {static_cast<uint32_t>(texture2dData->texWidth),
+              static_cast<uint32_t>(texture2dData->texHeight)};
 
-    Utils::Extent3D imageExtent {static_cast<uint32_t>(texture2dData.texWidth),
-                                 static_cast<uint32_t>(texture2dData.texHeight),
+    Utils::Extent3D imageExtent {static_cast<uint32_t>(texture2dData->texWidth),
+                                 static_cast<uint32_t>(texture2dData->texHeight),
                                  1};
     image = Image({Utils::RGBASRGB, imageExtent, Vulkan::Utils::USAGE_TEXTURE, 1, 1});
 

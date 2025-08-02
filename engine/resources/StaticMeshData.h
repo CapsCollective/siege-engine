@@ -10,11 +10,11 @@
 #ifndef SIEGE_ENGINE_STATICMESHDATA_H
 #define SIEGE_ENGINE_STATICMESHDATA_H
 
+#include <utils/BinarySerialisation.h>
 #include <utils/Colour.h>
 #include <utils/math/vec/Hashing.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
-#include <utils/BinarySerialisation.h>
 
 #include "PackFile.h"
 
@@ -40,7 +40,9 @@ inline bool operator!=(const BaseVertex& left, const BaseVertex& right)
     return !(left == right);
 }
 
-inline void serialise(BinarySerialisation::Buffer& buffer, BaseVertex& value, BinarySerialisation::SerialisationMode mode)
+inline void serialise(BinarySerialisation::Buffer& buffer,
+                      BaseVertex& value,
+                      BinarySerialisation::SerialisationMode mode)
 {
     serialise(buffer, value.position, mode);
     serialise(buffer, value.color, mode);
@@ -53,7 +55,8 @@ struct StaticMeshData : BinarySerialisation::BinarySerialisable
     std::vector<uint32_t> indices;
     std::vector<BaseVertex> vertices;
 
-    void serialise(BinarySerialisation::Buffer& buffer, BinarySerialisation::SerialisationMode mode) override
+    void serialise(BinarySerialisation::Buffer& buffer,
+                   BinarySerialisation::SerialisationMode mode) override
     {
         BinarySerialisation::serialise(buffer, indices, mode);
         BinarySerialisation::serialise(buffer, vertices, mode);

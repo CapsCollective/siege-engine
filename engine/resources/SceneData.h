@@ -19,7 +19,8 @@ struct SceneData : BinarySerialisation::BinarySerialisable
 {
     std::vector<String> entities;
 
-    void serialise(BinarySerialisation::Buffer& buffer, BinarySerialisation::SerialisationMode mode) override
+    void serialise(BinarySerialisation::Buffer& buffer,
+                   BinarySerialisation::SerialisationMode mode) override
     {
         BinarySerialisation::serialise(buffer, entities, mode);
     }

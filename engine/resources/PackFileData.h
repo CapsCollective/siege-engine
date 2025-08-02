@@ -10,7 +10,10 @@
 #ifndef SIEGE_ENGINE_PACKFILEDATA_H
 #define SIEGE_ENGINE_PACKFILEDATA_H
 
-#include "PackFile.h"
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <new>
 
 namespace Siege
 {
@@ -26,24 +29,18 @@ struct PackFileData
         return &data[0];
     }
 
-    static PackFileData* Create(char* data, uint32_t dataSize)
+    uint32_t GetDataSize() const
     {
-        uint32_t totalDataSize = sizeof(PackFileData) + dataSize;
-
-        void* mem = malloc(totalDataSize);
-        PackFileData* fileData = new (mem) PackFileData();
-
-        fileData->dataSize = dataSize;
-        memcpy(&fileData->data[0], data, dataSize);
-
-        return fileData;
+        return sizeof(PackFileData) + dataSize;
     }
 
-    static uint32_t GetDataSize(void* objectData)
+    static PackFileData* Create(char* data, uint32_t dataSize)
     {
-        if (!objectData) return 0;
-        PackFileData* fileData = reinterpret_cast<PackFileData*>(objectData);
-        return sizeof(PackFileData) + fileData->dataSize;
+        void* mem = malloc(sizeof(PackFileData) + dataSize);
+        PackFileData* fileData = new (mem) PackFileData();
+        fileData->dataSize = dataSize;
+        memcpy(&fileData->data[0], data, dataSize);
+        return fileData;
     }
 };
 #pragma pack(pop)

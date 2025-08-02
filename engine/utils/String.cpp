@@ -549,7 +549,7 @@ void String::Append(char character)
     Assign(cstr);
 }
 
-void String::Append(const char *string, size_t size)
+void String::Append(const char* string, size_t size)
 {
     const char* data = Data();
     size_t lhsLength = Size();

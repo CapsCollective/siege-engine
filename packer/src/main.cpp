@@ -7,15 +7,15 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/PackFileData.h>
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <resources/StaticMeshData.h>
 #include <utils/Logging.h>
+#include <zlib.h>
 
 #include <fstream>
-#include <zlib.h>
 
 #include "types/GenericFileDataPacker.h"
 #include "types/SceneDataPacker.h"
@@ -46,32 +46,30 @@ int main(int argc, char* argv[])
     uint32_t entriesDataSize = 0;
     uint32_t entriesTocSize = 0;
 
-    std::vector<void*> dynamicAllocations;
     std::vector<std::pair<PackFile::TocEntry*, void*>> entries;
     for (auto& file : inputFiles)
     {
         if (file.empty()) continue;
         CC_LOG_INFO("Reading asset at path {}", file.c_str())
 
-        void* data = nullptr;
-        uint32_t dataSize = 0;
+        Siege::PackFileData* data = nullptr;
         Siege::String fullPath = assetsDir + "/" + Siege::String(file.c_str());
         std::filesystem::path extension = file.extension();
         if (extension == ".sm")
         {
-            data = PackStaticMeshFile(fullPath, assetsDir, dataSize);
+            data = PackStaticMeshFile(fullPath, assetsDir);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
-            data = PackTexture2DFile(fullPath, dataSize);
+            data = PackTexture2DFile(fullPath);
         }
         else if (extension == ".spv" || extension == ".ttf")
         {
-            data = PackGenericFile(fullPath, dataSize);
+            data = PackGenericFile(fullPath);
         }
         else if (extension == ".scene")
         {
-            data = PackSceneFile(fullPath, dataSize);
+            data = PackSceneFile(fullPath);
         }
 
         if (!data)
@@ -81,15 +79,14 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        PackFile::TocEntry* tocEntry = PackFile::TocEntry::Create(file.c_str(), entriesDataSize, dataSize);
+        uint32_t dataSize = data->GetDataSize();
+        PackFile::TocEntry* tocEntry =
+            PackFile::TocEntry::Create(file.c_str(), entriesDataSize, dataSize);
 
         entries.emplace_back(tocEntry, data);
 
         entriesDataSize += dataSize;
         entriesTocSize += tocEntry->GetDataSize();
-
-        dynamicAllocations.push_back(data);
-        dynamicAllocations.push_back(tocEntry);
     }
 
     PackFile::Header header {{PACKER_MAGIC_NUMBER_FILE},
@@ -114,30 +111,39 @@ int main(int argc, char* argv[])
                 writeTotal)
 
     entriesDataSize = 0;
-    Bytef* bodyDataBufferCompressed  = nullptr;
+    Bytef* bodyDataBufferCompressed = nullptr;
     for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
     {
         uLongf bodyDataSizeUncompressed = entry.first->dataSize;
         uLongf bodyDataSizeCompressed = compressBound(bodyDataSizeUncompressed);
 
-        Bytef* tempBuffer = static_cast<Bytef*>(realloc(bodyDataBufferCompressed, bodyDataSizeCompressed));
+        Bytef* tempBuffer =
+            static_cast<Bytef*>(realloc(bodyDataBufferCompressed, bodyDataSizeCompressed));
         bodyDataBufferCompressed = tempBuffer;
 
-        int result = compress2(bodyDataBufferCompressed, &bodyDataSizeCompressed,
-            static_cast<Bytef*>(entry.second), bodyDataSizeUncompressed, Z_BEST_COMPRESSION);
-        CC_ASSERT(result == Z_OK, "Compression failed for entry: " + Siege::String(entry.first->name));
+        int result = compress2(bodyDataBufferCompressed,
+                               &bodyDataSizeCompressed,
+                               static_cast<Bytef*>(entry.second),
+                               bodyDataSizeUncompressed,
+                               Z_BEST_COMPRESSION);
+        CC_ASSERT(result == Z_OK,
+                  "Compression failed for entry: " + Siege::String(entry.first->name));
 
-        outputFileStream.write(reinterpret_cast<char*>(bodyDataBufferCompressed), static_cast<long>(bodyDataSizeCompressed));
+        outputFileStream.write(reinterpret_cast<char*>(bodyDataBufferCompressed),
+                               static_cast<long>(bodyDataSizeCompressed));
         entry.first->dataOffset = entriesDataSize;
         entry.first->dataSizeCompressed = bodyDataSizeCompressed;
         writeTotal += bodyDataSizeCompressed;
         entriesDataSize += bodyDataSizeCompressed;
-        CC_LOG_INFO("Adding DATA \"{}\" to pack file with size: {} from {}, compressed to ~{}% (write total: {})",
-                    entry.first->name,
-                    bodyDataSizeCompressed,
-                    bodyDataSizeUncompressed,
-                    static_cast<uint8_t>(ceilf(static_cast<float>(bodyDataSizeCompressed) / static_cast<float>(bodyDataSizeUncompressed) * 100.f)),
-                    writeTotal)
+        CC_LOG_INFO(
+            "Adding DATA \"{}\" to pack file with size: {} from {}, compressed to ~{}% (write "
+            "total: {})",
+            entry.first->name,
+            bodyDataSizeCompressed,
+            bodyDataSizeUncompressed,
+            static_cast<uint8_t>(ceilf(static_cast<float>(bodyDataSizeCompressed) /
+                                       static_cast<float>(bodyDataSizeUncompressed) * 100.f)),
+            writeTotal)
     }
     free(bodyDataBufferCompressed);
 
@@ -151,12 +157,11 @@ int main(int argc, char* argv[])
     {
         outputFileStream.write(reinterpret_cast<char*>(entry.first), entry.first->GetDataSize());
         writeTotal += entry.first->GetDataSize();
-        CC_LOG_INFO(
-            "Adding TOC \"{}\" (offset: {}) to pack file with size: {} (write total: {})",
-            entry.first->name,
-            entry.first->dataOffset,
-            entry.first->GetDataSize(),
-            writeTotal)
+        CC_LOG_INFO("Adding TOC \"{}\" (offset: {}) to pack file with size: {} (write total: {})",
+                    entry.first->name,
+                    entry.first->dataOffset,
+                    entry.first->GetDataSize(),
+                    writeTotal)
     }
 
     header.bodySize = entriesDataSize + PACKER_MAGIC_NUMBER_SIZE + entriesTocSize;
@@ -190,7 +195,11 @@ int main(int argc, char* argv[])
     resourceSystem.UnmountPackFile();
 
     CC_LOG_INFO("Freeing dynamically allocated memory from packer...")
-    for (void* allocation : dynamicAllocations) free(allocation);
+    for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
+    {
+        free(entry.first);
+        free(entry.second);
+    }
 
     if (errors)
     {

@@ -12,6 +12,6 @@
 
 #include <resources/PackFile.h>
 
-void* PackSceneFile(const Siege::String& filePath, uint32_t& fileSize);
+Siege::PackFileData* PackSceneFile(const Siege::String& filePath);
 
 #endif // SIEGE_ENGINE_SCENEDATAPACKER_H

@@ -19,7 +19,7 @@
 #include "render/renderer/buffer/Buffer.h"
 #include "resources/PackFileData.h"
 
-void* PackSceneFile(const Siege::String& filePath, uint32_t& fileSize)
+Siege::PackFileData* PackSceneFile(const Siege::String& filePath)
 {
     Siege::SceneData sceneData;
     auto appendFile = [&sceneData](const std::filesystem::path& path) {
@@ -38,9 +38,7 @@ void* PackSceneFile(const Siege::String& filePath, uint32_t& fileSize)
     Siege::BinarySerialisation::Buffer dataBuffer;
     sceneData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
 
-    fileSize = dataBuffer.data.size();
     char* data = reinterpret_cast<char*>(dataBuffer.data.data());
-
-    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, fileSize);
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());
     return fileData;
 }

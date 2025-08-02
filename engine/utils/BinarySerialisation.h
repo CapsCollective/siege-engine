@@ -14,11 +14,11 @@
 #include <set>
 #include <vector>
 
+#include "Colour.h"
+#include "String.h"
 #include "math/vec/Vec.h"
 #include "math/vec/Vec2.h"
 #include "math/vec/Vec3.h"
-#include "Colour.h"
-#include "String.h"
 
 namespace Siege::BinarySerialisation
 {
@@ -29,20 +29,25 @@ enum SerialisationMode : u_int8_t
     DESERIALISE,
 };
 
-#define SERIALISE_NATIVE(type)                                                \
+#define SERIALISE_NATIVE(type)                                                       \
     inline void serialise(Buffer& buffer, type& value, SerialisationMode mode)       \
-    {                                                                         \
-        serialiseNative(buffer, value, mode);                                 \
-    }                                                                         \
+    {                                                                                \
+        serialiseNative(buffer, value, mode);                                        \
+    }                                                                                \
     inline void serialise(Buffer& buffer, const type& value, SerialisationMode mode) \
-    {                                                                         \
-        serialiseNative(buffer, value, mode);                                 \
+    {                                                                                \
+        serialiseNative(buffer, value, mode);                                        \
     }
 
 struct Buffer
 {
     std::basic_string<uint8_t> data;
     uint32_t cursor = 0;
+
+    void Fill(const uint8_t* sourceData, uint32_t size)
+    {
+        data.assign(sourceData, size);
+    }
 
     void Reset()
     {
@@ -114,23 +119,23 @@ void serialiseContainer(Buffer& buffer, T& value)
 
 inline void serialise(Buffer& buffer, Vec2& value, SerialisationMode mode)
 {
-    serialiseNative(buffer, value.x, mode);
-    serialiseNative(buffer, value.y, mode);
+    serialiseNative<float>(buffer, value.x, mode);
+    serialiseNative<float>(buffer, value.y, mode);
 }
 
 inline void serialise(Buffer& buffer, Vec3& value, SerialisationMode mode)
 {
-    serialiseNative(buffer, value.x, mode);
-    serialiseNative(buffer, value.y, mode);
-    serialiseNative(buffer, value.z, mode);
+    serialiseNative<float>(buffer, value.x, mode);
+    serialiseNative<float>(buffer, value.y, mode);
+    serialiseNative<float>(buffer, value.z, mode);
 }
 
 inline void serialise(Buffer& buffer, FColour& value, SerialisationMode mode)
 {
-    serialiseNative(buffer, value.r, mode);
-    serialiseNative(buffer, value.g, mode);
-    serialiseNative(buffer, value.b, mode);
-    serialiseNative(buffer, value.a, mode);
+    serialiseNative<float>(buffer, value.r, mode);
+    serialiseNative<float>(buffer, value.g, mode);
+    serialiseNative<float>(buffer, value.b, mode);
+    serialiseNative<float>(buffer, value.a, mode);
 }
 
 inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
@@ -139,8 +144,13 @@ inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
     {
         case SERIALISE:
         {
-            std::string temp(value.Str());
-            serialiseContainer(buffer, temp);
+            uint32_t size = value.Size() + 1;
+            serialise(buffer, size, mode);
+
+            size_t was = buffer.data.size();
+            buffer.data.resize(was + size);
+
+            memcpy(&buffer.data[was], value.Str(), size);
             break;
         }
         case DESERIALISE:

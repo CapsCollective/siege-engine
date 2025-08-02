@@ -7,8 +7,8 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/PackFileData.h>
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <resources/StaticMeshData.h>
@@ -57,8 +57,8 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(48681, header.bodySize);
-    ASSERT_EQ(48489, header.tocOffset);
+    ASSERT_EQ(48711, header.bodySize);
+    ASSERT_EQ(48519, header.tocOffset);
 
     std::vector<String> packedFilepaths {"assets/scene2.scene",
                                          "assets/scene1.scene",
@@ -79,7 +79,7 @@ UTEST_F(test_ResourceSystem, LoadNonExistentData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/nonexistent.filetype");
+    std::shared_ptr<PackFileData> data = packFile->FindData("assets/nonexistent.filetype");
     ASSERT_FALSE(data);
 }
 
@@ -88,7 +88,7 @@ UTEST_F(test_ResourceSystem, LoadPackFileData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/PublicPixel.ttf");
+    std::shared_ptr<PackFileData> data = packFile->FindData("assets/PublicPixel.ttf");
     ASSERT_TRUE(data);
     ASSERT_EQ(97456, data->dataSize);
 }
@@ -98,7 +98,8 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<StaticMeshData> data = packFile->FindData<StaticMeshData>("assets/cube.sm");
+    std::shared_ptr<StaticMeshData> data =
+        packFile->FindDataDeserialised<StaticMeshData>("assets/cube.sm");
     ASSERT_TRUE(data);
     ASSERT_EQ(36, data->indices.size());
     ASSERT_EQ(24, data->vertices.size());
@@ -142,14 +143,13 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
                                      {{1, 1, -1}, {1, 1, 1, 1}, {0, 1, 0}, {0.375, 0.75}},
                                      {{1, -1, -1}, {1, 1, 1, 1}, {1, 0, 0}, {0.625, 0.75}},
                                      {{1, -1, 1}, {1, 1, 1, 1}, {0, 0, 1}, {0.625, 0.5}}};
-    BaseVertex* actualVertices = data->vertices.data();
-    ASSERT_TRUE(actualVertices);
+    ASSERT_FALSE(data->vertices.empty());
 
     bool verticesCorrect = true;
     for (int i = 0; i < 24; i++)
     {
         const BaseVertex& expectedVertex = expectedVertices[i];
-        const BaseVertex& actualVertex = actualVertices[i];
+        const BaseVertex& actualVertex = data->vertices[i];
         if (expectedVertex != actualVertex)
         {
             verticesCorrect = false;
@@ -163,10 +163,10 @@ UTEST_F(test_ResourceSystem, LoadTextureData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::shared_ptr<Texture2DData> data = packFile->FindData<Texture2DData>("assets/cappy.png");
+    std::shared_ptr<Texture2DData> data =
+        packFile->FindDataDeserialised<Texture2DData>("assets/cappy.png");
     ASSERT_TRUE(data);
     ASSERT_EQ(160000, data->GetImageSize());
-
     ASSERT_EQ(160000, data->pixels.size());
 }
 
@@ -175,23 +175,27 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    const char* expectedSceneData = "TYPE:TestEntity;"
-                                    "POSITION:0.000000,0.000000,0.000000;"
-                                    "ROTATION:0.000000;"
-                                    "Z_INDEX:0;"
-                                    "|"
-                                    "TYPE:TestEntity;"
-                                    "POSITION:0.000000,0.000000,0.000000;"
-                                    "ROTATION:0.000000;"
-                                    "Z_INDEX:0;"
-                                    "|"
-                                    "TYPE:TestEntity;"
-                                    "POSITION:0.000000,0.000000,0.000000;"
-                                    "ROTATION:0.000000;"
-                                    "Z_INDEX:0;"
-                                    "|";
+    std::vector<String> expectedSceneData = {"TYPE:TestEntity;\n"
+                                             "POSITION:0.000000,0.000000,0.000000;\n"
+                                             "ROTATION:0.000000;\n"
+                                             "Z_INDEX:0;\n",
+                                             "TYPE:TestEntity;\n"
+                                             "POSITION:0.000000,0.000000,0.000000;\n"
+                                             "ROTATION:0.000000;\n"
+                                             "Z_INDEX:0;\n",
+                                             "TYPE:TestEntity;\n"
+                                             "POSITION:0.000000,0.000000,0.000000;\n"
+                                             "ROTATION:0.000000;\n"
+                                             "Z_INDEX:0;\n"};
 
-    std::shared_ptr<PackFileData> data = packFile->FindData<PackFileData>("assets/scene1.scene");
+    std::shared_ptr<SceneData> data =
+        packFile->FindDataDeserialised<SceneData>("assets/scene1.scene");
     ASSERT_TRUE(data);
-    ASSERT_STREQ(expectedSceneData, "Fixme");
+    ASSERT_EQ(expectedSceneData.size(), data->entities.size());
+    for (int i = 0; i < expectedSceneData.size(); ++i)
+    {
+        const String& expectedEntityData = expectedSceneData[i];
+        const String& actualEntityData = data->entities[i];
+        ASSERT_STREQ(expectedEntityData.Str(), actualEntityData.Str());
+    }
 }

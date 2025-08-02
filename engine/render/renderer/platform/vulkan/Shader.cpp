@@ -9,8 +9,8 @@
 
 #include "Shader.h"
 
-#include <resources/PackFileData.h>
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <utils/Logging.h>
 
@@ -174,7 +174,7 @@ void Shader::Destroy()
 MHArray<char> Shader::ReadFileAsBinary(const String& filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    std::shared_ptr<PackFileData> fileData = packFile->FindData<PackFileData>(filePath);
+    std::shared_ptr<PackFileData> fileData = packFile->FindData(filePath);
     MHArray<char> buffer(fileData->data, fileData->dataSize);
     return buffer;
 }

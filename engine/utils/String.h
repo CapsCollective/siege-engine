@@ -184,7 +184,8 @@ public:
     String& operator+=(const char* rhs);
 
     /**
-     * Wide-char c-string addition compound assignment operator overload for appending wide char c-strings
+     * Wide-char c-string addition compound assignment operator overload for appending wide char
+     * c-strings
      * @param rhs - the wide char c-string to append
      * @return a reference to the original String object
      */

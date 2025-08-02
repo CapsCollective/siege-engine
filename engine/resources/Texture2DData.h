@@ -10,8 +10,9 @@
 #ifndef SIEGE_ENGINE_TEXTURE2DDATA_H
 #define SIEGE_ENGINE_TEXTURE2DDATA_H
 
-#include "PackFile.h"
 #include <utils/BinarySerialisation.h>
+
+#include "PackFile.h"
 
 // TODO - Remove this hard-coded value and support various texture channel sizes
 #define TEXTURE2D_TEXTURE_CHANNELS 4
@@ -31,7 +32,8 @@ struct Texture2DData : BinarySerialisation::BinarySerialisable
         return texWidth * texHeight * TEXTURE2D_TEXTURE_CHANNELS;
     }
 
-    void serialise(BinarySerialisation::Buffer& buffer, BinarySerialisation::SerialisationMode mode) override
+    void serialise(BinarySerialisation::Buffer& buffer,
+                   BinarySerialisation::SerialisationMode mode) override
     {
         BinarySerialisation::serialise(buffer, texWidth, mode);
         BinarySerialisation::serialise(buffer, texHeight, mode);

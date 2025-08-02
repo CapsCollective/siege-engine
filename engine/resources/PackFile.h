@@ -10,13 +10,15 @@
 #ifndef SIEGE_ENGINE_PACKFILE_H
 #define SIEGE_ENGINE_PACKFILE_H
 
-#include <utils/String.h>
+#include <utils/BinarySerialisation.h>
 #include <utils/Logging.h>
+#include <utils/String.h>
+#include <zlib.h>
 
 #include <filesystem>
 #include <map>
 
-#include <zlib.h>
+#include "PackFileData.h"
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
 #define PACKER_MAGIC_NUMBER_TOC "toc!"
@@ -69,23 +71,25 @@ public:
 
     bool LoadFromPath(const String& filepath);
 
+    std::shared_ptr<PackFileData> FindData(const String& filepath);
+
     template<typename T>
-    std::shared_ptr<T> FindData(const String& filepath)
+    std::shared_ptr<T> FindDataDeserialised(const String& filepath)
     {
-        const TocEntry* toc = entries[filepath];
-        if (!toc)
+        std::shared_ptr<PackFileData> packFileData = FindData(filepath);
+        if (!packFileData)
         {
+            CC_LOG_WARNING("Failed to find data for filepath \"{}\"", filepath);
             return nullptr;
         }
 
-        uLongf bodyDataSizeUncompressed = toc->dataSize;
-        uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
-        void* mem = malloc(bodyDataSizeUncompressed);
+        BinarySerialisation::Buffer buffer;
+        buffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
 
-        int result = uncompress(static_cast<Bytef*>(mem), &bodyDataSizeUncompressed, reinterpret_cast<Bytef*>(body + toc->dataOffset), bodyDataSizeCompressed);
-        CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
+        T* typedData = new T();
+        typedData->serialise(buffer, BinarySerialisation::DESERIALISE);
 
-        return std::shared_ptr<T>(static_cast<T*>(mem), free);
+        return std::shared_ptr<T>(typedData);
     }
 
     const std::map<String, TocEntry*>& GetEntries();
