@@ -12,6 +12,8 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <resources/StaticMeshData.h>
+#include <resources/PackFileData.h>
+#include <utils/BinarySerialisation.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
@@ -208,11 +210,15 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
         }
     }
 
-    std::vector<Siege::BaseVertex> vertices;
-    std::vector<uint32_t> indices;
-    GetMeshesForNode(scene, scene->mRootNode, requestedNodePath, '/', baseXform, vertices, indices);
+    Siege::StaticMeshData staticMeshData;
+    GetMeshesForNode(scene, scene->mRootNode, requestedNodePath, '/', baseXform, staticMeshData.vertices, staticMeshData.indices);
 
-    Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
-    fileSize = Siege::StaticMeshData::GetDataSize(staticMeshData);
-    return staticMeshData;
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    staticMeshData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
+
+    fileSize = dataBuffer.data.size();
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, fileSize);
+    return fileData;
 }

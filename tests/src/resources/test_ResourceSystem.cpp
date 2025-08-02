@@ -100,13 +100,12 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
 
     std::shared_ptr<StaticMeshData> data = packFile->FindData<StaticMeshData>("assets/cube.sm");
     ASSERT_TRUE(data);
-    ASSERT_EQ(36, data->indicesCount);
-    ASSERT_EQ(24, data->verticesCount);
-    ASSERT_EQ(1312, StaticMeshData::GetDataSize(data.get()));
+    ASSERT_EQ(36, data->indices.size());
+    ASSERT_EQ(24, data->vertices.size());
 
     uint32_t expectedIndices[36] {0, 1,  2, 3, 4,  5, 6, 7,  8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
                                   0, 18, 1, 3, 19, 4, 6, 20, 7, 9, 21, 10, 12, 22, 13, 15, 23, 16};
-    uint32_t* actualIndices = data->GetIndices();
+    uint32_t* actualIndices = data->indices.data();
     ASSERT_TRUE(actualIndices);
 
     bool indicesCorrect = true;
@@ -143,7 +142,7 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
                                      {{1, 1, -1}, {1, 1, 1, 1}, {0, 1, 0}, {0.375, 0.75}},
                                      {{1, -1, -1}, {1, 1, 1, 1}, {1, 0, 0}, {0.625, 0.75}},
                                      {{1, -1, 1}, {1, 1, 1, 1}, {0, 0, 1}, {0.625, 0.5}}};
-    BaseVertex* actualVertices = data->GetVertices();
+    BaseVertex* actualVertices = data->vertices.data();
     ASSERT_TRUE(actualVertices);
 
     bool verticesCorrect = true;

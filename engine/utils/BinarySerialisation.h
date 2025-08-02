@@ -14,6 +14,10 @@
 #include <set>
 #include <vector>
 
+#include "math/vec/Vec.h"
+#include "math/vec/Vec2.h"
+#include "math/vec/Vec3.h"
+#include "Colour.h"
 #include "String.h"
 
 namespace Siege::BinarySerialisation
@@ -108,9 +112,29 @@ void serialiseContainer(Buffer& buffer, T& value)
     }
 }
 
+inline void serialise(Buffer& buffer, Vec2& value, SerialisationMode mode)
+{
+    serialiseNative(buffer, value.x, mode);
+    serialiseNative(buffer, value.y, mode);
+}
+
+inline void serialise(Buffer& buffer, Vec3& value, SerialisationMode mode)
+{
+    serialiseNative(buffer, value.x, mode);
+    serialiseNative(buffer, value.y, mode);
+    serialiseNative(buffer, value.z, mode);
+}
+
+inline void serialise(Buffer& buffer, FColour& value, SerialisationMode mode)
+{
+    serialiseNative(buffer, value.r, mode);
+    serialiseNative(buffer, value.g, mode);
+    serialiseNative(buffer, value.b, mode);
+    serialiseNative(buffer, value.a, mode);
+}
+
 inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
 {
-
     switch (mode)
     {
         case SERIALISE:

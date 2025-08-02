@@ -11,10 +11,11 @@
 
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
+#include <resources/PackFileData.h>
+#include <resources/StaticMeshData.h>
 #include <utils/Logging.h>
 
 #include "Swapchain.h"
-#include "resources/StaticMeshData.h"
 
 namespace Siege::Vulkan
 {
@@ -43,22 +44,31 @@ StaticMesh::StaticMesh(const char* filePath, Material* material)
 {
     // TODO(Aryeh): How to extract material data from object files?
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    std::shared_ptr<StaticMeshData> vertexData = packFile->FindData<StaticMeshData>(filePath);
+    std::shared_ptr<PackFileData> vertexDataDataBuffer = packFile->FindData<PackFileData>(filePath);
 
-    CC_ASSERT(vertexData->verticesCount > 0, "Cannot load in a file with no vertices!")
-    CC_ASSERT(vertexData->indicesCount > 0, "Cannot load in a file with no indices!")
+    BinarySerialisation::Buffer buffer;
+    uint8_t* data = reinterpret_cast<uint8_t*>(vertexDataDataBuffer->data);
+    size_t dataSize = vertexDataDataBuffer->dataSize;
+    buffer.data.assign(data, dataSize);
 
-    CC_ASSERT(vertexData->verticesCount < MAX_VERTICES, "The provided model has too many vertices!")
-    CC_ASSERT(vertexData->indicesCount < MAX_INDICES, "The provided model has too many indices!")
+    // TODO - Fold into resource system
+    StaticMeshData staticMeshData;
+    staticMeshData.serialise(buffer, BinarySerialisation::DESERIALISE);
 
-    vertexBuffer = VertexBuffer(sizeof(BaseVertex) * vertexData->verticesCount);
-    vertexBuffer.Copy(vertexData->GetVertices(), sizeof(BaseVertex) * vertexData->verticesCount);
+    CC_ASSERT(!staticMeshData.vertices.empty(), "Cannot load in a file with no vertices!")
+    CC_ASSERT(!staticMeshData.indices.empty(), "Cannot load in a file with no indices!")
 
-    indexBuffer = IndexBuffer(sizeof(unsigned int) * vertexData->indicesCount);
-    indexBuffer.Copy(vertexData->GetIndices(), sizeof(unsigned int) * vertexData->indicesCount);
+    CC_ASSERT(staticMeshData.vertices.size() < MAX_VERTICES, "The provided model has too many vertices!")
+    CC_ASSERT(staticMeshData.indices.size() < MAX_INDICES, "The provided model has too many indices!")
 
-    vertexCount = vertexData->verticesCount;
-    indexCount = vertexData->indicesCount;
+    vertexCount = staticMeshData.vertices.size();
+    indexCount = staticMeshData.indices.size();
+
+    vertexBuffer = VertexBuffer(sizeof(BaseVertex) * vertexCount);
+    vertexBuffer.Copy(staticMeshData.vertices.data(), sizeof(BaseVertex) * vertexCount);
+
+    indexBuffer = IndexBuffer(sizeof(unsigned int) * indexCount);
+    indexBuffer.Copy(staticMeshData.indices.data(), sizeof(unsigned int) * indexCount);
 
     subMeshes = MHArray<SubMesh>(1);
     materials = MHArray<Material*>(1);

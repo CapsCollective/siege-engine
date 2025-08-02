@@ -14,6 +14,7 @@
 #include <utils/math/vec/Hashing.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
+#include <utils/BinarySerialisation.h>
 
 #include "PackFile.h"
 
@@ -39,50 +40,25 @@ inline bool operator!=(const BaseVertex& left, const BaseVertex& right)
     return !(left == right);
 }
 
-#pragma pack(push, 1)
-struct StaticMeshData
+inline void serialise(BinarySerialisation::Buffer& buffer, BaseVertex& value, BinarySerialisation::SerialisationMode mode)
 {
-    uint64_t indicesCount = 0;
-    uint64_t verticesCount = 0;
-    char data[];
+    serialise(buffer, value.position, mode);
+    serialise(buffer, value.color, mode);
+    serialise(buffer, value.normal, mode);
+    serialise(buffer, value.uv, mode);
+}
 
-    uint32_t* GetIndices() const
+struct StaticMeshData : BinarySerialisation::BinarySerialisable
+{
+    std::vector<uint32_t> indices;
+    std::vector<BaseVertex> vertices;
+
+    void serialise(BinarySerialisation::Buffer& buffer, BinarySerialisation::SerialisationMode mode) override
     {
-        return (uint32_t*) data;
-    }
-
-    BaseVertex* GetVertices() const
-    {
-        return (BaseVertex*) (data + sizeof(uint32_t) * indicesCount);
-    }
-
-    static StaticMeshData* Create(const std::vector<uint32_t>& objIndices,
-                                  const std::vector<BaseVertex>& objVertices)
-    {
-        uint32_t indicesDataSize = sizeof(uint32_t) * objIndices.size();
-        uint32_t verticesDataSize = sizeof(BaseVertex) * objVertices.size();
-        uint32_t totalDataSize = sizeof(StaticMeshData) + indicesDataSize + verticesDataSize;
-
-        void* mem = malloc(totalDataSize);
-        StaticMeshData* staticMeshData = new (mem) StaticMeshData();
-
-        staticMeshData->indicesCount = objIndices.size();
-        staticMeshData->verticesCount = objVertices.size();
-        memcpy(&staticMeshData->data[0], objIndices.data(), indicesDataSize);
-        memcpy(&staticMeshData->data[0] + indicesDataSize, objVertices.data(), verticesDataSize);
-
-        return staticMeshData;
-    }
-
-    static uint32_t GetDataSize(void* objectData)
-    {
-        if (!objectData) return 0;
-        StaticMeshData* staticMeshData = reinterpret_cast<StaticMeshData*>(objectData);
-        return sizeof(StaticMeshData) + sizeof(uint32_t) * staticMeshData->indicesCount +
-               sizeof(BaseVertex) * staticMeshData->verticesCount;
+        BinarySerialisation::serialise(buffer, indices, mode);
+        BinarySerialisation::serialise(buffer, vertices, mode);
     }
 };
-#pragma pack(pop)
 
 } // namespace Siege
 
