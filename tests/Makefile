@@ -49,6 +49,7 @@ $(utestIncludeDir):
 
 # Copy the assets directory to the build directory, and pack them
 pack-assets:
+	$(RM) "$(testBuildDir)/assets"
 	$(call MKDIR,$(call platformpth,$(testBuildDir)/assets))
 	$(call COPY,$(testSrcDir)/assets,$(testBuildDir)/assets,$(RWCARDGLOB))
 	$(packerApp) $(testBuildDir)/app.pck $(testBuildDir) $(testAssets)

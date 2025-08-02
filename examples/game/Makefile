@@ -69,12 +69,12 @@ $(exampleGameBinDir)/%.o: $(exampleGameSrcDir)/%.cpp
 
 # Copy assets directory to the build directory and pack them
 pack-assets:
+	$(RM) "$(exampleGameBuildDir)/assets"
 	$(call MKDIR,$(call platformpth,$(exampleGameBuildDir)/assets))
 	$(call COPY,$(exampleGameSrcDir)/assets,$(exampleGameBuildDir)/assets,$(RWCARDGLOB))
 	$(call MKDIR,$(call platformpth,$(exampleGameBuildDir)/assets/shaders))
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleGameBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleGameBuildDir)/app.pck $(exampleGameBuildDir) $(exampleGameAssets)
-	$(RM) "$(exampleGameBuildDir)/assets"
 	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleGameBuildDir))
 
 

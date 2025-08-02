@@ -68,12 +68,12 @@ $(exampleRenderBinDir)/%.o: $(exampleRenderSrcDir)/%.cpp
 
 # Copy assets directory to the build directory and pack them
 pack-assets:
+	$(RM) "$(exampleRenderBuildDir)/assets"
 	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets))
 	$(call COPY,$(exampleRenderSrcDir)/assets,$(exampleRenderBuildDir)/assets,$(RWCARDGLOB))
 	$(call MKDIR,$(call platformpth,$(exampleRenderBuildDir)/assets/shaders))
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleRenderBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleRenderBuildDir)/app.pck $(exampleRenderBuildDir) $(exampleRenderAssets)
-	$(RM) "$(exampleRenderBuildDir)/assets"
 	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleRenderBuildDir))
 
 # Package the built application and all its assets to the output directory
