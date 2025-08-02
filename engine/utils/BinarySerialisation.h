@@ -84,6 +84,7 @@ void serialiseNative(Buffer& buffer, const T& value, SerialisationMode mode)
 
 SERIALISE_NATIVE(bool)
 SERIALISE_NATIVE(char)
+SERIALISE_NATIVE(unsigned char)
 SERIALISE_NATIVE(uint32_t)
 SERIALISE_NATIVE(int32_t)
 SERIALISE_NATIVE(float)

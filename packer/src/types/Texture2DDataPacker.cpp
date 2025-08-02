@@ -11,6 +11,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <resources/Texture2DData.h>
+#include <resources/PackFileData.h>
+#include <utils/BinarySerialisation.h>
 #include <stb_image.h>
 #include <utils/Defer.h>
 #include <utils/Logging.h>
@@ -27,8 +29,18 @@ void* PackTexture2DFile(const Siege::String& filePath, uint32_t& fileSize)
                 texHeight,
                 texChannels)
 
-    Siege::Texture2DData* texture2dData =
-        Siege::Texture2DData::Create(pixels, texWidth, texHeight, texChannels);
-    fileSize = Siege::Texture2DData::GetDataSize(texture2dData);
-    return texture2dData;
+    Siege::Texture2DData texture2dData;
+    texture2dData.texWidth = texWidth;
+    texture2dData.texHeight = texHeight;
+    texture2dData.texChannels = TEXTURE2D_TEXTURE_CHANNELS;
+    std::copy_n(pixels, texture2dData.GetImageSize(), std::back_inserter(texture2dData.pixels));
+
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    texture2dData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
+
+    fileSize = dataBuffer.data.size();
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, fileSize);
+    return fileData;
 }

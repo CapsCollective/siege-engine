@@ -168,8 +168,7 @@ UTEST_F(test_ResourceSystem, LoadTextureData)
     ASSERT_TRUE(data);
     ASSERT_EQ(160000, data->GetImageSize());
 
-    const uint8_t* actualPixels = data->GetPixels();
-    ASSERT_TRUE(actualPixels);
+    ASSERT_EQ(160000, data->pixels.size());
 }
 
 UTEST_F(test_ResourceSystem, LoadSceneData)
