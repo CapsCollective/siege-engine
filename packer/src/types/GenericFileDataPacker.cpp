@@ -10,6 +10,7 @@
 #include "GenericFileDataPacker.h"
 
 #include <resources/PackFileData.h>
+#include <utils/Defer.h>
 #include <utils/Logging.h>
 
 #include <fstream>
@@ -25,7 +26,7 @@ Siege::PackFileData* PackGenericFile(const Siege::String& filePath)
 
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).
-    uint32_t fileSize = static_cast<uint32_t>(file.tellg());
+    uint32_t fileSize = file.tellg();
     char* data = static_cast<char*>(malloc(fileSize));
     defer([&data] { free(data); });
 

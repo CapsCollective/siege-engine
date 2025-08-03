@@ -15,16 +15,20 @@
 namespace Siege
 {
 
-struct SceneData : BinarySerialisation::BinarySerialisable
+struct SceneData
 {
     std::vector<String> entities;
-
-    void serialise(BinarySerialisation::Buffer& buffer,
-                   BinarySerialisation::SerialisationMode mode) override
-    {
-        BinarySerialisation::serialise(buffer, entities, mode);
-    }
 };
+
+namespace BinarySerialisation
+{
+
+inline void serialise(Buffer& buffer, SceneData& value, SerialisationMode mode)
+{
+    serialise(buffer, value.entities, mode);
+}
+
+} // namespace BinarySerialisation
 
 } // namespace Siege
 

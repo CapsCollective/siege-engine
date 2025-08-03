@@ -12,15 +12,13 @@
 
 #include <utils/BinarySerialisation.h>
 
-#include "PackFile.h"
-
 // TODO - Remove this hard-coded value and support various texture channel sizes
 #define TEXTURE2D_TEXTURE_CHANNELS 4
 
 namespace Siege
 {
 
-struct Texture2DData : BinarySerialisation::BinarySerialisable
+struct Texture2DData
 {
     int32_t texWidth = 0;
     int32_t texHeight = 0;
@@ -29,18 +27,22 @@ struct Texture2DData : BinarySerialisation::BinarySerialisable
 
     uint64_t GetImageSize() const
     {
-        return texWidth * texHeight * TEXTURE2D_TEXTURE_CHANNELS;
-    }
-
-    void serialise(BinarySerialisation::Buffer& buffer,
-                   BinarySerialisation::SerialisationMode mode) override
-    {
-        BinarySerialisation::serialise(buffer, texWidth, mode);
-        BinarySerialisation::serialise(buffer, texHeight, mode);
-        BinarySerialisation::serialise(buffer, texChannels, mode);
-        BinarySerialisation::serialise(buffer, pixels, mode);
+        return texWidth * texHeight * texChannels;
     }
 };
+
+namespace BinarySerialisation
+{
+
+inline void serialise(Buffer& buffer, Texture2DData& value, SerialisationMode mode)
+{
+    serialise(buffer, value.texWidth, mode);
+    serialise(buffer, value.texHeight, mode);
+    serialise(buffer, value.texChannels, mode);
+    serialise(buffer, value.pixels, mode);
+}
+
+} // namespace BinarySerialisation
 
 } // namespace Siege
 

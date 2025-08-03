@@ -12,33 +12,35 @@
 
 #include <map>
 
-struct TestBinarySerialisable1 : public Siege::BinarySerialisation::BinarySerialisable
+struct TestBinarySerialisable1
 {
     bool b = false;
     int i = 0;
     float f = 0;
     double d = 0;
-
-    void serialise(Siege::BinarySerialisation::Buffer& buffer,
-                   Siege::BinarySerialisation::SerialisationMode mode) override
-    {
-        Siege::BinarySerialisation::serialise(buffer, b, mode);
-        Siege::BinarySerialisation::serialise(buffer, i, mode);
-        Siege::BinarySerialisation::serialise(buffer, f, mode);
-        Siege::BinarySerialisation::serialise(buffer, d, mode);
-    }
 };
 
-struct TestBinarySerialisable2 : public Siege::BinarySerialisation::BinarySerialisable
+struct TestBinarySerialisable2
 {
     TestBinarySerialisable1 test;
-
-    void serialise(Siege::BinarySerialisation::Buffer& buffer,
-                   Siege::BinarySerialisation::SerialisationMode mode) override
-    {
-        Siege::BinarySerialisation::serialise(buffer, test, mode);
-    }
 };
+
+inline void serialise(Siege::BinarySerialisation::Buffer& buffer,
+                      TestBinarySerialisable1& value,
+                      Siege::BinarySerialisation::SerialisationMode mode)
+{
+    Siege::BinarySerialisation::serialise(buffer, value.b, mode);
+    Siege::BinarySerialisation::serialise(buffer, value.i, mode);
+    Siege::BinarySerialisation::serialise(buffer, value.f, mode);
+    Siege::BinarySerialisation::serialise(buffer, value.d, mode);
+}
+
+inline void serialise(Siege::BinarySerialisation::Buffer& buffer,
+                      TestBinarySerialisable2& value,
+                      Siege::BinarySerialisation::SerialisationMode mode)
+{
+    serialise(buffer, value.test, mode);
+}
 
 UTEST(test_BinarySerialisation, Native)
 {
@@ -102,10 +104,10 @@ UTEST(test_BinarySerialisation, Struct)
         test1.i = 36;
         test1.f = 3.14f;
         test1.d = 1.21;
-        Siege::BinarySerialisation::serialise(buffer, test1, Siege::BinarySerialisation::SERIALISE);
+        serialise(buffer, test1, Siege::BinarySerialisation::SERIALISE);
     }
     TestBinarySerialisable1 test1;
-    Siege::BinarySerialisation::serialise(buffer, test1, Siege::BinarySerialisation::DESERIALISE);
+    serialise(buffer, test1, Siege::BinarySerialisation::DESERIALISE);
     ASSERT_EQ(true, test1.b);
     ASSERT_EQ(36, test1.i);
     ASSERT_EQ(3.14f, test1.f);
@@ -118,10 +120,10 @@ UTEST(test_BinarySerialisation, Struct)
         test2.test.i = 36;
         test2.test.f = 3.14f;
         test2.test.d = 1.21;
-        Siege::BinarySerialisation::serialise(buffer, test1, Siege::BinarySerialisation::SERIALISE);
+        serialise(buffer, test1, Siege::BinarySerialisation::SERIALISE);
     }
     TestBinarySerialisable2 test2;
-    Siege::BinarySerialisation::serialise(buffer, test2, Siege::BinarySerialisation::DESERIALISE);
+    serialise(buffer, test2, Siege::BinarySerialisation::DESERIALISE);
     ASSERT_EQ(true, test2.test.b);
     ASSERT_EQ(36, test2.test.i);
     ASSERT_EQ(3.14f, test2.test.f);

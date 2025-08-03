@@ -36,7 +36,9 @@ Siege::PackFileData* PackSceneFile(const Siege::String& filePath)
     }
 
     Siege::BinarySerialisation::Buffer dataBuffer;
-    sceneData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          sceneData,
+                                          Siege::BinarySerialisation::SERIALISE);
 
     char* data = reinterpret_cast<char*>(dataBuffer.data.data());
     Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());

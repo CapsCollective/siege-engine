@@ -36,7 +36,9 @@ Siege::PackFileData* PackTexture2DFile(const Siege::String& filePath)
     std::copy_n(pixels, texture2dData.GetImageSize(), std::back_inserter(texture2dData.pixels));
 
     Siege::BinarySerialisation::Buffer dataBuffer;
-    texture2dData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          texture2dData,
+                                          Siege::BinarySerialisation::SERIALISE);
 
     char* data = reinterpret_cast<char*>(dataBuffer.data.data());
     Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());

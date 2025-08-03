@@ -221,7 +221,9 @@ Siege::PackFileData* PackStaticMeshFile(const Siege::String& filePath,
                      staticMeshData.indices);
 
     Siege::BinarySerialisation::Buffer dataBuffer;
-    staticMeshData.serialise(dataBuffer, Siege::BinarySerialisation::SERIALISE);
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          staticMeshData,
+                                          Siege::BinarySerialisation::SERIALISE);
 
     char* data = reinterpret_cast<char*>(dataBuffer.data.data());
     Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());

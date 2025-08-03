@@ -56,13 +56,6 @@ struct Buffer
     }
 };
 
-struct BinarySerialisable
-{
-    virtual ~BinarySerialisable() = default;
-
-    virtual void serialise(Buffer& buffer, SerialisationMode mode) {}
-};
-
 template<typename T>
 void serialiseNative(Buffer& buffer, T& value, SerialisationMode mode)
 {
@@ -251,12 +244,6 @@ void serialise(Buffer& buffer, std::map<T1, T2>& value, SerialisationMode mode)
             break;
         }
     }
-}
-
-template<typename T>
-void serialise(Buffer& buffer, T& value, SerialisationMode mode)
-{
-    value.serialise(buffer, mode);
 }
 
 } // namespace Siege::BinarySerialisation

@@ -19,6 +19,9 @@
 #include <map>
 
 #include "PackFileData.h"
+#include "SceneData.h"
+#include "StaticMeshData.h"
+#include "Texture2DData.h"
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
 #define PACKER_MAGIC_NUMBER_TOC "toc!"
@@ -83,11 +86,11 @@ public:
             return nullptr;
         }
 
-        BinarySerialisation::Buffer buffer;
-        buffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
+        BinarySerialisation::Buffer dataBuffer;
+        dataBuffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
 
         T* typedData = new T();
-        typedData->serialise(buffer, BinarySerialisation::DESERIALISE);
+        BinarySerialisation::serialise(dataBuffer, *typedData, BinarySerialisation::DESERIALISE);
 
         return std::shared_ptr<T>(typedData);
     }

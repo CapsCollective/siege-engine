@@ -50,18 +50,22 @@ inline void serialise(BinarySerialisation::Buffer& buffer,
     serialise(buffer, value.uv, mode);
 }
 
-struct StaticMeshData : BinarySerialisation::BinarySerialisable
+struct StaticMeshData
 {
     std::vector<uint32_t> indices;
     std::vector<BaseVertex> vertices;
-
-    void serialise(BinarySerialisation::Buffer& buffer,
-                   BinarySerialisation::SerialisationMode mode) override
-    {
-        BinarySerialisation::serialise(buffer, indices, mode);
-        BinarySerialisation::serialise(buffer, vertices, mode);
-    }
 };
+
+namespace BinarySerialisation
+{
+
+inline void serialise(Buffer& buffer, StaticMeshData& value, SerialisationMode mode)
+{
+    serialise(buffer, value.indices, mode);
+    serialise(buffer, value.vertices, mode);
+}
+
+} // namespace BinarySerialisation
 
 } // namespace Siege
 

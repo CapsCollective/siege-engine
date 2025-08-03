@@ -9,14 +9,14 @@
 
 #include "Texture2D.h"
 
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
+#include <resources/Texture2DData.h>
 #include <utils/Defer.h>
 
 #include "Constants.h"
 #include "Context.h"
 #include "render/renderer/buffer/Buffer.h"
-#include "resources/PackFileData.h"
-#include "resources/ResourceSystem.h"
-#include "resources/Texture2DData.h"
 #include "utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
 
