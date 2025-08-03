@@ -9,9 +9,9 @@
 
 #include "FileSystem.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
-#include <algorithm>
 
 #include "Logging.h"
 

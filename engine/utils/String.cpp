@@ -9,11 +9,11 @@
 
 #include "String.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ostream>
 #include <stdexcept>
-#include <algorithm>
 
 namespace Siege
 {

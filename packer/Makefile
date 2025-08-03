@@ -18,7 +18,7 @@ packerBuildDir := $(packerBinDir)/build
 
 # Set build vars
 linkFlags += -l resources -l utils -L $(vendorDir)/zlib/build/lib -L $(vendorDir)/assimp/build/lib -l assimp -l z -l stdc++
-compileFlags += -I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image -I $(vendorDir)/assimp/include -I $(vendorDir)/assimp/build/include
+compileFlags += -I $(vendorDir)/stb_image -I $(vendorDir)/assimp/include -I $(vendorDir)/assimp/build/include
 
 .PHONY: all
 
