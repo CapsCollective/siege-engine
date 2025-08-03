@@ -123,9 +123,8 @@ String::String(const wchar_t* string) : memory()
 {
     size_t size = std::wcslen(string) + 1;
     char* convertedStr = static_cast<char*>(alloca(size));
-    memset(convertedStr, 0, size + 1);
     std::wcstombs(convertedStr, string, size);
-    convertedStr[size] = '\0';
+    convertedStr[size - 1] = '\0';
     Assign(convertedStr);
 }
 
@@ -232,9 +231,8 @@ String& String::operator+=(const wchar_t* rhs)
 {
     size_t size = std::wcslen(rhs) + 1;
     char* convertedStr = static_cast<char*>(alloca(size));
-    memset(convertedStr, 0, size + 1);
     std::wcstombs(convertedStr, rhs, size);
-    convertedStr[size] = '\0';
+    convertedStr[size - 1] = '\0';
 
     Append(convertedStr);
     return *this;
@@ -718,6 +716,18 @@ String operator+(const char* lhs, const String& rhs)
 
     char* cstr = static_cast<char*>(alloca(lhsLength + rhsLength + 1));
     strcpy(cstr, lhs);
+    strcpy(cstr + lhsLength, rhs.Str());
+
+    return {cstr};
+}
+
+String operator+(const wchar_t* lhs, const String& rhs)
+{
+    size_t lhsLength = std::wcslen(lhs);
+    size_t rhsLength = rhs.Size();
+
+    char* cstr = static_cast<char*>(alloca(lhsLength + rhsLength + 1));
+    std::wcstombs(cstr, lhs, lhsLength);
     strcpy(cstr + lhsLength, rhs.Str());
 
     return {cstr};

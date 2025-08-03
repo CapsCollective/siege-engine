@@ -657,6 +657,14 @@ bool operator!=(const char* lhs, const String& rhs);
 String operator+(const char* lhs, const String& rhs);
 
 /**
+ * Reversed wide c-string addition operator overload for prepending strings
+ * @param lhs - the string to append to
+ * @param rhs - the string to append
+ * @return a new string object with the appended value
+ */
+String operator+(const wchar_t* lhs, const String& rhs);
+
+/**
  * Reversed character addition operator overload for prepending characters
  * @param lhs - the character to append to
  * @param rhs - the string to append

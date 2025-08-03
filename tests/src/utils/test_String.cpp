@@ -37,6 +37,13 @@ UTEST(test_String, DefaultConstruct)
     ASSERT_EQ(5, s.Size());
     ASSERT_STREQ("hello", s.Str());
     ASSERT_EQ(0, std::strcmp(s.Str(), "hello"));
+
+    // Assignment of wide c-strings via assignment operator should apply
+    s = L"hello";
+    ASSERT_FALSE(s.IsEmpty());
+    ASSERT_EQ(5, s.Size());
+    ASSERT_STREQ("hello", s.Str());
+    ASSERT_EQ(0, std::strcmp(s.Str(), "hello"));
 }
 
 UTEST(test_String, CopyConstruct)
@@ -147,6 +154,16 @@ UTEST(test_String, Append)
     s2.Append("goodbye");
     ASSERT_STREQ("goodbyehellogoodbye", s2.Str());
     ASSERT_EQ(19, s2.Size());
+
+    // The string should correctly append wide c-strings
+    Siege::String s6;
+    s6 += L"hello";
+    ASSERT_STREQ("hello", s6.Str());
+    Siege::String s7 = L"goodbye" + s6;
+    ASSERT_STREQ("goodbyehello", s7.Str());
+    s7.Append(L"goodbye");
+    ASSERT_STREQ("goodbyehellogoodbye", s7.Str());
+    ASSERT_EQ(19, s7.Size());
 
     // The string should correctly append characters
     Siege::String s5;
