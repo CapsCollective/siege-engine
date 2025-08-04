@@ -8,6 +8,7 @@
 //
 
 #include "StaticMeshDataPacker.h"
+#include "MathUtils.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -16,7 +17,6 @@
 #include <utils/Logging.h>
 
 #include <algorithm>
-#include <assimp/Importer.hpp>
 #include <fstream>
 
 enum RequestPathStage
@@ -50,7 +50,7 @@ static RequestPathStage GetRequestPathStage(const Siege::String& requestPath,
 
 static void GetMeshData(const aiScene* scene,
                         const aiMesh* mesh,
-                        const aiMatrix4x4t<ai_real>& matrix,
+                        const Siege::Mat4& mat,
                         OUT std::vector<Siege::BaseVertex>& vertices,
                         OUT std::vector<uint32_t>& indices)
 {
@@ -59,8 +59,11 @@ static void GetMeshData(const aiScene* scene,
         Siege::BaseVertex vertex {};
 
         aiVector3t<ai_real> vert = mesh->mVertices[i];
-        vert *= matrix;
-        vertex.position = {vert.x, vert.y, vert.z};
+        Siege::Vec4 v = {vert.x, vert.y, vert.z, 1.f};
+
+        v = mat * v;
+
+        vertex.position = {v.x, v.y, v.z};
 
         aiVector3t<ai_real> norm = mesh->mNormals[i];
         vertex.normal = {norm.x, norm.y, norm.z};
@@ -93,7 +96,7 @@ static void GetMeshesForNode(const aiScene* scene,
                              const aiNode* node,
                              const Siege::String& requestPath,
                              Siege::String currentPath,
-                             aiMatrix4x4t<ai_real> matrix,
+                             Siege::Mat4 matrix,
                              OUT std::vector<Siege::BaseVertex>& vertices,
                              OUT std::vector<uint32_t>& indices)
 {
@@ -109,7 +112,7 @@ static void GetMeshesForNode(const aiScene* scene,
 
     if (nodePathStage == CHILD || nodePathStage == SELF)
     {
-        matrix *= node->mTransformation;
+        matrix *= AssimptMat4ToMat4(node->mTransformation);
     }
 
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
@@ -175,7 +178,7 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
 
     CC_LOG_INFO("Reading static mesh for file {} with node path {}", it->second, requestedNodePath)
 
-    aiMatrix4x4t<ai_real> baseXform;
+    Siege::Mat4 baseXform = Siege::Mat4::Identity();
     auto flipAxesIt = attributes.find(TOKEN_FLIP_AXES);
     if (flipAxesIt != attributes.end())
     {
@@ -186,7 +189,7 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
 
         for (int32_t i = 0; i < flipAxesIt->second.Size(); ++i)
         {
-            aiVector3t<ai_real> scale {1.f, 1.f, 1.f};
+            Siege::Vec4 scale = {1.f, 1.f, 1.f, 1.f};
             switch (flipAxesIt->second[i])
             {
                 case 'x':
@@ -203,8 +206,7 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
                                    flipAxesIt->second[i])
                     break;
             }
-            aiMatrix4x4t<ai_real> scalingMat;
-            baseXform *= aiMatrix4x4t<ai_real>::Scaling(scale, scalingMat);
+            baseXform *= Siege::Mat4::Scale(scale);
         }
     }
 
