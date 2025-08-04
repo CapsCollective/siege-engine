@@ -17,6 +17,8 @@
 #include <utils/Defer.h>
 #include <utils/Logging.h>
 
+#include <algorithm>
+
 Siege::PackFileData* PackTexture2DFile(const Siege::String& filePath)
 {
     int32_t texWidth, texHeight, texChannels;

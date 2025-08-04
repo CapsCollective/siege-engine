@@ -15,7 +15,7 @@ renderSources := $(call rwildcard,$(renderSrcDir)/,*.cpp)
 renderObjects := $(call findobjs,$(renderSrcDir),$(renderBinDir),$(renderSources))
 renderDepends := $(patsubst %.o, %.d, $(call rwildcard,$(renderBinDir)/,*.o))
 renderBuildDir := $(renderBinDir)/build
-renderLibs := $(vendorDir)/zlib/build/lib/libz.a $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
+renderLibs := $(vendorDir)/libpng/build/libpng.a $(vendorDir)/freetype/build/libfreetype.a
 
 # Set shader build vars
 vertSources := $(call rwildcard,assets/shaders,*.vert)
@@ -23,10 +23,10 @@ fragSources := $(call rwildcard,assets/shaders,*.frag)
 vertObjects := $(patsubst %.vert,$(renderBuildDir)/%.vert.spv,$(vertSources))
 fragObjects := $(patsubst %.frag,$(renderBuildDir)/%.frag.spv,$(fragSources))
 
+# Set build vars
 linkFlags += -l utils -l window
-
-compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include -I $(vendorDir)/glm \
-				-I $(vendorDir)/zlib/build/include -I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
+compileFlags += -I $(vendorDir)/vulkan/include -I $(vendorDir)/glfw/include \
+				-I $(vendorDir)/libpng -I $(vendorDir)/include/freetype
 
 .PHONY: all
 

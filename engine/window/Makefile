@@ -16,6 +16,7 @@ windowObjects := $(call findobjs,$(windowSrcDir),$(windowBinDir),$(windowSources
 windowDepends := $(patsubst %.o, %.d, $(call rwildcard,$(windowBinDir)/,*.o))
 windowLibs := $(vendorDir)/glfw/build/src/libglfw3.a
 
+# Set build vars
 linkFlags += -l utils
 compileFlags += -I $(vendorDir)/glfw/include
 

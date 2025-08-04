@@ -25,7 +25,10 @@ Siege::PackFileData* PackSceneFile(const Siege::String& filePath)
     auto appendFile = [&sceneData](const std::filesystem::path& path) {
         if (path.extension() != ".entity") return;
         CC_LOG_INFO("Reading entity file {}", path.filename().c_str())
-        sceneData.entities.emplace_back(Siege::FileSystem::Read(path.c_str()));
+
+        Siege::String content = Siege::FileSystem::Read(path.c_str());
+        content = Siege::FileSystem::StripNewLines(content);
+        sceneData.entities.emplace_back(content);
     };
 
     bool result = Siege::FileSystem::ForEachFileInDir(filePath, appendFile);

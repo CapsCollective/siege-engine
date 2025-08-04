@@ -57,8 +57,8 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
     const PackFile::Header& header = packFile->GetHeader();
     ASSERT_STREQ("pck", header.magic.string);
-    ASSERT_EQ(48711, header.bodySize);
-    ASSERT_EQ(48519, header.tocOffset);
+    ASSERT_EQ(48703, header.bodySize);
+    ASSERT_EQ(48511, header.tocOffset);
 
     std::vector<String> packedFilepaths {"assets/scene2.scene",
                                          "assets/scene1.scene",
@@ -175,18 +175,18 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
     ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
     PackFile* packFile = resourceSystem.GetPackFile();
 
-    std::vector<String> expectedSceneData = {"TYPE:TestEntity;\n"
-                                             "POSITION:0.000000,0.000000,0.000000;\n"
-                                             "ROTATION:0.000000;\n"
-                                             "Z_INDEX:0;\n",
-                                             "TYPE:TestEntity;\n"
-                                             "POSITION:0.000000,0.000000,0.000000;\n"
-                                             "ROTATION:0.000000;\n"
-                                             "Z_INDEX:0;\n",
-                                             "TYPE:TestEntity;\n"
-                                             "POSITION:0.000000,0.000000,0.000000;\n"
-                                             "ROTATION:0.000000;\n"
-                                             "Z_INDEX:0;\n"};
+    std::vector<String> expectedSceneData = {"TYPE:TestEntity;"
+                                             "POSITION:0.000000,0.000000,0.000000;"
+                                             "ROTATION:0.000000;"
+                                             "Z_INDEX:0;",
+                                             "TYPE:TestEntity;"
+                                             "POSITION:0.000000,0.000000,0.000000;"
+                                             "ROTATION:0.000000;"
+                                             "Z_INDEX:0;",
+                                             "TYPE:TestEntity;"
+                                             "POSITION:0.000000,0.000000,0.000000;"
+                                             "ROTATION:0.000000;"
+                                             "Z_INDEX:0;"};
 
     std::shared_ptr<SceneData> data =
         packFile->FindDataDeserialised<SceneData>("assets/scene1.scene");

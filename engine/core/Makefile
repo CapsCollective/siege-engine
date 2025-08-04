@@ -15,13 +15,6 @@ coreSources := $(call rwildcard,$(coreSrcDir)/,*.cpp)
 coreObjects := $(call findobjs,$(coreSrcDir),$(coreBinDir),$(coreSources))
 coreDepends := $(patsubst %.o, %.d, $(call rwildcard,$(coreBinDir)/,*.o))
 
-# Set build vars
-ifeq ($(platform), windows)
-    libGenDir := src
-else ifeq ($(platform), macos)
-    libGenDir := src
-endif
-
 # Build the static library
 $(coreLib): $(coreObjects)
 	$(call MKDIR,$(call platformpth,$(libDir)))

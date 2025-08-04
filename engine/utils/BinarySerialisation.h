@@ -23,7 +23,7 @@
 namespace Siege::BinarySerialisation
 {
 
-enum SerialisationMode : u_int8_t
+enum SerialisationMode : uint8_t
 {
     SERIALISE,
     DESERIALISE,
