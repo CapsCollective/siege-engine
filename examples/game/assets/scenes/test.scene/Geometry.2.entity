@@ -1,7 +1,7 @@
-Geometry;
+TYPE:Geometry;
 POSITION:-10.50,0.00,-7.00;
 ROTATION:0.000000;
-Z-INDEX:0;
+Z_INDEX:0;
 DIMENSIONS:2.00,0.10,2.00;
-MODEL_PATH:assets/models/cube/cube.obj;
+MODEL_PATH:assets/models/cube/cube.sm;
 TEXTURE_PATH:models/cube/cube_1.png;

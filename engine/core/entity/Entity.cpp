@@ -16,12 +16,9 @@
 
 namespace Siege
 {
-// Static member initialisation
-const String Entity::ENTITY_NAME("Entity");
-
-Entity::Entity(const String& name, const Xform& transform, int zIndex) :
+Entity::Entity(Token type, const Xform& transform, int zIndex) :
     transform(transform),
-    name(name),
+    type(type),
     index(GenerationalIndex()),
     zIndex(zIndex)
 {}
@@ -42,9 +39,9 @@ void Entity::QueueFree()
     EntitySystem::QueueFree(this);
 }
 
-const String& Entity::GetName() const
+Token Entity::GetType() const
 {
-    return name;
+    return type;
 }
 
 const GenerationalIndex& Entity::GetIndex() const

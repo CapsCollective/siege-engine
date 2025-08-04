@@ -9,28 +9,30 @@
 
 #include "FileSystem.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
+
+#include "Defer.h"
+#include "Logging.h"
 
 namespace Siege::FileSystem
 {
 String Read(const String& filename)
 {
-    // Try open the file for reading
     FILE* file = fopen(filename, "rb");
     if (!file) return "";
 
-    // Determine file size
     fseek(file, 0, SEEK_END);
     size_t size = ftell(file);
     rewind(file);
 
-    // Copy the content
-    char content[size + 1];
+    char* content = static_cast<char*>(malloc(size + 1));
+    defer([&content] { free(content); });
+
     fread(content, sizeof(char), size, file);
     content[size] = '\0';
 
-    // Close the file stream and return
     fclose(file);
     return content;
 }
@@ -71,5 +73,44 @@ bool ForEachFileInDir(const String& path,
         if (!std::filesystem::is_directory(entry)) func(entry.path());
     }
     return true;
+}
+
+String StripNewLines(const String& string)
+{
+    std::string str(string);
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.cend());
+    return str.c_str();
+}
+
+std::map<Token, String> ParseAttributeFileData(const String& fileData)
+{
+    // Expunge any newlines characters from the file data
+    String sanitisedFileData = StripNewLines(fileData);
+
+    // Split the file line contents into attributes
+    std::map<Token, String> attributes;
+    for (const String& line : sanitisedFileData.Split(ATTR_FILE_LINE_SEP))
+    {
+        std::vector<String> attribute = line.Split(ATTR_FILE_VALUE_SEP);
+        if (attribute.size() != 2)
+        {
+            CC_LOG_WARNING("Received wrong number of attribute value seperations for line \"{}\", "
+                           "will not register!",
+                           line)
+            continue;
+        }
+
+        Token attributeToken = Token::FindToken(attribute[0]);
+        if (!attributeToken)
+        {
+            CC_LOG_WARNING("Failed to find token for attribute \"{}\", will not register!",
+                           attribute[0])
+            continue;
+        }
+        attributes[attributeToken] = attribute[1];
+    }
+
+    return attributes;
 }
 } // namespace Siege::FileSystem

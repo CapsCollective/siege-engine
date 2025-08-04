@@ -1,0 +1,3 @@
+SOURCE_PATH:assets/models/flat_vase.obj;
+MATERIAL_PATH:assets/models/flat_vase.mat;
+NODE_PATH:/;

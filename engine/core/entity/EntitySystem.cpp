@@ -72,13 +72,13 @@ void EntitySystem::QueueFree(Entity* entity)
     EntitySystem* system = FindInGlobalRegister(entity);
     if (system)
     {
-        CC_LOG_INFO("Freeing {} at ({})", entity->GetName(), entity->GetIndex().ToString());
+        CC_LOG_INFO("Freeing {} at ({})", entity->GetType(), entity->GetIndex().ToString());
         system->AddToFreeQueue(entity);
     }
     else
     {
         CC_LOG_WARNING("Could not find storage for {} at {}",
-                       entity->GetName(),
+                       entity->GetType(),
                        entity->GetIndex().ToString());
     }
 }
@@ -90,7 +90,7 @@ void EntitySystem::Resort(Entity* entity, int oldZIdx)
     else
     {
         CC_LOG_WARNING("Could not find storage for {} at {}",
-                       entity->GetName(),
+                       entity->GetType(),
                        entity->GetIndex().ToString());
     }
 }
@@ -141,7 +141,7 @@ void EntitySystem::RegisterEntities()
         // If the entity's given index already exists then override the existing entry
         if (entity->GetIndex().index < entities.size()) entities[entity->GetIndex().index] = entity;
         else entities.push_back(entity);
-        CC_LOG_INFO("Registered {} at ({})", entity->GetName(), entity->GetIndex().ToString());
+        CC_LOG_INFO("Registered {} at ({})", entity->GetType(), entity->GetIndex().ToString());
 
         packedEntities.push_back(entity);
         AddToGlobalRegister(entity, this);

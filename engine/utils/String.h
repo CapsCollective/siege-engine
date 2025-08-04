@@ -218,6 +218,13 @@ public:
     // Conversion methods
 
     /**
+     * Attempts to retrieve the String's value as a bool
+     * @param value - the bool to populate
+     * @return true if the conversion was successful, false otherwise
+     */
+    bool GetBool(OUT bool& value) const;
+
+    /**
      * Attempts to retrieve the String's value as an integer
      * @param value - the integer to populate
      * @return true if the conversion was successful, false otherwise
@@ -230,6 +237,13 @@ public:
      * @return true if the conversion was successful, false otherwise
      */
     bool GetFloat(OUT float& value) const;
+
+    /**
+     * Conversion method for bool values
+     * @param value - the bool value to convert
+     * @return the newly created String
+     */
+    static String FromBool(bool value);
 
     /**
      * Conversion method for integer values
@@ -343,6 +357,18 @@ public:
     size_t Find(char character, int startIdx = 0) const;
 
     /**
+     * Returns whether the String begins with the supplied String as a substring
+     * @return true if the String begins with the substring, false otherwise
+     */
+    bool BeginsWith(const String& substring) const;
+
+    /**
+     * Returns whether the String begins with the supplied c-string as a substring
+     * @return true if the String begins with the substring, false otherwise
+     */
+    bool BeginsWith(const char* substring) const;
+
+    /**
      * Splits the String by a provided list of delimiter characters
      * @param delimiters - a c-string of delimiter characters to split by (e.g. ",:-")
      * @return a vector of Strings resulting from the split
@@ -426,10 +452,15 @@ public:
     void Prepend(const char* string);
 
     /**
-     * Removes the character at
-     * @return
+     * Removes the character at the end of the String and returns it
+     * @return the popped character
      */
     char PopBack();
+
+    /**
+     * Reverses the String in-place
+     */
+    void Reverse();
 
     /**
      * Erases portions of the String based on position and length
@@ -492,7 +523,7 @@ public:
     {
         const char* data = Data();
         size_t formatLen = snprintf(nullptr, 0, data, std::forward<P>(params)...);
-        char newStr[formatLen + 1];
+        char* newStr = static_cast<char*>(alloca(formatLen + 1));
         snprintf(newStr, formatLen + 1, data, std::forward<P>(params)...);
         Assign(newStr);
     }
@@ -624,6 +655,14 @@ bool operator!=(const char* lhs, const String& rhs);
  * @return a new string object with the appended value
  */
 String operator+(const char* lhs, const String& rhs);
+
+/**
+ * Reversed wide c-string addition operator overload for prepending strings
+ * @param lhs - the string to append to
+ * @param rhs - the string to append
+ * @return a new string object with the appended value
+ */
+String operator+(const wchar_t* lhs, const String& rhs);
 
 /**
  * Reversed character addition operator overload for prepending characters

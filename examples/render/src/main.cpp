@@ -84,15 +84,19 @@ int main()
                      .Build());
 
     // Generate models
-    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.obj", &testMaterial);
-    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.obj", &testMaterial);
+    Siege::Vulkan::StaticMesh cubeObjModel("assets/models/cube.sm", &testMaterial);
+    Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.sm", &testMaterial);
+    Siege::Vulkan::StaticMesh cubeSetObjModel("assets/models/cube_set.sm", &testMaterial);
+    Siege::Vulkan::StaticMesh gizmoObjModel("assets/models/gizmo.sm", &testMaterial);
 
     // Create shapes for use
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
                                             GameObject(&cubeObjModel),
-                                            GameObject(&vaseObjModel)};
+                                            GameObject(&vaseObjModel),
+                                            GameObject(&cubeSetObjModel),
+                                            GameObject(&gizmoObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});
@@ -116,6 +120,14 @@ int main()
     objects3D[4].SetPosition({0.f, -1.f, 0.f});
     objects3D[4].SetScale({2.f, 2.f, 2.f});
     objects3D[4].SetColour({128, 0, 0, 255});
+
+    objects3D[5].SetPosition({-8.f, 0.f, 0.f});
+    objects3D[5].SetScale({1.f, 1.f, 1.f});
+    objects3D[5].SetColour({0, 0, 128, 255});
+
+    objects3D[6].SetPosition({-5.f, 0.f, 0.f});
+    objects3D[6].SetScale({1.f, 1.f, 1.f});
+    objects3D[6].SetColour({0, 0, 128, 255});
 
     FPSCamera camera3D = FPSCamera({0.f, -1.f, -2.5f},
                                    {0.f, 0.f, 1.f},

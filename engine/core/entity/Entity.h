@@ -11,11 +11,14 @@
 #define SIEGE_ENGINE_ENTITY_H
 
 #include <utils/String.h>
+#include <utils/Token.h>
 #include <utils/math/Maths.h>
 #include <utils/math/Xform.h>
 
 #include "EntityPtr.h"
 #include "IndexAllocator.h"
+
+REGISTER_TOKEN(Entity);
 
 namespace Siege
 {
@@ -26,36 +29,30 @@ class Entity
 {
 public:
 
-    // Public constants
-
-    static const String ENTITY_NAME;
-
     // 'Structors
 
     /**
      * Zero-param constructor for Entity, initialises both
-     * position and rotation to zero, and name to "Entity"
+     * position and rotation to zero, and type to Entity
      */
-    Entity() : Entity(ENTITY_NAME) {};
+    Entity() : Entity(TOKEN_Entity) {};
 
     /**
      * Single-param constructor for Entity that simply defines
      * a custom name for the Entity
-     * @param name - a const reference to the name of the
-     *               entity as a string
+     * @param type - a token for the entity to use as its type
      */
-    Entity(const String& name) : Entity(name, {Vec3::Zero(), 0.f}) {};
+    Entity(Token type) : Entity(type, {Vec3::Zero(), 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
      * generational index to zero
-     * @param name - a const reference to the name of the
-     *               entity as a string
+     * @param type - a token for the entity to use as its type
      * @param transform - the initial transition of the entity
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero
      */
-    Entity(const String& name, const Xform& transform, int zIndex = 0);
+    Entity(Token type, const Xform& transform, int zIndex = 0);
 
     /**
      * Default virtual destructor for Entity
@@ -121,11 +118,10 @@ public:
     // Public getters
 
     /**
-     * Getter method for the entity's vanity name
-     * @return a constant reference to the entity's name
-     *         as a string
+     * Getter method for the entity's type
+     * @return a token for the entity's type
      */
-    const String& GetName() const;
+    Token GetType() const;
 
     /**
      * Getter method for the entity's generational index
@@ -234,9 +230,9 @@ private:
     // Private fields
 
     /**
-     * The name of the entity type
+     * The type of the entity type
      */
-    const String& name;
+    Token type;
 
     /**
      * The generational index of the entity

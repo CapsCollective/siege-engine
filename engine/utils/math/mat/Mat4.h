@@ -214,6 +214,15 @@ struct Mat<T, 4, 4>
                 {matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]}};
     }
 
+    static inline constexpr Mat<T, 4, 4> Scale(const Vec<T, 3>& scale)
+    {
+        Mat<T, 4, 4> mat = Mat<T, 4, 4>::Identity();
+        mat[0][0] = scale.x;
+        mat[1][1] = scale.y;
+        mat[2][2] = scale.z;
+        return mat;
+    }
+
     // 'Structors
 
     /**

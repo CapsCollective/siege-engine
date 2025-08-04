@@ -1,0 +1,4 @@
+SOURCE_PATH:assets/models/cube_set.glb;
+MATERIAL_PATH:assets/models/cube.mat;
+NODE_PATH:/;
+FLIP_AXES:yz;

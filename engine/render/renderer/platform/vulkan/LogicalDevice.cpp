@@ -81,7 +81,6 @@ LogicalDevice::LogicalDevice(const Surface& surface, PhysicalDevice& physDevice)
     GET_UNIQUE_QUEUES(queueCreateInfos, graphicsIdx, presentIdx)
 
     auto deviceExtensions = Vulkan::Config::deviceExtensions;
-    auto layers = Vulkan::Config::validationLayers;
 
     CREATE_LOGICAL_DEVICE(
         vkPhysicalDevice,

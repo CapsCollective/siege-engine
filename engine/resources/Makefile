@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set build vars
-resourcesSrcDir := .
+resourcesSrcDir := ./
 resourcesBinDir := $(binDir)/engine/resources
 resourcesSources := $(call rwildcard,$(resourcesSrcDir)/,*.cpp)
 resourcesObjects := $(call findobjs,$(resourcesSrcDir),$(resourcesBinDir),$(resourcesSources))

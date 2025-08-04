@@ -158,12 +158,14 @@ You can see examples of this in any of the application targets under `examples`.
      ├─[engine]
      │        ├─[core] <- the engine's core library
      │        ├─[render] <- the engine's renderer
+     |        ├─[resources] <- the engine's resource types and loading system
      │        ├─[window] <- the engine's windowing and input library
      │        ├─[utils] <- the engine's utils library
      │
      ├─[examples]
      │          ├─[game] <- an example app utilising all of the engine's libraries
-     │          ├─[render] <- an example app demonstrating the renderer
+     │          ├─[render] <- an example app demonstrating the renderer for 3D
+     |          ├─[tilemap] <- an example app demonstrating the renderer for a tilemap
      │
      ├─[make] <- additional Make file utilities for the build system
      ├─[packer] <- an asset packing app for bundling game assets in a pack file on build 

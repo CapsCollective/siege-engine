@@ -12,21 +12,24 @@
 #include <resources/PackFile.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
-#include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
 #include <algorithm>
 
 #include "SceneSystem.h"
-#include "resources/GenericFileData.h"
+
+REGISTER_TOKEN(TYPE);
+REGISTER_TOKEN(ROTATION);
+REGISTER_TOKEN(Z_INDEX);
+REGISTER_TOKEN(POSITION);
 
 namespace Siege
 {
-void SceneFile::RegisterSerialisable(const String& name,
+void SceneFile::RegisterSerialisable(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
 {
-    GetSerialisables().emplace(name, std::make_pair(serialise, deserialise));
+    GetSerialisables().emplace(type, std::make_pair(serialise, deserialise));
 }
 
 bool SceneFile::Serialise(const std::vector<Entity*>& entities)
@@ -65,14 +68,14 @@ bool SceneFile::SerialiseToString(Entity* entity, String& fileData)
     auto& serialisables = GetSerialisables();
 
     // Only serialise entities that register a serialisable interface
-    auto it = serialisables.find(entity->GetName());
+    auto it = serialisables.find(entity->GetType());
     if (it == serialisables.end()) return false;
 
     // Serialise the general entity information
-    fileData += (entity->GetName() + LINE_SEP);
-    fileData += DefineField("POSITION", ToString(entity->GetPosition()));
-    fileData += DefineField("ROTATION", String::FromFloat(entity->GetRotation().y));
-    fileData += DefineField("Z-INDEX", String::FromInt(entity->GetZIndex()));
+    fileData += DefineField(TOKEN_TYPE, entity->GetType().GetId());
+    fileData += DefineField(TOKEN_POSITION, ToString(entity->GetPosition()));
+    fileData += DefineField(TOKEN_ROTATION, String::FromFloat(entity->GetRotation().y));
+    fileData += DefineField(TOKEN_Z_INDEX, String::FromInt(entity->GetZIndex()));
 
     // Apply its serialiser if it
     Serialiser serialiser = it->second.first;
@@ -141,34 +144,25 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
 
 Entity* SceneFile::DeserialiseFromString(const String& fileData)
 {
-    if (fileData.IsEmpty())
+    std::map<Token, String> attributes = Siege::FileSystem::ParseAttributeFileData(fileData);
+
+    if (attributes.empty())
     {
-        CC_LOG_WARNING("Found empty entity during deserialisation");
+        CC_LOG_WARNING("Found empty entity during deserialisation!");
         return nullptr;
-    }
-
-    // Split the file into arguments and strip the labels from each item
-    std::vector<String> args = fileData.Split(LINE_SEP);
-    for (String& arg : args) arg = arg.SubString((int) arg.Find(NAME_SEP) + 1);
-
-    // Get the standard entity fields
-    EntityData data;
-    if (!(args.size() >= 4 && args[ENTITY_ROT].GetFloat(data.rotation) &&
-          args[ENTITY_Z_IDX].GetInt(data.zIndex) && FromString(data.position, args[ENTITY_POS])))
-    {
-        CC_LOG_WARNING("Failed to deserialise fields for entity \"{}\"", args[ENTITY_NAME]);
     }
 
     // Check if the entity has a relevant serialisable interface registered
     auto& serialisables = GetSerialisables();
-    auto it = serialisables.find(args[ENTITY_NAME]);
+    Token typeToken(attributes[TOKEN_TYPE]);
+    auto it = serialisables.find(typeToken);
     if (it != serialisables.end())
     {
         // Apply its deserialiser
         Deserialiser deserialiser = it->second.second;
-        if (deserialiser) return deserialiser(data, args);
+        if (deserialiser) return deserialiser(attributes);
     }
-    else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", args[ENTITY_NAME]);
+    else CC_LOG_WARNING("\"{}\" has no deserialisation protocols defined", attributes[TOKEN_TYPE]);
     return nullptr;
 }
 
@@ -188,6 +182,29 @@ void SceneFile::InitialiseEntityPathMappings()
     {
         pair.first.InitialiseIndex();
     }
+}
+
+EntityData SceneFile::GetBaseEntityData(const std::map<Token, String>& attributes)
+{
+    EntityData data;
+    auto it = attributes.find(TOKEN_ROTATION);
+    if (it == attributes.end() || !it->second.GetFloat(data.rotation))
+    {
+        CC_LOG_WARNING("Failed to deserialise ROTATION field for entity attributes");
+    }
+
+    it = attributes.find(TOKEN_Z_INDEX);
+    if (it == attributes.end() || !it->second.GetInt(data.zIndex))
+    {
+        CC_LOG_WARNING("Failed to deserialise Z_INDEX field for entity attributes");
+    }
+
+    it = attributes.find(TOKEN_POSITION);
+    if (it == attributes.end() || !FromString(data.position, it->second))
+    {
+        CC_LOG_WARNING("Failed to deserialise POSITION field for entity attributes");
+    }
+    return data;
 }
 
 String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
@@ -212,7 +229,8 @@ String SceneFile::GetOrCreateEntityFilepath(Entity* entity)
 
     // Failed attempts to find a file index are serialised as 0
     String index = result ? String::FromInt(newFileIndex) : "0";
-    return MakeScenePath(sceneName) + '/' + entity->GetName() + '.' + index + ENTITY_FILE_EXT;
+    return MakeScenePath(sceneName) + '/' + entity->GetType().GetId() + '.' + index +
+           ENTITY_FILE_EXT;
 }
 
 String SceneFile::MakeScenePath(const String& sceneName)

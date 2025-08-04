@@ -121,6 +121,15 @@ clean:
 	$(RM) $(call platformpth,$(outputDir))
 	$(RM) $(call platformpth,$(buildFlagsFile))
 
+clean-deps:
+	git submodule foreach --recursive git clean -xfd
+	git submodule foreach --recursive git reset --hard
+	$(RM) $(call platformpth,$(vendorDir)/include)
+	$(RM) $(call platformpth,$(vendorDir)/vulkan/include)
+	$(RM) $(call platformpth,$(vendorDir)/vulkan/lib)
+
+clean-all: clean clean-deps
+
 # Check file formatting program across all source files
 format-check:
 	$(formatScript) "$(engineDir) $(examplesDir) $(testsDir) $(packerDir)" --check

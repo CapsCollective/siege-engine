@@ -1,0 +1,3 @@
+SOURCE_PATH:assets/models/cube/cube.obj;
+MATERIAL_PATH:assets/models/cube/cube.mat;
+NODE_PATH:/;

@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_SCENEFILE_H
 #define SIEGE_ENGINE_SCENEFILE_H
 
+#include <utils/FileSystem.h>
 #include <utils/Macros.h>
 #include <utils/String.h>
 #include <utils/math/Maths.h>
@@ -29,30 +30,14 @@
 namespace Siege
 {
 // Define constants
-static constexpr const char LINE_SEP = ';';
-static constexpr const char NAME_SEP = ':';
 static constexpr const char* SCENE_FILE_EXT = ".scene";
 static constexpr const char* ENTITY_FILE_EXT = ".entity";
 
 // Define types
 typedef struct EntityData EntityData;
 typedef const std::function<String(class Entity*)> Serialiser;
-typedef const std::function<Entity*(const EntityData&, const std::vector<String>&)> Deserialiser;
+typedef const std::function<Entity*(const std::map<Token, String>&)> Deserialiser;
 typedef std::pair<Serialiser, Deserialiser> SerialisationInterface;
-
-/**
- * An enum for common serialisation field names
- */
-enum SerialisationFields
-{
-    ENTITY_NAME = 0,
-    ENTITY_POS = 1,
-    ENTITY_ROT = 2,
-    ENTITY_Z_IDX = 3,
-    CUSTOM_FIELD_1 = 4,
-    CUSTOM_FIELD_2 = 5,
-    CUSTOM_FIELD_3 = 6,
-};
 
 class SceneFile
 {
@@ -75,11 +60,11 @@ public:
 
     /**
      * Registers a serialisation interface for an entity
-     * @param name - the name of the serialisable entity
+     * @param type - the type token of the serialisable entity
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    static void RegisterSerialisable(const String& name,
+    static void RegisterSerialisable(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise);
 
@@ -136,6 +121,8 @@ public:
      */
     void InitialiseEntityPathMappings();
 
+    static EntityData GetBaseEntityData(const std::map<Token, String>& attributes);
+
 private:
 
     // Private methods
@@ -159,11 +146,11 @@ private:
 
     /**
      * Getter & storage for mapped serialisation interfaces
-     * @return a map of string to serialisation interfaces
+     * @return a map of token to serialisation interfaces
      */
-    static std::map<String, SerialisationInterface>& GetSerialisables()
+    static std::map<Token, SerialisationInterface>& GetSerialisables()
     {
-        static std::map<String, SerialisationInterface> serialisables;
+        static std::map<Token, SerialisationInterface> serialisables;
         return serialisables;
     }
 
@@ -216,15 +203,15 @@ struct SerialisationInterfaceRegisterer
      * that registers provided serialisation interfaces at
      * initialisation time
      * @note This is supposedly 1B in size per-instantiation
-     * @param name - the name of the serialisable entity
+     * @param type - the type token of the serialisable entity
      * @param serialise - the serialise function for the entity
      * @param deserialise - the deserialise function for the entity
      */
-    SerialisationInterfaceRegisterer(const String& name,
+    SerialisationInterfaceRegisterer(Token type,
                                      const Serialiser& serialise,
                                      const Deserialiser& deserialise)
     {
-        SceneFile::RegisterSerialisable(name, serialise, deserialise);
+        SceneFile::RegisterSerialisable(type, serialise, deserialise);
     }
 };
 
@@ -233,13 +220,13 @@ struct SerialisationInterfaceRegisterer
 /**
  * An inlined helper function to define the structure of the
  * property field in a .scene file
- * @param name - the name of the property field
+ * @param name - the token name of the property field
  * @param content - the content of the property
  * @return the field content as a const string
  */
-inline String DefineField(const String& name, const String& content)
+inline String DefineField(Token name, const String& content)
 {
-    return name + NAME_SEP + content + LINE_SEP;
+    return String(name.GetId()) + ATTR_FILE_VALUE_SEP + content + ATTR_FILE_LINE_SEP;
 }
 } // namespace Siege
 

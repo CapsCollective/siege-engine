@@ -9,7 +9,7 @@ include $(makeDir)/Functions.mk
 include $(makeDir)/Platform.mk
 
 # Set source build vars
-packerSrcDir := .
+packerSrcDir := ./
 packerBinDir := $(binDir)/packer
 packerSources := $(call rwildcard,$(packerSrcDir)/,*.cpp)
 packerObjects := $(call findobjs,$(packerSrcDir),$(packerBinDir),$(packerSources))
@@ -17,8 +17,8 @@ packerDepends := $(patsubst %.o, %.d, $(call rwildcard,$(packerBinDir)/,*.o))
 packerBuildDir := $(packerBinDir)/build
 
 # Set build vars
-linkFlags += -l resources -l utils
-compileFlags += -I $(vendorDir)/tinyobjloader -I $(vendorDir)/stb_image
+linkFlags += -l resources -l utils -L $(vendorDir)/zlib/build/lib -L $(vendorDir)/assimp/build/lib -l assimp -l z -l stdc++
+compileFlags += -I $(vendorDir)/stb_image -I $(vendorDir)/assimp/include -I $(vendorDir)/assimp/build/include
 
 .PHONY: all
 

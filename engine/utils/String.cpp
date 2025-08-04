@@ -9,6 +9,7 @@
 
 #include "String.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ostream>
@@ -121,10 +122,9 @@ String::String(const char* string) : memory()
 String::String(const wchar_t* string) : memory()
 {
     size_t size = std::wcslen(string) + 1;
-    char convertedStr[size];
-    memset(convertedStr, 0, size + 1);
+    char* convertedStr = static_cast<char*>(alloca(size));
     std::wcstombs(convertedStr, string, size);
-    convertedStr[size] = '\0';
+    convertedStr[size - 1] = '\0';
     Assign(convertedStr);
 }
 
@@ -186,7 +186,7 @@ bool String::operator<(const String& rhs) const
 
 String String::operator+(const String& rhs) const
 {
-    return *this + (const char*) rhs.Data();
+    return *this + rhs.Data();
 }
 
 String String::operator+(const char* rhs) const
@@ -195,7 +195,7 @@ String String::operator+(const char* rhs) const
     size_t lhsLength = Size();
     size_t rhsLength = strlen(rhs);
 
-    char cstr[lhsLength + rhsLength + 1];
+    char* cstr = static_cast<char*>(alloca(lhsLength + rhsLength + 1));
     strcpy(cstr, data);
     strcpy(cstr + lhsLength, rhs);
 
@@ -207,7 +207,7 @@ String String::operator+(char rhs) const
     const char* data = Data();
     size_t lhsLength = Size();
 
-    char cstr[lhsLength + 1 + 1];
+    char* cstr = static_cast<char*>(alloca(lhsLength + 1 + 1));
     strcpy(cstr, data);
     cstr[lhsLength] = rhs;
     cstr[lhsLength + 1] = '\0';
@@ -230,10 +230,9 @@ String& String::operator+=(const char* rhs)
 String& String::operator+=(const wchar_t* rhs)
 {
     size_t size = std::wcslen(rhs) + 1;
-    char convertedStr[size];
-    memset(convertedStr, 0, size + 1);
+    char* convertedStr = static_cast<char*>(alloca(size));
     std::wcstombs(convertedStr, rhs, size);
-    convertedStr[size] = '\0';
+    convertedStr[size - 1] = '\0';
 
     Append(convertedStr);
     return *this;
@@ -259,6 +258,21 @@ String::operator bool() const
 String::operator const char*() const
 {
     return Data();
+}
+
+bool String::GetBool(bool& value) const
+{
+    if (*this == ("0") || *this == ("false"))
+    {
+        value = false;
+        return true;
+    }
+    if (*this == ("1") || *this == ("true"))
+    {
+        value = true;
+        return true;
+    }
+    return false;
 }
 
 bool String::GetInt(int& value) const
@@ -287,6 +301,11 @@ bool String::GetFloat(float& value) const
     catch (const std::out_of_range& err)
     {}
     return false;
+}
+
+String String::FromBool(bool value)
+{
+    return value ? "true" : "false";
 }
 
 String String::FromInt(int value)
@@ -378,6 +397,18 @@ size_t String::Find(char character, int startIdx) const
     return pos != nullptr ? pos - sstr + startIdx : -1;
 }
 
+bool String::BeginsWith(const String& substring) const
+{
+    return BeginsWith(substring.Data());
+}
+
+bool String::BeginsWith(const char* substring) const
+{
+    const char* data = Data();
+    size_t strLen = strlen(substring);
+    return strncmp(data, substring, strLen) == 0;
+}
+
 std::vector<String> String::Split(const char* delimiters) const
 {
     const char* data = Data();
@@ -385,7 +416,7 @@ std::vector<String> String::Split(const char* delimiters) const
     if (len == 0) return {};
 
     // Copy over the internal string
-    char string[len + 1];
+    char* string = static_cast<char*>(alloca(len + 1));
     strcpy(string, data);
 
     // Iterate over the string while there is still a delimiter
@@ -415,7 +446,7 @@ String String::SubString(int startPos, size_t length) const
     if (startPos >= len || (startPos + length) > len) return {};
 
     // Copy over the substring and return it
-    char subString[length + 1];
+    char* subString = static_cast<char*>(alloca(length + 1));
     strncpy(subString, data + startPos, length);
     subString[length] = '\0'; // Manually add the null-termination char
     return subString;
@@ -456,7 +487,7 @@ bool String::Shrink()
     char* data = Data();
     if (len <= MAX_STACK_CAPACITY)
     {
-        char newStr[len + 1];
+        char* newStr = static_cast<char*>(alloca(len + 1));
         strcpy(newStr, data);
         free(str);
         strcpy(buffer, newStr);
@@ -498,7 +529,7 @@ void String::Append(const char* string)
     size_t rhsLength = strlen(string);
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength + 1];
+    char* cstr = static_cast<char*>(alloca(fullLength + 1));
     strcpy(cstr, data);
     strcpy(cstr + lhsLength, string);
 
@@ -510,7 +541,7 @@ void String::Append(char character)
     const char* data = Data();
     size_t lhsLength = Size();
 
-    char cstr[lhsLength + 2];
+    char* cstr = static_cast<char*>(alloca(lhsLength + 2));
     strcpy(cstr, data);
     cstr[lhsLength] = character;
     cstr[lhsLength + 1] = '\0';
@@ -526,7 +557,7 @@ void String::Prepend(const String& string)
     size_t rhsLength = Size();
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength + 1];
+    char* cstr = static_cast<char*>(alloca(fullLength + 1));
     strcpy(cstr, string.Data());
     strcpy(cstr + lhsLength, data);
 
@@ -540,7 +571,7 @@ void String::Prepend(const char* string)
     size_t rhsLength = Size();
     size_t fullLength = lhsLength + rhsLength;
 
-    char cstr[fullLength + 1];
+    char* cstr = static_cast<char*>(alloca(fullLength + 1));
     strcpy(cstr, string);
     strcpy(cstr + lhsLength, data);
 
@@ -556,6 +587,13 @@ char String::PopBack()
     if (onHeap) size -= 1;
     else space += 1;
     return character;
+}
+
+void String::Reverse()
+{
+    char* data = Data();
+    size_t len = Size();
+    std::reverse(data, data + len);
 }
 
 void String::Erase(int startPos, size_t length)
@@ -574,7 +612,7 @@ void String::Erase(int startPos, size_t length)
     }
 
     // Copy over the non-erased portions and assign it
-    char newStr[newLen];
+    char* newStr = static_cast<char*>(alloca(newLen));
     strncpy(newStr, data, startPos);
     strcpy(newStr + startPos, data + startPos + length);
     Assign(newStr);
@@ -598,7 +636,7 @@ void String::Insert(int pos, const char* string)
     size_t insLength = strlen(string);
 
     // Copy over the non-erased portions and assign it
-    char newStr[len + insLength];
+    char* newStr = static_cast<char*>(alloca(len + insLength));
     strncpy(newStr, data, pos);
     strncpy(newStr + pos, string, insLength);
     strcpy(newStr + pos + insLength, data + pos);
@@ -620,7 +658,7 @@ bool String::Replace(const char* toReplace, const char* replacement)
     size_t replaceLen = strlen(replacement);
     size_t finalLen = (currentLen - toReplaceLen) + replaceLen;
 
-    char newStr[finalLen + 1];
+    char* newStr = static_cast<char*>(alloca(finalLen + 1));
     strncpy(newStr, data, pos);
     strncpy(newStr + pos, replacement, replaceLen);
     strcpy(newStr + pos + replaceLen, data + pos + toReplaceLen);
@@ -676,8 +714,20 @@ String operator+(const char* lhs, const String& rhs)
     size_t lhsLength = strlen(lhs);
     size_t rhsLength = rhs.Size();
 
-    char cstr[lhsLength + rhsLength + 1];
+    char* cstr = static_cast<char*>(alloca(lhsLength + rhsLength + 1));
     strcpy(cstr, lhs);
+    strcpy(cstr + lhsLength, rhs.Str());
+
+    return {cstr};
+}
+
+String operator+(const wchar_t* lhs, const String& rhs)
+{
+    size_t lhsLength = std::wcslen(lhs);
+    size_t rhsLength = rhs.Size();
+
+    char* cstr = static_cast<char*>(alloca(lhsLength + rhsLength + 1));
+    std::wcstombs(cstr, lhs, lhsLength);
     strcpy(cstr + lhsLength, rhs.Str());
 
     return {cstr};
@@ -687,7 +737,7 @@ String operator+(char lhs, const String& rhs)
 {
     size_t rhsLength = rhs.Size();
 
-    char cstr[1 + rhsLength + 1];
+    char* cstr = static_cast<char*>(alloca(1 + rhsLength + 1));
     cstr[0] = lhs;
     strcpy(cstr + 1, rhs.Str());
 

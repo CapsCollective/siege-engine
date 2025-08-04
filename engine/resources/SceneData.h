@@ -41,6 +41,7 @@ struct SceneData
 
     static uint32_t GetDataSize(void* objectData)
     {
+        if (!objectData) return 0;
         SceneData* sceneData = reinterpret_cast<SceneData*>(objectData);
         return sizeof(SceneData) + sceneData->dataSize;
     }

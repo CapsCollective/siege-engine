@@ -76,6 +76,7 @@ struct StaticMeshData
 
     static uint32_t GetDataSize(void* objectData)
     {
+        if (!objectData) return 0;
         StaticMeshData* staticMeshData = reinterpret_cast<StaticMeshData*>(objectData);
         return sizeof(StaticMeshData) + sizeof(uint32_t) * staticMeshData->indicesCount +
                sizeof(BaseVertex) * staticMeshData->verticesCount;

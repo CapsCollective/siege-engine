@@ -16,8 +16,9 @@
 
 #include "../ServiceLocator.h"
 
-// Static member initialisation
-const Siege::String Geometry::ENTITY_NAME("Geometry");
+REGISTER_TOKEN(DIMENSIONS);
+REGISTER_TOKEN(MODEL_PATH);
+REGISTER_TOKEN(TEXTURE_PATH);
 
 void Geometry::OnStart()
 {
@@ -71,26 +72,34 @@ static Siege::String Serialise(Siege::Entity* entity)
 {
     Siege::String fileData;
     auto geometry = dynamic_cast<Geometry*>(entity);
-    fileData += DefineField("DIMENSIONS", Siege::ToString(geometry->GetDimensions()));
+    fileData += DefineField(TOKEN_DIMENSIONS, Siege::ToString(geometry->GetDimensions()));
 
-    fileData += DefineField("MODEL_PATH", geometry->GetModelPath());
-    fileData += DefineField("TEXTURE_PATH", geometry->GetTexturePath());
+    fileData += DefineField(TOKEN_MODEL_PATH, geometry->GetModelPath());
+    fileData += DefineField(TOKEN_TEXTURE_PATH, geometry->GetTexturePath());
     return fileData;
 }
 
-static Siege::Entity* Deserialise(const Siege::EntityData& data,
-                                  const std::vector<Siege::String>& args)
+static Siege::Entity* Deserialise(const std::map<Siege::Token, Siege::String>& attributes)
 {
+    Siege::EntityData data = Siege::SceneFile::GetBaseEntityData(attributes);
+
     Siege::Vec3 dimensions;
-    if (!Siege::FromString(dimensions, args[Siege::CUSTOM_FIELD_1]))
+    auto it = attributes.find(TOKEN_DIMENSIONS);
+    if (it != attributes.end())
     {
-        CC_LOG_WARNING("Failed to deserialise dimensions with value {}",
-                       args[Siege::CUSTOM_FIELD_1]);
+        if (!Siege::FromString(dimensions, it->second))
+        {
+            CC_LOG_WARNING("Failed to deserialise dimensions with value {}", it->second);
+        }
     }
-    Siege::String modelPath = args[Siege::CUSTOM_FIELD_2];
-    Siege::String texturePath = args[Siege::CUSTOM_FIELD_3];
+
+    it = attributes.find(TOKEN_MODEL_PATH);
+    Siege::String modelPath = it != attributes.end() ? it->second : "";
+
+    it = attributes.find(TOKEN_TEXTURE_PATH);
+    Siege::String texturePath = it != attributes.end() ? it->second : "";
 
     return new Geometry({data.position, data.rotation, dimensions}, modelPath, texturePath);
 }
 
-REGISTER_SERIALISATION_INTERFACE(Geometry::ENTITY_NAME, Serialise, Deserialise);
+REGISTER_SERIALISATION_INTERFACE(TOKEN_Geometry, Serialise, Deserialise);
