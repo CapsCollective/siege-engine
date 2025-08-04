@@ -10,6 +10,7 @@
 #include "SceneDataPacker.h"
 
 #include <resources/SceneData.h>
+#include <utils/Defer.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
@@ -36,7 +37,9 @@ void* PackSceneFile(const Siege::String& filePath)
     bodyString = Siege::FileSystem::StripNewLines(bodyString);
 
     uint32_t fileSize = bodyString.Size() + 1;
-    char* data = static_cast<char*>(alloca(fileSize));
+    char* data = static_cast<char*>(malloc(fileSize));
+    defer([&data] { free(data); });
+
     memcpy(data, bodyString.Str(), fileSize);
 
     Siege::SceneData* sceneData = Siege::SceneData::Create(&data[0], fileSize);

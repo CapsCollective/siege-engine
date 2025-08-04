@@ -33,23 +33,21 @@ public:
 
     /**
      * Zero-param constructor for Entity, initialises both
-     * position and rotation to zero, and name to "Entity"
+     * position and rotation to zero, and type to Entity
      */
     Entity() : Entity(TOKEN_Entity) {};
 
     /**
      * Single-param constructor for Entity that simply defines
      * a custom name for the Entity
-     * @param typeName - a const reference to the name of the
-     *                   entity as a string
+     * @param type - a token for the entity to use as its type
      */
     Entity(Token type) : Entity(type, {Vec3::Zero(), 0.f}) {};
 
     /**
      * Delegate constructor for Entity, initialises
      * generational index to zero
-     * @param name - a const reference to the name of the
-     *               entity as a string
+     * @param type - a token for the entity to use as its type
      * @param transform - the initial transition of the entity
      * @param zIndex - the initial z-index of the entity,
      *                 defaults to zero

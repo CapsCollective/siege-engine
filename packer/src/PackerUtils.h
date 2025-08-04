@@ -7,13 +7,13 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_PACKER_MATHUTILS_H
-#define SIEGE_ENGINE_PACKER_MATHUTILS_H
+#ifndef SIEGE_ENGINE_PACKER_PACKERUTILS_H
+#define SIEGE_ENGINE_PACKER_PACKERUTILS_H
 
+#include <assimp/types.h>
 #include <utils/math/mat/Mat4.h>
-#include <assimp/Importer.hpp>
 
-static inline constexpr Siege::Mat4 AssimptMat4ToMat4(const aiMatrix4x4& matrix)
+static constexpr Siege::Mat4 AssimpMat4ToMat4(const aiMatrix4x4& matrix)
 {
     return {{matrix.a1, matrix.b1, matrix.c1, matrix.d1},
             {matrix.a2, matrix.b2, matrix.c2, matrix.d2},
@@ -21,4 +21,4 @@ static inline constexpr Siege::Mat4 AssimptMat4ToMat4(const aiMatrix4x4& matrix)
             {matrix.a4, matrix.b4, matrix.c4, matrix.d4}};
 }
 
-#endif // SIEGE_ENGINE_PACKER_MATHUTILS_H
+#endif // SIEGE_ENGINE_PACKER_PACKERUTILS_H

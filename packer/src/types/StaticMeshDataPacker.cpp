@@ -8,7 +8,6 @@
 //
 
 #include "StaticMeshDataPacker.h"
-#include "MathUtils.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -17,7 +16,10 @@
 #include <utils/Logging.h>
 
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <fstream>
+
+#include "../PackerUtils.h"
 
 enum RequestPathStage
 {
@@ -59,11 +61,7 @@ static void GetMeshData(const aiScene* scene,
         Siege::BaseVertex vertex {};
 
         aiVector3t<ai_real> vert = mesh->mVertices[i];
-        Siege::Vec4 v = {vert.x, vert.y, vert.z, 1.f};
-
-        v = mat * v;
-
-        vertex.position = {v.x, v.y, v.z};
+        vertex.position = mat * Siege::Vec4(vert.x, vert.y, vert.z, 1.f);
 
         aiVector3t<ai_real> norm = mesh->mNormals[i];
         vertex.normal = {norm.x, norm.y, norm.z};
@@ -112,7 +110,7 @@ static void GetMeshesForNode(const aiScene* scene,
 
     if (nodePathStage == CHILD || nodePathStage == SELF)
     {
-        matrix *= AssimptMat4ToMat4(node->mTransformation);
+        matrix *= AssimpMat4ToMat4(node->mTransformation);
     }
 
     for (uint32_t i = 0; i < node->mNumMeshes; i++)

@@ -29,7 +29,7 @@ UTEST(test_Token, StaticallyRegistered)
     ASSERT_TRUE(tk2.IsValid());
     ASSERT_TRUE(tk3.IsValid());
     ASSERT_TRUE(tk4.IsValid());
-    ASSERT_TRUE(!tk5.IsValid());
+    ASSERT_FALSE(tk5.IsValid());
     ASSERT_TRUE(tk6.IsValid());
     ASSERT_TRUE(tk7.IsValid());
 
@@ -89,7 +89,7 @@ UTEST(test_Token, DynamicallyRegistered)
     Siege::Token tk9 = Siege::Token::FindToken("FooBar");
 
     ASSERT_TRUE(tk8.IsValid());
-    ASSERT_TRUE(!tk9.IsValid());
+    ASSERT_FALSE(tk9.IsValid());
 
     ASSERT_STREQ("GoodbyeWorld", tk8.GetId());
 
