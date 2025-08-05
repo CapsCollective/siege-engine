@@ -9,13 +9,13 @@
 
 #include "GenericFileDataPacker.h"
 
-#include <resources/GenericFileData.h>
+#include <resources/PackFileData.h>
 #include <utils/Defer.h>
 #include <utils/Logging.h>
 
 #include <fstream>
 
-void* PackGenericFile(const Siege::String& filePath)
+Siege::PackFileData* PackGenericFile(const Siege::String& filePath)
 {
     CC_LOG_INFO("Reading file data as generic binary asset")
 
@@ -27,7 +27,6 @@ void* PackGenericFile(const Siege::String& filePath)
     // Since we consumed the entire file, we can tell the size by checking where
     // the file stream is reading from (which presumably is at the end of the file).
     uint32_t fileSize = file.tellg();
-
     char* data = static_cast<char*>(malloc(fileSize));
     defer([&data] { free(data); });
 
@@ -35,6 +34,6 @@ void* PackGenericFile(const Siege::String& filePath)
     file.read(data, fileSize);
     file.close();
 
-    Siege::GenericFileData* fileData = Siege::GenericFileData::Create(&data[0], fileSize);
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(&data[0], fileSize);
     return fileData;
 }

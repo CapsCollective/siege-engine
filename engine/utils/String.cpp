@@ -549,6 +549,19 @@ void String::Append(char character)
     Assign(cstr);
 }
 
+void String::Append(const char* string, size_t size)
+{
+    const char* data = Data();
+    size_t lhsLength = Size();
+    size_t fullLength = lhsLength + size;
+
+    char* cstr = static_cast<char*>(alloca(fullLength + 1));
+    strcpy(cstr, data);
+    strncpy(cstr + lhsLength, string, size);
+
+    Assign(cstr);
+}
+
 void String::Prepend(const String& string)
 {
     // Mirrors c-string implementation

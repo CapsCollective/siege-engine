@@ -130,7 +130,8 @@ void EditorController::OnUpdate()
         // Run the appropriate editor mode logic on the selected entity
         switch (currentMode)
         {
-            case POSITION: {
+            case POSITION:
+            {
                 // Calculate move from input
                 Siege::Vec3 move = Siege::Vec3::Zero();
                 float precision = MOVE_LEVELS[movePrecision];
@@ -149,7 +150,8 @@ void EditorController::OnUpdate()
                 selectedEntity->SetPosition(entityPosition + move);
                 break;
             }
-            case ROTATION: {
+            case ROTATION:
+            {
                 // Calculate rotation from input and apply it to the rotation of the entity
                 float precision = ROTATE_LEVELS[rotatePrecision];
                 float rotation =
@@ -254,7 +256,8 @@ void EditorController::AdjustPrecision(int adjustment)
     // Precision adjust for the relevant mode
     switch (currentMode)
     {
-        case POSITION: {
+        case POSITION:
+        {
             // Check boundaries on move precision
             int newPrecision = movePrecision + adjustment;
             if (newPrecision >= 0 && newPrecision < sizeof(MOVE_LEVELS) / sizeof(int))
@@ -266,7 +269,8 @@ void EditorController::AdjustPrecision(int adjustment)
             }
             break;
         }
-        case ROTATION: {
+        case ROTATION:
+        {
             // Check boundaries on rotate precision
             int newPrecision = rotatePrecision + adjustment;
             if (newPrecision >= 0 && newPrecision < sizeof(ROTATE_LEVELS) / sizeof(int))

@@ -10,8 +10,8 @@
 #include "Font.h"
 
 #include <freetype/freetype.h>
-#include <resources/GenericFileData.h>
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <utils/Defer.h>
 #include <utils/Logging.h>
@@ -27,7 +27,7 @@ namespace Siege::Vulkan
 Font::Font(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    GenericFileData* fileData = packFile->FindData<GenericFileData>(filePath);
+    std::shared_ptr<PackFileData> fileData = packFile->FindData(filePath);
 
     FT_Open_Args args;
     args.flags = FT_OPEN_MEMORY;

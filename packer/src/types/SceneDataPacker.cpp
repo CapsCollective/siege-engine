@@ -10,21 +10,25 @@
 #include "SceneDataPacker.h"
 
 #include <resources/SceneData.h>
-#include <utils/Defer.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
 #include <algorithm>
 #include <fstream>
 
-void* PackSceneFile(const Siege::String& filePath)
+#include "render/renderer/buffer/Buffer.h"
+#include "resources/PackFileData.h"
+
+Siege::PackFileData* PackSceneFile(const Siege::String& filePath)
 {
-    Siege::String bodyString;
-    auto appendFile = [&bodyString](const std::filesystem::path& path) {
+    Siege::SceneData sceneData;
+    auto appendFile = [&sceneData](const std::filesystem::path& path) {
         if (path.extension() != ".entity") return;
         CC_LOG_INFO("Reading entity file {}", path.filename().c_str())
-        bodyString += Siege::FileSystem::Read(path.c_str());
-        bodyString += '|';
+
+        Siege::String content = Siege::FileSystem::Read(path.c_str());
+        content = Siege::FileSystem::StripNewLines(content);
+        sceneData.entities.emplace_back(content);
     };
 
     bool result = Siege::FileSystem::ForEachFileInDir(filePath, appendFile);
@@ -34,14 +38,12 @@ void* PackSceneFile(const Siege::String& filePath)
         return nullptr;
     }
 
-    bodyString = Siege::FileSystem::StripNewLines(bodyString);
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          sceneData,
+                                          Siege::BinarySerialisation::SERIALISE);
 
-    uint32_t fileSize = bodyString.Size() + 1;
-    char* data = static_cast<char*>(malloc(fileSize));
-    defer([&data] { free(data); });
-
-    memcpy(data, bodyString.Str(), fileSize);
-
-    Siege::SceneData* sceneData = Siege::SceneData::Create(&data[0], fileSize);
-    return sceneData;
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());
+    return fileData;
 }

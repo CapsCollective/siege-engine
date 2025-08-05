@@ -67,12 +67,12 @@ $(exampleTilemapBinDir)/%.o: $(exampleTilemapSrcDir)/%.cpp
 
 # Copy assets directory to the build directory and pack them
 pack-assets:
+	$(RM) "$(exampleTilemapBuildDir)/assets"
 	$(call MKDIR,$(call platformpth,$(exampleTilemapBuildDir)/assets))
 	$(call COPY,$(exampleTilemapSrcDir)/assets,$(exampleTilemapBuildDir)/assets,$(RWCARDGLOB))
 	$(call MKDIR,$(call platformpth,$(exampleTilemapBuildDir)/assets/shaders))
 	$(call COPY,$(binDir)/engine/render/build/assets/shaders,$(exampleTilemapBuildDir)/assets/shaders,$(RWCARDGLOB))
 	$(packerApp) $(exampleTilemapBuildDir)/app.pck $(exampleTilemapBuildDir) $(exampleTilemapAssets)
-	$(RM) "$(exampleTilemapBuildDir)/assets"
 	$(call PACK_LIBS_SCRIPT,$(vendorDir)/vulkan/lib,$(exampleTilemapBuildDir))
 
 # Package the built application and all its assets to the output directory

@@ -11,7 +11,9 @@
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <resources/PackFileData.h>
 #include <resources/StaticMeshData.h>
+#include <utils/BinarySerialisation.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
@@ -140,7 +142,8 @@ static void GetMeshesForNode(const aiScene* scene,
     }
 };
 
-void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
+Siege::PackFileData* PackStaticMeshFile(const Siege::String& filePath,
+                                        const Siege::String& assetsPath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
     std::map<Siege::Token, Siege::String> attributes =
@@ -208,10 +211,21 @@ void* PackStaticMeshFile(const Siege::String& filePath, const Siege::String& ass
         }
     }
 
-    std::vector<Siege::BaseVertex> vertices;
-    std::vector<uint32_t> indices;
-    GetMeshesForNode(scene, scene->mRootNode, requestedNodePath, '/', baseXform, vertices, indices);
+    Siege::StaticMeshData staticMeshData;
+    GetMeshesForNode(scene,
+                     scene->mRootNode,
+                     requestedNodePath,
+                     '/',
+                     baseXform,
+                     staticMeshData.vertices,
+                     staticMeshData.indices);
 
-    Siege::StaticMeshData* staticMeshData = Siege::StaticMeshData::Create(indices, vertices);
-    return staticMeshData;
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          staticMeshData,
+                                          Siege::BinarySerialisation::SERIALISE);
+
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());
+    return fileData;
 }

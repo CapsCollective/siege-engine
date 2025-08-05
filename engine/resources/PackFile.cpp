@@ -28,7 +28,7 @@ bool PackFile::LoadFromPath(const String& filepath)
 {
     std::ifstream inputFileStream;
     inputFileStream.open(filepath, std::ios::in | std::ios::binary);
-    inputFileStream.read(reinterpret_cast<char*>(&header), sizeof(PackFile::Header));
+    inputFileStream.read(reinterpret_cast<char*>(&header), sizeof(Header));
 
     body = reinterpret_cast<char*>(malloc(header.bodySize));
     inputFileStream.read(body, (uint32_t) header.bodySize);
@@ -41,7 +41,7 @@ bool PackFile::LoadFromPath(const String& filepath)
     char* tocEnd = body + header.bodySize;
     while (tocCurr < tocEnd)
     {
-        PackFile::TocEntry* toc = reinterpret_cast<PackFile::TocEntry*>(tocCurr);
+        TocEntry* toc = reinterpret_cast<TocEntry*>(tocCurr);
         if (!toc)
         {
             break;
@@ -50,6 +50,27 @@ bool PackFile::LoadFromPath(const String& filepath)
         entries.emplace(toc->name, toc);
     }
     return true;
+}
+
+std::shared_ptr<PackFileData> PackFile::FindData(const String& filepath)
+{
+    const TocEntry* toc = entries[filepath];
+    if (!toc)
+    {
+        return nullptr;
+    }
+
+    uLongf bodyDataSizeUncompressed = toc->dataSize;
+    uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
+
+    PackFileData* packFileData = new (malloc(bodyDataSizeUncompressed)) PackFileData();
+    int result = uncompress(reinterpret_cast<Bytef*>(packFileData),
+                            &bodyDataSizeUncompressed,
+                            reinterpret_cast<Bytef*>(body + toc->dataOffset),
+                            bodyDataSizeCompressed);
+    CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
+
+    return {packFileData, free};
 }
 
 const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
@@ -69,7 +90,7 @@ PackFile::TocEntry* PackFile::TocEntry::Create(const String& name,
     uint32_t nameDataSize = name.Size() + 1;
     void* mem = malloc(sizeof(TocEntry) + nameDataSize);
 
-    PackFile::TocEntry* tocEntry = new (mem) TocEntry();
+    TocEntry* tocEntry = new (mem) TocEntry();
     tocEntry->dataOffset = dataOffset;
     tocEntry->dataSize = dataSize;
     strcpy(&tocEntry->name[0], name.Str());

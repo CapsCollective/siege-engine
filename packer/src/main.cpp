@@ -7,13 +7,13 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include <resources/GenericFileData.h>
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <resources/StaticMeshData.h>
-#include <resources/Texture2DData.h>
 #include <utils/Logging.h>
+#include <zlib.h>
 
 #include <fstream>
 
@@ -43,46 +43,33 @@ int main(int argc, char* argv[])
         inputFiles.emplace_back(argv[currentArg]);
     }
 
-    uint32_t dataSize = 0;
-    uint32_t entriesSize = 0;
+    uint32_t entriesDataSize = 0;
+    uint32_t entriesTocSize = 0;
 
-    struct BodyDataEntry
-    {
-        void* ptr;
-        uint32_t size;
-    };
-
-    std::vector<void*> dynamicAllocations;
-    std::vector<PackFile::TocEntry*> tocEntries;
-    std::vector<BodyDataEntry> bodyDataEntries;
+    std::vector<std::pair<PackFile::TocEntry*, void*>> entries;
     for (auto& file : inputFiles)
     {
         if (file.empty()) continue;
         CC_LOG_INFO("Reading asset at path {}", file.c_str())
 
-        void* data = nullptr;
-        uint32_t bodyDataSize = 0;
+        Siege::PackFileData* data = nullptr;
         Siege::String fullPath = assetsDir + "/" + Siege::String(file.c_str());
         std::filesystem::path extension = file.extension();
         if (extension == ".sm")
         {
             data = PackStaticMeshFile(fullPath, assetsDir);
-            bodyDataSize = Siege::StaticMeshData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
             data = PackTexture2DFile(fullPath);
-            bodyDataSize = Siege::Texture2DData::GetDataSize(data);
         }
         else if (extension == ".spv" || extension == ".ttf")
         {
             data = PackGenericFile(fullPath);
-            bodyDataSize = Siege::GenericFileData::GetDataSize(data);
         }
         else if (extension == ".scene")
         {
             data = PackSceneFile(fullPath);
-            bodyDataSize = Siege::SceneData::GetDataSize(data);
         }
 
         if (!data)
@@ -92,23 +79,20 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        uint32_t dataSize = data->GetDataSize();
         PackFile::TocEntry* tocEntry =
-            PackFile::TocEntry::Create(file.c_str(), dataSize, bodyDataSize);
+            PackFile::TocEntry::Create(file.c_str(), entriesDataSize, dataSize);
 
-        bodyDataEntries.push_back({data, bodyDataSize});
-        tocEntries.push_back(tocEntry);
+        entries.emplace_back(tocEntry, data);
 
-        dataSize += bodyDataSize;
-        entriesSize += tocEntry->GetDataSize();
-
-        dynamicAllocations.push_back(data);
-        dynamicAllocations.push_back(tocEntry);
+        entriesDataSize += dataSize;
+        entriesTocSize += tocEntry->GetDataSize();
     }
 
     PackFile::Header header {{PACKER_MAGIC_NUMBER_FILE},
                              PACKER_FILE_VERSION,
-                             dataSize + PACKER_MAGIC_NUMBER_SIZE + entriesSize,
-                             dataSize};
+                             entriesDataSize + PACKER_MAGIC_NUMBER_SIZE + entriesTocSize,
+                             entriesDataSize};
 
     CC_LOG_INFO(
         "Beginning pack file version {} write process for body size {} and ToC offset of {}...",
@@ -116,7 +100,6 @@ int main(int argc, char* argv[])
         header.bodySize,
         header.tocOffset)
     uint64_t writeTotal = 0;
-    uint64_t dataOffset = 0;
 
     std::ofstream outputFileStream;
     outputFileStream.open(outputFile, std::ios::out | std::ios::binary);
@@ -127,17 +110,42 @@ int main(int argc, char* argv[])
                 sizeof(PackFile::Header),
                 writeTotal)
 
-    for (auto entry : bodyDataEntries)
+    entriesDataSize = 0;
+    Bytef* bodyDataBufferCompressed = nullptr;
+    for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
     {
-        uint32_t bodyDataSize = entry.size;
-        outputFileStream.write(reinterpret_cast<char*>(entry.ptr), bodyDataSize);
-        writeTotal += bodyDataSize;
-        CC_LOG_INFO("Adding DATA (offset: {}) to pack file with size: {} (write total: {})",
-                    dataOffset,
-                    bodyDataSize,
-                    writeTotal)
-        dataOffset += bodyDataSize;
+        uLongf bodyDataSizeUncompressed = entry.first->dataSize;
+        uLongf bodyDataSizeCompressed = compressBound(bodyDataSizeUncompressed);
+
+        Bytef* tempBuffer =
+            static_cast<Bytef*>(realloc(bodyDataBufferCompressed, bodyDataSizeCompressed));
+        bodyDataBufferCompressed = tempBuffer;
+
+        int result = compress2(bodyDataBufferCompressed,
+                               &bodyDataSizeCompressed,
+                               static_cast<Bytef*>(entry.second),
+                               bodyDataSizeUncompressed,
+                               Z_BEST_COMPRESSION);
+        CC_ASSERT(result == Z_OK,
+                  "Compression failed for entry: " + Siege::String(entry.first->name));
+
+        outputFileStream.write(reinterpret_cast<char*>(bodyDataBufferCompressed),
+                               static_cast<long>(bodyDataSizeCompressed));
+        entry.first->dataOffset = entriesDataSize;
+        entry.first->dataSizeCompressed = bodyDataSizeCompressed;
+        writeTotal += bodyDataSizeCompressed;
+        entriesDataSize += bodyDataSizeCompressed;
+        CC_LOG_INFO(
+            "Adding DATA \"{}\" to pack file with size: {} from {}, compressed to ~{}% (write "
+            "total: {})",
+            entry.first->name,
+            bodyDataSizeCompressed,
+            bodyDataSizeUncompressed,
+            static_cast<uint8_t>(ceilf(static_cast<float>(bodyDataSizeCompressed) /
+                                       static_cast<float>(bodyDataSizeUncompressed) * 100.f)),
+            writeTotal)
     }
+    if (bodyDataBufferCompressed) free(bodyDataBufferCompressed);
 
     outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
     writeTotal += PACKER_MAGIC_NUMBER_SIZE;
@@ -145,17 +153,21 @@ int main(int argc, char* argv[])
                 PACKER_MAGIC_NUMBER_SIZE,
                 writeTotal)
 
-    for (Siege::PackFile::TocEntry* toc : tocEntries)
+    for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
     {
-        outputFileStream.write(reinterpret_cast<char*>(toc), toc->GetDataSize());
-        writeTotal += toc->GetDataSize();
-        CC_LOG_INFO(
-            "Adding TOC ENTRY \"{}\" (offset: {}) to pack file with size: {} (write total: {})",
-            toc->name,
-            toc->dataOffset,
-            toc->GetDataSize(),
-            writeTotal)
+        outputFileStream.write(reinterpret_cast<char*>(entry.first), entry.first->GetDataSize());
+        writeTotal += entry.first->GetDataSize();
+        CC_LOG_INFO("Adding TOC \"{}\" (offset: {}) to pack file with size: {} (write total: {})",
+                    entry.first->name,
+                    entry.first->dataOffset,
+                    entry.first->GetDataSize(),
+                    writeTotal)
     }
+
+    header.bodySize = entriesDataSize + PACKER_MAGIC_NUMBER_SIZE + entriesTocSize;
+    header.tocOffset = entriesDataSize;
+    outputFileStream.seekp(0);
+    outputFileStream.write(reinterpret_cast<char*>(&header), sizeof(PackFile::Header));
 
     outputFileStream.close();
     CC_LOG_INFO("Ended pack file write process (write total: {})", writeTotal)
@@ -176,7 +188,6 @@ int main(int argc, char* argv[])
         {
             CC_LOG_WARNING("Missing ToC entry for input file \"{}\"", file.c_str())
             errors = true;
-            continue;
         }
     }
 
@@ -184,7 +195,11 @@ int main(int argc, char* argv[])
     resourceSystem.UnmountPackFile();
 
     CC_LOG_INFO("Freeing dynamically allocated memory from packer...")
-    for (void* allocation : dynamicAllocations) free(allocation);
+    for (const std::pair<PackFile::TocEntry*, void*>& entry : entries)
+    {
+        free(entry.first);
+        free(entry.second);
+    }
 
     if (errors)
     {

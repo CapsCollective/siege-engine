@@ -9,13 +9,14 @@
 
 #include "Texture2D.h"
 
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
+#include <resources/Texture2DData.h>
 #include <utils/Defer.h>
 
 #include "Constants.h"
 #include "Context.h"
 #include "render/renderer/buffer/Buffer.h"
-#include "resources/ResourceSystem.h"
-#include "resources/Texture2DData.h"
 #include "utils/Descriptor.h"
 #include "utils/TypeAdaptor.h"
 
@@ -93,14 +94,13 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 void Texture2D::LoadFromFile(const char* filePath)
 {
     PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    Texture2DData* texture2dData = packFile->FindData<Texture2DData>(filePath);
-    uint64_t imageSize = texture2dData->GetImageSize();
-    const uint8_t* pixelPtr = texture2dData->GetPixels();
+    std::shared_ptr<Texture2DData> texture2dData =
+        packFile->FindDataDeserialised<Texture2DData>(filePath);
 
     Buffer::Buffer stagingBuffer;
     defer([&stagingBuffer] { Buffer::DestroyBuffer(stagingBuffer); });
 
-    Buffer::CreateBuffer(imageSize,
+    Buffer::CreateBuffer(texture2dData->GetImageSize(),
                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          // specifies that data is accessible on the CPU.
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -109,7 +109,7 @@ void Texture2D::LoadFromFile(const char* filePath)
                          OUT stagingBuffer.buffer,
                          OUT stagingBuffer.bufferMemory);
 
-    Buffer::CopyData(stagingBuffer, imageSize, pixelPtr);
+    Buffer::CopyData(stagingBuffer, texture2dData->GetImageSize(), texture2dData->pixels.data());
 
     extent = {static_cast<uint32_t>(texture2dData->texWidth),
               static_cast<uint32_t>(texture2dData->texHeight)};

@@ -10,6 +10,7 @@
 #include "SceneFile.h"
 
 #include <resources/PackFile.h>
+#include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
 #include <resources/SceneData.h>
 #include <utils/Logging.h>
@@ -105,11 +106,11 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
         };
 
     // TODO: Implement proper write-mode handling for scene system
-    String ScenePath = MakeScenePath(sceneName);
+    String scenePath = MakeScenePath(sceneName);
     if (!SceneSystem::GetBaseDirectory().IsEmpty())
     {
         bool result = FileSystem::ForEachFileInDir(
-            ScenePath,
+            scenePath,
             [&deserialiseEntityString](const std::filesystem::path& path) {
                 if (path.extension() != ENTITY_FILE_EXT) return;
                 String entityData = FileSystem::Read(path.c_str());
@@ -117,7 +118,7 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
             });
         if (!result)
         {
-            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", ScenePath)
+            CC_LOG_ERROR("Failed to read scene file at path \"{}\"", scenePath)
             return false;
         }
     }
@@ -125,15 +126,16 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     {
         PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
 
-        SceneData* sceneData = packFile->FindData<SceneData>(ScenePath);
+        std::shared_ptr<SceneData> sceneData = packFile->FindDataDeserialised<SceneData>(scenePath);
         if (!sceneData)
         {
-            CC_LOG_WARNING("Failed to find scene \"{}\" in pack file", ScenePath)
+            CC_LOG_WARNING(
+                "Failed to retrieve deserialised scene data for scene \"{}\" from pack file",
+                scenePath)
             return false;
         }
 
-        String sceneString(sceneData->data);
-        for (const String& entityData : sceneString.Split('|'))
+        for (const String& entityData : sceneData->entities)
         {
             deserialiseEntityString(entityData.Str(), "");
         }

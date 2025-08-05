@@ -14,13 +14,16 @@ resourcesBinDir := $(binDir)/engine/resources
 resourcesSources := $(call rwildcard,$(resourcesSrcDir)/,*.cpp)
 resourcesObjects := $(call findobjs,$(resourcesSrcDir),$(resourcesBinDir),$(resourcesSources))
 resourcesDepends := $(patsubst %.o, %.d, $(call rwildcard,$(resourcesBinDir)/,*.o))
+resourcesLibs := $(vendorDir)/zlib/build/lib/libz.a
 
-linkFlags += -l utils
+# Set build vars
+linkFlags += -l utils -l z
+compileFlags += -I $(vendorDir)/zlib/build/include
 
 # Build the static library
 $(resourcesLib): $(resourcesObjects)
 	$(call MKDIR,$(call platformpth,$(libDir)))
-	ar -crs $(resourcesLib) $(resourcesObjects)
+	$(call COMBINE_LIBS, $(resourcesLibs), $(resourcesObjects), $(libDir), resources)
 
 # Add all rules from dependency files
 -include $(resourcesDepends)

@@ -10,10 +10,18 @@
 #ifndef SIEGE_ENGINE_PACKFILE_H
 #define SIEGE_ENGINE_PACKFILE_H
 
+#include <utils/BinarySerialisation.h>
+#include <utils/Logging.h>
 #include <utils/String.h>
+#include <zlib.h>
 
 #include <filesystem>
 #include <map>
+
+#include "PackFileData.h"
+#include "SceneData.h"
+#include "StaticMeshData.h"
+#include "Texture2DData.h"
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
 #define PACKER_MAGIC_NUMBER_TOC "toc!"
@@ -46,6 +54,7 @@ public:
     {
         uint32_t dataOffset;
         uint32_t dataSize;
+        uint32_t dataSizeCompressed;
         char name[];
 
         uint32_t GetDataSize() const
@@ -65,15 +74,25 @@ public:
 
     bool LoadFromPath(const String& filepath);
 
+    std::shared_ptr<PackFileData> FindData(const String& filepath);
+
     template<typename T>
-    T* FindData(const String& filepath)
+    std::shared_ptr<T> FindDataDeserialised(const String& filepath)
     {
-        PackFile::TocEntry* toc = entries[filepath];
-        if (!toc)
+        std::shared_ptr<PackFileData> packFileData = FindData(filepath);
+        if (!packFileData)
         {
+            CC_LOG_WARNING("Failed to find data for filepath \"{}\"", filepath);
             return nullptr;
         }
-        return reinterpret_cast<T*>(body + toc->dataOffset);
+
+        BinarySerialisation::Buffer dataBuffer;
+        dataBuffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
+
+        T* typedData = new T();
+        BinarySerialisation::serialise(dataBuffer, *typedData, BinarySerialisation::DESERIALISE);
+
+        return std::shared_ptr<T>(typedData);
     }
 
     const std::map<String, TocEntry*>& GetEntries();

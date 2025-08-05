@@ -12,6 +12,6 @@
 
 #include <resources/PackFile.h>
 
-void* PackTexture2DFile(const Siege::String& filePath);
+Siege::PackFileData* PackTexture2DFile(const Siege::String& filePath);
 
 #endif // SIEGE_ENGINE_TEXTURE2DDATAPACKER_H

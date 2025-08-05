@@ -10,43 +10,25 @@
 #ifndef SIEGE_ENGINE_SCENEDATA_H
 #define SIEGE_ENGINE_SCENEDATA_H
 
-#include "PackFile.h"
+#include <utils/BinarySerialisation.h>
 
 namespace Siege
 {
 
-#pragma pack(push, 1)
 struct SceneData
 {
-    uint32_t dataSize = 0;
-    char data[];
-
-    const char* GetData() const
-    {
-        return &data[0];
-    }
-
-    static SceneData* Create(char* data, uint32_t dataSize)
-    {
-        uint32_t totalDataSize = sizeof(SceneData) + dataSize;
-
-        void* mem = malloc(totalDataSize);
-        SceneData* sceneData = new (mem) SceneData();
-
-        sceneData->dataSize = dataSize;
-        memcpy(&sceneData->data[0], data, dataSize);
-
-        return sceneData;
-    }
-
-    static uint32_t GetDataSize(void* objectData)
-    {
-        if (!objectData) return 0;
-        SceneData* sceneData = reinterpret_cast<SceneData*>(objectData);
-        return sizeof(SceneData) + sceneData->dataSize;
-    }
+    std::vector<String> entities;
 };
-#pragma pack(pop)
+
+namespace BinarySerialisation
+{
+
+inline void serialise(Buffer& buffer, SceneData& value, SerialisationMode mode)
+{
+    serialise(buffer, value.entities, mode);
+}
+
+} // namespace BinarySerialisation
 
 } // namespace Siege
 

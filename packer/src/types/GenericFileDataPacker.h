@@ -12,6 +12,6 @@
 
 #include <resources/PackFile.h>
 
-void* PackGenericFile(const Siege::String& filePath);
+Siege::PackFileData* PackGenericFile(const Siege::String& filePath);
 
 #endif // SIEGE_ENGINE_GENERICFILEDATAPACKER_H

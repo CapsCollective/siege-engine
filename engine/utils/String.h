@@ -183,6 +183,12 @@ public:
      */
     String& operator+=(const char* rhs);
 
+    /**
+     * Wide-char c-string addition compound assignment operator overload for appending wide char
+     * c-strings
+     * @param rhs - the wide char c-string to append
+     * @return a reference to the original String object
+     */
     String& operator+=(const wchar_t* rhs);
 
     /**
@@ -438,6 +444,13 @@ public:
      * @param character - the character to append
      */
     void Append(char character);
+
+    /**
+     * Appends the value of a c-string to the String for a number of characters
+     * @param string - the c-string to append
+     * @param length - the length of the string to append
+     */
+    void Append(const char* string, size_t length);
 
     /**
      * Prepends the value of another String
