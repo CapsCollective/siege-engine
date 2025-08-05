@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
                                        static_cast<float>(bodyDataSizeUncompressed) * 100.f)),
             writeTotal)
     }
-    free(bodyDataBufferCompressed);
+    if (bodyDataBufferCompressed) free(bodyDataBufferCompressed);
 
     outputFileStream.write(PACKER_MAGIC_NUMBER_TOC, PACKER_MAGIC_NUMBER_SIZE);
     writeTotal += PACKER_MAGIC_NUMBER_SIZE;

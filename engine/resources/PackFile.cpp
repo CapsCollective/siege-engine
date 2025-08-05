@@ -70,7 +70,7 @@ std::shared_ptr<PackFileData> PackFile::FindData(const String& filepath)
                             bodyDataSizeCompressed);
     CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
 
-    return std::shared_ptr<PackFileData>(packFileData);
+    return {packFileData, free};
 }
 
 const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
