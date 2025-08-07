@@ -17,7 +17,6 @@
 #include <utils/math/mat/Mat4.h>
 
 #include "StaticMeshData.h"
-#include "PackFile.h"
 
 namespace Siege
 {
