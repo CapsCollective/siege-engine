@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include "Hash.h"
+#include "String.h"
 
 namespace Siege
 {
@@ -235,6 +236,28 @@ inline constexpr FColour ToIColour(const FColour& other)
             static_cast<float>(other.b * 255),
             static_cast<float>(other.a * 255)};
 }
+
+/**
+ * Converts an integer colour to a string
+ * @param colour the colour to convert to a string
+ * @return a string representation of the colour
+ */
+inline String ToString(const IColour& colour)
+{
+    return String("%d,%d,%d,%d").Formatted(colour.r, colour.g, colour.b, colour.a);
+}
+
+
+/**
+ * Converts a float colour to a string
+ * @param colour the colour to convert to a string
+ * @return a string representation of the colour
+ */
+inline String ToString(const FColour& colour)
+{
+    return String("%.2f,%.2f,%.2f,%.2f").Formatted(colour.r, colour.g, colour.b, colour.a);
+}
+
 
 } // namespace Siege
 

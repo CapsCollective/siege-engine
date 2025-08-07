@@ -23,6 +23,7 @@
 #include "math/mat/Mat2.h"
 #include "math/mat/Mat3.h"
 #include "math/vec/Format.h"
+#include "Colour.h"
 
 // Define terminal colour wrapping macros
 #define _CC_LOG_COLOUR_RED "31"
@@ -102,6 +103,8 @@ public:
     DEFINE_VARIANT_TYPE(const Vec2& data, "Vector2(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec3& data, "Vector3(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Vec4& data, "Vector4(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const FColour& data, "FColour(" + ToString(data) + ")");
+    DEFINE_VARIANT_TYPE(const IColour& data, "IColour(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Mat2& data, "Mat2(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Mat3& data, "Mat3(" + ToString(data) + ")");
     DEFINE_VARIANT_TYPE(const Mat4& data, "Mat4(" + ToString(data) + ")");
