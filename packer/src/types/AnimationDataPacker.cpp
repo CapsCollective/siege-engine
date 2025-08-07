@@ -23,7 +23,7 @@
 
 REGISTER_TOKEN(ANIM_NAME);
 
-static void GetAnimationData(aiAnimation* animation, OUT Siege::Anim& anim)
+static void GetAnimationData(aiAnimation* animation, OUT Siege::AnimationData& anim)
 {
     anim.length = animation->mDuration;
     anim.speed = animation->mTicksPerSecond;
@@ -38,7 +38,7 @@ static void GetAnimationData(aiAnimation* animation, OUT Siege::Anim& anim)
 
         CC_LOG_INFO("Reading channel with name \"{}\"", channelName)
 
-        Siege::AnimChannel& animChannel = anim.channels[channelName];
+        Siege::AnimationChannel& animChannel = anim.channels[channelName];
 
         for (uint32_t j = 0; j < channel->mNumPositionKeys; j++)
         {
@@ -66,7 +66,7 @@ static void GetAnimationData(aiAnimation* animation, OUT Siege::Anim& anim)
     }
 }
 
-void* PackAnimationFile(const Siege::String& filePath, const Siege::String& assetsPath)
+Siege::PackFileData* PackAnimationFile(const Siege::String& filePath, const Siege::String& assetsPath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
     std::map<Siege::Token, Siege::String> attributes = Siege::FileSystem::ParseAttributeFileData(contents);
@@ -124,9 +124,15 @@ void* PackAnimationFile(const Siege::String& filePath, const Siege::String& asse
         return nullptr;
     }
 
-    Siege::Anim anim;
-    GetAnimationData(animation, anim);
+    Siege::AnimationData animData;
+    GetAnimationData(animation, animData);
 
-    Siege::AnimationData* animationData = Siege::AnimationData::Create(anim);
-    return animationData;
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          animData,
+                                          Siege::BinarySerialisation::SERIALISE);
+
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());
+    return fileData;
 }

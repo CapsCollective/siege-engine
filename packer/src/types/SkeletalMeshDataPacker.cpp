@@ -8,36 +8,23 @@
 
 #include "SkeletalMeshDataPacker.h"
 
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <resources/SkeletalMeshData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <fstream>
 
+#include "../PackerUtils.h"
 #include "StaticMeshDataPacker.h"
-
-static inline Siege::Mat4 ConvertMatrix(const aiMatrix4x4& from)
-{
-    Siege::Mat4 to;
-    //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-    to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-    to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-    to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-    to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-    return to;
-}
 
 static void GetMeshData(const aiScene* scene,
                         aiMesh* mesh,
-                        aiMatrix4x4t<ai_real> matrix,
-                        OUT std::vector<Siege::SkinnedVertex>& vertices,
-                        OUT std::vector<uint32_t>& indices,
-                        OUT std::map<Siege::String, Siege::Bone>& bones)
+                        Siege::Mat4 mat,
+                        OUT Siege::SkeletalMeshData& meshData)
 {
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
     {
@@ -46,8 +33,7 @@ static void GetMeshData(const aiScene* scene,
         vertex.weights = {0.f, 0.f, 0.f, 0.f };
 
         aiVector3t<ai_real> vert = mesh->mVertices[i];
-        vert *= matrix;
-        vertex.position = {vert.x, vert.y, vert.z};
+        vertex.position = mat * Siege::Vec4(vert.x, vert.y, vert.z, 1.f);
 
         aiVector3t<ai_real> norm = mesh->mNormals[i];
         vertex.normal = {norm.x, norm.y, norm.z};
@@ -61,7 +47,7 @@ static void GetMeshData(const aiScene* scene,
             vertex.uv = {uv->x, uv->y};
         }
 
-        vertices.push_back(vertex);
+        meshData.vertices.push_back(vertex);
     }
 
     for (uint32_t i = 0; i < mesh->mNumFaces; i++)
@@ -69,7 +55,7 @@ static void GetMeshData(const aiScene* scene,
         aiFace face = mesh->mFaces[i];
         for (uint32_t j = 0; j < face.mNumIndices; j++)
         {
-            indices.push_back(face.mIndices[j]);
+            meshData.indices.push_back(face.mIndices[j]);
         }
     }
 
@@ -80,19 +66,19 @@ static void GetMeshData(const aiScene* scene,
         uint32_t boneId;
         Siege::String boneName(currentBone->mName.C_Str());
 
-        auto it = bones.find(boneName);
-        if (it != bones.end())
+        auto it = meshData.bones.find(boneName);
+        if (it != meshData.bones.end())
         {
             boneId = it->second.id;
         }
         else
         {
-            boneId = bones.size();
+            boneId = meshData.bones.size();
 
             Siege::Bone newBone;
             newBone.id = boneId;
-            newBone.bindMatrix = ConvertMatrix(currentBone->mOffsetMatrix);
-            bones.emplace(boneName, newBone);
+            newBone.bindMatrix = AssimpMat4ToMat4(currentBone->mOffsetMatrix);
+            meshData.bones.emplace(boneName, newBone);
         }
 
         CC_LOG_INFO("Reading bone {} with id {}", boneName, boneId)
@@ -100,7 +86,7 @@ static void GetMeshData(const aiScene* scene,
         for (int32_t j = 0; j < currentBone->mNumWeights; ++j)
         {
             aiVertexWeight weight = currentBone->mWeights[j];
-            Siege::SkinnedVertex vertex = vertices[weight.mVertexId];
+            Siege::SkinnedVertex vertex = meshData.vertices[weight.mVertexId];
             for (int32_t k = 0; k < 4; ++k)
             {
                 if (vertex.bones[k] < 0)
@@ -138,7 +124,7 @@ static aiMesh* FindMeshAtPath(const aiScene* scene, aiNode* node, const Siege::S
     return nullptr;
 }
 
-void* PackSkeletalMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
+Siege::PackFileData* PackSkeletalMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
     std::map<Siege::Token, Siege::String> attributes = Siege::FileSystem::ParseAttributeFileData(contents);
@@ -193,11 +179,47 @@ void* PackSkeletalMeshFile(const Siege::String& filePath, const Siege::String& a
         mesh = scene->mMeshes[0];
     }
 
-    std::vector<Siege::SkinnedVertex> vertices;
-    std::vector<uint32_t> indices;
-    std::map<Siege::String, Siege::Bone> bones;
-    GetMeshData(scene, mesh, aiMatrix4x4t<ai_real>(), vertices, indices, bones);
+    Siege::Mat4 baseXform = Siege::Mat4::Identity();
+    auto flipAxesIt = attributes.find(TOKEN_FLIP_AXES);
+    if (flipAxesIt != attributes.end())
+    {
+        if (flipAxesIt->second.Size() < 1 || flipAxesIt->second.Size() > 3)
+        {
+            CC_LOG_WARNING("FLIP_AXES attribute in .sm file contains invalid number of axes")
+        }
 
-    Siege::SkeletalMeshData* skeletalMeshData = Siege::SkeletalMeshData::Create(indices, vertices, bones);
-    return skeletalMeshData;
+        for (int32_t i = 0; i < flipAxesIt->second.Size(); ++i)
+        {
+            Siege::Vec4 scale = {1.f, 1.f, 1.f, 1.f};
+            switch (flipAxesIt->second[i])
+            {
+                case 'x':
+                    scale.x *= -1;
+                    break;
+                case 'y':
+                    scale.y *= -1;
+                    break;
+                case 'z':
+                    scale.z *= -1;
+                    break;
+                default:
+                    CC_LOG_WARNING("Found invalid axis \"{}\" in FLIP_AXES attribute, ignoring",
+                                   flipAxesIt->second[i])
+                    break;
+            }
+            baseXform *= Siege::Mat4::Scale(scale);
+        }
+    }
+
+    Siege::SkeletalMeshData skeletalMeshData;
+    GetMeshData(scene, mesh, baseXform, skeletalMeshData);
+
+    Siege::BinarySerialisation::Buffer dataBuffer;
+    Siege::BinarySerialisation::serialise(dataBuffer,
+                                          skeletalMeshData,
+                                          Siege::BinarySerialisation::SERIALISE);
+
+    char* data = reinterpret_cast<char*>(dataBuffer.data.data());
+    Siege::PackFileData* fileData = Siege::PackFileData::Create(data, dataBuffer.data.size());
+    return fileData;
 }

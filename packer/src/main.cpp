@@ -10,11 +10,6 @@
 #include <resources/PackFile.h>
 #include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
-#include <resources/SceneData.h>
-#include <resources/StaticMeshData.h>
-#include <resources/SkeletalMeshData.h>
-#include <resources/AnimationData.h>
-#include <resources/Texture2DData.h>
 #include <utils/Logging.h>
 #include <zlib.h>
 
@@ -67,24 +62,22 @@ int main(int argc, char* argv[])
         else if (extension == ".sk")
         {
             data = PackSkeletalMeshFile(fullPath, assetsDir);
-            bodyDataSize = Siege::SkeletalMeshData::GetDataSize(data);
         }
         else if (extension == ".ska")
         {
             data = PackAnimationFile(fullPath, assetsDir);
-            bodyDataSize = Siege::AnimationData::GetDataSize(data);
         }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
             data = PackTexture2DFile(fullPath);
         }
-        else if (extension == ".spv" || extension == ".ttf")
-        {
-            data = PackGenericFile(fullPath);
-        }
         else if (extension == ".scene")
         {
             data = PackSceneFile(fullPath);
+        }
+        else if (extension == ".spv" || extension == ".ttf")
+        {
+            data = PackGenericFile(fullPath);
         }
 
         if (!data)

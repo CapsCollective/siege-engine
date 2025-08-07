@@ -21,6 +21,7 @@
 #include "PackFileData.h"
 #include "SceneData.h"
 #include "StaticMeshData.h"
+#include "SkeletalMeshData.h"
 #include "Texture2DData.h"
 
 #define PACKER_MAGIC_NUMBER_FILE "pck"
