@@ -15,6 +15,7 @@
 #include <variant>
 #include <vector>
 
+#include "Colour.h"
 #include "Macros.h"
 #include "String.h"
 #include "Token.h"
@@ -23,7 +24,6 @@
 #include "math/mat/Mat2.h"
 #include "math/mat/Mat3.h"
 #include "math/vec/Format.h"
-#include "Colour.h"
 
 // Define terminal colour wrapping macros
 #define _CC_LOG_COLOUR_RED "31"

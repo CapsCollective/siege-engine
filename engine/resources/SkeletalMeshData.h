@@ -10,11 +10,12 @@
 #ifndef SIEGE_ENGINE_SKELETALMESHDATA_H
 #define SIEGE_ENGINE_SKELETALMESHDATA_H
 
+#include <utils/BinarySerialisation.h>
 #include <utils/Colour.h>
+#include <utils/math/mat/Mat4.h>
 #include <utils/math/vec/Hashing.h>
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
-#include <utils/math/mat/Mat4.h>
 
 #include "StaticMeshData.h"
 
@@ -34,7 +35,8 @@ struct SkinnedVertex : BaseVertex
 
 inline bool operator==(const SkinnedVertex& left, const SkinnedVertex& right)
 {
-    return static_cast<BaseVertex>(left) == static_cast<BaseVertex>(right) && left.bones == right.bones && left.weights == right.weights;
+    return static_cast<BaseVertex>(left) == static_cast<BaseVertex>(right) &&
+           left.bones == right.bones && left.weights == right.weights;
 }
 
 inline bool operator!=(const SkinnedVertex& left, const SkinnedVertex& right)

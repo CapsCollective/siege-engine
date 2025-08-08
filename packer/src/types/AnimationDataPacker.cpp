@@ -8,15 +8,14 @@
 
 #include "AnimationDataPacker.h"
 
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <resources/AnimationData.h>
 #include <utils/FileSystem.h>
 #include <utils/Logging.h>
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <fstream>
 
 #include "StaticMeshDataPacker.h"
@@ -29,7 +28,9 @@ static void GetAnimationData(aiAnimation* animation, OUT Siege::AnimationData& a
     anim.speed = animation->mTicksPerSecond;
 
     Siege::String animName = animation->mName.C_Str();
-    CC_LOG_INFO("Reading animation \"{}\" with duration of {} seconds", animName, anim.length / anim.speed)
+    CC_LOG_INFO("Reading animation \"{}\" with duration of {} seconds",
+                animName,
+                anim.length / anim.speed)
 
     for (uint32_t i = 0; i < animation->mNumChannels; i++)
     {
@@ -66,10 +67,12 @@ static void GetAnimationData(aiAnimation* animation, OUT Siege::AnimationData& a
     }
 }
 
-Siege::PackFileData* PackAnimationFile(const Siege::String& filePath, const Siege::String& assetsPath)
+Siege::PackFileData* PackAnimationFile(const Siege::String& filePath,
+                                       const Siege::String& assetsPath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
-    std::map<Siege::Token, Siege::String> attributes = Siege::FileSystem::ParseAttributeFileData(contents);
+    std::map<Siege::Token, Siege::String> attributes =
+        Siege::FileSystem::ParseAttributeFileData(contents);
 
     if (attributes.empty())
     {

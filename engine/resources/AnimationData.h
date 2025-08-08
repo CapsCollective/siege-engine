@@ -10,10 +10,9 @@
 #ifndef SIEGE_ENGINE_ANIMATIONDATA_H
 #define SIEGE_ENGINE_ANIMATIONDATA_H
 
-#include <utils/math/vec/Vec3.h>
+#include <utils/BinarySerialisation.h>
 #include <utils/math/mat/Mat4.h>
-
-#include "PackFile.h"
+#include <utils/math/vec/Vec3.h>
 
 namespace Siege
 {

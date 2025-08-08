@@ -30,7 +30,7 @@ static void GetMeshData(const aiScene* scene,
     {
         Siege::SkinnedVertex vertex {};
         vertex.bones = {-1, -1, -1, -1};
-        vertex.weights = {0.f, 0.f, 0.f, 0.f };
+        vertex.weights = {0.f, 0.f, 0.f, 0.f};
 
         aiVector3t<ai_real> vert = mesh->mVertices[i];
         vertex.position = mat * Siege::Vec4(vert.x, vert.y, vert.z, 1.f);
@@ -100,7 +100,10 @@ static void GetMeshData(const aiScene* scene,
     }
 }
 
-static aiMesh* FindMeshAtPath(const aiScene* scene, aiNode* node, const Siege::String& requestPath, Siege::String currentPath)
+static aiMesh* FindMeshAtPath(const aiScene* scene,
+                              aiNode* node,
+                              const Siege::String& requestPath,
+                              Siege::String currentPath)
 {
     currentPath = currentPath + node->mName.C_Str();
     CC_LOG_INFO("Reading node at {}", currentPath)
@@ -124,10 +127,12 @@ static aiMesh* FindMeshAtPath(const aiScene* scene, aiNode* node, const Siege::S
     return nullptr;
 }
 
-Siege::PackFileData* PackSkeletalMeshFile(const Siege::String& filePath, const Siege::String& assetsPath)
+Siege::PackFileData* PackSkeletalMeshFile(const Siege::String& filePath,
+                                          const Siege::String& assetsPath)
 {
     Siege::String contents = Siege::FileSystem::Read(filePath);
-    std::map<Siege::Token, Siege::String> attributes = Siege::FileSystem::ParseAttributeFileData(contents);
+    std::map<Siege::Token, Siege::String> attributes =
+        Siege::FileSystem::ParseAttributeFileData(contents);
 
     if (attributes.empty())
     {

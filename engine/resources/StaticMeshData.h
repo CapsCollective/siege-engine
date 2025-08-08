@@ -16,8 +16,6 @@
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 
-#include "PackFile.h"
-
 namespace Siege
 {
 

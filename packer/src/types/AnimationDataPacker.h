@@ -11,6 +11,7 @@
 
 #include <resources/PackFile.h>
 
-Siege::PackFileData* PackAnimationFile(const Siege::String& filePath, const Siege::String& assetsPath);
+Siege::PackFileData* PackAnimationFile(const Siege::String& filePath,
+                                       const Siege::String& assetsPath);
 
 #endif // SIEGE_ENGINE_ANIMATIONDATAPACKER_H
