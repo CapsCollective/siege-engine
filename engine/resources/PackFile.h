@@ -18,8 +18,10 @@
 #include <filesystem>
 #include <map>
 
+#include "AnimationData.h"
 #include "PackFileData.h"
 #include "SceneData.h"
+#include "SkeletalMeshData.h"
 #include "StaticMeshData.h"
 #include "Texture2DData.h"
 

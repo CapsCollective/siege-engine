@@ -16,8 +16,6 @@
 #include <utils/math/vec/Vec2.h>
 #include <utils/math/vec/Vec3.h>
 
-#include "PackFile.h"
-
 namespace Siege
 {
 
@@ -40,6 +38,15 @@ inline bool operator!=(const BaseVertex& left, const BaseVertex& right)
     return !(left == right);
 }
 
+struct StaticMeshData
+{
+    std::vector<uint32_t> indices;
+    std::vector<BaseVertex> vertices;
+};
+
+namespace BinarySerialisation
+{
+
 inline void serialise(BinarySerialisation::Buffer& buffer,
                       BaseVertex& value,
                       BinarySerialisation::SerialisationMode mode)
@@ -49,15 +56,6 @@ inline void serialise(BinarySerialisation::Buffer& buffer,
     serialise(buffer, value.normal, mode);
     serialise(buffer, value.uv, mode);
 }
-
-struct StaticMeshData
-{
-    std::vector<uint32_t> indices;
-    std::vector<BaseVertex> vertices;
-};
-
-namespace BinarySerialisation
-{
 
 inline void serialise(Buffer& buffer, StaticMeshData& value, SerialisationMode mode)
 {
