@@ -27,16 +27,21 @@ struct Bone
     Mat4 bindMatrix;
 };
 
-struct SkinnedVertex : BaseVertex
+struct SkinnedVertex
 {
+    Vec3 position;
+    FColour color;
+    Vec3 normal;
+    Vec2 uv;
     Vec4 bones;
     Vec4 weights;
 };
 
 inline bool operator==(const SkinnedVertex& left, const SkinnedVertex& right)
 {
-    return static_cast<BaseVertex>(left) == static_cast<BaseVertex>(right) &&
-           left.bones == right.bones && left.weights == right.weights;
+    return left.position == right.position && left.color == right.color &&
+           left.normal == right.normal && left.uv == right.uv && left.bones == right.bones &&
+           left.weights == right.weights;
 }
 
 inline bool operator!=(const SkinnedVertex& left, const SkinnedVertex& right)
@@ -62,6 +67,7 @@ inline void serialise(Buffer& buffer, Bone& value, SerialisationMode mode)
 
 inline void serialise(Buffer& buffer, SkinnedVertex& value, SerialisationMode mode)
 {
+    serialise(buffer, value.position, mode);
     serialise(buffer, value.color, mode);
     serialise(buffer, value.normal, mode);
     serialise(buffer, value.uv, mode);
