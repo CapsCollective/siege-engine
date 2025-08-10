@@ -16,9 +16,12 @@
 
 #include "Colour.h"
 #include "String.h"
+#include "math/mat/Mat.h"
+#include "math/mat/Mat4.h"
 #include "math/vec/Vec.h"
 #include "math/vec/Vec2.h"
 #include "math/vec/Vec3.h"
+#include "math/vec/Vec4.h"
 
 namespace Siege::BinarySerialisation
 {
@@ -123,12 +126,28 @@ inline void serialise(Buffer& buffer, Vec3& value, SerialisationMode mode)
     serialiseNative<float>(buffer, value.z, mode);
 }
 
+inline void serialise(Buffer& buffer, Vec4& value, SerialisationMode mode)
+{
+    serialiseNative<float>(buffer, value.x, mode);
+    serialiseNative<float>(buffer, value.y, mode);
+    serialiseNative<float>(buffer, value.z, mode);
+    serialiseNative<float>(buffer, value.w, mode);
+}
+
 inline void serialise(Buffer& buffer, FColour& value, SerialisationMode mode)
 {
     serialiseNative<float>(buffer, value.r, mode);
     serialiseNative<float>(buffer, value.g, mode);
     serialiseNative<float>(buffer, value.b, mode);
     serialiseNative<float>(buffer, value.a, mode);
+}
+
+inline void serialise(Buffer& buffer, Mat4& value, SerialisationMode mode)
+{
+    serialise(buffer, value.values[0], mode);
+    serialise(buffer, value.values[1], mode);
+    serialise(buffer, value.values[2], mode);
+    serialise(buffer, value.values[3], mode);
 }
 
 inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
@@ -159,6 +178,11 @@ inline void serialise(Buffer& buffer, String& value, SerialisationMode mode)
             break;
         }
     }
+}
+
+inline void serialise(Buffer& buffer, const String& value, SerialisationMode mode)
+{
+    serialise(buffer, const_cast<String&>(value), mode);
 }
 
 template<typename T>

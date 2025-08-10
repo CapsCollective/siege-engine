@@ -10,15 +10,15 @@
 #include <resources/PackFile.h>
 #include <resources/PackFileData.h>
 #include <resources/ResourceSystem.h>
-#include <resources/SceneData.h>
-#include <resources/StaticMeshData.h>
 #include <utils/Logging.h>
 #include <zlib.h>
 
 #include <fstream>
 
+#include "types/AnimationDataPacker.h"
 #include "types/GenericFileDataPacker.h"
 #include "types/SceneDataPacker.h"
+#include "types/SkeletalMeshDataPacker.h"
 #include "types/StaticMeshDataPacker.h"
 #include "types/Texture2DDataPacker.h"
 
@@ -59,17 +59,25 @@ int main(int argc, char* argv[])
         {
             data = PackStaticMeshFile(fullPath, assetsDir);
         }
+        else if (extension == ".sk")
+        {
+            data = PackSkeletalMeshFile(fullPath, assetsDir);
+        }
+        else if (extension == ".ska")
+        {
+            data = PackAnimationFile(fullPath, assetsDir);
+        }
         else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
         {
             data = PackTexture2DFile(fullPath);
         }
-        else if (extension == ".spv" || extension == ".ttf")
-        {
-            data = PackGenericFile(fullPath);
-        }
         else if (extension == ".scene")
         {
             data = PackSceneFile(fullPath);
+        }
+        else if (extension == ".spv" || extension == ".ttf")
+        {
+            data = PackGenericFile(fullPath);
         }
 
         if (!data)
