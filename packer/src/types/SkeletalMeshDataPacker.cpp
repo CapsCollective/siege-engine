@@ -28,7 +28,7 @@ static void GetMeshData(const aiScene* scene,
 {
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
     {
-        Siege::SkinnedVertex vertex {};
+        Siege::SkinnedVertex vertex;
         vertex.bones = {-1, -1, -1, -1};
         vertex.weights = {0.f, 0.f, 0.f, 0.f};
 
@@ -86,7 +86,7 @@ static void GetMeshData(const aiScene* scene,
         for (int32_t j = 0; j < currentBone->mNumWeights; ++j)
         {
             aiVertexWeight weight = currentBone->mWeights[j];
-            Siege::SkinnedVertex vertex = meshData.vertices[weight.mVertexId];
+            Siege::SkinnedVertex& vertex = meshData.vertices[weight.mVertexId];
             for (int32_t k = 0; k < 4; ++k)
             {
                 if (vertex.bones[k] < 0)
