@@ -561,3 +561,282 @@ UTEST_F(test_ResourceSystem, LoadAnimationData)
         }
     }
 }
+struct TestStruct
+{
+    uint64_t inta {0};
+    uint64_t intb {0};
+};
+
+struct FreeBlock
+{
+    size_t size {0};
+    FreeBlock* prev {nullptr};
+    FreeBlock* next {nullptr};
+};
+
+struct SmallBlockHeader
+{
+    uint16_t sizeAndFlags {0};
+};
+
+struct SmallBlockFooter
+{
+    uint16_t sizeAndFlags {0};
+};
+
+struct BlockHeader
+{
+    uint32_t sizeAndFlags {0};
+};
+
+struct BlockFooter
+{
+    uint32_t sizeAndFlags {0};
+};
+
+struct LargeBlockHeader
+{
+    uint64_t sizeAndFlags {0};
+};
+
+struct LargeBlockFooter
+{
+    uint64_t sizeAndFlags {0};
+};
+
+#define FL_MIN 4
+#define FL_INDEX(capacity) 63 - __builtin_clzll(capacity)
+#define MAX_SL_INDEX 16
+
+#define SL_BITS 4 // we get the log(2) the max sl index
+#define SL_MASK ((1 << SL_BITS) - 1)
+
+#define INVALID_INDEX SIZE_T_MAX
+
+class Allocator
+{
+public:
+    Allocator() {};
+    Allocator(const size_t capacity)
+        : capacity {capacity}
+    {
+        data = reinterpret_cast<unsigned char*>(calloc(sizeof(FreeBlock), capacity));
+
+        // __builtin_clzll calculates the leading zeroes of a 64 bit integer. To find the furthest
+        // bit set to 1 we need to minus 63 from the result (since a 64 bit integer has a bit range
+        // of 0 - 63)
+        uint64_t rawFl = FL_INDEX(capacity);
+        uint64_t maxIndices = rawFl - FL_MIN + 1;
+
+        freeList = reinterpret_cast<FreeBlock**>(calloc(maxIndices * MAX_SL_INDEX, sizeof(FreeBlock*)));
+        slBitmasks = reinterpret_cast<uint16_t*>(calloc(maxIndices, sizeof(uint16_t)));
+
+        FreeBlock* firstBlock = reinterpret_cast<FreeBlock*>(data);
+        firstBlock->size = capacity;
+
+        size_t offsetFlIdx = rawFl - FL_MIN;
+
+        size_t sl = SlIndex(capacity, rawFl);
+        size_t freeListIdx = (offsetFlIdx) * MAX_SL_INDEX + sl;
+
+        freeList[freeListIdx] = firstBlock;
+
+        flBitmask |= 1ULL << (offsetFlIdx);
+        slBitmasks[offsetFlIdx] |= 1ULL << sl;
+    }
+
+    ~Allocator()
+    {
+        if (data) free(data);
+        if (freeList) free(freeList);
+        if (slBitmasks) free(slBitmasks);
+
+        capacity = 0;
+        data = nullptr;
+        freeList = nullptr;
+        slBitmasks = nullptr;
+    }
+
+    void* Allocate(size_t size)
+    {
+        if (size < 16) return nullptr;
+
+        size_t rawFl = FL_INDEX(size);
+        size_t sl = SlIndex(size, rawFl);
+        size_t fl = rawFl - FL_MIN;
+
+        size_t freeListIdx = 0;
+
+        freeListIdx = fl * MAX_SL_INDEX + sl;
+
+        size_t freeSlotFl = fl;
+        size_t freeSlotSl = sl;
+
+        if (!IsFree(fl, sl)) freeListIdx = GetNextFreeSlotIndex(freeSlotFl, freeSlotSl);
+        if (freeListIdx == INVALID_INDEX) return nullptr;
+
+        FreeBlock* block = freeList[freeListIdx];
+
+        size_t requiredSize = sizeof(BlockHeader) + size + sizeof(BlockFooter);
+
+        // Needs to be split
+        if (block->size > requiredSize)
+        {
+            slBitmasks[freeSlotFl] &= ~(1 << freeSlotSl);
+            if (!slBitmasks[freeSlotFl]) flBitmask &= ~(1 << freeSlotFl);
+
+            size_t newSize = block->size - requiredSize;
+            size_t newRawFl = FL_INDEX(newSize);
+            size_t newFl = newRawFl - FL_MIN;
+            size_t newSl = SlIndex(newSize, newRawFl);
+            size_t newFreeListIdx = newFl * MAX_SL_INDEX + newSl;
+
+            FreeBlock* newBlock = reinterpret_cast<FreeBlock*>(reinterpret_cast<unsigned char*>(block) + requiredSize);
+
+            newBlock->size = newSize;
+            newBlock->prev = nullptr;
+            newBlock->next = nullptr;
+
+            freeList[newFreeListIdx] = newBlock;
+
+            flBitmask |= 1ULL << (newFl);
+            slBitmasks[newFl] |= 1ULL << newSl;
+        }
+
+        BlockHeader* header = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(block));
+        size_t flags = 0;
+        flags |= BitMask(0);
+
+        BlockFooter* prev = reinterpret_cast<BlockFooter*>(reinterpret_cast<unsigned char*>(header) - sizeof(BlockFooter));
+        BlockHeader* prevHeader = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(prev) - prev->sizeAndFlags - sizeof(BlockHeader));
+
+        if ((unsigned char*)header != data && !Mask(prevHeader->sizeAndFlags,0)) flags |= BitMask(1);
+
+        header->sizeAndFlags = (requiredSize << 3) | flags;
+
+        unsigned char* ptr = reinterpret_cast<unsigned char*>(reinterpret_cast<unsigned char*>(header)+sizeof(BlockHeader));
+
+        BlockFooter* footer = reinterpret_cast<BlockFooter*>(ptr+size);
+        footer->sizeAndFlags = size;
+
+        return ptr;
+    }
+
+    size_t GetNextFreeSlotIndex(OUT size_t& fl,OUT size_t& sl)
+    {
+        sl = FindLargerSlots(slBitmasks[fl], sl);
+        if (sl) return fl * MAX_SL_INDEX + __builtin_ctz(sl);
+
+        fl = FindLargerSlots64(flBitmask, fl);
+
+        if (!fl) return INVALID_INDEX;
+
+        fl = __builtin_ctzll(fl);
+        CC_ASSERT(slBitmasks[fl] > 0,
+                  "SlBitmasks is returning 0. This should not be happening and indicates an implementation error.")
+
+        sl = __builtin_ctz(slBitmasks[fl]);
+
+        return fl * MAX_SL_INDEX + sl;
+    }
+
+    bool IsFree(size_t fl, size_t sl) { return Mask(slBitmasks[fl], BitMask(sl)); }
+    const size_t FindLargerSlots(size_t mask, size_t idx) { return Mask(mask, FlipBits(BitMask(idx+1)-1)); }
+    const size_t FindLargerSlots64(size_t mask, size_t idx) { return Mask(mask, FlipBits(BitMask64(idx+1)-1)); }
+    const size_t BitMask(size_t shiftAmount) { return 1 << shiftAmount; }
+    const size_t BitMask64(size_t shiftAmount) { return 1ULL << shiftAmount; }
+    const size_t FlipBits(size_t mask) { return ~(mask); }
+    const size_t Mask(size_t value, size_t mask) { return value & mask; }
+
+
+    size_t& Capacity() { return capacity;}
+    unsigned char* Data() { return data; };
+    size_t SlIndex(size_t size, size_t fl) { return (size >> (fl - SL_BITS)) & SL_MASK; }
+    const uint64_t& FlBitmask() { return flBitmask; }
+    uint16_t*& SlBitmask() { return slBitmasks; }
+    FreeBlock** FreeList() { return freeList; }
+
+private:
+    size_t capacity {0};
+    unsigned char* data {nullptr};
+    FreeBlock** freeList {nullptr};
+
+    // bitmasks
+    uint64_t flBitmask {0};
+    uint16_t* slBitmasks {nullptr};
+};
+
+UTEST(test_ResourceSystem, TestEmptyAllocatorCreation)
+{
+    Allocator a;
+    ASSERT_EQ(a.Data(), nullptr);
+    ASSERT_EQ(a.Capacity(), 0);
+}
+
+UTEST(test_ResourceSystem, TestAllocatorCreationWithSize)
+{
+    Allocator a(64);
+    ASSERT_NE(a.Data(), nullptr);
+    ASSERT_EQ(a.Capacity(), 64);
+
+    // 0001 0000
+    ASSERT_EQ(a.FlBitmask(), 4);
+    ASSERT_EQ(a.SlBitmask()[2], 1);
+
+    FreeBlock* block = a.FreeList()[2 * 16];
+    ASSERT_EQ(block->size,64);
+    ASSERT_EQ(block->next, nullptr);
+    ASSERT_EQ(block->prev, nullptr);
+}
+
+UTEST(test_ResourceSystem, TestAllocateFunction)
+{
+    Allocator a(64);
+    ASSERT_NE(a.Data(), nullptr);
+    ASSERT_EQ(a.Capacity(), 64);
+
+    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+
+    p->inta = 10;
+    p->intb = 20;
+
+    ASSERT_EQ(10, p->inta);
+    ASSERT_EQ(20, p->intb);
+
+    ASSERT_EQ(a.FlBitmask(), 2);
+    ASSERT_EQ(16, a.SlBitmask()[1]);
+
+    FreeBlock* block = a.FreeList()[(1 * 16) + 4];
+    ASSERT_EQ(block->size,40);
+    ASSERT_EQ(block->next, nullptr);
+    ASSERT_EQ(block->prev, nullptr);
+
+    auto header = (BlockHeader*)a.Data();
+    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+
+    ASSERT_EQ(193, header->sizeAndFlags);
+    ASSERT_EQ(data, p);
+    ASSERT_EQ(sizeof(TestStruct), footer->sizeAndFlags);
+
+    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
+
+    *str = "Hello There!";
+    ASSERT_STREQ(str->Str(),"Hello There!");
+
+    ASSERT_EQ(a.FlBitmask(), 1);
+    ASSERT_EQ(0, a.SlBitmask()[1]);
+
+    FreeBlock* NewBlock = a.FreeList()[0];
+    ASSERT_EQ(NewBlock->size,16);
+    ASSERT_EQ(NewBlock->next, nullptr);
+    ASSERT_EQ(NewBlock->prev, nullptr);
+
+    auto newHeader = (BlockHeader*)((unsigned char*)footer + sizeof(BlockFooter));
+    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
+    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
+
+    ASSERT_EQ(195, newHeader->sizeAndFlags);
+    ASSERT_EQ(newData, str);
+    ASSERT_EQ(sizeof(Siege::String), newFooter->sizeAndFlags);
+}
