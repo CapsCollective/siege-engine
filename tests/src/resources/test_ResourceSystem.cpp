@@ -567,11 +567,10 @@ struct TestStruct
     uint64_t intb {0};
 };
 
-struct FreeBlock
+struct FreeBlockNode
 {
-    size_t size {0};
-    FreeBlock* prev {nullptr};
-    FreeBlock* next {nullptr};
+    FreeBlockNode* prev {nullptr};
+    FreeBlockNode* next {nullptr};
 };
 
 struct SmallBlockHeader
@@ -586,12 +585,16 @@ struct SmallBlockFooter
 
 struct BlockHeader
 {
+    // bitmask where the first three bits are flags:
+    // 0 = is the block free
+    // 1 = is the previous block free
+    // 2 = padding
     uint32_t sizeAndFlags {0};
 };
 
 struct BlockFooter
 {
-    uint32_t sizeAndFlags {0};
+    uint32_t totalBlockSize {0};
 };
 
 struct LargeBlockHeader
@@ -607,9 +610,19 @@ struct LargeBlockFooter
 #define FL_MIN 4
 #define FL_INDEX(capacity) 63 - __builtin_clzll(capacity)
 #define MAX_SL_INDEX 16
+#define MIN_ALLOC_SIZE 16
+
+#define TO_BYTES(val) ((unsigned char*)val)
+#define TO_HBLOCK(val) ((BlockHeader*)val)
+#define TO_FBLOCK(val) ((BlockFooter*)val)
+#define TO_FREEBLOCK(val) ((FreeBlockNode*)val)
 
 #define SL_BITS 4 // we get the log(2) the max sl index
 #define SL_MASK ((1 << SL_BITS) - 1)
+
+#define FLAG_BITS 3
+#define IS_FREE_FLAG 1
+#define IS_PREV_FREE_FLAG 2
 
 #define INVALID_INDEX SIZE_T_MAX
 
@@ -620,29 +633,28 @@ public:
     Allocator(const size_t capacity)
         : capacity {capacity}
     {
-        data = reinterpret_cast<unsigned char*>(calloc(sizeof(FreeBlock), capacity));
+        data = TO_BYTES(calloc(1, sizeof(BlockHeader) + sizeof(BlockFooter) + capacity));
 
-        // __builtin_clzll calculates the leading zeroes of a 64 bit integer. To find the furthest
-        // bit set to 1 we need to minus 63 from the result (since a 64 bit integer has a bit range
-        // of 0 - 63)
-        uint64_t rawFl = FL_INDEX(capacity);
-        uint64_t maxIndices = rawFl - FL_MIN + 1;
+        size_t fl = 0, sl = 0, index;
 
-        freeList = reinterpret_cast<FreeBlock**>(calloc(maxIndices * MAX_SL_INDEX, sizeof(FreeBlock*)));
-        slBitmasks = reinterpret_cast<uint16_t*>(calloc(maxIndices, sizeof(uint16_t)));
+        CalculateIndices(capacity, fl, sl ,index);
 
-        FreeBlock* firstBlock = reinterpret_cast<FreeBlock*>(data);
-        firstBlock->size = capacity;
+        uint64_t maxIndices = fl + 1;
 
-        size_t offsetFlIdx = rawFl - FL_MIN;
+        freeList = (FreeBlockNode**)calloc(maxIndices * MAX_SL_INDEX, sizeof(FreeBlockNode*));
+        slBitmasks = (uint16_t*)calloc(maxIndices, sizeof(uint16_t));
 
-        size_t sl = SlIndex(capacity, rawFl);
-        size_t freeListIdx = (offsetFlIdx) * MAX_SL_INDEX + sl;
+        BlockHeader* firstHeader = (BlockHeader*)data;
+        firstHeader->sizeAndFlags = (capacity << FLAG_BITS) | IS_FREE_FLAG;
 
-        freeList[freeListIdx] = firstBlock;
+        FreeBlockNode* firstBlock = TO_FREEBLOCK((data+sizeof(BlockHeader)));
 
-        flBitmask |= 1ULL << (offsetFlIdx);
-        slBitmasks[offsetFlIdx] |= 1ULL << sl;
+        BlockFooter* firstFooter = TO_FBLOCK(TO_BYTES(firstBlock)+capacity);
+        firstFooter->totalBlockSize = capacity;
+        freeList[index] = firstBlock;
+
+        flBitmask = SetBitOn64(flBitmask, fl);
+        slBitmasks[fl] = SetBitOn(slBitmasks[fl], sl);
     }
 
     ~Allocator()
@@ -659,69 +671,42 @@ public:
 
     void* Allocate(size_t size)
     {
-        if (size < 16) return nullptr;
-
-        size_t rawFl = FL_INDEX(size);
-        size_t sl = SlIndex(size, rawFl);
-        size_t fl = rawFl - FL_MIN;
-
-        size_t freeListIdx = 0;
-
-        freeListIdx = fl * MAX_SL_INDEX + sl;
-
-        size_t freeSlotFl = fl;
-        size_t freeSlotSl = sl;
-
-        if (!IsFree(fl, sl)) freeListIdx = GetNextFreeSlotIndex(freeSlotFl, freeSlotSl);
-        if (freeListIdx == INVALID_INDEX) return nullptr;
-
-        FreeBlock* block = freeList[freeListIdx];
-
         size_t requiredSize = sizeof(BlockHeader) + size + sizeof(BlockFooter);
+        if (!data || capacity == 0 ||size == 0 || requiredSize < size) return nullptr;
+        if (requiredSize < MIN_ALLOC_SIZE) return nullptr;
 
-        // Needs to be split
-        if (block->size > requiredSize)
-        {
-            slBitmasks[freeSlotFl] &= ~(1 << freeSlotSl);
-            if (!slBitmasks[freeSlotFl]) flBitmask &= ~(1 << freeSlotFl);
+        size_t freeListIdx = 0, fl = 0, sl = 0;
 
-            size_t newSize = block->size - requiredSize;
-            size_t newRawFl = FL_INDEX(newSize);
-            size_t newFl = newRawFl - FL_MIN;
-            size_t newSl = SlIndex(newSize, newRawFl);
-            size_t newFreeListIdx = newFl * MAX_SL_INDEX + newSl;
+        FreeBlockNode* block = FindFreeBlock(requiredSize, fl, sl, freeListIdx);
+        BlockHeader* header = GetHeader(block);
 
-            FreeBlock* newBlock = reinterpret_cast<FreeBlock*>(reinterpret_cast<unsigned char*>(block) + requiredSize);
+        TrySplitBlock(header, block, requiredSize, fl, sl, freeListIdx);
 
-            newBlock->size = newSize;
-            newBlock->prev = nullptr;
-            newBlock->next = nullptr;
+        BlockHeader* newHeader = TO_HBLOCK(TO_BYTES(header));
 
-            freeList[newFreeListIdx] = newBlock;
-
-            flBitmask |= 1ULL << (newFl);
-            slBitmasks[newFl] |= 1ULL << newSl;
-        }
-
-        BlockHeader* header = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(block));
         size_t flags = 0;
-        flags |= BitMask(0);
+        TrySetPreviousHeaderFlag(newHeader, flags);
 
-        BlockFooter* prev = reinterpret_cast<BlockFooter*>(reinterpret_cast<unsigned char*>(header) - sizeof(BlockFooter));
-        BlockHeader* prevHeader = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(prev) - prev->sizeAndFlags - sizeof(BlockHeader));
+        newHeader->sizeAndFlags = (requiredSize << FLAG_BITS) | flags;
 
-        if ((unsigned char*)header != data && !Mask(prevHeader->sizeAndFlags,0)) flags |= BitMask(1);
+        unsigned char* ptr = TO_BYTES(TO_BYTES(header)+sizeof(BlockHeader));
 
-        header->sizeAndFlags = (requiredSize << 3) | flags;
-
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(reinterpret_cast<unsigned char*>(header)+sizeof(BlockHeader));
-
-        BlockFooter* footer = reinterpret_cast<BlockFooter*>(ptr+size);
-        footer->sizeAndFlags = size;
+        BlockFooter* footer = TO_FBLOCK((ptr+size));
+        footer->totalBlockSize = requiredSize;
 
         return ptr;
     }
 
+//    void Deallocate(void* ptr)
+//    {
+//        if (!ptr) return;
+//
+//        BlockHeader* header = TO_HBLOCK((TO_BYTES(ptr) - sizeof(BlockHeader)));
+//        size_t blockSize = GetHeaderSize(header);
+//
+//        TryCoalesce(header, blockSize);
+//    }
+//
     size_t GetNextFreeSlotIndex(OUT size_t& fl,OUT size_t& sl)
     {
         sl = FindLargerSlots(slBitmasks[fl], sl);
@@ -745,21 +730,154 @@ public:
     const size_t FindLargerSlots64(size_t mask, size_t idx) { return Mask(mask, FlipBits(BitMask64(idx+1)-1)); }
     const size_t BitMask(size_t shiftAmount) { return 1 << shiftAmount; }
     const size_t BitMask64(size_t shiftAmount) { return 1ULL << shiftAmount; }
+    const size_t SetBitOn64(size_t val, size_t bit) { return val | BitMask64(bit);}
+    const size_t SetBitOn(size_t val, size_t bit) { return val | BitMask(bit);}
     const size_t FlipBits(size_t mask) { return ~(mask); }
     const size_t Mask(size_t value, size_t mask) { return value & mask; }
+//
+    const size_t GetHeaderSize(BlockHeader* header) { return header->sizeAndFlags >> FLAG_BITS; }
+    const size_t PrevBlockIsFree(BlockHeader* header) { return Mask(header->sizeAndFlags, IS_PREV_FREE_FLAG); }
+    const size_t BlockIsFree(BlockHeader* header) { return Mask(header->sizeAndFlags, IS_FREE_FLAG); }
+    BlockHeader* GetHeader(FreeBlockNode* node) { return TO_HBLOCK((TO_BYTES(node) - sizeof(BlockHeader))); }
+//
+//    BlockHeader* TryCoalesce(BlockHeader* header, OUT size_t& size)
+//    {
+//        BlockHeader* start = header;
+//        BlockHeader* prev = GetPreviousHeader(header);
+//
+//        if (prev && PrevBlockIsFree(header))
+//        {
+//            start = prev;
+//            size += GetHeaderSize(prev);
+//            RemoveFromFreeList(prev);
+//        }
+//
+//        BlockHeader* next = GetNextHeader(header, GetHeaderSize(header));
+//
+//        if (next && BlockIsFree(next))
+//        {
+//            size += GetHeaderSize(next);
+//            RemoveFromFreeList(next);
+//        }
+//
+//        start->sizeAndFlags = (size << FLAG_BITS) | IS_FREE_FLAG;
+//        CreateNewBlock(TO_BYTES(start), size);
+//    }
 
+    BlockHeader* GetPreviousHeader(void* currentHeader)
+    {
+        if (IsHead(currentHeader)) return nullptr;
+        BlockFooter* prev = TO_FBLOCK(TO_BYTES(currentHeader) - sizeof(BlockFooter));
+        BlockHeader* prevHeader = TO_HBLOCK(TO_BYTES(currentHeader) - prev->totalBlockSize);
+        return prevHeader;
+    }
 
+//    BlockHeader* GetNextHeader(void* currentHeader, size_t offset)
+//    {
+//        unsigned char* next = TO_BYTES(currentHeader) + offset;
+//        if (next >= (data+capacity)) return nullptr;
+//        if (IsTail(next)) return nullptr;
+//        return TO_HBLOCK(next);
+//    }
+
+    void TrySetPreviousHeaderFlag(void* currentHeader, size_t& flags)
+    {
+        BlockHeader* prevHeader = GetPreviousHeader(currentHeader);
+        if (prevHeader &&
+            !Mask(prevHeader->sizeAndFlags,IS_FREE_FLAG)) flags |= IS_PREV_FREE_FLAG;
+    }
+
+    void TrySplitBlock(BlockHeader* header, FreeBlockNode* block, size_t size, size_t fl, size_t sl, size_t index)
+    {
+        size_t blockSize = GetHeaderSize(header);
+        if (blockSize <= size) return;
+        RemoveFromFreeList(block, fl, sl, index);
+        CreateNewBlock(TO_BYTES(header) + size, blockSize - size);
+    }
+
+    void RemoveFromFreeList(FreeBlockNode* block, size_t fl, size_t sl, size_t index)
+    {
+        if (!block) return;
+        if (block->prev) block->prev->next = block->next;
+        if (block->next) block->next->prev = block->prev;
+
+        freeList[index] = block->next;
+
+        slBitmasks[fl] = Mask(slBitmasks[fl],FlipBits(BitMask(sl)));
+        if (!slBitmasks[fl]) flBitmask = Mask(flBitmask,FlipBits(BitMask(fl)));
+    }
+
+//    void RemoveFromFreeList(BlockHeader* block)
+//    {
+//        size_t size = GetHeaderSize(block);
+//        size_t fl, sl, index;
+//
+//        FreeBlockNode* freeBlock = FindFreeBlock(size, fl, sl, index);
+//        RemoveFromFreeList(freeBlock, fl, sl, index);
+//    }
+
+    void CalculateIndices(size_t size, OUT size_t& fl, OUT size_t& sl, OUT size_t& index)
+    {
+        GetIndices(size, fl, sl);
+        index = fl * MAX_SL_INDEX + sl;
+    }
+
+    void CreateNewBlock(unsigned char* ptr, size_t size)
+    {
+            size_t fl = 0,sl = 0, index;
+            CalculateIndices(size, fl, sl, index);
+
+            size_t sizeFlag = (size << FLAG_BITS);
+
+            BlockHeader* header = TO_HBLOCK(ptr);
+            header->sizeAndFlags = sizeFlag;
+
+            FreeBlockNode* block = TO_FREEBLOCK((TO_BYTES(header) + sizeof(BlockHeader)));
+
+            BlockFooter* firstFooter = TO_FBLOCK((TO_BYTES(block)+size));
+            firstFooter->totalBlockSize = size;
+
+            block->next = freeList[index];
+            block->prev = nullptr;
+
+            if (block->next) block->next->prev = block;
+
+            freeList[index] = block;
+
+            flBitmask = SetBitOn64(flBitmask, fl);
+            slBitmasks[fl] = SetBitOn(slBitmasks[fl], sl);
+    }
+
+    FreeBlockNode* FindFreeBlock(size_t size, OUT size_t& fl, OUT size_t& sl,  OUT size_t& index)
+    {
+        CalculateIndices(size, fl, sl, index);
+
+        if (!IsFree(fl, sl)) index = GetNextFreeSlotIndex(fl, sl);
+        if (index == INVALID_INDEX) return nullptr;
+
+        return freeList[index];
+    }
+
+    void GetIndices(const size_t size, OUT size_t& fl, OUT size_t& sl)
+    {
+        size_t rawFl = FL_INDEX(size);
+        sl = SlIndex(size, rawFl);
+        fl = rawFl - FL_MIN;
+    }
+
+    bool IsHead(void* ptr) { return TO_BYTES(ptr) == data ;}
+    bool IsTail(void* ptr) { return TO_BYTES(ptr) + sizeof(BlockHeader) >= (data + capacity); }
     size_t& Capacity() { return capacity;}
     unsigned char* Data() { return data; };
     size_t SlIndex(size_t size, size_t fl) { return (size >> (fl - SL_BITS)) & SL_MASK; }
     const uint64_t& FlBitmask() { return flBitmask; }
     uint16_t*& SlBitmask() { return slBitmasks; }
-    FreeBlock** FreeList() { return freeList; }
+    FreeBlockNode** FreeList() { return freeList; }
 
 private:
     size_t capacity {0};
     unsigned char* data {nullptr};
-    FreeBlock** freeList {nullptr};
+    FreeBlockNode** freeList {nullptr};
 
     // bitmasks
     uint64_t flBitmask {0};
@@ -783,10 +901,19 @@ UTEST(test_ResourceSystem, TestAllocatorCreationWithSize)
     ASSERT_EQ(a.FlBitmask(), 4);
     ASSERT_EQ(a.SlBitmask()[2], 1);
 
-    FreeBlock* block = a.FreeList()[2 * 16];
-    ASSERT_EQ(block->size,64);
+    FreeBlockNode* block = a.FreeList()[2 * 16];
     ASSERT_EQ(block->next, nullptr);
     ASSERT_EQ(block->prev, nullptr);
+
+    BlockHeader* header = TO_HBLOCK((TO_BYTES(block) - sizeof(BlockHeader)));
+    ASSERT_TRUE(header);
+    ASSERT_EQ(64, a.GetHeaderSize(header));
+    ASSERT_TRUE(a.BlockIsFree(header));
+    ASSERT_FALSE(a.PrevBlockIsFree(header));
+
+    BlockFooter* footer = TO_FBLOCK(TO_BYTES(block) + a.GetHeaderSize(header));
+    ASSERT_TRUE(header);
+    ASSERT_EQ(64, footer->totalBlockSize);
 }
 
 UTEST(test_ResourceSystem, TestAllocateFunction)
@@ -806,8 +933,7 @@ UTEST(test_ResourceSystem, TestAllocateFunction)
     ASSERT_EQ(a.FlBitmask(), 2);
     ASSERT_EQ(16, a.SlBitmask()[1]);
 
-    FreeBlock* block = a.FreeList()[(1 * 16) + 4];
-    ASSERT_EQ(block->size,40);
+    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
     ASSERT_EQ(block->next, nullptr);
     ASSERT_EQ(block->prev, nullptr);
 
@@ -815,28 +941,77 @@ UTEST(test_ResourceSystem, TestAllocateFunction)
     auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
     auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
 
-    ASSERT_EQ(193, header->sizeAndFlags);
+    ASSERT_EQ(192, header->sizeAndFlags);
     ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(TestStruct), footer->sizeAndFlags);
+    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
 
     Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
 
     *str = "Hello There!";
     ASSERT_STREQ(str->Str(),"Hello There!");
 
-    ASSERT_EQ(a.FlBitmask(), 1);
+    ASSERT_EQ(1, a.FlBitmask());
     ASSERT_EQ(0, a.SlBitmask()[1]);
 
-    FreeBlock* NewBlock = a.FreeList()[0];
-    ASSERT_EQ(NewBlock->size,16);
+    FreeBlockNode* NewBlock = a.FreeList()[0];
     ASSERT_EQ(NewBlock->next, nullptr);
     ASSERT_EQ(NewBlock->prev, nullptr);
 
-    auto newHeader = (BlockHeader*)((unsigned char*)footer + sizeof(BlockFooter));
+    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
     auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
     auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
 
-    ASSERT_EQ(195, newHeader->sizeAndFlags);
+    ASSERT_EQ(194, newHeader->sizeAndFlags);
     ASSERT_EQ(newData, str);
-    ASSERT_EQ(sizeof(Siege::String), newFooter->sizeAndFlags);
+    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
+
+    // Edge cases
+
+    // Empty allocator
+    Allocator emptyA;
+
+    TestStruct* ptr = (TestStruct*) emptyA.Allocate(sizeof(TestStruct));
+    ASSERT_FALSE(ptr);
+
+    // Allocate 0 bytes
+    void* emptyAllocPtr = a.Allocate(0);
+    ASSERT_FALSE(emptyAllocPtr);
+
+    // Allocate an amount that causes a value overflow
+    Allocator overflowAlloc(SIZE_T_MAX);
+    void* overflowPtr = overflowAlloc.Allocate(SIZE_T_MAX);
+    ASSERT_FALSE(overflowPtr);
 }
+//
+//UTEST(test_ResourceSystem, TestDeallocateFunction)
+//{
+//    Allocator a(64);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 64);
+//
+//    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//
+//    p->inta = 10;
+//    p->intb = 20;
+//
+//    ASSERT_EQ(10, p->inta);
+//    ASSERT_EQ(20, p->intb);
+//
+//    ASSERT_EQ(a.FlBitmask(), 2);
+//    ASSERT_EQ(16, a.SlBitmask()[1]);
+//
+//    FreeBlock* block = a.FreeList()[(1 * 16) + 4];
+//    ASSERT_EQ(block->size,40);
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//
+//    auto header = (BlockHeader*)a.Data();
+//    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+//    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//
+//    a.Deallocate(p);
+//}
