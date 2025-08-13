@@ -78,30 +78,26 @@ UTEST_F(test_ResourceSystem, ReadAllPackedEntries)
 
 UTEST_F(test_ResourceSystem, LoadNonExistentData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
-
-    std::shared_ptr<PackFileData> data = packFile->FindData("assets/nonexistent.filetype");
-    ASSERT_FALSE(data);
+    ResourceHandle<PackFileData> handle = ResourceSystem::GetInstance().LoadResource<PackFileData>("assets/nonexistent.filetype");
+    ASSERT_FALSE(handle.IsValid());
 }
 
 UTEST_F(test_ResourceSystem, LoadPackFileData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<PackFileData> handle = ResourceSystem::GetInstance().LoadResource<PackFileData>("assets/PublicPixel.ttf");
+    ASSERT_TRUE(handle.IsValid());
 
-    std::shared_ptr<PackFileData> data = packFile->FindData("assets/PublicPixel.ttf");
+    PackFileData* data = handle.GetData();
     ASSERT_TRUE(data);
     ASSERT_EQ(97456, data->dataSize);
 }
 
 UTEST_F(test_ResourceSystem, LoadStaticMeshData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<StaticMeshData> handle = ResourceSystem::GetInstance().LoadResource<StaticMeshData>("assets/cube.sm");
+    ASSERT_TRUE(handle.IsValid());
 
-    std::shared_ptr<StaticMeshData> data =
-        packFile->FindDataDeserialised<StaticMeshData>("assets/cube.sm");
+    StaticMeshData* data = handle.GetData();
     ASSERT_TRUE(data);
     ASSERT_EQ(36, data->indices.size());
     ASSERT_EQ(24, data->vertices.size());
@@ -162,11 +158,10 @@ UTEST_F(test_ResourceSystem, LoadStaticMeshData)
 
 UTEST_F(test_ResourceSystem, LoadTextureData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<Texture2DData> handle = ResourceSystem::GetInstance().LoadResource<Texture2DData>("assets/cappy.png");
+    ASSERT_TRUE(handle.IsValid());
 
-    std::shared_ptr<Texture2DData> data =
-        packFile->FindDataDeserialised<Texture2DData>("assets/cappy.png");
+    Texture2DData* data = handle.GetData();
     ASSERT_TRUE(data);
     ASSERT_EQ(160000, data->GetImageSize());
     ASSERT_EQ(160000, data->pixels.size());
@@ -174,8 +169,11 @@ UTEST_F(test_ResourceSystem, LoadTextureData)
 
 UTEST_F(test_ResourceSystem, LoadSceneData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<SceneData> handle = ResourceSystem::GetInstance().LoadResource<SceneData>("assets/scene1.scene");
+    ASSERT_TRUE(handle.IsValid());
+
+    SceneData* data = handle.GetData();
+    ASSERT_TRUE(data);
 
     std::vector<String> expectedSceneData = {"TYPE:TestEntity;"
                                              "POSITION:0.000000,0.000000,0.000000;"
@@ -190,9 +188,6 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
                                              "ROTATION:0.000000;"
                                              "Z_INDEX:0;"};
 
-    std::shared_ptr<SceneData> data =
-        packFile->FindDataDeserialised<SceneData>("assets/scene1.scene");
-    ASSERT_TRUE(data);
     ASSERT_EQ(expectedSceneData.size(), data->entities.size());
     for (int i = 0; i < expectedSceneData.size(); ++i)
     {
@@ -204,11 +199,10 @@ UTEST_F(test_ResourceSystem, LoadSceneData)
 
 UTEST_F(test_ResourceSystem, LoadSkeletalMeshData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<SkeletalMeshData> handle = ResourceSystem::GetInstance().LoadResource<SkeletalMeshData>("assets/cube_anim.sk");
+    ASSERT_TRUE(handle.IsValid());
 
-    std::shared_ptr<SkeletalMeshData> data =
-        packFile->FindDataDeserialised<SkeletalMeshData>("assets/cube_anim.sk");
+    SkeletalMeshData* data = handle.GetData();
     ASSERT_TRUE(data);
     ASSERT_EQ(60, data->indices.size());
     ASSERT_EQ(32, data->vertices.size());
@@ -469,11 +463,10 @@ UTEST_F(test_ResourceSystem, LoadSkeletalMeshData)
 
 UTEST_F(test_ResourceSystem, LoadAnimationData)
 {
-    ResourceSystem& resourceSystem = ResourceSystem::GetInstance();
-    PackFile* packFile = resourceSystem.GetPackFile();
+    ResourceHandle<AnimationData> handle = ResourceSystem::GetInstance().LoadResource<AnimationData>("assets/cube_anim.ska");
+    ASSERT_TRUE(handle.IsValid());
 
-    std::shared_ptr<AnimationData> data =
-        packFile->FindDataDeserialised<AnimationData>("assets/cube_anim.ska");
+    AnimationData* data = handle.GetData();
     ASSERT_TRUE(data);
     ASSERT_NEAR(833.333, data->length, 0.001);
     ASSERT_NEAR(1000.000, data->speed, 0.001);

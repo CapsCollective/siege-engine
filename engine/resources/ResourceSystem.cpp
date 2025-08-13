@@ -47,6 +47,25 @@ PackFile* ResourceSystem::GetPackFile()
     return packFile;
 }
 
+bool ResourceSystem::FreeResources()
+{
+    bool freedResources = false;
+    for (auto it = loadedResources.begin(); it != loadedResources.end();)
+    {
+        if (it->second.first == 0)
+        {
+            // TODO handle dealloc here
+            loadedResources.erase(it++);
+            freedResources = true;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    return freedResources;
+}
+
 ResourceSystem& ResourceSystem::GetInstance()
 {
     static ResourceSystem resourceSystem;
