@@ -697,16 +697,28 @@ public:
         return ptr;
     }
 
-//    void Deallocate(void* ptr)
-//    {
-//        if (!ptr) return;
-//
-//        BlockHeader* header = TO_HBLOCK((TO_BYTES(ptr) - sizeof(BlockHeader)));
-//        size_t blockSize = GetHeaderSize(header);
-//
-//        TryCoalesce(header, blockSize);
-//    }
-//
+    template<typename T>
+    void Deallocate(T*& ptr)
+    {
+        if (!ptr) return;
+
+        BlockHeader* header = TO_HBLOCK((TO_BYTES(ptr) - sizeof(BlockHeader)));
+        size_t blockSize = GetHeaderSize(header);
+
+        size_t totalBlockSize = blockSize;
+        BlockHeader* targetHeader = TryCoalesce(header, totalBlockSize);
+        BlockFooter* footer = TO_FBLOCK((TO_BYTES(targetHeader) + totalBlockSize - sizeof(BlockFooter)));
+
+        targetHeader->sizeAndFlags = (totalBlockSize << FLAG_BITS) | (targetHeader->sizeAndFlags & IS_PREV_FREE_FLAG) | IS_FREE_FLAG;
+        footer->totalBlockSize = totalBlockSize;
+
+        BlockHeader* nextHeader = GetNextHeader(targetHeader, totalBlockSize);
+        if (nextHeader) nextHeader->sizeAndFlags |= IS_PREV_FREE_FLAG;
+
+        CreateNewBlock(TO_BYTES(targetHeader), totalBlockSize);
+        ptr = nullptr;
+    }
+
     size_t GetNextFreeSlotIndex(OUT size_t& fl,OUT size_t& sl)
     {
         sl = FindLargerSlots(slBitmasks[fl], sl);
@@ -734,35 +746,34 @@ public:
     const size_t SetBitOn(size_t val, size_t bit) { return val | BitMask(bit);}
     const size_t FlipBits(size_t mask) { return ~(mask); }
     const size_t Mask(size_t value, size_t mask) { return value & mask; }
-//
+
     const size_t GetHeaderSize(BlockHeader* header) { return header->sizeAndFlags >> FLAG_BITS; }
     const size_t PrevBlockIsFree(BlockHeader* header) { return Mask(header->sizeAndFlags, IS_PREV_FREE_FLAG); }
     const size_t BlockIsFree(BlockHeader* header) { return Mask(header->sizeAndFlags, IS_FREE_FLAG); }
     BlockHeader* GetHeader(FreeBlockNode* node) { return TO_HBLOCK((TO_BYTES(node) - sizeof(BlockHeader))); }
-//
-//    BlockHeader* TryCoalesce(BlockHeader* header, OUT size_t& size)
-//    {
-//        BlockHeader* start = header;
-//        BlockHeader* prev = GetPreviousHeader(header);
-//
-//        if (prev && PrevBlockIsFree(header))
-//        {
-//            start = prev;
-//            size += GetHeaderSize(prev);
-//            RemoveFromFreeList(prev);
-//        }
-//
-//        BlockHeader* next = GetNextHeader(header, GetHeaderSize(header));
-//
-//        if (next && BlockIsFree(next))
-//        {
-//            size += GetHeaderSize(next);
-//            RemoveFromFreeList(next);
-//        }
-//
-//        start->sizeAndFlags = (size << FLAG_BITS) | IS_FREE_FLAG;
-//        CreateNewBlock(TO_BYTES(start), size);
-//    }
+
+    BlockHeader* TryCoalesce(BlockHeader* header, OUT size_t& size)
+    {
+        BlockHeader* start = header;
+        BlockHeader* prev = GetPreviousHeader(header);
+
+        if (prev && BlockIsFree(prev))
+        {
+            start = prev;
+            size += GetHeaderSize(prev);
+            RemoveFromFreeList(prev);
+        }
+
+        BlockHeader* next = GetNextHeader(start, size);
+
+        if (next && BlockIsFree(next))
+        {
+            size += GetHeaderSize(next);
+            RemoveFromFreeList(next);
+        }
+
+        return start;
+    }
 
     BlockHeader* GetPreviousHeader(void* currentHeader)
     {
@@ -772,19 +783,19 @@ public:
         return prevHeader;
     }
 
-//    BlockHeader* GetNextHeader(void* currentHeader, size_t offset)
-//    {
-//        unsigned char* next = TO_BYTES(currentHeader) + offset;
-//        if (next >= (data+capacity)) return nullptr;
-//        if (IsTail(next)) return nullptr;
-//        return TO_HBLOCK(next);
-//    }
+    BlockHeader* GetNextHeader(void* currentHeader, size_t offset)
+    {
+        unsigned char* next = TO_BYTES(currentHeader) + offset;
+        if (next >= (data+capacity)) return nullptr;
+        if (IsTail(next)) return nullptr;
+        return TO_HBLOCK(next);
+    }
 
     void TrySetPreviousHeaderFlag(void* currentHeader, size_t& flags)
     {
         BlockHeader* prevHeader = GetPreviousHeader(currentHeader);
         if (prevHeader &&
-            !Mask(prevHeader->sizeAndFlags,IS_FREE_FLAG)) flags |= IS_PREV_FREE_FLAG;
+            Mask(prevHeader->sizeAndFlags,IS_FREE_FLAG)) flags |= IS_PREV_FREE_FLAG;
     }
 
     void TrySplitBlock(BlockHeader* header, FreeBlockNode* block, size_t size, size_t fl, size_t sl, size_t index)
@@ -807,14 +818,16 @@ public:
         if (!slBitmasks[fl]) flBitmask = Mask(flBitmask,FlipBits(BitMask(fl)));
     }
 
-//    void RemoveFromFreeList(BlockHeader* block)
-//    {
-//        size_t size = GetHeaderSize(block);
-//        size_t fl, sl, index;
-//
-//        FreeBlockNode* freeBlock = FindFreeBlock(size, fl, sl, index);
-//        RemoveFromFreeList(freeBlock, fl, sl, index);
-//    }
+    void RemoveFromFreeList(BlockHeader* block)
+    {
+        size_t size = GetHeaderSize(block);
+        size_t fl, sl, index;
+
+        CalculateIndices(size, fl, sl, index);
+
+        FreeBlockNode* freeBlock = TO_FREEBLOCK((TO_BYTES(block) + sizeof(BlockHeader)));
+        RemoveFromFreeList(freeBlock, fl, sl, index);
+    }
 
     void CalculateIndices(size_t size, OUT size_t& fl, OUT size_t& sl, OUT size_t& index)
     {
@@ -830,11 +843,11 @@ public:
             size_t sizeFlag = (size << FLAG_BITS);
 
             BlockHeader* header = TO_HBLOCK(ptr);
-            header->sizeAndFlags = sizeFlag;
+            header->sizeAndFlags = (sizeFlag | IS_FREE_FLAG);
 
             FreeBlockNode* block = TO_FREEBLOCK((TO_BYTES(header) + sizeof(BlockHeader)));
 
-            BlockFooter* firstFooter = TO_FBLOCK((TO_BYTES(block)+size));
+            BlockFooter* firstFooter = TO_FBLOCK((TO_BYTES(header)+(size-sizeof(BlockFooter))));
             firstFooter->totalBlockSize = size;
 
             block->next = freeList[index];
@@ -982,36 +995,99 @@ UTEST(test_ResourceSystem, TestAllocateFunction)
     void* overflowPtr = overflowAlloc.Allocate(SIZE_T_MAX);
     ASSERT_FALSE(overflowPtr);
 }
-//
-//UTEST(test_ResourceSystem, TestDeallocateFunction)
-//{
-//    Allocator a(64);
-//    ASSERT_NE(a.Data(), nullptr);
-//    ASSERT_EQ(a.Capacity(), 64);
-//
-//    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
-//
-//    p->inta = 10;
-//    p->intb = 20;
-//
-//    ASSERT_EQ(10, p->inta);
-//    ASSERT_EQ(20, p->intb);
-//
-//    ASSERT_EQ(a.FlBitmask(), 2);
-//    ASSERT_EQ(16, a.SlBitmask()[1]);
-//
-//    FreeBlock* block = a.FreeList()[(1 * 16) + 4];
-//    ASSERT_EQ(block->size,40);
-//    ASSERT_EQ(block->next, nullptr);
-//    ASSERT_EQ(block->prev, nullptr);
-//
-//    auto header = (BlockHeader*)a.Data();
-//    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
-//    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
-//
-//    ASSERT_EQ(192, header->sizeAndFlags);
-//    ASSERT_EQ(data, p);
-//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-//
-//    a.Deallocate(p);
-//}
+
+UTEST(test_ResourceSystem, TestDeallocateFunction)
+{
+    Allocator a(64);
+    ASSERT_NE(a.Data(), nullptr);
+    ASSERT_EQ(a.Capacity(), 64);
+
+    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+
+    p->inta = 10;
+    p->intb = 20;
+
+    ASSERT_EQ(10, p->inta);
+    ASSERT_EQ(20, p->intb);
+
+    ASSERT_EQ(a.FlBitmask(), 2);
+    ASSERT_EQ(16, a.SlBitmask()[1]);
+
+    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
+    ASSERT_EQ(block->next, nullptr);
+    ASSERT_EQ(block->prev, nullptr);
+
+    auto header = (BlockHeader*)a.Data();
+    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+
+    ASSERT_EQ(192, header->sizeAndFlags);
+    ASSERT_EQ(data, p);
+    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+
+    a.Deallocate(p);
+
+    // Should be empty
+    ASSERT_EQ(513, header->sizeAndFlags);
+    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
+    ASSERT_FALSE(p);
+    ASSERT_EQ(a.FlBitmask(), 4);
+    ASSERT_EQ(a.SlBitmask()[2], 1);
+
+    p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+    p->inta = 10;
+    p->intb = 20;
+
+    ASSERT_EQ(10, p->inta);
+    ASSERT_EQ(20, p->intb);
+
+    ASSERT_EQ(a.FlBitmask(), 2);
+    ASSERT_EQ(16, a.SlBitmask()[1]);
+
+    block = a.FreeList()[(1 * 16) + 4];
+    ASSERT_EQ(block->next, nullptr);
+    ASSERT_EQ(block->prev, nullptr);
+
+    header = (BlockHeader*)a.Data();
+    data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+    footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+
+    ASSERT_EQ(192, header->sizeAndFlags);
+    ASSERT_EQ(data, p);
+    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+
+    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
+
+    *str = "Hello There!";
+    ASSERT_STREQ(str->Str(),"Hello There!");
+
+    ASSERT_EQ(1, a.FlBitmask());
+    ASSERT_EQ(0, a.SlBitmask()[1]);
+
+    FreeBlockNode* NewBlock = a.FreeList()[0];
+    ASSERT_EQ(NewBlock->next, nullptr);
+    ASSERT_EQ(NewBlock->prev, nullptr);
+
+    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
+    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
+    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
+
+    ASSERT_EQ(194, newHeader->sizeAndFlags);
+    ASSERT_EQ(newData, str);
+    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
+
+    a.Deallocate(p);
+    ASSERT_FALSE(p);
+    ASSERT_TRUE(newHeader->sizeAndFlags & IS_PREV_FREE_FLAG);
+    ASSERT_EQ(194, newHeader->sizeAndFlags);
+    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
+    FreeBlockNode* newFreeBlock = TO_FREEBLOCK((TO_BYTES(header)+sizeof(BlockHeader)));
+    ASSERT_EQ(newFreeBlock->next, nullptr);
+    ASSERT_EQ(newFreeBlock->prev, nullptr);
+
+    a.Deallocate(str);
+//    ASSERT_FALSE(str);
+//    ASSERT_EQ(513, header->sizeAndFlags);
+//    ASSERT_EQ(a.FlBitmask(), 4);
+//    ASSERT_EQ(a.SlBitmask()[2], 1);
+}
