@@ -115,6 +115,8 @@ int main()
                           0);
 
         renderer.EndFrame();
+
+        Siege::ResourceSystem::GetInstance().FreeResources();
     }
 
     renderer.ClearQueues();

@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
         Siege::Statics::Collision().FreeEntities();
         Siege::Statics::Entity().FreeEntities();
         Siege::Statics::Tool().FreeEntities();
+        Siege::ResourceSystem::GetInstance().FreeResources();
         Siege::Statics::Scene().LoadNextScene();
     }
 
