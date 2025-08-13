@@ -12,6 +12,11 @@
 
 #include <utils/String.h>
 
+#include <map>
+
+#include "PackFile.h"
+#include "ResourceHandle.h"
+
 namespace Siege
 {
 
@@ -27,13 +32,38 @@ public:
 
     void UnmountPackFile();
 
-    class PackFile* GetPackFile();
+    PackFile* GetPackFile();
+
+    bool FreeResources();
+
+    template<typename T>
+    ResourceHandle<T> LoadResource(const String& path)
+    {
+        T* data;
+        uint32_t* count;
+        const auto& it = loadedResources.find(path);
+        if (it != loadedResources.end())
+        {
+            count = &it->second.first;
+            data = static_cast<T*>(it->second.second);
+        }
+        else
+        {
+            data = GetPackFile()->FindData<T>(path);
+            std::pair<uint32_t, void*> pair(0, data);
+            const auto& newIt = loadedResources.emplace(path, pair);
+            count = &newIt.first->second.first;
+        }
+        return {count, data};
+    }
 
 private:
 
     // Private fields
 
     PackFile* packFile = nullptr;
+
+    std::map<String, std::pair<uint32_t, void*>> loadedResources;
 };
 
 } // namespace Siege

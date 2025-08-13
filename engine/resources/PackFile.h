@@ -76,25 +76,41 @@ public:
 
     bool LoadFromPath(const String& filepath);
 
-    std::shared_ptr<PackFileData> FindData(const String& filepath);
-
     template<typename T>
-    std::shared_ptr<T> FindDataDeserialised(const String& filepath)
+    T* FindData(const String& filepath)
     {
-        std::shared_ptr<PackFileData> packFileData = FindData(filepath);
-        if (!packFileData)
-        {
-            CC_LOG_WARNING("Failed to find data for filepath \"{}\"", filepath);
-            return nullptr;
-        }
+        PackFileData* packFileData = FindData<PackFileData>(filepath);
 
         BinarySerialisation::Buffer dataBuffer;
         dataBuffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
+        delete packFileData;
 
         T* typedData = new T();
         BinarySerialisation::serialise(dataBuffer, *typedData, BinarySerialisation::DESERIALISE);
 
-        return std::shared_ptr<T>(typedData);
+        return typedData;
+    }
+
+    template<>
+    PackFileData* FindData<PackFileData>(const String& filepath)
+    {
+        const TocEntry* toc = entries[filepath];
+        if (!toc)
+        {
+            return nullptr;
+        }
+
+        uLongf bodyDataSizeUncompressed = toc->dataSize;
+        uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
+
+        PackFileData* packFileData = new (malloc(bodyDataSizeUncompressed)) PackFileData();
+        int result = uncompress(reinterpret_cast<Bytef*>(packFileData),
+                                &bodyDataSizeUncompressed,
+                                reinterpret_cast<Bytef*>(body + toc->dataOffset),
+                                bodyDataSizeCompressed);
+        CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
+
+        return packFileData;
     }
 
     const std::map<String, TocEntry*>& GetEntries();
