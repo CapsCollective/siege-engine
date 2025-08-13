@@ -378,6 +378,8 @@ int main()
                           &aryehthulu);
 
         renderer.EndFrame();
+
+        Siege::ResourceSystem::GetInstance().FreeResources();
     }
 
     renderer.ClearQueues();

@@ -93,9 +93,8 @@ Texture2D& Texture2D::operator=(Texture2D&& other)
 
 void Texture2D::LoadFromFile(const char* filePath)
 {
-    PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-    std::shared_ptr<Texture2DData> texture2dData =
-        packFile->FindDataDeserialised<Texture2DData>(filePath);
+    ResourceHandle<Texture2DData> handle = ResourceSystem::GetInstance().LoadResource<Texture2DData>(filePath);
+    Texture2DData* texture2dData = handle.GetData();
 
     Buffer::Buffer stagingBuffer;
     defer([&stagingBuffer] { Buffer::DestroyBuffer(stagingBuffer); });

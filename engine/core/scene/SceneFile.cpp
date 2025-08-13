@@ -124,10 +124,8 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
     }
     else
     {
-        PackFile* packFile = ResourceSystem::GetInstance().GetPackFile();
-
-        std::shared_ptr<SceneData> sceneData = packFile->FindDataDeserialised<SceneData>(scenePath);
-        if (!sceneData)
+        ResourceHandle<SceneData> handle = ResourceSystem::GetInstance().LoadResource<SceneData>(scenePath);
+        if (!handle.IsValid())
         {
             CC_LOG_WARNING(
                 "Failed to retrieve deserialised scene data for scene \"{}\" from pack file",
@@ -135,6 +133,7 @@ bool SceneFile::Deserialise(std::vector<Entity*>& entities)
             return false;
         }
 
+        SceneData* sceneData = handle.GetData();
         for (const String& entityData : sceneData->entities)
         {
             deserialiseEntityString(entityData.Str(), "");
