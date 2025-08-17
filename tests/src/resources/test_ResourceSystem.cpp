@@ -680,6 +680,9 @@ public:
         size_t freeListIdx = 0, fl = 0, sl = 0;
 
         FreeBlockNode* block = FindFreeBlock(requiredSize, fl, sl, freeListIdx);
+
+        if (freeListIdx == INVALID_INDEX) return nullptr;
+
         BlockHeader* header = GetHeader(block);
 
         TrySplitBlock(header, block, requiredSize, fl, sl, freeListIdx);
@@ -809,8 +812,9 @@ public:
     void TrySplitBlock(BlockHeader* header, FreeBlockNode* block, size_t size, size_t fl, size_t sl, size_t index)
     {
         size_t blockSize = GetHeaderSize(header);
-        if (blockSize <= size) return;
         RemoveFromFreeList(block, fl, sl, index);
+        if (blockSize <= size) return;
+
         CreateNewBlock(TO_BYTES(header) + size, blockSize - size);
     }
 
@@ -849,8 +853,6 @@ public:
             CalculateIndices(size, fl, sl, index);
 
             size_t sizeFlag = (size << FLAG_BITS);
-
-            // 0000 0000 0000 0000
 
             BlockHeader* header = TO_HBLOCK(ptr);
             header->sizeAndFlags = (sizeFlag | IS_FREE_FLAG);
@@ -1232,7 +1234,29 @@ UTEST(test_ResourceSystem, TestBlockCoalescing)
     ASSERT_FALSE(badPointer);
 
     // try to deallocate pointer not in allocator;
-    uint64_t* val = new uint64_t;
 
-    a.Deallocate(val);
+    uint64_t* val = new uint64_t;
+    a.Deallocate(val); // Should do nothing and be ignored.
+    free(val);
+}
+
+UTEST(test_ResourceSystem, TestAllocationWhenNoAppropriateFragmentExists)
+{
+    Allocator a(128);
+    ASSERT_NE(a.Data(), nullptr);
+    ASSERT_EQ(a.Capacity(), 128);
+    ASSERT_EQ(128, a.BytesRemaining());
+
+    void* p0 = a.Allocate(16);
+    void* p1 = a.Allocate(32);
+    void* p2 = a.Allocate(16);
+    void* p3 = a.Allocate(32);
+    ASSERT_EQ(0, a.BytesRemaining());
+
+    a.Deallocate(p0);
+    a.Deallocate(p2);
+
+    ASSERT_EQ(48, a.BytesRemaining());
+    void* tooLargeVal = a.Allocate(24);
+    ASSERT_FALSE(tooLargeVal);
 }
