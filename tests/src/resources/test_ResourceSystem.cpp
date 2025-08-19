@@ -16,6 +16,7 @@
 #include <resources/StaticMeshData.h>
 #include <resources/Texture2DData.h>
 #include <utest.h>
+#include <random>
 
 using namespace Siege;
 
@@ -683,7 +684,9 @@ public:
 
         if (freeListIdx == INVALID_INDEX) return nullptr;
 
-        BlockHeader* header = GetHeader(block);
+        BlockHeader* header = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(block) - sizeof(BlockHeader));
+
+
 
         TrySplitBlock(header, block, requiredSize, fl, sl, freeListIdx);
 
@@ -694,7 +697,7 @@ public:
 
         newHeader->sizeAndFlags = (requiredSize << FLAG_BITS) | flags;
 
-        unsigned char* ptr = TO_BYTES(TO_BYTES(header)+sizeof(BlockHeader));
+        unsigned char* ptr = TO_BYTES(header)+sizeof(BlockHeader);
 
         BlockFooter* footer = TO_FBLOCK((ptr+size));
         footer->totalBlockSize = requiredSize;
@@ -732,8 +735,10 @@ public:
 
     size_t GetNextFreeSlotIndex(OUT size_t& fl,OUT size_t& sl)
     {
-        sl = FindLargerSlots(slBitmasks[fl], sl);
-        if (sl) return fl * MAX_SL_INDEX + __builtin_ctz(sl);
+        sl = __builtin_ctz(FindLargerSlots(slBitmasks[fl], sl));
+
+        if (sl == 32) sl = 0;
+        if (sl) return fl * MAX_SL_INDEX + sl;
 
         fl = FindLargerSlots64(flBitmask, fl);
 
@@ -813,7 +818,7 @@ public:
     {
         size_t blockSize = GetHeaderSize(header);
         RemoveFromFreeList(block, fl, sl, index);
-        if (blockSize <= size) return;
+        if (blockSize <= size || ((blockSize - size) < (sizeof(BlockHeader) + sizeof(BlockFooter)))) return;
 
         CreateNewBlock(TO_BYTES(header) + size, blockSize - size);
     }
@@ -821,10 +826,11 @@ public:
     void RemoveFromFreeList(FreeBlockNode* block, size_t fl, size_t sl, size_t index)
     {
         if (!block) return;
-        if (block->prev) block->prev->next = block->next;
-        if (block->next) block->next->prev = block->prev;
 
-        freeList[index] = block->next;
+        if (!block->prev) freeList[index] = block->next;
+        else block->prev->next = block->next;
+
+        if (block->next) block->next->prev = block->prev;
 
         slBitmasks[fl] = Mask(slBitmasks[fl],FlipBits(BitMask(sl)));
         if (!slBitmasks[fl]) flBitmask = Mask(flBitmask,FlipBits(BitMask(fl)));
@@ -857,7 +863,9 @@ public:
             BlockHeader* header = TO_HBLOCK(ptr);
             header->sizeAndFlags = (sizeFlag | IS_FREE_FLAG);
 
-            FreeBlockNode* block = TO_FREEBLOCK((TO_BYTES(header) + sizeof(BlockHeader)));
+            FreeBlockNode* block = reinterpret_cast<FreeBlockNode*>(reinterpret_cast<unsigned char*>(header) + sizeof(BlockHeader));
+
+//            FreeBlockNode* block = TO_FREEBLOCK((TO_BYTES(header) + sizeof(BlockHeader)));
 
             BlockFooter* firstFooter = TO_FBLOCK((TO_BYTES(header)+(size-sizeof(BlockFooter))));
             firstFooter->totalBlockSize = size;
@@ -865,7 +873,7 @@ public:
             block->next = freeList[index];
             block->prev = nullptr;
 
-            if (block->next) block->next->prev = block;
+            if (IsValid(block->next)) block->next->prev = block;
 
             freeList[index] = block;
 
@@ -892,6 +900,7 @@ public:
 
     bool IsHead(void* ptr) { return TO_BYTES(ptr) == data ;}
     bool IsTail(void* ptr) { return TO_BYTES(ptr) + sizeof(BlockHeader) >= (data + capacity); }
+    bool IsValid(FreeBlockNode* ptr) { return ptr != nullptr; }
     size_t& Capacity() { return capacity;}
     unsigned char* Data() { return data; };
     size_t SlIndex(size_t size, size_t fl) { return (size >> (fl - SL_BITS)) & SL_MASK; }
@@ -1259,4 +1268,53 @@ UTEST(test_ResourceSystem, TestAllocationWhenNoAppropriateFragmentExists)
     ASSERT_EQ(48, a.BytesRemaining());
     void* tooLargeVal = a.Allocate(24);
     ASSERT_FALSE(tooLargeVal);
+}
+
+UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
+{
+    Allocator a(1024 * 1024);
+
+    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
+    //std::default_random_engine generator(seed);
+    std::default_random_engine generator(12345);
+
+    std::uniform_int_distribution<int> actionDist(0, 10);
+    std::uniform_int_distribution<int> sizeDist(1, 256);
+
+    std::vector<void*> pointers;
+
+    for(int i = 0; i < 10000; i++)
+    {
+        int action = actionDist(generator);
+
+        if (action < 8)
+        {
+            size_t randomSize = sizeDist(generator);
+            void* ptr = a.Allocate(randomSize);
+            if (ptr)
+            {
+                *((uint32_t*)ptr) = 0xDEADC0DE;
+                pointers.push_back(ptr);
+            }
+        }
+        else if (action <= 10 && !pointers.empty())
+        {
+            std::uniform_int_distribution<int> indices(0, pointers.size()-1);
+            size_t index = indices(generator);
+
+            void* ptrToFree = pointers[index];
+            ASSERT_EQ(*(uint32_t*)ptrToFree, 0xDEADC0DE);
+
+            a.Deallocate(ptrToFree);
+            ASSERT_FALSE(ptrToFree);
+            pointers.erase(pointers.begin() + index);
+        }
+    }
+
+    for (void* ptr : pointers)
+    {
+        a.Deallocate(ptr);
+    }
+
+    ASSERT_EQ(a.Capacity(), a.BytesRemaining());
 }
