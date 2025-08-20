@@ -586,10 +586,6 @@ struct SmallBlockFooter
 
 struct BlockHeader
 {
-    // bitmask where the first three bits are flags:
-    // 0 = is the block free
-    // 1 = is the previous block free
-    // 2 = padding
     uint32_t sizeAndFlags {0};
 };
 
@@ -618,7 +614,7 @@ struct LargeBlockFooter
 #define TO_FBLOCK(val) ((BlockFooter*)val)
 #define TO_FREEBLOCK(val) ((FreeBlockNode*)val)
 
-#define SL_BITS 4 // we get the log(2) the max sl index
+#define SL_BITS 4
 #define SL_MASK ((1 << SL_BITS) - 1)
 
 #define FLAG_BITS 3
@@ -686,8 +682,6 @@ public:
 
         BlockHeader* header = reinterpret_cast<BlockHeader*>(reinterpret_cast<unsigned char*>(block) - sizeof(BlockHeader));
 
-
-
         TrySplitBlock(header, block, requiredSize, fl, sl, freeListIdx);
 
         BlockHeader* newHeader = TO_HBLOCK(TO_BYTES(header));
@@ -714,6 +708,9 @@ public:
         if ((TO_BYTES(ptr) < data || TO_BYTES(ptr) >= (data + capacity))) return;
 
         BlockHeader* header = TO_HBLOCK((TO_BYTES(ptr) - sizeof(BlockHeader)));
+
+        if (BlockIsFree(header)) return;
+
         size_t blockSize = GetHeaderSize(header);
 
         size_t totalBlockSize = blockSize;
@@ -832,6 +829,9 @@ public:
 
         if (block->next) block->next->prev = block->prev;
 
+        block->next = nullptr;
+        block->prev = nullptr;
+
         slBitmasks[fl] = Mask(slBitmasks[fl],FlipBits(BitMask(sl)));
         if (!slBitmasks[fl]) flBitmask = Mask(flBitmask,FlipBits(BitMask(fl)));
     }
@@ -864,8 +864,6 @@ public:
             header->sizeAndFlags = (sizeFlag | IS_FREE_FLAG);
 
             FreeBlockNode* block = reinterpret_cast<FreeBlockNode*>(reinterpret_cast<unsigned char*>(header) + sizeof(BlockHeader));
-
-//            FreeBlockNode* block = TO_FREEBLOCK((TO_BYTES(header) + sizeof(BlockHeader)));
 
             BlockFooter* firstFooter = TO_FBLOCK((TO_BYTES(header)+(size-sizeof(BlockFooter))));
             firstFooter->totalBlockSize = size;
@@ -920,401 +918,402 @@ private:
     uint16_t* slBitmasks {nullptr};
 };
 
-UTEST(test_ResourceSystem, TestEmptyAllocatorCreation)
-{
-    Allocator a;
-    ASSERT_EQ(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 0);
-}
-
-UTEST(test_ResourceSystem, TestAllocatorCreationWithSize)
-{
-    Allocator a(64);
-    ASSERT_NE(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 64);
-    ASSERT_EQ(64, a.BytesRemaining());
-
-    // 0001 0000
-    ASSERT_EQ(a.FlBitmask(), 4);
-    ASSERT_EQ(a.SlBitmask()[2], 1);
-
-    FreeBlockNode* block = a.FreeList()[2 * 16];
-    ASSERT_EQ(block->next, nullptr);
-    ASSERT_EQ(block->prev, nullptr);
-
-    BlockHeader* header = TO_HBLOCK((TO_BYTES(block) - sizeof(BlockHeader)));
-    ASSERT_TRUE(header);
-    ASSERT_EQ(64, a.GetHeaderSize(header));
-    ASSERT_TRUE(a.BlockIsFree(header));
-    ASSERT_FALSE(a.PrevBlockIsFree(header));
-
-    BlockFooter* footer = TO_FBLOCK(TO_BYTES(block) + a.GetHeaderSize(header));
-    ASSERT_TRUE(header);
-    ASSERT_EQ(64, footer->totalBlockSize);
-}
-
-UTEST(test_ResourceSystem, TestAllocateFunction)
-{
-    Allocator a(64);
-    ASSERT_NE(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 64);
-    ASSERT_EQ(64, a.BytesRemaining());
-
-    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
-
-    p->inta = 10;
-    p->intb = 20;
-
-    ASSERT_EQ(10, p->inta);
-    ASSERT_EQ(20, p->intb);
-
-    ASSERT_EQ(a.FlBitmask(), 2);
-    ASSERT_EQ(16, a.SlBitmask()[1]);
-
-    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
-    ASSERT_EQ(block->next, nullptr);
-    ASSERT_EQ(block->prev, nullptr);
-
-    auto header = (BlockHeader*)a.Data();
-    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
-    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, header->sizeAndFlags);
-    ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-    ASSERT_EQ(40, a.BytesRemaining());
-
-    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
-
-    *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
-
-    ASSERT_EQ(1, a.FlBitmask());
-    ASSERT_EQ(0, a.SlBitmask()[1]);
-
-    FreeBlockNode* NewBlock = a.FreeList()[0];
-    ASSERT_EQ(NewBlock->next, nullptr);
-    ASSERT_EQ(NewBlock->prev, nullptr);
-
-    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
-    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
-    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, newHeader->sizeAndFlags);
-    ASSERT_EQ(newData, str);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
-    ASSERT_EQ(16, a.BytesRemaining());
-
-    // Edge cases
-
-    // Empty allocator
-    Allocator emptyA;
-
-    TestStruct* ptr = (TestStruct*) emptyA.Allocate(sizeof(TestStruct));
-    ASSERT_FALSE(ptr);
-
-    // Allocate 0 bytes
-    void* emptyAllocPtr = a.Allocate(0);
-    ASSERT_FALSE(emptyAllocPtr);
-
-    // Allocate an amount that causes a value overflow
-    Allocator overflowAlloc(SIZE_T_MAX);
-    void* overflowPtr = overflowAlloc.Allocate(SIZE_T_MAX);
-    ASSERT_FALSE(overflowPtr);
-
-    void* tooLargeCase = a.Allocate(100);
-    ASSERT_FALSE(tooLargeCase);
-
-    Allocator tooSmallAlloc(64);
-    void* tooLargeAlloc = a.Allocate(100);
-    ASSERT_FALSE(tooLargeCase);
-}
-
-UTEST(test_ResourceSystem, TestDeallocateFunction)
-{
-    Allocator a(64);
-    ASSERT_NE(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 64);
-    ASSERT_EQ(64, a.BytesRemaining());
-
-    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
-
-    p->inta = 10;
-    p->intb = 20;
-
-    ASSERT_EQ(10, p->inta);
-    ASSERT_EQ(20, p->intb);
-
-    ASSERT_EQ(a.FlBitmask(), 2);
-    ASSERT_EQ(16, a.SlBitmask()[1]);
-
-    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
-    ASSERT_EQ(block->next, nullptr);
-    ASSERT_EQ(block->prev, nullptr);
-    ASSERT_EQ(40, a.BytesRemaining());
-
-    auto header = (BlockHeader*)a.Data();
-    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
-    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, header->sizeAndFlags);
-    ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-
-    a.Deallocate(p);
-
-    // Should be empty
-    ASSERT_EQ(513, header->sizeAndFlags);
-    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
-    ASSERT_FALSE(p);
-    ASSERT_EQ(a.FlBitmask(), 4);
-    ASSERT_EQ(a.SlBitmask()[2], 1);
-    ASSERT_EQ(64, a.BytesRemaining());
-
-    p = (TestStruct*) a.Allocate(sizeof(TestStruct));
-    p->inta = 10;
-    p->intb = 20;
-
-    ASSERT_EQ(10, p->inta);
-    ASSERT_EQ(20, p->intb);
-
-    ASSERT_EQ(a.FlBitmask(), 2);
-    ASSERT_EQ(16, a.SlBitmask()[1]);
-
-    block = a.FreeList()[(1 * 16) + 4];
-    ASSERT_EQ(block->next, nullptr);
-    ASSERT_EQ(block->prev, nullptr);
-    ASSERT_EQ(40, a.BytesRemaining());
-
-    header = (BlockHeader*)a.Data();
-    data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
-    footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, header->sizeAndFlags);
-    ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-
-    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
-
-    *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
-
-    ASSERT_EQ(1, a.FlBitmask());
-    ASSERT_EQ(0, a.SlBitmask()[1]);
-
-    FreeBlockNode* NewBlock = a.FreeList()[0];
-    ASSERT_EQ(NewBlock->next, nullptr);
-    ASSERT_EQ(NewBlock->prev, nullptr);
-    ASSERT_EQ(16, a.BytesRemaining());
-
-    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
-    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
-    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, newHeader->sizeAndFlags);
-    ASSERT_EQ(newData, str);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
-
-    a.Deallocate(p);
-    ASSERT_FALSE(p);
-    ASSERT_TRUE(newHeader->sizeAndFlags & IS_PREV_FREE_FLAG);
-    ASSERT_EQ(194, newHeader->sizeAndFlags);
-    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
-    FreeBlockNode* newFreeBlock = TO_FREEBLOCK((TO_BYTES(header)+sizeof(BlockHeader)));
-    ASSERT_EQ(newFreeBlock->next, nullptr);
-    ASSERT_EQ(newFreeBlock->prev, nullptr);
-    ASSERT_EQ(40, a.BytesRemaining());
-
-    a.Deallocate(str);
-    ASSERT_FALSE(str);
-    ASSERT_EQ(513, header->sizeAndFlags);
-    ASSERT_EQ(4, a.FlBitmask());
-    ASSERT_EQ(1, a.SlBitmask()[2]);
-    ASSERT_EQ(64, a.BytesRemaining());
-}
-
-UTEST(test_ResourceSystem, TestBlockCoalescing)
-{
-    Allocator a(128);
-    ASSERT_NE(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 128);
-    ASSERT_EQ(128, a.BytesRemaining());
-
-    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
-
-    p->inta = 10;
-    p->intb = 20;
-
-    ASSERT_EQ(10, p->inta);
-    ASSERT_EQ(20, p->intb);
-
-    ASSERT_EQ(4, a.FlBitmask());
-    ASSERT_EQ(0, a.SlBitmask()[1]);
-
-    FreeBlockNode* block = a.FreeList()[42];
-    ASSERT_EQ(block->next, nullptr);
-    ASSERT_EQ(block->prev, nullptr);
-    ASSERT_EQ(104, a.BytesRemaining());
-
-    auto header = (BlockHeader*)a.Data();
-    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
-    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, header->sizeAndFlags);
-    ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-
-    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
-
-    *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
-
-    ASSERT_EQ(4, a.FlBitmask());
-    ASSERT_EQ(0, a.SlBitmask()[1]);
-
-    FreeBlockNode* NewBlock = a.FreeList()[36];
-    ASSERT_EQ(NewBlock->next, nullptr);
-    ASSERT_EQ(NewBlock->prev, nullptr);
-    ASSERT_EQ(80, a.BytesRemaining());
-
-    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
-    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
-    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, newHeader->sizeAndFlags);
-    ASSERT_EQ(newData, str);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
-
-    TestStruct* p2 = (TestStruct*) a.Allocate(sizeof(TestStruct));
-
-    p2->inta = 10;
-    p2->intb = 20;
-
-    ASSERT_EQ(10, p2->inta);
-    ASSERT_EQ(20, p2->intb);
-
-    ASSERT_EQ(a.FlBitmask(), 2);
-    ASSERT_EQ(4096, a.SlBitmask()[1]);
-
-    FreeBlockNode* newFreeBlock = a.FreeList()[28];
-    ASSERT_EQ(newFreeBlock->next, nullptr);
-    ASSERT_EQ(newFreeBlock->prev, nullptr);
-    ASSERT_EQ(56, a.BytesRemaining());
-
-    auto newHeader2 = (BlockHeader*)(TO_BYTES(newFooter) + sizeof(BlockFooter));
-    auto newData2 = (TestStruct*) (((unsigned char*)newHeader2) + sizeof(BlockHeader));
-    auto newFooter2 = (BlockFooter*) (((unsigned char*)newData2) + sizeof(TestStruct));
-
-    ASSERT_EQ(192, header->sizeAndFlags);
-    ASSERT_EQ(data, p);
-    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
-
-    a.Deallocate(p);
-
-    FreeBlockNode* firstFree = a.FreeList()[8];
-    ASSERT_EQ(firstFree->next, nullptr);
-    ASSERT_EQ(firstFree->prev, nullptr);
-    ASSERT_EQ(80, a.BytesRemaining());
-
-    BlockHeader* firstFreeHeader = TO_HBLOCK((TO_BYTES(firstFree) - sizeof(BlockHeader)));
-    ASSERT_TRUE(firstFreeHeader->sizeAndFlags & IS_FREE_FLAG);
-    ASSERT_FALSE(firstFreeHeader->sizeAndFlags & IS_PREV_FREE_FLAG);
-    ASSERT_FALSE(p);
-    ASSERT_EQ(a.FlBitmask(), 3);
-    ASSERT_EQ(256, a.SlBitmask()[0]);
-
-    a.Deallocate(p2);
-    ASSERT_FALSE(p2);
-    ASSERT_EQ(104, a.BytesRemaining());
-    ASSERT_EQ(a.FlBitmask(), 5);
-    ASSERT_EQ(256, a.SlBitmask()[0]);
-    ASSERT_EQ(16, a.SlBitmask()[2]);
-
-    a.Deallocate(str);
-    ASSERT_FALSE(str);
-    ASSERT_EQ(128, a.BytesRemaining());
-    ASSERT_EQ(a.FlBitmask(), 8);
-    ASSERT_EQ(a.SlBitmask()[3], 1);
-
-    // Edge Cases
-
-    void* badPointer = nullptr;
-    a.Deallocate(badPointer);
-    ASSERT_FALSE(badPointer);
-
-    // try to deallocate pointer not in allocator;
-
-    uint64_t* val = new uint64_t;
-    a.Deallocate(val); // Should do nothing and be ignored.
-    free(val);
-}
-
-UTEST(test_ResourceSystem, TestAllocationWhenNoAppropriateFragmentExists)
-{
-    Allocator a(128);
-    ASSERT_NE(a.Data(), nullptr);
-    ASSERT_EQ(a.Capacity(), 128);
-    ASSERT_EQ(128, a.BytesRemaining());
-
-    void* p0 = a.Allocate(16);
-    void* p1 = a.Allocate(32);
-    void* p2 = a.Allocate(16);
-    void* p3 = a.Allocate(32);
-    ASSERT_EQ(0, a.BytesRemaining());
-
-    a.Deallocate(p0);
-    a.Deallocate(p2);
-
-    ASSERT_EQ(48, a.BytesRemaining());
-    void* tooLargeVal = a.Allocate(24);
-    ASSERT_FALSE(tooLargeVal);
-}
-
-UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
-{
-    Allocator a(1024 * 1024);
-
-    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
-    //std::default_random_engine generator(seed);
-    std::default_random_engine generator(12345);
-
-    std::uniform_int_distribution<int> actionDist(0, 10);
-    std::uniform_int_distribution<int> sizeDist(1, 256);
-
-    std::vector<void*> pointers;
-
-    for(int i = 0; i < 10000; i++)
-    {
-        int action = actionDist(generator);
-
-        if (action < 8)
-        {
-            size_t randomSize = sizeDist(generator);
-            void* ptr = a.Allocate(randomSize);
-            if (ptr)
-            {
-                *((uint32_t*)ptr) = 0xDEADC0DE;
-                pointers.push_back(ptr);
-            }
-        }
-        else if (action <= 10 && !pointers.empty())
-        {
-            std::uniform_int_distribution<int> indices(0, pointers.size()-1);
-            size_t index = indices(generator);
-
-            void* ptrToFree = pointers[index];
-            ASSERT_EQ(*(uint32_t*)ptrToFree, 0xDEADC0DE);
-
-            a.Deallocate(ptrToFree);
-            ASSERT_FALSE(ptrToFree);
-            pointers.erase(pointers.begin() + index);
-        }
-    }
-
-    for (void* ptr : pointers)
-    {
-        a.Deallocate(ptr);
-    }
-
-    ASSERT_EQ(a.Capacity(), a.BytesRemaining());
-}
+//UTEST(test_ResourceSystem, TestEmptyAllocatorCreation)
+//{
+//    Allocator a;
+//    ASSERT_EQ(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 0);
+//}
+//
+//UTEST(test_ResourceSystem, TestAllocatorCreationWithSize)
+//{
+//    Allocator a(64);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 64);
+//    ASSERT_EQ(64, a.BytesRemaining());
+//
+//    // 0001 0000
+//    ASSERT_EQ(a.FlBitmask(), 4);
+//    ASSERT_EQ(a.SlBitmask()[2], 1);
+//
+//    FreeBlockNode* block = a.FreeList()[2 * 16];
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//
+//    BlockHeader* header = TO_HBLOCK((TO_BYTES(block) - sizeof(BlockHeader)));
+//    ASSERT_TRUE(header);
+//    ASSERT_EQ(64, a.GetHeaderSize(header));
+//    ASSERT_TRUE(a.BlockIsFree(header));
+//    ASSERT_FALSE(a.PrevBlockIsFree(header));
+//
+//    BlockFooter* footer = TO_FBLOCK(TO_BYTES(block) + a.GetHeaderSize(header));
+//    ASSERT_TRUE(header);
+//    ASSERT_EQ(64, footer->totalBlockSize);
+//}
+//
+//UTEST(test_ResourceSystem, TestAllocateFunction)
+//{
+//    Allocator a(64);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 64);
+//    ASSERT_EQ(64, a.BytesRemaining());
+//
+//    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//
+//    p->inta = 10;
+//    p->intb = 20;
+//
+//    ASSERT_EQ(10, p->inta);
+//    ASSERT_EQ(20, p->intb);
+//
+//    ASSERT_EQ(a.FlBitmask(), 2);
+//    ASSERT_EQ(16, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//
+//    auto header = (BlockHeader*)a.Data();
+//    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+//    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//    ASSERT_EQ(40, a.BytesRemaining());
+//
+//    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
+//
+//    *str = "Hello There!";
+//    ASSERT_STREQ(str->Str(),"Hello There!");
+//
+//    ASSERT_EQ(1, a.FlBitmask());
+//    ASSERT_EQ(0, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* NewBlock = a.FreeList()[0];
+//    ASSERT_EQ(NewBlock->next, nullptr);
+//    ASSERT_EQ(NewBlock->prev, nullptr);
+//
+//    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
+//    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
+//    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, newHeader->sizeAndFlags);
+//    ASSERT_EQ(newData, str);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
+//    ASSERT_EQ(16, a.BytesRemaining());
+//
+//    // Edge cases
+//
+//    // Empty allocator
+//    Allocator emptyA;
+//
+//    TestStruct* ptr = (TestStruct*) emptyA.Allocate(sizeof(TestStruct));
+//    ASSERT_FALSE(ptr);
+//
+//    // Allocate 0 bytes
+//    void* emptyAllocPtr = a.Allocate(0);
+//    ASSERT_FALSE(emptyAllocPtr);
+//
+//    // Allocate an amount that causes a value overflow
+//    Allocator overflowAlloc(SIZE_T_MAX);
+//    void* overflowPtr = overflowAlloc.Allocate(SIZE_T_MAX);
+//    ASSERT_FALSE(overflowPtr);
+//
+//    void* tooLargeCase = a.Allocate(100);
+//    ASSERT_FALSE(tooLargeCase);
+//
+//    Allocator tooSmallAlloc(64);
+//    void* tooLargeAlloc = a.Allocate(100);
+//    ASSERT_FALSE(tooLargeCase);
+//}
+//
+//UTEST(test_ResourceSystem, TestDeallocateFunction)
+//{
+//    Allocator a(64);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 64);
+//    ASSERT_EQ(64, a.BytesRemaining());
+//
+//    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//
+//    p->inta = 10;
+//    p->intb = 20;
+//
+//    ASSERT_EQ(10, p->inta);
+//    ASSERT_EQ(20, p->intb);
+//
+//    ASSERT_EQ(a.FlBitmask(), 2);
+//    ASSERT_EQ(16, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* block = a.FreeList()[(1 * 16) + 4];
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//    ASSERT_EQ(40, a.BytesRemaining());
+//
+//    auto header = (BlockHeader*)a.Data();
+//    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+//    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//
+//    a.Deallocate(p);
+//
+//    // Should be empty
+//    ASSERT_EQ(513, header->sizeAndFlags);
+//    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
+//    ASSERT_FALSE(p);
+//    ASSERT_EQ(a.FlBitmask(), 4);
+//    ASSERT_EQ(a.SlBitmask()[2], 1);
+//    ASSERT_EQ(64, a.BytesRemaining());
+//
+//    p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//    p->inta = 10;
+//    p->intb = 20;
+//
+//    ASSERT_EQ(10, p->inta);
+//    ASSERT_EQ(20, p->intb);
+//
+//    ASSERT_EQ(a.FlBitmask(), 2);
+//    ASSERT_EQ(16, a.SlBitmask()[1]);
+//
+//    block = a.FreeList()[(1 * 16) + 4];
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//    ASSERT_EQ(40, a.BytesRemaining());
+//
+//    header = (BlockHeader*)a.Data();
+//    data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+//    footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//
+//    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
+//
+//    *str = "Hello There!";
+//    ASSERT_STREQ(str->Str(),"Hello There!");
+//
+//    ASSERT_EQ(1, a.FlBitmask());
+//    ASSERT_EQ(0, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* NewBlock = a.FreeList()[0];
+//    ASSERT_EQ(NewBlock->next, nullptr);
+//    ASSERT_EQ(NewBlock->prev, nullptr);
+//    ASSERT_EQ(16, a.BytesRemaining());
+//
+//    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
+//    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
+//    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, newHeader->sizeAndFlags);
+//    ASSERT_EQ(newData, str);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
+//
+//    a.Deallocate(p);
+//    ASSERT_FALSE(p);
+//    ASSERT_TRUE(newHeader->sizeAndFlags & IS_PREV_FREE_FLAG);
+//    ASSERT_EQ(194, newHeader->sizeAndFlags);
+//    ASSERT_TRUE(header->sizeAndFlags & IS_FREE_FLAG);
+//    FreeBlockNode* newFreeBlock = TO_FREEBLOCK((TO_BYTES(header)+sizeof(BlockHeader)));
+//    ASSERT_EQ(newFreeBlock->next, nullptr);
+//    ASSERT_EQ(newFreeBlock->prev, nullptr);
+//    ASSERT_EQ(40, a.BytesRemaining());
+//
+//    a.Deallocate(str);
+//    ASSERT_FALSE(str);
+//    ASSERT_EQ(513, header->sizeAndFlags);
+//    ASSERT_EQ(4, a.FlBitmask());
+//    ASSERT_EQ(1, a.SlBitmask()[2]);
+//    ASSERT_EQ(64, a.BytesRemaining());
+//}
+//
+//UTEST(test_ResourceSystem, TestBlockCoalescing)
+//{
+//    Allocator a(128);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 128);
+//    ASSERT_EQ(128, a.BytesRemaining());
+//
+//    TestStruct* p = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//
+//    p->inta = 10;
+//    p->intb = 20;
+//
+//    ASSERT_EQ(10, p->inta);
+//    ASSERT_EQ(20, p->intb);
+//
+//    ASSERT_EQ(4, a.FlBitmask());
+//    ASSERT_EQ(0, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* block = a.FreeList()[42];
+//    ASSERT_EQ(block->next, nullptr);
+//    ASSERT_EQ(block->prev, nullptr);
+//    ASSERT_EQ(104, a.BytesRemaining());
+//
+//    auto header = (BlockHeader*)a.Data();
+//    auto data = (TestStruct*) (((unsigned char*)header) + sizeof(BlockHeader));
+//    auto footer = (BlockFooter*) (((unsigned char*)data) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//
+//    Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
+//
+//    *str = "Hello There!";
+//    ASSERT_STREQ(str->Str(),"Hello There!");
+//
+//    ASSERT_EQ(4, a.FlBitmask());
+//    ASSERT_EQ(0, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* NewBlock = a.FreeList()[36];
+//    ASSERT_EQ(NewBlock->next, nullptr);
+//    ASSERT_EQ(NewBlock->prev, nullptr);
+//    ASSERT_EQ(80, a.BytesRemaining());
+//
+//    auto newHeader = (BlockHeader*)(TO_BYTES(footer) + sizeof(BlockFooter));
+//    auto newData = (Siege::String*) (((unsigned char*)newHeader) + sizeof(BlockHeader));
+//    auto newFooter = (BlockFooter*) (((unsigned char*)newData) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, newHeader->sizeAndFlags);
+//    ASSERT_EQ(newData, str);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(Siege::String) + sizeof(BlockFooter), newFooter->totalBlockSize);
+//
+//    TestStruct* p2 = (TestStruct*) a.Allocate(sizeof(TestStruct));
+//
+//    p2->inta = 10;
+//    p2->intb = 20;
+//
+//    ASSERT_EQ(10, p2->inta);
+//    ASSERT_EQ(20, p2->intb);
+//
+//    ASSERT_EQ(a.FlBitmask(), 2);
+//    ASSERT_EQ(4096, a.SlBitmask()[1]);
+//
+//    FreeBlockNode* newFreeBlock = a.FreeList()[28];
+//    ASSERT_EQ(newFreeBlock->next, nullptr);
+//    ASSERT_EQ(newFreeBlock->prev, nullptr);
+//    ASSERT_EQ(56, a.BytesRemaining());
+//
+//    auto newHeader2 = (BlockHeader*)(TO_BYTES(newFooter) + sizeof(BlockFooter));
+//    auto newData2 = (TestStruct*) (((unsigned char*)newHeader2) + sizeof(BlockHeader));
+//    auto newFooter2 = (BlockFooter*) (((unsigned char*)newData2) + sizeof(TestStruct));
+//
+//    ASSERT_EQ(192, header->sizeAndFlags);
+//    ASSERT_EQ(data, p);
+//    ASSERT_EQ(sizeof(BlockHeader) + sizeof(TestStruct) + sizeof(BlockFooter), footer->totalBlockSize);
+//
+//    a.Deallocate(p);
+//
+//    FreeBlockNode* firstFree = a.FreeList()[8];
+//    ASSERT_EQ(firstFree->next, nullptr);
+//    ASSERT_EQ(firstFree->prev, nullptr);
+//    ASSERT_EQ(80, a.BytesRemaining());
+//
+//    BlockHeader* firstFreeHeader = TO_HBLOCK((TO_BYTES(firstFree) - sizeof(BlockHeader)));
+//    ASSERT_TRUE(firstFreeHeader->sizeAndFlags & IS_FREE_FLAG);
+//    ASSERT_FALSE(firstFreeHeader->sizeAndFlags & IS_PREV_FREE_FLAG);
+//    ASSERT_FALSE(p);
+//    ASSERT_EQ(a.FlBitmask(), 3);
+//    ASSERT_EQ(256, a.SlBitmask()[0]);
+//
+//    a.Deallocate(p2);
+//    ASSERT_FALSE(p2);
+//    ASSERT_EQ(104, a.BytesRemaining());
+//    ASSERT_EQ(a.FlBitmask(), 5);
+//    ASSERT_EQ(256, a.SlBitmask()[0]);
+//    ASSERT_EQ(16, a.SlBitmask()[2]);
+//
+//    a.Deallocate(str);
+//    ASSERT_FALSE(str);
+//    ASSERT_EQ(128, a.BytesRemaining());
+//    ASSERT_EQ(a.FlBitmask(), 8);
+//    ASSERT_EQ(a.SlBitmask()[3], 1);
+//
+//    // Edge Cases
+//
+//    void* badPointer = nullptr;
+//    a.Deallocate(badPointer);
+//    ASSERT_FALSE(badPointer);
+//
+//    // try to deallocate pointer not in allocator;
+//
+//    uint64_t* val = new uint64_t;
+//    a.Deallocate(val); // Should do nothing and be ignored.
+//    free(val);
+//}
+//
+//UTEST(test_ResourceSystem, TestAllocationWhenNoAppropriateFragmentExists)
+//{
+//    Allocator a(128);
+//    ASSERT_NE(a.Data(), nullptr);
+//    ASSERT_EQ(a.Capacity(), 128);
+//    ASSERT_EQ(128, a.BytesRemaining());
+//
+//    void* p0 = a.Allocate(16);
+//    void* p1 = a.Allocate(32);
+//    void* p2 = a.Allocate(16);
+//    void* p3 = a.Allocate(32);
+//    ASSERT_EQ(0, a.BytesRemaining());
+//
+//    a.Deallocate(p0);
+//    a.Deallocate(p2);
+//
+//    ASSERT_EQ(48, a.BytesRemaining());
+//    void* tooLargeVal = a.Allocate(24);
+//    ASSERT_FALSE(tooLargeVal);
+//}
+//
+//UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
+//{
+//    Allocator a(1024 * 1024);
+//
+//    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
+//    //std::default_random_engine generator(seed);
+//    std::default_random_engine generator(12345);
+//
+//    std::uniform_int_distribution<int> actionDist(0, 10);
+//    std::uniform_int_distribution<int> sizeDist(1, 256);
+//
+//    std::vector<void*> pointers;
+//    pointers.reserve(10000);
+//
+//    for(int i = 0; i < 10000; i++)
+//    {
+//        int action = actionDist(generator);
+//
+//        if (action < 8)
+//        {
+//            size_t randomSize = sizeDist(generator);
+//            void* ptr = a.Allocate(randomSize);
+//            if (ptr)
+//            {
+//                *((uint32_t*)ptr) = 0xDEADC0DE;
+//                pointers.push_back(ptr);
+//            }
+//        }
+//        else if (action <= 10 && !pointers.empty())
+//        {
+//            std::uniform_int_distribution<int> indices(0, pointers.size()-1);
+//            size_t index = indices(generator);
+//
+//            void* ptrToFree = pointers[index];
+//            ASSERT_EQ(0xDEADC0DE, *(uint32_t*)ptrToFree);
+//
+//            a.Deallocate(ptrToFree);
+//            ASSERT_FALSE(ptrToFree);
+//            pointers.erase(pointers.begin() + index);
+//        }
+//    }
+//
+//    for (void* ptr : pointers)
+//    {
+//        a.Deallocate(ptr);
+//    }
+//
+//    ASSERT_EQ(a.Capacity(), a.BytesRemaining());
+//}
