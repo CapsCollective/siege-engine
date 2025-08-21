@@ -8,11 +8,11 @@
 #     https://opensource.org/licenses/Zlib
 
 # Dependency versions
-VULKAN_VERSION="vulkan-sdk-1.3.296.0"
-SPIRV_VERSION="vulkan-sdk-1.3.296.0"
-GLSLANG_VERSION="vulkan-sdk-1.3.296.0"
+VULKAN_VERSION="vulkan-sdk-1.4.321.0"
+SPIRV_VERSION="vulkan-sdk-1.4.321.0"
+GLSLANG_VERSION="vulkan-sdk-1.4.321.0"
 ROBIN_HOOD_HASHING_VERSION="3.11.5"
-MOLTENVK_VERSION="v1.2.11"
+MOLTENVK_VERSION="v1.4.0"
 FREETYPE_VERSION="VER-2-13-3"
 LIBPNG_VERSION="v1.6.50"
 ZLIB_VERSION="v1.3.1"
@@ -205,6 +205,9 @@ setup_spirv_tools() {
     update_submodule vulkan/SPIRV-Tools
     checkout_tags "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "$SPIRV_VERSION"
 
+    echo "Linking to SPIRV Headers..."
+    ln -sfn "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "${VULKAN_VENDOR_DIR}"/SPIRV-Tools/external/spirv-headers
+
     echo "Building SPIRV Tools..."
     local BUILD_DIR="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build
     mkdir -p "${BUILD_DIR}"
@@ -217,8 +220,6 @@ setup_spirv_tools() {
       -S"${VULKAN_VENDOR_DIR}"/SPIRV-Tools \
       -B"${BUILD_DIR}"
     cmake --build "${BUILD_DIR}" --target install --config Release -j"${NUMBER_OF_PROCESSORS}"
-
-    ln -sfn "${VULKAN_VENDOR_DIR}"/SPIRV-Headers "${VULKAN_VENDOR_DIR}"/SPIRV-Tools/external/spirv-headers
 }
 
 setup_glslang() {
@@ -226,6 +227,9 @@ setup_glslang() {
     echo "Cloning glslang..."
     update_submodule glslang
     checkout_tags "${VENDOR_DIR}"/glslang "$GLSLANG_VERSION"
+
+    echo "Linking to SPIRV Tools..."
+    ln -sfn "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "${VENDOR_DIR}"/glslang/External/spirv-tools
 
     echo "Building glslang..."
     local BUILD_DIR="${VENDOR_DIR}"/glslang/build
@@ -238,9 +242,6 @@ setup_glslang() {
         -DSPIRV-Tools-opt_INCLUDE_DIRS="${VULKAN_VENDOR_DIR}"/SPIRV-Tools/build/install/include \
         -S"${VENDOR_DIR}"/glslang \
         -B"${BUILD_DIR}"
-
-    ln -sfn "${VULKAN_VENDOR_DIR}"/SPIRV-Tools "${VENDOR_DIR}"/glslang/External/spirv-tools
-
     cmake --build "${BUILD_DIR}" --target install -- -j"${NUMBER_OF_PROCESSORS}"
 }
 
@@ -248,6 +249,7 @@ setup_volk() {
     echo "Setting up volk..."
     echo "Cloning volk..."
     update_submodule vulkan/volk
+    checkout_tags "${VULKAN_VENDOR_DIR}"/volk "$VULKAN_VERSION"
 
     echo "Building volk..."
     mkdir -p "${VOLK_INCLUDE_DIR}"
@@ -281,7 +283,7 @@ setup_moltenVk() {
     checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK ${MOLTENVK_VERSION}
 
     echo "Building MoltenVk..."
-    (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos --v-headers-root "${VULKAN_VENDOR_DIR}"/Vulkan-Headers --glslang-root "${VENDOR_DIR}"/glslang)
+    (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos)
     make -C "${VULKAN_VENDOR_DIR}"/MoltenVK macos -j"${NUMBER_OF_PROCESSORS}"
     mkdir -p "${VULKAN_LIB_DIR}"/icd.d
     mkdir -p "${VULKAN_INCLUDE_DIR}"
