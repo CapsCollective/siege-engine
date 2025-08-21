@@ -10,9 +10,9 @@ param (
 )
 
 # Dependency versions
-[string] $Vulkan_Version= "vulkan-sdk-1.4.313"
-[string] $Spirv_Version="vulkan-sdk-1.4.313"
-[string] $Glslang_Version="vulkan-sdk-1.4.313"
+[string] $Vulkan_Version= "vulkan-sdk-1.4.321.0"
+[string] $Spirv_Version="vulkan-sdk-1.4.321.0"
+[string] $Glslang_Version="vulkan-sdk-1.4.321.0"
 [string] $Robin_Hood_Hashing_Version="3.11.5"
 [string] $FreeType_Version="VER-2-13-3"
 [string] $LibPng_Version="v1.6.50"
@@ -179,7 +179,7 @@ function Setup-Vulkan-Headers {
     Write-Output "Setting up Vulkan Headers..."
     Write-Output "Cloning Vulkan Headers..."
     Update-Submodule vulkan/Vulkan-Headers
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Headers" "$Vulkan_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Headers" "$Vulkan_Version"
 
     Write-Output "Building Vulkan Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Headers/build"
@@ -198,7 +198,7 @@ function Setup-Spirv-Headers {
     Write-Output "Setting up SPIRV Headers..."
     Write-Output "Cloning SPIRV Headers..."
     Update-Submodule vulkan/SPIRV-Headers
-    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "$Spirv_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Headers" "$Spirv_Version"
 
     Write-Output "Building SPIRV Headers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Headers/build"
@@ -215,7 +215,7 @@ function Setup-Spirv-Tools {
     Write-Output "Setting up Spirv Tools..."
     Write-Output "Cloning SPIRV Tools..."
     Update-Submodule vulkan/SPIRV-Tools
-    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Tools" "$Spirv_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir/SPIRV-Tools" "$Spirv_Version"
 
     Write-Output "Building SPIRV Tools..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/SPIRV-Tools/build"
@@ -258,6 +258,7 @@ function Setup-Volk {
     Write-Output "Setting up volk..."
     Write-Output "Cloning volk..."
     Update-Submodule vulkan/volk
+    Checkout-Tags "$Vulkan_Vendor_Dir/volk" "$Vulkan_Version"
 
     Write-Output "Building volk..."
     Make-Dir $Volk_Include_Dir
@@ -270,7 +271,7 @@ function Setup-Vulkan-Loader {
     Write-Output "Setting up Vulkan Loader..."
     Write-Output "Cloning Vulkan Loader..."
     Update-Submodule vulkan/Vulkan-Loader
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Loader" "$Vulkan_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-Loader" "$Vulkan_Version"
 
     Write-Output "Building Vulkan Loader..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-Loader/build"
@@ -310,7 +311,7 @@ function Setup-Vulkan-Utility-Libraries
     Write-Output "Setting up Vulkan Utility Libraries..."
     Write-Output "Cloning Vulkan Utility Libraries..."
     Update-Submodule vulkan\Vulkan-Utility-Libraries
-    Checkout-Tags "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries" "$Vulkan_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries" "$Vulkan_Version"
 
     Write-Output "Building Vulkan Validation Layers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir\Vulkan-Utility-Libraries/build"
@@ -329,7 +330,7 @@ function Setup-Validation-Layers {
     Write-Output "Setting up Vulkan Validation Layers..."
     Write-Output "Cloning Vulkan ValidationLayers..."
     Update-Submodule vulkan/Vulkan-ValidationLayers
-    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers" "$Vulkan_Version.0"
+    Checkout-Tags "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers" "$Vulkan_Version"
 
     Write-Output "Building Vulkan Validation Layers..."
     [string] $build_dir = "$Vulkan_Vendor_Dir/Vulkan-ValidationLayers/build"
