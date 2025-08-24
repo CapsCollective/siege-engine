@@ -1,0 +1,4 @@
+SOURCE_PATH:assets/models/ozymandias.fbx;
+MATERIAL_PATH:assets/models/ozymandias.sm;
+NODE_PATH:/;
+FLIP_AXES:yz;
