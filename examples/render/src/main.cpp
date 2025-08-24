@@ -88,6 +88,7 @@ int main()
     Siege::Vulkan::StaticMesh vaseObjModel("assets/models/smooth_vase.sm", &testMaterial);
     Siege::Vulkan::StaticMesh cubeSetObjModel("assets/models/cube_set.sm", &testMaterial);
     Siege::Vulkan::StaticMesh gizmoObjModel("assets/models/gizmo.sm", &testMaterial);
+    Siege::Vulkan::StaticMesh ozymandiasObjModel("assets/models/ozymandias.sm", &testMaterial);
 
     // Create shapes for use
     Siege::MHArray<GameObject> objects3D = {GameObject(&cubeObjModel),
@@ -96,7 +97,8 @@ int main()
                                             GameObject(&cubeObjModel),
                                             GameObject(&vaseObjModel),
                                             GameObject(&cubeSetObjModel),
-                                            GameObject(&gizmoObjModel)};
+                                            GameObject(&gizmoObjModel),
+                                            GameObject(&ozymandiasObjModel)};
 
     objects3D[0].SetPosition({0.f, -.5f, 0.f});
     objects3D[0].SetScale({.5f, .5f, .5f});
@@ -117,7 +119,7 @@ int main()
     objects3D[3].SetColour({128, 0, 0, 255});
     objects3D[3].SetRotationY(1.5707963268f);
 
-    objects3D[4].SetPosition({0.f, -1.f, 0.f});
+    objects3D[4].SetPosition({-1.f, -0.1f, 0.f});
     objects3D[4].SetScale({2.f, 2.f, 2.f});
     objects3D[4].SetColour({128, 0, 0, 255});
 
@@ -128,6 +130,11 @@ int main()
     objects3D[6].SetPosition({-5.f, 0.f, 0.f});
     objects3D[6].SetScale({1.f, 1.f, 1.f});
     objects3D[6].SetColour({0, 0, 128, 255});
+
+    objects3D[7].SetPosition({0.f, -2.f, 0.f});
+    objects3D[7].SetScale({0.01f, 0.01f, 0.01f});
+    objects3D[7].SetRotationY(60.f);
+    objects3D[7].SetColour({0, 0, 128, 255});
 
     FPSCamera camera3D = FPSCamera({0.f, -1.f, -2.5f},
                                    {0.f, 0.f, 1.f},
@@ -212,11 +219,11 @@ int main()
                                           {255, 0, 0, (uint8_t) 255.f},
                                           {0, 0, 255, 5});
 
-        Siege::Renderer3D::DrawBillboard({-1.f, -2.5f, 0.f},
+        Siege::Renderer3D::DrawBillboard({-2.f, -2.5f, 0.f},
                                          {1.f, 1.f},
                                          {255, 255, 255, 255},
                                          &cappy);
-        Siege::Renderer3D::DrawBillboard({1.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
+        Siege::Renderer3D::DrawBillboard({2.f, -2.5f, 0.f}, {1.f, 1.f}, {255, 0, 0, 255});
 
         Siege::Renderer3D::DrawLine({0.f, -1.f, -1.5f}, {0.f, -1.f, 0.f}, {255, 255, 255, 255});
 
