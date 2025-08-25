@@ -8,9 +8,10 @@
 //
 
 #include "TlsfAllocator.h"
-#include "Logging.h"
 
 #include <memory>
+
+#include "Logging.h"
 
 #define TO_BYTES(val) reinterpret_cast<uint8_t*>(val)
 #define TO_HEADER(val) reinterpret_cast<BlockHeader*>(val)
@@ -39,7 +40,8 @@ TlsfAllocator::TlsfAllocator() {}
 TlsfAllocator::TlsfAllocator(const uint64_t size)
 {
     uint64_t paddedSize = PAD_SIZE(size);
-    if (size == 0 || size < MIN_ALLOCATION || size > (UINT64_MAX - METADATA_OVERHEAD) || paddedSize < size)
+    if (size == 0 || size < MIN_ALLOCATION || size > (UINT64_MAX - METADATA_OVERHEAD) ||
+        paddedSize < size)
         return;
 
     uint64_t maxBuckets = (FL(size) - FL_MIN_INDEX) + 1;
@@ -57,18 +59,19 @@ TlsfAllocator::TlsfAllocator(const uint64_t size)
 
     data = TO_BYTES(calloc(1, allocSize));
 
-    CC_ASSERT(data, "Allocation returned null. This should not happen and implies an implementation failure.")
+    CC_ASSERT(
+        data,
+        "Allocation returned null. This should not happen and implies an implementation failure.")
 
-    freeList = (FreeBlockNode**)(data + paddedSize);
-    slBitmasks = (uint16_t*)(data + paddedSize + freeListSize);
+    freeList = (FreeBlockNode**) (data + paddedSize);
+    slBitmasks = (uint16_t*) (data + paddedSize + freeListSize);
 
     CreateHeader(data, paddedSize, FREE);
 
     AddNewBlock(paddedSize, TO_HEADER(data));
 }
 
-void TlsfAllocator::CreateHeader(uint8_t* ptr, const uint64_t size,
-                                                        HeaderFlags flags)
+void TlsfAllocator::CreateHeader(uint8_t* ptr, const uint64_t size, HeaderFlags flags)
 {
     if (!ptr) return;
     BlockHeader* header = TO_HEADER(ptr);
@@ -78,8 +81,9 @@ void TlsfAllocator::CreateHeader(uint8_t* ptr, const uint64_t size,
 void* TlsfAllocator::Allocate(const uint64_t& size)
 {
     uint64_t requiredSize = sizeof(BlockHeader) + size + sizeof(BlockFooter);
-    if (!data || capacity == 0 ||size == 0 || requiredSize < size || requiredSize > totalBytesRemaining
-        || size < MIN_ALLOCATION) return nullptr;
+    if (!data || capacity == 0 || size == 0 || requiredSize < size ||
+        requiredSize > totalBytesRemaining || size < MIN_ALLOCATION)
+        return nullptr;
 
     FreeBlockNode* block = FindFreeBlock(requiredSize);
 
@@ -96,7 +100,8 @@ void* TlsfAllocator::Allocate(const uint64_t& size)
     return ptr;
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBlockNode* node, uint64_t& allocatedSize)
+TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBlockNode* node,
+                                                         uint64_t& allocatedSize)
 {
     if (!node) return nullptr;
 
@@ -106,8 +111,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBloc
 
     if (!RemoveFreeBlock(node)) return nullptr;
 
-    if (oldSize <= allocatedSize || ((oldSize - allocatedSize) <
-                                     (HEADER_SIZE + FREE_BLOCK_SIZE + FOOTER_SIZE)))
+    if (oldSize <= allocatedSize ||
+        ((oldSize - allocatedSize) < (HEADER_SIZE + FREE_BLOCK_SIZE + FOOTER_SIZE)))
     {
         allocatedSize = oldSize;
         return header;
@@ -122,7 +127,7 @@ TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBloc
 
 void TlsfAllocator::AddNewBlock(const uint64_t size, BlockHeader* header)
 {
-    uint64_t fl = 0,sl = 0, index;
+    uint64_t fl = 0, sl = 0, index;
     index = CalculateFreeBlockIndices(size, fl, sl);
 
     CreateHeader(TO_BYTES(header), size, FREE);
@@ -209,14 +214,15 @@ const uint64_t TlsfAllocator::GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl)
 
     fl = __builtin_ctzll(fl);
     CC_ASSERT(slBitmasks[fl] > 0,
-              "SlBitmasks is returning 0. This should not be happening and indicates an implementation error.")
+              "SlBitmasks is returning 0. This should not be happening and indicates an "
+              "implementation error.")
 
     sl = __builtin_ctz(slBitmasks[fl]);
 
     return fl * MAX_SL_BUCKETS + sl;
 }
 
-uint64_t TlsfAllocator::CalculateFreeBlockIndices(uint64_t size, OUT uint64_t & fl, OUT uint64_t & sl)
+uint64_t TlsfAllocator::CalculateFreeBlockIndices(uint64_t size, OUT uint64_t& fl, OUT uint64_t& sl)
 {
     uint64_t rawFl = FL(size);
     fl = rawFl - FL_MIN_INDEX;
@@ -253,7 +259,7 @@ TlsfAllocator::BlockHeader* TlsfAllocator::GetPrevHeader(TlsfAllocator::BlockHea
     uint8_t* rawPrevFooter = TO_BYTES(GetPrevFooter(header));
     if (!IsValid(rawPrevFooter)) return nullptr;
     uint8_t* prevHeader = (rawPrevFooter - TO_FOOTER(rawPrevFooter)->totalBlockSize) + FOOTER_SIZE;
-    if (!IsValid(prevHeader)) return  nullptr;
+    if (!IsValid(prevHeader)) return nullptr;
     return TO_HEADER(prevHeader);
 }
 
@@ -347,8 +353,14 @@ bool TlsfAllocator::IsValid(uint8_t* ptr)
     return ptr && ptr >= data && ptr < (data + (capacity + HEADER_SIZE + FOOTER_SIZE));
 }
 
-const uint64_t TlsfAllocator::Capacity() { return capacity; }
+const uint64_t TlsfAllocator::Capacity()
+{
+    return capacity;
+}
 
-const uint64_t TlsfAllocator::BytesRemaining() { return bytesRemaining; }
+const uint64_t TlsfAllocator::BytesRemaining()
+{
+    return bytesRemaining;
+}
 
 } // namespace Siege

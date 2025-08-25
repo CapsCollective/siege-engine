@@ -8,11 +8,11 @@
 //
 
 #include <utest.h>
-#include <utils/TlsfAllocator.h>
 #include <utils/String.h>
+#include <utils/TlsfAllocator.h>
 
-#include <random>
 #include <chrono>
+#include <random>
 
 using namespace Siege;
 
@@ -21,7 +21,6 @@ struct TestStruct
     uint64_t inta {0};
     uint64_t intb {0};
 };
-
 
 UTEST(test_TlsfAllocator, EmptyConstructor)
 {
@@ -89,31 +88,34 @@ UTEST(test_TlsfAllocator, TestAllocateFunction)
     ASSERT_EQ(block->next, nullptr);
     ASSERT_EQ(block->prev, nullptr);
 
-    auto header = (TlsfAllocator::BlockHeader*)a.Data();
-    auto data = (TestStruct*)a.GetBlockData(header);
+    auto header = (TlsfAllocator::BlockHeader*) a.Data();
+    auto data = (TestStruct*) a.GetBlockData(header);
     auto footer = a.GetFooter(header);
 
     ASSERT_EQ(192, header->sizeAndFlags);
     ASSERT_EQ(data, p);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(TestStruct) +
-                  sizeof(TlsfAllocator::BlockFooter), footer->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              footer->totalBlockSize);
     ASSERT_EQ(a.BytesRemaining(), 48);
 
     Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
 
     *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
+    ASSERT_STREQ(str->Str(), "Hello There!");
 
     ASSERT_EQ(1, a.FlBitmask());
     ASSERT_EQ(0, a.SlBitmask(1));
 
     auto strHeader = a.GetNextHeader(header);
-    auto strData = (String*)a.GetBlockData(strHeader);
+    auto strData = (String*) a.GetBlockData(strHeader);
     auto strFooter = a.GetFooter(strHeader);
 
     ASSERT_EQ(192, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(String) + sizeof(TlsfAllocator::BlockFooter), strFooter->totalBlockSize);
+    ASSERT_EQ(
+        sizeof(TlsfAllocator::BlockHeader) + sizeof(String) + sizeof(TlsfAllocator::BlockFooter),
+        strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     // Edge cases
@@ -143,32 +145,32 @@ UTEST(test_TlsfAllocator, TestAllocateFunction)
 
 UTEST(test_TlsfAllocator, TestAllocateFunctionWithRandomInputs)
 {
-        TlsfAllocator a(1024 * 1024);
+    TlsfAllocator a(1024 * 1024);
 
-        unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
-        std::default_random_engine generator(12345);
+    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(12345);
 
-        std::uniform_int_distribution<int> sizeDist(1, 256);
+    std::uniform_int_distribution<int> sizeDist(1, 256);
 
-        TlsfAllocator::BlockHeader* header = (TlsfAllocator::BlockHeader*)a.Data();
+    TlsfAllocator::BlockHeader* header = (TlsfAllocator::BlockHeader*) a.Data();
 
-        for(int i = 0; i < 10000; i++)
+    for (int i = 0; i < 10000; i++)
+    {
+        size_t randomSize = sizeDist(generator);
+        void* ptr = a.Allocate(randomSize);
+
+        if (ptr)
         {
-            size_t randomSize = sizeDist(generator);
-            void* ptr = a.Allocate(randomSize);
+            *((uint32_t*) ptr) = 0xDEADC0DE;
 
-            if (ptr)
-            {
-                *((uint32_t*)ptr) = 0xDEADC0DE;
-
-                uint64_t expectedSize = header->sizeAndFlags >> 3;
-                uint32_t* data = (uint32_t*)a.GetBlockData(header);
-                ASSERT_EQ(0xDEADC0DE, *data);
-                TlsfAllocator::BlockFooter* footer = a.GetFooter(header);
-                header = a.GetNextHeader(header);
-            }
-            else continue;
+            uint64_t expectedSize = header->sizeAndFlags >> 3;
+            uint32_t* data = (uint32_t*) a.GetBlockData(header);
+            ASSERT_EQ(0xDEADC0DE, *data);
+            TlsfAllocator::BlockFooter* footer = a.GetFooter(header);
+            header = a.GetNextHeader(header);
         }
+        else continue;
+    }
 }
 
 UTEST(test_TlsfAllocator, TestDeallocateFunction)
@@ -196,14 +198,15 @@ UTEST(test_TlsfAllocator, TestDeallocateFunction)
     ASSERT_EQ(block->next, nullptr);
     ASSERT_EQ(block->prev, nullptr);
 
-    auto header = (TlsfAllocator::BlockHeader*)a.Data();
-    auto data = (TestStruct*)a.GetBlockData(header);
+    auto header = (TlsfAllocator::BlockHeader*) a.Data();
+    auto data = (TestStruct*) a.GetBlockData(header);
     auto footer = a.GetFooter(header);
 
     ASSERT_EQ(192, header->sizeAndFlags);
     ASSERT_EQ(data, p);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(TestStruct) +
-                  sizeof(TlsfAllocator::BlockFooter), footer->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              footer->totalBlockSize);
     ASSERT_EQ(48, a.BytesRemaining());
 
     a.Deallocate(p);
@@ -230,31 +233,34 @@ UTEST(test_TlsfAllocator, TestDeallocateFunction)
     ASSERT_EQ(block->next, nullptr);
     ASSERT_EQ(block->prev, nullptr);
 
-    header = (TlsfAllocator::BlockHeader*)a.Data();
-    data = (TestStruct*)a.GetBlockData(header);
+    header = (TlsfAllocator::BlockHeader*) a.Data();
+    data = (TestStruct*) a.GetBlockData(header);
     footer = a.GetFooter(header);
 
     ASSERT_EQ(192, header->sizeAndFlags);
     ASSERT_EQ(data, p);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(TestStruct) +
-                  sizeof(TlsfAllocator::BlockFooter), footer->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              footer->totalBlockSize);
     ASSERT_EQ(48, a.BytesRemaining());
 
     Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
 
     *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
+    ASSERT_STREQ(str->Str(), "Hello There!");
 
     ASSERT_EQ(1, a.FlBitmask());
     ASSERT_EQ(0, a.SlBitmask(1));
 
     auto strHeader = a.GetNextHeader(header);
-    auto strData = (String*)a.GetBlockData(strHeader);
+    auto strData = (String*) a.GetBlockData(strHeader);
     auto strFooter = a.GetFooter(strHeader);
 
     ASSERT_EQ(192, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(String) + sizeof(TlsfAllocator::BlockFooter), strFooter->totalBlockSize);
+    ASSERT_EQ(
+        sizeof(TlsfAllocator::BlockHeader) + sizeof(String) + sizeof(TlsfAllocator::BlockFooter),
+        strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     a.Deallocate(p);
@@ -307,19 +313,20 @@ UTEST(test_TlsfAllocator, TestBlockCoalescing)
     ASSERT_EQ(block->prev, nullptr);
     ASSERT_EQ(112, a.BytesRemaining());
 
-    auto header = (TlsfAllocator::BlockHeader*)a.Data();
-    auto data = (TestStruct*)a.GetBlockData(header);
+    auto header = (TlsfAllocator::BlockHeader*) a.Data();
+    auto data = (TestStruct*) a.GetBlockData(header);
     auto footer = a.GetFooter(header);
 
     ASSERT_EQ(192, header->sizeAndFlags);
     ASSERT_EQ(data, p);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(TestStruct) +
-                  sizeof(TlsfAllocator::BlockFooter), footer->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              footer->totalBlockSize);
 
     Siege::String* str = (Siege::String*) a.Allocate(sizeof(Siege::String));
 
     *str = "Hello There!";
-    ASSERT_STREQ(str->Str(),"Hello There!");
+    ASSERT_STREQ(str->Str(), "Hello There!");
 
     ASSERT_EQ(4, a.FlBitmask());
     ASSERT_EQ(64, a.SlBitmask(2));
@@ -330,13 +337,14 @@ UTEST(test_TlsfAllocator, TestBlockCoalescing)
     ASSERT_EQ(96, a.BytesRemaining());
 
     auto strHeader = a.GetNextHeader(header);
-    auto strData = (String*)a.GetBlockData(strHeader);
+    auto strData = (String*) a.GetBlockData(strHeader);
     auto strFooter = a.GetFooter(strHeader);
 
     ASSERT_EQ(192, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(Siege::String) +
-                  sizeof(TlsfAllocator::BlockFooter), strFooter->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
 
     TestStruct* p2 = (TestStruct*) a.Allocate(sizeof(TestStruct));
 
@@ -355,13 +363,14 @@ UTEST(test_TlsfAllocator, TestBlockCoalescing)
     ASSERT_EQ(80, a.BytesRemaining());
 
     auto newHeader = a.GetNextHeader(strHeader);
-    auto newData = (String*)a.GetBlockData(newHeader);
+    auto newData = (String*) a.GetBlockData(newHeader);
     auto newFooter = a.GetFooter(newHeader);
 
     ASSERT_EQ(192, newHeader->sizeAndFlags);
     ASSERT_EQ(data, p);
     ASSERT_EQ(sizeof(TlsfAllocator::BlockHeader) + sizeof(TestStruct) +
-                  sizeof(TlsfAllocator::BlockFooter), footer->totalBlockSize);
+                  sizeof(TlsfAllocator::BlockFooter),
+              footer->totalBlockSize);
 
     a.Deallocate(p);
 
@@ -370,7 +379,7 @@ UTEST(test_TlsfAllocator, TestBlockCoalescing)
     ASSERT_EQ(firstFree->prev, nullptr);
     ASSERT_EQ(96, a.BytesRemaining());
 
-    TlsfAllocator::BlockHeader* firstFreeHeader = a.GetHeader((uint8_t*)firstFree);
+    TlsfAllocator::BlockHeader* firstFreeHeader = a.GetHeader((uint8_t*) firstFree);
     ASSERT_TRUE(firstFreeHeader->sizeAndFlags & TlsfAllocator::FREE);
     ASSERT_FALSE(firstFreeHeader->sizeAndFlags & TlsfAllocator::PREV_IS_FREE);
 
@@ -438,7 +447,7 @@ UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
     std::vector<void*> pointers;
     pointers.reserve(10000);
 
-    for(int i = 0; i < 10000; i++)
+    for (int i = 0; i < 10000; i++)
     {
         int action = actionDist(generator);
 
@@ -449,18 +458,18 @@ UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
             void* ptr = a.Allocate(randomSize);
             if (ptr)
             {
-                *((uint32_t*)ptr) = 0xDEADC0DE;
+                *((uint32_t*) ptr) = 0xDEADC0DE;
                 pointers.push_back(ptr);
-                TlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*)ptr);
+                TlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*) ptr);
             }
         }
         else if (action <= 10 && !pointers.empty())
         {
-            std::uniform_int_distribution<int> indices(0, pointers.size()-1);
+            std::uniform_int_distribution<int> indices(0, pointers.size() - 1);
             size_t index = indices(generator);
 
             void*& ptrToFree = pointers[index];
-            ASSERT_EQ(0xDEADC0DE, *(uint32_t*)ptrToFree);
+            ASSERT_EQ(0xDEADC0DE, *(uint32_t*) ptrToFree);
             TlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*) ptrToFree);
 
             a.Deallocate(ptrToFree);
