@@ -113,9 +113,9 @@ UTEST(test_MediumTlsfAllocator, TestAllocateFunction)
 
     ASSERT_EQ(192, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(MediumTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(MediumTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(MediumTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(MediumTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     // Edge cases
@@ -258,9 +258,9 @@ UTEST(Test_MediumTlsfAllocator, TestDeallocateFunction)
 
     ASSERT_EQ(192, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(MediumTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(MediumTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(MediumTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(MediumTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     a.FREE(p);
@@ -425,6 +425,7 @@ UTEST(Test_MediumTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     void* p2 = a.Allocate(16);
     void* p3 = a.Allocate(32);
     ASSERT_EQ(0, a.TotalBytesRemaining());
+    ASSERT_TRUE(a.IsFull());
 
     a.FREE(p0);
     a.FREE(p2);
@@ -581,9 +582,9 @@ UTEST(Test_SmallTlsfAllocator, TestAllocateFunction)
 
     ASSERT_EQ(160, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(SmallTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(SmallTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(SmallTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(SmallTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     // Edge cases
@@ -726,9 +727,9 @@ UTEST(Test_SmallTlsfAllocator, TestDeallocateFunction)
 
     ASSERT_EQ(160, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(SmallTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(SmallTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(SmallTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(SmallTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
     a.FREE(p);
@@ -893,6 +894,7 @@ UTEST(Test_SmallTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     void* p2 = a.Allocate(20);
     void* p3 = a.Allocate(36);
     ASSERT_EQ(0, a.TotalBytesRemaining());
+    ASSERT_TRUE(a.IsFull());
 
     a.FREE(p0);
     a.FREE(p2);
@@ -1049,9 +1051,9 @@ UTEST(Test_LargeTlsfAllocator, TestAllocateFunction)
 
     ASSERT_EQ(256, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(LargeTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(LargeTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(LargeTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(LargeTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(224, a.BytesRemaining());
 
     // Edge cases
@@ -1191,9 +1193,9 @@ UTEST(Test_LargeTlsfAllocator, TestDeallocateFunction)
 
     ASSERT_EQ(256, strHeader->sizeAndFlags);
     ASSERT_EQ(strData, str);
-    ASSERT_EQ(
-        sizeof(LargeTlsfAllocator::BlockHeader) + sizeof(String) + sizeof(LargeTlsfAllocator::BlockFooter),
-        strFooter->totalBlockSize);
+    ASSERT_EQ(sizeof(LargeTlsfAllocator::BlockHeader) + sizeof(String) +
+                  sizeof(LargeTlsfAllocator::BlockFooter),
+              strFooter->totalBlockSize);
     ASSERT_EQ(224, a.BytesRemaining());
 
     a.FREE(p);
@@ -1358,6 +1360,7 @@ UTEST(Test_LargeTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     void* p2 = a.Allocate(32);
     void* p3 = a.Allocate(64);
     ASSERT_EQ(0, a.TotalBytesRemaining());
+    ASSERT_TRUE(a.IsFull());
 
     a.FREE(p0);
     a.FREE(p2);

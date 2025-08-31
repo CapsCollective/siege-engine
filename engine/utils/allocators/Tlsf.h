@@ -14,7 +14,7 @@
 
 #include "../Macros.h"
 
-#define FREE(ptr) Deallocate((void**)&ptr)
+#define FREE(ptr) Deallocate((void**) &ptr)
 
 namespace Siege
 {
@@ -22,6 +22,7 @@ template<typename T>
 class TlsfAllocator
 {
 public:
+
     enum HeaderFlags
     {
         FULL = 0,
@@ -65,6 +66,7 @@ public:
     const T GetNextFreeSlotIndex(T& fl, T& sl);
     bool IsFree(BlockHeader* header);
     bool IsFree(T fl, T sl);
+    bool IsFull();
     bool PrevBlockIsFree(BlockHeader* header);
     T CalculateFreeBlockIndices(T size, OUT T& fl, OUT T& sl);
 
@@ -141,6 +143,6 @@ typedef TlsfAllocator<uint16_t> SmallTlsfAllocator;
 typedef TlsfAllocator<uint32_t> MediumTlsfAllocator;
 // Maximum buffer possible here is around 2,147,483.6GB.
 typedef TlsfAllocator<uint64_t> LargeTlsfAllocator;
-}
+} // namespace Siege
 
 #endif // SIEGE_ENGINE_TLSF_H
