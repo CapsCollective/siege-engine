@@ -240,7 +240,6 @@ template<typename T>
 typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::FindFreeBlock(const T& size)
 {
     T fl, sl, index;
-    // 1000 0000 0000 1000
     index = CalculateFreeBlockIndices(size, fl, sl);
 
     if (!IsFree(fl, sl)) index = GetNextFreeSlotIndex(fl, sl);
