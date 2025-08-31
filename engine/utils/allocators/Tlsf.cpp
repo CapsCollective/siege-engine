@@ -8,7 +8,9 @@
 //
 
 #include "Tlsf.h"
+
 #include <memory>
+
 #include "../Logging.h"
 
 #define TO_BYTES(val) reinterpret_cast<uint8_t*>(val)
@@ -35,7 +37,8 @@ template<typename T>
 uint8_t TlsfAllocator<T>::MIN_SIZE_INDEX = 4;
 
 template<typename T>
-TlsfAllocator<T>::TlsfAllocator() {}
+TlsfAllocator<T>::TlsfAllocator()
+{}
 
 template<typename T>
 TlsfAllocator<T>::TlsfAllocator(const T size)
@@ -139,8 +142,9 @@ void TlsfAllocator<T>::Deallocate(void** ptr)
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TrySplitBlock(TlsfAllocator<T>::FreeBlockNode* node,
-                                                         T& allocatedSize)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TrySplitBlock(
+    TlsfAllocator<T>::FreeBlockNode* node,
+    T& allocatedSize)
 {
     if (!node) return nullptr;
 
@@ -182,7 +186,8 @@ void TlsfAllocator<T>::AddNewBlock(const T size, BlockHeader* header)
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TryCoalesce(BlockHeader* header, OUT T& size)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TryCoalesce(BlockHeader* header,
+                                                                      OUT T& size)
 {
     BlockHeader* start = header;
     BlockHeader* prev = GetPrevHeader(start);
@@ -284,7 +289,8 @@ void TlsfAllocator<T>::CreateFooter(uint8_t* ptr, const T size)
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(TlsfAllocator::FreeBlockNode* node)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(
+    TlsfAllocator::FreeBlockNode* node)
 {
     if (!node) return nullptr;
     uint8_t* rawHeader = TO_BYTES(node) - HEADER_SIZE;
@@ -302,7 +308,8 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(uint8_t* ptr
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(TlsfAllocator::BlockHeader* header)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(
+    TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawPrevFooter = TO_BYTES(GetPrevFooter(header));
@@ -313,7 +320,8 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(TlsfAllo
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetNextHeader(TlsfAllocator::BlockHeader* header)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetNextHeader(
+    TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawHeader = TO_BYTES(header);
@@ -323,9 +331,10 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetNextHeader(TlsfAllo
 }
 
 template<typename T>
-typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::CreateFreeBlock(uint8_t* ptr,
-                                                             TlsfAllocator::FreeBlockNode* prev,
-                                                             TlsfAllocator::FreeBlockNode* next)
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::CreateFreeBlock(
+    uint8_t* ptr,
+    TlsfAllocator::FreeBlockNode* prev,
+    TlsfAllocator::FreeBlockNode* next)
 {
     if (!IsValid(ptr)) return nullptr;
 
@@ -351,7 +360,8 @@ typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(const T
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(TlsfAllocator::BlockHeader* header)
+typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(
+    TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     T size = GetHeaderSize(header);
@@ -361,7 +371,8 @@ typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(TlsfAllocato
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetPrevFooter(TlsfAllocator::BlockHeader* header)
+typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetPrevFooter(
+    TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawFooter = TO_BYTES(header) - FOOTER_SIZE;
@@ -391,6 +402,12 @@ template<typename T>
 bool TlsfAllocator<T>::IsFree(T fl, T sl)
 {
     return slBitmasks[fl] & (1 << sl);
+}
+
+template<typename T>
+bool TlsfAllocator<T>::IsFull()
+{
+    return totalBytesRemaining == 0;
 }
 
 template<typename T>
@@ -429,5 +446,4 @@ const T TlsfAllocator<T>::BytesRemaining()
 template class TlsfAllocator<uint16_t>;
 template class TlsfAllocator<uint32_t>;
 template class TlsfAllocator<uint64_t>;
-}
-
+} // namespace Siege
