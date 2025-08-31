@@ -48,7 +48,7 @@ public:
     // S'tructors
 
     TlsfAllocator();
-    TlsfAllocator(const uint64_t size);
+    TlsfAllocator(const T size);
 
     // Deleted copy and move constructors
 
@@ -57,21 +57,21 @@ public:
 
     // Other functions
 
-    void CreateHeader(uint8_t* ptr, const uint64_t size, HeaderFlags flags);
-    void CreateFooter(uint8_t* ptr, const uint64_t size);
+    void CreateHeader(uint8_t* ptr, const T size, HeaderFlags flags);
+    void CreateFooter(uint8_t* ptr, const T size);
     FreeBlockNode* CreateFreeBlock(uint8_t* ptr, FreeBlockNode* prev, FreeBlockNode* next);
-    FreeBlockNode* FindFreeBlock(const uint64_t& size);
+    FreeBlockNode* FindFreeBlock(const T& size);
 
-    const uint64_t GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl);
+    const T GetNextFreeSlotIndex(T& fl, T& sl);
     bool IsFree(BlockHeader* header);
-    bool IsFree(uint64_t fl, uint64_t sl);
+    bool IsFree(T fl, T sl);
     bool PrevBlockIsFree(BlockHeader* header);
-    uint64_t CalculateFreeBlockIndices(uint64_t size, OUT uint64_t& fl, OUT uint64_t& sl);
+    T CalculateFreeBlockIndices(T size, OUT T& fl, OUT T& sl);
 
     // Buffer manipulation Functions
 
     FreeBlockNode* GetFreeBlock(BlockHeader* header);
-    FreeBlockNode* GetFreeBlock(const uint64_t fl, const uint64_t sl);
+    FreeBlockNode* GetFreeBlock(const T fl, const T sl);
     uint8_t* GetBlockData(BlockHeader* header);
     BlockFooter* GetFooter(BlockHeader* header);
     BlockFooter* GetPrevFooter(BlockHeader* header);
@@ -82,25 +82,25 @@ public:
 
     // Allocate/Deallocate
 
-    void* Allocate(const uint64_t& size);
+    void* Allocate(const T& size);
     void Deallocate(void** ptr);
 
-    BlockHeader* TrySplitBlock(FreeBlockNode* node, uint64_t& allocatedSize);
+    BlockHeader* TrySplitBlock(FreeBlockNode* node, T& allocatedSize);
     bool RemoveFreeBlock(FreeBlockNode* node);
-    void AddNewBlock(const uint64_t size, BlockHeader* currentNode);
-    BlockHeader* TryCoalesce(BlockHeader* header, OUT uint64_t& size);
+    void AddNewBlock(const T size, BlockHeader* currentNode);
+    BlockHeader* TryCoalesce(BlockHeader* header, OUT T& size);
 
     // Getters
 
     bool IsValid(uint8_t* ptr);
-    const uint64_t GetHeaderSize(BlockHeader* header);
-    const uint64_t Capacity();
-    const uint64_t BytesRemaining();
-    const uint64_t TotalBytesRemaining()
+    const T GetHeaderSize(BlockHeader* header);
+    const T Capacity();
+    const T BytesRemaining();
+    const T TotalBytesRemaining()
     {
         return totalBytesRemaining;
     }
-    const uint64_t TotalSize()
+    const T TotalSize()
     {
         return totalSize;
     }
@@ -108,11 +108,11 @@ public:
     {
         return data;
     }
-    const uint64_t FlBitmask()
+    const T FlBitmask()
     {
         return flBitmask;
     }
-    const uint16_t& SlBitmask(const uint64_t fl)
+    const uint16_t& SlBitmask(const T fl)
     {
         return slBitmasks[fl];
     }
@@ -121,17 +121,17 @@ private:
 
     static uint8_t MIN_SIZE_INDEX;
 
-    uint64_t totalSize {0};
-    uint64_t totalBytesRemaining {0};
+    T totalSize {0};
+    T totalBytesRemaining {0};
 
-    uint64_t capacity {0};
-    uint64_t bytesRemaining {0};
+    T capacity {0};
+    T bytesRemaining {0};
 
     uint8_t* data {nullptr};
     FreeBlockNode** freeList {nullptr};
 
     // bitmasks
-    uint64_t flBitmask {0};
+    T flBitmask {0};
     uint16_t* slBitmasks {nullptr};
 };
 
