@@ -7,11 +7,9 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#include "TlsfAllocator.h"
-
+#include "Tlsf.h"
 #include <memory>
-
-#include "Logging.h"
+#include "../Logging.h"
 
 #define TO_BYTES(val) reinterpret_cast<uint8_t*>(val)
 #define TO_HEADER(val) reinterpret_cast<BlockHeader*>(val)
@@ -24,27 +22,30 @@
 #define METADATA_OVERHEAD HEADER_SIZE + FOOTER_SIZE
 #define PAD_SIZE(size) size + METADATA_OVERHEAD
 
-#define FL_MIN_INDEX 4
 #define MAX_SL_BUCKETS 16
 #define FL(size) 63 - __builtin_clzll(size)
-#define SL(size, fl) (size >> fl) & ((1 << FL_MIN_INDEX) - 1);
+#define SL(size, fl) (size >> fl) & ((1 << MIN_SIZE_INDEX) - 1);
 #define FLAG_OFFSET 3
-#define MIN_ALLOCATION 16
-#define INVALID_INDEX UINT64_MAX
+#define INVALID_INDEX(T) std::numeric_limits<T>::max()
+#define MIN_ALLOCATION_SIZE 16
 
 namespace Siege
 {
+template<typename T>
+uint8_t TlsfAllocator<T>::MIN_SIZE_INDEX = sizeof(T) < 4 ? 4 : sizeof(T);
 
-TlsfAllocator::TlsfAllocator() {}
+template<typename T>
+TlsfAllocator<T>::TlsfAllocator() {}
 
-TlsfAllocator::TlsfAllocator(const uint64_t size)
+template<typename T>
+TlsfAllocator<T>::TlsfAllocator(const uint64_t size)
 {
     uint64_t paddedSize = PAD_SIZE(size);
-    if (size == 0 || size < MIN_ALLOCATION || size > (UINT64_MAX - METADATA_OVERHEAD) ||
+    if (size == 0 || size < MIN_ALLOCATION_SIZE || size > (INVALID_INDEX(T) - METADATA_OVERHEAD) ||
         paddedSize < size)
         return;
 
-    uint64_t maxBuckets = (FL(size) - FL_MIN_INDEX) + 1;
+    uint64_t maxBuckets = (FL(size) - MIN_SIZE_INDEX) + 1;
 
     uint64_t slBucketSize = sizeof(uint16_t) * maxBuckets;
     uint64_t freeListSize = maxBuckets * MAX_SL_BUCKETS * sizeof(FreeBlockNode*);
@@ -71,18 +72,20 @@ TlsfAllocator::TlsfAllocator(const uint64_t size)
     AddNewBlock(paddedSize, TO_HEADER(data));
 }
 
-void TlsfAllocator::CreateHeader(uint8_t* ptr, const uint64_t size, HeaderFlags flags)
+template<typename T>
+void TlsfAllocator<T>::CreateHeader(uint8_t* ptr, const uint64_t size, HeaderFlags flags)
 {
     if (!ptr) return;
     BlockHeader* header = TO_HEADER(ptr);
     header->sizeAndFlags = (size << FLAG_OFFSET) | flags;
 }
 
-void* TlsfAllocator::Allocate(const uint64_t& size)
+template<typename T>
+void* TlsfAllocator<T>::Allocate(const uint64_t& size)
 {
     uint64_t requiredSize = sizeof(BlockHeader) + size + sizeof(BlockFooter);
     if (!data || capacity == 0 || size == 0 || requiredSize < size ||
-        requiredSize > totalBytesRemaining || size < MIN_ALLOCATION)
+        requiredSize > totalBytesRemaining || size < MIN_ALLOCATION_SIZE)
         return nullptr;
 
     FreeBlockNode* block = FindFreeBlock(requiredSize);
@@ -100,7 +103,43 @@ void* TlsfAllocator::Allocate(const uint64_t& size)
     return ptr;
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBlockNode* node,
+template<typename T>
+void TlsfAllocator<T>::Deallocate(void** ptr)
+{
+    uint8_t* raw = (uint8_t*) *ptr;
+    if (!raw) return;
+    if (raw < data || raw >= (data + capacity)) return;
+
+    BlockHeader* header = GetHeader(raw);
+
+    if (IsFree(header)) return;
+
+    uint64_t blockSize = GetHeaderSize(header);
+
+    uint64_t totalBlockSize = blockSize;
+    header = TryCoalesce(header, totalBlockSize);
+    BlockFooter* footer = GetFooter(header);
+
+    header->sizeAndFlags = (totalBlockSize << 3) | (header->sizeAndFlags & PREV_IS_FREE) | FREE;
+    footer->totalBlockSize = totalBlockSize;
+
+    BlockHeader* nextHeader = GetNextHeader(header);
+
+    if (nextHeader && ((uint8_t*) nextHeader < (data + capacity)))
+    {
+        nextHeader->sizeAndFlags |= PREV_IS_FREE;
+    }
+
+    AddNewBlock(totalBlockSize, header);
+
+    bytesRemaining += blockSize - sizeof(BlockHeader) - sizeof(BlockFooter);
+    totalBytesRemaining += blockSize;
+
+    *ptr = nullptr;
+}
+
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TrySplitBlock(TlsfAllocator<T>::FreeBlockNode* node,
                                                          uint64_t& allocatedSize)
 {
     if (!node) return nullptr;
@@ -125,7 +164,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::TrySplitBlock(TlsfAllocator::FreeBloc
     return header;
 }
 
-void TlsfAllocator::AddNewBlock(const uint64_t size, BlockHeader* header)
+template<typename T>
+void TlsfAllocator<T>::AddNewBlock(const uint64_t size, BlockHeader* header)
 {
     uint64_t fl = 0, sl = 0, index;
     index = CalculateFreeBlockIndices(size, fl, sl);
@@ -141,7 +181,8 @@ void TlsfAllocator::AddNewBlock(const uint64_t size, BlockHeader* header)
     slBitmasks[fl] |= (1 << sl);
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::TryCoalesce(BlockHeader* header, OUT uint64_t& size)
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TryCoalesce(BlockHeader* header, OUT uint64_t& size)
 {
     BlockHeader* start = header;
     BlockHeader* prev = GetPrevHeader(start);
@@ -163,7 +204,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::TryCoalesce(BlockHeader* header, OUT 
     return start;
 }
 
-bool TlsfAllocator::RemoveFreeBlock(TlsfAllocator::FreeBlockNode* node)
+template<typename T>
+bool TlsfAllocator<T>::RemoveFreeBlock(TlsfAllocator::FreeBlockNode* node)
 {
     BlockHeader* header = GetHeader(node);
 
@@ -189,19 +231,21 @@ bool TlsfAllocator::RemoveFreeBlock(TlsfAllocator::FreeBlockNode* node)
     return true;
 }
 
-TlsfAllocator::FreeBlockNode* TlsfAllocator::FindFreeBlock(const uint64_t& size)
+template<typename T>
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::FindFreeBlock(const uint64_t& size)
 {
     uint64_t fl, sl, index;
     // 1000 0000 0000 1000
     index = CalculateFreeBlockIndices(size, fl, sl);
 
     if (!IsFree(fl, sl)) index = GetNextFreeSlotIndex(fl, sl);
-    if (index == INVALID_INDEX) return nullptr;
+    if (index == INVALID_INDEX(T)) return nullptr;
 
     return freeList[index];
 }
 
-const uint64_t TlsfAllocator::GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl)
+template<typename T>
+const uint64_t TlsfAllocator<T>::GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl)
 {
     sl = __builtin_ctz(slBitmasks[fl] & ~(((1 << (sl + 1)) - 1)));
 
@@ -210,7 +254,7 @@ const uint64_t TlsfAllocator::GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl)
 
     fl = flBitmask & ~(((1ULL << (fl + 1)) - 1));
 
-    if (!fl) return INVALID_INDEX;
+    if (!fl) return INVALID_INDEX(T);
 
     fl = __builtin_ctzll(fl);
     CC_ASSERT(slBitmasks[fl] > 0,
@@ -222,22 +266,25 @@ const uint64_t TlsfAllocator::GetNextFreeSlotIndex(uint64_t& fl, uint64_t& sl)
     return fl * MAX_SL_BUCKETS + sl;
 }
 
-uint64_t TlsfAllocator::CalculateFreeBlockIndices(uint64_t size, OUT uint64_t& fl, OUT uint64_t& sl)
+template<typename T>
+uint64_t TlsfAllocator<T>::CalculateFreeBlockIndices(uint64_t size, OUT uint64_t& fl, OUT uint64_t& sl)
 {
     uint64_t rawFl = FL(size);
-    fl = rawFl - FL_MIN_INDEX;
+    fl = rawFl - MIN_SIZE_INDEX;
     sl = SL(size, fl);
     return fl * MAX_SL_BUCKETS + sl;
 }
 
-void TlsfAllocator::CreateFooter(uint8_t* ptr, const uint64_t size)
+template<typename T>
+void TlsfAllocator<T>::CreateFooter(uint8_t* ptr, const uint64_t size)
 {
     if (!ptr) return;
     BlockFooter* footer = TO_FOOTER(ptr);
     footer->totalBlockSize = size;
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::GetHeader(TlsfAllocator::FreeBlockNode* node)
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(TlsfAllocator::FreeBlockNode* node)
 {
     if (!node) return nullptr;
     uint8_t* rawHeader = TO_BYTES(node) - HEADER_SIZE;
@@ -245,7 +292,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::GetHeader(TlsfAllocator::FreeBlockNod
     return TO_HEADER(rawHeader);
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::GetHeader(uint8_t* ptr)
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(uint8_t* ptr)
 {
     if (!ptr) return nullptr;
     uint8_t* rawHeader = ptr - HEADER_SIZE;
@@ -253,7 +301,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::GetHeader(uint8_t* ptr)
     return TO_HEADER(rawHeader);
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::GetPrevHeader(TlsfAllocator::BlockHeader* header)
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawPrevFooter = TO_BYTES(GetPrevFooter(header));
@@ -263,7 +312,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::GetPrevHeader(TlsfAllocator::BlockHea
     return TO_HEADER(prevHeader);
 }
 
-TlsfAllocator::BlockHeader* TlsfAllocator::GetNextHeader(TlsfAllocator::BlockHeader* header)
+template<typename T>
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetNextHeader(TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawHeader = TO_BYTES(header);
@@ -272,7 +322,8 @@ TlsfAllocator::BlockHeader* TlsfAllocator::GetNextHeader(TlsfAllocator::BlockHea
     return TO_HEADER(next);
 }
 
-TlsfAllocator::FreeBlockNode* TlsfAllocator::CreateFreeBlock(uint8_t* ptr,
+template<typename T>
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::CreateFreeBlock(uint8_t* ptr,
                                                              TlsfAllocator::FreeBlockNode* prev,
                                                              TlsfAllocator::FreeBlockNode* next)
 {
@@ -284,7 +335,8 @@ TlsfAllocator::FreeBlockNode* TlsfAllocator::CreateFreeBlock(uint8_t* ptr,
     return node;
 }
 
-TlsfAllocator::FreeBlockNode* TlsfAllocator::GetFreeBlock(BlockHeader* header)
+template<typename T>
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(BlockHeader* header)
 {
     if (!header || !IsFree(header)) return nullptr;
     uint8_t* rawBlock = TO_BYTES(header) + HEADER_SIZE;
@@ -292,12 +344,14 @@ TlsfAllocator::FreeBlockNode* TlsfAllocator::GetFreeBlock(BlockHeader* header)
     return TO_FREE_BLOCK(rawBlock);
 }
 
-TlsfAllocator::FreeBlockNode* TlsfAllocator::GetFreeBlock(const uint64_t fl, const uint64_t sl)
+template<typename T>
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(const uint64_t fl, const uint64_t sl)
 {
     return freeList[fl * MAX_SL_BUCKETS + sl];
 }
 
-TlsfAllocator::BlockFooter* TlsfAllocator::GetFooter(TlsfAllocator::BlockHeader* header)
+template<typename T>
+typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint64_t size = GetHeaderSize(header);
@@ -306,7 +360,8 @@ TlsfAllocator::BlockFooter* TlsfAllocator::GetFooter(TlsfAllocator::BlockHeader*
     return TO_FOOTER(rawFooter);
 }
 
-TlsfAllocator::BlockFooter* TlsfAllocator::GetPrevFooter(TlsfAllocator::BlockHeader* header)
+template<typename T>
+typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetPrevFooter(TlsfAllocator::BlockHeader* header)
 {
     if (!header) return nullptr;
     uint8_t* rawFooter = TO_BYTES(header) - FOOTER_SIZE;
@@ -314,27 +369,32 @@ TlsfAllocator::BlockFooter* TlsfAllocator::GetPrevFooter(TlsfAllocator::BlockHea
     return TO_FOOTER(rawFooter);
 }
 
-uint8_t* TlsfAllocator::GetBlockData(TlsfAllocator::BlockHeader* header)
+template<typename T>
+uint8_t* TlsfAllocator<T>::GetBlockData(TlsfAllocator::BlockHeader* header)
 {
     return TO_BYTES(header) + HEADER_SIZE;
 }
 
-const uint64_t TlsfAllocator::GetHeaderSize(BlockHeader* header)
+template<typename T>
+const uint64_t TlsfAllocator<T>::GetHeaderSize(BlockHeader* header)
 {
     return header->sizeAndFlags >> FLAG_OFFSET;
 }
 
-bool TlsfAllocator::IsFree(BlockHeader* header)
+template<typename T>
+bool TlsfAllocator<T>::IsFree(BlockHeader* header)
 {
     return header->sizeAndFlags & FREE;
 }
 
-bool TlsfAllocator::IsFree(uint64_t fl, uint64_t sl)
+template<typename T>
+bool TlsfAllocator<T>::IsFree(uint64_t fl, uint64_t sl)
 {
     return slBitmasks[fl] & (1 << sl);
 }
 
-bool TlsfAllocator::PrevBlockIsFree(BlockHeader* header)
+template<typename T>
+bool TlsfAllocator<T>::PrevBlockIsFree(BlockHeader* header)
 {
     uint8_t* raw = TO_BYTES(header);
     if (raw == data) return false;
@@ -348,19 +408,26 @@ bool TlsfAllocator::PrevBlockIsFree(BlockHeader* header)
     return IsFree(TO_HEADER(rawPrevHeader));
 }
 
-bool TlsfAllocator::IsValid(uint8_t* ptr)
+template<typename T>
+bool TlsfAllocator<T>::IsValid(uint8_t* ptr)
 {
     return ptr && ptr >= data && ptr < (data + (capacity + HEADER_SIZE + FOOTER_SIZE));
 }
 
-const uint64_t TlsfAllocator::Capacity()
+template<typename T>
+const uint64_t TlsfAllocator<T>::Capacity()
 {
     return capacity;
 }
 
-const uint64_t TlsfAllocator::BytesRemaining()
+template<typename T>
+const uint64_t TlsfAllocator<T>::BytesRemaining()
 {
     return bytesRemaining;
 }
 
-} // namespace Siege
+template class TlsfAllocator<uint16_t>;
+template class TlsfAllocator<uint32_t>;
+template class TlsfAllocator<uint64_t>;
+}
+

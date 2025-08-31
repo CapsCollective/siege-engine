@@ -7,20 +7,21 @@
 //     https://opensource.org/licenses/Zlib
 //
 
-#ifndef SIEGE_ENGINE_TLSFALLOCATOR_H
-#define SIEGE_ENGINE_TLSFALLOCATOR_H
+#ifndef SIEGE_ENGINE_TLSF_H
+#define SIEGE_ENGINE_TLSF_H
 
 #include <cstdint>
 
-#include "Macros.h"
+#include "../Macros.h"
+
+#define FREE(ptr) Deallocate((void**)&ptr)
 
 namespace Siege
 {
-
+template<typename T>
 class TlsfAllocator
 {
 public:
-
     enum HeaderFlags
     {
         FULL = 0,
@@ -36,12 +37,12 @@ public:
 
     struct BlockHeader
     {
-        uint32_t sizeAndFlags {0};
+        T sizeAndFlags {0};
     };
 
     struct BlockFooter
     {
-        uint32_t totalBlockSize {0};
+        T totalBlockSize {0};
     };
 
     // S'tructors
@@ -82,41 +83,8 @@ public:
     // Allocate/Deallocate
 
     void* Allocate(const uint64_t& size);
+    void Deallocate(void** ptr);
 
-    template<typename T>
-    void Deallocate(T*& ptr)
-    {
-        uint8_t* raw = (uint8_t*) ptr;
-        if (!raw) return;
-        if (raw < data || raw >= (data + capacity)) return;
-
-        BlockHeader* header = GetHeader(raw);
-
-        if (IsFree(header)) return;
-
-        uint64_t blockSize = GetHeaderSize(header);
-
-        uint64_t totalBlockSize = blockSize;
-        header = TryCoalesce(header, totalBlockSize);
-        BlockFooter* footer = GetFooter(header);
-
-        header->sizeAndFlags = (totalBlockSize << 3) | (header->sizeAndFlags & PREV_IS_FREE) | FREE;
-        footer->totalBlockSize = totalBlockSize;
-
-        BlockHeader* nextHeader = GetNextHeader(header);
-
-        if (nextHeader && ((uint8_t*) nextHeader < (data + capacity)))
-        {
-            nextHeader->sizeAndFlags |= PREV_IS_FREE;
-        }
-
-        AddNewBlock(totalBlockSize, header);
-
-        bytesRemaining += blockSize - sizeof(BlockHeader) - sizeof(BlockFooter);
-        totalBytesRemaining += blockSize;
-
-        ptr = nullptr;
-    }
     BlockHeader* TrySplitBlock(FreeBlockNode* node, uint64_t& allocatedSize);
     bool RemoveFreeBlock(FreeBlockNode* node);
     void AddNewBlock(const uint64_t size, BlockHeader* currentNode);
@@ -151,6 +119,8 @@ public:
 
 private:
 
+    static uint8_t MIN_SIZE_INDEX;
+
     uint64_t totalSize {0};
     uint64_t totalBytesRemaining {0};
 
@@ -165,6 +135,12 @@ private:
     uint16_t* slBitmasks {nullptr};
 };
 
-} // namespace Siege
+// Maximum buffer possible here is around 8KB.
+typedef TlsfAllocator<uint16_t> SmallTlsfAllocator;
+// Maximum buffer possible here is around 512MB.
+typedef TlsfAllocator<uint32_t> MediumTlsfAllocator;
+// Maximum buffer possible here is around 2,147,483.6GB.
+typedef TlsfAllocator<uint64_t> LargeTlsfAllocator;
+}
 
-#endif // SIEGE_ENGINE_TLSFALLOCATOR_H
+#endif // SIEGE_ENGINE_TLSF_H
