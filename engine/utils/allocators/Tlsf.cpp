@@ -76,6 +76,23 @@ TlsfAllocator<T>::TlsfAllocator(const T size)
 }
 
 template<typename T>
+TlsfAllocator<T>::~TlsfAllocator()
+{
+    if (data) free(data);
+
+    totalBytesRemaining = 0;
+    capacity = 0;
+    bytesRemaining = 0;
+    totalSize = 0;
+
+    flBitmask = 0;
+
+    data = nullptr;
+    freeList = nullptr;
+    slBitmasks = nullptr;
+}
+
+template<typename T>
 void TlsfAllocator<T>::CreateHeader(uint8_t* ptr, const T size, HeaderFlags flags)
 {
     if (!ptr) return;

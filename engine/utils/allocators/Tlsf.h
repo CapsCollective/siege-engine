@@ -70,12 +70,18 @@ public:
      * @brief Empty constructor Initialises the constructor and size to 0 (null)
      */
     TlsfAllocator();
+
     /**
      * @brief Size initialiser. Accepts a number representing the number of bytes to allocate to
      * the allocator's memory buffer
      * @param size the number of bytes to allocate, cannot be less than 16
      */
     TlsfAllocator(const T size);
+
+    /**
+     * @brief Destructor, deallocates all memory and sets all values to zero
+     */
+    ~TlsfAllocator();
 
     // Deleted copy and move constructors
 
