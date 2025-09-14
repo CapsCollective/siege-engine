@@ -11,6 +11,7 @@
 #define SIEGE_ENGINE_TLSFALLOCATOR_H
 
 #include <cstdint>
+
 #include "Macros.h"
 
 namespace Siege
@@ -19,6 +20,7 @@ namespace Siege
 class TlsfAllocator
 {
 public:
+
     enum HeaderFlags
     {
         FULL = 0,
@@ -32,7 +34,8 @@ public:
         FreeBlockNode* prev {nullptr};
     };
 
-    struct BlockHeader {
+    struct BlockHeader
+    {
         uint32_t sizeAndFlags {0};
     };
 
@@ -62,7 +65,7 @@ public:
     bool IsFree(BlockHeader* header);
     bool IsFree(uint64_t fl, uint64_t sl);
     bool PrevBlockIsFree(BlockHeader* header);
-    uint64_t CalculateFreeBlockIndices(uint64_t size, OUT uint64_t & fl, OUT uint64_t & sl);
+    uint64_t CalculateFreeBlockIndices(uint64_t size, OUT uint64_t& fl, OUT uint64_t& sl);
 
     // Buffer manipulation Functions
 
@@ -83,7 +86,7 @@ public:
     template<typename T>
     void Deallocate(T*& ptr)
     {
-        uint8_t* raw = (uint8_t*)ptr;
+        uint8_t* raw = (uint8_t*) ptr;
         if (!raw) return;
         if (raw < data || raw >= (data + capacity)) return;
 
@@ -102,7 +105,7 @@ public:
 
         BlockHeader* nextHeader = GetNextHeader(header);
 
-        if (nextHeader && ((uint8_t*)nextHeader < (data + capacity)))
+        if (nextHeader && ((uint8_t*) nextHeader < (data + capacity)))
         {
             nextHeader->sizeAndFlags |= PREV_IS_FREE;
         }
@@ -125,12 +128,29 @@ public:
     const uint64_t GetHeaderSize(BlockHeader* header);
     const uint64_t Capacity();
     const uint64_t BytesRemaining();
-    const uint64_t TotalBytesRemaining() { return totalBytesRemaining; }
-    const uint64_t TotalSize() { return totalSize; }
-    const uint8_t* Data() { return data; }
-    const uint64_t FlBitmask() { return flBitmask; }
-    const uint16_t& SlBitmask(const uint64_t fl) { return slBitmasks[fl]; }
+    const uint64_t TotalBytesRemaining()
+    {
+        return totalBytesRemaining;
+    }
+    const uint64_t TotalSize()
+    {
+        return totalSize;
+    }
+    const uint8_t* Data()
+    {
+        return data;
+    }
+    const uint64_t FlBitmask()
+    {
+        return flBitmask;
+    }
+    const uint16_t& SlBitmask(const uint64_t fl)
+    {
+        return slBitmasks[fl];
+    }
+
 private:
+
     uint64_t totalSize {0};
     uint64_t totalBytesRemaining {0};
 

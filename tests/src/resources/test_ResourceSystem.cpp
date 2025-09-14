@@ -16,6 +16,7 @@
 #include <resources/StaticMeshData.h>
 #include <resources/Texture2DData.h>
 #include <utest.h>
+
 #include <random>
 
 using namespace Siege;
