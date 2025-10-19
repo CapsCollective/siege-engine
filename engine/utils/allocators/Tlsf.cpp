@@ -166,9 +166,9 @@ void* TlsfAllocator<T>::Allocate(const T& size)
 }
 
 template<typename T>
-void TlsfAllocator<T>::Deallocate(void** ptr)
+void TlsfAllocator<T>::Deallocate(void* ptr)
 {
-    uint8_t* raw = (uint8_t*) *ptr;
+    uint8_t* raw = static_cast<uint8_t*>(ptr);
     if (!raw)
     {
         CC_LOG_ERROR("DEALLOCATE: Cannot deallocate nullptr. This may indicate a larger bug")
@@ -204,8 +204,6 @@ void TlsfAllocator<T>::Deallocate(void** ptr)
 
     bytesRemaining += blockSize - sizeof(BlockHeader) - sizeof(BlockFooter);
     totalBytesRemaining += blockSize;
-
-    *ptr = nullptr;
 }
 
 template<typename T>

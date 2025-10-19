@@ -211,12 +211,11 @@ UTEST(Test_MediumTlsfAllocator, TestDeallocateFunction)
               footer->totalBlockSize);
     ASSERT_EQ(48, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     // Should be empty
     ASSERT_EQ(577, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & MediumTlsfAllocator::FREE);
-    ASSERT_FALSE(p);
     ASSERT_EQ(4, a.FirstLevelBitmask());
     ASSERT_EQ(4, a.SecondLevelBitmask(2));
     ASSERT_EQ(64, a.BytesRemaining());
@@ -265,8 +264,7 @@ UTEST(Test_MediumTlsfAllocator, TestDeallocateFunction)
               strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
-    ASSERT_FALSE(p);
+    a.Deallocate(p);
     ASSERT_TRUE(strHeader->sizeAndFlags & MediumTlsfAllocator::PREV_IS_FREE);
     ASSERT_EQ(193, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & MediumTlsfAllocator::FREE);
@@ -275,8 +273,7 @@ UTEST(Test_MediumTlsfAllocator, TestDeallocateFunction)
     ASSERT_EQ(nullptr, newFreeBlock->prev);
     ASSERT_EQ(48, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(577, header->sizeAndFlags);
     ASSERT_EQ(4, a.FirstLevelBitmask());
     ASSERT_EQ(4, a.SecondLevelBitmask(2));
@@ -374,7 +371,7 @@ UTEST(Test_MediumTlsfAllocator, TestBlockCoalescing)
                   sizeof(MediumTlsfAllocator::BlockFooter),
               footer->totalBlockSize);
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     MediumTlsfAllocator::FreeBlockNode* firstFree = a.GetFreeBlock(0, 8);
     ASSERT_EQ(firstFree->next, nullptr);
@@ -385,19 +382,16 @@ UTEST(Test_MediumTlsfAllocator, TestBlockCoalescing)
     ASSERT_TRUE(firstFreeHeader->sizeAndFlags & MediumTlsfAllocator::FREE);
     ASSERT_FALSE(firstFreeHeader->sizeAndFlags & MediumTlsfAllocator::PREV_IS_FREE);
 
-    ASSERT_FALSE(p);
     ASSERT_EQ(a.FirstLevelBitmask(), 5);
     ASSERT_EQ(256, a.SecondLevelBitmask(0));
 
-    a.TLSF_ALLOC_FREE(p2);
-    ASSERT_FALSE(p2);
+    a.Deallocate(p2);
     ASSERT_EQ(112, a.BytesRemaining());
     ASSERT_EQ(a.FirstLevelBitmask(), 5);
     ASSERT_EQ(256, a.SecondLevelBitmask(0));
     ASSERT_EQ(64, a.SecondLevelBitmask(2));
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(128, a.BytesRemaining());
     ASSERT_EQ(8, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(3));
@@ -405,13 +399,13 @@ UTEST(Test_MediumTlsfAllocator, TestBlockCoalescing)
     // Edge Cases
 
     void* badPointer = nullptr;
-    a.TLSF_ALLOC_FREE(badPointer);
+    a.Deallocate(badPointer);
     ASSERT_FALSE(badPointer);
 
     // try to deallocate pointer not in allocator;
 
     uint64_t* val = new uint64_t;
-    a.TLSF_ALLOC_FREE(val); // Should do nothing and be ignored.
+    a.Deallocate(val); // Should do nothing and be ignored.
     free(val);
 }
 
@@ -429,8 +423,8 @@ UTEST(Test_MediumTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     ASSERT_EQ(0, a.TotalBytesRemaining());
     ASSERT_TRUE(a.IsFull());
 
-    a.TLSF_ALLOC_FREE(p0);
-    a.TLSF_ALLOC_FREE(p2);
+    a.Deallocate(p0);
+    a.Deallocate(p2);
 
     ASSERT_EQ(64, a.BytesRemaining());
     void* tooLargeVal = a.Allocate(24);
@@ -475,17 +469,16 @@ UTEST(test_ResourceSystem, TestRandomAllocationsAndDeallocations)
             ASSERT_EQ(0xDEADC0DE, *(uint32_t*) ptrToFree);
             MediumTlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*) ptrToFree);
 
-            a.TLSF_ALLOC_FREE(ptrToFree);
+            a.Deallocate(ptrToFree);
             MediumTlsfAllocator::FreeBlockNode* newNode = a.GetFreeBlock(header);
 
-            ASSERT_FALSE(ptrToFree);
             pointers.erase(pointers.begin() + index);
         }
     }
 
     for (void* ptr : pointers)
     {
-        a.TLSF_ALLOC_FREE(ptr);
+        a.Deallocate(ptr);
     }
 
     ASSERT_EQ(a.TotalSize(), a.TotalBytesRemaining());
@@ -680,12 +673,11 @@ UTEST(Test_SmallTlsfAllocator, TestDeallocateFunction)
               footer->totalBlockSize);
     ASSERT_EQ(48, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     // Should be empty
     ASSERT_EQ(545, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & SmallTlsfAllocator::FREE);
-    ASSERT_FALSE(p);
     ASSERT_EQ(4, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(2));
     ASSERT_EQ(64, a.BytesRemaining());
@@ -734,8 +726,7 @@ UTEST(Test_SmallTlsfAllocator, TestDeallocateFunction)
               strFooter->totalBlockSize);
     ASSERT_EQ(32, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
-    ASSERT_FALSE(p);
+    a.Deallocate(p);
     ASSERT_TRUE(strHeader->sizeAndFlags & SmallTlsfAllocator::PREV_IS_FREE);
     ASSERT_EQ(161, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & SmallTlsfAllocator::FREE);
@@ -744,8 +735,7 @@ UTEST(Test_SmallTlsfAllocator, TestDeallocateFunction)
     ASSERT_EQ(nullptr, newFreeBlock->prev);
     ASSERT_EQ(48, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(545, header->sizeAndFlags);
     ASSERT_EQ(4, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(2));
@@ -843,7 +833,7 @@ UTEST(Test_SmallTlsfAllocator, TestBlockCoalescing)
                   sizeof(SmallTlsfAllocator::BlockFooter),
               footer->totalBlockSize);
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     SmallTlsfAllocator::FreeBlockNode* firstFree = a.GetFreeBlock(0, 4);
     ASSERT_EQ(firstFree->next, nullptr);
@@ -854,19 +844,16 @@ UTEST(Test_SmallTlsfAllocator, TestBlockCoalescing)
     ASSERT_TRUE(firstFreeHeader->sizeAndFlags & SmallTlsfAllocator::FREE);
     ASSERT_FALSE(firstFreeHeader->sizeAndFlags & SmallTlsfAllocator::PREV_IS_FREE);
 
-    ASSERT_FALSE(p);
     ASSERT_EQ(a.FirstLevelBitmask(), 5);
     ASSERT_EQ(16, a.SecondLevelBitmask(0));
 
-    a.TLSF_ALLOC_FREE(p2);
-    ASSERT_FALSE(p2);
+    a.Deallocate(p2);
     ASSERT_EQ(112, a.BytesRemaining());
     ASSERT_EQ(a.FirstLevelBitmask(), 5);
     ASSERT_EQ(16, a.SecondLevelBitmask(0));
     ASSERT_EQ(128, a.SecondLevelBitmask(2));
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(128, a.BytesRemaining());
     ASSERT_EQ(8, a.FirstLevelBitmask());
     ASSERT_EQ(1, a.SecondLevelBitmask(3));
@@ -874,13 +861,13 @@ UTEST(Test_SmallTlsfAllocator, TestBlockCoalescing)
     // Edge Cases
 
     void* badPointer = nullptr;
-    a.TLSF_ALLOC_FREE(badPointer);
+    a.Deallocate(badPointer);
     ASSERT_FALSE(badPointer);
 
     // try to deallocate pointer not in allocator;
 
     uint64_t* val = new uint64_t;
-    a.TLSF_ALLOC_FREE(val); // Should do nothing and be ignored.
+    a.Deallocate(val); // Should do nothing and be ignored.
     free(val);
 }
 
@@ -898,8 +885,8 @@ UTEST(Test_SmallTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     ASSERT_EQ(0, a.TotalBytesRemaining());
     ASSERT_TRUE(a.IsFull());
 
-    a.TLSF_ALLOC_FREE(p0);
-    a.TLSF_ALLOC_FREE(p2);
+    a.Deallocate(p0);
+    a.Deallocate(p2);
 
     ASSERT_EQ(48, a.TotalBytesRemaining());
     void* tooLargeVal = a.Allocate(24);
@@ -944,17 +931,16 @@ UTEST(Test_SmallTlsfAllocator, TestRandomAllocationsAndDeallocations)
             ASSERT_EQ(0xDEADC0DE, *(uint32_t*) ptrToFree);
             SmallTlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*) ptrToFree);
 
-            a.TLSF_ALLOC_FREE(ptrToFree);
+            a.Deallocate(ptrToFree);
             SmallTlsfAllocator::FreeBlockNode* newNode = a.GetFreeBlock(header);
 
-            ASSERT_FALSE(ptrToFree);
             pointers.erase(pointers.begin() + index);
         }
     }
 
     for (void* ptr : pointers)
     {
-        a.TLSF_ALLOC_FREE(ptr);
+        a.Deallocate(ptr);
     }
 
     ASSERT_EQ(a.TotalSize(), a.TotalBytesRemaining());
@@ -1146,12 +1132,11 @@ UTEST(Test_LargeTlsfAllocator, TestDeallocateFunction)
               footer->totalBlockSize);
     ASSERT_EQ(240, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     // Should be empty
     ASSERT_EQ(2177, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & LargeTlsfAllocator::FREE);
-    ASSERT_FALSE(p);
     ASSERT_EQ(16, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(4));
     ASSERT_EQ(256, a.BytesRemaining());
@@ -1200,8 +1185,7 @@ UTEST(Test_LargeTlsfAllocator, TestDeallocateFunction)
               strFooter->totalBlockSize);
     ASSERT_EQ(224, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(p);
-    ASSERT_FALSE(p);
+    a.Deallocate(p);
     ASSERT_TRUE(strHeader->sizeAndFlags & LargeTlsfAllocator::PREV_IS_FREE);
     ASSERT_EQ(257, header->sizeAndFlags);
     ASSERT_TRUE(header->sizeAndFlags & LargeTlsfAllocator::FREE);
@@ -1210,8 +1194,7 @@ UTEST(Test_LargeTlsfAllocator, TestDeallocateFunction)
     ASSERT_EQ(nullptr, newFreeBlock->prev);
     ASSERT_EQ(240, a.BytesRemaining());
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(2177, header->sizeAndFlags);
     ASSERT_EQ(16, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(4));
@@ -1309,7 +1292,7 @@ UTEST(Test_LargeTlsfAllocator, TestBlockCoalescing)
                   sizeof(LargeTlsfAllocator::BlockFooter),
               footer->totalBlockSize);
 
-    a.TLSF_ALLOC_FREE(p);
+    a.Deallocate(p);
 
     LargeTlsfAllocator::FreeBlockNode* firstFree = a.GetFreeBlock(3, 6);
     ASSERT_EQ(firstFree->next, nullptr);
@@ -1320,19 +1303,16 @@ UTEST(Test_LargeTlsfAllocator, TestBlockCoalescing)
     ASSERT_TRUE(firstFreeHeader->sizeAndFlags & LargeTlsfAllocator::FREE);
     ASSERT_FALSE(firstFreeHeader->sizeAndFlags & LargeTlsfAllocator::PREV_IS_FREE);
 
-    ASSERT_FALSE(p);
     ASSERT_EQ(a.FirstLevelBitmask(), 10);
     ASSERT_EQ(1, a.SecondLevelBitmask(1));
 
-    a.TLSF_ALLOC_FREE(p2);
-    ASSERT_FALSE(p2);
+    a.Deallocate(p2);
     ASSERT_EQ(240, a.BytesRemaining());
     ASSERT_EQ(a.FirstLevelBitmask(), 10);
     ASSERT_EQ(1024, a.SecondLevelBitmask(3));
     ASSERT_EQ(1, a.SecondLevelBitmask(1));
 
-    a.TLSF_ALLOC_FREE(str);
-    ASSERT_FALSE(str);
+    a.Deallocate(str);
     ASSERT_EQ(256, a.BytesRemaining());
     ASSERT_EQ(16, a.FirstLevelBitmask());
     ASSERT_EQ(2, a.SecondLevelBitmask(4));
@@ -1340,13 +1320,13 @@ UTEST(Test_LargeTlsfAllocator, TestBlockCoalescing)
     // Edge Cases
 
     void* badPointer = nullptr;
-    a.TLSF_ALLOC_FREE(badPointer);
+    a.Deallocate(badPointer);
     ASSERT_FALSE(badPointer);
 
     // try to deallocate pointer not in allocator;
 
     uint64_t* val = new uint64_t;
-    a.TLSF_ALLOC_FREE(val); // Should do nothing and be ignored.
+    a.Deallocate(val); // Should do nothing and be ignored.
     free(val);
 }
 
@@ -1364,8 +1344,8 @@ UTEST(Test_LargeTlsfAllocator, TestAllocationWhenNoAppropriateFragmentExists)
     ASSERT_EQ(0, a.TotalBytesRemaining());
     ASSERT_TRUE(a.IsFull());
 
-    a.TLSF_ALLOC_FREE(p0);
-    a.TLSF_ALLOC_FREE(p2);
+    a.Deallocate(p0);
+    a.Deallocate(p2);
 
     ASSERT_EQ(128, a.BytesRemaining());
     void* tooLargeVal = a.Allocate(34);
@@ -1410,17 +1390,16 @@ UTEST(Test_LargeTlsfAllocator, TestRandomAllocationsAndDeallocations)
             ASSERT_EQ(0xDEADC0DE, *(uint32_t*) ptrToFree);
             LargeTlsfAllocator::BlockHeader* header = a.GetHeader((uint8_t*) ptrToFree);
 
-            a.TLSF_ALLOC_FREE(ptrToFree);
+            a.Deallocate(ptrToFree);
             LargeTlsfAllocator::FreeBlockNode* newNode = a.GetFreeBlock(header);
 
-            ASSERT_FALSE(ptrToFree);
             pointers.erase(pointers.begin() + index);
         }
     }
 
     for (void* ptr : pointers)
     {
-        a.TLSF_ALLOC_FREE(ptr);
+        a.Deallocate(ptr);
     }
 
     ASSERT_EQ(a.TotalSize(), a.TotalBytesRemaining());
