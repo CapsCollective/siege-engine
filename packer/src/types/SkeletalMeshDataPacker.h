@@ -9,7 +9,8 @@
 #ifndef SIEGE_ENGINE_SKELETALMESHDATAPACKER_H
 #define SIEGE_ENGINE_SKELETALMESHDATAPACKER_H
 
-#include <resources/PackFile.h>
+#include <utils/String.h>
+#include <resources/PackFileData.h>
 
 Siege::PackFileData* PackSkeletalMeshFile(const Siege::String& filePath,
                                           const Siege::String& assetsPath);

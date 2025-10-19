@@ -52,14 +52,19 @@ bool PackFile::LoadFromPath(const String& filepath)
     return true;
 }
 
-const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries()
+const std::map<String, PackFile::TocEntry*>& PackFile::GetEntries() const
 {
     return entries;
 }
 
-const PackFile::Header& PackFile::GetHeader()
+const PackFile::Header& PackFile::GetHeader() const
 {
     return header;
+}
+
+char* PackFile::GetBody() const
+{
+    return body;
 }
 
 PackFile::TocEntry* PackFile::TocEntry::Create(const String& name,

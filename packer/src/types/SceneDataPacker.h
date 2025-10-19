@@ -10,7 +10,8 @@
 #ifndef SIEGE_ENGINE_SCENEDATAPACKER_H
 #define SIEGE_ENGINE_SCENEDATAPACKER_H
 
-#include <resources/PackFile.h>
+#include <utils/String.h>
+#include <resources/PackFileData.h>
 
 Siege::PackFileData* PackSceneFile(const Siege::String& filePath);
 
