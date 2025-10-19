@@ -15,11 +15,6 @@
 
 #include "../Macros.h"
 
-/**
- * A shorthand macro for making deallocations easier to manage.
- */
-#define TLSF_ALLOC_FREE(ptr) Deallocate((void**) &ptr)
-
 namespace Siege
 {
 template<typename T>
@@ -201,7 +196,7 @@ public:
      * Deallocates a memory block and returns the memory to the allocator's pool
      * @param ptr the pointer to deallocate
      */
-    void Deallocate(void** ptr);
+    void Deallocate(void* ptr);
 
     // Getters
 
