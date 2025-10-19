@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_TLSF_H
 #define SIEGE_ENGINE_TLSF_H
 
+#include <cstddef>
 #include <cstdint>
 
 #include "../Macros.h"
@@ -17,7 +18,7 @@
 /**
  * A shorthand macro for making deallocations easier to manage.
  */
-#define FREE(ptr) Deallocate((void**) &ptr)
+#define TLSF_ALLOC_FREE(ptr) Deallocate((void**) &ptr)
 
 namespace Siege
 {
@@ -27,7 +28,7 @@ class TlsfAllocator
 public:
 
     /**
-     * @brief Flags for determining the state of a memory block. Every header has a flag where the
+     * Flags for determining the state of a memory block. Every header has a flag where the
      * first three bits are dedicated to keeping track of the block's state
      */
     enum HeaderFlags
@@ -38,7 +39,7 @@ public:
     };
 
     /**
-     * @brief linked list nodes for representing free memory blocks
+     * linked list nodes for representing free memory blocks
      */
     struct FreeBlockNode
     {
@@ -47,7 +48,7 @@ public:
     };
 
     /**
-     * @brief A struct representing the header for each memory block in the allocator. This struct
+     * A struct representing the header for each memory block in the allocator. This struct
      * stores the size of the entire block alongside the state of the block
      */
     struct BlockHeader
@@ -56,7 +57,7 @@ public:
     };
 
     /**
-     * @brief a struct which stores the size of the the entire memory block. Used to navigate the
+     * a struct which stores the size of the the entire memory block. Used to navigate the
      * allocator and find the block's header
      */
     struct BlockFooter
@@ -67,19 +68,19 @@ public:
     // S'tructors
 
     /**
-     * @brief Empty constructor Initialises the constructor and size to 0 (null)
+     * Empty constructor Initialises the constructor and size to 0 (null)
      */
     TlsfAllocator();
 
     /**
-     * @brief Size initialiser. Accepts a number representing the number of bytes to allocate to
+     * Size initialiser. Accepts a number representing the number of bytes to allocate to
      * the allocator's memory buffer
      * @param size the number of bytes to allocate, cannot be less than 16
      */
     TlsfAllocator(const T size);
 
     /**
-     * @brief Destructor, deallocates all memory and sets all values to zero
+     * Destructor, deallocates all memory and sets all values to zero
      */
     ~TlsfAllocator();
 
@@ -91,105 +92,105 @@ public:
     // Other functions
 
     /**
-     * @brief Checks if a block's preceding neighbour is free (the block that comes before it)
+     * Checks if a block's preceding neighbour is free (the block that comes before it)
      * @param header the current header
      * @return true if the previous block is free, otherwise false
      */
-    bool PrevBlockIsFree(BlockHeader* header);
+    bool PrevBlockIsFree(BlockHeader* header) const;
 
     /**
-     * @brief Checks if a block is free for allocation
+     * Checks if a block is free for allocation
      * @param header the header to check for free space
      * @return true if the free flag is set, otherwise false
      */
-    bool IsFree(BlockHeader* header);
+    bool IsFree(BlockHeader* header) const;
 
     /**
-     * @brief Checks if an entry exists in the FreeList for a specific combination of first and
+     * Checks if an entry exists in the FreeList for a specific combination of first and
      * second level indices
-     * @param fl the index to search the first level bitmask with
-     * @param sl the index to search the second level bitmask with
+     * @param firstLevel the index to search the first level bitmask with
+     * @param secondLevel the index to search the second level bitmask with
      * @return true if a free block exists, false otherwise
      */
-    bool IsFree(T fl, T sl);
+    bool IsFree(T firstLevel, T secondLevel) const;
 
     /**
-     * @brief Checks if the allocator is full
+     * Checks if the allocator is full
      * @return true if there are no bytes left in the allocator, otherwise false
      */
-    bool IsFull();
+    bool IsFull() const;
 
     // Buffer manipulation Functions
 
     /**
-     * @brief Retrieves a free block from a header if possible
+     * Retrieves a free block from a header if possible
      * @param header the header from which to get a FreeBlock
      * @return a FreeBlock if applicable, otherwise a nullptr
      */
-    FreeBlockNode* GetFreeBlock(BlockHeader* header);
+    FreeBlockNode* GetFreeBlock(BlockHeader* header) const;
 
     /**
-     * @brief Retrieves a free block using first and second level indices
-     * @param fl the first level index to be calculated
-     * @param sl the second level index to be calculated
+     * Retrieves a free block using first and second level indices
+     * @param firstLevel the first level index to be calculated
+     * @param secondLevel the second level index to be calculated
      * @return the FreeBlock at the specified first and second level indices
      */
-    FreeBlockNode* GetFreeBlock(const T fl, const T sl);
+    FreeBlockNode* GetFreeBlock(const T firstLevel, const T secondLevel) const;
 
     /**
-     * @brief Retrieves the raw allocated data stored within the memory block
+     * Retrieves the raw allocated data stored within the memory block
      * @param header the header to extrapolate the data from
      * @return a pointer to the data stored by the memory block
      */
-    uint8_t* GetBlockData(BlockHeader* header);
+    uint8_t* GetBlockData(BlockHeader* header) const;
 
     /**
-     * @brief Gets the footer for a memory block
+     * Gets the footer for a memory block
      * @param header the header of the memory block
      * @return the footer associated with the memory block or nullptr if out of bounds
      */
-    BlockFooter* GetFooter(BlockHeader* header);
+    BlockFooter* GetFooter(BlockHeader* header) const;
 
     /**
-     * @brief Returns the footer of the previous memory block
+     * Returns the footer of the previous memory block
      * @param header the current header
      * @return the previous footer or nullptr if it doesnt exist
      */
-    BlockFooter* GetPrevFooter(BlockHeader* header);
+    BlockFooter* GetPrevFooter(BlockHeader* header) const;
 
     /**
-     * @brief Returns the header associated with a FreeBlock
+     * Returns the header associated with a FreeBlock
      * @param node the FreeBlock to search
      * @return the BlockHeader associated with the free block
      */
-    BlockHeader* GetHeader(FreeBlockNode* node);
+    BlockHeader* GetHeader(FreeBlockNode* node) const;
 
     /**
-     * @brief Returns the header of a data pointer. Assumes that the data is pointing to the start
+     * Returns the header of a data pointer. Assumes that the data is pointing to the start
      * of the data pointer
      * @param ptr the raw data pointer
      * @return a BlockHeader if one exists
      */
-    BlockHeader* GetHeader(uint8_t* ptr);
+    BlockHeader* GetHeader(uint8_t* ptr) const;
 
     /**
-     * @brief Returns the header of the previous data block if within the allocator's range
+     * Returns the header of the previous data block if within the allocator's range
      * @param header the current header
      * @return the header of the previous block or nullptr if none exist
      */
-    BlockHeader* GetPrevHeader(BlockHeader* header);
+    BlockHeader* GetPrevHeader(BlockHeader* header) const;
 
     /**
-     * @brief Returns the header of the next memory block if within the allocator's range
+     * Returns the header of the next memory block if within the allocator's range
      * @param header the current header
      * @return the header of the next memory block or nullptr if out of bounds
      */
-    BlockHeader* GetNextHeader(BlockHeader* header);
+    BlockHeader* GetNextHeader(BlockHeader* header) const;
 
     // Allocate/Deallocate
 
     /**
-     * @brief Allocates a memory block and returns a pointer to the allocator's buffer
+     * Allocates a memory block and returns a pointer to the allocator's buffer
      * @param size the size in bytes to allocate. The minimum allocatable chunk of memory is 16
      * bytes
      * @return a pointer to the memory block
@@ -197,7 +198,7 @@ public:
     void* Allocate(const T& size);
 
     /**
-     * @brief Deallocates a memory block and returns the memory to the allocator's pool
+     * Deallocates a memory block and returns the memory to the allocator's pool
      * @param ptr the pointer to deallocate
      */
     void Deallocate(void** ptr);
@@ -205,29 +206,29 @@ public:
     // Getters
 
     /**
-     * @brief Returns the size of a memory block from its header
+     * Returns the size of a memory block from its header
      * @param header the header of the memory block
      * @return the fully padded size of the memory block
      */
-    const T GetHeaderSize(BlockHeader* header);
+    const T GetHeaderSize(BlockHeader* header) const;
 
     /**
      * Returns the maximum capacity of the allocator
      * @return the allocator's capacity in bytes
      */
-    const T Capacity();
+    const T Capacity() const;
 
     /**
      * Returns the number of unpadded bytes remaining
      * @return the number of bytes remaining in the allocator
      */
-    const T BytesRemaining();
+    const T BytesRemaining() const;
 
     /**
      * Returns the total bytes remaining with padding
      * @return the total bytes remaining with padding
      */
-    const T TotalBytesRemaining()
+    const T TotalBytesRemaining() const
     {
         return totalBytesRemaining;
     }
@@ -236,7 +237,7 @@ public:
      * Returns the total size of allocated memory by the allocator with padding
      * @return the total size of allocated memory by the allocator with padding
      */
-    const T TotalSize()
+    const T TotalSize() const
     {
         return totalSize;
     }
@@ -245,7 +246,7 @@ public:
      * Returns the data buffer held by the allocator
      * @return the data buffer held by the allocator
      */
-    const uint8_t* Data()
+    const uint8_t* Data() const
     {
         return data;
     }
@@ -254,34 +255,34 @@ public:
      * Returns the bitmask representing the first level of size classes
      * @return the bitmask representing the first level of size classes
      */
-    const T FlBitmask()
+    const T FirstLevelBitmask() const
     {
-        return flBitmask;
+        return firstLevelBitmask;
     }
 
     /**
      * Returns the second level bitmask stored by the allocator
-     * @param fl the first level index to search over
+     * @param firstLevel the first level index to search over
      * @return the value of the second level bitmask
      */
-    const uint16_t& SlBitmask(const T fl)
+    const uint16_t& SecondLevelBitmask(const T firstLevel)
     {
-        return slBitmasks[fl];
+        return secondLevelBitmasks[firstLevel];
     }
 
 private:
 
     /**
-     * @brief Calculates the FreeList, first level, and second level indices for a given size
+     * Calculates the FreeList, first level, and second level indices for a given size
      * @param size the size class to search for in the allocator
-     * @param fl the first level index to be calculated
-     * @param sl the second level index to be calculated
+     * @param firstLevel the first level index to be calculated
+     * @param secondLevel the second level index to be calculated
      * @return the FreeList index
      */
-    T CalculateFreeBlockIndices(T size, OUT T& fl, OUT T& sl);
+    T CalculateFreeBlockIndices(T size, OUT T& firstLevel, OUT T& secondLevel);
 
     /**
-     * @brief Creates and initialises a header at a specified memory location
+     * Creates and initialises a header at a specified memory location
      * @param ptr the memory location, represented as a pointer to a set of bytes
      * @param size the size to allocate to the memory block. Size must have metadata sizes factored
      * into its calculation
@@ -290,7 +291,7 @@ private:
     void CreateHeader(uint8_t* ptr, const T size, HeaderFlags flags);
 
     /**
-     * @brief Creates a footer at a specified memory location. Footers store the size of the entire
+     * Creates a footer at a specified memory location. Footers store the size of the entire
      * memory block (including metadata padding)
      * @param ptr the memory location to allocate the footer to (represented as a byte pointer)
      * @param size the size to assign the footer (should be the full block size)
@@ -298,7 +299,7 @@ private:
     void CreateFooter(uint8_t* ptr, const T size);
 
     /**
-     * @brief Creates a FreeBlockNode at a specified memory location and positions it within the
+     * Creates a FreeBlockNode at a specified memory location and positions it within the
      * FreeList
      * @param ptr the memory location to initialise the block to
      * @param prev the FreeBlock that precedes this block
@@ -308,7 +309,7 @@ private:
     FreeBlockNode* CreateFreeBlock(uint8_t* ptr, FreeBlockNode* prev, FreeBlockNode* next);
 
     /**
-     * @brief Finds a free block for a specified size. If none exist, will attempt to find the next
+     * Finds a free block for a specified size. If none exist, will attempt to find the next
      * available block
      * @param size the minimum size of the free block
      * @return a pointer to a FreeBlockNode if one exists, otherwise nullptr
@@ -316,12 +317,12 @@ private:
     FreeBlockNode* FindFreeBlock(const T& size);
 
     /**
-     * @brief Returns the next available free block (if any exist)
-     * @param fl the index to search the first level bitmask with
-     * @param sl the index to search the second level bitmask with
+     * Returns the next available free block (if any exist)
+     * @param firstLevel the index to search the first level bitmask with
+     * @param secondLevel the index to search the second level bitmask with
      * @return the index to the FreeList where the block exists
      */
-    const T GetNextFreeSlotIndex(T& fl, T& sl);
+    const T GetNextFreeSlotIndex(T& firstLevel, T& secondLevel);
 
     /**
      * Attempts to split a block in two, prioritising splitting the block into the requested size
@@ -361,7 +362,7 @@ private:
      * @param ptr the pointer to test
      * @return true if the pointer is valid, otherwise false
      */
-    bool IsValid(uint8_t* ptr);
+    bool IsValid(uint8_t* ptr) const;
 
     static uint8_t MIN_SIZE_INDEX;
 
@@ -375,12 +376,12 @@ private:
     FreeBlockNode** freeList {nullptr};
 
     // bitmasks
-    T flBitmask {0};
-    uint16_t* slBitmasks {nullptr};
+    T firstLevelBitmask {0};
+    uint16_t* secondLevelBitmasks {nullptr};
 };
 
 /**
- * @brief A TLSF allocator capable of storing up to 8KB of memory. Each allocation has a overhead of
+ * A TLSF allocator capable of storing up to 8KB of memory. Each allocation has a overhead of
  * 4 bytes and can only allocate a minimum of 16 bytes
  */
 typedef TlsfAllocator<uint16_t> SmallTlsfAllocator;

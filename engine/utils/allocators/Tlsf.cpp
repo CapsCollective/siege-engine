@@ -26,7 +26,7 @@
 
 #define MAX_SL_BUCKETS 16
 #define FL(size) 63 - __builtin_clzll(size)
-#define SL(size, fl) (size >> fl) & ((1 << MIN_SIZE_INDEX) - 1);
+#define SL(size, firstLevel) (size >> firstLevel) & ((1 << MIN_SIZE_INDEX) - 1);
 #define FLAG_OFFSET 3
 #define INVALID_INDEX(T) std::numeric_limits<T>::max()
 #define MIN_ALLOCATION_SIZE 16
@@ -44,9 +44,21 @@ template<typename T>
 TlsfAllocator<T>::TlsfAllocator(const T size)
 {
     T paddedSize = PAD_SIZE(size);
-    if (size == 0 || size < MIN_ALLOCATION_SIZE || size > (INVALID_INDEX(T) - METADATA_OVERHEAD) ||
-        paddedSize < size)
+
+    if (size == 0 || size < MIN_ALLOCATION_SIZE)
+    {
+        CC_LOG_ERROR("CONSTRUCTOR: Size must be greater than or equal to {}", MIN_ALLOCATION_SIZE);
         return;
+    }
+
+    if (size > (INVALID_INDEX(T) - METADATA_OVERHEAD) || paddedSize < size)
+    {
+        T max_size = INVALID_INDEX(T) - METADATA_OVERHEAD;
+        CC_LOG_ERROR("CONSTRUCTOR: size: {} is above allowed allocator limit of {}",
+                     size,
+                     max_size);
+        return;
+    }
 
     T maxBuckets = (FL(size) - MIN_SIZE_INDEX) + 1;
 
@@ -68,7 +80,7 @@ TlsfAllocator<T>::TlsfAllocator(const T size)
         "Allocation returned null. This should not happen and implies an implementation failure.")
 
     freeList = (FreeBlockNode**) (data + paddedSize);
-    slBitmasks = (uint16_t*) (data + paddedSize + freeListSize);
+    secondLevelBitmasks = (uint16_t*) (data + paddedSize + freeListSize);
 
     CreateHeader(data, paddedSize, FREE);
 
@@ -85,11 +97,11 @@ TlsfAllocator<T>::~TlsfAllocator()
     bytesRemaining = 0;
     totalSize = 0;
 
-    flBitmask = 0;
+    firstLevelBitmask = 0;
 
     data = nullptr;
     freeList = nullptr;
-    slBitmasks = nullptr;
+    secondLevelBitmasks = nullptr;
 }
 
 template<typename T>
@@ -104,10 +116,40 @@ template<typename T>
 void* TlsfAllocator<T>::Allocate(const T& size)
 {
     T requiredSize = sizeof(BlockHeader) + size + sizeof(BlockFooter);
-    if (!data || capacity == 0 || size == 0 || requiredSize < size ||
-        requiredSize > totalBytesRemaining || size < MIN_ALLOCATION_SIZE)
-        return nullptr;
 
+    if (!data)
+    {
+        CC_LOG_ERROR(
+            "ALLOCATE: Allocator's buffer is a nullptr. This should not happen and indicates a bug")
+        return nullptr;
+    }
+
+    if (capacity == 0 | size == 0)
+    {
+        CC_LOG_ERROR("ALLOCATE: Cannot allocate memory from an allocator with a capacity of 0")
+        return nullptr;
+    }
+
+    if (requiredSize < size)
+    {
+        CC_LOG_ERROR("ALLOCATE: Requested size is too large and has caused an overflow")
+        return nullptr;
+    }
+
+    if (requiredSize > totalBytesRemaining)
+    {
+        CC_LOG_ERROR("ALLOCATE: Not enough free space available for an allocation of size: {}",
+                     size)
+        return nullptr;
+    }
+
+    if (size < MIN_ALLOCATION_SIZE)
+    {
+        CC_LOG_ERROR(
+            "ALLOCATE: Requested size is too small. Allocations must not be smaller than {} bytes",
+            MIN_ALLOCATION_SIZE)
+        return nullptr;
+    }
     FreeBlockNode* block = FindFreeBlock(requiredSize);
 
     if (!block) return nullptr;
@@ -127,8 +169,16 @@ template<typename T>
 void TlsfAllocator<T>::Deallocate(void** ptr)
 {
     uint8_t* raw = (uint8_t*) *ptr;
-    if (!raw) return;
-    if (raw < data || raw >= (data + capacity)) return;
+    if (!raw)
+    {
+        CC_LOG_ERROR("DEALLOCATE: Cannot deallocate nullptr. This may indicate a larger bug")
+        return;
+    }
+    if (raw < data || raw >= (data + capacity))
+    {
+        CC_LOG_ERROR("DEALLOCATE: Provided pointer is out of the allocator's pointer range")
+        return;
+    }
 
     BlockHeader* header = GetHeader(raw);
 
@@ -188,8 +238,8 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::TrySplitBlock(
 template<typename T>
 void TlsfAllocator<T>::AddNewBlock(const T size, BlockHeader* header)
 {
-    T fl = 0, sl = 0, index;
-    index = CalculateFreeBlockIndices(size, fl, sl);
+    T firstLevel = 0, secondLevel = 0, index;
+    index = CalculateFreeBlockIndices(size, firstLevel, secondLevel);
 
     CreateHeader(TO_BYTES(header), size, FREE);
     FreeBlockNode* node = CreateFreeBlock(TO_BYTES(GetFreeBlock(header)), nullptr, freeList[index]);
@@ -198,8 +248,8 @@ void TlsfAllocator<T>::AddNewBlock(const T size, BlockHeader* header)
     if (node && node->next) node->next->prev = node;
 
     freeList[index] = node;
-    flBitmask |= (1ULL << fl);
-    slBitmasks[fl] |= (1 << sl);
+    firstLevelBitmask |= (1ULL << firstLevel);
+    secondLevelBitmasks[firstLevel] |= (1 << secondLevel);
 }
 
 template<typename T>
@@ -235,17 +285,17 @@ bool TlsfAllocator<T>::RemoveFreeBlock(TlsfAllocator::FreeBlockNode* node)
 
     T oldSize = GetHeaderSize(header);
 
-    T fl, sl, index;
+    T firstLevel, secondLevel, index;
 
-    index = CalculateFreeBlockIndices(oldSize, fl, sl);
+    index = CalculateFreeBlockIndices(oldSize, firstLevel, secondLevel);
 
     if (!node->prev) freeList[index] = node->next;
     else node->prev->next = node->next;
 
     if (node->next) node->next->prev = node->prev;
 
-    if (!freeList[index]) slBitmasks[fl] &= ~(1 << sl);
-    if (!slBitmasks[fl]) flBitmask &= ~(1ULL << fl);
+    if (!freeList[index]) secondLevelBitmasks[firstLevel] &= ~(1 << secondLevel);
+    if (!secondLevelBitmasks[firstLevel]) firstLevelBitmask &= ~(1ULL << firstLevel);
 
     node->next = nullptr;
     node->prev = nullptr;
@@ -256,44 +306,45 @@ bool TlsfAllocator<T>::RemoveFreeBlock(TlsfAllocator::FreeBlockNode* node)
 template<typename T>
 typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::FindFreeBlock(const T& size)
 {
-    T fl, sl, index;
-    index = CalculateFreeBlockIndices(size, fl, sl);
+    T firstLevel, secondLevel, index;
+    index = CalculateFreeBlockIndices(size, firstLevel, secondLevel);
 
-    if (!IsFree(fl, sl)) index = GetNextFreeSlotIndex(fl, sl);
+    if (!IsFree(firstLevel, secondLevel)) index = GetNextFreeSlotIndex(firstLevel, secondLevel);
     if (index == INVALID_INDEX(T)) return nullptr;
 
     return freeList[index];
 }
 
 template<typename T>
-const T TlsfAllocator<T>::GetNextFreeSlotIndex(T& fl, T& sl)
+const T TlsfAllocator<T>::GetNextFreeSlotIndex(T& firstLevel, T& secondLevel)
 {
-    sl = __builtin_ctz(slBitmasks[fl] & ~(((1 << (sl + 1)) - 1)));
+    secondLevel =
+        __builtin_ctz(secondLevelBitmasks[firstLevel] & ~(((1 << (secondLevel + 1)) - 1)));
 
-    if (sl == 32) sl = 0;
-    if (sl) return fl * MAX_SL_BUCKETS + sl;
+    if (secondLevel == 32) secondLevel = 0;
+    if (secondLevel) return firstLevel * MAX_SL_BUCKETS + secondLevel;
 
-    fl = flBitmask & ~(((1ULL << (fl + 1)) - 1));
+    firstLevel = firstLevelBitmask & ~(((1ULL << (firstLevel + 1)) - 1));
 
-    if (!fl) return INVALID_INDEX(T);
+    if (!firstLevel) return INVALID_INDEX(T);
 
-    fl = __builtin_ctzll(fl);
-    CC_ASSERT(slBitmasks[fl] > 0,
+    firstLevel = __builtin_ctzll(firstLevel);
+    CC_ASSERT(secondLevelBitmasks[firstLevel] > 0,
               "SlBitmasks is returning 0. This should not be happening and indicates an "
               "implementation error.")
 
-    sl = __builtin_ctz(slBitmasks[fl]);
+    secondLevel = __builtin_ctz(secondLevelBitmasks[firstLevel]);
 
-    return fl * MAX_SL_BUCKETS + sl;
+    return firstLevel * MAX_SL_BUCKETS + secondLevel;
 }
 
 template<typename T>
-T TlsfAllocator<T>::CalculateFreeBlockIndices(T size, OUT T& fl, OUT T& sl)
+T TlsfAllocator<T>::CalculateFreeBlockIndices(T size, OUT T& firstLevel, OUT T& secondLevel)
 {
     T rawFl = FL(size);
-    fl = rawFl - MIN_SIZE_INDEX;
-    sl = SL(size, fl);
-    return fl * MAX_SL_BUCKETS + sl;
+    firstLevel = rawFl - MIN_SIZE_INDEX;
+    secondLevel = SL(size, firstLevel);
+    return firstLevel * MAX_SL_BUCKETS + secondLevel;
 }
 
 template<typename T>
@@ -306,7 +357,7 @@ void TlsfAllocator<T>::CreateFooter(uint8_t* ptr, const T size)
 
 template<typename T>
 typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(
-    TlsfAllocator::FreeBlockNode* node)
+    TlsfAllocator::FreeBlockNode* node) const
 {
     if (!node) return nullptr;
     uint8_t* rawHeader = TO_BYTES(node) - HEADER_SIZE;
@@ -315,7 +366,7 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(
 }
 
 template<typename T>
-typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(uint8_t* ptr)
+typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(uint8_t* ptr) const
 {
     if (!ptr) return nullptr;
     uint8_t* rawHeader = ptr - HEADER_SIZE;
@@ -325,7 +376,7 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetHeader(uint8_t* ptr
 
 template<typename T>
 typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(
-    TlsfAllocator::BlockHeader* header)
+    TlsfAllocator::BlockHeader* header) const
 {
     if (!header) return nullptr;
     uint8_t* rawPrevFooter = TO_BYTES(GetPrevFooter(header));
@@ -337,7 +388,7 @@ typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetPrevHeader(
 
 template<typename T>
 typename TlsfAllocator<T>::BlockHeader* TlsfAllocator<T>::GetNextHeader(
-    TlsfAllocator::BlockHeader* header)
+    TlsfAllocator::BlockHeader* header) const
 {
     if (!header) return nullptr;
     uint8_t* rawHeader = TO_BYTES(header);
@@ -361,7 +412,7 @@ typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::CreateFreeBlock(
 }
 
 template<typename T>
-typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(BlockHeader* header)
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(BlockHeader* header) const
 {
     if (!header || !IsFree(header)) return nullptr;
     uint8_t* rawBlock = TO_BYTES(header) + HEADER_SIZE;
@@ -370,14 +421,15 @@ typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(BlockHe
 }
 
 template<typename T>
-typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(const T fl, const T sl)
+typename TlsfAllocator<T>::FreeBlockNode* TlsfAllocator<T>::GetFreeBlock(const T firstLevel,
+                                                                         const T secondLevel) const
 {
-    return freeList[fl * MAX_SL_BUCKETS + sl];
+    return freeList[firstLevel * MAX_SL_BUCKETS + secondLevel];
 }
 
 template<typename T>
 typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(
-    TlsfAllocator::BlockHeader* header)
+    TlsfAllocator::BlockHeader* header) const
 {
     if (!header) return nullptr;
     T size = GetHeaderSize(header);
@@ -388,7 +440,7 @@ typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetFooter(
 
 template<typename T>
 typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetPrevFooter(
-    TlsfAllocator::BlockHeader* header)
+    TlsfAllocator::BlockHeader* header) const
 {
     if (!header) return nullptr;
     uint8_t* rawFooter = TO_BYTES(header) - FOOTER_SIZE;
@@ -397,37 +449,37 @@ typename TlsfAllocator<T>::BlockFooter* TlsfAllocator<T>::GetPrevFooter(
 }
 
 template<typename T>
-uint8_t* TlsfAllocator<T>::GetBlockData(TlsfAllocator::BlockHeader* header)
+uint8_t* TlsfAllocator<T>::GetBlockData(TlsfAllocator::BlockHeader* header) const
 {
     return TO_BYTES(header) + HEADER_SIZE;
 }
 
 template<typename T>
-const T TlsfAllocator<T>::GetHeaderSize(BlockHeader* header)
+const T TlsfAllocator<T>::GetHeaderSize(BlockHeader* header) const
 {
     return header->sizeAndFlags >> FLAG_OFFSET;
 }
 
 template<typename T>
-bool TlsfAllocator<T>::IsFree(BlockHeader* header)
+bool TlsfAllocator<T>::IsFree(BlockHeader* header) const
 {
     return header->sizeAndFlags & FREE;
 }
 
 template<typename T>
-bool TlsfAllocator<T>::IsFree(T fl, T sl)
+bool TlsfAllocator<T>::IsFree(T firstLevel, T secondLevel) const
 {
-    return slBitmasks[fl] & (1 << sl);
+    return secondLevelBitmasks[firstLevel] & (1 << secondLevel);
 }
 
 template<typename T>
-bool TlsfAllocator<T>::IsFull()
+bool TlsfAllocator<T>::IsFull() const
 {
     return totalBytesRemaining == 0;
 }
 
 template<typename T>
-bool TlsfAllocator<T>::PrevBlockIsFree(BlockHeader* header)
+bool TlsfAllocator<T>::PrevBlockIsFree(BlockHeader* header) const
 {
     uint8_t* raw = TO_BYTES(header);
     if (raw == data) return false;
@@ -442,19 +494,19 @@ bool TlsfAllocator<T>::PrevBlockIsFree(BlockHeader* header)
 }
 
 template<typename T>
-bool TlsfAllocator<T>::IsValid(uint8_t* ptr)
+bool TlsfAllocator<T>::IsValid(uint8_t* ptr) const
 {
     return ptr && ptr >= data && ptr < (data + (capacity + HEADER_SIZE + FOOTER_SIZE));
 }
 
 template<typename T>
-const T TlsfAllocator<T>::Capacity()
+const T TlsfAllocator<T>::Capacity() const
 {
     return capacity;
 }
 
 template<typename T>
-const T TlsfAllocator<T>::BytesRemaining()
+const T TlsfAllocator<T>::BytesRemaining() const
 {
     return bytesRemaining;
 }
