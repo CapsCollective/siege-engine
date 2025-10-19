@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_PACKFILE_H
 #define SIEGE_ENGINE_PACKFILE_H
 
+#include <utils/allocators/Tlsf.h>
 #include <utils/BinarySerialisation.h>
 #include <utils/Logging.h>
 #include <utils/String.h>
@@ -77,22 +78,25 @@ public:
     bool LoadFromPath(const String& filepath);
 
     template<typename T>
-    T* FindData(const String& filepath)
+    T* FindData(const String& filepath, uint32_t& outSize)
     {
-        PackFileData* packFileData = FindData<PackFileData>(filepath);
+        uint32_t none;
+        PackFileData* packFileData = FindData<PackFileData>(filepath, none);
 
         BinarySerialisation::Buffer dataBuffer;
         dataBuffer.Fill(reinterpret_cast<uint8_t*>(packFileData->data), packFileData->dataSize);
-        delete packFileData;
+        resourceAllocator.TLSF_ALLOC_FREE(packFileData);
 
-        T* typedData = new T();
+        void* allocation = resourceAllocator.Allocate(sizeof(T));
+        T* typedData = new (allocation) T();
         BinarySerialisation::serialise(dataBuffer, *typedData, BinarySerialisation::DESERIALISE);
+        outSize += sizeof(T);
 
         return typedData;
     }
 
     template<>
-    PackFileData* FindData<PackFileData>(const String& filepath)
+    PackFileData* FindData<PackFileData>(const String& filepath, uint32_t& outSize)
     {
         const TocEntry* toc = entries[filepath];
         if (!toc)
@@ -103,19 +107,23 @@ public:
         uLongf bodyDataSizeUncompressed = toc->dataSize;
         uLongf bodyDataSizeCompressed = toc->dataSizeCompressed;
 
-        PackFileData* packFileData = new (malloc(bodyDataSizeUncompressed)) PackFileData();
+        void* allocation = resourceAllocator.Allocate(bodyDataSizeUncompressed);
+        PackFileData* packFileData = new (allocation) PackFileData();
         int result = uncompress(reinterpret_cast<Bytef*>(packFileData),
                                 &bodyDataSizeUncompressed,
                                 reinterpret_cast<Bytef*>(body + toc->dataOffset),
                                 bodyDataSizeCompressed);
         CC_ASSERT(result == Z_OK, "Decompression failed for filepath: " + filepath);
 
+        outSize = bodyDataSizeUncompressed;
         return packFileData;
     }
 
     const std::map<String, TocEntry*>& GetEntries();
 
     const Header& GetHeader();
+
+    MediumTlsfAllocator resourceAllocator = 4000000; // 4MB
 
 private:
 

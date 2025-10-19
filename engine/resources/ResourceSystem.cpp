@@ -52,9 +52,11 @@ bool ResourceSystem::FreeResources()
     bool freedResources = false;
     for (auto it = loadedResources.begin(); it != loadedResources.end();)
     {
-        if (it->second.first == 0)
+        if (it->second.refs == 0)
         {
-            // TODO handle dealloc here
+            packFile->resourceAllocator.Deallocate(&it->second.ptr);
+            runningTotal -= it->second.size;
+            CC_LOG_INFO("[RESOURCES] Running Total: {}, deallocating \"{}\"", runningTotal, it->first)
             loadedResources.erase(it++);
             freedResources = true;
         }

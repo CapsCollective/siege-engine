@@ -19,6 +19,12 @@
 
 namespace Siege
 {
+struct ResourceEntry
+{
+    uint32_t refs;
+    uint32_t size;
+    void* ptr;
+};
 
 class ResourceSystem
 {
@@ -44,26 +50,31 @@ public:
         const auto& it = loadedResources.find(path);
         if (it != loadedResources.end())
         {
-            count = &it->second.first;
-            data = static_cast<T*>(it->second.second);
+            count = &it->second.refs;
+            data = static_cast<T*>(it->second.ptr);
         }
         else
         {
-            data = GetPackFile()->FindData<T>(path);
-            std::pair<uint32_t, void*> pair(0, data);
-            const auto& newIt = loadedResources.emplace(path, pair);
-            count = &newIt.first->second.first;
+            uint32_t size;
+            data = GetPackFile()->FindData<T>(path, size);
+            ResourceEntry e{0, size, data};
+            const auto& newIt = loadedResources.emplace(path, e);
+            count = &newIt.first->second.refs;
+            runningTotal += newIt.first->second.size;
+            CC_LOG_INFO("[RESOURCES] Running Total: {}, allocating \"{}\"", runningTotal, path)
         }
         return {count, data};
     }
 
 private:
 
+    uint32_t runningTotal = 0;
+
     // Private fields
 
     PackFile* packFile = nullptr;
 
-    std::map<String, std::pair<uint32_t, void*>> loadedResources;
+    std::map<String, ResourceEntry> loadedResources;
 };
 
 } // namespace Siege
