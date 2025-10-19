@@ -10,7 +10,8 @@
 #ifndef SIEGE_ENGINE_GENERICFILEDATAPACKER_H
 #define SIEGE_ENGINE_GENERICFILEDATAPACKER_H
 
-#include <resources/PackFile.h>
+#include <utils/String.h>
+#include <resources/PackFileData.h>
 
 Siege::PackFileData* PackGenericFile(const Siege::String& filePath);
 

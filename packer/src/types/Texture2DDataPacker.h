@@ -10,7 +10,8 @@
 #ifndef SIEGE_ENGINE_TEXTURE2DDATAPACKER_H
 #define SIEGE_ENGINE_TEXTURE2DDATAPACKER_H
 
-#include <resources/PackFile.h>
+#include <utils/String.h>
+#include <resources/PackFileData.h>
 
 Siege::PackFileData* PackTexture2DFile(const Siege::String& filePath);
 

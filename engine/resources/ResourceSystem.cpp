@@ -8,7 +8,6 @@
 //
 
 #include "ResourceSystem.h"
-
 #include "PackFile.h"
 
 namespace Siege
@@ -54,9 +53,9 @@ bool ResourceSystem::FreeResources()
     {
         if (it->second.refs == 0)
         {
-            packFile->resourceAllocator.Deallocate(&it->second.ptr);
-            runningTotal -= it->second.size;
-            CC_LOG_INFO("[RESOURCES] Running Total: {}, deallocating \"{}\"", runningTotal, it->first)
+            resourceAllocator.Deallocate(it->second.ptr);
+            totalAllocation -= it->second.size;
+            CC_LOG_INFO("[RESOURCES] Running Total: {}, deallocating \"{}\"", totalAllocation, it->first)
             loadedResources.erase(it++);
             freedResources = true;
         }
