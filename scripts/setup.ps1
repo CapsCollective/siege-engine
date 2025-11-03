@@ -10,9 +10,9 @@ param (
 )
 
 # Dependency versions
-[string] $Vulkan_Version= "vulkan-sdk-1.4.321.0"
-[string] $Spirv_Version="vulkan-sdk-1.4.321.0"
-[string] $Glslang_Version="vulkan-sdk-1.4.321.0"
+[string] $Vulkan_Version= "vulkan-sdk-1.4.321.1"
+[string] $Spirv_Version="vulkan-sdk-1.4.321.1"
+[string] $Glslang_Version="vulkan-sdk-1.4.321.1"
 [string] $Robin_Hood_Hashing_Version="3.11.5"
 [string] $FreeType_Version="VER-2-13-3"
 [string] $LibPng_Version="v1.6.50"

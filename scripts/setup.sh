@@ -8,9 +8,9 @@
 #     https://opensource.org/licenses/Zlib
 
 # Dependency versions
-VULKAN_VERSION="vulkan-sdk-1.4.321.0"
-SPIRV_VERSION="vulkan-sdk-1.4.321.0"
-GLSLANG_VERSION="vulkan-sdk-1.4.321.0"
+VULKAN_VERSION="vulkan-sdk-1.4.328.1"
+SPIRV_VERSION="vulkan-sdk-1.4.328.1"
+GLSLANG_VERSION="vulkan-sdk-1.4.328.1"
 ROBIN_HOOD_HASHING_VERSION="3.11.5"
 MOLTENVK_VERSION="v1.4.0"
 FREETYPE_VERSION="VER-2-13-3"
@@ -282,8 +282,10 @@ setup_moltenVk() {
     update_submodule vulkan/MoltenVK
     checkout_tags "${VULKAN_VENDOR_DIR}"/MoltenVK ${MOLTENVK_VERSION}
 
+    cp -f "${VULKAN_VENDOR_DIR}/known-good/MoltenVK-pbxproj" "${VULKAN_VENDOR_DIR}/MoltenVK/ExternalDependencies.xcodeproj/project.pbxproj"
+
     echo "Building MoltenVk..."
-    (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos)
+    (cd "${VULKAN_VENDOR_DIR}"/MoltenVK ; ./fetchDependencies --macos --v-headers-root "${VULKAN_VENDOR_DIR}/Vulkan-Headers" --spirv-tools-root "${VULKAN_VENDOR_DIR}/SPIRV-Tools")
     make -C "${VULKAN_VENDOR_DIR}"/MoltenVK macos -j"${NUMBER_OF_PROCESSORS}"
     mkdir -p "${VULKAN_LIB_DIR}"/icd.d
     mkdir -p "${VULKAN_INCLUDE_DIR}"
