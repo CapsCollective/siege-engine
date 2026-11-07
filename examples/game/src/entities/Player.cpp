@@ -12,6 +12,7 @@
 #include <core/Statics.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
+#include <audio/AudioSystem.h>
 #include <window/Input.h>
 
 #include "../ServiceLocator.h"
@@ -30,6 +31,12 @@ void Player::OnUpdate()
     // Normalise and apply move to velocity
     float deltaTime = ServiceLocator::GetTicker()->GetDeltaTime();
     velocity += Siege::Vec3::Normalise(move) * speed * deltaTime;
+
+    bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
+    if (pressedC)
+    {
+        bool result = Siege::AudioSystem::GetInstance().PlayClip("assets/audio/click.wav");
+    }
 
     // Apply force of gravity
     velocity += {0.f, 0.01f, 0.f};

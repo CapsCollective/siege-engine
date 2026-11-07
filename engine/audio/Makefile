@@ -20,7 +20,7 @@ linkFlags += -l utils
 compileFlags += -I $(vendorDir)/miniaudio
 
 # Build the static library
-$(utilsLib): $(audioObjects)
+$(audioLib): $(audioObjects)
 	$(call MKDIR,$(call platformpth,$(libDir)))
 	ar -crs $(audioLib) $(audioObjects)
 

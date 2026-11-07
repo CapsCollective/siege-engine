@@ -24,7 +24,6 @@ AudioSystem& AudioSystem::GetInstance()
 
 bool AudioSystem::Initialise()
 {
-
     ma_result result = ma_engine_init(nullptr, &audioEngine);
     return result == MA_SUCCESS;
 }

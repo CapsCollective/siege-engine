@@ -50,14 +50,14 @@ packagingFlags = $(ENV_VARS) --excludes "$(packagingExcludes)"
 
 # Set build vars
 compileFlags += -I $(vendorDir)/glfw/include -I $(vendorDir)/glm -I $(vendorDir)/freetype/include
-linkFlags += -l core -l window -l render -l resources -l utils
+linkFlags += -l core -l window -l render -l audio -l resources -l utils
 
 .PHONY: all pack-assets
 
 all: $(exampleGameApp) pack-assets
 
 # Link the object files and create an executable
-$(exampleGameApp): $(utilsLib) $(windowLib) $(renderLib) $(coreLib) $(exampleGameObjects)
+$(exampleGameApp): $(utilsLib) $(windowLib) $(audioLib) $(renderLib) $(coreLib) $(exampleGameObjects)
 	$(call MKDIR,$(call platformpth,$(@D)))
 	$(CXX) $(exampleGameObjects) -o $(exampleGameApp) $(linkFlags)
 

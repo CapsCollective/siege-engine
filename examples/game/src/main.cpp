@@ -13,6 +13,7 @@
 #include <core/scene/SceneSystem.h>
 #include <render/renderer/Renderer.h>
 #include <resources/ResourceSystem.h>
+#include <audio/AudioSystem.h>
 #include <window/Input.h>
 #include <window/Window.h>
 
@@ -37,6 +38,9 @@ int main(int argc, char* argv[])
 
     // Initialise resources
     Siege::ResourceSystem::GetInstance().MountPackFile();
+
+    // Initialise audio
+    Siege::AudioSystem::GetInstance().Initialise();
 
     Siege::Renderer renderer(window);
     ServiceLocator::Provide(&renderer);
@@ -133,6 +137,7 @@ int main(int argc, char* argv[])
 
     renderer.ClearQueues();
     Siege::ResourceSystem::GetInstance().UnmountPackFile();
+    Siege::AudioSystem::GetInstance().Uninitialise();
 
     return 0;
 }
