@@ -64,6 +64,12 @@ function Setup-Utest {
     Update-Submodule -Submodule utest.h
 }
 
+function Setup-Miniaudio {
+    Write-Output "Setting up miniaudio..."
+    Write-Output "Cloning miniaudio..."
+    Update-Submodule -Submodule miniaudio
+}
+
 function Setup-Zlib {
     Write-Output "Setting up zlib..."
     Write-Output "Cloning zlib..."
@@ -360,6 +366,7 @@ if (Test-Path "$Vulkan_Vendor_Dir/vulkan/include") { Remove-Item -Path "$Vulkan_
 if (Test-Path "$Vendor_Dir/include") { Remove-Item -Path "$Vendor_Dir/include" -Recurse -Force }
 
 Setup-Utest
+Setup-Miniaudio
 Setup-Zlib
 Setup-LibPng
 Setup-FreeType
