@@ -128,6 +128,8 @@ int main(int argc, char* argv[])
 
         renderer.EndFrame();
 
+        Siege::AudioSystem::GetInstance().Update();
+
         // Remove all entities at the end of the frame
         Siege::Statics::Collision().FreeEntities();
         Siege::Statics::Entity().FreeEntities();

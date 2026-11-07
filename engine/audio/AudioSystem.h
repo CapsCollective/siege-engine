@@ -11,6 +11,7 @@
 #define SIEGE_ENGINE_AUDIOSYSTEM_H
 
 #include <utils/String.h>
+#include <resources/PackFileData.h>
 
 namespace Siege
 {
@@ -26,6 +27,10 @@ public:
     bool Initialise();
 
     bool PlayClip(const String& path) const;
+
+    bool PlayClip(const PackFileData& data) const;
+
+    void Update();
 
     void Uninitialise();
 

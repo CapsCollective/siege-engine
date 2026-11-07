@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_PLAYER_H
 #define SIEGE_ENGINE_PLAYER_H
 
+#include <resources/PackFileData.h>
 #include <core/entity/Entity.h>
 #include <utils/Token.h>
 
@@ -34,6 +35,8 @@ public:
 
     Siege::BoundedBox GetBoundingBox() const override;
 
+    void OnStart() override;
+
     void OnDraw3D() override;
 
 protected:
@@ -49,6 +52,8 @@ private:
     float speed;
 
     Siege::Vec3 velocity;
+
+    std::shared_ptr<Siege::PackFileData> clickAudio;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H

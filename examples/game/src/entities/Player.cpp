@@ -9,13 +9,23 @@
 
 #include "Player.h"
 
+#include <audio/AudioSystem.h>
 #include <core/Statics.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
-#include <audio/AudioSystem.h>
+#include <resources/ResourceSystem.h>
+#include <resources/PackFile.h>
 #include <window/Input.h>
 
 #include "../ServiceLocator.h"
+
+void Player::OnStart()
+{
+    Entity::OnStart();
+
+    Siege::PackFile* packFile = Siege::ResourceSystem::GetInstance().GetPackFile();
+    clickAudio = packFile->FindData("assets/audio/click.wav");
+}
 
 void Player::OnUpdate()
 {
@@ -35,7 +45,7 @@ void Player::OnUpdate()
     bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
     if (pressedC)
     {
-        bool result = Siege::AudioSystem::GetInstance().PlayClip("assets/audio/click.wav");
+        bool result = Siege::AudioSystem::GetInstance().PlayClip(*clickAudio);
     }
 
     // Apply force of gravity
