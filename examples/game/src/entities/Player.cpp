@@ -9,12 +9,35 @@
 
 #include "Player.h"
 
+#include <audio/AudioSystem.h>
 #include <core/Statics.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
+#include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
 #include <window/Input.h>
 
 #include "../ServiceLocator.h"
+
+void Player::OnStart()
+{
+    Entity::OnStart();
+
+    Siege::PackFile* packFile = Siege::ResourceSystem::GetInstance().GetPackFile();
+    clickSoundPlayer.clipData = packFile->FindData("assets/audio/click.wav");
+    musicSoundPlayer.clipData = packFile->FindData("assets/audio/call_to_adventure.mp3");
+    musicSoundPlayer.looping = true;
+    musicSoundPlayer.maxPolyphony = 1;
+    musicSoundPlayer.disableSpatialisation = true;
+}
+
+void Player::OnDestroy()
+{
+    clickSoundPlayer.Stop();
+    musicSoundPlayer.Stop();
+
+    Entity::OnDestroy();
+}
 
 void Player::OnUpdate()
 {
@@ -30,6 +53,29 @@ void Player::OnUpdate()
     // Normalise and apply move to velocity
     float deltaTime = ServiceLocator::GetTicker()->GetDeltaTime();
     velocity += Siege::Vec3::Normalise(move) * speed * deltaTime;
+
+    clickSoundPlayer.location = transform.GetPosition();
+    clickSoundPlayer.UpdateVoices();
+    musicSoundPlayer.location = transform.GetPosition();
+    musicSoundPlayer.UpdateVoices();
+
+    bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
+    if (pressedC)
+    {
+        clickSoundPlayer.Play();
+    }
+
+    bool pressedF = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_F);
+    if (pressedF)
+    {
+        musicSoundPlayer.Play();
+    }
+
+    bool pressedG = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_G);
+    if (pressedG)
+    {
+        musicSoundPlayer.Stop();
+    }
 
     // Apply force of gravity
     velocity += {0.f, 0.01f, 0.f};

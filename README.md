@@ -3,16 +3,15 @@
 [![macOS Status](../../workflows/macOS/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/macOS.yml)
 [![Linux Status](../../workflows/Ubuntu/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/ubuntu.yml)
 [![Windows Status](../../workflows/Windows/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/windows.yml)
-[![Tests Status](../../workflows/Tests/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/tests.yml)
 [![Formatting Status](../../workflows/Formatting/badge.svg)](https://github.com/CapsCollective/siege-engine/actions/workflows/formatting.yml)
 [![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-Sometimes game development can feel like a bit of a slog; an endless battle in which the developer is set against an overwhelming bulwark of required knowledge to create a functional game. On one hand, one must understand _linear algebra, calculus, and the intricacies of the rasterised rendering pipeline_ whilst also expecting a mastery of _memory mangement, build systems, algorithms, and coherent software architecture_.
+Sometimes game development can feel like a bit of a slog; an endless battle in which the developer is set against an overwhelming bulwark of required knowledge to create a functional game. On one hand, one must understand _linear algebra, calculus, and the intricacies of the rasterised rendering pipeline_ whilst also expecting a mastery of _memory management, build systems, algorithms, and coherent software architecture_.
 
 The reality is that making games is hard, and making games can be even harder when one does not fully understand the underlying foundations below the many layers of abstraction present in many commercial and general game engines. Using them can often feel disempowering as they discourage deeper learning through sheer size and complexity.
 
-The ultimate purpose of this project is to act as the metaphorical siege engine to break down the barriers to game engine development. To this end, Siege aims to be a **light-weight, cross platform, 3D game engine**. In doing so, we hope to create an engine for game developers, by game developers.
+The ultimate purpose of this project is to act as the metaphorical siege engine to break down the barriers to game engine development. To this end, Siege aims to be a **light-weight, cross-platform, 3D game engine**. In doing so, we hope to create an engine for game developers, by game developers.
 
 ### Current Compatability
 
@@ -156,6 +155,7 @@ You can see examples of this in any of the application targets under `examples`.
 ```
 [root]
      ├─[engine]
+     │        ├─[audio] <- the engine's audio system
      │        ├─[core] <- the engine's core library
      │        ├─[render] <- the engine's renderer
      |        ├─[resources] <- the engine's resource types and loading system

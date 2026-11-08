@@ -79,6 +79,10 @@ int main(int argc, char* argv[])
         {
             data = PackGenericFile(fullPath);
         }
+        else if (extension == ".wav" || extension == ".mp3")
+        {
+            data = PackGenericFile(fullPath);
+        }
 
         if (!data)
         {

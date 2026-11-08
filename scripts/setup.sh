@@ -61,6 +61,12 @@ setup_utest() {
     update_submodule utest.h
 }
 
+setup_miniaudio() {
+    echo "Setting up miniaudio..."
+    echo "Cloning miniaudio..."
+    update_submodule miniaudio
+}
+
 setup_zlib() {
     echo "Setting up zlib..."
     echo "Cloning zlib..."
@@ -360,6 +366,7 @@ echo "OS detected: ${OS}"
 echo "Setting up dependencies..."
 
 setup_utest
+setup_miniaudio
 setup_zlib
 setup_libpng
 setup_freetype

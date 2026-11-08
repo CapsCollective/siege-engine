@@ -44,6 +44,7 @@ export examplesDir := $(abspath examples)
 export utilsLib := $(libDir)/libutils.a
 export resourcesLib := $(libDir)/libresources.a
 export windowLib := $(libDir)/libwindow.a
+export audioLib := $(libDir)/libaudio.a
 export coreLib := $(libDir)/libcore.a
 export renderLib := $(libDir)/librender.a
 export testApp := $(binDir)/tests/build/app
@@ -70,7 +71,10 @@ $(resourcesLib): buildFlags $(utilsLib)
 $(windowLib): buildFlags $(utilsLib)
 	"$(MAKE)" -C $(engineDir)/window CXXFLAGS="$(CXXFLAGS)"
 
-$(coreLib): buildFlags $(utilsLib)
+$(audioLib): buildFlags $(utilsLib)
+	"$(MAKE)" -C $(engineDir)/audio CXXFLAGS="$(CXXFLAGS)"
+
+$(coreLib): buildFlags $(utilsLib) $(audioLib) # TODO remove redundant audio dependency
 	"$(MAKE)" -C $(engineDir)/core CXXFLAGS="$(CXXFLAGS)"
 
 $(renderLib): buildFlags $(utilsLib) $(windowLib)

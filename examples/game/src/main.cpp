@@ -7,6 +7,7 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <audio/AudioSystem.h>
 #include <core/Statics.h>
 #include <core/Ticker.h>
 #include <core/physics/CollisionSystem.h>
@@ -37,6 +38,9 @@ int main(int argc, char* argv[])
 
     // Initialise resources
     Siege::ResourceSystem::GetInstance().MountPackFile();
+
+    // Initialise audio
+    Siege::AudioSystem::GetInstance().Initialise();
 
     Siege::Renderer renderer(window);
     ServiceLocator::Provide(&renderer);
@@ -124,6 +128,8 @@ int main(int argc, char* argv[])
 
         renderer.EndFrame();
 
+        Siege::AudioSystem::GetInstance().Update();
+
         // Remove all entities at the end of the frame
         Siege::Statics::Collision().FreeEntities();
         Siege::Statics::Entity().FreeEntities();
@@ -133,6 +139,7 @@ int main(int argc, char* argv[])
 
     renderer.ClearQueues();
     Siege::ResourceSystem::GetInstance().UnmountPackFile();
+    Siege::AudioSystem::GetInstance().Uninitialise();
 
     return 0;
 }

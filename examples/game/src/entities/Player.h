@@ -10,6 +10,7 @@
 #ifndef SIEGE_ENGINE_PLAYER_H
 #define SIEGE_ENGINE_PLAYER_H
 
+#include <audio/AudioSystem.h>
 #include <core/entity/Entity.h>
 #include <utils/Token.h>
 
@@ -34,6 +35,10 @@ public:
 
     Siege::BoundedBox GetBoundingBox() const override;
 
+    void OnStart() override;
+
+    void OnDestroy() override;
+
     void OnDraw3D() override;
 
 protected:
@@ -49,6 +54,10 @@ private:
     float speed;
 
     Siege::Vec3 velocity;
+
+    Siege::SoundPlayer clickSoundPlayer;
+
+    Siege::SoundPlayer musicSoundPlayer;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H
