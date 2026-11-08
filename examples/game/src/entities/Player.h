@@ -10,11 +10,9 @@
 #ifndef SIEGE_ENGINE_PLAYER_H
 #define SIEGE_ENGINE_PLAYER_H
 
-#include <resources/PackFileData.h>
+#include <audio/AudioSystem.h>
 #include <core/entity/Entity.h>
 #include <utils/Token.h>
-
-#include <memory>
 
 REGISTER_TOKEN(Player);
 
@@ -39,6 +37,8 @@ public:
 
     void OnStart() override;
 
+    void OnDestroy() override;
+
     void OnDraw3D() override;
 
 protected:
@@ -55,7 +55,9 @@ private:
 
     Siege::Vec3 velocity;
 
-    std::shared_ptr<Siege::PackFileData> clickAudio;
+    Siege::SoundSource clickSoundSource;
+
+    Siege::SoundSource musicSoundSource;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H

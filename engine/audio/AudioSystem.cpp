@@ -27,6 +27,7 @@ struct Voice
     bool pendingKill = false;
     ma_decoder decoder = {};
     ma_sound sound = {};
+    Token contextToken;
 };
 
 static ma_engine audioEngine;
@@ -43,11 +44,23 @@ AudioSystem& AudioSystem::GetInstance()
 
 bool AudioSystem::Initialise()
 {
-    decoderConfig = ma_decoder_config_init(ma_format_f32, 2, 48000);
-    decoderConfig.encodingFormat = ma_encoding_format_wav;
-
+    decoderConfig = ma_decoder_config_init_default();
     ma_result result = ma_engine_init(nullptr, &audioEngine);
     return result == MA_SUCCESS;
+}
+
+static int32_t FindPolyphonyCountForSound(const SoundSource& soundSource)
+{
+    int32_t count = 0;
+    for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
+    {
+        const Voice& voice = voices[i];
+        if (voice.contextToken == soundSource.contextToken)
+        {
+            ++count;
+        }
+    }
+    return count;
 }
 
 static int32_t FindAvailableVoice()
@@ -66,37 +79,54 @@ static int32_t FindAvailableVoice()
 
 static void OnSoundEnded(void* userData, ma_sound* sound)
 {
-    voicesMutex.lock();
+    std::scoped_lock lock(voicesMutex);
     uint64_t voiceIdx = reinterpret_cast<uint64_t>(userData);
     Voice& voice = voices[voiceIdx];
     voice.pendingKill = true;
     CC_LOG_INFO("Marked pending kill sound clip with id {} on voice idx {}", voice.id, voiceIdx)
-    voicesMutex.unlock();
 }
 
-bool AudioSystem::PlayClip(const PackFileData& data) const
+bool AudioSystem::PlaySoundSource(const SoundSource& soundSource)
 {
-    voicesMutex.lock();
+    std::scoped_lock lock(voicesMutex);
+
+    void* clipData = soundSource.clipData->data;
+    uint32_t clipDataLength = soundSource.clipData->dataSize;
+
+    if (soundSource.maxPolyphony != 0)
+    {
+        int32_t currentPolyphony = FindPolyphonyCountForSound(soundSource);
+        if (currentPolyphony >= soundSource.maxPolyphony)
+        {
+            CC_LOG_WARNING("Cannot play requested clip at address above {} max polyphony of {}",
+                reinterpret_cast<uint64_t>(clipData), soundSource.maxPolyphony);
+            return false;
+        }
+    }
+
     int32_t voiceIdx = FindAvailableVoice();
     if (voiceIdx == -1)
     {
-        CC_LOG_ERROR("Failed to find available voice for requested clip at address {}", reinterpret_cast<uint64_t>(&data));
+        CC_LOG_WARNING("Failed to find available voice for requested clip at address {}",
+            reinterpret_cast<uint64_t>(clipData));
         return false;
     }
 
     Voice& voice = voices[voiceIdx];
 
-    ma_result result = ma_decoder_init_memory(data.data, data.dataSize, &decoderConfig, &voice.decoder);
+    ma_result result = ma_decoder_init_memory(clipData, clipDataLength, &decoderConfig, &voice.decoder);
     if (result != MA_SUCCESS)
     {
-        CC_LOG_ERROR("Failed to initialise decoder for requested clip at address {}", reinterpret_cast<uint64_t>(&data))
+        CC_LOG_ERROR("Failed to initialise decoder for requested clip at address {}",
+            reinterpret_cast<uint64_t>(clipData))
         return false;
     }
 
     result = ma_sound_init_from_data_source(&audioEngine, &voice.decoder, 0, nullptr, &voice.sound);
     if (result != MA_SUCCESS)
     {
-        CC_LOG_ERROR("Failed to initialise sound for requested clip at address {}", reinterpret_cast<uint64_t>(&data))
+        CC_LOG_ERROR("Failed to initialise sound for requested clip at address {}",
+            reinterpret_cast<uint64_t>(clipData))
         result = ma_decoder_uninit(&voice.decoder);
         if (result != MA_SUCCESS)
         {
@@ -108,10 +138,13 @@ bool AudioSystem::PlayClip(const PackFileData& data) const
     static uint64_t globalId = 0;
     voice.id = ++globalId;
 
+    voice.contextToken = soundSource.contextToken;
+
     result = ma_sound_set_end_callback(&voice.sound, OnSoundEnded, reinterpret_cast<void*>(voiceIdx));
     if (result != MA_SUCCESS)
     {
-        CC_LOG_ERROR("Failed to set sound ended callback for requested clip at address {}", reinterpret_cast<uint64_t>(&data))
+        CC_LOG_ERROR("Failed to set sound ended callback for requested clip at address {}",
+            reinterpret_cast<uint64_t>(clipData))
         ma_sound_uninit(&voice.sound);
         result = ma_decoder_uninit(&voice.decoder);
         if (result != MA_SUCCESS)
@@ -121,10 +154,16 @@ bool AudioSystem::PlayClip(const PackFileData& data) const
         return false;
     }
 
+    if (soundSource.looping)
+    {
+        ma_sound_set_looping(&voice.sound, true);
+    }
+
     result = ma_sound_start(&voice.sound);
     if (result != MA_SUCCESS)
     {
-        CC_LOG_ERROR("Failed to start sound for requested clip at address {}", reinterpret_cast<uint64_t>(&data))
+        CC_LOG_ERROR("Failed to start sound for requested clip at address {}",
+            reinterpret_cast<uint64_t>(clipData))
         ma_sound_uninit(&voice.sound);
         result = ma_decoder_uninit(&voice.decoder);
         if (result != MA_SUCCESS)
@@ -133,15 +172,41 @@ bool AudioSystem::PlayClip(const PackFileData& data) const
         }
         return false;
     }
-    voicesMutex.unlock();
 
-    CC_LOG_INFO("Started playing sound clip at address {} with id {} on voice idx {}", reinterpret_cast<uint64_t>(&data), voice.id, voiceIdx)
+    CC_LOG_INFO("Started playing sound clip at address {} with id {} on voice idx {}",
+        reinterpret_cast<uint64_t>(clipData), voice.id, voiceIdx)
     return true;
+}
+
+bool AudioSystem::StopSoundSource(const SoundSource& soundSource)
+{
+    std::scoped_lock lock(voicesMutex);
+    bool stoppedSounds = false;
+    for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
+    {
+        Voice& voice = voices[i];
+        if (voice.contextToken != soundSource.contextToken)
+        {
+            continue;
+        }
+
+        ma_result result = ma_sound_stop(&voice.sound);
+        if (result != MA_SUCCESS)
+        {
+            CC_LOG_ERROR("Failed to stop sound with id {} on voice idx {}", voice.id, i)
+        }
+        CC_LOG_INFO("Stopped sound clip with id {} on voice idx {}", voice.id, i)
+
+        voice.pendingKill = true;
+        CC_LOG_INFO("Marked pending kill sound clip with id {} on voice idx {}", voice.id, i)
+        stoppedSounds = true;
+    }
+    return stoppedSounds;
 }
 
 void AudioSystem::Update()
 {
-    voicesMutex.lock();
+    std::scoped_lock lock(voicesMutex);
     for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
     {
         Voice& voice = voices[i];
@@ -166,29 +231,32 @@ void AudioSystem::Update()
         std::memset(&voice, 0, sizeof(Voice));
         CC_LOG_INFO("Flushed voice playing sound clip with id {} on voice idx {}", id, i)
     }
-    voicesMutex.unlock();
 }
 
 void AudioSystem::Uninitialise()
 {
-    voicesMutex.lock();
-    for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
     {
-        Voice& voice = voices[i];
-        uint64_t id = voice.id;
-        if (id == 0)
+        std::scoped_lock lock(voicesMutex);
+        for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
         {
-            continue;
-        }
+            Voice& voice = voices[i];
+            uint64_t id = voice.id;
+            if (id == 0)
+            {
+                continue;
+            }
 
-        ma_result result = ma_sound_stop(&voice.sound);
-        if (result != MA_SUCCESS)
-        {
-            CC_LOG_ERROR("Failed to stop sound with id {} on voice idx {}", voice.id, i)
+            ma_result result = ma_sound_stop(&voice.sound);
+            if (result != MA_SUCCESS)
+            {
+                CC_LOG_ERROR("Failed to stop sound with id {} on voice idx {}", voice.id, i)
+            }
+            CC_LOG_INFO("Stopped sound clip with id {} on voice idx {}", voice.id, i)
+
+            voice.pendingKill = true;
+            CC_LOG_INFO("Marked pending kill sound clip with id {} on voice idx {}", voice.id, i)
         }
-        voice.pendingKill = true;
     }
-    voicesMutex.unlock();
     Update();
 
     ma_engine_uninit(&audioEngine);

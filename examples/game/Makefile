@@ -38,6 +38,7 @@ exampleGameAssets += $(patsubst $(engineRenderBuildDir)/%,%, $(call rwildcard,$(
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.ttf))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.scene))
 exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.wav))
+exampleGameAssets += $(patsubst ./%,%, $(call rwildcard,$(exampleGameSrcDir),*.mp3))
 
 ifneq ($(ENABLE_VALIDATION_LAYERS), 1)
 	packagingExcludes := $(VALIDATION_LAYERS_INSTALL_DIR)

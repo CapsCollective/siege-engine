@@ -24,7 +24,19 @@ void Player::OnStart()
     Entity::OnStart();
 
     Siege::PackFile* packFile = Siege::ResourceSystem::GetInstance().GetPackFile();
-    clickAudio = packFile->FindData("assets/audio/click.wav");
+    clickSoundSource.clipData = packFile->FindData("assets/audio/click.wav");
+    clickSoundSource.contextToken = Siege::Token::FindOrRegisterToken("click_clip");
+    musicSoundSource.clipData = packFile->FindData("assets/audio/call_to_adventure.mp3");
+    musicSoundSource.looping = true;
+    musicSoundSource.maxPolyphony = 1;
+    musicSoundSource.contextToken = Siege::Token::FindOrRegisterToken("music_clip");
+}
+void Player::OnDestroy()
+{
+    Siege::AudioSystem::GetInstance().StopSoundSource(clickSoundSource);
+    Siege::AudioSystem::GetInstance().StopSoundSource(musicSoundSource);
+
+    Entity::OnDestroy();
 }
 
 void Player::OnUpdate()
@@ -45,7 +57,19 @@ void Player::OnUpdate()
     bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
     if (pressedC)
     {
-        bool result = Siege::AudioSystem::GetInstance().PlayClip(*clickAudio);
+        Siege::AudioSystem::GetInstance().PlaySoundSource(clickSoundSource);
+    }
+
+    bool pressedF = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_F);
+    if (pressedF)
+    {
+        Siege::AudioSystem::GetInstance().PlaySoundSource(musicSoundSource);
+    }
+
+    bool pressedG = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_G);
+    if (pressedG)
+    {
+        Siege::AudioSystem::GetInstance().StopSoundSource(musicSoundSource);
     }
 
     // Apply force of gravity

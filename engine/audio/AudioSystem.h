@@ -10,11 +10,21 @@
 #ifndef SIEGE_ENGINE_AUDIOSYSTEM_H
 #define SIEGE_ENGINE_AUDIOSYSTEM_H
 
-#include <utils/String.h>
+#include <utils/Token.h>
 #include <resources/PackFileData.h>
+
+#include <memory>
 
 namespace Siege
 {
+
+struct SoundSource
+{
+    std::shared_ptr<PackFileData> clipData;
+    uint8_t maxPolyphony = 0;
+    bool looping = false;
+    Token contextToken;
+};
 
 class AudioSystem
 {
@@ -26,7 +36,9 @@ public:
 
     bool Initialise();
 
-    bool PlayClip(const PackFileData& data) const;
+    bool PlaySoundSource(const SoundSource& soundSource);
+
+    bool StopSoundSource(const SoundSource& soundSource);
 
     void Update();
 
