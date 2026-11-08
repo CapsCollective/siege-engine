@@ -12,6 +12,7 @@
 #include <utils/math/Projection.h>
 #include <utils/math/Transform.h>
 #include <window/Input.h>
+#include <audio/AudioSystem.h>
 
 #define DEFAULT_NEAR_POINT 0.1f
 #define DEFAULT_FAR_POINT 1000.f
@@ -66,6 +67,8 @@ FPSCamera::FPSCamera(Siege::Vec3 position, Siege::Vec3 front, float fov) :
 void FPSCamera::Update(float fovy, float width, float height, float near, float far)
 {
     cam.projection = Siege::Perspective(fovy, width / height, near, far);
+    Siege::Xform transform{camPos, camFront, Siege::Vec3::Zero()};
+    Siege::AudioSystem::GetInstance().SetSoundListenerTransform(transform);
 }
 
 void FPSCamera::LookAt(Siege::Vec3 target)

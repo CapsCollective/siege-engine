@@ -45,7 +45,9 @@ AudioSystem& AudioSystem::GetInstance()
 bool AudioSystem::Initialise()
 {
     decoderConfig = ma_decoder_config_init_default();
-    ma_result result = ma_engine_init(nullptr, &audioEngine);
+    ma_engine_config engineConfig = ma_engine_config_init();
+    engineConfig.listenerCount = 1;
+    ma_result result = ma_engine_init(&engineConfig, &audioEngine);
     return result == MA_SUCCESS;
 }
 
@@ -159,6 +161,13 @@ bool AudioSystem::PlaySoundSource(const SoundSource& soundSource)
         ma_sound_set_looping(&voice.sound, true);
     }
 
+    ma_sound_set_spatialization_enabled(&voice.sound, !soundSource.disableSpatialisation);
+    if (!soundSource.disableSpatialisation)
+    {
+        const Vec3& pos = soundSource.location;
+        ma_sound_set_position(&voice.sound, pos.x, pos.y, pos.z);
+    }
+
     result = ma_sound_start(&voice.sound);
     if (result != MA_SUCCESS)
     {
@@ -202,6 +211,34 @@ bool AudioSystem::StopSoundSource(const SoundSource& soundSource)
         stoppedSounds = true;
     }
     return stoppedSounds;
+}
+
+void AudioSystem::SetSoundListenerTransform(const Xform& transform)
+{
+    uint32_t listenerIdx = 0;
+    ma_engine_listener_set_world_up(&audioEngine, listenerIdx, 0, 1, 0);
+
+    const Vec3& pos = transform.GetPosition();
+    const Vec3& rot = transform.GetRotation();
+    ma_engine_listener_set_position(&audioEngine, listenerIdx, pos.x, pos.y, pos.z);
+    ma_engine_listener_set_direction(&audioEngine, listenerIdx, rot.x, rot.y, rot.z);
+}
+
+void AudioSystem::UpdateSoundSourcePosition(const SoundSource& soundSource)
+{
+    std::scoped_lock lock(voicesMutex);
+    bool stoppedSounds = false;
+    for (int32_t i = 0; i < AUDIO_SYSTEM_MAX_VOICES; ++i)
+    {
+        Voice& voice = voices[i];
+        if (voice.contextToken != soundSource.contextToken)
+        {
+            continue;
+        }
+
+        const Vec3& pos = soundSource.location;
+        ma_sound_set_position(&voice.sound, pos.x, pos.y, pos.z);
+    }
 }
 
 void AudioSystem::Update()

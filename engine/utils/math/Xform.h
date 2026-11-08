@@ -26,6 +26,12 @@ public:
 
     Xform(Vec3 position, float rotation) : Xform(position, rotation, Vec3::One()) {}
 
+    Xform(Vec3 position, Vec3 rotation, Vec3 scale) :
+        position(position),
+        rotation(rotation),
+        scale(scale)
+    {}
+
     Xform(Vec3 position, float rotation, Vec3 scale) :
         position(position),
         rotation(Vec3 {0.f, rotation, 0.f}),

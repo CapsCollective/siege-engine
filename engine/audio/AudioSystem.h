@@ -10,8 +10,9 @@
 #ifndef SIEGE_ENGINE_AUDIOSYSTEM_H
 #define SIEGE_ENGINE_AUDIOSYSTEM_H
 
-#include <utils/Token.h>
+#include <utils/math/Xform.h>
 #include <resources/PackFileData.h>
+#include <utils/Token.h>
 
 #include <memory>
 
@@ -24,6 +25,8 @@ struct SoundSource
     uint8_t maxPolyphony = 0;
     bool looping = false;
     Token contextToken;
+    bool disableSpatialisation = false;
+    Vec3 location;
 };
 
 class AudioSystem
@@ -39,6 +42,10 @@ public:
     bool PlaySoundSource(const SoundSource& soundSource);
 
     bool StopSoundSource(const SoundSource& soundSource);
+
+    void SetSoundListenerTransform(const Xform& transform);
+
+    void UpdateSoundSourcePosition(const SoundSource& soundSource);
 
     void Update();
 

@@ -29,6 +29,7 @@ void Player::OnStart()
     musicSoundSource.clipData = packFile->FindData("assets/audio/call_to_adventure.mp3");
     musicSoundSource.looping = true;
     musicSoundSource.maxPolyphony = 1;
+    musicSoundSource.disableSpatialisation = true;
     musicSoundSource.contextToken = Siege::Token::FindOrRegisterToken("music_clip");
 }
 void Player::OnDestroy()
@@ -53,6 +54,11 @@ void Player::OnUpdate()
     // Normalise and apply move to velocity
     float deltaTime = ServiceLocator::GetTicker()->GetDeltaTime();
     velocity += Siege::Vec3::Normalise(move) * speed * deltaTime;
+
+    clickSoundSource.location = transform.GetPosition();
+    Siege::AudioSystem::GetInstance().UpdateSoundSourcePosition(clickSoundSource);
+    musicSoundSource.location = transform.GetPosition();
+    Siege::AudioSystem::GetInstance().UpdateSoundSourcePosition(musicSoundSource);
 
     bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
     if (pressedC)
