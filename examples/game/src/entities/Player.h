@@ -14,6 +14,8 @@
 #include <core/entity/Entity.h>
 #include <utils/Token.h>
 
+#include <memory>
+
 REGISTER_TOKEN(Player);
 
 class Player : public Siege::Entity

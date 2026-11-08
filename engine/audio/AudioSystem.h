@@ -26,8 +26,6 @@ public:
 
     bool Initialise();
 
-    bool PlayClip(const String& path) const;
-
     bool PlayClip(const PackFileData& data) const;
 
     void Update();
