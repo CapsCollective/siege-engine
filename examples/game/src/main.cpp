@@ -7,13 +7,13 @@
 //     https://opensource.org/licenses/Zlib
 //
 
+#include <audio/AudioSystem.h>
 #include <core/Statics.h>
 #include <core/Ticker.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneSystem.h>
 #include <render/renderer/Renderer.h>
 #include <resources/ResourceSystem.h>
-#include <audio/AudioSystem.h>
 #include <window/Input.h>
 #include <window/Window.h>
 

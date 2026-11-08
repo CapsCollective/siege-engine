@@ -13,8 +13,8 @@
 #include <core/Statics.h>
 #include <core/physics/CollisionSystem.h>
 #include <core/scene/SceneFile.h>
-#include <resources/ResourceSystem.h>
 #include <resources/PackFile.h>
+#include <resources/ResourceSystem.h>
 #include <window/Input.h>
 
 #include "../ServiceLocator.h"
@@ -24,18 +24,17 @@ void Player::OnStart()
     Entity::OnStart();
 
     Siege::PackFile* packFile = Siege::ResourceSystem::GetInstance().GetPackFile();
-    clickSoundSource.clipData = packFile->FindData("assets/audio/click.wav");
-    clickSoundSource.contextToken = Siege::Token::FindOrRegisterToken("click_clip");
-    musicSoundSource.clipData = packFile->FindData("assets/audio/call_to_adventure.mp3");
-    musicSoundSource.looping = true;
-    musicSoundSource.maxPolyphony = 1;
-    musicSoundSource.disableSpatialisation = true;
-    musicSoundSource.contextToken = Siege::Token::FindOrRegisterToken("music_clip");
+    clickSoundPlayer.clipData = packFile->FindData("assets/audio/click.wav");
+    musicSoundPlayer.clipData = packFile->FindData("assets/audio/call_to_adventure.mp3");
+    musicSoundPlayer.looping = true;
+    musicSoundPlayer.maxPolyphony = 1;
+    musicSoundPlayer.disableSpatialisation = true;
 }
+
 void Player::OnDestroy()
 {
-    Siege::AudioSystem::GetInstance().StopSoundSource(clickSoundSource);
-    Siege::AudioSystem::GetInstance().StopSoundSource(musicSoundSource);
+    clickSoundPlayer.Stop();
+    musicSoundPlayer.Stop();
 
     Entity::OnDestroy();
 }
@@ -55,27 +54,27 @@ void Player::OnUpdate()
     float deltaTime = ServiceLocator::GetTicker()->GetDeltaTime();
     velocity += Siege::Vec3::Normalise(move) * speed * deltaTime;
 
-    clickSoundSource.location = transform.GetPosition();
-    Siege::AudioSystem::GetInstance().UpdateSoundSourcePosition(clickSoundSource);
-    musicSoundSource.location = transform.GetPosition();
-    Siege::AudioSystem::GetInstance().UpdateSoundSourcePosition(musicSoundSource);
+    clickSoundPlayer.location = transform.GetPosition();
+    clickSoundPlayer.UpdateVoices();
+    musicSoundPlayer.location = transform.GetPosition();
+    musicSoundPlayer.UpdateVoices();
 
     bool pressedC = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_C);
     if (pressedC)
     {
-        Siege::AudioSystem::GetInstance().PlaySoundSource(clickSoundSource);
+        clickSoundPlayer.Play();
     }
 
     bool pressedF = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_F);
     if (pressedF)
     {
-        Siege::AudioSystem::GetInstance().PlaySoundSource(musicSoundSource);
+        musicSoundPlayer.Play();
     }
 
     bool pressedG = Siege::Input::IsKeyJustPressed(Siege::Key::KEY_G);
     if (pressedG)
     {
-        Siege::AudioSystem::GetInstance().StopSoundSource(musicSoundSource);
+        musicSoundPlayer.Stop();
     }
 
     // Apply force of gravity

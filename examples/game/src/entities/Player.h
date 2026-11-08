@@ -55,9 +55,9 @@ private:
 
     Siege::Vec3 velocity;
 
-    Siege::SoundSource clickSoundSource;
+    Siege::SoundPlayer clickSoundPlayer;
 
-    Siege::SoundSource musicSoundSource;
+    Siege::SoundPlayer musicSoundPlayer;
 };
 
 #endif // SIEGE_ENGINE_PLAYER_H
